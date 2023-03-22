@@ -17,7 +17,11 @@ import {
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../../utils/field-constants';
-import { PREVIOUS_P, PREVIOUS_Q_MAX_P, PREVIOUS_Q_MIN_P } from '../../modification/generator-modification-utils';
+import {
+    PREVIOUS_P,
+    PREVIOUS_Q_MAX_P,
+    PREVIOUS_Q_MIN_P,
+} from '../../modification/generator-modification-utils';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';

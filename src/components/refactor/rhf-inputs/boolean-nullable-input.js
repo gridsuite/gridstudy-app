@@ -6,7 +6,7 @@
  */
 
 import FormControl from '@mui/material/FormControl';
-import { Checkbox, FormControlLabel, FormHelperText } from '@mui/material';
+import { Checkbox, FormControlLabel } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useController, useWatch } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';

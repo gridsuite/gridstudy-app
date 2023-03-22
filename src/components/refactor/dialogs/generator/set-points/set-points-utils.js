@@ -34,8 +34,8 @@ import {
     PREVIOUS_FREQUENCY_REGULATION,
     PREVIOUS_VOLTAGE_LEVEL,
     PREVIOUS_VOLTAGE_REGULATION,
-    PREVIOUS_VOLTAGE_SET_POINT
-} from "../modification/generator-modification-utils";
+    PREVIOUS_VOLTAGE_SET_POINT,
+} from '../modification/generator-modification-utils';
 
 const getFrequencyRegulationEmptyFormData = (frequencyRegulation) => ({
     [FREQUENCY_REGULATION]: frequencyRegulation,
@@ -54,7 +54,8 @@ const getFrequencyRegulationSchema = () => ({
         .number()
         .nullable()
         .when([FREQUENCY_REGULATION, PREVIOUS_DROOP], {
-            is: (frequencyRegulation, previousDroop) => frequencyRegulation && previousDroop == null,
+            is: (frequencyRegulation, previousDroop) =>
+                frequencyRegulation && previousDroop == null,
             then: (schema) => schema.required(),
         }),
 });
@@ -99,7 +100,11 @@ const getVoltageRegulationSchema = () => ({
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
         .when(
-            [VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, PREVIOUS_VOLTAGE_LEVEL],
+            [
+                VOLTAGE_REGULATION,
+                VOLTAGE_REGULATION_TYPE,
+                PREVIOUS_VOLTAGE_LEVEL,
+            ],
             {
                 is: (
                     voltageRegulation,
@@ -148,7 +153,7 @@ export const getSetPointsEmptyFormData = (
     voltageRegulation = false,
     voltageRegulationType = REGULATION_TYPES.LOCAL.id,
     frequencyRegulation = false
-                                          ) => ({
+) => ({
     [VOLTAGE_REGULATION]: voltageRegulation,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,

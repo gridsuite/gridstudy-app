@@ -12,18 +12,16 @@ import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { useStyles } from '../../../../../dialogs/dialogUtils';
-import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
+import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
 import ErrorInput from '../../../../rhf-inputs/error-inputs/error-input';
-import {
-    P,
-    Q_MAX_P,
-    Q_MIN_P,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-} from 'components/refactor/utils/field-constants';
+import { P, Q_MAX_P, Q_MIN_P } from 'components/refactor/utils/field-constants';
 import MidFormError from 'components/refactor/rhf-inputs/error-inputs/mid-form-error';
-import { INSERT, REMOVE } from './reactive-capability-utils';
-import { PREVIOUS_P, PREVIOUS_Q_MAX_P, PREVIOUS_Q_MIN_P } from '../../modification/generator-modification-utils';
+import {
+    PREVIOUS_P,
+    PREVIOUS_Q_MAX_P,
+    PREVIOUS_Q_MIN_P,
+} from '../../modification/generator-modification-utils';
 
 export const ReactiveCapabilityCurveTable = ({
     id,
@@ -78,14 +76,16 @@ export const ReactiveCapabilityCurveTable = ({
                                 <IconButton
                                     className={classes.icon}
                                     key={value.id}
-                                    onClick={() => insert(rows.length - 1, {
-                                        [P]: null,
-                                        [Q_MIN_P]: null,
-                                        [Q_MAX_P]: null,
-                                        [PREVIOUS_P]: null,
-                                        [PREVIOUS_Q_MIN_P]: null,
-                                        [PREVIOUS_Q_MAX_P]: null,
-                                    })}
+                                    onClick={() =>
+                                        insert(rows.length - 1, {
+                                            [P]: null,
+                                            [Q_MIN_P]: null,
+                                            [Q_MAX_P]: null,
+                                            [PREVIOUS_P]: null,
+                                            [PREVIOUS_Q_MIN_P]: null,
+                                            [PREVIOUS_Q_MAX_P]: null,
+                                        })
+                                    }
                                     disabled={disabled}
                                     style={{ top: '-1em' }}
                                 >

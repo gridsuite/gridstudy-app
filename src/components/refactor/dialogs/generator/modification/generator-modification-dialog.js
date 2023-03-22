@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -25,12 +25,9 @@ import {
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    MINIMUM_REACTIVE_POWER,
-    P,
+    MINIMUM_REACTIVE_POWER, P,
     PLANNED_ACTIVE_POWER_SET_POINT,
-    PLANNED_OUTAGE_RATE,
-    Q_MAX_P,
-    Q_MIN_P,
+    PLANNED_OUTAGE_RATE, Q_MAX_P, Q_MIN_P,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
@@ -46,7 +43,10 @@ import {
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
 
-import { modifyGenerator } from '../../../../../utils/rest-api';
+import {
+    fetchEquipmentInfos,
+    modifyGenerator,
+} from '../../../../../utils/rest-api';
 import { sanitizeString } from '../../../../dialogs/dialogUtils';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import GeneratorModificationForm from './generator-modification-form';
@@ -58,17 +58,15 @@ import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
 } from '../reactive-limits/reactive-limits-utils';
-import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
 import {
-    getModificationRowEmptyFormData,
-    REMOVE,
-} from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import {
+    assignPreviousValuesToForm,
     assignValuesToForm,
+    getPreviousValuesEmptyForm,
     PREVIOUS_P,
     PREVIOUS_Q_MAX_P,
     PREVIOUS_Q_MIN_P,
 } from './generator-modification-utils';
+import { useIntl } from 'react-intl';
 
 const schema = yup
     .object()
@@ -111,10 +109,8 @@ const GeneratorModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const [generatorToModify, setGeneratorToModify] = useState();
-
-    const isSelectedGeneratorUndefined = generatorToModify === undefined;
-    const isEditDataUndefined = editData === undefined;
+    const intl = useIntl();
+    const [currentEquipmentId, setCurrentEquipmentId] = useState(null);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const emptyFormData = useMemo(
@@ -134,35 +130,24 @@ const GeneratorModificationDialog = ({
             [FORCED_OUTAGE_RATE]: null,
             ...getSetPointsEmptyFormData(null, null, null),
             ...getReactiveLimitsEmptyFormData(true),
+            ...getPreviousValuesEmptyForm(),
         }),
         [defaultIdValue]
     );
 
-    const formDataFromEditData = useMemo(
-        () => (editData ? assignValuesToForm(editData) : null),
-        [editData]
-    );
-
-    const defaultFormData = useMemo(() => {
-        if (!editData) {
-            return emptyFormData;
-        } else {
-            console.log('editData', editData);
-            return formDataFromEditData;
+    useEffect(() => {
+        console.log('==================> editData : ', editData);
+        if (editData) {
+            onEquipmentIdChange(editData.equipmentId);
         }
-    }, [editData, emptyFormData, formDataFromEditData]);
+    }, [editData]);
 
-    /*const schema = useMemo(
-        () =>
-
-        [isSelectedGeneratorUndefined, isEditDataUndefined]
-    );*/
     const methods = useForm({
-        defaultValues: defaultFormData,
+        defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
 
-    const { reset, getValues } = methods;
+    const { reset, getValues, clearErrors } = methods;
 
     //this method empties the form, and let us pass custom data that we want to set
     const clear = useCallback(
@@ -184,70 +169,69 @@ const GeneratorModificationDialog = ({
         [editData, emptyFormData, reset]
     );
 
-    const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
-        setGeneratorToModify((previousValue) => {
-            const newRccValues = previousValue?.reactiveCapabilityCurvePoints;
-            action === REMOVE
-                ? newRccValues.splice(index, 1)
-                : newRccValues.splice(index, 0, {
-                      [P]: null,
-                      [Q_MIN_P]: null,
-                      [Q_MAX_P]: null,
-                      [PREVIOUS_P]: null,
-                      [PREVIOUS_Q_MIN_P]: null,
-                      [PREVIOUS_Q_MAX_P]: null,
-                  });
-            return {
-                ...previousValue,
-                reactiveCapabilityCurvePoints: newRccValues,
-            };
-        });
-    };
+    //this useCallback fetches previous equipment properties values, resets form values
+    //then create empty reactive limits table depending on fetched equipment data
+    const onEquipmentIdChange = useCallback(
+        (equipmentId) => {
+            clearErrors();
+            if (equipmentId && equipmentId !== currentEquipmentId) {
+                fetchEquipmentInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    'generators',
+                    equipmentId,
+                    true
+                ).then((value) => {
+                    setCurrentEquipmentId(equipmentId);
+                    console.log('fetched value : ', value);
+                    if (value) {
+                        clear({
+                            ...assignPreviousValuesToForm(
+                                value,
+                                equipmentId,
+                                intl
+                            ),
+                        });
+                    }
+                });
+            } else {
+                clear();
+            }
+        },
+        [studyUuid, currentNodeUuid, intl]
+    );
 
     const calculateCurvePointsToStore = useCallback(() => {
         const reactiveCapabilityCurve = getValues(
             REACTIVE_CAPABILITY_CURVE_TABLE
         );
-        const displayedPreviousValues =
-            generatorToModify?.reactiveCapabilityCurvePoints;
 
-        if (
-            displayedPreviousValues &&
-            reactiveCapabilityCurve?.length ===
-                displayedPreviousValues.length &&
-            reactiveCapabilityCurve.filter(
-                (point) =>
-                    point.p !== '' || point.qminP !== '' || point.qmaxP !== ''
-            ).length === 0
-        ) {
-            return null;
-        } else {
-            const pointsToStore = [];
-            reactiveCapabilityCurve.forEach((point, index) => {
-                if (point) {
-                    let pointToStore = {
-                        p: point?.p,
-                        oldP:
-                            displayedPreviousValues !== undefined
-                                ? displayedPreviousValues[index]?.p
-                                : null,
-                        qminP: point?.qminP,
-                        oldQminP:
-                            displayedPreviousValues !== undefined
-                                ? displayedPreviousValues[index]?.qminP
-                                : null,
-                        qmaxP: point?.qmaxP,
-                        oldQmaxP:
-                            displayedPreviousValues !== undefined
-                                ? displayedPreviousValues[index]?.qmaxP
-                                : null,
-                    };
-                    pointsToStore.push(pointToStore);
-                }
-            });
-            return pointsToStore;
-        }
-    }, [getValues, generatorToModify]);
+        const pointsToStore = [];
+        reactiveCapabilityCurve.forEach((point, index) => {
+            const reactiveCapabilityCurvePoint = reactiveCapabilityCurve[index];
+            if (point) {
+                let pointToStore = {
+                    p: point?.p,
+                    oldP:
+                        reactiveCapabilityCurve !== undefined
+                            ? reactiveCapabilityCurvePoint[PREVIOUS_P]
+                            : null,
+                    qminP: point?.qminP,
+                    oldQminP:
+                        reactiveCapabilityCurve !== undefined
+                            ? reactiveCapabilityCurvePoint[PREVIOUS_Q_MIN_P]
+                            : null,
+                    qmaxP: point?.qmaxP,
+                    oldQmaxP:
+                        reactiveCapabilityCurve !== undefined
+                            ? reactiveCapabilityCurvePoint[PREVIOUS_Q_MAX_P]
+                            : null,
+                };
+                pointsToStore.push(pointToStore);
+            }
+        });
+        return pointsToStore;
+    }, [getValues]);
 
     const onSubmit = useCallback(
         (generator) => {
@@ -353,13 +337,7 @@ const GeneratorModificationDialog = ({
                 <GeneratorModificationForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    resetForm={clear}
-                    editData={editData}
-                    generatorToModify={generatorToModify}
-                    setGeneratorToModify={setGeneratorToModify}
-                    updatePreviousReactiveCapabilityCurveTable={
-                        updatePreviousReactiveCapabilityCurveTable
-                    }
+                    onEquipmentIdChange={onEquipmentIdChange}
                 />
             </ModificationDialog>
         </FormProvider>

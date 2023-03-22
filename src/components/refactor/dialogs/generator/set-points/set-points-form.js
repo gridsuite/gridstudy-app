@@ -14,19 +14,18 @@ import {
 } from '../../../../dialogs/dialogUtils';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
-import React from 'react';
+import React, {useEffect} from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     ACTIVE_POWER_SET_POINT,
     REACTIVE_POWER_SET_POINT,
-    VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
 } from '../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import FrequencyRegulation from './frequency-regulation';
 import VoltageRegulation from './voltage-regulation';
 import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import CheckboxNullableInput from 'components/refactor/rhf-inputs/boolean-nullable-input';
 import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
 
@@ -40,10 +39,14 @@ const SetPointsForm = ({
         name: VOLTAGE_REGULATION,
     });
 
+    const watchVoltageRegulationPreviousValue = useWatch({
+        name: getPreviousValueFieldName(VOLTAGE_REGULATION),
+    });
+
     const isVoltageRegulationOn =
         watchVoltageRegulation ||
         (watchVoltageRegulation === null &&
-            getPreviousValueFieldName(VOLTAGE_REGULATION));
+            watchVoltageRegulationPreviousValue);
 
     const activePowerSetPointField = (
         <FloatInput
@@ -84,10 +87,12 @@ const SetPointsForm = ({
             voltageLevelOptions={voltageLevelOptions}
             currentNodeUuid={currentNodeUuid}
             studyUuid={studyUuid}
-            //previousValues={previousValues}
         />
     );
 
+    useEffect(() => {
+        console.log('isVoltageRegulationOn : ', isVoltageRegulationOn);
+    }, [isVoltageRegulationOn])
     return (
         <>
             <GridSection title="Setpoints" />

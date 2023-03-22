@@ -7,31 +7,19 @@
 
 import TextInput from '../../../rhf-inputs/text-input';
 import {
-    ACTIVE_POWER_SET_POINT,
     ENERGY_SOURCE,
-    EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
-    FREQUENCY_REGULATION,
     MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
-    Q_MAX_P,
-    Q_MIN_P,
     RATED_NOMINAL_POWER,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
-    REACTIVE_POWER_SET_POINT,
     STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
-    VOLTAGE_LEVEL,
-    VOLTAGE_REGULATION,
-    VOLTAGE_REGULATION_TYPE,
 } from '../../../utils/field-constants';
 import {
     ActivePowerAdornment,
@@ -43,80 +31,33 @@ import {
     OhmAdornment,
 } from '../../../../dialogs/dialogUtils';
 import SelectInput from '../../../rhf-inputs/select-input';
-import {
-    ENERGY_SOURCES,
-    getEnergySourceLabel,
-    REGULATION_TYPES,
-} from '../../../../network/constants';
+import { ENERGY_SOURCES } from '../../../../network/constants';
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
-    fetchEquipmentInfos,
     fetchEquipmentsIds,
     fetchVoltageLevelsIdAndTopology,
 } from '../../../../../utils/rest-api';
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
-import { useFormContext, useWatch } from 'react-hook-form';
-import { getModificationRowEmptyFormData } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
-import { REGULATING_VOLTAGE_LEVEL } from '../../regulating-terminal/regulating-terminal-form';
-import {
-    assignPreviousValuesToForm,
-    assignValuesToForm,
-    getGeneratorPreviousValuesData,
-    getPreviousBooleanValue,
-    PREVIOUS_ACTIVE_POWER_SET_POINT,
-    PREVIOUS_DROOP,
-    PREVIOUS_ENERGY_SOURCE,
-    PREVIOUS_EQUIPMENT,
-    PREVIOUS_EQUIPMENT_NAME,
-    PREVIOUS_FORCED_OUTAGE_RATE,
-    PREVIOUS_FREQUENCY_REGULATION,
-    PREVIOUS_MARGINAL_COST,
-    PREVIOUS_MAXIMUM_ACTIVE_POWER,
-    PREVIOUS_MAXIMUM_REACTIVE_POWER,
-    PREVIOUS_MINIMUM_ACTIVE_POWER,
-    PREVIOUS_MINIMUM_REACTIVE_POWER,
-    PREVIOUS_P,
-    PREVIOUS_PLANNED_ACTIVE_POWER_SET_POINT,
-    PREVIOUS_PLANNED_OUTAGE_RATE,
-    PREVIOUS_Q_MAX_P,
-    PREVIOUS_Q_MIN_P,
-    PREVIOUS_RATED_NOMINAL_POWER,
-    PREVIOUS_REACTIVE_POWER_SET_POINT,
-    PREVIOUS_STARTUP_COST,
-    PREVIOUS_TRANSFORMER_REACTANCE,
-    PREVIOUS_TRANSIENT_REACTANCE,
-    PREVIOUS_VOLTAGE_LEVEL,
-    PREVIOUS_VOLTAGE_REGULATION,
-    PREVIOUS_VOLTAGE_REGULATION_TYPE,
-    PREVIOUS_VOLTAGE_SET_POINT,
-} from './generator-modification-utils';
+import { useWatch } from 'react-hook-form';
 
 const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
-    resetForm,
-    editData,
-    updatePreviousReactiveCapabilityCurveTable,
+    onEquipmentIdChange,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
-    const intl = useIntl();
-    const { clearErrors } = useFormContext();
-    const shouldEmptyFormOnGeneratorIdChangeRef = useRef();
-    const watchEquipmentId = useWatch({
-        name: EQUIPMENT_ID,
-    });
+    const equipmentIdWatch = useWatch({ name: EQUIPMENT_ID });
 
     useEffect(() => {
-        if (!editData) shouldEmptyFormOnGeneratorIdChangeRef.current = true;
-    }, [editData]);
+        onEquipmentIdChange(equipmentIdWatch);
+    }, [equipmentIdWatch]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -138,48 +79,6 @@ const GeneratorModificationForm = ({
             });
         }
     }, [studyUuid, currentNodeUuid]);
-
-    //this useEffect fetches previous equipment properties values, resets form values
-    //then create empty reactive limits table depending on fetched equipment data
-    useEffect(() => {
-        clearErrors();
-        if (watchEquipmentId) {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'generators',
-                watchEquipmentId,
-                true
-            ).then((value) => {
-                if (value) {
-                    console.log(
-                        'value',
-                        value,
-                        shouldEmptyFormOnGeneratorIdChangeRef?.current
-                    );
-
-                    resetForm({
-                        ...assignPreviousValuesToForm(
-                            value,
-                            watchEquipmentId,
-                            intl
-                        ),
-                    });
-
-                    shouldEmptyFormOnGeneratorIdChangeRef.current = true;
-                }
-            });
-        } else {
-            resetForm();
-        }
-    }, [
-        watchEquipmentId,
-        studyUuid,
-        currentNodeUuid,
-        clearErrors,
-        resetForm,
-        intl,
-    ]);
 
     const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
 

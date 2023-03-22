@@ -40,7 +40,6 @@ import { getModificationRowEmptyFormData } from '../reactive-limits/reactive-cap
 import yup from '../../../utils/yup-config';
 import { getSetPointsSchema } from '../set-points/set-points-utils';
 import { getReactiveLimitsSchema } from '../reactive-limits/reactive-limits-utils';
-import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
 
 export const PREVIOUS_EQUIPMENT_NAME =
     getPreviousValueFieldName(EQUIPMENT_NAME);
@@ -166,25 +165,21 @@ const completeReactiveCapabilityCurvePointsData = (
 };
 
 export function assignValuesToForm(editData) {
-    console.log('testing editData assign : ', editData);
-    console.log(
-        'testing editData assign boolean',
-        !!editData?.regulatingTerminalId?.value ||
-            !!editData?.regulatingTerminalVlId?.value
+    // the reactive capability table values are assigned when retrieving previous values
+    const rcc = editData.reactiveCapabilityCurvePoints.map(
+        (point) => {
+            return {
+                [P]: point.p,
+                [Q_MAX_P]: point.qmaxP,
+                [Q_MIN_P]: point.qminP,
+                [PREVIOUS_Q_MAX_P]: point.oldQmaxP,
+                [PREVIOUS_Q_MIN_P]: point.oldQminP,
+                [PREVIOUS_P]: point.oldP,
+            };
+        }
     );
-    const rcc =
-        completeReactiveCapabilityCurvePointsData(
-            editData?.reactiveCapabilityCurvePoints
-        ) &&
-        completeReactiveCapabilityCurvePointsData(
-            editData?.reactiveCapabilityCurvePoints
-        ).length > 0
-            ? completeReactiveCapabilityCurvePointsData(
-                  editData?.reactiveCapabilityCurvePoints
-              )
-            : [{}, {}];
+
     return {
-        [EQUIPMENT_ID]: editData?.equipmentId,
         [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
         [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
         [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
@@ -211,19 +206,7 @@ export function assignValuesToForm(editData) {
         [MINIMUM_REACTIVE_POWER]: editData?.minimumReactivePower?.value ?? null,
         [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower?.value ?? null,
         [Q_PERCENT]: editData?.qPercent?.value ?? null,
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-            !editData?.reactiveCapabilityCurve?.value ||
-            editData?.minimumReactivePower ||
-            editData?.maximumReactivePower
-                ? 'MINMAX'
-                : 'CURVE',
-        [REACTIVE_CAPABILITY_CURVE_TABLE]:
-            rcc,
-        ...getRegulatingTerminalFormData({
-            equipmentId: editData?.regulatingTerminalId?.value,
-            equipmentType: editData?.regulatingTerminalType?.value,
-            voltageLevelId: editData?.regulatingTerminalVlId?.value,
-        }),
+        [REACTIVE_CAPABILITY_CURVE_TABLE]: rcc,
     };
 }
 
@@ -287,9 +270,7 @@ export const assignPreviousValuesToForm = (
                 : REGULATION_TYPES.LOCAL.id,
         [PREVIOUS_VOLTAGE_LEVEL]: generator?.regulatingTerminalVlId ?? null,
         [PREVIOUS_EQUIPMENT]:
-            generator?.regulatingTerminalConnectableType +
-                ':' +
-                generator?.regulatingTerminalConnectableId ?? null,
+            generator?.regulatingTerminalConnectableId ?? null,
         [PREVIOUS_EQUIPMENT_NAME]: generator?.name,
         [PREVIOUS_ENERGY_SOURCE]: previousEnergySourceLabel,
         [PREVIOUS_MAXIMUM_ACTIVE_POWER]: generator?.maxP,
@@ -314,5 +295,33 @@ export const assignPreviousValuesToForm = (
         [PREVIOUS_VOLTAGE_REGULATION_TYPE]: previousVoltageRegulationType,
         [PREVIOUS_FREQUENCY_REGULATION]: previousFrequencyRegulationState,
         [PREVIOUS_DROOP]: generator?.droop,
+    };
+};
+
+export const getPreviousValuesEmptyForm = () => {
+    return {
+        [PREVIOUS_VOLTAGE_LEVEL]: null,
+        [PREVIOUS_EQUIPMENT]: null,
+        [PREVIOUS_EQUIPMENT_NAME]: null,
+        [PREVIOUS_ENERGY_SOURCE]: null,
+        [PREVIOUS_MAXIMUM_ACTIVE_POWER]: null,
+        [PREVIOUS_MINIMUM_ACTIVE_POWER]: null,
+        [PREVIOUS_MAXIMUM_REACTIVE_POWER]: null,
+        [PREVIOUS_MINIMUM_REACTIVE_POWER]: null,
+        [PREVIOUS_RATED_NOMINAL_POWER]: null,
+        [PREVIOUS_TRANSIENT_REACTANCE]: null,
+        [PREVIOUS_TRANSFORMER_REACTANCE]: null,
+        [PREVIOUS_PLANNED_ACTIVE_POWER_SET_POINT]: null,
+        [PREVIOUS_STARTUP_COST]: null,
+        [PREVIOUS_MARGINAL_COST]: null,
+        [PREVIOUS_PLANNED_OUTAGE_RATE]: null,
+        [PREVIOUS_FORCED_OUTAGE_RATE]: null,
+        [PREVIOUS_ACTIVE_POWER_SET_POINT]: null,
+        [PREVIOUS_VOLTAGE_REGULATION]: null,
+        [PREVIOUS_REACTIVE_POWER_SET_POINT]: null,
+        [PREVIOUS_VOLTAGE_SET_POINT]: null,
+        [PREVIOUS_VOLTAGE_REGULATION_TYPE]: null,
+        [PREVIOUS_FREQUENCY_REGULATION]: null,
+        [PREVIOUS_DROOP]: null,
     };
 };
