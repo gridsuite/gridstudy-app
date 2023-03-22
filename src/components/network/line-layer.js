@@ -84,12 +84,12 @@ export function getLineLoadingZoneOfSide(
 
 export function getLineLoadingZone(line, lineFlowAlertThreshold) {
     const zone1 = getLineLoadingZoneOfSide(
-        line.permanentLimit1,
+        line.currentLimits1?.permanentLimit,
         line.i1,
         lineFlowAlertThreshold
     );
     const zone2 = getLineLoadingZoneOfSide(
-        line.permanentLimit2,
+        line.currentLimits2?.permanentLimit,
         line.i2,
         lineFlowAlertThreshold
     );
@@ -168,8 +168,14 @@ function getArrowSpeedOfSide(limit, intensity) {
 }
 
 function getArrowSpeed(line) {
-    const speed1 = getArrowSpeedOfSide(line.permanentLimit1, line.i1);
-    const speed2 = getArrowSpeedOfSide(line.permanentLimit2, line.i2);
+    const speed1 = getArrowSpeedOfSide(
+        line.currentLimits1?.permanentLimit,
+        line.i1
+    );
+    const speed2 = getArrowSpeedOfSide(
+        line.currentLimits2?.permanentLimit,
+        line.i2
+    );
     return Math.max(speed1, speed2);
 }
 

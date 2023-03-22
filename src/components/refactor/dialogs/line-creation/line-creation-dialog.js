@@ -168,13 +168,13 @@ const LineCreationDialog = ({
                         )),
                 }),
                 ...getLimitsFormData({
-                    permanentLimit1: line.permanentLimit1,
-                    permanentLimit2: line.permanentLimit2,
+                    permanentLimit1: line.currentLimits1?.permanentLimit,
+                    permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        line.temporaryLimits1
+                        line.currentLimits1?.temporaryLimits
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        line.temporaryLimits2
+                        line.currentLimits2?.temporaryLimits
                     ),
                 }),
             },
