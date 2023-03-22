@@ -12,7 +12,7 @@ import Paper from '@mui/material/Paper';
 import LoadFlowResult from './loadflow-result';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { SensitivityAnalysisResultTab } from './sensitivity-analysis-result-tab';
@@ -91,12 +91,12 @@ export const ResultViewTab = ({
         );
     }
 
-    function renderSensitivityAnalysisResult(studyUuid, nodeUuid) {
+    function renderSensitivityAnalysisResult() {
         return (
             <Paper className={classes.analysisResult}>
                 <SensitivityAnalysisResultTab
                     studyUuid={studyUuid}
-                    nodeUuid={nodeUuid}
+                    nodeUuid={currentNode?.id}
                 />
             </Paper>
         );
@@ -124,21 +124,17 @@ export const ResultViewTab = ({
         );
     }
 
-    const lazyTab = useCallback(
-        (index, className, tabPaneFunc, tabPaneOther) => {
-            return (
-                <TabPanelLazy
-                    selected={index === tabIndex && !dormant}
-                    lazyChild={tabPaneFunc}
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id}
-                    className={classes.tabPanel}
-                    {...tabPaneOther}
-                />
-            );
-        },
-        [studyUuid, currentNode?.id, tabIndex, dormant, classes]
-    );
+    const lazyTab = (index, tabPaneFunc) => {
+        return (
+            <TabPanelLazy
+                selected={index === tabIndex && !dormant}
+                lazyChild={tabPaneFunc}
+                studyUuid={studyUuid}
+                nodeUuid={currentNode?.id}
+                className={classes.tabPanel}
+            />
+        );
+    };
 
     useEffect(() => {
         if (!enableDeveloperMode) {
@@ -194,11 +190,11 @@ export const ResultViewTab = ({
                 {disabled && <AlertInvalidNode />}
             </div>
             {/* tab contents */}
-            {lazyTab(0, 'analysisResult', renderLoadFlowResult)}
-            {lazyTab(1, 'analysisResult', renderSecurityAnalysisResult)}
-            {lazyTab(2, 'analysisResult', renderShortCircuitAnalysisResult)}
-            {lazyTab(3, 'analysisResult', renderSensitivityAnalysisResult)}
-            {lazyTab(4, 'analysisResult', renderDynamicSimulationResult)}
+            {lazyTab(0, renderLoadFlowResult)}
+            {lazyTab(1, renderSecurityAnalysisResult)}
+            {lazyTab(2, renderShortCircuitAnalysisResult)}
+            {lazyTab(3, renderSensitivityAnalysisResult)}
+            {lazyTab(4, renderDynamicSimulationResult)}
         </Paper>
     );
 };
