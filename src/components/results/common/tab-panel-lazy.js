@@ -8,15 +8,23 @@
 import React, { useRef } from 'react';
 
 const TabPanelLazy = (props) => {
-    const { children, selected, studyUuid, nodeUuid, lazyChild, ...other } =
-        props;
+    const { children, selected, invalidatingDeps, lazyChild, ...other } = props;
 
     const synthRef = useRef();
-    const [next, prev] = [{ selected, studyUuid, nodeUuid }, synthRef.current];
+    const [next, prev] = [
+        { selected, invalidatingDeps: [...invalidatingDeps] },
+        synthRef.current,
+    ];
 
-    if (next.studyUuid !== prev?.studyUuid) {
+    if (prev?.invalidatingDeps?.length !== invalidatingDeps?.length) {
         next.hasToHaveItMounted = selected;
-    } else if (next.nodeUuid !== prev?.nodeUuid) {
+    } else if (
+        invalidatingDeps?.length &&
+        invalidatingDeps.reduce(
+            (accum, dep, i) => accum && dep === prev.invalidatingDeps[i],
+            true
+        )
+    ) {
         next.hasToHaveItMounted = selected;
     } else if (next.selected && !prev?.selected) {
         next.hasToHaveItMounted = true;
@@ -28,7 +36,7 @@ const TabPanelLazy = (props) => {
     return (
         <div style={{ display: selected ? 'inherit' : 'none' }} {...other}>
             {next.hasToHaveItMounted && children}
-            {next.hasToHaveItMounted && lazyChild?.(studyUuid, nodeUuid)}
+            {next.hasToHaveItMounted && lazyChild?.()}
         </div>
     );
 };
