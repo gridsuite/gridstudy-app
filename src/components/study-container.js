@@ -16,6 +16,7 @@ import React, {
 import * as PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { PARAMS_LOADED } from '../utils/config-params';
 import {
     connectNotificationsWebsocket,
     fetchLoadFlowInfos,
@@ -238,7 +239,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const network = useSelector((state) => state.network);
     const userName = useSelector((state) => state.user.profile.sub);
-
+    const paramsLoaded = useSelector((state) => state[PARAMS_LOADED]);
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
         useState(undefined);
 
@@ -561,7 +562,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
+        if (network && studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
@@ -615,7 +616,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
             if (isUpdate) {
                 // After a load flow, network has to be recreated.
-                // In order to avoid glitches during sld and map rendering,
+                // In order to avoid glitches during sld (this force closes all slds) and map rendering,
                 // lines and substations have to be prefetched and set before network creation event is dispatched
                 // Network creation event is dispatched directly in the network constructor
                 new Network(
@@ -658,7 +659,7 @@ export function StudyContainer({ view, onChangeTab }) {
         ) {
             return;
         }
-        loadNetwork(true);
+        loadNetwork(previousCurrentNode); // loadNetwork(false) only at app startup, otherwise slds are force closed
     }, [loadNetwork, currentNode, wsConnected]);
 
     useEffect(() => {
@@ -765,7 +766,7 @@ export function StudyContainer({ view, onChangeTab }) {
             errMessage={
                 studyErrorMessage || networkLoadingFailMessage || errorMessage
             }
-            loading={studyPending || !network}
+            loading={studyPending || !paramsLoaded} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
             <StudyPane
