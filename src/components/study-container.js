@@ -41,7 +41,6 @@ import {
     setCurrentTreeNode,
     setDeletedEquipments,
     setUpdatedSubstationsIds,
-    updateAnalysisStatus,
 } from '../redux/actions';
 import Network from './network/network';
 import WaitingLoader from './util/waiting-loader';
@@ -119,7 +118,6 @@ export function useNodeData(
     const nodeUuidRef = useRef();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const lastUpdateRef = useRef();
-    const dispatch = useDispatch();
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
@@ -129,7 +127,6 @@ export function useNodeData(
             .then((res) => {
                 if (nodeUuidRef.current === nodeUuid) {
                     setResult(resultConversion ? resultConversion(res) : res);
-                    dispatch(updateAnalysisStatus(res));
                 }
             })
             .catch((err) => {
@@ -137,7 +134,7 @@ export function useNodeData(
                 setResult(RunningStatus.FAILED);
             })
             .finally(() => setIsPending(false));
-    }, [nodeUuid, fetcher, studyUuid, resultConversion, dispatch]);
+    }, [nodeUuid, fetcher, studyUuid, resultConversion]);
 
     /* initial fetch and update */
     useEffect(() => {

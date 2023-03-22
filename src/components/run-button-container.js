@@ -103,6 +103,7 @@ export function RunButtonContainer({
             studyUpdatedForce?.eventData?.headers?.updateType === 'loadflow'
         ) {
             dispatch(addLoadflowNotif());
+            dispatch(updateAnalysisStatus(loadFlowStatusState));
         } else if (
             ranSA &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
@@ -115,18 +116,21 @@ export function RunButtonContainer({
                 'sensitivityAnalysisResult'
         ) {
             dispatch(addSensiNotif());
+            dispatch(updateAnalysisStatus(sensiStatusState));
         } else if (
             ranShortCircuit &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'shortCircuitAnalysisResult'
         ) {
             dispatch(addShortCircuitNotif());
+            dispatch(updateAnalysisStatus(shortCircuitStatusState));
         } else if (
             ranDynamicSimulation &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'dynamicSimulationResult'
         ) {
             dispatch(addDynamicSimulationNotif());
+            dispatch(updateAnalysisStatus(dynamicSimulationStatusState));
         }
     }, [
         dispatch,
@@ -136,6 +140,10 @@ export function RunButtonContainer({
         ranSensi,
         ranShortCircuit,
         ranDynamicSimulation,
+        loadFlowStatusState,
+        sensiStatusState,
+        shortCircuitStatusState,
+        dynamicSimulationStatusState,
     ]);
 
     const ACTION_ON_RUNNABLES = {
@@ -154,6 +162,7 @@ export function RunButtonContainer({
                 stopDynamicSimulation(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
+            dispatch(updateAnalysisStatus(RunningStatus.IDLE));
         },
     };
 
