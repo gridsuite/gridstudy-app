@@ -14,7 +14,9 @@ const TabPanelLazy = (props) => {
     const synthRef = useRef();
     const [next, prev] = [{ selected, studyUuid, nodeUuid }, synthRef.current];
 
-    if (next.studyUuid !== prev?.studyUuid || next.nodeUuid !== prev?.nodeUuid) {
+    if (next.studyUuid !== prev?.studyUuid) {
+        next.hasToHaveItMounted = selected;
+    } else if (next.nodeUuid !== prev?.nodeUuid) {
         next.hasToHaveItMounted = selected;
     } else if (next.selected && !prev?.selected) {
         next.hasToHaveItMounted = true;

@@ -127,16 +127,14 @@ export const ResultViewTab = ({
     const lazyTab = useCallback(
         (index, className, tabPaneFunc, tabPaneOther) => {
             return (
-                <Paper className={classes[className]}>
-                    <TabPanelLazy
-                        selected={index === tabIndex && !dormant}
-                        lazyChild={tabPaneFunc}
-                        studyUuid={studyUuid}
-                        nodeUuid={currentNode?.id}
-                        className={classes.tabPanel}
-                        {...tabPaneOther}
-                    />
-                </Paper>
+                <TabPanelLazy
+                    selected={index === tabIndex && !dormant}
+                    lazyChild={tabPaneFunc}
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    className={classes.tabPanel}
+                    {...tabPaneOther}
+                />
             );
         },
         [studyUuid, currentNode?.id, tabIndex, dormant, classes]
@@ -148,8 +146,6 @@ export const ResultViewTab = ({
             setTabIndex(0);
         }
     }, [enableDeveloperMode]);
-
-    const showsSubs = !dormant && !disabled;
 
     return (
         <Paper className={clsx('singlestretch-child', classes.table)}>
@@ -198,31 +194,11 @@ export const ResultViewTab = ({
                 {disabled && <AlertInvalidNode />}
             </div>
             {/* tab contents */}
-            <TabPanelLazy
-                className={classes.tabPanel}
-                selected={tabIndex === 0 && showsSubs}
-            >
-                {renderLoadFlowResult()}
-            </TabPanelLazy>
-            <TabPanelLazy
-                className={classes.tabPanel}
-                selected={tabIndex === 1 && showsSubs}
-            >
-                {renderSecurityAnalysisResult()}
-            </TabPanelLazy>
-            <TabPanelLazy
-                className={classes.tabPanel}
-                selected={tabIndex === 2 && showsSubs}
-            >
-                {renderShortCircuitAnalysisResult()}
-            </TabPanelLazy>
+            {lazyTab(0, 'analysisResult', renderLoadFlowResult)}
+            {lazyTab(1, 'analysisResult', renderSecurityAnalysisResult)}
+            {lazyTab(2, 'analysisResult', renderShortCircuitAnalysisResult)}
             {lazyTab(3, 'analysisResult', renderSensitivityAnalysisResult)}
-            <TabPanelLazy
-                className={classes.tabPanel}
-                selected={tabIndex === 4 && showsSubs}
-            >
-                {renderDynamicSimulationResult()}
-            </TabPanelLazy>
+            {lazyTab(4, 'analysisResult', renderDynamicSimulationResult)}
         </Paper>
     );
 };
