@@ -451,26 +451,32 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
-    const doCutModification = useCallback(() => {
-        // just memorize the list of selected modifications
-        setCopiedModifications(
-            Array.from(selectedItems).map((item) => item.uuid)
-        );
+    const selectedModificationsIds = useCallback(() => {
+        const allModificationsIds = modifications.map((m) => m.uuid);
+        // sort the selected modifications in the same order as they appear in the whole modifications list
+        return Array.from(selectedItems)
+            .sort(
+                (a, b) =>
+                    allModificationsIds.indexOf(a.uuid) -
+                    allModificationsIds.indexOf(b.uuid)
+            )
+            .map((m) => m.uuid);
+    }, [modifications, selectedItems]);
+
+    const doCutModifications = useCallback(() => {
+        setCopiedModifications(selectedModificationsIds());
         setCopyInfos({
             copyType: CopyType.MOVE,
             originNodeUuid: currentNode.id,
         });
-    }, [currentNode?.id, selectedItems]);
+    }, [currentNode?.id, selectedModificationsIds]);
 
-    const doCopyModification = useCallback(() => {
-        // just memorize the list of selected modifications
-        setCopiedModifications(
-            Array.from(selectedItems).map((item) => item.uuid)
-        );
+    const doCopyModifications = useCallback(() => {
+        setCopiedModifications(selectedModificationsIds());
         setCopyInfos({ copyType: CopyType.COPY });
-    }, [selectedItems]);
+    }, [selectedModificationsIds]);
 
-    const doPasteModification = useCallback(() => {
+    const doPasteModifications = useCallback(() => {
         if (copyInfos.copyType === CopyType.MOVE) {
             copyOrMoveModifications(
                 studyUuid,
@@ -746,7 +752,7 @@ const NetworkModificationNodeEditor = () => {
                 />
                 <div className={classes.filler} />
                 <IconButton
-                    onClick={doCutModification}
+                    onClick={doCutModifications}
                     size={'small'}
                     className={classes.toolbarIcon}
                     disabled={
@@ -758,7 +764,7 @@ const NetworkModificationNodeEditor = () => {
                     <ContentCutIcon />
                 </IconButton>
                 <IconButton
-                    onClick={doCopyModification}
+                    onClick={doCopyModifications}
                     size={'small'}
                     className={classes.toolbarIcon}
                     disabled={selectedItems.size === 0 || isAnyNodeBuilding}
@@ -779,7 +785,7 @@ const NetworkModificationNodeEditor = () => {
                 >
                     <span>
                         <IconButton
-                            onClick={doPasteModification}
+                            onClick={doPasteModifications}
                             size={'small'}
                             className={classes.toolbarIcon}
                             disabled={
