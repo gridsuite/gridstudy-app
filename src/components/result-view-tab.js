@@ -12,7 +12,7 @@ import Paper from '@mui/material/Paper';
 import LoadFlowResult from './loadflow-result';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { SensitivityAnalysisResultTab } from './sensitivity-analysis-result-tab';
@@ -59,7 +59,7 @@ export const ResultViewTab = ({
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
-    notTheContent,
+    dormant,
     disabled,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
@@ -91,12 +91,12 @@ export const ResultViewTab = ({
         );
     }
 
-    function renderSensitivityAnalysisResult() {
+    function renderSensitivityAnalysisResult(studyUuid, nodeUuid) {
         return (
             <Paper className={classes.analysisResult}>
                 <SensitivityAnalysisResultTab
                     studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id}
+                    nodeUuid={nodeUuid}
                 />
             </Paper>
         );
@@ -124,6 +124,24 @@ export const ResultViewTab = ({
         );
     }
 
+    const lazyTab = useCallback(
+        (index, className, tabPaneFunc, tabPaneOther) => {
+            return (
+                <Paper className={classes[className]}>
+                    <TabPanelLazy
+                        selected={index === tabIndex && !dormant}
+                        lazyChild={tabPaneFunc}
+                        studyUuid={studyUuid}
+                        nodeUuid={currentNode?.id}
+                        className={classes.tabPanel}
+                        {...tabPaneOther}
+                    />
+                </Paper>
+            );
+        },
+        [studyUuid, currentNode?.id, tabIndex, dormant, classes]
+    );
+
     useEffect(() => {
         if (!enableDeveloperMode) {
             // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
@@ -131,7 +149,7 @@ export const ResultViewTab = ({
         }
     }, [enableDeveloperMode]);
 
-    const showsSubs = !notTheContent && !disabled;
+    const showsSubs = !dormant && !disabled;
 
     return (
         <Paper className={clsx('singlestretch-child', classes.table)}>
@@ -198,12 +216,7 @@ export const ResultViewTab = ({
             >
                 {renderShortCircuitAnalysisResult()}
             </TabPanelLazy>
-            <TabPanelLazy
-                className={classes.tabPanel}
-                selected={tabIndex === 3 && showsSubs}
-            >
-                {renderSensitivityAnalysisResult()}
-            </TabPanelLazy>
+            {lazyTab(3, 'analysisResult', renderSensitivityAnalysisResult)}
             <TabPanelLazy
                 className={classes.tabPanel}
                 selected={tabIndex === 4 && showsSubs}
