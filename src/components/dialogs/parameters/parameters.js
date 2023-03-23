@@ -41,6 +41,7 @@ import {
     getDefaultLoadFlowProvider,
     setLoadFlowProvider,
     setLoadFlowParameters,
+    getLoadFlowSpecificParametersDescription,
 } from '../../../utils/rest-api';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -116,7 +117,7 @@ export const DropDown = ({ value, label, values, callback, renderValue }) => {
                             {renderValue ? (
                                 renderValue(value)
                             ) : (
-                                <FormattedMessage id={value} />
+                            <FormattedMessage id={value} />
                             )}
                         </MenuItem>
                     ))}
@@ -201,7 +202,8 @@ export const useParametersBackend = (
     backendFetchDefaultProvider,
     backendUpdateProvider,
     backendFetchParameters,
-    backendUpdateParameters
+    backendUpdateParameters,
+    backendFetchSpecificParameters
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -212,6 +214,9 @@ export const useParametersBackend = (
     const [provider, setProvider] = useState(null);
 
     const [params, setParams] = useState(null);
+
+    const [specificParamsDescription, setSpecificParamsDescription] =
+        useState(null);
 
     useEffect(() => {
         if (user !== null) {
@@ -300,36 +305,36 @@ export const useParametersBackend = (
 
     const resetParameters = useCallback(
         (callBack) => {
-            backendUpdateParameters(studyUuid, null)
-                .then(() => {
-                    return backendFetchParameters(studyUuid)
+        backendUpdateParameters(studyUuid, null)
+            .then(() => {
+                return backendFetchParameters(studyUuid)
                         .then((params) => {
                             setParams(params);
                             if (callBack) {
                                 callBack();
                             }
                         })
-                        .catch((error) => {
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'fetch' + type + 'ParametersError',
-                            });
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'fetch' + type + 'ParametersError',
                         });
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'update' + type + 'ParametersError',
                     });
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'update' + type + 'ParametersError',
                 });
+            });
         },
         [
-            studyUuid,
-            type,
-            backendUpdateParameters,
-            backendFetchParameters,
-            snackError,
-            setParams,
+        studyUuid,
+        type,
+        backendUpdateParameters,
+        backendFetchParameters,
+        snackError,
+        setParams,
         ]
     );
 
@@ -337,7 +342,9 @@ export const useParametersBackend = (
         if (studyUuid) {
             if (backendFetchParameters) {
                 backendFetchParameters(studyUuid)
-                    .then((params) => setParams(params))
+                    .then((params) => {
+                        setParams(params);
+                    })
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
@@ -360,10 +367,24 @@ export const useParametersBackend = (
                         headerId: 'fetch' + type + 'ProviderError',
                     });
                 });
+            if (backendFetchSpecificParameters) {
+                backendFetchSpecificParameters()
+                    .then((specificParams) => {
+                        setSpecificParamsDescription(specificParams);
+                    })
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId:
+                                'fetch' + type + 'SpecificParametersError',
+                        });
+                    });
+            }
         }
     }, [
         type,
         backendFetchParameters,
+        backendFetchSpecificParameters,
         backendFetchProvider,
         studyUuid,
         snackError,
@@ -380,6 +401,7 @@ export const useParametersBackend = (
         params,
         updateParameter,
         resetParameters,
+        specificParamsDescription,
     ];
 };
 
@@ -439,7 +461,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         getDefaultLoadFlowProvider,
         setLoadFlowProvider,
         getLoadFlowParameters,
-        setLoadFlowParameters
+        setLoadFlowParameters,
+        getLoadFlowSpecificParametersDescription
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
@@ -465,6 +488,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
+
+    const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
 
     useEffect(() => {
         setTabValue((oldValue) => {
@@ -585,8 +610,12 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                         loadFlowParametersBackend
                                     }
                                     showAdvancedLfParams={showAdvancedLfParams}
+                                    showSpecificLfParams={showSpecificLfParams}
                                     setShowAdvancedLfParams={
                                         setShowAdvancedLfParams
+                                    }
+                                    setShowSpecificLfParams={
+                                        setShowSpecificLfParams
                                     }
                                 />
                             )}

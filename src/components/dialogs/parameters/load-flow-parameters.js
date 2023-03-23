@@ -88,10 +88,23 @@ const CountrySelector = ({ value, label, callback }) => {
     );
 };
 
-function makeComponentsFor(defParams, params, setter) {
+function makeComponentsFor(
+    defParams,
+    localParams,
+    allParams,
+    setter,
+    provider
+) {
     return Object.keys(defParams).map((key) => (
         <Grid container spacing={1} paddingTop={1} key={key}>
-            {makeComponentFor(defParams[key], key, params, setter)}
+            {makeComponentFor(
+                defParams[key],
+                key,
+                localParams,
+                allParams,
+                setter,
+                provider
+            )}
             <LineSeparator />
         </Grid>
     ));
@@ -101,16 +114,44 @@ function getValue(param, key) {
     if (!param || param[key] === undefined) return null;
     return param[key];
 }
-function makeComponentFor(defParam, key, lfParams, setter) {
-    const value = getValue(lfParams, key);
+
+function makeComponentFor(
+    defParam,
+    key,
+    localParams,
+    allParams,
+    setter,
+    provider
+) {
+    function updateValues(newval) {
+        localParams = { ...localParams, [key]: newval }; // single value update made
+        let newParams = { ...allParams }; // but we send/update all params to the back
+        if (provider === undefined) {
+            if ('commonParameters' in newParams) {
+                newParams['commonParameters'] = {
+                    ...localParams,
+                };
+            }
+        } else if (
+            'specificParametersPerProvider' in newParams &&
+            provider in newParams['specificParametersPerProvider']
+        ) {
+            newParams['specificParametersPerProvider'][provider] = {
+                ...localParams,
+            };
+        }
+        setter(newParams);
+    }
+
+    const value = getValue(localParams, key);
     if (defParam.type === TYPES.bool) {
         return (
             <SwitchWithLabel
                 value={value}
                 label={defParam.description}
-                callback={(ev) =>
-                    setter({ ...lfParams, [key]: ev.target.checked })
-                }
+                callback={(ev) => {
+                    updateValues(ev.target.checked);
+                }}
             />
         );
     } else if (defParam.type === TYPES.enum) {
@@ -119,9 +160,9 @@ function makeComponentFor(defParam, key, lfParams, setter) {
                 value={value}
                 label={defParam.description}
                 values={defParam.values}
-                callback={(ev) =>
-                    setter({ ...lfParams, [key]: ev.target.value })
-                }
+                callback={(ev) => {
+                    updateValues(ev.target.value);
+                }}
             />
         );
     } else if (defParam.type === TYPES.countries) {
@@ -130,17 +171,20 @@ function makeComponentFor(defParam, key, lfParams, setter) {
                 value={value || []}
                 label={defParam.description}
                 callback={(newValues) => {
-                    setter({ ...lfParams, [key]: [...newValues] });
+                    updateValues([...newValues]);
                 }}
             />
         );
-    }
+    } // TODO else if double, integer, string
 }
 
 const TYPES = {
     enum: 'Enum',
     bool: 'Bool',
     countries: 'Countries',
+    string: 'String',
+    double: 'Double',
+    integer: 'Integer',
 };
 
 const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
@@ -185,7 +229,12 @@ const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
         },
     };
 
-    return makeComponentsFor(defParams, lfParams, commitLFParameter);
+    return makeComponentsFor(
+        defParams,
+        lfParams?.commonParameters || {},
+        lfParams,
+        commitLFParameter
+    );
 };
 
 const AdvancedParameterButton = ({ showOpenIcon, label, callback }) => {
@@ -263,7 +312,95 @@ const AdvancedLoadFlowParameters = ({
                 callback={() => setShowAdvancedLfParams(!showAdvancedLfParams)}
             />
             {showAdvancedLfParams &&
-                makeComponentsFor(defParams, lfParams, commitLFParameter)}
+                makeComponentsFor(
+                    defParams,
+                    lfParams?.commonParameters || {},
+                    lfParams,
+                    commitLFParameter
+                )}
+        </>
+    );
+};
+
+const SpecificLoadFlowParameters = ({
+    lfParams,
+    commitLFParameter,
+    showSpecificLfParams,
+    setShowSpecificLfParams,
+    currentProvider,
+    specificParamsDescription,
+}) => {
+    /*
+    Create a param definition structure just like the constants in
+    BasicLoadFlowParameters / AdvancedLoadFlowParameters
+     */
+    function extractParamsDefinition(paramsDesc) {
+        const definitions = {};
+        for (var i = 0; i < paramsDesc.length; i++) {
+            if (paramsDesc[i].provider === currentProvider) {
+                let paramType = null;
+                let enumValues = null;
+                if (paramsDesc[i].type === 'BOOLEAN') {
+                    paramType = TYPES.bool;
+                } else if (paramsDesc[i].type === 'STRING') {
+                    if (
+                        paramsDesc[i].possibleValues !== null &&
+                        paramsDesc[i].possibleValues.length > 0
+                    ) {
+                        paramType = TYPES.enum;
+                        enumValues = {};
+                        for (
+                            var p = 0;
+                            p < paramsDesc[i].possibleValues.length;
+                            p++
+                        ) {
+                            const enumValue = paramsDesc[i].possibleValues[p];
+                            enumValues[enumValue] =
+                                paramsDesc[i].name + '_' + enumValue;
+                        }
+                    } else {
+                        paramType = TYPES.string;
+                    }
+                } else if (paramsDesc[i].type === 'DOUBLE') {
+                    paramType = TYPES.double;
+                } else if (paramsDesc[i].type === 'INTEGER') {
+                    paramType = TYPES.integer;
+                }
+
+                if (paramType) {
+                    definitions[paramsDesc[i].name] = {
+                        type: paramType,
+                        description:
+                            paramsDesc[i].provider + '_' + paramsDesc[i].name, // translation key
+                    };
+                    if (enumValues !== null) {
+                        definitions[paramsDesc[i].name].values = enumValues;
+                    }
+                }
+            }
+        }
+        return definitions;
+    }
+
+    return (
+        <>
+            <AdvancedParameterButton
+                showOpenIcon={showSpecificLfParams}
+                label={'showSpecificParameters'}
+                callback={() => setShowSpecificLfParams(!showSpecificLfParams)}
+            />
+            {showSpecificLfParams &&
+                makeComponentsFor(
+                    specificParamsDescription
+                        ? extractParamsDefinition(specificParamsDescription)
+                        : {},
+                    lfParams?.specificParametersPerProvider?.[
+                        currentProvider
+                    ] || {},
+                    lfParams,
+                    commitLFParameter,
+                    currentProvider
+                )}
         </>
     );
 };
@@ -272,7 +409,9 @@ export const LoadFlowParameters = ({
     hideParameters,
     parametersBackend,
     showAdvancedLfParams,
+    showSpecificLfParams,
     setShowAdvancedLfParams,
+    setShowSpecificLfParams,
 }) => {
     const classes = useStyles();
 
@@ -284,6 +423,7 @@ export const LoadFlowParameters = ({
         params,
         updateParameters,
         resetParameters,
+        specificParamsDescription,
     ] = parametersBackend;
 
     const updateLfProviderCallback = useCallback(
@@ -324,6 +464,14 @@ export const LoadFlowParameters = ({
                     commitLFParameter={updateParameters}
                     showAdvancedLfParams={showAdvancedLfParams}
                     setShowAdvancedLfParams={setShowAdvancedLfParams}
+                />
+                <SpecificLoadFlowParameters
+                    lfParams={params || {}}
+                    commitLFParameter={updateParameters}
+                    showSpecificLfParams={showSpecificLfParams}
+                    setShowSpecificLfParams={setShowSpecificLfParams}
+                    currentProvider={provider}
+                    specificParamsDescription={specificParamsDescription}
                 />
             </Grid>
             <Grid
