@@ -26,7 +26,7 @@ import VoltageRegulation from './voltage-regulation';
 import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
 import { FormattedMessage } from 'react-intl';
 import CheckboxNullableInput from 'components/refactor/rhf-inputs/boolean-nullable-input';
-import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
+import { PREVIOUS_VOLTAGE_REGULATION_TYPE } from '../modification/generator-modification-utils';
 
 const SetPointsForm = ({
     studyUuid,
@@ -39,7 +39,7 @@ const SetPointsForm = ({
     });
 
     const watchVoltageRegulationPreviousValue = useWatch({
-        name: getPreviousValueFieldName(VOLTAGE_REGULATION),
+        name: PREVIOUS_VOLTAGE_REGULATION_TYPE,
     });
 
     const isVoltageRegulationOn =
