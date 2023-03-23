@@ -8,14 +8,12 @@ import { useCallback, useMemo } from 'react';
 import { debounce, Grid } from '@mui/material';
 import { makeComponentsFor, TYPES } from '../util/make-component-utils';
 
-const NetworkParameters = ({ dynaWaltzExtension, onUpdateNetwork }) => {
-    const { network } = dynaWaltzExtension;
-
+const NetworkParameters = ({ network, onUpdateNetwork }) => {
     const handleUpdateNetwork = useCallback(
         (newNetwork) => {
-            onUpdateNetwork({ ...dynaWaltzExtension, network: newNetwork });
+            onUpdateNetwork({ newNetwork });
         },
-        [onUpdateNetwork, dynaWaltzExtension]
+        [onUpdateNetwork]
     );
 
     const delayedHandleUpdateNetwork = useMemo(

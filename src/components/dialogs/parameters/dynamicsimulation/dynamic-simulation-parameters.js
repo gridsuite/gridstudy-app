@@ -38,10 +38,6 @@ const TAB_VALUES = {
     networkParamsTabValue: 'Network',
 };
 
-const EXTENSIONS = {
-    DYNA_WALTZ: 'DynaWaltzParameters',
-};
-
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const classes = useStyles();
 
@@ -95,24 +91,11 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         [updateParameters, parameters]
     );
 
-    const updateExtension = useCallback(
-        (newExtension) => {
-            const foundIndex = parameters.extensions.findIndex(
-                (elem) => elem.name === newExtension.name
-            );
-            parameters.extensions.splice(foundIndex, 1, newExtension);
-            updateParameters({
-                ...parameters,
-            });
+    const handleUpdateSolver = useCallback(
+        (newSolver) => {
+            updateParameters({ ...parameters, ...newSolver });
         },
         [updateParameters, parameters]
-    );
-
-    const handleUpdateSolver = useCallback(
-        (newExtension) => {
-            updateExtension(newExtension);
-        },
-        [updateExtension]
     );
 
     const handleUpdateMapping = useCallback(
@@ -123,10 +106,10 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
     );
 
     const handleUpdateNetwork = useCallback(
-        (newExtension) => {
-            updateExtension(newExtension);
+        (newNetwork) => {
+            updateParameters({ ...parameters, network: newNetwork });
         },
-        [updateExtension]
+        [updateParameters, parameters]
     );
 
     const handleTabChange = useCallback((event, newValue) => {
@@ -215,15 +198,12 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                     >
                         <SolverParameters
                             key={`solver-${resetRevision}`} // to force remount a component having internal states
-                            dynaWaltzExtension={
+                            solver={
                                 parameters
-                                    ? parameters.extensions[
-                                          parameters.extensions.findIndex(
-                                              (elem) =>
-                                                  elem.name ===
-                                                  EXTENSIONS.DYNA_WALTZ
-                                          )
-                                      ]
+                                    ? {
+                                          solverId: parameters.solverId,
+                                          solvers: parameters.solvers,
+                                      }
                                     : undefined
                             }
                             onUpdateSolver={handleUpdateSolver}
@@ -251,16 +231,8 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                     >
                         <NetworkParameters
                             key={`network-${resetRevision}`} // to force remount a component having internal states
-                            dynaWaltzExtension={
-                                parameters
-                                    ? parameters.extensions[
-                                          parameters.extensions.findIndex(
-                                              (elem) =>
-                                                  elem.name ===
-                                                  EXTENSIONS.DYNA_WALTZ
-                                          )
-                                      ]
-                                    : undefined
+                            network={
+                                parameters ? parameters.network : undefined
                             }
                             onUpdateNetwork={handleUpdateNetwork}
                         />
