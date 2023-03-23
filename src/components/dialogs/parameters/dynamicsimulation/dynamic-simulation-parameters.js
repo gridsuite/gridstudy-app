@@ -232,7 +232,9 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                         <NetworkParameters
                             key={`network-${resetRevision}`} // to force remount a component having internal states
                             network={
-                                parameters ? parameters.network : undefined
+                                parameters
+                                    ? { ...parameters.network }
+                                    : undefined
                             }
                             onUpdateNetwork={handleUpdateNetwork}
                         />

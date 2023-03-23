@@ -11,7 +11,7 @@ import { makeComponentsFor, TYPES } from '../util/make-component-utils';
 const NetworkParameters = ({ network, onUpdateNetwork }) => {
     const handleUpdateNetwork = useCallback(
         (newNetwork) => {
-            onUpdateNetwork({ newNetwork });
+            onUpdateNetwork(newNetwork);
         },
         [onUpdateNetwork]
     );
