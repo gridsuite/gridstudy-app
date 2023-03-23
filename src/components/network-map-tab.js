@@ -788,7 +788,9 @@ export const NetworkMapTab = ({
 
     const renderMap = () => (
         <NetworkMap
-            mapEquipments={mapEquipments}
+            mapEquipments={
+                mapEquipments?.waitingForUpdate ? null : mapEquipments
+            }
             updatedLines={updatedLines}
             geoData={geoData}
             displayOverlayLoader={!basicDataReady && waitingLoadData}
