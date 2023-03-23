@@ -5,8 +5,49 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { Grid, Typography } from '@mui/material';
+import EquipmentFilter from './equipment-filter';
+import ModelFilter from './model-filter';
+import { FormattedMessage } from 'react-intl';
+import React from 'react';
+import { useTheme } from '@mui/styles';
+
 const CurveSelector = (props) => {
-    return <></>;
+    const theme = useTheme();
+    return (
+        <>
+            <Grid
+                item
+                container
+                xs={6}
+                direction={'column'}
+                alignItems={'flex-start'}
+                justifyContent={'flex-start'}
+                spacing={1}
+            >
+                <Typography
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    variant="h6"
+                >
+                    <FormattedMessage
+                        id={'DynamicSimulationCurveEquipmentFilter'}
+                    ></FormattedMessage>
+                </Typography>
+                <EquipmentFilter />
+            </Grid>
+            <Grid
+                item
+                container
+                xs
+                direction={'column'}
+                alignItems={'flex-start'}
+                justifyContent={'flex-start'}
+                spacing={1}
+            >
+                <ModelFilter />
+            </Grid>
+        </>
+    );
 };
 
 export default CurveSelector;

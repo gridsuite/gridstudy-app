@@ -18,6 +18,7 @@ import GridButtons from './curve/grid-buttons';
 import { AgGridReact } from 'ag-grid-react';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
+import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -35,6 +36,18 @@ const useStyles = makeStyles((theme) => ({
 
 const CurveParameters = ({ curves, onUpdateCurve }) => {
     const intl = useIntl();
+
+    // handle open/close/save curve selector dialog
+    const [open, setOpen] = useState(false);
+    const handleClose = useCallback(() => {
+        setOpen((prevState) => !prevState);
+    }, []);
+    const handleSave = useCallback(() => {
+        // do save here
+        console.log('handleSave of CurveParameters is called');
+        setOpen((prevState) => !prevState);
+    }, []);
+
     const quickFilterRef = useRef();
 
     // curve grid configuration
@@ -77,12 +90,15 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
         };
     }, []);
 
-    const onGridReady = useCallback((params) => {
-        /*fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
+    const onGridReady = useCallback(
+        (params) => {
+            /*fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
             .then((resp) => resp.json())
             .then((data) => setRowData(data));*/
-        setRowData(curves);
-    }, []);
+            setRowData(curves);
+        },
+        [curves]
+    );
 
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current.api.getSelectedRows();
@@ -91,10 +107,11 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
 
     const handleAdd = useCallback(() => {
         console.log('handleAdd is called');
+        setOpen((prevState) => !prevState);
     }, []);
 
     const handleDelete = useCallback(() => {
-        console.log('handlDelete is called');
+        console.log('handleDelete is called');
     }, []);
 
     return (
@@ -124,6 +141,11 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
                         onSelectionChanged={onSelectionChanged}
                     ></AgGridReact>
                 </div>
+                <CurveSelectorDialog
+                    open={open}
+                    onClose={handleClose}
+                    onSave={handleSave}
+                />
             </>
         )
     );

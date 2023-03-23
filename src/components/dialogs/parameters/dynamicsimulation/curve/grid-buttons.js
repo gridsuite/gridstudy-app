@@ -21,7 +21,7 @@ const GridButtons = ({ onAddButton, onDeleteButton, disabled }) => {
     }, [onAddButton]);
     const handleDeleteButton = useCallback(() => {
         onDeleteButton();
-    }, [onAddButton]);
+    }, [onDeleteButton]);
 
     const hasSelectedRow = false;
 
