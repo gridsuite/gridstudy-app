@@ -151,7 +151,6 @@ const GeneratorModificationDialog = ({
                     ...assignValuesToForm(editData),
                 };
             }
-            console.log('custom data : ', customData);
             reset(
                 { ...emptyFormData, ...customData },
                 { keepDefaultValues: keepValues }
@@ -159,6 +158,10 @@ const GeneratorModificationDialog = ({
         },
         [editData, emptyFormData, reset]
     );
+
+    const resetAllFields = useCallback(() => {
+        reset({ ...emptyFormData });
+    }, [emptyFormData, reset]);
 
     //this useCallback fetches previous equipment properties values, resets form values
     //then create empty reactive limits table depending on fetched equipment data
@@ -172,22 +175,24 @@ const GeneratorModificationDialog = ({
                     'generators',
                     equipmentId,
                     true
-                ).then((value) => {
-                    if (value) {
-                        clear({
-                            ...assignPreviousValuesToForm(
-                                value,
-                                equipmentId,
-                                intl
-                            ),
-                        });
-                    }
-                });
+                )
+                    .then((value) => {
+                        if (value) {
+                            clear({
+                                ...assignPreviousValuesToForm(
+                                    value,
+                                    equipmentId,
+                                    intl
+                                ),
+                            });
+                        }
+                    })
+                    .catch(() => resetAllFields());
             } else {
-                clear();
+                resetAllFields();
             }
         },
-        [studyUuid, currentNodeUuid, intl, clear, clearErrors]
+        [clearErrors, studyUuid, currentNodeUuid, clear, intl, resetAllFields]
     );
 
     useEffect(() => {

@@ -24,6 +24,7 @@ import ModificationDialog from '../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 import { getPreviousValueFieldName } from '../../utils/utils';
 import { getLoadTypeLabel } from '../../../network/constants';
+import { useIntl } from 'react-intl';
 
 /**
  * Dialog to create a load in the network
@@ -55,7 +56,7 @@ const assignEditDataValuesToForm = (load) => {
     };
 };
 
-const assignFetchedValuesToFrom = (load, intl) => {
+const assignFetchedValuesToFrom = (load, loadId, intl) => {
     const type =
         load.type || load.type === 'UNDEFINED'
             ? ''
@@ -64,6 +65,7 @@ const assignFetchedValuesToFrom = (load, intl) => {
               });
 
     return {
+        [EQUIPMENT_ID]: loadId,
         [getPreviousValueFieldName(EQUIPMENT_NAME)]: load.name ?? '',
         [getPreviousValueFieldName(LOAD_TYPE)]: type,
         [getPreviousValueFieldName(ACTIVE_POWER)]: load.p0 ?? null,
@@ -79,6 +81,7 @@ const LoadModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const emptyFormData = useMemo(
         () => ({
@@ -124,8 +127,6 @@ const LoadModificationDialog = ({
 
     const clear = useCallback(
         (customData = {}, keepValues = false) => {
-            console.log('clear custom data : ', customData);
-            console.log('clear edit data : ', editData);
             if (editData) {
                 customData = {
                     ...customData,
@@ -151,18 +152,19 @@ const LoadModificationDialog = ({
                     true
                 ).then((value) => {
                     if (value) {
-                        clear({ ...assignFetchedValuesToFrom(value) });
-                    } else {
-                        clear();
+                        clear({
+                            ...assignFetchedValuesToFrom(value, loadId, intl),
+                        });
                     }
                 });
+            } else {
+                reset({ ...emptyFormData });
             }
         },
-        [clear, currentNodeUuid, studyUuid]
+        [clear, currentNodeUuid, emptyFormData, intl, reset, studyUuid]
     );
 
     useEffect(() => {
-        console.log('use effect edit data : ', editData);
         if (editData) {
             onEquipmentIdChange(editData.equipmentId);
         }

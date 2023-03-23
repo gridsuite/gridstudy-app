@@ -99,12 +99,6 @@ export const getPreviousBooleanValue = (isPreviousValueOn) => {
 };
 
 export function assignValuesToForm(editData) {
-    console.log(
-        'edit data : ',
-        editData,
-        editData?.regulatingTerminalVlId?.value,
-        editData?.regulatingTerminalId?.value
-    );
     // the reactive capability table values are assigned when retrieving previous values
     const rcc = editData.reactiveCapabilityCurvePoints.map((point) => {
         return {
@@ -206,13 +200,14 @@ export const assignPreviousValuesToForm = (
               ':' +
               generator?.regulatingTerminalConnectableId
             : null;
-    console.log('generator prev : ', generator);
     return {
         [EQUIPMENT_ID]: watchEquipmentId,
         [REACTIVE_CAPABILITY_CURVE_TABLE]: reactiveCapabilityCurvePoints,
         [REACTIVE_CAPABILITY_CURVE_CHOICE]:
             generator?.minMaxReactiveLimits != null ? 'MINMAX' : 'CURVE',
-        [VOLTAGE_REGULATION]: generator?.voltageRegulatorOn,
+        [VOLTAGE_REGULATION]: generator?.voltageRegulatorOn
+            ? generator?.voltageRegulatorOn
+            : null,
         [FREQUENCY_REGULATION]: generator?.activePowerControlOn,
         [VOLTAGE_REGULATION_TYPE]:
             generator?.regulatingTerminalVlId ||
