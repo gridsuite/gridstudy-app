@@ -110,6 +110,7 @@ export function RunButtonContainer({
                 'securityAnalysisResult'
         ) {
             dispatch(addSANotif());
+            dispatch(updateAnalysisStatus(securityAnalysisStatusState));
         } else if (
             ranSensi &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
@@ -144,6 +145,7 @@ export function RunButtonContainer({
         sensiStatusState,
         shortCircuitStatusState,
         dynamicSimulationStatusState,
+        securityAnalysisStatusState,
     ]);
 
     const ACTION_ON_RUNNABLES = {
