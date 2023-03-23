@@ -105,7 +105,7 @@ const LineCharacteristicsPane = ({
     return (
         <>
             <Grid container spacing={0}>
-                {/* better than having GridSection x 2 */}
+                {/* prettier (less empty spaces) than having GridSection x 2 */}
                 <Grid item xs={12}>
                     <h3>
                         <FormattedMessage id={'Connectivity'} />

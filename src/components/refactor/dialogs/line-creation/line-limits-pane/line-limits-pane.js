@@ -74,7 +74,7 @@ const LineLimitsPane = ({ id = LIMITS }) => {
         }));
     }, [columnsDefinition]);
 
-    function createLimitRows(numberOfRows) {
+    function createLimitRows() {
         const newRows = [];
         newRows.push(newRowData);
         return newRows;
