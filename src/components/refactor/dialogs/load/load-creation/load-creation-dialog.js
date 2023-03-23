@@ -17,21 +17,21 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
-import { sanitizeString } from '../../../dialogs/dialogUtils';
-import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
-import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
+import { createLoad, fetchEquipmentInfos } from '../../../../../utils/rest-api';
+import { sanitizeString } from '../../../../dialogs/dialogUtils';
+import EquipmentSearchDialog from '../../../../dialogs/equipment-search-dialog';
+import { useFormSearchCopy } from '../../../../dialogs/form-search-copy-hook';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
     UNDEFINED_LOAD_TYPE,
-} from '../../../network/constants';
-import yup from '../../utils/yup-config';
-import ModificationDialog from '../commons/modificationDialog';
+} from '../../../../network/constants';
+import yup from '../../../utils/yup-config';
+import ModificationDialog from '../../commons/modificationDialog';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../connectivity/connectivity-form-utils';
+} from '../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 

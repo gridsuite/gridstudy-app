@@ -17,13 +17,13 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { fetchEquipmentInfos, modifyLoad } from '../../../../utils/rest-api';
-import { sanitizeString } from '../../../dialogs/dialogUtils';
-import yup from '../../utils/yup-config';
-import ModificationDialog from '../commons/modificationDialog';
+import { fetchEquipmentInfos, modifyLoad } from '../../../../../utils/rest-api';
+import { sanitizeString } from '../../../../dialogs/dialogUtils';
+import yup from '../../../utils/yup-config';
+import ModificationDialog from '../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
-import { getPreviousValueFieldName } from '../../utils/utils';
-import { getLoadTypeLabel } from '../../../network/constants';
+import { getPreviousValueFieldName } from '../../../utils/utils';
+import { getLoadTypeLabel } from '../../../../network/constants';
 import { useIntl } from 'react-intl';
 
 /**

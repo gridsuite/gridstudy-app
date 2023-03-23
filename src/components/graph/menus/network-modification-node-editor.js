@@ -29,8 +29,8 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
-import LoadModificationDialog from '../../refactor/dialogs/load-modification/load-modification-dialog';
+import LoadCreationDialog from '../../refactor/dialogs/load/load-creation/load-creation-dialog';
+import LoadModificationDialog from '../../refactor/dialogs/load/load-modification/load-modification-dialog';
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';

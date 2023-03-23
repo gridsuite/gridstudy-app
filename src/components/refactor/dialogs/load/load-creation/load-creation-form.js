@@ -21,12 +21,12 @@ import {
     gridItem,
     GridSection,
     ReactivePowerAdornment,
-} from '../../../dialogs/dialogUtils';
-import { LOAD_TYPES } from '../../../network/constants';
-import FloatInput from '../../rhf-inputs/float-input';
-import SelectInput from '../../rhf-inputs/select-input';
-import TextInput from '../../rhf-inputs/text-input';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
+} from '../../../../dialogs/dialogUtils';
+import { LOAD_TYPES } from '../../../../network/constants';
+import FloatInput from '../../../rhf-inputs/float-input';
+import SelectInput from '../../../rhf-inputs/select-input';
+import TextInput from '../../../rhf-inputs/text-input';
+import { ConnectivityForm } from '../../connectivity/connectivity-form';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
