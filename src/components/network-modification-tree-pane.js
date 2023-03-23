@@ -314,7 +314,7 @@ export const NetworkModificationTreePane = ({
 
     const handleCutNode = (nodeId) => {
         nodeId
-            ? dispatchSelectedNodeForCopy(nodeId, CopyType.CUT)
+            ? dispatchSelectedNodeForCopy(studyUuid, nodeId, CopyType.CUT)
             : dispatch(setSelectedNodeForCopy(noSelectionForCopy));
     };
 
