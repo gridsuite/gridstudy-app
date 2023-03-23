@@ -29,17 +29,24 @@ import {
     updateDynamicSimulationParameters,
     updateDynamicSimulationProvider,
 } from '../../../../utils/rest-api';
+import * as PropTypes from 'prop-types';
+import CurveParameters from './curve-parameters';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',
     solverParamsTabValue: 'Solver',
     mappingParamsTabValue: 'Mapping',
+    curveParamsTabValue: 'Curve',
 };
 
 const EXTENSIONS = {
     DYNA_WALTZ: 'DynaWaltzParameters',
 };
 
+CurveParameters.propTypes = {
+    onUpdateCurve: PropTypes.func,
+    dynaWaltzExtension: PropTypes.any,
+};
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const classes = useStyles();
 
@@ -113,6 +120,13 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         [updateExtension]
     );
 
+    const handleUpdateCurve = useCallback(
+        (newExtension) => {
+            updateExtension(newExtension);
+        },
+        [updateExtension]
+    );
+
     const handleUpdateMapping = useCallback(
         (newMapping) => {
             updateParameters({ ...parameters, ...newMapping });
@@ -175,6 +189,12 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                             }
                             value={TAB_VALUES.mappingParamsTabValue}
                         />
+                        <Tab
+                            label={
+                                <FormattedMessage id="DynamicSimulationCurve" />
+                            }
+                            value={TAB_VALUES.curveParamsTabValue}
+                        />
                     </Tabs>
 
                     <TabPanel
@@ -228,6 +248,26 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                                     : undefined
                             }
                             onUpdateMapping={handleUpdateMapping}
+                        />
+                    </TabPanel>
+                    <TabPanel
+                        value={tabValue}
+                        index={TAB_VALUES.curveParamsTabValue}
+                    >
+                        <CurveParameters
+                            key={`curve-${resetRevision}`} // to force remount a component having internal states
+                            dynaWaltzExtension={
+                                parameters
+                                    ? parameters.extensions[
+                                          parameters.extensions.findIndex(
+                                              (elem) =>
+                                                  elem.name ===
+                                                  EXTENSIONS.DYNA_WALTZ
+                                          )
+                                      ]
+                                    : undefined
+                            }
+                            onUpdateCurve={handleUpdateCurve}
                         />
                     </TabPanel>
                 </Grid>
