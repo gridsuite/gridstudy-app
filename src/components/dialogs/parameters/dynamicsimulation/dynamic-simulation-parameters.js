@@ -29,7 +29,6 @@ import {
     updateDynamicSimulationParameters,
     updateDynamicSimulationProvider,
 } from '../../../../utils/rest-api';
-import * as PropTypes from 'prop-types';
 import CurveParameters from './curve-parameters';
 
 const TAB_VALUES = {
@@ -39,14 +38,6 @@ const TAB_VALUES = {
     curveParamsTabValue: 'Curve',
 };
 
-const EXTENSIONS = {
-    DYNA_WALTZ: 'DynaWaltzParameters',
-};
-
-CurveParameters.propTypes = {
-    onUpdateCurve: PropTypes.func,
-    dynaWaltzExtension: PropTypes.any,
-};
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const classes = useStyles();
 
@@ -100,31 +91,18 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         [updateParameters, parameters]
     );
 
-    const updateExtension = useCallback(
-        (newExtension) => {
-            const foundIndex = parameters.extensions.findIndex(
-                (elem) => elem.name === newExtension.name
-            );
-            parameters.extensions.splice(foundIndex, 1, newExtension);
-            updateParameters({
-                ...parameters,
-            });
+    const handleUpdateSolver = useCallback(
+        (newSolver) => {
+            updateParameters({ ...parameters, ...newSolver });
         },
         [updateParameters, parameters]
     );
 
-    const handleUpdateSolver = useCallback(
-        (newExtension) => {
-            updateExtension(newExtension);
-        },
-        [updateExtension]
-    );
-
     const handleUpdateCurve = useCallback(
-        (newExtension) => {
-            updateExtension(newExtension);
+        (newCurves) => {
+            updateParameters({ ...parameters, curves: newCurves });
         },
-        [updateExtension]
+        [updateParameters, parameters]
     );
 
     const handleUpdateMapping = useCallback(
@@ -220,15 +198,12 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                     >
                         <SolverParameters
                             key={`solver-${resetRevision}`} // to force remount a component having internal states
-                            dynaWaltzExtension={
+                            solver={
                                 parameters
-                                    ? parameters.extensions[
-                                          parameters.extensions.findIndex(
-                                              (elem) =>
-                                                  elem.name ===
-                                                  EXTENSIONS.DYNA_WALTZ
-                                          )
-                                      ]
+                                    ? {
+                                          solverId: parameters.solverId,
+                                          solvers: parameters.solvers,
+                                      }
                                     : undefined
                             }
                             onUpdateSolver={handleUpdateSolver}
@@ -256,16 +231,8 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                     >
                         <CurveParameters
                             key={`curve-${resetRevision}`} // to force remount a component having internal states
-                            dynaWaltzExtension={
-                                parameters
-                                    ? parameters.extensions[
-                                          parameters.extensions.findIndex(
-                                              (elem) =>
-                                                  elem.name ===
-                                                  EXTENSIONS.DYNA_WALTZ
-                                          )
-                                      ]
-                                    : undefined
+                            curves={
+                                parameters ? [...parameters.curves] : undefined
                             }
                             onUpdateCurve={handleUpdateCurve}
                         />

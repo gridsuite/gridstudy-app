@@ -16,26 +16,26 @@ const SOLVER_TYPES = {
     SIM: 'SIM',
 };
 
-const SolverParameters = ({ dynaWaltzExtension, onUpdateSolver }) => {
-    const { solverId, solvers } = dynaWaltzExtension;
+const SolverParameters = ({ solver, onUpdateSolver }) => {
+    const { solverId, solvers } = solver;
 
     const handleUpdateSolver = useCallback(
-        (newDynaWaltzExtension) => {
-            onUpdateSolver(newDynaWaltzExtension);
+        (newSolver) => {
+            onUpdateSolver({ ...solver, ...newSolver });
         },
-        [onUpdateSolver]
+        [onUpdateSolver, solver]
     );
 
     const handleUpdateSolverParameters = useCallback(
         (newSolverParameters) => {
-            const newSolvers = Array.from(dynaWaltzExtension.solvers);
+            const newSolvers = Array.from(solvers);
             const foundIndex = newSolvers.findIndex(
                 (elem) => elem.id === newSolverParameters.id
             );
             newSolvers.splice(foundIndex, 1, newSolverParameters);
-            onUpdateSolver({ ...dynaWaltzExtension, solvers: newSolvers });
+            onUpdateSolver({ ...solver, solvers: newSolvers });
         },
-        [onUpdateSolver, dynaWaltzExtension]
+        [onUpdateSolver, solver, solvers]
     );
 
     const defParams = {
@@ -54,13 +54,9 @@ const SolverParameters = ({ dynaWaltzExtension, onUpdateSolver }) => {
     }, [solvers, solverId]);
 
     return (
-        dynaWaltzExtension && (
+        solver && (
             <Grid container>
-                {makeComponentsFor(
-                    defParams,
-                    dynaWaltzExtension,
-                    handleUpdateSolver
-                )}
+                {makeComponentsFor(defParams, solver, handleUpdateSolver)}
                 {selectedSolver?.type === SOLVER_TYPES.IDA && (
                     <IdaSolverParameters
                         idaSolver={selectedSolver}

@@ -13,10 +13,11 @@ import 'ag-grid-community/styles/ag-theme-material.css';
 import { Grid } from '@mui/material';
 import { makeStyles, useTheme } from '@mui/styles';
 import GridQuickFilter from './curve/grid-quick-filter';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
 import { AgGridReact } from 'ag-grid-react';
 import clsx from 'clsx';
+import { useIntl } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -32,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const CurveParameters = ({ dynaWaltzExtension, onUpdateCurve }) => {
-    const { curves } = dynaWaltzExtension;
+const CurveParameters = ({ curves, onUpdateCurve }) => {
+    const intl = useIntl();
     const quickFilterRef = useRef();
 
     // curve grid configuration
@@ -48,32 +49,56 @@ const CurveParameters = ({ dynaWaltzExtension, onUpdateCurve }) => {
     const gridStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
     const [rowData, setRowData] = useState();
     const [columnDefs, setColumnDefs] = useState([
-        { field: 'athlete', minWidth: 150 },
-        { field: 'age', maxWidth: 90 },
-        { field: 'country', minWidth: 150 },
-        { field: 'year', maxWidth: 90 },
+        {
+            field: 'dynamicModelName',
+            minWidth: '80',
+            headerName: intl.formatMessage({
+                id: 'DynamicSimulationCurveDynamicModelHeader',
+            }),
+        },
+        {
+            field: 'variableName',
+            minWidth: '80',
+            headerName: intl.formatMessage({
+                id: 'DynamicSimulationCurveVariableHeader',
+            }),
+        },
     ]);
     const defaultColDef = useMemo(() => {
         return {
             flex: 1,
             minWidth: 100,
+            filter: true,
+            sortable: true,
+            resizable: true,
+            lockPinned: true,
+            wrapHeaderText: true,
+            autoHeaderHeight: true,
         };
     }, []);
 
     const onGridReady = useCallback((params) => {
-        fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
+        /*fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
             .then((resp) => resp.json())
-            .then((data) => setRowData(data));
+            .then((data) => setRowData(data));*/
+        setRowData(curves);
     }, []);
 
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current.api.getSelectedRows();
-        document.querySelector('#selectedRows').innerHTML =
-            selectedRows.length === 1 ? selectedRows[0].athlete : '';
+        console.log('Number of selected row', selectedRows.length);
+    }, []);
+
+    const handleAdd = useCallback(() => {
+        console.log('handleAdd is called');
+    }, []);
+
+    const handleDelete = useCallback(() => {
+        console.log('handlDelete is called');
     }, []);
 
     return (
-        dynaWaltzExtension && (
+        curves && (
             <>
                 <Grid container item sx={{ marginBottom: theme.spacing(1) }}>
                     <GridQuickFilter
@@ -82,7 +107,10 @@ const CurveParameters = ({ dynaWaltzExtension, onUpdateCurve }) => {
                         gridRef={gridRef}
                         disabled={false}
                     />
-                    <GridButtons />
+                    <GridButtons
+                        onAddButton={handleAdd}
+                        onDeleteButton={handleDelete}
+                    />
                 </Grid>
 
                 <div className={clsx([theme.aggrid, classes.grid])}>

@@ -179,6 +179,8 @@
     "DynamicSimulationSimplifiedSolverMaxNewtonTry": "Maximum number of Newton's resolution (for one step)",
     "DynamicSimulationSimplifiedSolverLinearSolverName": "Chosen linear solver",
     "DynamicSimulationSimplifiedSolverRecalculateStep": "Activate step recalculation",
+    "DynamicSimulationCurveDynamicModelHeader": "Network object name",
+    "DynamicSimulationCurveVariableHeader": "Variable",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",

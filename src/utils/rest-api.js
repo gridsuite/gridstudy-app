@@ -1333,9 +1333,103 @@ export function fetchDynamicSimulationParameters(studyUuid) {
 
     const mappingsPromise = getDynamicMappings(studyUuid);
 
-    return Promise.all([parametersPromise, mappingsPromise]).then(
-        ([parameters, mappings]) => ({ ...parameters, mappings })
-    );
+    // fake API curves
+    const curvesPromise = Promise.resolve([
+        {
+            dynamicModelId: '_GEN____1_SM',
+            dynamicModelName: 'GEN    1_SM',
+            variable: 'generator_omegaPu',
+            variableName: 'Omega Pu',
+        },
+        {
+            dynamicModelId: '_GEN____2_SM',
+            dynamicModelName: 'GEN    2_SM',
+            variable: 'generator_omegaPu',
+            variableName: 'Omega Pu',
+        },
+        {
+            dynamicModelId: '_GEN____2_SM',
+            dynamicModelName: 'GEN    2_SM',
+            variable: 'generator_PGen',
+            variableName: 'PGen',
+        },
+        {
+            dynamicModelId: '_GEN____3_SM',
+            dynamicModelName: 'GEN    3_SM',
+            variable: 'generator_omegaPu',
+            variableName: 'Omega Pu',
+        },
+        {
+            dynamicModelId: '_GEN____6_SM',
+            dynamicModelName: 'GEN    6_SM',
+            variable: 'generator_omegaPu',
+            variableName: 'Omega Pu',
+        },
+        {
+            dynamicModelId: '_GEN____3_SM',
+            dynamicModelName: 'GEN    3_SM',
+            variable: 'generator_QGen',
+            variableName: 'QGen',
+        },
+        {
+            dynamicModelId: '_GEN____6_SM',
+            dynamicModelName: 'GEN    6_SM',
+            variable: 'generator_QGen',
+            variableName: 'QGen',
+        },
+        {
+            dynamicModelId: '_GEN____3_SM',
+            dynamicModelName: 'GEN    3_SM',
+            variable: 'generator_UStatorPu',
+            variableName: 'UStatorPu',
+        },
+        {
+            dynamicModelId: '_GEN____6_SM',
+            dynamicModelName: 'GEN    6_SM',
+            variable: 'generator_UStatorPu',
+            variableName: 'UStatorPu',
+        },
+        {
+            dynamicModelId: '_GEN____3_SM',
+            dynamicModelName: 'GEN    3_SM',
+            variable: 'voltageRegulator_EfdPu',
+            variableName: 'Voltage Regulator EfdPu',
+        },
+        {
+            dynamicModelId: '_GEN____6_SM',
+            dynamicModelName: 'GEN    6_SM',
+            variable: 'voltageRegulator_EfdPu',
+            variableName: 'Voltage Regulator EfdPu',
+        },
+        {
+            dynamicModelId: '_LOAD___2_EC',
+            dynamicModelName: 'LOAD   2_EC',
+            variable: 'load_PPu',
+            variableName: 'PPu',
+        },
+        {
+            dynamicModelId: '_LOAD___2_EC',
+            dynamicModelName: 'LOAD   2_EC',
+            variable: 'load_QPu',
+            variableName: 'QPu',
+        },
+        {
+            dynamicModelId: '_BUS____7_TN',
+            dynamicModelName: 'BUS    7_TN',
+            variable: 'Upu_value',
+            variableName: 'Upu',
+        },
+    ]);
+
+    return Promise.all([
+        parametersPromise,
+        mappingsPromise,
+        curvesPromise,
+    ]).then(([parameters, mappings, curves]) => ({
+        ...parameters,
+        mappings,
+        curves,
+    }));
 }
 export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');

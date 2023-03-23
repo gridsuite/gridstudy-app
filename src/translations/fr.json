@@ -179,6 +179,8 @@
     "DynamicSimulationSimplifiedSolverMaxNewtonTry": "Nombre maximum de résolution de Newton (pour un pas)",
     "DynamicSimulationSimplifiedSolverLinearSolverName": "Solveur linéaire choisi",
     "DynamicSimulationSimplifiedSolverRecalculateStep": "Activer recalculation de pas",
+    "DynamicSimulationCurveDynamicModelHeader": "Nom objet réseau",
+    "DynamicSimulationCurveVariableHeader": "Variable",
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",

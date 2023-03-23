@@ -13,11 +13,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import React, { useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
-const GridButtons = ({ onAddButton, onDeleteBUtton, disabled }) => {
+const GridButtons = ({ onAddButton, onDeleteButton, disabled }) => {
     const intl = useIntl();
 
-    const handleAddButton = useCallback(() => {}, []);
-    const handleDeleteButton = useCallback(() => {}, []);
+    const handleAddButton = useCallback(() => {
+        onAddButton();
+    }, [onAddButton]);
+    const handleDeleteButton = useCallback(() => {
+        onDeleteButton();
+    }, [onAddButton]);
 
     const hasSelectedRow = false;
 
