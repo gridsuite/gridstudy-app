@@ -19,16 +19,6 @@ import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../../../dialogs/inputs/input-hooks';
 import { useFormContext } from 'react-hook-form';
 import SubmitButton from './submitButton';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
-
-const useStyles = makeStyles((theme) => ({
-    header: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '15px',
-    },
-}));
 
 /**
  * Generic Modification Dialog which manage basic common behaviors
@@ -38,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
  * @param {CallbackEvent} onSave callback when saving the modification
  * @param {Boolean} disabledSave to control disabled prop of the validate button
  * @param {Object} searchCopy Object managing search equipments for copy
- * @param {ReactElement} headerPane a header content set just under the dialog title
  * @param {ReactElement} subtitle subtitle component to put inside DialogTitle
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
  */
@@ -50,14 +39,11 @@ const ModificationDialog = ({
     onValidationError,
     disabledSave = false,
     searchCopy,
-    headerPane = undefined,
     subtitle,
     onValidated,
     ...dialogProps
 }) => {
     const { handleSubmit } = useFormContext();
-
-    const classes = useStyles();
 
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
@@ -97,22 +83,13 @@ const ModificationDialog = ({
             aria-labelledby={titleId}
             {...dialogProps}
         >
-            <DialogTitle
-                className={clsx({
-                    [classes.header]: headerPane !== undefined,
-                })}
-            >
+            <DialogTitle>
                 <Grid container justifyContent={'space-between'}>
                     <Grid item xs={11}>
                         <FormattedMessage id={titleId} />
                     </Grid>
                     {searchCopy && <Grid item> {copyEquipmentButton} </Grid>}
                 </Grid>
-                {headerPane && (
-                    <Grid container justifyContent={'space-between'}>
-                        {headerPane}
-                    </Grid>
-                )}
                 {subtitle}
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
@@ -142,7 +119,6 @@ ModificationDialog.propTypes = {
     disabledSave: PropTypes.bool,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
-    headerPane: PropTypes.element,
 };
 
 export default ModificationDialog;
