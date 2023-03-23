@@ -33,6 +33,7 @@ const LineCharacteristicsPane = ({
     studyUuid,
     currentNode,
     voltageLevelOptions,
+    displayConnectivity,
 }) => {
     const seriesResistanceField = (
         <FloatInput
@@ -104,24 +105,28 @@ const LineCharacteristicsPane = ({
 
     return (
         <>
-            <Grid container spacing={0}>
-                {/* prettier (less empty spaces) than having GridSection x 2 */}
-                <Grid item xs={12}>
-                    <h3>
-                        <FormattedMessage id={'Connectivity'} />
-                    </h3>
-                    <h4>
-                        <FormattedMessage id={'Side1'} />
-                    </h4>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                {gridItem(connectivity1Field, 12)}
-            </Grid>
-            <GridSection title="Side2" heading="4" />
-            <Grid container spacing={2}>
-                {gridItem(connectivity2Field, 12)}
-            </Grid>
+            {displayConnectivity && (
+                <>
+                    <Grid container spacing={0}>
+                        {/* prettier (less empty spaces) than having GridSection x 2 */}
+                        <Grid item xs={12}>
+                            <h3>
+                                <FormattedMessage id={'Connectivity'} />
+                            </h3>
+                            <h4>
+                                <FormattedMessage id={'Side1'} />
+                            </h4>
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={2}>
+                        {gridItem(connectivity1Field, 12)}
+                    </Grid>
+                    <GridSection title="Side2" heading="4" />
+                    <Grid container spacing={2}>
+                        {gridItem(connectivity2Field, 12)}
+                    </Grid>
+                </>
+            )}
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
                 {gridItem(seriesResistanceField, 4)}
