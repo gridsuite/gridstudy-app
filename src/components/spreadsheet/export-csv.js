@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const CsvExport = ({ gridRef, tableName, disabled }) => {
+export const CsvExport = ({ gridRef, columns, tableName, disabled }) => {
     const classes = useStyles();
     const intl = useIntl();
 
@@ -37,11 +37,16 @@ export const CsvExport = ({ gridRef, tableName, disabled }) => {
     }, [intl, tableName]);
 
     const downloadCSVData = useCallback(() => {
+        const filteredColumnsKeys = columns
+            .filter((column) => column.field !== 'edit')
+            .map((column) => column.field);
+
         gridRef?.current?.api?.exportDataAsCsv({
             suppressQuotes: true,
+            columnKeys: filteredColumnsKeys,
             fileName: getCSVFilename(),
         });
-    }, [getCSVFilename, gridRef]);
+    }, [columns, getCSVFilename, gridRef]);
 
     return (
         <Grid item className={classes.exportCsv}>

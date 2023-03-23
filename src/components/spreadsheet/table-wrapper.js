@@ -122,7 +122,6 @@ const TableWrapper = (props) => {
 
     const globalFilterRef = useRef();
 
-    const [rowData, setRowData] = useState([]);
     const [columnData, setColumnData] = useState([]);
 
     const startEditing = useCallback(() => {
@@ -284,19 +283,15 @@ const TableWrapper = (props) => {
                 : props.network[tableDefinition.resource];
 
             if (!datasourceRows) return [];
-            return datasourceRows;
+            return [...datasourceRows];
         },
         [props.disabled, props.network]
     );
 
     useEffect(() => {
         setColumnData(generateTableColumns(tabIndex));
-
-        //As of now rows data is updated only when tabIndex, getRows and generateTableColumns changes which doesn't encompass when the underlying dataset,
-        //network.js, changes from external triggers after receiving a notification. Since we curently don't have a proper way to detect when network.js data
-        //changes it has been decided to reinstate changes detection when a more granular notification system is implemented.
-        setRowData(getRows(tabIndex));
-    }, [generateTableColumns, getRows, tabIndex]);
+    }, [generateTableColumns, tabIndex]);
+    const rowData = getRows(tabIndex);
 
     const handleSwitchTab = useCallback(
         (value) => {
@@ -361,11 +356,10 @@ const TableWrapper = (props) => {
             );
             setTabIndex(newTabIndex); // select the right table type
             // calculate row index to scroll to
-            const newRowIndex = rowData.findIndex(
-                (r) => r.id === props.equipmentId
-            );
-            //test different to -1 because findIndex returns -1 when no occurence is found
-            setScrollToIndex(newRowIndex !== -1 ? newRowIndex : undefined);
+            const newRowIndex = gridRef.current?.api?.getRowNode(
+                props.equipmentId
+            )?.rowIndex;
+            setScrollToIndex(newRowIndex);
         } else if (manualTabSwitch) {
             setScrollToIndex();
         }
@@ -617,6 +611,7 @@ const TableWrapper = (props) => {
                     />
                     <CsvExport
                         gridRef={gridRef}
+                        columns={columnData}
                         tableName={TABLES_DEFINITION_INDEXES.get(tabIndex).name}
                         disabled={
                             !!(
