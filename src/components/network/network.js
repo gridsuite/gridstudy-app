@@ -420,6 +420,8 @@ export default class Network {
         //  and modifying directly its "fetched" attribute, some refactoring should be done in remote-resource-handler in order to allow
         //  equipment loading without necessarily dispatch update
 
+        this.dispatch(isNetworkEquipmentsFetched(false));
+
         // we keep the node id before fetching, so we can check if it changed when retrieving data
         const nodeBeforeFetch = currentNodeRef.current;
         equipments.forEach((equipment) => {
@@ -427,7 +429,6 @@ export default class Network {
             if (fetcher)
                 fetchers.push(
                     fetcher.fetcher().then((values) => {
-                        this.dispatch(isNetworkEquipmentsFetched(false));
                         if (nodeBeforeFetch === currentNodeRef.current) {
                             return { values: values, equipment: equipment };
                         }
