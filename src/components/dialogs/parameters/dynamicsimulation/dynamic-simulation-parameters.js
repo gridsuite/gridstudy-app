@@ -36,10 +36,6 @@ const TAB_VALUES = {
     mappingParamsTabValue: 'Mapping',
 };
 
-const EXTENSIONS = {
-    DYNA_WALTZ: 'DynaWaltzParameters',
-};
-
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const classes = useStyles();
 
@@ -93,24 +89,11 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         [updateParameters, parameters]
     );
 
-    const updateExtension = useCallback(
-        (newExtension) => {
-            const foundIndex = parameters.extensions.findIndex(
-                (elem) => elem.name === newExtension.name
-            );
-            parameters.extensions.splice(foundIndex, 1, newExtension);
-            updateParameters({
-                ...parameters,
-            });
+    const handleUpdateSolver = useCallback(
+        (newSolver) => {
+            updateParameters({ ...parameters, ...newSolver });
         },
         [updateParameters, parameters]
-    );
-
-    const handleUpdateSolver = useCallback(
-        (newExtension) => {
-            updateExtension(newExtension);
-        },
-        [updateExtension]
     );
 
     const handleUpdateMapping = useCallback(
@@ -200,15 +183,12 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                     >
                         <SolverParameters
                             key={`solver-${resetRevision}`} // to force remount a component having internal states
-                            dynaWaltzExtension={
+                            solver={
                                 parameters
-                                    ? parameters.extensions[
-                                          parameters.extensions.findIndex(
-                                              (elem) =>
-                                                  elem.name ===
-                                                  EXTENSIONS.DYNA_WALTZ
-                                          )
-                                      ]
+                                    ? {
+                                          solverId: parameters.solverId,
+                                          solvers: parameters.solvers,
+                                      }
                                     : undefined
                             }
                             onUpdateSolver={handleUpdateSolver}
