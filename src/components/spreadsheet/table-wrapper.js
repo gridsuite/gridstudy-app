@@ -283,6 +283,8 @@ const TableWrapper = (props) => {
                 : props.network[tableDefinition.resource];
 
             if (!datasourceRows) return [];
+
+            //the method returns a new array so that the table component detects its data changed thus rerendering its rows
             return [...datasourceRows];
         },
         [props.disabled, props.network]
@@ -291,6 +293,11 @@ const TableWrapper = (props) => {
     useEffect(() => {
         setColumnData(generateTableColumns(tabIndex));
     }, [generateTableColumns, tabIndex]);
+
+    //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
+    //is reinstanciated in order to notify components using it.
+    //this variable is regenerated on every renders in order to gather latest external updates done to the dataset,
+    //it is necessary since we curently lack the system to detect changes done to it after receiving a notification
     const rowData = getRows(tabIndex);
 
     const handleSwitchTab = useCallback(
@@ -369,7 +376,6 @@ const TableWrapper = (props) => {
         props.equipmentType,
         props.equipmentChanged,
         manualTabSwitch,
-        rowData,
     ]);
 
     useEffect(() => {
