@@ -427,8 +427,8 @@ export default class Network {
             if (fetcher)
                 fetchers.push(
                     fetcher.fetcher().then((values) => {
+                        this.dispatch(isNetworkEquipmentsFetched(false));
                         if (nodeBeforeFetch === currentNodeRef.current) {
-                            this.dispatch(isNetworkEquipmentsFetched(false));
                             return { values: values, equipment: equipment };
                         }
                     })
