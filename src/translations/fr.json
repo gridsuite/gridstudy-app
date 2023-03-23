@@ -419,7 +419,6 @@
     "errDuplicateModificationMsg": "Une erreur est survenue lors de la copie des modifications",
     "errCutModificationMsg": "Une erreur est survenue lors du coupage des modifications",
     "warnDuplicateModificationMsg": "Nombre de modifications non copiées :",
-    "warnCutModificationMsg": "Nombre de modifications non coupées :",
     "errDeleteModificationMsg": "Une erreur est survenue lors de la suppression des modifications",
     "DeleteEquipment": "Supprimer ouvrage",
     "Type": "Type",
