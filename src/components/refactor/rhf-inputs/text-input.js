@@ -33,7 +33,7 @@ const TextInput = ({
     customAdornment,
 }) => {
     const classes = useStyles();
-    const { validationSchema, getValues } = useFormContext();
+    const { validationSchema, getValues, isEdit } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
@@ -63,7 +63,8 @@ const TextInput = ({
               values: labelValues,
               optional:
                   !isFieldRequired(name, validationSchema, getValues()) &&
-                  !formProps?.disabled,
+                  !formProps?.disabled &&
+                  !isEdit,
           });
 
     return (
