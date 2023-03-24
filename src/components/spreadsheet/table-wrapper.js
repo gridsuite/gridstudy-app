@@ -42,7 +42,7 @@ import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
 
 const useEditBuffer = () => {
-    //the data is feeded and read during the edition validation process so we don't need to rerender after to one of these methods thus useRef is more suited
+    //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
     const data = useRef({});
 
     const addDataToBuffer = useCallback(
