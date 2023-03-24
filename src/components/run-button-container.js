@@ -224,6 +224,7 @@ export function RunButtonContainer({
 
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
+            dispatch(updateAnalysisStatus(RunningStatus.RUNNING));
             startLoadFlow(studyUuid, currentNode?.id)
                 .then(setRanLoadflow(true))
                 .catch((error) => {
@@ -240,6 +241,7 @@ export function RunButtonContainer({
             setShowSensiParametersSelector(true);
             setRanSensi(true);
         } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
+            dispatch(updateAnalysisStatus(RunningStatus.RUNNING));
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
                 .then(setRanShortCircuit(true))
                 .catch((error) => {
