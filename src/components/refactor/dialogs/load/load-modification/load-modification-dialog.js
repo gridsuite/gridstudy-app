@@ -171,7 +171,11 @@ const LoadModificationDialog = ({
     }, [onEquipmentIdChange, editData]);
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider
+            validationSchema={schema}
+            {...methods}
+            isEdit={editData ? true : false}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
