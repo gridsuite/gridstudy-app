@@ -16,13 +16,14 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
+import { EDIT_COLUMN } from './config-tables';
 
 const refreshEditingCell = (params) => {
     const rowNode = params.api.getPinnedTopRow(0);
     if (rowNode) {
         const refreshConfig = {
             rowNodes: [rowNode],
-            columns: ['edit'],
+            columns: [EDIT_COLUMN],
             force: true,
         };
         params.api.getCellEditorInstances().forEach((cellEditor) => {

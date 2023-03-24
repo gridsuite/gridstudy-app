@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import { FormattedMessage, useIntl } from 'react-intl';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { useCallback } from 'react';
+import { EDIT_COLUMN } from './utils/config-tables';
 
 const useStyles = makeStyles((theme) => ({
     exportCsv: {
@@ -38,7 +39,7 @@ export const CsvExport = ({ gridRef, columns, tableName, disabled }) => {
 
     const downloadCSVData = useCallback(() => {
         const filteredColumnsKeys = columns
-            .filter((column) => column.field !== 'edit')
+            .filter((column) => column.field !== EDIT_COLUMN)
             .map((column) => column.field);
 
         gridRef?.current?.api?.exportDataAsCsv({

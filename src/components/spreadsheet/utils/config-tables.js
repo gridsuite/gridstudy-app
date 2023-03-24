@@ -36,6 +36,8 @@ export const MAX_LOCKS_PER_TAB = 5;
 
 export const DEFAULT_SORT_ORDER = 'asc';
 
+export const EDIT_COLUMN = 'edit';
+
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,

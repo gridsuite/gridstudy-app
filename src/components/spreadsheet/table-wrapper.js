@@ -23,6 +23,7 @@ import {
     TABLES_DEFINITIONS,
     TABLES_NAMES,
     MIN_COLUMN_WIDTH,
+    EDIT_COLUMN,
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
@@ -129,7 +130,7 @@ const TableWrapper = (props) => {
         if (topRow) {
             gridRef.current.api?.startEditingCell({
                 rowIndex: topRow.rowIndex,
-                colKey: 'edit',
+                colKey: EDIT_COLUMN,
                 rowPinned: topRow.rowPinned,
             });
         }
@@ -199,7 +200,7 @@ const TableWrapper = (props) => {
     const addEditColumn = useCallback(
         (columns) => {
             columns.unshift({
-                field: 'edit',
+                field: EDIT_COLUMN,
                 locked: true,
                 pinned: 'left',
                 lockPosition: 'left',
@@ -392,7 +393,10 @@ const TableWrapper = (props) => {
             });
 
         if (isEditColumnVisible()) {
-            lockedColumnsConfig.unshift({ colId: 'edit', pinned: 'left' });
+            lockedColumnsConfig.unshift({
+                colId: EDIT_COLUMN,
+                pinned: 'left',
+            });
         }
 
         gridRef.current?.columnApi?.applyColumnState({
