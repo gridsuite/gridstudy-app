@@ -128,13 +128,17 @@ export function assignValuesToForm(editData) {
         [MINIMUM_REACTIVE_POWER]: editData?.minimumReactivePower?.value ?? null,
         [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower?.value ?? null,
         [Q_PERCENT]: editData?.qPercent?.value ?? null,
-        [VOLTAGE_LEVEL]: {
-            id: editData?.regulatingTerminalVlId?.value ?? null,
-        },
-        [EQUIPMENT]: {
-            id: editData?.regulatingTerminalId?.value ?? null,
-            type: editData?.regulatingTerminalType?.value ?? null,
-        },
+        [VOLTAGE_LEVEL]: editData?.regulatingTerminalVlId?.value
+            ? {
+                  id: editData?.regulatingTerminalVlId?.value,
+              }
+            : null,
+        [EQUIPMENT]: editData?.regulatingTerminalId?.value
+            ? {
+                  id: editData?.regulatingTerminalId?.value ?? null,
+                  type: editData?.regulatingTerminalType?.value ?? null,
+              }
+            : null,
     };
 
     if (editData?.reactiveCapabilityCurvePoints?.length > 0) {

@@ -205,7 +205,16 @@ const GeneratorModificationDialog = ({
         const reactiveCapabilityCurve = getValues(
             REACTIVE_CAPABILITY_CURVE_TABLE
         );
-
+        if (
+            reactiveCapabilityCurve.filter(
+                (point) =>
+                    point.p == null &&
+                    point.qminP == null &&
+                    point.qmaxP == null
+            ).length === reactiveCapabilityCurve?.length
+        ) {
+            return null;
+        }
         const pointsToStore = [];
         reactiveCapabilityCurve.forEach((point, index) => {
             const reactiveCapabilityCurvePoint = reactiveCapabilityCurve[index];

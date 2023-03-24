@@ -111,10 +111,11 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
                     voltageRegulationType,
                     oldVoltageLevel
                 ) =>
-                    oldVoltageLevel == null &&
                     (voltageRegulation == null || voltageRegulation) &&
-                    voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+                    voltageRegulationType === REGULATION_TYPES.DISTANT.id &&
+                    oldVoltageLevel == null,
                 then: (schema) => schema.required(),
+                otherwise: (schema) => schema.notRequired(),
             }
         ),
     [EQUIPMENT]: yup
