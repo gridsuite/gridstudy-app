@@ -54,7 +54,7 @@ const useEditBuffer = () => {
 
     const resetBuffer = useCallback(() => {
         data.current = {};
-    }, []);
+    }, [data]);
 
     return [data.current, addDataToBuffer, resetBuffer];
 };
@@ -364,7 +364,9 @@ const TableWrapper = (props) => {
                 props.equipmentType
             );
             setTabIndex(newTabIndex); // select the right table type
-            // calculate row index to scroll to
+
+            //calculate row index to scroll to
+            //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
             const newRowIndex = gridRef.current?.api?.getRowNode(
                 props.equipmentId
             )?.rowIndex;
