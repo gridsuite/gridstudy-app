@@ -78,7 +78,7 @@ export const ResultViewTab = ({
         );
     }
 
-    function renderSecurityAnalysisResult() {
+    function renderSecurityAnalysisResult(dormant) {
         return (
             <Paper className={classes.table}>
                 <SecurityAnalysisResultTab
@@ -86,39 +86,43 @@ export const ResultViewTab = ({
                     nodeUuid={currentNode?.id}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
+                    dormant={dormant}
                 />
             </Paper>
         );
     }
 
-    function renderSensitivityAnalysisResult() {
+    function renderSensitivityAnalysisResult(dormant) {
         return (
             <Paper className={classes.analysisResult}>
                 <SensitivityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
+                    dormant={dormant}
                 />
             </Paper>
         );
     }
 
-    function renderShortCircuitAnalysisResult() {
+    function renderShortCircuitAnalysisResult(dormant) {
         return (
             <Paper className={classes.analysisResult}>
                 <ShortCircuitAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
+                    dormant={dormant}
                 />
             </Paper>
         );
     }
 
-    function renderDynamicSimulationResult() {
+    function renderDynamicSimulationResult(dormant) {
         return (
             <Paper className={classes.analysisResult}>
                 <DynamicSimulationResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
+                    dormant={dormant}
                 />
             </Paper>
         );
@@ -127,11 +131,11 @@ export const ResultViewTab = ({
     const lazyTab = (index, tabPaneFunc) => {
         return (
             <TabPanelLazy
-                selected={index === tabIndex && !dormant}
-                lazyChild={tabPaneFunc}
-                invalidatingDeps={[studyUuid, currentNode?.id]}
                 className={classes.tabPanel}
-            />
+                selected={tabIndex === index && !disabled}
+            >
+                {tabPaneFunc(dormant || tabIndex !== index)}
+            </TabPanelLazy>
         );
     };
 

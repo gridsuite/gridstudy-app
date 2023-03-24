@@ -70,12 +70,16 @@ function isWorthUpdate(
     lastUpdateRef,
     nodeUuidRef,
     nodeUuid,
-    invalidations
+    invalidations,
+    dormant
 ) {
     const headers = studyUpdatedForce?.eventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const node = headers?.['node'];
     const nodes = headers?.['nodes'];
+    if (dormant) {
+        return false;
+    }
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
     }
@@ -110,7 +114,8 @@ export function useNodeData(
     fetcher,
     invalidations,
     defaultValue,
-    resultConversion
+    resultConversion,
+    dormant
 ) {
     const [result, setResult] = useState(defaultValue);
     const [isPending, setIsPending] = useState(false);
@@ -144,10 +149,11 @@ export function useNodeData(
             lastUpdateRef,
             nodeUuidRef,
             nodeUuid,
-            invalidations
+            invalidations,
+            dormant
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
-        if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
+        if (isUpdateForUs) {
             update();
         }
     }, [
@@ -157,6 +163,7 @@ export function useNodeData(
         invalidations,
         studyUpdatedForce,
         studyUuid,
+        dormant,
     ]);
 
     return [result, isPending, errorMessage, update];

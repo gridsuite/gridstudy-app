@@ -5,38 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const TabPanelLazy = (props) => {
-    const { children, selected, invalidatingDeps, lazyChild, ...other } = props;
+    const { children, selected, ...other } = props;
+    const [initialized, setInitialized] = useState(false);
 
-    const synthRef = useRef();
-    const [next, prev] = [
-        { selected, invalidatingDeps: [...invalidatingDeps] },
-        synthRef.current,
-    ];
-
-    if (prev?.invalidatingDeps?.length !== invalidatingDeps?.length) {
-        next.hasToHaveItMounted = selected;
-    } else if (
-        invalidatingDeps?.length &&
-        invalidatingDeps.reduce(
-            (accum, dep, i) => accum && dep === prev.invalidatingDeps[i],
-            true
-        )
-    ) {
-        next.hasToHaveItMounted = selected;
-    } else if (next.selected && !prev?.selected) {
-        next.hasToHaveItMounted = true;
-    } else {
-        next.hasToHaveItMounted = prev?.hasToHaveItMounted;
-    }
-    synthRef.current = next;
+    // force mount child once
+    useEffect(() => {
+        if (!initialized && selected) {
+            setInitialized(true);
+        }
+    }, [selected, initialized]);
 
     return (
         <div style={{ display: selected ? 'inherit' : 'none' }} {...other}>
-            {next.hasToHaveItMounted && children}
-            {next.hasToHaveItMounted && lazyChild?.()}
+            {initialized && children}
         </div>
     );
 };

@@ -17,7 +17,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 const dynamicSimulationResultInvalidations = ['dynamicSimulationResult'];
 const loadingMessage = 'LoadingRemoteData';
 
-const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
+const DynamicSimulationResultTab = ({ studyUuid, nodeUuid, dormant }) => {
     const [dynamicSimulationResult, isWaiting] = useNodeData(
         studyUuid,
         nodeUuid,
@@ -28,7 +28,8 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
             status: res.status,
             timeseries: Array(res.timeseriesMetadatas.length),
             timeseriesMetadatas: res.timeseriesMetadatas,
-        })
+        }),
+        dormant
     );
 
     const { snackError } = useSnackMessage();

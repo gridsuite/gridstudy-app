@@ -17,12 +17,16 @@ export const SecurityAnalysisResultTab = ({
     nodeUuid,
     network,
     openVoltageLevelDiagram,
+    dormant,
 }) => {
     const [securityAnalysisResult, isWaiting] = useNodeData(
         studyUuid,
         nodeUuid,
         fetchSecurityAnalysisResult,
-        securityAnalysisResultInvalidations
+        securityAnalysisResultInvalidations,
+        null,
+        null,
+        dormant
     );
 
     function onClickNmKConstraint(row, column) {
