@@ -556,6 +556,7 @@ const TableWrapper = (props) => {
             editingData,
             intl,
             priorValuesBuffer,
+            resetBuffer,
             rollbackEdit,
             snackError,
             tabIndex,
