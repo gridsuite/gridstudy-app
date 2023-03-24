@@ -9,8 +9,6 @@ import React, { useMemo, useCallback } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import 'ag-grid-community/styles/ag-theme-material.css';
-
 import { makeStyles, useTheme } from '@mui/styles';
 import LoaderWithOverlay from '../util/loader-with-overlay';
 import { useIntl } from 'react-intl';
