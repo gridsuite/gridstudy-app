@@ -100,18 +100,8 @@ export const getPreviousBooleanValue = (isPreviousValueOn) => {
 
 export function assignValuesToForm(editData) {
     // the reactive capability table values are assigned when retrieving previous values
-    const rcc = editData.reactiveCapabilityCurvePoints.map((point) => {
-        return {
-            [P]: point.p,
-            [Q_MAX_P]: point.qmaxP,
-            [Q_MIN_P]: point.qminP,
-            [PREVIOUS_Q_MAX_P]: point.oldQmaxP ?? point.qmaxP,
-            [PREVIOUS_Q_MIN_P]: point.oldQminP ?? point.qminP,
-            [PREVIOUS_P]: point.oldP ?? point.p,
-        };
-    });
 
-    return {
+    const customEditData = {
         [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
         [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
         [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
@@ -138,8 +128,6 @@ export function assignValuesToForm(editData) {
         [MINIMUM_REACTIVE_POWER]: editData?.minimumReactivePower?.value ?? null,
         [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower?.value ?? null,
         [Q_PERCENT]: editData?.qPercent?.value ?? null,
-        [REACTIVE_CAPABILITY_CURVE_TABLE]:
-            rcc && rcc.length > 0 ? rcc : [{}, {}],
         [VOLTAGE_LEVEL]: {
             id: editData?.regulatingTerminalVlId?.value ?? null,
         },
@@ -147,6 +135,28 @@ export function assignValuesToForm(editData) {
             id: editData?.regulatingTerminalId?.value ?? null,
             type: editData?.regulatingTerminalType?.value ?? null,
         },
+    };
+
+    if (editData?.reactiveCapabilityCurvePoints?.length > 0) {
+        const rcc = editData.reactiveCapabilityCurvePoints.map((point) => {
+            return {
+                [P]: point.p,
+                [Q_MAX_P]: point.qmaxP,
+                [Q_MIN_P]: point.qminP,
+                [PREVIOUS_Q_MAX_P]: point.oldQmaxP ?? point.qmaxP,
+                [PREVIOUS_Q_MIN_P]: point.oldQminP ?? point.qminP,
+                [PREVIOUS_P]: point.oldP ?? point.p,
+            };
+        });
+        const tableData = { [REACTIVE_CAPABILITY_CURVE_TABLE]: rcc };
+        return {
+            ...customEditData,
+            ...tableData,
+        };
+    }
+
+    return {
+        ...customEditData,
     };
 }
 
