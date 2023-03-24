@@ -133,7 +133,6 @@ export const NumericalField = forwardRef(
         function renderNumericText() {
             return (
                 <TextField
-                    ref={ref}
                     value={value}
                     onChange={validateEvent}
                     error={error}
@@ -224,7 +223,6 @@ export const BooleanListField = forwardRef(
 
         return (
             <Select
-                ref={ref}
                 value={value}
                 onChange={validateChange}
                 size={'medium'}
