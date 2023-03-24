@@ -209,11 +209,6 @@ export const assignPreviousValuesToForm = (
             ? generator?.voltageRegulatorOn
             : null,
         [FREQUENCY_REGULATION]: generator?.activePowerControlOn,
-        [VOLTAGE_REGULATION_TYPE]:
-            generator?.regulatingTerminalVlId ||
-            generator?.regulatingTerminalConnectableId
-                ? REGULATION_TYPES.DISTANT.id
-                : REGULATION_TYPES.LOCAL.id,
         [PREVIOUS_VOLTAGE_LEVEL]: generator?.regulatingTerminalVlId ?? null,
         [PREVIOUS_EQUIPMENT]: previousEquipment,
         [PREVIOUS_EQUIPMENT_NAME]: generator?.name,

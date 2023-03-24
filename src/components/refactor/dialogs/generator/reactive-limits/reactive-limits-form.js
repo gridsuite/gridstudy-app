@@ -73,7 +73,7 @@ const ReactiveLimitsForm = () => {
 
     return (
         <>
-            <GridSection title="ReactiveLimits" />
+            <GridSection title="ReactiveLimits" heading="4" />
             <Grid container spacing={2}>
                 {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
             </Grid>

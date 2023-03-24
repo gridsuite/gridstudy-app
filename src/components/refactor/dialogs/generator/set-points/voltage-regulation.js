@@ -12,11 +12,10 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import React from 'react';
+import React, { useCallback } from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     gridItem,
-    italicFontTextField,
     percentageTextField,
     VoltageAdornment,
 } from '../../../../dialogs/dialogUtils';
@@ -25,6 +24,7 @@ import { Box } from '@mui/system';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import { useWatch } from 'react-hook-form';
+import { PREVIOUS_VOLTAGE_REGULATION_TYPE } from '../modification/generator-modification-utils';
 
 const VoltageRegulation = ({
     studyUuid,
@@ -35,8 +35,22 @@ const VoltageRegulation = ({
         name: VOLTAGE_REGULATION_TYPE,
     });
 
+    const voltageRegulationPreviousType = useWatch({
+        name: PREVIOUS_VOLTAGE_REGULATION_TYPE,
+    });
+
+    const isPreviousRegulationDistant = useCallback(() => {
+        return (
+            voltageRegulationPreviousType &&
+            (voltageRegulationPreviousType === 'Remote' ||
+                voltageRegulationPreviousType ===
+                    REGULATION_TYPES.DISTANT.label)
+        );
+    }, [voltageRegulationPreviousType]);
+
     const isDistantRegulation =
-        voltageRegulationType === REGULATION_TYPES.DISTANT.id;
+        voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
+        (voltageRegulationType === null && isPreviousRegulationDistant());
 
     const voltageRegulationTypeField = (
         <SelectInput
@@ -44,8 +58,6 @@ const VoltageRegulation = ({
             name={VOLTAGE_REGULATION_TYPE}
             label={'RegulationTypeText'}
             size={'small'}
-            disableClearable={true}
-            formProps={italicFontTextField}
         />
     );
 

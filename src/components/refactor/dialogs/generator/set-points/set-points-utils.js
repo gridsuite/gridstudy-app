@@ -68,7 +68,7 @@ const getVoltageRegulationEmptyFormData = (voltageRegulationType) => ({
     ...getRegulatingTerminalEmptyFormData(),
 });
 
-const getVoltageRegulationSchema = () => ({
+const getVoltageRegulationSchema = (isGeneratorModification) => ({
     [VOLTAGE_REGULATION_TYPE]: yup
         .string()
         .nullable()
@@ -80,7 +80,8 @@ const getVoltageRegulationSchema = () => ({
         .number()
         .nullable()
         .when([VOLTAGE_REGULATION, PREVIOUS_VOLTAGE_SET_POINT], {
-            is: (value, previousValue) => value && !previousValue,
+            is: (value, previousValue) =>
+                value && !previousValue && !isGeneratorModification,
             then: (schema) => schema.required(),
         }),
     [Q_PERCENT]: yup
@@ -170,7 +171,7 @@ export const getSetPointsSchema = (isGeneratorModification = false) => ({
         }),
     ...getActivePowerSetPointSchema(),
     ...getReactivePowerSetPointSchema(),
-    ...getVoltageRegulationSchema(),
+    ...getVoltageRegulationSchema(isGeneratorModification),
     ...getFrequencyRegulationSchema(isGeneratorModification),
 });
 
