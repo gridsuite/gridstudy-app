@@ -42,7 +42,11 @@ const PAGE_OPTIONS = Object.freeze([
 ]);
 const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[1];
 
-export const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, dormant }) => {
+export const SensitivityAnalysisResultTab = ({
+    studyUuid,
+    nodeUuid,
+    dormant,
+}) => {
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKindIndex, setSensiKindIndex] = useState(0);
 

@@ -12,7 +12,11 @@ import ShortCircuitAnalysisResult from './shortcircuit-analysis-result';
 
 const shortCircuitAnalysisResultInvalidations = ['shortCircuitAnalysisResult'];
 
-export const ShortCircuitAnalysisResultTab = ({ studyUuid, nodeUuid, dormant }) => {
+export const ShortCircuitAnalysisResultTab = ({
+    studyUuid,
+    nodeUuid,
+    dormant,
+}) => {
     const [shortCircuitAnalysisResult, isWaiting] = useNodeData(
         studyUuid,
         nodeUuid,
