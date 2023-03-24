@@ -42,21 +42,21 @@ import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
 
 const useEditBuffer = () => {
-    const [data, setData] = useState({});
+    //the data is feeded and read during the edition validation process so we don't need to rerender after to one of these methods thus useRef is more suited
+    const data = useRef({});
 
     const addDataToBuffer = useCallback(
         (field, value) => {
-            data[field] = value;
-            setData(data);
+            data.current[field] = value;
         },
         [data]
     );
 
     const resetBuffer = useCallback(() => {
-        setData({});
+        data.current = {};
     }, []);
 
-    return [data, addDataToBuffer, resetBuffer];
+    return [data.current, addDataToBuffer, resetBuffer];
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -188,6 +188,7 @@ const TableWrapper = (props) => {
             column.width = column.columnWidth || MIN_COLUMN_WIDTH;
 
             //if it is not the first render the column might already have a pinned value so we need to handle the case where it needs to be reseted to undefined
+            //we reuse and mutate the column objects so we need to clear to undefined
             column.pinned = lockedColumnsNames.has(column.id)
                 ? 'left'
                 : undefined;
@@ -535,6 +536,7 @@ const TableWrapper = (props) => {
                     };
                     gridRef.current.api.applyTransaction(transaction);
                     setEditingData();
+                    resetBuffer();
                     setIsValidatingData(false);
                 })
                 .catch((promiseErrorMsg) => {

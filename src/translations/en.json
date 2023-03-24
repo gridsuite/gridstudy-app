@@ -800,25 +800,5 @@
 
     "YupRequired": "This field is required",
     "YupNotTypeNumber": "This field only accepts numeric values",
-    "YupNotTypeDefault": "Field value format is incorrect",
-
-    "grid.contains": "Contains",
-    "grid.notContains": "Not contains",
-    "grid.equals": "Equals",
-    "grid.notEqual": "Not equal",
-    "grid.startsWith": "Starts with",
-    "grid.endsWith": "Ends with",
-    "grid.blank": "Blank",
-    "grid.notBlank": "Not blank",
-    "grid.inRange": "In range",
-    "grid.lessThan": "Less than",
-    "grid.lessThanOrEqual": "Less than or equals",
-    "grid.greaterThan": "Greater than",
-    "grid.greaterThanOrEqual": "Greater than or equals",
-    "grid.andCondition": "AND",
-    "grid.orCondition": "OR",
-    "grid.inRangeStart": "From",
-    "grid.inRangeEnd": "To",
-    "grid.filterOoo": "Filter...",
-    "grid.noRowsToShow": "No rows"
+    "YupNotTypeDefault": "Field value format is incorrect"
 }
