@@ -37,6 +37,7 @@ import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
+import { usePrevious } from './study-container';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -335,6 +336,28 @@ const StudyPane = ({
         );
     }
 
+    // --- force unmount when result tab in dormant and a switch node occurs
+    const prevNodeUuid = usePrevious(currentNode?.id);
+    const [mountResult, setMountResult] = useState(false);
+    useEffect(() => {
+        setMountResult((prevMountResult) => {
+            if (
+                prevMountResult && // mounted previously
+                prevNodeUuid !== currentNode?.id && // new node uuid (switch node or new)
+                props.view !== StudyView.RESULTS // dormant tab
+            ) {
+                return false; // force unmount
+            }
+
+            if (!prevMountResult && props.view === StudyView.RESULTS) {
+                return true; // force mount on-demand
+            }
+
+            // otherwise don't change
+            return prevMountResult;
+        });
+    }, [props.view, prevNodeUuid, currentNode?.id]);
+
     return (
         <>
             {/*Rendering the map is slow, do it once and keep it display:none*/}
@@ -361,14 +384,16 @@ const StudyPane = ({
                     display: props.view === StudyView.RESULTS ? null : 'none',
                 }}
             >
-                <ResultViewTab
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    loadFlowInfos={loadFlowInfos}
-                    network={network}
-                    openVoltageLevelDiagram={openVoltageLevelDiagram}
-                    disabled={disabled}
-                />
+                {mountResult && (
+                    <ResultViewTab
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        loadFlowInfos={loadFlowInfos}
+                        network={network}
+                        openVoltageLevelDiagram={openVoltageLevelDiagram}
+                        disabled={disabled}
+                    />
+                )}
             </div>
             <div
                 className="singlestretch-child"
