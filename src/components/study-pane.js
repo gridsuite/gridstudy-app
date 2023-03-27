@@ -92,29 +92,30 @@ export const StudyView = {
 
 // this hook is used to force unmount a tab which is in dormant state
 // when having a change on dependencies, e.g. study or node uuid
-const useMount = ({ viewId, currViewId }, deps) => {
+const useMountTab = ({ tabId, currTabId }, deps) => {
     const prevDeps = usePrevious(deps);
     const prevMountRef = useRef(false);
     const mount = useMemo(() => {
         if (
             deps.reduce(
-                (accum, elem, index) => accum || elem !== prevDeps[index],
+                (accum, elem, index) =>
+                    accum || (prevDeps ? elem !== prevDeps[index] : true),
                 false
             ) && // has any change in dependencies
             prevMountRef.current && // mounted previously
-            currViewId !== viewId // dormant tab
+            currTabId !== tabId // dormant tab
         ) {
             prevMountRef.current = false; // force unmount
         } else if (
             !prevMountRef.current && // not yet mounted previously
-            currViewId === viewId // become active tab
+            currTabId === tabId // become active tab
         ) {
             prevMountRef.current = true; // force mount on-demand
         }
 
         // otherwise don't change
         return prevMountRef.current;
-    }, [viewId, currViewId, prevDeps, deps]);
+    }, [tabId, currTabId, prevDeps, deps]);
 
     return mount;
 };
@@ -372,10 +373,10 @@ const StudyPane = ({
     }
 
     // --- force unmount when result tab in dormant and a switch study/node occurs
-    const mountResult = useMount(
+    const mountTabResult = useMountTab(
         {
-            viewId: StudyView.RESULTS,
-            currViewId: props.view,
+            tabId: StudyView.RESULTS,
+            currTabId: props.view,
         },
         [studyUuid, currentNode?.id]
     );
@@ -406,7 +407,7 @@ const StudyPane = ({
                     display: props.view === StudyView.RESULTS ? null : 'none',
                 }}
             >
-                {mountResult && (
+                {mountTabResult && (
                     <ResultViewTab
                         studyUuid={studyUuid}
                         currentNode={currentNode}
