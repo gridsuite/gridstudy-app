@@ -8,29 +8,15 @@
 import React, { useRef } from 'react';
 
 const TabPanelLazy = (props) => {
-    const { children, selected, invalidatingDeps, ...other } = props;
+    const { children, selected, canKeepMounted, ...other } = props;
 
     const synthRef = useRef();
-    const [next, prev] = [
-        { selected, invalidatingDeps: [...invalidatingDeps] },
-        synthRef.current,
-    ];
+    const [next, prev] = [{ selected, canKeepMounted }, synthRef.current];
 
-    if (prev?.invalidatingDeps?.length !== invalidatingDeps?.length) {
-        next.hasToHaveItMounted = selected;
-    } else if (
-        invalidatingDeps?.length &&
-        !invalidatingDeps.reduce(
-            (accum, dep, i) => accum && dep === prev.invalidatingDeps[i],
-            true
-        )
-    ) {
-        // at least one dependency has changed, we revoke unselected ones, other show and update
-        next.hasToHaveItMounted = selected;
-    } else if (next.selected && !prev?.selected) {
-        next.hasToHaveItMounted = true;
-    } else {
+    if (canKeepMounted && !selected) {
         next.hasToHaveItMounted = prev?.hasToHaveItMounted;
+    } else {
+        next.hasToHaveItMounted = selected;
     }
     synthRef.current = next;
 

@@ -12,7 +12,7 @@ import Paper from '@mui/material/Paper';
 import LoadFlowResult from './loadflow-result';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { SensitivityAnalysisResultTab } from './sensitivity-analysis-result-tab';
@@ -43,6 +43,41 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const TABS = [
+    {
+        id: 'loadFlowResults',
+        CompFunc: LoadFlowResult,
+    },
+    {
+        id: 'securityAnalysisResults',
+        CompFunc: SecurityAnalysisResultTab,
+    },
+    {
+        id: 'ShortCircuitAnalysisResults',
+        CompFunc: ShortCircuitAnalysisResultTab,
+        needsDeveloperMode: true,
+    },
+    {
+        id: 'sensitivityAnalysisResults',
+        CompFunc: SensitivityAnalysisResultTab,
+        // needsDeveloperMode: true,
+    },
+    {
+        id: 'DynamicSimulationResults',
+        CompFunc: DynamicSimulationResultTab,
+        needsDeveloperMode: true,
+    },
+];
+
+const useSameNode = (studyUuid, nodeUuid) => {
+    const ref = useRef();
+    const [next, prev] = [{ studyUuid, nodeUuid }, ref.current];
+    const same =
+        next.studyUuid === prev?.studyUuid && next.nodeUuid === prev?.nodeUuid;
+    ref.current = next;
+    return same;
+};
+
 /**
  * control results views
  * @param studyUuid : string uuid of study
@@ -63,6 +98,7 @@ export const ResultViewTab = ({
     disabled,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
+    const sameNode = useSameNode(studyUuid, currentNode?.id);
 
     const classes = useStyles();
 
@@ -70,69 +106,47 @@ export const ResultViewTab = ({
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    function renderLoadFlowResult() {
-        return (
-            <Paper className={classes.table}>
-                <LoadFlowResult result={loadFlowInfos?.loadFlowResult} />
-            </Paper>
-        );
-    }
+    const selectionableIndices = useMemo(
+        () =>
+            TABS.map((entry, index) =>
+                !entry.needsDeveloperMode || enableDeveloperMode ? index : null
+            ).filter((visibleIndex) => visibleIndex !== null),
+        [enableDeveloperMode]
+    );
 
-    function renderSecurityAnalysisResult() {
+    const makeTabWidgetJsx = (entry) => {
         return (
-            <Paper className={classes.table}>
-                <SecurityAnalysisResultTab
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id}
-                    network={network}
-                    openVoltageLevelDiagram={openVoltageLevelDiagram}
+            (!entry.needsDeveloperMode || enableDeveloperMode) && (
+                <Tab
+                    key={entry.id}
+                    label={intl.formatMessage({ id: entry.id })}
+                    disabled={disabled}
                 />
-            </Paper>
+            )
         );
-    }
+    };
 
-    function renderSensitivityAnalysisResult() {
+    const makeTabPaneJsx = (CompFunc, needsDeveloperMode, selected) => {
         return (
-            <Paper className={classes.analysisResult}>
-                <SensitivityAnalysisResultTab
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id}
-                />
-            </Paper>
-        );
-    }
-
-    function renderShortCircuitAnalysisResult() {
-        return (
-            <Paper className={classes.analysisResult}>
-                <ShortCircuitAnalysisResultTab
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id}
-                />
-            </Paper>
-        );
-    }
-
-    function renderDynamicSimulationResult() {
-        return (
-            <Paper className={classes.analysisResult}>
-                <DynamicSimulationResultTab
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id}
-                />
-            </Paper>
-        );
-    }
-
-    const lazyTab = (index, tabPaneFunc) => {
-        return (
-            <TabPanelLazy
-                selected={index === tabIndex && !dormant}
-                invalidatingDeps={[studyUuid, currentNode?.id]}
-                className={classes.tabPanel}
-            >
-                {tabPaneFunc()}
-            </TabPanelLazy>
+            (!needsDeveloperMode || enableDeveloperMode) && (
+                <TabPanelLazy
+                    selected={selected && !dormant}
+                    canKeepMounted={sameNode}
+                    className={classes.tabPanel}
+                >
+                    <Paper className={classes.table}>
+                        {/* we are generous and give the union of needed parameters,
+                           each Component uses only what it needs */}
+                        <CompFunc
+                            studyUuid={studyUuid}
+                            nodeUuid={currentNode?.id}
+                            network={network}
+                            openVoltageLevelDiagram={openVoltageLevelDiagram}
+                            result={loadFlowInfos?.loadFlowResult}
+                        />
+                    </Paper>
+                </TabPanelLazy>
+            )
         );
     };
 
@@ -150,51 +164,18 @@ export const ResultViewTab = ({
                     value={tabIndex}
                     onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
                 >
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'loadFlowResults',
-                        })}
-                        disabled={disabled}
-                    />
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'securityAnalysisResults',
-                        })}
-                        disabled={disabled}
-                    />
-                    {enableDeveloperMode && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'ShortCircuitAnalysisResults',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
-                    {enableDeveloperMode && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'sensitivityAnalysisResults',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
-                    {enableDeveloperMode && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'DynamicSimulationResults',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
+                    {TABS.map((entry) => makeTabWidgetJsx(entry))}
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
             {/* tab contents */}
-            {lazyTab(0, renderLoadFlowResult)}
-            {lazyTab(1, renderSecurityAnalysisResult)}
-            {lazyTab(2, renderShortCircuitAnalysisResult)}
-            {lazyTab(3, renderSensitivityAnalysisResult)}
-            {lazyTab(4, renderDynamicSimulationResult)}
+            {TABS.map((entry, index) =>
+                makeTabPaneJsx(
+                    entry.CompFunc,
+                    entry.needsDeveloperMode,
+                    selectionableIndices[tabIndex] === index
+                )
+            )}
         </Paper>
     );
 };
