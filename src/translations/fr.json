@@ -115,6 +115,8 @@
     "ActivePowerSide2": "p2 (MW)",
     "ActivePowerSide3": "p3 (MW)",
     "ReactivePower": "q (MVar)",
+    "ConstantReactivePower" : "Q constant (MVar)",
+    "ConstantActivePower": "P constant (MW)",
     "ReactivePowerSide1": "q1 (MVar)",
     "ReactivePowerSide2": "q2 (MVar)",
     "ReactivePowerSide3": "q3 (MVar)",
@@ -546,8 +548,8 @@
 
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
-    "Side1": "Côté 1",
-    "Side2": "Côté 2",
+    "Side1": "Côté origine",
+    "Side2": "Côté extrémité",
     "OriginSide": "Côté origine",
     "ExtremitySide": "Côté extrémité",
     "SeriesResistanceText": "Résistance série",
@@ -559,6 +561,14 @@
     "QatNominalV": "Q à tension nominale",
     "QatNominalVLabel": "Q à Unom (MVAr)",
     "SusceptanceLabel": "Susceptance (S)",
+    "LineLimitsTab": "Limites",
+    "LineCharacteristicsTab": "Caractéristiques",
+    "TemporaryCurrentLimitsText": "Limites d'intensité temporaires",
+    "TemporaryLimitDuration": "Tempo (s)",
+    "TemporaryLimitName": "Nom",
+    "TemporaryLimitValue": "Valeur (A)",
+    "TemporaryLimitNameUnicityError": "Les noms des limites temporaires doivent être uniques dans la table",
+    "TemporaryLimitDurationUnicityError": "Les tempos des limites temporaires doivent être uniques dans la table",
 
     "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Sections identiques",
@@ -834,5 +844,26 @@
 
     "YupRequired": "Ce champ doit être renseigné",
     "YupNotTypeNumber": "Ce champ n'accepte que des valeurs numériques",
-    "YupNotTypeDefault": "La valeur du champ n'est pas au bon format"
+    "YupNotTypeDefault": "La valeur du champ n'est pas au bon format",
+
+    "grid.contains": "Contient",
+    "grid.notContains": "Ne contient pas",
+    "grid.equals": "Égal à",
+    "grid.notEqual": "N'est pas égal à",
+    "grid.startsWith": "Commence par",
+    "grid.endsWith": "Finit par",
+    "grid.blank": "Vide",
+    "grid.notBlank": "N'est pas vide",
+    "grid.inRange": "Intervalle",
+    "grid.lessThan": "Moins que",
+    "grid.lessThanOrEqual": "Moins ou égal à",
+    "grid.greaterThan": "Plus que",
+    "grid.greaterThanOrEqual": "Plus ou égal à",
+    "grid.andCondition": "ET",
+    "grid.orCondition": "OU",
+    "grid.inRangeStart": "Début",
+    "grid.inRangeEnd": "Fin",
+    "grid.filterOoo": "Filtrer...",
+    "grid.noRowsToShow": "Aucune Donnée"
+    
 }
