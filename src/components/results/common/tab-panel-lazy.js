@@ -20,11 +20,12 @@ const TabPanelLazy = (props) => {
         next.hasToHaveItMounted = selected;
     } else if (
         invalidatingDeps?.length &&
-        invalidatingDeps.reduce(
+        !invalidatingDeps.reduce(
             (accum, dep, i) => accum && dep === prev.invalidatingDeps[i],
             true
         )
     ) {
+        // at least one dependency has changed, we revoke unselected ones, other show and update
         next.hasToHaveItMounted = selected;
     } else if (next.selected && !prev?.selected) {
         next.hasToHaveItMounted = true;
