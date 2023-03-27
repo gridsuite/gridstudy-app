@@ -4,16 +4,133 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import VirtualizedTable from './util/virtualized-table';
+import { AgGridReact } from 'ag-grid-react';
+import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
+import { makeStyles, useTheme } from '@mui/styles';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+import clsx from 'clsx';
+
+const useStyles = makeStyles((theme) => ({
+    grid: {
+        width: 'auto',
+        height: '100%',
+        position: 'relative',
+
+        //overrides the default computed max heigt for ag grid default selector editor to make it more usable
+        //can be removed if a custom selector editor is implemented
+        '& .ag-select-list': {
+            maxHeight: '300px !important',
+        },
+    },
+}));
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+
+    const theme = useTheme();
+    const GRID_PREFIX = 'grid.';
+    const classes = useStyles();
+
+    const columns = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'IDNode' }),
+                field: 'elementId',
+                comparator: function (
+                    valueA,
+                    valueB,
+                    nodeA,
+                    nodeB,
+                    isDescending
+                ) {
+                    const valueAToCompare =
+                        valueA ?? nodeA?.data?.linkedElementId;
+                    const valueBToCompare =
+                        valueB ?? nodeB?.data?.linkedElementId;
+
+                    if (
+                        nodeA?.data?.linkedElementId &&
+                        nodeA?.data?.linkedElementId ===
+                            nodeB?.data?.linkedElementId
+                    ) {
+                        return nodeA?.data?.connectableId.localeCompare(
+                            nodeB?.data?.connectableId
+                        );
+                    }
+                    return valueAToCompare.localeCompare(valueBToCompare);
+                },
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Type' }),
+                field: 'faultType',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Feeders' }),
+                field: 'connectableId',
+            },
+
+            {
+                headerName: intl.formatMessage({ id: 'IscKA' }),
+                field: 'current',
+            },
+
+            {
+                headerName: intl.formatMessage({ id: 'LimitType' }),
+                field: 'limitType',
+            },
+
+            {
+                headerName: intl.formatMessage({ id: 'IscMinKA' }),
+                field: 'limitMin',
+
+                // numeric: true,
+                // nullable: true,
+                // fractionDigits: 1,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'IscMaxKA' }),
+                field: 'limitMax',
+
+                // numeric: true,
+                // nullable: true,
+                // fractionDigits: 1,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'PscMVA' }),
+                field: 'shortCircuitPower',
+
+                // numeric: true,
+                // fractionDigits: 1,
+            },
+        ];
+    }, [intl]);
+
+    const getRowStyle = useCallback(
+        (params) => {
+            console.log('params', params);
+            if (params?.data?.elementId) {
+                return {
+                    backgroundColor: theme.selectedRow.background,
+                };
+            }
+        },
+        [theme.selectedRow.background]
+    );
+
+    const getLocaleText = useCallback(
+        (params) => {
+            const key = GRID_PREFIX + params.key;
+            return intl.messages[key] || params.defaultValue;
+        },
+        [intl]
+    );
 
     function flattenResult(shortcutAnalysisResult) {
         const rows = [];
@@ -30,11 +147,11 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     limitMin:
                         lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
                             ? lv.limit
-                            : NaN,
+                            : null,
                     limitMax:
                         lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
                             ? lv.limit
-                            : NaN,
+                            : null,
                     limitName: lv.limitName,
                     current: lv.value,
                 };
@@ -55,11 +172,11 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     limitMin:
                         lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
                             ? lv.limit
-                            : NaN,
+                            : null,
                     limitMax:
                         lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
                             ? lv.limit
-                            : NaN,
+                            : null,
                     limitName: lv.limitName,
                     current: lv.value,
                 });
@@ -69,6 +186,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 rows.push({
                     connectableId: fr.connectableId,
                     current: fr.current,
+                    linkedElementId: fault.elementId,
                 });
             });
         });
@@ -80,67 +198,22 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         return (
             result &&
             shortCircuitNotif && (
-                <VirtualizedTable
-                    rows={rows}
-                    sortable={false}
-                    columns={[
-                        {
-                            width: 200,
-                            label: intl.formatMessage({ id: 'IDNode' }),
-                            dataKey: 'elementId',
-                        },
-                        {
-                            width: 200,
-                            label: intl.formatMessage({ id: 'Type' }),
-                            dataKey: 'faultType',
-                        },
-                        {
-                            width: 200,
-                            label: intl.formatMessage({ id: 'Feeders' }),
-                            dataKey: 'connectableId',
-                        },
-                        {
-                            width: 200,
-                            label: intl.formatMessage({ id: 'IscKA' }),
-                            dataKey: 'current',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            label: intl.formatMessage({ id: 'LimitType' }),
-                            dataKey: 'limitType',
-                        },
-                        {
-                            width: 200,
-                            label: intl.formatMessage({ id: 'IscMinKA' }),
-                            dataKey: 'limitMin',
-                            numeric: true,
-                            nullable: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            label: intl.formatMessage({ id: 'IscMaxKA' }),
-                            dataKey: 'limitMax',
-                            numeric: true,
-                            nullable: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            label: intl.formatMessage({ id: 'PscMVA' }),
-                            dataKey: 'shortCircuitPower',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                    ]}
+                <AgGridReact
+                    rowData={rows}
+                    defaultColDef={{ sortable: true }}
+                    columnDefs={columns}
+                    getLocaleText={getLocaleText}
+                    getRowStyle={getRowStyle}
                 />
             )
         );
     }
 
-    return renderResult();
+    return (
+        <div className={clsx([theme.aggrid, classes.grid])}>
+            {renderResult()}
+        </div>
+    );
 };
 
 ShortCircuitAnalysisResult.defaultProps = {
