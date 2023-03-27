@@ -29,7 +29,6 @@ import {
     addSensiNotif,
     addShortCircuitNotif,
     addDynamicSimulationNotif,
-    updateAnalysisStatus,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -102,36 +101,36 @@ export function RunButtonContainer({
             ranLoadflow &&
             studyUpdatedForce?.eventData?.headers?.updateType === 'loadflow'
         ) {
+            setLoadFlowStatusState(loadFlowStatus);
             dispatch(addLoadflowNotif());
-            dispatch(updateAnalysisStatus(loadFlowStatusState));
         } else if (
             ranSA &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'securityAnalysisResult'
         ) {
+            setSecurityAnalysisStatusState(securityAnalysisStatus);
             dispatch(addSANotif());
-            dispatch(updateAnalysisStatus(securityAnalysisStatusState));
         } else if (
             ranSensi &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'sensitivityAnalysisResult'
         ) {
+            setSensiStatusState(sensiStatus);
             dispatch(addSensiNotif());
-            dispatch(updateAnalysisStatus(sensiStatusState));
         } else if (
             ranShortCircuit &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'shortCircuitAnalysisResult'
         ) {
+            setShortCircuitStatusState(shortCircuitStatus);
             dispatch(addShortCircuitNotif());
-            dispatch(updateAnalysisStatus(shortCircuitStatusState));
         } else if (
             ranDynamicSimulation &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'dynamicSimulationResult'
         ) {
+            setDynamicSimulationStatusState(dynamicSimulationStatus);
             dispatch(addDynamicSimulationNotif());
-            dispatch(updateAnalysisStatus(dynamicSimulationStatusState));
         }
     }, [
         dispatch,
@@ -141,30 +140,33 @@ export function RunButtonContainer({
         ranSensi,
         ranShortCircuit,
         ranDynamicSimulation,
-        loadFlowStatusState,
-        sensiStatusState,
-        shortCircuitStatusState,
-        dynamicSimulationStatusState,
-        securityAnalysisStatusState,
+        loadFlowStatus,
+        sensiStatus,
+        shortCircuitStatus,
+        dynamicSimulationStatus,
+        securityAnalysisStatus,
     ]);
 
     const ACTION_ON_RUNNABLES = {
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (action) => {
             if (action === runnable.SECURITY_ANALYSIS) {
+                setSecurityAnalysisStatusState(RunningStatus.IDLE);
                 stopSecurityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             } else if (action === runnable.SENSITIVITY_ANALYSIS) {
+                setSensiStatusState(RunningStatus.IDLE);
                 stopSensitivityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
+                setShortCircuitStatusState(RunningStatus.IDLE);
                 stopShortCircuitAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             } else if (action === runnable.DYNAMIC_SIMULATION) {
+                setDynamicSimulationStatusState(RunningStatus.IDLE);
                 stopDynamicSimulation(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
-            dispatch(updateAnalysisStatus(RunningStatus.IDLE));
         },
     };
 
@@ -173,7 +175,7 @@ export function RunButtonContainer({
         setShowContingencyListSelector(false);
 
         setComputationStopped(false);
-        dispatch(updateAnalysisStatus(RunningStatus.RUNNING));
+        setSecurityAnalysisStatusState(RunningStatus.RUNNING);
         // start server side security analysis
         startSecurityAnalysis(
             studyUuid,
@@ -186,7 +188,7 @@ export function RunButtonContainer({
         // close the contingency list selection window
         setShowSensiParametersSelector(false);
         setComputationStopped(false);
-        dispatch(updateAnalysisStatus(RunningStatus.RUNNING));
+        setSensiStatusState(RunningStatus.RUNNING);
         // start server side security analysis
         startSensitivityAnalysis(
             studyUuid,
@@ -205,7 +207,7 @@ export function RunButtonContainer({
         setShowDynamicSimulationParametersSelector(false);
 
         setComputationStopped(false);
-        dispatch(updateAnalysisStatus(RunningStatus.RUNNING));
+        setDynamicSimulationStatusState(RunningStatus.RUNNING);
 
         // start server side dynamic simulation
         startDynamicSimulation(
@@ -224,7 +226,7 @@ export function RunButtonContainer({
 
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
-            dispatch(updateAnalysisStatus(RunningStatus.RUNNING));
+            setLoadFlowStatusState(RunningStatus.RUNNING);
             startLoadFlow(studyUuid, currentNode?.id)
                 .then(setRanLoadflow(true))
                 .catch((error) => {
@@ -241,7 +243,7 @@ export function RunButtonContainer({
             setShowSensiParametersSelector(true);
             setRanSensi(true);
         } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
-            dispatch(updateAnalysisStatus(RunningStatus.RUNNING));
+            setShortCircuitStatusState(RunningStatus.RUNNING);
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
                 .then(setRanShortCircuit(true))
                 .catch((error) => {

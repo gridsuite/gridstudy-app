@@ -285,15 +285,6 @@ export function addLoadflowNotif() {
     return { type: ADD_LOADFLOW_NOTIF };
 }
 
-export const UPDATE_ANALYSIS_STATUS = 'UPDATE_ANALYSIS_STATUS';
-
-export function updateAnalysisStatus(analysisStatus) {
-    return {
-        type: UPDATE_ANALYSIS_STATUS,
-        analysisStatus: analysisStatus,
-    };
-}
-
 export const RESET_LOADFLOW_NOTIF = 'RESET_LOADFLOW_NOTIF';
 
 export function resetLoadflowNotif() {
