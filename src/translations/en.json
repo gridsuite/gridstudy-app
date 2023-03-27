@@ -115,6 +115,8 @@
     "ActivePowerSide2": "p2 (MW)",
     "ActivePowerSide3": "p3 (MW)",
     "ReactivePower": "q (MVar)",
+    "ConstantReactivePower" : "Constant q (MVar)",
+    "ConstantActivePower": "Constant p (MW)",
     "ReactivePowerSide1": "q1 (MVar)",
     "ReactivePowerSide2": "q2 (MVar)",
     "ReactivePowerSide3": "q3 (MVar)",

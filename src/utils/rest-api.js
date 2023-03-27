@@ -2186,8 +2186,8 @@ export function createTwoWindingsTransformer(
     ratedS,
     ratedVoltage1,
     ratedVoltage2,
-    permanentCurrentLimit1,
-    permanentCurrentLimit2,
+    currentLimit1,
+    currentLimit2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -2215,6 +2215,35 @@ export function createTwoWindingsTransformer(
         console.info('Creating two windings transformer creation');
     }
 
+    console.log(
+        JSON.stringify({
+            type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION.type,
+            equipmentId: twoWindingsTransformerId,
+            equipmentName: twoWindingsTransformerName,
+            seriesResistance: seriesResistance,
+            seriesReactance: seriesReactance,
+            magnetizingConductance: magnetizingConductance,
+            magnetizingSusceptance: magnetizingSusceptance,
+            ratedS: ratedS,
+            ratedVoltage1: ratedVoltage1,
+            ratedVoltage2: ratedVoltage2,
+            currentLimits1: currentLimit1,
+            currentLimits2: currentLimit2,
+            voltageLevelId1: voltageLevelId1,
+            busOrBusbarSectionId1: busOrBusbarSectionId1,
+            voltageLevelId2: voltageLevelId2,
+            busOrBusbarSectionId2: busOrBusbarSectionId2,
+            ratioTapChanger: ratioTapChanger,
+            phaseTapChanger: phaseTapChanger,
+            connectionName1: connectionName1,
+            connectionDirection1: connectionDirection1,
+            connectionName2: connectionName2,
+            connectionDirection2: connectionDirection2,
+            connectionPosition1: connectionPosition1,
+            connectionPosition2: connectionPosition2,
+        })
+    );
+
     return backendFetchText(createTwoWindingsTransformerUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -2232,8 +2261,8 @@ export function createTwoWindingsTransformer(
             ratedS: ratedS,
             ratedVoltage1: ratedVoltage1,
             ratedVoltage2: ratedVoltage2,
-            currentLimits1: permanentCurrentLimit1,
-            currentLimits2: permanentCurrentLimit2,
+            currentLimits1: currentLimit1,
+            currentLimits2: currentLimit2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,

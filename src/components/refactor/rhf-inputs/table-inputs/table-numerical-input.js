@@ -36,7 +36,7 @@ export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
 
     const transformedValue = inputTransform(value);
 
-    const renderNumericText = (
+    return (
         <TextField
             value={transformedValue}
             onChange={handleInputChange}
@@ -59,6 +59,4 @@ export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
             {...props}
         />
     );
-
-    return <div>{renderNumericText}</div>;
 };

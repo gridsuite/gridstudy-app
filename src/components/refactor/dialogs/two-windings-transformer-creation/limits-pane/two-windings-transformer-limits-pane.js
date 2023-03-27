@@ -27,7 +27,7 @@ import React, { useMemo } from 'react';
 import DndTable from '../../../../util/dnd-table/dnd-table';
 import { useFieldArray } from 'react-hook-form';
 
-const LineLimitsPane = ({ id = LIMITS }) => {
+const TwoWindingsTransformerLimitsPane = ({ id = LIMITS }) => {
     const intl = useIntl();
 
     const columnsDefinition = useMemo(() => {
@@ -74,7 +74,7 @@ const LineLimitsPane = ({ id = LIMITS }) => {
         }));
     }, [columnsDefinition]);
 
-    function createLimitRows() {
+    function createLimitRows(numberOfRows) {
         const newRows = [];
         newRows.push(newRowData);
         return newRows;
@@ -132,4 +132,4 @@ const LineLimitsPane = ({ id = LIMITS }) => {
     );
 };
 
-export default LineLimitsPane;
+export default TwoWindingsTransformerLimitsPane;

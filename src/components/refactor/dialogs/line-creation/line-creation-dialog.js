@@ -34,7 +34,7 @@ import {
 } from 'components/refactor/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { createLine, fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import {
@@ -257,16 +257,6 @@ const LineCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const tabs = useMemo(() => {
-        return (
-            <LineCreationDialogTabs
-                tabIndex={tabIndex}
-                tabIndexesWithError={tabIndexesWithError}
-                setTabIndex={setTabIndex}
-            />
-        );
-    }, [tabIndex, tabIndexesWithError]);
-
     const sanitizeLimitNames = (temporaryLimitList) =>
         temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
             ...temporaryLimit,
@@ -356,11 +346,24 @@ const LineCreationDialog = ({
         />
     );
 
-    const headerFields = (
-        <Grid container spacing={2}>
-            {gridItem(lineIdField, 4)}
-            {gridItem(lineNameField, 4)}
-        </Grid>
+    const headerAndTabs = (
+        <Box
+            sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '15px',
+            }}
+        >
+            <Grid container spacing={2}>
+                {gridItem(lineIdField, 4)}
+                {gridItem(lineNameField, 4)}
+            </Grid>
+            <LineCreationDialogTabs
+                tabIndex={tabIndex}
+                tabIndexesWithError={tabIndexesWithError}
+                setTabIndex={setTabIndex}
+            />
+        </Box>
     );
 
     return (
@@ -373,9 +376,8 @@ const LineCreationDialog = ({
                 aria-labelledby="dialog-create-line"
                 maxWidth={'md'}
                 titleId="CreateLine"
-                subtitle={tabs}
+                subtitle={headerAndTabs}
                 searchCopy={searchCopy}
-                headerPane={headerFields}
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
