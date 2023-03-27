@@ -14,6 +14,7 @@ import { makeStyles, useTheme } from '@mui/styles';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import clsx from 'clsx';
+import { groupPostSort, groupSort } from './util/sort-functions';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -43,29 +44,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
-                comparator: function (
-                    valueA,
-                    valueB,
-                    nodeA,
-                    nodeB,
-                    isDescending
-                ) {
-                    const valueAToCompare =
-                        valueA ?? nodeA?.data?.linkedElementId;
-                    const valueBToCompare =
-                        valueB ?? nodeB?.data?.linkedElementId;
-
-                    if (
-                        nodeA?.data?.linkedElementId &&
-                        nodeA?.data?.linkedElementId ===
-                            nodeB?.data?.linkedElementId
-                    ) {
-                        return nodeA?.data?.connectableId.localeCompare(
-                            nodeB?.data?.connectableId
-                        );
-                    }
-                    return valueAToCompare.localeCompare(valueBToCompare);
-                },
             },
             {
                 headerName: intl.formatMessage({ id: 'Type' }),
@@ -74,6 +52,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
+                filter: true,
             },
 
             {
@@ -89,7 +68,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
-
                 // numeric: true,
                 // nullable: true,
                 // fractionDigits: 1,
@@ -97,7 +75,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
-
                 // numeric: true,
                 // nullable: true,
                 // fractionDigits: 1,
@@ -105,7 +82,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
-
                 // numeric: true,
                 // fractionDigits: 1,
             },
@@ -114,7 +90,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
 
     const getRowStyle = useCallback(
         (params) => {
-            console.log('params', params);
             if (params?.data?.elementId) {
                 return {
                     backgroundColor: theme.selectedRow.background,
@@ -195,6 +170,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
 
     function renderResult() {
         const rows = flattenResult(result);
+
         return (
             result &&
             shortCircuitNotif && (
@@ -204,6 +180,14 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     columnDefs={columns}
                     getLocaleText={getLocaleText}
                     getRowStyle={getRowStyle}
+                    postSortRows={(params) => {
+                        const rows = params.nodes;
+
+                        Object.assign(
+                            rows,
+                            groupPostSort(rows, 'elementId', 'linkedElementId')
+                        );
+                    }}
                 />
             )
         );
