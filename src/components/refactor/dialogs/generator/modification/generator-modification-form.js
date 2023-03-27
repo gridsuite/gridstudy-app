@@ -46,6 +46,7 @@ import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
+import { LinearProgress } from '@mui/material';
 
 const GeneratorModificationForm = ({
     studyUuid,
@@ -214,6 +215,7 @@ const GeneratorModificationForm = ({
 
     return (
         <>
+            {!generatorToModify && <LinearProgress />}
             <Grid container spacing={2}>
                 {gridItem(generatorIdField, 4)}
                 {gridItem(generatorNameField, 4)}

@@ -27,6 +27,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from '../../../../utils/rest-api';
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 import { useIntl } from 'react-intl';
+import { LinearProgress } from '@mui/material';
 
 const LoadModificationForm = ({ currentNode, studyUuid, loadInfos }) => {
     const currentNodeUuid = currentNode?.id;
@@ -117,6 +118,7 @@ const LoadModificationForm = ({ currentNode, studyUuid, loadInfos }) => {
 
     return (
         <>
+            {!loadInfos && <LinearProgress />}
             <Grid container spacing={2}>
                 {gridItem(loadIdField, 4)}
                 {gridItem(loadNameField, 4)}
