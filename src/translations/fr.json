@@ -115,6 +115,8 @@
     "ActivePowerSide2": "p2 (MW)",
     "ActivePowerSide3": "p3 (MW)",
     "ReactivePower": "q (MVar)",
+    "ConstantReactivePower" : "Q constant (MVar)",
+    "ConstantActivePower": "P constant (MW)",
     "ReactivePowerSide1": "q1 (MVar)",
     "ReactivePowerSide2": "q2 (MVar)",
     "ReactivePowerSide3": "q3 (MVar)",
@@ -808,5 +810,26 @@
 
     "YupRequired": "Ce champ doit être renseigné",
     "YupNotTypeNumber": "Ce champ n'accepte que des valeurs numériques",
-    "YupNotTypeDefault": "La valeur du champ n'est pas au bon format"
+    "YupNotTypeDefault": "La valeur du champ n'est pas au bon format",
+
+    "grid.contains": "Contient",
+    "grid.notContains": "Ne contient pas",
+    "grid.equals": "Égal à",
+    "grid.notEqual": "N'est pas égal à",
+    "grid.startsWith": "Commence par",
+    "grid.endsWith": "Finit par",
+    "grid.blank": "Vide",
+    "grid.notBlank": "N'est pas vide",
+    "grid.inRange": "Intervalle",
+    "grid.lessThan": "Moins que",
+    "grid.lessThanOrEqual": "Moins ou égal à",
+    "grid.greaterThan": "Plus que",
+    "grid.greaterThanOrEqual": "Plus ou égal à",
+    "grid.andCondition": "ET",
+    "grid.orCondition": "OU",
+    "grid.inRangeStart": "Début",
+    "grid.inRangeEnd": "Fin",
+    "grid.filterOoo": "Filtrer...",
+    "grid.noRowsToShow": "Aucune Donnée"
+    
 }
