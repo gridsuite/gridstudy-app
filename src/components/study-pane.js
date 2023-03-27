@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -82,6 +88,33 @@ export const StudyView = {
     SPREADSHEET: 'Spreadsheet',
     RESULTS: 'Results',
     LOGS: 'Logs',
+};
+
+const useMount = ({ viewId, currViewId }, deps) => {
+    const prevDeps = usePrevious(deps);
+    const prevMountRef = useRef(false);
+    const mount = useMemo(() => {
+        if (
+            prevMountRef.current && // mounted previously
+            deps.reduce(
+                (accum, elem, index) => accum || elem !== prevDeps[index],
+                false
+            ) &&
+            currViewId !== viewId // dormant tab
+        ) {
+            prevMountRef.current = false; // force unmount
+        } else if (
+            !prevMountRef.current && // not yet mounted previously
+            currViewId === viewId // active tab
+        ) {
+            prevMountRef.current = true; // force mount on-demand
+        }
+
+        // otherwise don't change
+        return prevMountRef.current;
+    }, [viewId, currViewId, prevDeps, deps]);
+
+    return mount;
 };
 
 const StudyPane = ({
@@ -336,27 +369,14 @@ const StudyPane = ({
         );
     }
 
-    // --- force unmount when result tab in dormant and a switch node occurs
-    const prevNodeUuid = usePrevious(currentNode?.id);
-    const [mountResult, setMountResult] = useState(false);
-    useEffect(() => {
-        setMountResult((prevMountResult) => {
-            if (
-                prevMountResult && // mounted previously
-                prevNodeUuid !== currentNode?.id && // new node uuid (switch node or new)
-                props.view !== StudyView.RESULTS // dormant tab
-            ) {
-                return false; // force unmount
-            }
-
-            if (!prevMountResult && props.view === StudyView.RESULTS) {
-                return true; // force mount on-demand
-            }
-
-            // otherwise don't change
-            return prevMountResult;
-        });
-    }, [props.view, prevNodeUuid, currentNode?.id]);
+    // --- force unmount when result tab in dormant and a switch study/node occurs
+    const mountResult = useMount(
+        {
+            viewId: StudyView.RESULTS,
+            currViewId: props.view,
+        },
+        [studyUuid, currentNode?.id]
+    );
 
     return (
         <>
