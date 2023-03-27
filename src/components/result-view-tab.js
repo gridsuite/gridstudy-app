@@ -128,10 +128,11 @@ export const ResultViewTab = ({
         return (
             <TabPanelLazy
                 selected={index === tabIndex && !dormant}
-                lazyChild={tabPaneFunc}
                 invalidatingDeps={[studyUuid, currentNode?.id]}
                 className={classes.tabPanel}
-            />
+            >
+                {tabPaneFunc()}
+            </TabPanelLazy>
         );
     };
 

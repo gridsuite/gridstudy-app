@@ -8,7 +8,7 @@
 import React, { useRef } from 'react';
 
 const TabPanelLazy = (props) => {
-    const { children, selected, invalidatingDeps, lazyChild, ...other } = props;
+    const { children, selected, invalidatingDeps, ...other } = props;
 
     const synthRef = useRef();
     const [next, prev] = [
@@ -37,7 +37,6 @@ const TabPanelLazy = (props) => {
     return (
         <div style={{ display: selected ? 'inherit' : 'none' }} {...other}>
             {next.hasToHaveItMounted && children}
-            {next.hasToHaveItMounted && lazyChild?.()}
         </div>
     );
 };
