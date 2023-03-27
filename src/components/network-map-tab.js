@@ -638,7 +638,8 @@ export const NetworkMapTab = ({
     const updateMapEquipmentsAndGeoData = useCallback(() => {
         const currentNodeAtReloadCalling = currentNodeRef.current;
         updateMapEquipments(currentNodeAtReloadCalling).then(() => {
-            if (currentNodeAtReloadCalling === currentNodeRef.current) {
+            console.log('currentNodeAtReloadCalling : ', currentNodeRef.current);
+            if (currentNodeAtReloadCalling === currentNodeRef.current && isNodeBuilt(currentNodeRef.current)) {
                 loadGeoData();
             }
         });
