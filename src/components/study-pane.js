@@ -90,22 +90,24 @@ export const StudyView = {
     LOGS: 'Logs',
 };
 
+// this hook is used to force unmount a tab which is in dormant state
+// when having a change on dependencies, e.g. study or node uuid
 const useMount = ({ viewId, currViewId }, deps) => {
     const prevDeps = usePrevious(deps);
     const prevMountRef = useRef(false);
     const mount = useMemo(() => {
         if (
-            prevMountRef.current && // mounted previously
             deps.reduce(
                 (accum, elem, index) => accum || elem !== prevDeps[index],
                 false
-            ) &&
+            ) && // has any change in dependencies
+            prevMountRef.current && // mounted previously
             currViewId !== viewId // dormant tab
         ) {
             prevMountRef.current = false; // force unmount
         } else if (
             !prevMountRef.current && // not yet mounted previously
-            currViewId === viewId // active tab
+            currViewId === viewId // become active tab
         ) {
             prevMountRef.current = true; // force mount on-demand
         }

@@ -69,13 +69,6 @@ export const ResultViewTab = ({
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    useEffect(() => {
-        console.log('ResultViewTab mounted');
-        return () => {
-            console.log('ResultViewTab unmounted');
-        };
-    }, []);
-
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.table}>
