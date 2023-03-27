@@ -51,7 +51,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
         <Dialog
             open={open}
             aria-labelledby="curve-selector-dialog-title"
-            maxWidth={'lg'}
+            maxWidth={'xl'}
             fullWidth={true}
         >
             <DialogTitle id="curve-selector-dialog-title">
@@ -64,7 +64,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
                 </Typography>
             </DialogTitle>
             <DialogContent style={{ overflowY: 'hidden', height: '60vh' }}>
-                <Grid container maxWidth={'lg'} sx={{ height: '100%' }}>
+                <Grid container maxWidth={'xl'} sx={{ height: '100%' }}>
                     <Grid item container xs={6} spacing={theme.spacing(1)}>
                         <CurveSelector />
                     </Grid>

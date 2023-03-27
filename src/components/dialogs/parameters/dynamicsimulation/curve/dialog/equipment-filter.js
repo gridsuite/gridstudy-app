@@ -11,6 +11,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { AgGridReact } from 'ag-grid-react';
 import { makeStyles, useTheme } from '@mui/styles';
+import CountryAutocomplete from '../country-autocomplete';
 
 const EQUIPMENT_TYPE = {
     GENERATOR: 'Generator',
@@ -96,6 +97,9 @@ const EquipmentFilter = (props) => {
     const [columnDefs, setColumnDefs] = useState([
         {
             field: 'dynamicModelName',
+            checkboxSelection: true,
+            headerCheckboxSelection: true,
+            headerCheckboxSelectionFilteredOnly: true,
             minWidth: '80',
             headerName: intl.formatMessage({
                 id: 'DynamicSimulationCurveDynamicModelHeader',
@@ -131,14 +135,14 @@ const EquipmentFilter = (props) => {
         <>
             {/* Equipment type */}
             <Grid item container sx={{ width: '100%' }}>
-                <Grid item xs={8}>
+                <Grid item xs={6}>
                     <Typography>
                         <FormattedMessage
                             id={'DynamicSimulationCurveEquipmentType'}
                         ></FormattedMessage>
                     </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={6}>
                     <Select
                         labelId={'DynamicSimulationCurveEquipementType'}
                         value={equipmentType}
@@ -156,14 +160,14 @@ const EquipmentFilter = (props) => {
             </Grid>
             {/* Post */}
             <Grid item container sx={{ width: '100%' }}>
-                <Grid item xs={8}>
+                <Grid item xs={6}>
                     <Typography>
                         <FormattedMessage
                             id={'DynamicSimulationCurvePost'}
                         ></FormattedMessage>
                     </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={6}>
                     <Select
                         labelId={'DynamicSimulationCurvePost'}
                         value={post}
@@ -181,15 +185,15 @@ const EquipmentFilter = (props) => {
             </Grid>
             {/* Country */}
             <Grid item container sx={{ width: '100%' }}>
-                <Grid item xs={8}>
+                <Grid item xs={6}>
                     <Typography>
                         <FormattedMessage
                             id={'DynamicSimulationCurveCountry'}
                         ></FormattedMessage>
                     </Typography>
                 </Grid>
-                <Grid item xs={4}>
-                    <Select
+                <Grid item xs={6}>
+                    {/*<Select
                         labelId={'DynamicSimulationCurveCountry'}
                         value={country}
                         onChange={handleCountryChange}
@@ -201,7 +205,8 @@ const EquipmentFilter = (props) => {
                                 {value}
                             </MenuItem>
                         ))}
-                    </Select>
+                    </Select>*/}
+                    <CountryAutocomplete />
                 </Grid>
             </Grid>
             <Grid item xs sx={{ width: '100%' }}>

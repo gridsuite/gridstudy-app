@@ -122,14 +122,14 @@ const ModelFilter = (props) => {
         <>
             {/* Equipment type */}
             <Grid item container sx={{ width: '100%' }}>
-                <Grid item xs={8}>
+                <Grid item xs={6}>
                     <Typography>
                         <FormattedMessage
                             id={'DynamicSimulationCurveModel'}
                         ></FormattedMessage>
                     </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={6}>
                     <Select
                         labelId={'DynamicSimulationCurveModel'}
                         value={model}
