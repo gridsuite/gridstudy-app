@@ -182,7 +182,7 @@ export const EditingCellRenderer = (props) => {
     const validateEdit = useCallback(() => {
         //stopEditing triggers the events onCellValueChanged and once every cells have been processed it triggers onRowValueChanged
         props.api?.stopEditing();
-        props.setIsValidatingData(true);
+        props.isValidatingData.current = true;
     }, [props]);
 
     const resetEdit = useCallback(() => {
@@ -197,7 +197,7 @@ export const EditingCellRenderer = (props) => {
 
     useEffect(() => {
         //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
-        if (!props.isValidatingData) {
+        if (!props.isValidatingData.current) {
             props.startEditing();
         }
     }, [props]);

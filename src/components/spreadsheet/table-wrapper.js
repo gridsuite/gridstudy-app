@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useState,
+    useRef,
+    useMemo,
+} from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from '../network/network';
@@ -119,7 +125,10 @@ const TableWrapper = (props) => {
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
     const [editingData, setEditingData] = useState();
-    const [isValidatingData, setIsValidatingData] = useState(false);
+
+    //the following variable needs to be a ref because its usage in EditingCellRenderer sets and reads
+    //the value although its cell renderers is not rerendered so storing it in a state wouldn't fill its purpose
+    const isValidatingData = useRef(false);
 
     const globalFilterRef = useRef();
 
@@ -144,7 +153,7 @@ const TableWrapper = (props) => {
         });
         resetBuffer();
         setEditingData();
-        setIsValidatingData(false);
+        isValidatingData.current = false;
     }, [priorValuesBuffer, resetBuffer]);
 
     const cleanTableState = useCallback(() => {
@@ -217,7 +226,6 @@ const TableWrapper = (props) => {
                             params: {
                                 setEditingData: setEditingData,
                                 startEditing: startEditing,
-                                setIsValidatingData: setIsValidatingData,
                                 isValidatingData: isValidatingData,
                             },
                         };
@@ -239,7 +247,7 @@ const TableWrapper = (props) => {
                 },
             });
         },
-        [editingData?.id, isValidatingData, startEditing, tabIndex]
+        [editingData?.id, startEditing, tabIndex]
     );
 
     const generateTableColumns = useCallback(
@@ -539,7 +547,7 @@ const TableWrapper = (props) => {
                     gridRef.current.api.applyTransaction(transaction);
                     setEditingData();
                     resetBuffer();
-                    setIsValidatingData(false);
+                    isValidatingData.current = false;
                 })
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
@@ -576,24 +584,29 @@ const TableWrapper = (props) => {
     //this listener is called once all cells listener have been called
     const handleRowEditing = useCallback(
         (params) => {
-            if (isValidatingData) {
+            if (isValidatingData.current) {
                 validateEdit(params);
             }
         },
-        [isValidatingData, validateEdit]
+        [validateEdit]
     );
 
     const handleEditingStopped = useCallback(
         (params) => {
             if (
-                !isValidatingData ||
+                !isValidatingData.current ||
                 Object.values(priorValuesBuffer).length === 0
             ) {
                 rollbackEdit();
             }
             params.context.dynamicValidation = {};
         },
-        [isValidatingData, priorValuesBuffer, rollbackEdit]
+        [priorValuesBuffer, rollbackEdit]
+    );
+
+    const topPinnedData = useMemo(
+        () => (editingData ? [editingData] : undefined),
+        [editingData]
     );
 
     return (
@@ -647,9 +660,9 @@ const TableWrapper = (props) => {
                     <EquipmentTable
                         gridRef={gridRef}
                         currentNode={props.currentNode}
-                        rows={rowData}
-                        columns={columnData}
-                        editingData={editingData ? [editingData] : undefined}
+                        rowData={rowData}
+                        columnData={columnData}
+                        topPinnedData={topPinnedData}
                         fetched={props.network?.isResourceFetched(
                             TABLES_DEFINITION_INDEXES.get(tabIndex).resource
                         )}
