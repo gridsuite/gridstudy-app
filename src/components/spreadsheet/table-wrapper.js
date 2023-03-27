@@ -127,7 +127,7 @@ const TableWrapper = (props) => {
     const [editingData, setEditingData] = useState();
 
     //the following variable needs to be a ref because its usage in EditingCellRenderer sets and reads
-    //the value although its cell renderers is not rerendered so storing it in a state wouldn't fill its purpose
+    //the value although it is not rerendered so storing it in a state wouldn't fill its purpose
     const isValidatingData = useRef(false);
 
     const globalFilterRef = useRef();
