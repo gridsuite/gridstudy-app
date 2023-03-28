@@ -6,101 +6,15 @@
  */
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 
 import SplitButton from './util/split-button';
 import { RunningStatus } from './util/running-status';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 
-const useStyles = makeStyles((theme) => ({
-    succeed: {
-        backgroundColor: '#0ca789',
-        color: '#fdfdfd',
-        border: '1px solid #0ca789',
-        '&:nth-child(1)': {
-            minWidth: 270,
-        },
-        '&:nth-child(2)': {
-            borderLeft: '1px solid #92b1ab',
-        },
-        '&:disabled, &:hover': {
-            backgroundColor: '#0ca789',
-            color: '#fdfdfd',
-        },
-    },
-    failed: {
-        backgroundColor: '#d85050',
-        color: '#fdfdfd',
-        border: '1px solid #d85050',
-        '&:nth-child(1)': {
-            minWidth: 270,
-        },
-        '&:nth-child(2)': {
-            borderLeft: '1px solid #c58585',
-        },
-        '&:disabled, &:hover': {
-            backgroundColor: '#d85050',
-            color: '#fdfdfd',
-        },
-    },
-    running: {
-        backgroundColor: '#242424',
-        color: '#fdfdfd',
-        border: '1px solid #808080',
-        '&:nth-child(1)': {
-            minWidth: 270,
-            color: '#fdfdfd',
-        },
-        '&:nth-child(2)': {
-            borderLeft: '1px solid #4a4a4a',
-        },
-        '&:hover': {
-            backgroundColor: '#242424',
-            color: '#fdfdfd',
-        },
-    },
-    idle: {
-        backgroundColor: '#242424',
-        color: '#fdfdfd',
-        border: '1px solid #808080',
-        '&:nth-child(1)': {
-            minWidth: 270,
-            color: '#fdfdfd',
-        },
-        '&:nth-child(2)': {
-            borderLeft: '1px solid #4a4a4a',
-        },
-        '&:hover': {
-            backgroundColor: '#242424',
-            border: '1px solid ' + theme.palette.primary,
-            color: '#fdfdfd',
-        },
-        '&:disabled': {
-            color: '#717171',
-        },
-    },
-}));
-
 const RunButton = (props) => {
-    const classes = useStyles();
-
     const [selectedIndex, setSelectedIndex] = React.useState(0);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
-    function getStyle(runningStatus) {
-        switch (runningStatus) {
-            case RunningStatus.SUCCEED:
-                return classes.succeed;
-            case RunningStatus.FAILED:
-                return classes.failed;
-            case RunningStatus.RUNNING:
-                return classes.running;
-            case RunningStatus.IDLE:
-            default:
-                return classes.idle;
-        }
-    }
 
     function getOptions(runningStatus, runnables, actionOnRunnable) {
         switch (runningStatus) {
@@ -141,9 +55,9 @@ const RunButton = (props) => {
         }
     }, [enableDeveloperMode, setSelectedIndex]);
 
-    function getRunningStatus() {
+    const getRunningStatus = useCallback(() => {
         return props.getStatus(getRunnable());
-    }
+    }, [getRunnable, props]);
 
     let buttonDisabled =
         props.disabled ||
@@ -170,10 +84,9 @@ const RunButton = (props) => {
             selectedIndex={selectedIndex}
             onSelectionChange={(index) => setSelectedIndex(index)}
             onClick={handleClick}
-            className={getStyle(getRunningStatus())}
+            runningStatus={getRunningStatus()}
             buttonDisabled={buttonDisabled}
             selectionDisabled={selectionDisabled}
-            startIcon={props.getStartIcon(getRunningStatus())}
             text={
                 props.getText
                     ? props.getText(getRunnable(), getRunningStatus())
