@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useCallback } from 'react';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -20,6 +20,11 @@ import makeStyles from '@mui/styles/makeStyles';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import StopIcon from '@mui/icons-material/Stop';
 import ListItemText from '@mui/material/ListItemText';
+import LoopIcon from '@mui/icons-material/Loop';
+import DoneIcon from '@mui/icons-material/Done';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import PlayIcon from '@mui/icons-material/PlayArrow';
+import { RunningStatus } from './running-status';
 
 const useStyles = makeStyles((theme) => ({
     expand: {
@@ -52,9 +57,89 @@ const useStyles = makeStyles((theme) => ({
     stop: {
         color: 'red',
     },
+    rotate: {
+        animation: 'spin 1000ms infinite',
+    },
+    succeed: {
+        backgroundColor: '#0ca789',
+        color: '#fdfdfd',
+        border: '1px solid #0ca789',
+        '&:nth-child(1)': {
+            minWidth: 270,
+        },
+        '&:nth-child(2)': {
+            borderLeft: '1px solid #92b1ab',
+        },
+        '&:disabled, &:hover': {
+            backgroundColor: '#0ca789',
+            color: '#fdfdfd',
+        },
+    },
+    failed: {
+        backgroundColor: '#d85050',
+        color: '#fdfdfd',
+        border: '1px solid #d85050',
+        '&:nth-child(1)': {
+            minWidth: 270,
+        },
+        '&:nth-child(2)': {
+            borderLeft: '1px solid #c58585',
+        },
+        '&:disabled, &:hover': {
+            backgroundColor: '#d85050',
+            color: '#fdfdfd',
+        },
+    },
+    running: {
+        backgroundColor: '#242424',
+        color: '#fdfdfd',
+        border: '1px solid #808080',
+        '&:nth-child(1)': {
+            minWidth: 270,
+            color: '#fdfdfd',
+        },
+        '&:nth-child(2)': {
+            borderLeft: '1px solid #4a4a4a',
+        },
+        '&:hover': {
+            backgroundColor: '#242424',
+            color: '#fdfdfd',
+        },
+    },
+    idle: {
+        backgroundColor: '#242424',
+        color: '#fdfdfd',
+        border: '1px solid #808080',
+        '&:nth-child(1)': {
+            minWidth: 270,
+            color: '#fdfdfd',
+        },
+        '&:nth-child(2)': {
+            borderLeft: '1px solid #4a4a4a',
+        },
+        '&:hover': {
+            backgroundColor: '#242424',
+            border: '1px solid ' + theme.palette.primary,
+            color: '#fdfdfd',
+        },
+        '&:disabled': {
+            color: '#717171',
+        },
+    },
 }));
-
-const SplitButton = (props) => {
+const SplitButton = ({
+    runningStatus,
+    buttonDisabled = false,
+    selectionDisabled = false,
+    computationStopped,
+    isRunning = false,
+    text,
+    options,
+    selectedIndex,
+    onClick,
+    actionOnRunnable,
+    onSelectionChange,
+}) => {
     const classes = useStyles();
 
     const [open, setOpen] = React.useState(false);
@@ -62,16 +147,16 @@ const SplitButton = (props) => {
     const anchorRef = React.useRef(null);
 
     const handleClick = () => {
-        if (props.onClick) {
-            props.onClick();
+        if (onClick) {
+            onClick();
         }
     };
 
     const handleMenuItemClick = (event, index) => {
-        if (props.isRunning) {
-            props.actionOnRunnable();
+        if (isRunning) {
+            actionOnRunnable();
         } else {
-            props.onSelectionChange(index);
+            onSelectionChange(index);
         }
         setOpen(false);
     };
@@ -87,30 +172,61 @@ const SplitButton = (props) => {
         setOpen(false);
     };
 
+    const getRunningIcon = (status) => {
+        switch (status) {
+            case RunningStatus.RUNNING:
+                return <LoopIcon className={classes.rotate} />;
+            case RunningStatus.SUCCEED:
+                return <DoneIcon />;
+            case RunningStatus.FAILED:
+                return <ErrorOutlineIcon />;
+            case RunningStatus.IDLE:
+            default:
+                return <PlayIcon />;
+        }
+    };
+
+    const getStyle = useCallback(
+        (runningStatus) => {
+            switch (runningStatus) {
+                case RunningStatus.SUCCEED:
+                    return classes.succeed;
+                case RunningStatus.FAILED:
+                    return classes.failed;
+                case RunningStatus.RUNNING:
+                    return classes.running;
+                case RunningStatus.IDLE:
+                default:
+                    return classes.idle;
+            }
+        },
+        [classes.failed, classes.idle, classes.running, classes.succeed]
+    );
+
     const breakText = (text) => {
         return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
     };
 
-    const disabledOption = props.isRunning && props.computationStopped;
+    const disabledOption = isRunning && computationStopped;
 
     return (
         <>
-            <ButtonGroup className={props.className} ref={anchorRef}>
+            <ButtonGroup className={getStyle(runningStatus)} ref={anchorRef}>
                 <Button
                     variant="outlined"
-                    startIcon={props.startIcon}
-                    className={props.className}
-                    disabled={props.buttonDisabled}
+                    startIcon={getRunningIcon(runningStatus)}
+                    className={getStyle(runningStatus)}
+                    disabled={buttonDisabled}
                     onClick={handleClick}
                 >
-                    {breakText(props.text)}
+                    {breakText(text)}
                 </Button>
                 <Button
                     variant="outlined"
                     size="small"
                     onClick={handleToggle}
-                    className={props.className}
-                    disabled={props.selectionDisabled}
+                    className={getStyle(runningStatus)}
+                    disabled={selectionDisabled}
                 >
                     <ArrowDropDownIcon
                         className={clsx(classes.expand, {
@@ -138,13 +254,11 @@ const SplitButton = (props) => {
                         <Paper className={classes.listOptions}>
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu">
-                                    {props.options.map((option, index) => (
+                                    {options.map((option, index) => (
                                         <MenuItem
                                             disabled={disabledOption}
                                             key={option}
-                                            selected={
-                                                index === props.selectedIndex
-                                            }
+                                            selected={index === selectedIndex}
                                             onClick={(event) =>
                                                 handleMenuItemClick(
                                                     event,
@@ -152,7 +266,7 @@ const SplitButton = (props) => {
                                                 )
                                             }
                                         >
-                                            {props.isRunning && (
+                                            {isRunning && (
                                                 <ListItemIcon>
                                                     <StopIcon
                                                         fontSize="small"
@@ -175,16 +289,9 @@ const SplitButton = (props) => {
     );
 };
 
-SplitButton.defaultProps = {
-    fullWidth: false,
-    buttonDisabled: false,
-    selectionDisabled: false,
-    isRunning: false,
-};
-
 SplitButton.propTypes = {
+    runningStatus: PropTypes.string,
     options: PropTypes.array.isRequired,
-    fullWidth: PropTypes.bool,
     selectedIndex: PropTypes.number.isRequired,
     onSelectionChange: PropTypes.func,
     onClick: PropTypes.func,
