@@ -56,7 +56,10 @@ import {
     createTwoWindingsTransformer,
     fetchVoltageLevelsIdAndTopology,
 } from 'utils/rest-api';
-import { roundToDefaultPrecision } from '../../../../utils/rounding.js';
+import {
+    microUnitToUnit,
+    unitToMicroUnit,
+} from '../../../../utils/rounding.js';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
@@ -88,6 +91,7 @@ import {
     getTwoWindingsTransformerFormData,
     getTwoWindingsTransformerValidationSchema,
 } from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
+import { addSelectedFieldToRows } from '../../../util/dnd-table/dnd-table';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -153,12 +157,6 @@ const TwoWindingsTransformerCreationDialog = ({
             : null;
     };
 
-    const addSelectedFieldToSteps = (steps) => {
-        return steps?.map((step) => {
-            return { ...step, selected: false };
-        });
-    };
-
     const getTapSideForEdit = (twt, tap) => {
         return tap?.regulatingTerminalId === twt.equipmentId
             ? tap?.regulatingTerminalVlId === twt?.voltageLevelId1
@@ -199,11 +197,11 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentName: twt.equipmentName,
                     seriesResistance: twt.seriesResistance,
                     seriesReactance: twt.seriesReactance,
-                    magnetizingConductance: roundToDefaultPrecision(
-                        twt.magnetizingConductance * 1e6
+                    magnetizingConductance: unitToMicroUnit(
+                        twt.magnetizingConductance
                     ),
-                    magnetizingSusceptance: roundToDefaultPrecision(
-                        twt.magnetizingSusceptance * 1e6
+                    magnetizingSusceptance: unitToMicroUnit(
+                        twt.magnetizingSusceptance
                     ),
                     ratedVoltage1: twt.ratedVoltage1,
                     ratedVoltage2: twt.ratedVoltage2,
@@ -255,7 +253,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToSteps(
+                    steps: addSelectedFieldToRows(
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId,
@@ -288,7 +286,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToSteps(
+                    steps: addSelectedFieldToRows(
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId,
@@ -310,12 +308,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentName: twt.name ?? '',
                     seriesResistance: twt.r,
                     seriesReactance: twt.x,
-                    magnetizingConductance: roundToDefaultPrecision(
-                        twt.g * 1e6
-                    ),
-                    magnetizingSusceptance: roundToDefaultPrecision(
-                        twt.b * 1e6
-                    ),
+                    magnetizingConductance: unitToMicroUnit(twt.g),
+                    magnetizingSusceptance: unitToMicroUnit(twt.b),
                     ratedVoltage1: twt.ratedU1,
                     ratedVoltage2: twt.ratedU2,
                     ratedS: twt.ratedS,
@@ -370,7 +364,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToSteps(
+                    steps: addSelectedFieldToRows(
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     equipmentId:
@@ -410,7 +404,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToSteps(
+                    steps: addSelectedFieldToRows(
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     voltageLevelId:
@@ -532,11 +526,11 @@ const TwoWindingsTransformerCreationDialog = ({
                     characteristics[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
             };
 
-            characteristics[MAGNETIZING_CONDUCTANCE] = roundToDefaultPrecision(
-                characteristics[MAGNETIZING_CONDUCTANCE] / 1e6
+            characteristics[MAGNETIZING_CONDUCTANCE] = microUnitToUnit(
+                characteristics[MAGNETIZING_CONDUCTANCE]
             );
-            characteristics[MAGNETIZING_SUSCEPTANCE] = roundToDefaultPrecision(
-                characteristics[MAGNETIZING_SUSCEPTANCE] / 1e6
+            characteristics[MAGNETIZING_SUSCEPTANCE] = microUnitToUnit(
+                characteristics[MAGNETIZING_SUSCEPTANCE]
             );
 
             let ratioTap = undefined;
