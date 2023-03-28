@@ -226,6 +226,8 @@ export default class MapEquipments {
     }
 
     updateLines(lines, fullReload) {
+        // lines are asked slightly after substations and are heavier (>3x) to retrieve,
+        // so we consider not being waiting anymore when we receive lines.
         this.waitingForUpdate = false;
         if (fullReload) {
             this.lines = [];
