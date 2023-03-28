@@ -15,6 +15,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     editCell: {
@@ -132,6 +133,12 @@ export const NumericCellRenderer = (props) => {
 export const EditableCellRenderer = (props) => {
     const classes = useStyles();
 
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const isRootNode = useMemo(
+        () => currentNode?.type === 'ROOT',
+        [currentNode]
+    );
+
     const handleStartEditing = useCallback(() => {
         props.setEditingData({
             ...props.data,
@@ -146,7 +153,7 @@ export const EditableCellRenderer = (props) => {
             <IconButton
                 size={'small'}
                 onClick={handleStartEditing}
-                disabled={props.context.isEditing}
+                disabled={isRootNode || props.context.isEditing}
             >
                 <EditIcon />
             </IconButton>
