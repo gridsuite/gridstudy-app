@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -95,29 +89,24 @@ export const StudyView = {
 const useMountTab = ({ tabId, currTabId }, deps) => {
     const prevDeps = usePrevious(deps);
     const prevMountRef = useRef(false);
-    const mount = useMemo(() => {
-        if (
-            deps.reduce(
-                (accum, elem, index) =>
-                    accum || (prevDeps ? elem !== prevDeps[index] : true),
-                false
-            ) && // has any change in dependencies
-            prevMountRef.current && // mounted previously
-            currTabId !== tabId // dormant tab
-        ) {
-            prevMountRef.current = false; // force unmount
-        } else if (
-            !prevMountRef.current && // not yet mounted previously
-            currTabId === tabId // become active tab
-        ) {
-            prevMountRef.current = true; // force mount on-demand
-        }
 
-        // otherwise don't change
-        return prevMountRef.current;
-    }, [tabId, currTabId, prevDeps, deps]);
+    if (
+        deps.some((elem, index) =>
+            prevDeps ? elem !== prevDeps[index] : true
+        ) && // has any change in dependencies
+        prevMountRef.current && // mounted previously
+        currTabId !== tabId // dormant tab
+    ) {
+        prevMountRef.current = false; // force unmount
+    } else if (
+        !prevMountRef.current && // not yet mounted previously
+        currTabId === tabId // become active tab
+    ) {
+        prevMountRef.current = true; // force mount on-demand
+    }
 
-    return mount;
+    // otherwise don't change
+    return prevMountRef.current;
 };
 
 const StudyPane = ({
