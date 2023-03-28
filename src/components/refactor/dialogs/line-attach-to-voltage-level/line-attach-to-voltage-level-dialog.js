@@ -33,7 +33,7 @@ import {
     getConnectivityData,
     getConnectivityWithoutPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
-import LineSplitWithVoltageLevelForm from './line-attach-to-voltage-level-form';
+import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
 import { MODIFICATION_TYPES } from 'components/util/modification-type';
 import {
     getLineToAttachOrSplitEmptyFormData,
@@ -186,8 +186,8 @@ const LineAttachToVoltageLevelDialog = ({
             connectivity2BobbsId,
             permanentCurrentLimit1,
             permanentCurrentLimit2,
-            isUpdate,
-            modificationUuid
+            temporaryCurrentLimits1,
+            temporaryCurrentLimits2
         ) => {
             return new Promise(() => {
                 const preparedLine = {
@@ -202,9 +202,11 @@ const LineAttachToVoltageLevelDialog = ({
                     shuntSusceptance2: shuntSusceptance2,
                     currentLimits1: {
                         permanentLimit: permanentCurrentLimit1,
+                        temporaryLimits: temporaryCurrentLimits1,
                     },
                     currentLimits2: {
                         permanentLimit: permanentCurrentLimit2,
+                        temporaryLimits: temporaryCurrentLimits2,
                     },
                 };
                 setAttachmentLine(preparedLine);
@@ -277,7 +279,7 @@ const LineAttachToVoltageLevelDialog = ({
                 titleId="LineAttachToVoltageLevel"
                 {...dialogProps}
             >
-                <LineSplitWithVoltageLevelForm
+                <LineAttachToVoltageLevelForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     onLineCreationDo={onLineCreationDo}
