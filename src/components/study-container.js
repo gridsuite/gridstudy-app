@@ -131,9 +131,10 @@ export function useNodeData(
             })
             .catch((err) => {
                 setErrorMessage(err.message);
+                setResult(RunningStatus.FAILED);
             })
             .finally(() => setIsPending(false));
-    }, [nodeUuid, studyUuid, fetcher, resultConversion]);
+    }, [nodeUuid, fetcher, studyUuid, resultConversion]);
 
     /* initial fetch and update */
     useEffect(() => {
