@@ -188,6 +188,8 @@
     "DynamicSimulationCurveEquipmentType": "Equipement type",
     "DynamicSimulationCurvePost": "Posts",
     "DynamicSimulationCurveCountry": "Country",
+    "DynamicSimulationCurveRegion": "Region",
+    "DynamicSimulationCurveTension": "Tension",
     "DynamicSimulationCurveEquipmentFilter": "Equipment filter",
     "DynamicSimulationCurveEquipment": "Equipments",
     "DynamicSimulationCurveModel": "Associated model",

@@ -11,7 +11,8 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { AgGridReact } from 'ag-grid-react';
 import { makeStyles, useTheme } from '@mui/styles';
-import CountryAutocomplete from '../country-autocomplete';
+import CountrySelect from '../country-select';
+import CheckmarkSelect from '../checkmark-select';
 
 const EQUIPMENT_TYPE = {
     GENERATOR: 'Generator',
@@ -19,15 +20,35 @@ const EQUIPMENT_TYPE = {
     BUS: 'Line',
 };
 
-const POST = {
-    POST: 'Postes',
-    OTHER: 'Other',
+const POSTS = {
+    ['.A.ZA 6']: '.A.ZA 6',
+    ['.ABAD 6']: '.ABAD 6',
+    ['.ABAN 7']: '.ABAN 7',
+    ['.ABRE 6']: '.ABRE 6',
+    ['.ACE 6']: '.ACE 6',
+    ['.ACHE 7']: '.ACHE 7',
 };
 
-const COUNTRY = {
-    FRANCE: 'France',
-    PAKISTAN: 'Pakistan',
+const REGIONS = {
+    ['GERMANY']: 'GERMANY',
+    ['ENGLAND']: 'ENGLAND',
+    ['PARIS']: 'PARIS',
+    ['NANTES']: 'NANTES',
+    ['LYON']: 'LYON',
+    ['SUISSE']: 'SUISSE',
 };
+
+const TENSIONS = {
+    ['20']: 20,
+    ['45']: 45,
+    ['63']: 63,
+    ['90']: 90,
+    ['150']: 150,
+    ['225']: 225,
+    ['400']: 400,
+};
+
+const TENSION_UNIT = 'kV';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -82,12 +103,12 @@ const EquipmentFilter = (props) => {
         setEquipmentType(event.target.value);
     }, []);
 
-    const [post, setPost] = useState(POST.POST);
+    const [post, setPost] = useState([]);
     const handlePostChange = useCallback((event) => {
         setPost(event.target.value);
     }, []);
 
-    const [country, setCountry] = useState(COUNTRY.FRANCE);
+    const [country, setCountry] = useState([]);
     const handleCountryChange = useCallback((event) => {
         setCountry(event.target.value);
     }, []);
@@ -168,19 +189,11 @@ const EquipmentFilter = (props) => {
                     </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <Select
-                        labelId={'DynamicSimulationCurvePost'}
-                        value={post}
-                        onChange={handlePostChange}
-                        size="small"
-                        sx={{ width: '100%' }}
-                    >
-                        {Object.entries(POST).map(([key, value]) => (
-                            <MenuItem key={key} value={value}>
-                                {value}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                    <CheckmarkSelect
+                        options={Object.keys(POSTS)}
+                        getOptionLabel={(value) => POSTS[value]}
+                        value={[Object.keys(POSTS)[0], Object.keys(POSTS)[1]]}
+                    />
                 </Grid>
             </Grid>
             {/* Country */}
@@ -193,22 +206,52 @@ const EquipmentFilter = (props) => {
                     </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    {/*<Select
-                        labelId={'DynamicSimulationCurveCountry'}
-                        value={country}
-                        onChange={handleCountryChange}
-                        size="small"
-                        sx={{ width: '100%' }}
-                    >
-                        {Object.entries(COUNTRY).map(([key, value]) => (
-                            <MenuItem key={key} value={value}>
-                                {value}
-                            </MenuItem>
-                        ))}
-                    </Select>*/}
-                    <CountryAutocomplete />
+                    <CountrySelect value={['DE', 'FR']} />
                 </Grid>
             </Grid>
+            {/* Region */}
+            <Grid item container sx={{ width: '100%' }}>
+                <Grid item xs={6}>
+                    <Typography>
+                        <FormattedMessage
+                            id={'DynamicSimulationCurveRegion'}
+                        ></FormattedMessage>
+                    </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                    <CheckmarkSelect
+                        options={Object.keys(REGIONS)}
+                        getOptionLabel={(value) => REGIONS[value]}
+                        value={[
+                            Object.keys(REGIONS)[0],
+                            Object.keys(REGIONS)[1],
+                        ]}
+                    />
+                </Grid>
+            </Grid>
+            {/* Tension */}
+            <Grid item container sx={{ width: '100%' }}>
+                <Grid item xs={6}>
+                    <Typography>
+                        <FormattedMessage
+                            id={'DynamicSimulationCurveTension'}
+                        ></FormattedMessage>
+                    </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                    <CheckmarkSelect
+                        options={Object.keys(TENSIONS)}
+                        getOptionLabel={(value) =>
+                            `${TENSIONS[value]} ${TENSION_UNIT}`
+                        }
+                        value={[
+                            Object.keys(TENSIONS)[0],
+                            Object.keys(TENSIONS)[1],
+                        ]}
+                    />
+                </Grid>
+            </Grid>
+            {/* Equipments */}
             <Grid item xs sx={{ width: '100%' }}>
                 <Typography
                     sx={{ marginBottom: theme.spacing(1) }}

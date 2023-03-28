@@ -188,6 +188,8 @@
     "DynamicSimulationCurveEquipmentType": "Type d'ouvrage",
     "DynamicSimulationCurvePost": "Postes",
     "DynamicSimulationCurveCountry": "Pays",
+    "DynamicSimulationCurveRegion": "Region",
+    "DynamicSimulationCurveTension": "Tension",
     "DynamicSimulationCurveEquipmentFilter": "Filtrer les ouvrages",
     "DynamicSimulationCurveEquipment": "Ouvrages",
     "DynamicSimulationCurveModel": "Association modèle",

@@ -8,11 +8,12 @@
 import { FormattedMessage, useIntl } from 'react-intl';
 import { makeStyles, useTheme } from '@mui/styles';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Grid, MenuItem, Select, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import clsx from 'clsx';
 import { AgGridReact } from 'ag-grid-react';
+import CheckmarkSelect from '../checkmark-select';
 
-const MODEL = {
+const MODELS = {
     LoadAlphaBeta: 'Load Alpha Beta',
     GeneratorSynchronousThreeWindingsProportionalRegulations:
         'Generator Synchronous Three Windings Proportional Regulations',
@@ -77,7 +78,7 @@ const ModelFilter = (props) => {
     const theme = useTheme();
     const gridRef = useRef();
 
-    const [model, setModel] = useState(MODEL.LoadAlphaBeta);
+    const [model, setModel] = useState([]);
     const handleModelChange = useCallback((event) => {
         setModel(event.target.value);
     }, []);
@@ -130,19 +131,11 @@ const ModelFilter = (props) => {
                     </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <Select
-                        labelId={'DynamicSimulationCurveModel'}
-                        value={model}
-                        onChange={handleModelChange}
-                        size="small"
-                        sx={{ width: '100%' }}
-                    >
-                        {Object.entries(MODEL).map(([key, value]) => (
-                            <MenuItem key={key} value={value}>
-                                {value}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                    <CheckmarkSelect
+                        options={Object.keys(MODELS)}
+                        getOptionLabel={(value) => MODELS[value]}
+                        value={[...Object.keys(MODELS)]}
+                    />
                 </Grid>
             </Grid>
             <Grid item xs sx={{ width: '100%' }}>
