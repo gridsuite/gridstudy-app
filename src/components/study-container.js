@@ -193,7 +193,7 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
-function usePrevious(value) {
+export function usePrevious(value) {
     const ref = useRef();
     useEffect(() => {
         ref.current = value;

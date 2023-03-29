@@ -22,6 +22,7 @@ import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
+import { usePrevious } from './study-container';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -43,6 +44,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const useContextChanged = (deps) => {
+    const prevDeps = usePrevious(deps);
+    return deps.some((elem, index) =>
+        prevDeps ? elem !== prevDeps[index] : true
+    );
+};
+
 /**
  * control results views
  * @param studyUuid : string uuid of study
@@ -60,6 +68,7 @@ export const ResultViewTab = ({
     network,
     openVoltageLevelDiagram,
     disabled,
+    visible: parentVisible,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -68,6 +77,8 @@ export const ResultViewTab = ({
     const intl = useIntl();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
+    const contextChanged = useContextChanged([studyUuid, currentNode?.id]);
 
     function renderLoadFlowResult() {
         return (
@@ -179,31 +190,36 @@ export const ResultViewTab = ({
             {/* tab contents */}
             <TabPanelLazy
                 className={classes.tabPanel}
-                selected={tabIndex === 0 && !disabled}
+                visible={tabIndex === 0 && !disabled && parentVisible}
+                forceUnmount={contextChanged}
             >
                 {renderLoadFlowResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
-                selected={tabIndex === 1 && !disabled}
+                visible={tabIndex === 1 && !disabled && parentVisible}
+                forceUnmount={contextChanged}
             >
                 {renderSecurityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
-                selected={tabIndex === 2 && !disabled}
+                visible={tabIndex === 2 && !disabled && parentVisible}
+                forceUnmount={contextChanged}
             >
                 {renderShortCircuitAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
-                selected={tabIndex === 3 && !disabled}
+                visible={tabIndex === 3 && !disabled && parentVisible}
+                forceUnmount={contextChanged}
             >
                 {renderSensitivityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
-                selected={tabIndex === 4 && !disabled}
+                visible={tabIndex === 4 && !disabled && parentVisible}
+                forceUnmount={contextChanged}
             >
                 {renderDynamicSimulationResult()}
             </TabPanelLazy>

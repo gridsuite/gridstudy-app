@@ -368,6 +368,7 @@ const StudyPane = ({
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
+                    visible={props.view === StudyView.RESULTS}
                 />
             </div>
             <div
