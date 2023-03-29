@@ -8,18 +8,18 @@
 import React, { useEffect, useState } from 'react';
 
 const TabPanelLazy = (props) => {
-    const { children, selected, ...other } = props;
+    const { children, visible, ...other } = props;
     const [initialized, setInitialized] = useState(false);
 
     // force mount child once
     useEffect(() => {
-        if (!initialized && selected) {
+        if (!initialized && visible) {
             setInitialized(true);
         }
-    }, [selected, initialized]);
+    }, [visible, initialized]);
 
     return (
-        <div style={{ display: selected ? 'inherit' : 'none' }} {...other}>
+        <div style={{ display: visible ? 'inherit' : 'none' }} {...other}>
             {initialized && children}
         </div>
     );

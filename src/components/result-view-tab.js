@@ -181,35 +181,35 @@ export const ResultViewTab = ({
             <TabPanelLazy
                 key={`${0}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 0 && !disabled && parentVisible}
+                visible={tabIndex === 0 && !disabled && parentVisible}
             >
                 {renderLoadFlowResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 key={`${1}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 1 && !disabled && parentVisible}
+                visible={tabIndex === 1 && !disabled && parentVisible}
             >
                 {renderSecurityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 key={`${2}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 2 && !disabled && parentVisible}
+                visible={tabIndex === 2 && !disabled && parentVisible}
             >
                 {renderShortCircuitAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 key={`${3}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 3 && !disabled && parentVisible}
+                visible={tabIndex === 3 && !disabled && parentVisible}
             >
                 {renderSensitivityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 key={`${4}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 4 && !disabled && parentVisible}
+                visible={tabIndex === 4 && !disabled && parentVisible}
             >
                 {renderDynamicSimulationResult()}
             </TabPanelLazy>
