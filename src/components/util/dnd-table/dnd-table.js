@@ -25,6 +25,7 @@ import { useIntl } from 'react-intl';
 import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../../refactor/rhf-inputs/table-inputs/table-numerical-input';
+import { TableTextInput } from '../../refactor/rhf-inputs/table-inputs/table-text-input';
 import CheckboxInput from '../../refactor/rhf-inputs/booleans/checkbox-input';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../../refactor/utils/field-constants';
@@ -34,6 +35,12 @@ import { ReadOnlyInput } from '../../refactor/rhf-inputs/read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 
 export const MAX_ROWS_NUMBER = 100;
+
+export const addSelectedFieldToRows = (rows) => {
+    return rows?.map((row) => {
+        return { ...row, selected: false };
+    });
+};
 
 function MultiCheckbox({
     arrayFormName,
@@ -74,10 +81,18 @@ function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
 function EditableTableCell({ arrayFormName, rowIndex, column, ...props }) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 0.5 }}>
-            <TableNumericalInput
-                name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                {...props}
-            />
+            {column.numeric && (
+                <TableNumericalInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    {...props}
+                />
+            )}
+            {!column.numeric && (
+                <TableTextInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    {...props}
+                />
+            )}
         </TableCell>
     );
 }
@@ -91,7 +106,9 @@ const DndTable = ({
     createRows,
     handleUploadButton,
     uploadButtonMessageId,
-    disabled,
+    disabled = false,
+    withLeftButtons = true,
+    withAddRowsDialog = true,
 }) => {
     const intl = useIntl();
 
@@ -125,7 +142,12 @@ const DndTable = ({
     function handleAddRowsButton() {
         allowedToAddRows().then((isAllowed) => {
             if (isAllowed) {
-                setOpenAddRowsDialog(true);
+                if (withAddRowsDialog) {
+                    setOpenAddRowsDialog(true);
+                } else {
+                    // directly add a single row
+                    addNewRows(1);
+                }
             }
         });
     }
@@ -324,11 +346,13 @@ const DndTable = ({
                 <ErrorInput name={arrayFormName} InputField={FieldErrorAlert} />
             </Grid>
             <Grid container item>
-                <DndTableBottomLeftButtons
-                    handleUploadButton={handleUploadButton}
-                    uploadButtonMessageId={uploadButtonMessageId}
-                    disabled={disabled}
-                />
+                {withLeftButtons && (
+                    <DndTableBottomLeftButtons
+                        handleUploadButton={handleUploadButton}
+                        uploadButtonMessageId={uploadButtonMessageId}
+                        disabled={disabled}
+                    />
+                )}
                 <DndTableBottomRightButtons
                     arrayFormName={arrayFormName}
                     handleAddButton={handleAddRowsButton}
@@ -357,6 +381,8 @@ DndTable.prototype = {
     handleUploadButton: PropTypes.func.isRequired,
     uploadButtonMessageId: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
+    withLeftButtons: PropTypes.bool,
+    withAddRowsDialog: PropTypes.bool,
 };
 
 export default DndTable;
