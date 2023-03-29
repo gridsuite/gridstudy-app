@@ -43,6 +43,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const ResultTabIds = {
+    LOAD_FLOW: 'loadFlowResults',
+    SECURITY_ANALYSIS: 'securityAnalysisResults',
+    SHORT_CIRCUIT_ANALYSIS: 'ShortCircuitAnalysisResults',
+    SENSITIVITY_ANALYSIS: 'sensitivityAnalysisResults',
+    DYNAMIC_SIMULATION: 'DynamicSimulationResults',
+};
+
 /**
  * control results views
  * @param studyUuid : string uuid of study
@@ -61,7 +69,7 @@ export const ResultViewTab = ({
     openVoltageLevelDiagram,
     disabled,
 }) => {
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabId, setTabId] = useState(ResultTabIds.LOAD_FLOW);
 
     const classes = useStyles();
 
@@ -126,7 +134,7 @@ export const ResultViewTab = ({
     useEffect(() => {
         if (!enableDeveloperMode) {
             // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
-            setTabIndex(0);
+            setTabId(ResultTabIds.LOAD_FLOW);
         }
     }, [enableDeveloperMode]);
 
@@ -134,42 +142,47 @@ export const ResultViewTab = ({
         <Paper className={clsx('singlestretch-child', classes.table)}>
             <div className={classes.div}>
                 <Tabs
-                    value={tabIndex}
-                    onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
+                    value={tabId}
+                    onChange={(event, newTabId) => setTabId(newTabId)}
                 >
                     <Tab
                         label={intl.formatMessage({
-                            id: 'loadFlowResults',
+                            id: ResultTabIds.LOAD_FLOW,
                         })}
+                        value={ResultTabIds.LOAD_FLOW}
                         disabled={disabled}
                     />
                     <Tab
                         label={intl.formatMessage({
-                            id: 'securityAnalysisResults',
+                            id: ResultTabIds.SECURITY_ANALYSIS,
                         })}
+                        value={ResultTabIds.SECURITY_ANALYSIS}
                         disabled={disabled}
                     />
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'ShortCircuitAnalysisResults',
+                                id: ResultTabIds.SHORT_CIRCUIT_ANALYSIS,
                             })}
+                            value={ResultTabIds.SHORT_CIRCUIT_ANALYSIS}
                             disabled={disabled}
                         />
                     )}
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'sensitivityAnalysisResults',
+                                id: ResultTabIds.SENSITIVITY_ANALYSIS,
                             })}
+                            value={ResultTabIds.SENSITIVITY_ANALYSIS}
                             disabled={disabled}
                         />
                     )}
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'DynamicSimulationResults',
+                                id: ResultTabIds.DYNAMIC_SIMULATION,
                             })}
+                            value={ResultTabIds.DYNAMIC_SIMULATION}
                             disabled={disabled}
                         />
                     )}
@@ -178,32 +191,43 @@ export const ResultViewTab = ({
             </div>
             {/* tab contents */}
             <TabPanelLazy
+                key={`${ResultTabIds.LOAD_FLOW}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 0 && !disabled}
+                selected={tabId === ResultTabIds.LOAD_FLOW && !disabled}
             >
                 {renderLoadFlowResult()}
             </TabPanelLazy>
             <TabPanelLazy
+                key={`${ResultTabIds.SECURITY_ANALYSIS}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 1 && !disabled}
+                selected={tabId === ResultTabIds.SECURITY_ANALYSIS && !disabled}
             >
                 {renderSecurityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
+                key={`${ResultTabIds.SHORT_CIRCUIT_ANALYSIS}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 2 && !disabled}
+                selected={
+                    tabId === ResultTabIds.SHORT_CIRCUIT_ANALYSIS && !disabled
+                }
             >
                 {renderShortCircuitAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
+                key={`${ResultTabIds.SENSITIVITY_ANALYSIS}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 3 && !disabled}
+                selected={
+                    tabId === ResultTabIds.SENSITIVITY_ANALYSIS && !disabled
+                }
             >
                 {renderSensitivityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
+                key={`${ResultTabIds.DYNAMIC_SIMULATION}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 4 && !disabled}
+                selected={
+                    tabId === ResultTabIds.DYNAMIC_SIMULATION && !disabled
+                }
             >
                 {renderDynamicSimulationResult()}
             </TabPanelLazy>
