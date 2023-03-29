@@ -16,7 +16,8 @@ import {
     TARGET_DEADBAND,
     TARGET_V,
 } from 'components/refactor/utils/field-constants';
-import { useWatch } from 'react-hook-form';
+import { useEffect } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { gridItem, VoltageAdornment } from '../../../../../dialogs/dialogUtils';
 import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
@@ -37,6 +38,8 @@ const RatioTapChangerPane = ({
     currentNodeUuid,
     voltageLevelOptions = [],
 }) => {
+    const { trigger } = useFormContext();
+
     const ratioTapChangerEnabledWatcher = useWatch({
         name: `${id}.${ENABLED}`,
     });
@@ -47,13 +50,22 @@ const RatioTapChangerPane = ({
 
     // we use this to force rerender when regulation mode change,
     // and then update the "optional" in label of target voltage field
-    useWatch({
+    const regulationModeWatch = useWatch({
         name: `${id}.${REGULATION_MODE}`,
     });
 
     const regulationTypeWatch = useWatch({
         name: `${id}.${REGULATION_TYPE}`,
     });
+
+    // we want to update the validation of these fields when they become optionals to remove the red alert
+    useEffect(() => {
+        if (regulationModeWatch === RATIO_REGULATION_MODES.FIXED_RATIO.id) {
+            trigger(`${id}.${REGULATION_TYPE}`);
+            trigger(`${id}.${REGULATION_SIDE}`);
+            trigger(`${id}.${TARGET_V}`);
+        }
+    }, [regulationModeWatch]);
 
     const ratioTapLoadTapChangingCapabilitiesField = (
         <SwitchInput
@@ -87,7 +99,6 @@ const RatioTapChangerPane = ({
                 !ratioTapLoadTapChangingCapabilitiesWatcher
             }
             size={'small'}
-            disableClearable
         />
     );
 
@@ -101,7 +112,6 @@ const RatioTapChangerPane = ({
                 !ratioTapLoadTapChangingCapabilitiesWatcher
             }
             size={'small'}
-            disableClearable
         />
     );
 
