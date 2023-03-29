@@ -1254,7 +1254,7 @@ export function fetchDynamicSimulationResultTimeSeries(
         timeSeriesNames.length > 0 &&
         '?' + getQueryParamsList(timeSeriesNames, 'timeSeriesNames');
 
-    url += paramsList && '';
+    url += paramsList ?? '';
 
     console.debug(url);
     return backendFetchJson(url);
