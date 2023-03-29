@@ -100,8 +100,8 @@ export const getPreviousBooleanValue = (isPreviousValueOn) => {
 
 export function assignValuesToForm(editData) {
     // the reactive capability table values are assigned when retrieving previous values
-
     const customEditData = {
+        [EQUIPMENT_ID]: editData?.equipmentId,
         [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
         [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
         [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
@@ -139,14 +139,19 @@ export function assignValuesToForm(editData) {
                   type: editData?.regulatingTerminalType?.value ?? null,
               }
             : null,
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]:
+            editData?.minimumReactivePower?.value ||
+            editData?.maximumReactivePower?.value
+                ? 'MINMAX'
+                : 'CURVE',
     };
 
     if (editData?.reactiveCapabilityCurvePoints?.length > 0) {
         const rcc = editData.reactiveCapabilityCurvePoints.map((point) => {
             return {
-                [P]: point.p,
-                [Q_MAX_P]: point.qmaxP,
-                [Q_MIN_P]: point.qminP,
+                [P]: point.p ?? null,
+                [Q_MAX_P]: point.qmaxP ?? null,
+                [Q_MIN_P]: point.qminP ?? null,
                 [PREVIOUS_Q_MAX_P]: point.oldQmaxP ?? point.qmaxP,
                 [PREVIOUS_Q_MIN_P]: point.oldQminP ?? point.qminP,
                 [PREVIOUS_P]: point.oldP ?? point.p,
@@ -167,27 +172,9 @@ export function assignValuesToForm(editData) {
 export const assignPreviousValuesToForm = (
     generator,
     watchEquipmentId,
-    intl
+    intl,
+    reactiveCapabilityCurvePoints
 ) => {
-    // when editing modification form, first render should not trigger this reset
-    // which would empty the form instead of displaying data of existing form
-    let reactiveCapabilityCurvePoints = [
-        getModificationRowEmptyFormData(),
-        getModificationRowEmptyFormData(),
-    ];
-    if (generator?.reactiveCapabilityCurvePoints) {
-        reactiveCapabilityCurvePoints = [];
-    }
-    generator?.reactiveCapabilityCurvePoints?.forEach((element) => {
-        reactiveCapabilityCurvePoints.push({
-            [P]: null,
-            [Q_MIN_P]: null,
-            [Q_MAX_P]: null,
-            [PREVIOUS_P]: element.p ?? null,
-            [PREVIOUS_Q_MIN_P]: element.qminP ?? null,
-            [PREVIOUS_Q_MAX_P]: element.qmaxP ?? null,
-        });
-    });
     const energySourceLabelId = getEnergySourceLabel(generator?.energySource);
     const previousEnergySourceLabel = energySourceLabelId
         ? intl.formatMessage({
@@ -217,12 +204,24 @@ export const assignPreviousValuesToForm = (
     return {
         [EQUIPMENT_ID]: watchEquipmentId,
         [REACTIVE_CAPABILITY_CURVE_TABLE]: reactiveCapabilityCurvePoints,
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-            generator?.minMaxReactiveLimits != null ? 'MINMAX' : 'CURVE',
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]: generator?.minMaxReactiveLimits
+            ? 'MINMAX'
+            : 'CURVE',
         [VOLTAGE_REGULATION]: generator?.voltageRegulatorOn
             ? generator?.voltageRegulatorOn
             : null,
-        [FREQUENCY_REGULATION]: generator?.activePowerControlOn,
+        [FREQUENCY_REGULATION]: generator?.activePowerControlOn ?? null,
+        [VOLTAGE_LEVEL]: generator?.regulatingTerminalVlId
+            ? {
+                  id: generator?.regulatingTerminalVlId,
+              }
+            : null,
+        [EQUIPMENT]: generator?.regulatingTerminalConnectableId
+            ? {
+                  id: generator?.regulatingTerminalConnectableId ?? null,
+                  type: generator?.regulatingTerminalConnectableType ?? null,
+              }
+            : null,
         [PREVIOUS_VOLTAGE_LEVEL]: generator?.regulatingTerminalVlId ?? null,
         [PREVIOUS_EQUIPMENT]: previousEquipment,
         [PREVIOUS_EQUIPMENT_NAME]: generator?.name,
@@ -242,11 +241,11 @@ export const assignPreviousValuesToForm = (
         [PREVIOUS_MARGINAL_COST]: generator?.marginalCost,
         [PREVIOUS_PLANNED_OUTAGE_RATE]: generator?.plannedOutageRate,
         [PREVIOUS_FORCED_OUTAGE_RATE]: generator?.forcedOutageRate,
-        [PREVIOUS_ACTIVE_POWER_SET_POINT]: generator.targetP,
+        [PREVIOUS_ACTIVE_POWER_SET_POINT]: generator?.targetP,
         [PREVIOUS_VOLTAGE_REGULATION]: getPreviousBooleanValue(
             generator?.voltageRegulatorOn
         ),
-        [PREVIOUS_REACTIVE_POWER_SET_POINT]: generator.targetQ,
+        [PREVIOUS_REACTIVE_POWER_SET_POINT]: generator?.targetQ,
         [PREVIOUS_VOLTAGE_SET_POINT]: generator?.targetV,
         [PREVIOUS_VOLTAGE_REGULATION_TYPE]: previousVoltageRegulationType,
         [PREVIOUS_FREQUENCY_REGULATION]: previousFrequencyRegulationState,

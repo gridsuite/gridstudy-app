@@ -33,6 +33,7 @@ import {
     PREVIOUS_FREQUENCY_REGULATION,
     PREVIOUS_VOLTAGE_LEVEL,
     PREVIOUS_VOLTAGE_REGULATION,
+    PREVIOUS_VOLTAGE_REGULATION_TYPE,
     PREVIOUS_VOLTAGE_SET_POINT,
 } from '../modification/generator-modification-utils';
 
@@ -63,8 +64,6 @@ const getVoltageRegulationEmptyFormData = (voltageRegulationType) => ({
     [VOLTAGE_SET_POINT]: null,
     [Q_PERCENT]: null,
     [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
-    [VOLTAGE_LEVEL]: null,
-    [EQUIPMENT]: null,
     ...getRegulatingTerminalEmptyFormData(),
 });
 
@@ -103,19 +102,20 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
             [
                 VOLTAGE_REGULATION,
                 VOLTAGE_REGULATION_TYPE,
+                PREVIOUS_VOLTAGE_REGULATION_TYPE,
                 PREVIOUS_VOLTAGE_LEVEL,
             ],
             {
                 is: (
                     voltageRegulation,
                     voltageRegulationType,
+                    previousVoltageRegulationType,
                     oldVoltageLevel
                 ) =>
                     (voltageRegulation == null || voltageRegulation) &&
                     voltageRegulationType === REGULATION_TYPES.DISTANT.id &&
                     oldVoltageLevel == null,
                 then: (schema) => schema.required(),
-                otherwise: (schema) => schema.notRequired(),
             }
         ),
     [EQUIPMENT]: yup

@@ -9,6 +9,7 @@ import SelectInput from '../../../rhf-inputs/select-input';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import {
     Q_PERCENT,
+    VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
@@ -50,7 +51,7 @@ const VoltageRegulation = ({
 
     const isDistantRegulation =
         voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
-        (voltageRegulationType === null && isPreviousRegulationDistant());
+        (voltageRegulationType == null && isPreviousRegulationDistant());
 
     const voltageRegulationTypeField = (
         <SelectInput

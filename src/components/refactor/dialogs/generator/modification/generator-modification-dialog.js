@@ -26,8 +26,11 @@ import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
+    P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
+    Q_MAX_P,
+    Q_MIN_P,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
@@ -143,25 +146,10 @@ const GeneratorModificationDialog = ({
     const { reset, getValues, clearErrors } = methods;
 
     //this method empties the form, and let us pass custom data that we want to set
-    const clear = useCallback(
-        (customData = {}, keepValues = false) => {
-            if (editData) {
-                customData = {
-                    ...customData,
-                    ...assignValuesToForm(editData),
-                };
-            }
-            reset(
-                { ...emptyFormData, ...customData },
-                { keepDefaultValues: keepValues }
-            );
-        },
-        [editData, emptyFormData, reset]
-    );
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset, emptyFormData]);
 
-    const resetAllFields = useCallback(() => {
-        reset({ ...emptyFormData });
-    }, [emptyFormData, reset]);
 
     //this useCallback fetches previous equipment properties values, resets form values
     //then create empty reactive limits table depending on fetched equipment data
@@ -178,28 +166,74 @@ const GeneratorModificationDialog = ({
                 )
                     .then((value) => {
                         if (value) {
-                            clear({
-                                ...assignPreviousValuesToForm(
+                            if (
+                                editData &&
+                                equipmentId === editData.equipmentId
+                            ) {
+                                const generator = assignPreviousValuesToForm(
                                     value,
                                     equipmentId,
-                                    intl
-                                ),
-                            });
+                                    intl,
+                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE)
+                                );
+                                reset(generator, { keepDirtyValues: true });
+                            } else {
+                                const generatorWithReactiveCapabilityCurve =
+                                    value?.reactiveCapabilityCurvePoints
+                                        ?.length > 0;
+                                const reactiveCapabilityCurvePoints =
+                                    generatorWithReactiveCapabilityCurve
+                                        ? value?.reactiveCapabilityCurvePoints?.map(
+                                              (element) => {
+                                                  return {
+                                                      [P]: null,
+                                                      [Q_MIN_P]: null,
+                                                      [Q_MAX_P]: null,
+                                                      [PREVIOUS_P]:
+                                                          element.p ?? null,
+                                                      [PREVIOUS_Q_MIN_P]:
+                                                          element.qminP ?? null,
+                                                      [PREVIOUS_Q_MAX_P]:
+                                                          element.qmaxP ?? null,
+                                                  };
+                                              }
+                                          )
+                                        : [{}, {}];
+                                const generator = assignPreviousValuesToForm(
+                                    value,
+                                    equipmentId,
+                                    intl,
+                                    reactiveCapabilityCurvePoints
+                                );
+                                reset({ ...emptyFormData, ...generator });
+                            }
                         }
                     })
-                    .catch(() => resetAllFields());
+                    .catch(() => clear());
             } else {
-                resetAllFields();
+                clear();
             }
         },
-        [clearErrors, studyUuid, currentNodeUuid, clear, intl, resetAllFields]
+        [
+            clearErrors,
+            studyUuid,
+            currentNodeUuid,
+            editData,
+            intl,
+            getValues,
+            reset,
+            emptyFormData,
+            clear,
+        ]
     );
 
     useEffect(() => {
         if (editData) {
-            onEquipmentIdChange(editData.equipmentId);
+            reset({
+                ...assignValuesToForm(editData),
+            });
         }
-    }, [editData, onEquipmentIdChange]);
+    }, [editData, reset]);
 
     const calculateCurvePointsToStore = useCallback(() => {
         const reactiveCapabilityCurve = getValues(

@@ -19,16 +19,21 @@ import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/refactor/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
+import { PREVIOUS_FREQUENCY_REGULATION } from '../modification/generator-modification-utils';
 
-const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
+const FrequencyRegulation = ({ isGeneratorModification }) => {
     const watchFrequencyRegulation = useWatch({
         name: FREQUENCY_REGULATION,
     });
 
+    const watchPreviousFrequencyRegulation = useWatch({
+        name: PREVIOUS_FREQUENCY_REGULATION,
+    });
+
     const isFrequencyRegulationOn =
         watchFrequencyRegulation === true ||
-        (watchFrequencyRegulation === null &&
-            previousValues?.activePowerControlOn === true);
+        (watchFrequencyRegulation == null &&
+            watchPreviousFrequencyRegulation?.props?.id === 'On');
 
     const frequencyRegulationField = isGeneratorModification ? (
         /** wrappe with box to avoid warning */
