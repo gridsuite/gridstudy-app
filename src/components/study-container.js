@@ -41,6 +41,7 @@ import {
     setCurrentTreeNode,
     setDeletedEquipments,
     setUpdatedSubstationsIds,
+    isNetworkEquipmentsFetched,
 } from '../redux/actions';
 import Network from './network/network';
 import WaitingLoader from './util/waiting-loader';
@@ -131,9 +132,10 @@ export function useNodeData(
             })
             .catch((err) => {
                 setErrorMessage(err.message);
+                setResult(RunningStatus.FAILED);
             })
             .finally(() => setIsPending(false));
-    }, [nodeUuid, studyUuid, fetcher, resultConversion]);
+    }, [nodeUuid, fetcher, studyUuid, resultConversion]);
 
     /* initial fetch and update */
     useEffect(() => {
@@ -621,7 +623,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 // Network creation event is dispatched directly in the network constructor
                 new Network(
                     studyUuid,
-                    currentNode?.id,
+                    currentNodeRef, // we use currentNodeRef instead of currentNode to check if the node has changed while we fetch data
                     displayNetworkLoadingFailMessage,
                     dispatch,
                     {
@@ -631,12 +633,13 @@ export function StudyContainer({ view, onChangeTab }) {
             } else {
                 const network = new Network(
                     studyUuid,
-                    currentNode?.id,
+                    currentNodeRef,
                     displayNetworkLoadingFailMessage,
                     dispatch
                 );
                 // For initial network loading, no need to initialize lines and substations at first,
                 // lazy loading will do the job (no glitches to avoid)
+                dispatch(isNetworkEquipmentsFetched(true));
                 dispatch(networkCreated(network));
             }
         },
