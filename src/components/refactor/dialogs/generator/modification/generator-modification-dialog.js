@@ -150,6 +150,46 @@ const GeneratorModificationDialog = ({
         reset(emptyFormData);
     }, [reset, emptyFormData]);
 
+    const assignValuesToFormAndKeepEditData = useCallback(
+        (value, equipmentId, intl, getValues, reset) => {
+            const generator = assignPreviousValuesToForm(
+                value,
+                equipmentId,
+                intl,
+                getValues(REACTIVE_CAPABILITY_CURVE_TABLE)
+            );
+            reset(generator, { keepDirtyValues: true });
+        },
+        []
+    );
+
+    const assignValuesToFormWithNoEditData = useCallback(
+        (value, equipmentId, intl, reset, emptyFormData) => {
+            const generatorWithReactiveCapabilityCurve =
+                value?.reactiveCapabilityCurvePoints?.length > 0;
+            const reactiveCapabilityCurvePoints =
+                generatorWithReactiveCapabilityCurve
+                    ? value?.reactiveCapabilityCurvePoints?.map((element) => {
+                          return {
+                              [P]: null,
+                              [Q_MIN_P]: null,
+                              [Q_MAX_P]: null,
+                              [PREVIOUS_P]: element.p ?? null,
+                              [PREVIOUS_Q_MIN_P]: element.qminP ?? null,
+                              [PREVIOUS_Q_MAX_P]: element.qmaxP ?? null,
+                          };
+                      })
+                    : [{}, {}];
+            const generator = assignPreviousValuesToForm(
+                value,
+                equipmentId,
+                intl,
+                reactiveCapabilityCurvePoints
+            );
+            reset({ ...emptyFormData, ...generator });
+        },
+        []
+    );
 
     //this useCallback fetches previous equipment properties values, resets form values
     //then create empty reactive limits table depending on fetched equipment data
@@ -170,42 +210,21 @@ const GeneratorModificationDialog = ({
                                 editData &&
                                 equipmentId === editData.equipmentId
                             ) {
-                                const generator = assignPreviousValuesToForm(
+                                assignValuesToFormAndKeepEditData(
                                     value,
                                     equipmentId,
                                     intl,
-                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE)
+                                    getValues,
+                                    reset
                                 );
-                                reset(generator, { keepDirtyValues: true });
                             } else {
-                                const generatorWithReactiveCapabilityCurve =
-                                    value?.reactiveCapabilityCurvePoints
-                                        ?.length > 0;
-                                const reactiveCapabilityCurvePoints =
-                                    generatorWithReactiveCapabilityCurve
-                                        ? value?.reactiveCapabilityCurvePoints?.map(
-                                              (element) => {
-                                                  return {
-                                                      [P]: null,
-                                                      [Q_MIN_P]: null,
-                                                      [Q_MAX_P]: null,
-                                                      [PREVIOUS_P]:
-                                                          element.p ?? null,
-                                                      [PREVIOUS_Q_MIN_P]:
-                                                          element.qminP ?? null,
-                                                      [PREVIOUS_Q_MAX_P]:
-                                                          element.qmaxP ?? null,
-                                                  };
-                                              }
-                                          )
-                                        : [{}, {}];
-                                const generator = assignPreviousValuesToForm(
+                                assignValuesToFormWithNoEditData(
                                     value,
                                     equipmentId,
                                     intl,
-                                    reactiveCapabilityCurvePoints
+                                    reset,
+                                    emptyFormData
                                 );
-                                reset({ ...emptyFormData, ...generator });
                             }
                         }
                     })
@@ -219,9 +238,11 @@ const GeneratorModificationDialog = ({
             studyUuid,
             currentNodeUuid,
             editData,
+            assignValuesToFormAndKeepEditData,
             intl,
             getValues,
             reset,
+            assignValuesToFormWithNoEditData,
             emptyFormData,
             clear,
         ]

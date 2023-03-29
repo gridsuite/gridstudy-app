@@ -9,7 +9,6 @@ import SelectInput from '../../../rhf-inputs/select-input';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import {
     Q_PERCENT,
-    VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';

@@ -36,7 +36,6 @@ import {
     getEnergySourceLabel,
     REGULATION_TYPES,
 } from '../../../../network/constants';
-import { getModificationRowEmptyFormData } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 export const PREVIOUS_EQUIPMENT_NAME =
     getPreviousValueFieldName(EQUIPMENT_NAME);

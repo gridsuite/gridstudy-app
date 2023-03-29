@@ -125,21 +125,9 @@ const LoadModificationDialog = ({
         [editData, studyUuid, currentNodeUuid, snackError]
     );
 
-    const clear = useCallback(
-        (customData = {}, keepValues = false) => {
-            if (editData) {
-                customData = {
-                    ...customData,
-                    ...assignEditDataValuesToForm(editData),
-                };
-            }
-            reset(
-                { ...emptyFormData, ...customData },
-                { keepDefaultValues: keepValues }
-            );
-        },
-        [editData, emptyFormData, reset]
-    );
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset, emptyFormData]);
 
     const onEquipmentIdChange = useCallback(
         (loadId) => {
@@ -152,23 +140,47 @@ const LoadModificationDialog = ({
                     true
                 ).then((value) => {
                     if (value) {
-                        clear({
-                            ...assignFetchedValuesToFrom(value, loadId, intl),
-                        });
+                        if (editData && editData.equipmentId === loadId) {
+                            reset(
+                                assignFetchedValuesToFrom(value, loadId, intl),
+                                {
+                                    keepDirtyValues: true,
+                                }
+                            );
+                        } else {
+                            reset({
+                                ...emptyFormData,
+                                ...assignFetchedValuesToFrom(
+                                    value,
+                                    loadId,
+                                    intl
+                                ),
+                            });
+                        }
                     }
                 });
             } else {
-                reset({ ...emptyFormData });
+                clear();
             }
         },
-        [clear, currentNodeUuid, emptyFormData, intl, reset, studyUuid]
+        [
+            clear,
+            currentNodeUuid,
+            editData,
+            emptyFormData,
+            intl,
+            reset,
+            studyUuid,
+        ]
     );
 
     useEffect(() => {
         if (editData) {
-            onEquipmentIdChange(editData.equipmentId);
+            reset({
+                ...assignEditDataValuesToForm(editData),
+            });
         }
-    }, [onEquipmentIdChange, editData]);
+    }, [editData, reset]);
 
     return (
         <FormProvider
