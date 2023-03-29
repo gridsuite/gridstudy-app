@@ -31,8 +31,9 @@ import {
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
+import { LinearProgress } from '@mui/material';
 
-const LoadModificationForm = ({ currentNode, studyUuid }) => {
+const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [loadInfos, setLoadInfos] = useState(null);
@@ -64,13 +65,14 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
                 true
             ).then((value) => {
                 if (value) {
+                    setIsDataFetched(true);
                     setLoadInfos(value);
                 }
             });
         } else {
             setLoadInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, loadId]);
+    }, [studyUuid, currentNodeUuid, loadId, setIsDataFetched]);
 
     const getObjectId = useCallback((object) => {
         if (typeof object === 'string') {
@@ -143,6 +145,7 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
 
     return (
         <>
+            {!loadInfos && <LinearProgress />}
             <Grid container spacing={2}>
                 {gridItem(loadIdField, 4)}
                 {gridItem(loadNameField, 4)}

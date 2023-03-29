@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
 export const ModificationListItem = ({
     item: modif,
     onEdit,
+    setModificationType,
     checked,
     index,
     handleToggle,
@@ -191,7 +192,10 @@ export const ModificationListItem = ({
                             !isDragging &&
                             isEditableModification(modif) && (
                                 <IconButton
-                                    onClick={() => onEdit(modif.uuid)}
+                                    onClick={() => {
+                                        setModificationType(modif?.type);
+                                        onEdit(modif.uuid);
+                                    }}
                                     size={'small'}
                                     className={classes.iconEdit}
                                 >

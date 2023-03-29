@@ -175,6 +175,7 @@ const NetworkModificationNodeEditor = () => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
+    const [modificationType, setModificationType] = useState();
 
     const cleanClipboard = () => {
         if (copiedModifications.length <= 0) return;
@@ -379,8 +380,11 @@ const NetworkModificationNodeEditor = () => {
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
     useEffect(() => {
-        setEditDialogOpen(editData?.type);
-    }, [editData]);
+        if (modificationType) {
+            setEditDialogOpen(modificationType);
+            setModificationType(null);
+        }
+    }, [modificationType]);
 
     useEffect(() => {
         // first time with currentNode initialized then fetch modifications
@@ -581,7 +585,7 @@ const NetworkModificationNodeEditor = () => {
         return dataTemp;
     }
 
-    const doEditModification = (modificationUuid) => {
+    const doEditModification = (modificationUuid, modificationType) => {
         const modification = fetchNetworkModification(modificationUuid);
         modification
             .then((res) => {
@@ -602,7 +606,7 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const renderDialog = () => {
-        return dialogs[editDialogOpen].dialog();
+        return dialogs[editDialogOpen]?.dialog();
     };
 
     const commit = useCallback(
@@ -674,6 +678,9 @@ const NetworkModificationNodeEditor = () => {
                                     <ModificationListItem
                                         key={props.item.uuid}
                                         onEdit={doEditModification}
+                                        setModificationType={
+                                            setModificationType
+                                        }
                                         isDragging={isDragging}
                                         network={network}
                                         isOneNodeBuilding={isAnyNodeBuilding}

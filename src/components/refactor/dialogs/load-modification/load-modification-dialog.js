@@ -15,11 +15,12 @@ import {
     REACTIVE_POWER,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { modifyLoad } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import yup from '../../utils/yup-config';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 import ModificationDialog from '../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 
@@ -52,6 +53,7 @@ const LoadModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [isDataFetched, setIsDataFetched] = useState(false);
 
     const emptyFormData = useMemo(
         () => ({
@@ -119,6 +121,8 @@ const LoadModificationDialog = ({
         reset(emptyFormData);
     }, [reset, emptyFormData]);
 
+    const open = useOpenShortWaitFetching(editData, isDataFetched, 200);
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -129,10 +133,13 @@ const LoadModificationDialog = ({
                 maxWidth={'md'}
                 titleId="ModifyLoad"
                 {...dialogProps}
+                open={open}
+                keepMounted={true}
             >
                 <LoadModificationForm
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    setIsDataFetched={setIsDataFetched}
                 />
             </ModificationDialog>
         </FormProvider>
