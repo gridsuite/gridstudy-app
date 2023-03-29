@@ -36,6 +36,7 @@ import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
+import { BUILD_STATUS } from "./network/constants";
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -278,7 +279,7 @@ export const NetworkModificationTreePane = ({
                     createTreeNode(studyUuid, element.id, insertMode, {
                         name: response,
                         type: type,
-                        buildStatus: 'NOT_BUILT',
+                        buildStatus: BUILD_STATUS.NOT_BUILT,
                     }).catch((error) => {
                         snackError({
                             messageTxt: error.message,

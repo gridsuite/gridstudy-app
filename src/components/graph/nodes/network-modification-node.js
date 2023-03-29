@@ -15,6 +15,7 @@ import { OverflowableText } from '@gridsuite/commons-ui';
 import { CopyType } from '../../network-modification-tree-pane';
 import { getLocalStorageTheme } from '../../../redux/local-storage';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
+import { BUILD_STATUS } from "../../network/constants";
 
 const BUILT_NODE_BANNER_COLOR = '#74a358';
 const BUILT_WITH_WARNING_NODE_BANNER_COLOR = '#FFA500';
@@ -128,11 +129,11 @@ const NetworkModificationNode = (props) => {
 
     function getClassForBanner(buildStatus) {
         switch (buildStatus) {
-            case 'BUILT':
+            case BUILD_STATUS.BUILT:
                 return classes.buildBannerOK;
-            case 'BUILT_WITH_ERROR':
+            case BUILD_STATUS.BUILT_WITH_ERROR:
                 return classes.buildBannerError;
-            case 'BUILT_WITH_WARNING':
+            case BUILD_STATUS.BUILT_WITH_WARNING:
                 return classes.buildBannerWarning;
             default:
                 return classes.buildBannerNotBuilt;

@@ -74,7 +74,7 @@ export function isNodeReadOnly(node) {
 export function isNodeBuilt(node) {
     if (!node) return false;
     if (node.type === 'ROOT') return true;
-    return node.data?.buildStatus.startsWith('BUILT');
+    return node.data?.buildStatus?.startsWith('BUILT');
 }
 
 export function isSameNode(node1, node2) {

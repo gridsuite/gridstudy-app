@@ -133,3 +133,10 @@ export const SWITCH_TYPE = [
     { id: 'BREAKER', label: 'Breaker' },
     { id: 'DISCONNECTOR', label: 'Disconnector' },
 ];
+
+export const BUILD_STATUS = {
+    NOT_BUILT: 'NOT_BUILT',
+    BUILT: 'BUILT',
+    BUILT_WITH_WARNING: 'BUILT_WITH_WARNING',
+    BUILT_WITH_ERROR: 'BUILT_WITH_ERROR',
+};

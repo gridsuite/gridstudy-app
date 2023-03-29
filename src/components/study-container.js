@@ -63,6 +63,7 @@ import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { equipments } from './network/network-equipments';
+import { BUILD_STATUS } from "./network/constants";
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -514,9 +515,9 @@ export function StudyContainer({ view, onChangeTab }) {
 
                 const firstSelectedNode =
                     getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
-                        'BUILT',
-                        'BUILT_WITH_WARNING',
-                        'BUILT_WITH_ERROR',
+                        BUILD_STATUS.BUILT,
+                        BUILD_STATUS.BUILT_WITH_WARNING,
+                        BUILD_STATUS.BUILT_WITH_ERROR,
                     ]) || getFirstNodeOfType(tree, 'ROOT');
 
                 // To get positions we must get the node from the model class
