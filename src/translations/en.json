@@ -191,6 +191,7 @@
     "DynamicSimulationCurveRegion": "Region",
     "DynamicSimulationCurveTension": "Tension",
     "DynamicSimulationCurveEquipmentFilter": "Equipment filter",
+    "DynamicSimulationCurveCurveFilter": "Curve filter",
     "DynamicSimulationCurveEquipment": "Equipments",
     "DynamicSimulationCurveModel": "Associated model",
     "DynamicSimulationCurveVariable": "Variables",

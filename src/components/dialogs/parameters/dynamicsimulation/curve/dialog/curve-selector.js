@@ -38,12 +38,20 @@ const CurveSelector = (props) => {
             <Grid
                 item
                 container
-                xs
+                xs={6}
                 direction={'column'}
                 alignItems={'flex-start'}
                 justifyContent={'flex-start'}
                 spacing={1}
             >
+                <Typography
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    variant="h6"
+                >
+                    <FormattedMessage
+                        id={'DynamicSimulationCurveCurveFilter'}
+                    ></FormattedMessage>
+                </Typography>
                 <ModelFilter />
             </Grid>
         </>

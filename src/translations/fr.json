@@ -191,6 +191,7 @@
     "DynamicSimulationCurveRegion": "Region",
     "DynamicSimulationCurveTension": "Tension",
     "DynamicSimulationCurveEquipmentFilter": "Filtrer les ouvrages",
+    "DynamicSimulationCurveCurveFilter": "Filter les courbes",
     "DynamicSimulationCurveEquipment": "Ouvrages",
     "DynamicSimulationCurveModel": "Association modèle",
     "DynamicSimulationCurveVariable": "Variables",
