@@ -668,9 +668,12 @@
     "ImportFileAlpha": "ShiftAngle",
 
     "RegulationMode": "Regulation mode",
+
     "FixedTap": "Fixed tap",
     "CurrentLimiter": "Current limiter",
     "PhaseActivePowerControl": "Active power control",
+
+    "FixedRatio": "Fixed ratio",
 
     "RegulatingValueCurrentLimiter": "Current limiter",
     "CurrentLimiterGreaterThanZero": "The current limiter value must be strictly positive",

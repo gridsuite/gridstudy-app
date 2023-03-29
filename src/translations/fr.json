@@ -669,9 +669,12 @@
     "ImportFileAlpha": "Dephasage",
 
     "RegulationMode": "Mode de réglage",
+
     "FixedTap": "Déphasage constant",
     "CurrentLimiter": "Limitation de courant",
     "PhaseActivePowerControl": "Suivi de transit",
+
+    "FixedRatio": "Rapport fixe",
 
     "RegulatingValueCurrentLimiter": "Limitation du courant",
     "CurrentLimiterGreaterThanZero": "La valeur de la limitation du courant doit être strictement positive",

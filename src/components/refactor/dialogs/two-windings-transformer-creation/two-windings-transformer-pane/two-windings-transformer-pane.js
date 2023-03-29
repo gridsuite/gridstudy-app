@@ -10,7 +10,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import {
     AmpereAdornment,
-    filledTextField,
     gridItem,
     MicroSusceptanceAdornment,
     MVAPowerAdornment,
@@ -26,8 +25,6 @@ import {
     CONNECTIVITY_2,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
     PERMANENT_LIMIT,
@@ -54,22 +51,6 @@ const TwoWindingsTransformerPane = ({
     const classes = useStyles();
 
     // CHARACTERISTICS TAP PANE
-    const twoWindingsTransformerIdField = (
-        <TextInput
-            name={`${id}.${EQUIPMENT_ID}`}
-            label="ID"
-            formProps={filledTextField}
-        />
-    );
-
-    const twoWindingsTransformerNameField = (
-        <TextInput
-            name={`${id}.${EQUIPMENT_NAME}`}
-            label="Name"
-            formProps={filledTextField}
-        />
-    );
-
     const seriesResistanceField = (
         <FloatInput
             name={`${id}.${SERIES_RESISTANCE}`}
@@ -166,10 +147,6 @@ const TwoWindingsTransformerPane = ({
 
     return (
         <>
-            <Grid container spacing={2}>
-                {gridItem(twoWindingsTransformerIdField)}
-                {gridItem(twoWindingsTransformerNameField)}
-            </Grid>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <h3 className={classes.h3}>
