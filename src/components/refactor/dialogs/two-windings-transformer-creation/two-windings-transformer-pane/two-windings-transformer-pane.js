@@ -17,7 +17,6 @@ import {
     VoltageAdornment,
 } from '../../../../dialogs/dialogUtils';
 import FloatInput from '../../../rhf-inputs/float-input';
-import TextInput from '../../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import {
     CHARACTERISTICS,

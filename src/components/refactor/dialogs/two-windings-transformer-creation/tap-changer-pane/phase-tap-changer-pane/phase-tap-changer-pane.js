@@ -11,7 +11,6 @@ import {
     ENABLED,
     FLOW_SET_POINT_REGULATING_VALUE,
     PHASE_TAP_CHANGER,
-    REGULATING,
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
@@ -29,12 +28,10 @@ import {
     REGULATION_TYPES,
     SIDE,
 } from '../../../../../network/constants';
-import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
 import FloatInput from '../../../../rhf-inputs/float-input';
 import SelectInput from '../../../../rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
-import { useCallback } from 'react';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 const PhaseTapChangerPane = ({
