@@ -60,6 +60,7 @@ export const ResultViewTab = ({
     network,
     openVoltageLevelDiagram,
     disabled,
+    visible: parentVisible,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -180,35 +181,35 @@ export const ResultViewTab = ({
             <TabPanelLazy
                 key={`${0}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 0 && !disabled}
+                selected={tabIndex === 0 && !disabled && parentVisible}
             >
                 {renderLoadFlowResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 key={`${1}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 1 && !disabled}
+                selected={tabIndex === 1 && !disabled && parentVisible}
             >
                 {renderSecurityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 key={`${2}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 2 && !disabled}
+                selected={tabIndex === 2 && !disabled && parentVisible}
             >
                 {renderShortCircuitAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 key={`${3}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 3 && !disabled}
+                selected={tabIndex === 3 && !disabled && parentVisible}
             >
                 {renderSensitivityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 key={`${4}-${currentNode?.id}`}
                 className={classes.tabPanel}
-                selected={tabIndex === 4 && !disabled}
+                selected={tabIndex === 4 && !disabled && parentVisible}
             >
                 {renderDynamicSimulationResult()}
             </TabPanelLazy>
@@ -223,4 +224,5 @@ ResultViewTab.propTypes = {
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
+    visible: PropTypes.bool,
 };
