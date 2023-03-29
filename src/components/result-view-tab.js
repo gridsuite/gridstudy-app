@@ -85,6 +85,7 @@ const useSameNode = (studyUuid, nodeUuid) => {
  * @param loadFlowInfos : object result of load flow
  * @param network : object network
  * @param openVoltageLevelDiagram : function
+ * @param visible : boolean
  * @returns {JSX.Element}
  * @constructor
  */
@@ -94,7 +95,7 @@ export const ResultViewTab = ({
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
-    dormant,
+    visible,
     disabled,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
@@ -126,11 +127,12 @@ export const ResultViewTab = ({
         );
     };
 
-    const makeTabPaneJsx = (CompFunc, needsDeveloperMode, selected) => {
+    const makeTabPaneJsx = (key, CompFunc, needsDeveloperMode, selected) => {
         return (
             (!needsDeveloperMode || enableDeveloperMode) && (
                 <TabPanelLazy
-                    selected={selected && !dormant}
+                    key={key}
+                    mounts={selected && visible}
                     canKeepMounted={sameNode}
                     className={classes.tabPanel}
                 >
@@ -171,6 +173,7 @@ export const ResultViewTab = ({
             {/* tab contents */}
             {TABS.map((entry, index) =>
                 makeTabPaneJsx(
+                    entry.id,
                     entry.CompFunc,
                     entry.needsDeveloperMode,
                     selectionableIndices[tabIndex] === index

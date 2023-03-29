@@ -8,20 +8,20 @@
 import React, { useRef } from 'react';
 
 const TabPanelLazy = (props) => {
-    const { children, selected, canKeepMounted, ...other } = props;
+    const { children, mounts, canKeepMounted, ...other } = props;
 
     const synthRef = useRef();
-    const [next, prev] = [{ selected, canKeepMounted }, synthRef.current];
+    const [next, prev] = [{}, synthRef.current];
 
-    if (canKeepMounted && !selected) {
+    if (canKeepMounted && !mounts) {
         next.hasToHaveItMounted = prev?.hasToHaveItMounted;
     } else {
-        next.hasToHaveItMounted = selected;
+        next.hasToHaveItMounted = mounts;
     }
     synthRef.current = next;
 
     return (
-        <div style={{ display: selected ? 'inherit' : 'none' }} {...other}>
+        <div style={{ display: mounts ? 'inherit' : 'none' }} {...other}>
             {next.hasToHaveItMounted && children}
         </div>
     );

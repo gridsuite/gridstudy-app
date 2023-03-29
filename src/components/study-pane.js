@@ -367,7 +367,7 @@ const StudyPane = ({
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
-                    dormant={props.view !== StudyView.RESULTS}
+                    visible={props.view === StudyView.RESULTS}
                     disabled={disabled}
                 />
             </div>
