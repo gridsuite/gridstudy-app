@@ -620,8 +620,6 @@ const TwoWindingsTransformerCreationDialog = ({
                 };
             }
 
-            console.log(currentLimits1);
-            console.log(currentLimits2);
             createTwoWindingsTransformer(
                 studyUuid,
                 currentNodeUuid,

@@ -190,14 +190,14 @@ const TwoWindingsTransformerPane = ({
                     </h3>
                 </Grid>
             </Grid>
-            <Grid container spacing={2} xs={8}>
+            <Grid container item spacing={2} xs={8}>
                 {gridItem(seriesResistanceField)}
                 {gridItem(seriesReactanceField)}
                 {gridItem(magnetizingConductanceField)}
                 {gridItem(magnetizingSusceptanceField)}
                 {gridItem(ratedSField)}
             </Grid>
-            <Grid container spacing={2} xs={8}>
+            <Grid container item spacing={2} xs={8}>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
                         <FormattedMessage id="OriginSide" />
@@ -209,7 +209,7 @@ const TwoWindingsTransformerPane = ({
                     </h4>
                 </Grid>
             </Grid>
-            <Grid container spacing={2} xs={8}>
+            <Grid container item spacing={2} xs={8}>
                 {gridItem(ratedVoltage1Field)}
                 {gridItem(ratedVoltage2Field)}
             </Grid>
