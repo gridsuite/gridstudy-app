@@ -28,9 +28,9 @@ import {
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
-    getConnectivityEmptyFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
-    getConnectivityFormValidationSchema,
+    getConnectivityWithPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
@@ -49,7 +49,7 @@ const emptyFormData = {
     [LOAD_TYPE]: null,
     [ACTIVE_POWER]: null,
     [REACTIVE_POWER]: null,
-    ...getConnectivityEmptyFormData(),
+    ...getConnectivityWithPositionEmptyFormData(),
 };
 
 const schema = yup
@@ -60,7 +60,7 @@ const schema = yup
         [LOAD_TYPE]: yup.string().nullable(),
         [ACTIVE_POWER]: yup.number().nullable().required(),
         [REACTIVE_POWER]: yup.number().nullable().required(),
-        ...getConnectivityFormValidationSchema(),
+        ...getConnectivityWithPositionValidationSchema(),
     })
     .required();
 
@@ -190,7 +190,7 @@ const LoadCreationDialog = ({
                 editData ? editData.uuid : undefined,
                 load.connectivity?.connectionDirection ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                load.connectivity?.connectionName ?? null,
+                sanitizeString(load.connectivity?.connectionName),
                 load.connectivity?.connectionPosition ?? null
             ).catch((error) => {
                 snackError({

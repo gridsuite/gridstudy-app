@@ -33,6 +33,7 @@ import {
     USE_NAME,
     SELECT_LANGUAGE,
     SELECT_COMPUTED_LANGUAGE,
+    SET_PARAMS_LOADED,
     STUDY_UPDATED,
     DISPLAY_OVERLOAD_TABLE,
     MAP_MANUAL_REFRESH,
@@ -83,6 +84,8 @@ import {
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
+    STOP_DIAGRAM_BLINK,
+    NETWORK_EQUIPMENT_FETCHED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -91,7 +94,7 @@ import {
     saveLocalStorageLanguage,
     getLocalStorageComputedLanguage,
 } from './local-storage';
-import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables';
+import { TABLES_COLUMNS_NAMES_JSON } from '../components/spreadsheet/utils/config-tables';
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
@@ -110,6 +113,7 @@ import {
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
     PARAM_DEVELOPER_MODE,
+    PARAMS_LOADED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -134,12 +138,13 @@ const paramsInitialState = {
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
+    [PARAMS_LOADED]: false,
 };
 
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
-    selectedNodeForCopy: { nodeId: null, copyType: null },
+    selectedNodeForCopy: { sourceStudyId: null, nodeId: null, copyType: null },
     network: null,
     mapEquipments: null,
     geoData: null,
@@ -172,6 +177,7 @@ const initialState = {
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
+    networkEquipmentsFetched: false, // indicate if network equipments are fetched
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -198,6 +204,10 @@ export const reducer = createReducer(initialState, {
 
     [NETWORK_CREATED]: (state, action) => {
         state.network = action.network;
+    },
+
+    [NETWORK_EQUIPMENT_FETCHED]: (state, action) => {
+        state.networkEquipmentsFetched = action.networkEquipmentsFetched;
     },
 
     [MAP_EQUIPMENTS_CREATED]: (state, action) => {
@@ -357,6 +367,10 @@ export const reducer = createReducer(initialState, {
         state.computedLanguage = action.computedLanguage;
     },
 
+    [SET_PARAMS_LOADED]: (state, action) => {
+        state[PARAMS_LOADED] = action[PARAMS_LOADED];
+    },
+
     [USE_NAME]: (state, action) => {
         state[PARAM_USE_NAME] = action[PARAM_USE_NAME];
     },
@@ -504,7 +518,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {
-        let newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
+        const newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
         action.displayedColumnsNamesParams.forEach((param) => {
             if (param) {
                 newDisplayedColumnsNames[param.index] = param.value;
@@ -679,6 +693,7 @@ export const reducer = createReducer(initialState, {
                             diagramStates[diagramToOpenIndex].svgType +
                             ')'
                     );
+                    diagramStates[diagramToOpenIndex].needsToBlink = true;
                 }
             } else {
                 // We minimize all the other OPENED SLD.
@@ -811,6 +826,13 @@ export const reducer = createReducer(initialState, {
         state.diagramStates = state.diagramStates.filter(
             (diagram) => !idsToClose.has(diagram.id)
         );
+    },
+    [STOP_DIAGRAM_BLINK]: (state) => {
+        state.diagramStates.forEach((diagram) => {
+            if (diagram.needsToBlink) {
+                diagram.needsToBlink = undefined;
+            }
+        });
     },
     [RESET_NETWORK_AREA_DIAGRAM_DEPTH]: (state) => {
         state.networkAreaDiagramDepth = 0;

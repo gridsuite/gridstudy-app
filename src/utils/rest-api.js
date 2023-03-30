@@ -1237,16 +1237,40 @@ export function fetchDynamicSimulationStatus(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationResultTimeSeries(
+export function fetchDynamicSimulationTimeSeriesMetadata(
     studyUuid,
     currentNodeUuid
 ) {
     console.info(
-        `Fetching dynamic simulation time series result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching dynamic simulation time series's metadata on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
+
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/dynamic-simulation/result/timeseries/metadata';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchDynamicSimulationResultTimeSeries(
+    studyUuid,
+    currentNodeUuid,
+    timeSeriesNames
+) {
+    console.info(
+        `Fetching dynamic simulation time series result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    let url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/dynamic-simulation/result/timeseries';
+
+    const paramsList =
+        timeSeriesNames &&
+        timeSeriesNames.length > 0 &&
+        '?' + getQueryParamsList(timeSeriesNames, 'timeSeriesNames');
+
+    url += paramsList && '';
+
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -1267,7 +1291,7 @@ export function fetchDynamicSimulationResultTimeLine(
 
 export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
     // fetch parallel different results
-    const timeseriesPromise = fetchDynamicSimulationResultTimeSeries(
+    const timeseriesMetadataPromise = fetchDynamicSimulationTimeSeriesMetadata(
         studyUuid,
         currentNodeUuid
     );
@@ -1275,8 +1299,11 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
         studyUuid,
         currentNodeUuid
     );
-    return Promise.all([timeseriesPromise, statusPromise]).then(
-        ([timeseries, status]) => ({ timeseries, status })
+    return Promise.all([timeseriesMetadataPromise, statusPromise]).then(
+        ([timeseriesMetadatas, status]) => ({
+            timeseriesMetadatas,
+            status,
+        })
     );
 }
 
@@ -1367,19 +1394,22 @@ export function updateTreeNode(studyUuid, node) {
 }
 
 export function copyTreeNode(
-    studyUuid,
+    sourceStudyId,
+    targetStudyId,
     nodeToCopyUuid,
     referenceNodeUuid,
     insertMode
 ) {
     const nodeCopyUrl =
-        getStudyUrl(studyUuid) +
+        getStudyUrl(targetStudyId) +
         '/tree/nodes?insertMode=' +
         insertMode +
         '&nodeToCopyUuid=' +
         nodeToCopyUuid +
         '&referenceNodeUuid=' +
-        referenceNodeUuid;
+        referenceNodeUuid +
+        '&sourceStudyUuid=' +
+        sourceStudyId;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
@@ -2099,6 +2129,8 @@ export function createLine(
     busOrBusbarSectionId2,
     permanentCurrentLimit1,
     permanentCurrentLimit2,
+    temporaryCurrentLimits1,
+    temporaryCurrentLimits2,
     isUpdate,
     modificationUuid,
     connectionName1,
@@ -2141,9 +2173,11 @@ export function createLine(
             busOrBusbarSectionId2: busOrBusbarSectionId2,
             currentLimits1: {
                 permanentLimit: permanentCurrentLimit1,
+                temporaryLimits: temporaryCurrentLimits1,
             },
             currentLimits2: {
                 permanentLimit: permanentCurrentLimit2,
+                temporaryLimits: temporaryCurrentLimits2,
             },
             connectionName1: connectionName1,
             connectionDirection1: connectionDirection1,

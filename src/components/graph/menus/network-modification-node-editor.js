@@ -7,20 +7,16 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    fetchNetworkModifications,
+    changeNetworkModificationOrder,
+    copyOrMoveModifications,
     deleteModifications,
     fetchNetworkModification,
-    changeNetworkModificationOrder,
-    fetchSubstations,
-    fetchLines,
-    fetchVoltageLevels,
-    copyOrMoveModifications,
+    fetchNetworkModifications,
     fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
-import LoadModificationDialog from '../../dialogs/load-modification-dialog';
+import LineAttachToVoltageLevelDialog from '../../refactor/dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
@@ -36,13 +32,12 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
+import LoadModificationDialog from '../../refactor/dialogs/load-modification/load-modification-dialog';
 import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
-import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
-import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
-import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level-dialog';
-import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
+import LineSplitWithVoltageLevelDialog from '../../refactor/dialogs/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
+import EquipmentDeletionDialog from '../../refactor/dialogs/equipment-deletion/equipment-deletion-dialog.js';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -58,12 +53,14 @@ import {
     setModificationsInProgress,
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
-import LinesAttachToSplitLinesDialog from '../../dialogs/lines-attach-to-split-lines-dialog';
-import GeneratorScalingDialog from '../../dialogs/generator-scaling-dialog';
-import LoadScalingDialog from '../../dialogs/load-scaling-dialog';
-import DeleteVoltageLevelOnLineDialog from '../../dialogs/delete-voltage-level-on-line';
-import DeleteAttachingLineDialog from '../../dialogs/delete-attaching-line-dialog';
-import GeneratorCreationDialog from '../../refactor/dialogs/generator-creation/generator-creation-dialog';
+import LoadScalingDialog from 'components/refactor/dialogs/load-scaling/load-scaling-dialog';
+import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
+import GeneratorCreationDialog from 'components/refactor/dialogs/generator-creation/generator-creation-dialog';
+import DeleteVoltageLevelOnLineDialog from 'components/refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
+import DeleteAttachingLineDialog from 'components/refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
+import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
+import GeneratorScalingDialog from 'components/refactor/dialogs/generator-scaling/generator-scaling-dialog';
+import SubstationCreationDialog from 'components/refactor/dialogs/substation-creation/substation-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -221,17 +218,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLs(p) {
-        const voltageLevelOptionsPromise = fetchVoltageLevels(
-            studyUuid,
-            currentNode?.id
-        );
-        return {
-            ...p,
-            voltageLevelOptionsPromise: voltageLevelOptionsPromise,
-        };
-    }
-
     function withVLsIdsAndTopology(p) {
         const voltageLevelsIdsAndTopologyPromise =
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id);
@@ -239,26 +225,6 @@ const NetworkModificationNodeEditor = () => {
             ...p,
             voltageLevelsIdsAndTopologyPromise:
                 voltageLevelsIdsAndTopologyPromise,
-        };
-    }
-
-    function withLines(p) {
-        const lineOptionsPromise = fetchLines(studyUuid, currentNode?.id, []);
-        return {
-            ...p,
-            lineOptionsPromise: lineOptionsPromise,
-        };
-    }
-
-    function withSubstations(p) {
-        const substationOptionsPromise = fetchSubstations(
-            studyUuid,
-            currentNode?.id,
-            []
-        );
-        return {
-            ...p,
-            substationOptionsPromise: substationOptionsPromise,
         };
     }
 
@@ -307,40 +273,22 @@ const NetworkModificationNodeEditor = () => {
         },
         VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
-            dialog: () => adapt(VoltageLevelCreationDialog, withSubstations),
+            dialog: () => adapt(VoltageLevelCreationDialog),
             icon: <AddIcon />,
         },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
             label: 'LineSplitWithVoltageLevel',
-            dialog: () =>
-                adapt(
-                    LineSplitWithVoltageLevelDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+            dialog: () => adapt(LineSplitWithVoltageLevelDialog),
             icon: <AddIcon />,
         },
         LINE_ATTACH_TO_VOLTAGE_LEVEL: {
             label: 'LineAttachToVoltageLevel',
-            dialog: () =>
-                adapt(
-                    LineAttachToVoltageLevelDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+            dialog: () => adapt(LineAttachToVoltageLevelDialog),
             icon: <AddIcon />,
         },
         LINES_ATTACH_TO_SPLIT_LINES: {
             label: 'LinesAttachToSplitLines',
-            dialog: () =>
-                adapt(
-                    LinesAttachToSplitLinesDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
+            dialog: () => adapt(LinesAttachToSplitLinesDialog),
             icon: <AddIcon />,
         },
         GENERATOR_SCALING: {
@@ -355,12 +303,12 @@ const NetworkModificationNodeEditor = () => {
         },
         DELETE_VOLTAGE_LEVEL_ON_LINE: {
             label: 'DeleteVoltageLevelOnLine',
-            dialog: () => adapt(DeleteVoltageLevelOnLineDialog, withLines),
+            dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
             icon: <AddIcon />,
         },
         DELETE_ATTACHING_LINE: {
             label: 'DeleteAttachingLine',
-            dialog: () => adapt(DeleteAttachingLineDialog, withLines),
+            dialog: () => adapt(DeleteAttachingLineDialog),
             icon: <AddIcon />,
         },
         EQUIPMENT_DELETION: {
@@ -410,7 +358,7 @@ const NetworkModificationNodeEditor = () => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') return;
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentNode?.id)
+        fetchNetworkModifications(studyUuid, currentNode.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -428,18 +376,20 @@ const NetworkModificationNodeEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [studyUuid, currentNode.id, currentNode.type, snackError, dispatch]);
+    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
     }, [editData]);
 
     useEffect(() => {
-        // first time then fetch modifications
+        // first time with currentNode initialized then fetch modifications
+        // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
         // OR next time if currentNodeId changed then fetch modifications
         if (
-            !currentNodeIdRef.current ||
-            currentNodeIdRef.current !== currentNode.id
+            currentNode &&
+            (!currentNodeIdRef.current ||
+                currentNodeIdRef.current !== currentNode.id)
         ) {
             currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
@@ -509,7 +459,7 @@ const NetworkModificationNodeEditor = () => {
     const doDeleteModification = useCallback(() => {
         deleteModifications(
             studyUuid,
-            currentNode?.id,
+            currentNode.id,
             [...selectedItems.values()].map((item) => item.uuid)
         )
             .then()
@@ -521,26 +471,32 @@ const NetworkModificationNodeEditor = () => {
             });
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
-    const doCutModification = useCallback(() => {
-        // just memorize the list of selected modifications
-        setCopiedModifications(
-            Array.from(selectedItems).map((item) => item.uuid)
-        );
+    const selectedModificationsIds = useCallback(() => {
+        const allModificationsIds = modifications.map((m) => m.uuid);
+        // sort the selected modifications in the same order as they appear in the whole modifications list
+        return Array.from(selectedItems)
+            .sort(
+                (a, b) =>
+                    allModificationsIds.indexOf(a.uuid) -
+                    allModificationsIds.indexOf(b.uuid)
+            )
+            .map((m) => m.uuid);
+    }, [modifications, selectedItems]);
+
+    const doCutModifications = useCallback(() => {
+        setCopiedModifications(selectedModificationsIds());
         setCopyInfos({
             copyType: CopyType.MOVE,
             originNodeUuid: currentNode.id,
         });
-    }, [currentNode.id, selectedItems]);
+    }, [currentNode?.id, selectedModificationsIds]);
 
-    const doCopyModification = useCallback(() => {
-        // just memorize the list of selected modifications
-        setCopiedModifications(
-            Array.from(selectedItems).map((item) => item.uuid)
-        );
+    const doCopyModifications = useCallback(() => {
+        setCopiedModifications(selectedModificationsIds());
         setCopyInfos({ copyType: CopyType.COPY });
-    }, [selectedItems]);
+    }, [selectedModificationsIds]);
 
-    const doPasteModification = useCallback(() => {
+    const doPasteModifications = useCallback(() => {
         if (copyInfos.copyType === CopyType.MOVE) {
             copyOrMoveModifications(
                 studyUuid,
@@ -598,7 +554,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [
         copiedModifications,
-        currentNode.id,
+        currentNode?.id,
         copyInfos,
         snackError,
         snackWarning,
@@ -652,7 +608,11 @@ const NetworkModificationNodeEditor = () => {
     const commit = useCallback(
         ({ source, destination }) => {
             setIsDragging(false);
-            if (destination === null || source.index === destination.index)
+            if (
+                !currentNode?.id ||
+                destination === null ||
+                source.index === destination.index
+            )
                 return;
             const res = [...modifications];
             const [item] = res.splice(source.index, 1);
@@ -667,7 +627,7 @@ const NetworkModificationNodeEditor = () => {
             setModifications(res);
             changeNetworkModificationOrder(
                 studyUuid,
-                currentNode?.id,
+                currentNode.id,
                 item.uuid,
                 before
             ).catch((error) => {
@@ -812,15 +772,19 @@ const NetworkModificationNodeEditor = () => {
                 />
                 <div className={classes.filler} />
                 <IconButton
-                    onClick={doCutModification}
+                    onClick={doCutModifications}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={selectedItems.size === 0 || isAnyNodeBuilding}
+                    disabled={
+                        selectedItems.size === 0 ||
+                        isAnyNodeBuilding ||
+                        !currentNode
+                    }
                 >
                     <ContentCutIcon />
                 </IconButton>
                 <IconButton
-                    onClick={doCopyModification}
+                    onClick={doCopyModifications}
                     size={'small'}
                     className={classes.toolbarIcon}
                     disabled={selectedItems.size === 0 || isAnyNodeBuilding}
@@ -841,12 +805,13 @@ const NetworkModificationNodeEditor = () => {
                 >
                     <span>
                         <IconButton
-                            onClick={doPasteModification}
+                            onClick={doPasteModifications}
                             size={'small'}
                             className={classes.toolbarIcon}
                             disabled={
                                 !(copiedModifications.length > 0) ||
-                                isAnyNodeBuilding
+                                isAnyNodeBuilding ||
+                                !currentNode
                             }
                         >
                             <ContentPasteIcon />
@@ -857,7 +822,11 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doDeleteModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={!(selectedItems?.size > 0) || isAnyNodeBuilding}
+                    disabled={
+                        !(selectedItems?.size > 0) ||
+                        isAnyNodeBuilding ||
+                        !currentNode
+                    }
                 >
                     <DeleteIcon />
                 </IconButton>
@@ -878,7 +847,6 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationDialog
                 open={openNetworkModificationsDialog}
                 onClose={closeNetworkModificationConfiguration}
-                network={network}
                 currentNodeUuid={currentNode?.id}
                 onOpenDialog={setEditDialogOpen}
                 dialogs={dialogs}

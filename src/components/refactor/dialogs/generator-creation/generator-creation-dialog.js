@@ -49,9 +49,9 @@ import {
     VOLTAGE_SET_POINT,
 } from '../../utils/field-constants';
 import {
-    getConnectivityEmptyFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
-    getConnectivityFormValidationSchema,
+    getConnectivityWithPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../regulating-terminal/regulating-terminal-form-utils';
@@ -86,7 +86,7 @@ const emptyFormData = {
     [FORCED_OUTAGE_RATE]: null,
     ...getSetPointsEmptyFormData(),
     ...getReactiveLimitsEmptyFormData(),
-    ...getConnectivityEmptyFormData(),
+    ...getConnectivityWithPositionEmptyFormData(),
 };
 
 const schema = yup
@@ -116,7 +116,7 @@ const schema = yup
                 .max(1, 'RealPercentage'),
             ...getSetPointsSchema(),
             ...getReactiveLimitsSchema(),
-            ...getConnectivityFormValidationSchema(),
+            ...getConnectivityWithPositionValidationSchema(),
         },
         [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
     )
@@ -215,7 +215,7 @@ const GeneratorCreationDialog = ({
                 [ACTIVE_POWER_SET_POINT]: editData.activePowerSetpoint,
                 [VOLTAGE_REGULATION]: editData.voltageRegulationOn,
                 [VOLTAGE_SET_POINT]: editData.voltageSetpoint,
-                [REACTIVE_POWER_SET_POINT]: editData.targetQ,
+                [REACTIVE_POWER_SET_POINT]: editData.reactivePowerSetpoint,
                 [PLANNED_ACTIVE_POWER_SET_POINT]:
                     editData.plannedActivePowerSetPoint,
                 [STARTUP_COST]: editData.startupCost,
@@ -312,7 +312,7 @@ const GeneratorCreationDialog = ({
                     : null,
                 generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                generator[CONNECTIVITY]?.[CONNECTION_NAME],
+                sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
                 generator[CONNECTIVITY]?.[CONNECTION_POSITION]
             ).catch((error) => {
                 snackError({

@@ -107,7 +107,7 @@ export const ModificationListItem = ({
         computedValues = useMemo(() => {
             function getVoltageLevelLabel(vlID) {
                 if (!vlID) return '';
-                const vl = network.getVoltageLevel(vlID);
+                const vl = network?.getVoltageLevel(vlID);
                 if (vl) return getNameOrId(vl);
                 return vlID;
             }
@@ -115,11 +115,11 @@ export const ModificationListItem = ({
             if (modif.type === 'BRANCH_STATUS_MODIFICATION') {
                 if (modif.action === 'ENERGISE_END_ONE') {
                     res.energizedEnd = getVoltageLevelLabel(
-                        network.getLine(modif.equipmentId)?.voltageLevelId1
+                        network?.getLine(modif.equipmentId)?.voltageLevelId1
                     );
                 } else if (modif.action === 'ENERGISE_END_TWO') {
                     res.energizedEnd = getVoltageLevelLabel(
-                        network.getLine(modif.equipmentId)?.voltageLevelId2
+                        network?.getLine(modif.equipmentId)?.voltageLevelId2
                     );
                 }
             }

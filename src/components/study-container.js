@@ -16,6 +16,7 @@ import React, {
 import * as PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { PARAMS_LOADED } from '../utils/config-params';
 import {
     connectNotificationsWebsocket,
     fetchLoadFlowInfos,
@@ -40,6 +41,7 @@ import {
     setCurrentTreeNode,
     setDeletedEquipments,
     setUpdatedSubstationsIds,
+    isNetworkEquipmentsFetched,
 } from '../redux/actions';
 import Network from './network/network';
 import WaitingLoader from './util/waiting-loader';
@@ -130,9 +132,10 @@ export function useNodeData(
             })
             .catch((err) => {
                 setErrorMessage(err.message);
+                setResult(RunningStatus.FAILED);
             })
             .finally(() => setIsPending(false));
-    }, [nodeUuid, studyUuid, fetcher, resultConversion]);
+    }, [nodeUuid, fetcher, studyUuid, resultConversion]);
 
     /* initial fetch and update */
     useEffect(() => {
@@ -238,7 +241,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const network = useSelector((state) => state.network);
     const userName = useSelector((state) => state.user.profile.sub);
-
+    const paramsLoaded = useSelector((state) => state[PARAMS_LOADED]);
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
         useState(undefined);
 
@@ -561,7 +564,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
+        if (network && studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
@@ -615,12 +618,12 @@ export function StudyContainer({ view, onChangeTab }) {
 
             if (isUpdate) {
                 // After a load flow, network has to be recreated.
-                // In order to avoid glitches during sld and map rendering,
+                // In order to avoid glitches during sld (this force closes all slds) and map rendering,
                 // lines and substations have to be prefetched and set before network creation event is dispatched
                 // Network creation event is dispatched directly in the network constructor
                 new Network(
                     studyUuid,
-                    currentNode?.id,
+                    currentNodeRef, // we use currentNodeRef instead of currentNode to check if the node has changed while we fetch data
                     displayNetworkLoadingFailMessage,
                     dispatch,
                     {
@@ -630,12 +633,13 @@ export function StudyContainer({ view, onChangeTab }) {
             } else {
                 const network = new Network(
                     studyUuid,
-                    currentNode?.id,
+                    currentNodeRef,
                     displayNetworkLoadingFailMessage,
                     dispatch
                 );
                 // For initial network loading, no need to initialize lines and substations at first,
                 // lazy loading will do the job (no glitches to avoid)
+                dispatch(isNetworkEquipmentsFetched(true));
                 dispatch(networkCreated(network));
             }
         },
@@ -658,7 +662,7 @@ export function StudyContainer({ view, onChangeTab }) {
         ) {
             return;
         }
-        loadNetwork(true);
+        loadNetwork(previousCurrentNode); // loadNetwork(false) only at app startup, otherwise slds are force closed
     }, [loadNetwork, currentNode, wsConnected]);
 
     useEffect(() => {
@@ -765,7 +769,7 @@ export function StudyContainer({ view, onChangeTab }) {
             errMessage={
                 studyErrorMessage || networkLoadingFailMessage || errorMessage
             }
-            loading={studyPending || !network}
+            loading={studyPending || !paramsLoaded} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
             <StudyPane

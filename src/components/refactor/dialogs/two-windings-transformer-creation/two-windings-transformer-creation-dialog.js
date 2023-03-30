@@ -56,6 +56,10 @@ import {
     createTwoWindingsTransformer,
     fetchVoltageLevelsIdAndTopology,
 } from 'utils/rest-api';
+import {
+    microUnitToUnit,
+    unitToMicroUnit,
+} from '../../../../utils/rounding.js';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
@@ -87,6 +91,7 @@ import {
     getTwoWindingsTransformerFormData,
     getTwoWindingsTransformerValidationSchema,
 } from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
+import { addSelectedFieldToRows } from '../../../util/dnd-table/dnd-table';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -119,7 +124,6 @@ export const TwoWindingsTransformerCreationDialogTab = {
 
 export const PHASE_TAP = 'dephasing';
 export const RATIO_TAP = 'ratio';
-export const MAX_TAP_CHANGER_STEPS_NUMBER = 100;
 
 const TwoWindingsTransformerCreationDialog = ({
     editData,
@@ -193,8 +197,12 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentName: twt.equipmentName,
                     seriesResistance: twt.seriesResistance,
                     seriesReactance: twt.seriesReactance,
-                    magnetizingConductance: twt.magnetizingConductance,
-                    magnetizingSusceptance: twt.magnetizingSusceptance,
+                    magnetizingConductance: unitToMicroUnit(
+                        twt.magnetizingConductance
+                    ),
+                    magnetizingSusceptance: unitToMicroUnit(
+                        twt.magnetizingSusceptance
+                    ),
                     ratedVoltage1: twt.ratedVoltage1,
                     ratedVoltage2: twt.ratedVoltage2,
                     ratedS: twt.ratedS,
@@ -245,7 +253,9 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: twt?.[PHASE_TAP_CHANGER]?.[STEPS],
+                    steps: addSelectedFieldToRows(
+                        twt?.[PHASE_TAP_CHANGER]?.[STEPS]
+                    ),
                     equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId,
                     equipmentType:
                         twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalType,
@@ -276,7 +286,9 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: twt?.[RATIO_TAP_CHANGER]?.[STEPS],
+                    steps: addSelectedFieldToRows(
+                        twt?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ),
                     equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId,
                     equipmentType:
                         twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalType,
@@ -296,8 +308,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentName: twt.name ?? '',
                     seriesResistance: twt.r,
                     seriesReactance: twt.x,
-                    magnetizingConductance: twt.g,
-                    magnetizingSusceptance: twt.b,
+                    magnetizingConductance: unitToMicroUnit(twt.g),
+                    magnetizingSusceptance: unitToMicroUnit(twt.b),
                     ratedVoltage1: twt.ratedU1,
                     ratedVoltage2: twt.ratedU2,
                     ratedS: twt.ratedS,
@@ -352,7 +364,9 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: twt?.[RATIO_TAP_CHANGER]?.[STEPS],
+                    steps: addSelectedFieldToRows(
+                        twt?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ),
                     equipmentId:
                         twt?.[RATIO_TAP_CHANGER]
                             ?.regulatingTerminalConnectableId,
@@ -390,7 +404,9 @@ const TwoWindingsTransformerCreationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                     ),
                     tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: twt?.[PHASE_TAP_CHANGER]?.[STEPS],
+                    steps: addSelectedFieldToRows(
+                        twt?.[PHASE_TAP_CHANGER]?.[STEPS]
+                    ),
                     voltageLevelId:
                         twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
                     equipmentId:
@@ -510,6 +526,13 @@ const TwoWindingsTransformerCreationDialog = ({
                     characteristics[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
             };
 
+            characteristics[MAGNETIZING_CONDUCTANCE] = microUnitToUnit(
+                characteristics[MAGNETIZING_CONDUCTANCE]
+            );
+            characteristics[MAGNETIZING_SUSCEPTANCE] = microUnitToUnit(
+                characteristics[MAGNETIZING_SUSCEPTANCE]
+            );
+
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
@@ -574,10 +597,14 @@ const TwoWindingsTransformerCreationDialog = ({
                 phaseTap,
                 editData ? true : false,
                 editData ? editData.uuid : undefined,
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(
+                    characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]
+                ),
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(
+                    characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]
+                ),
                 characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,

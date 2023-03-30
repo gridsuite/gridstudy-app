@@ -84,12 +84,12 @@ export function getLineLoadingZoneOfSide(
 
 export function getLineLoadingZone(line, lineFlowAlertThreshold) {
     const zone1 = getLineLoadingZoneOfSide(
-        line.permanentLimit1,
+        line.currentLimits1?.permanentLimit,
         line.i1,
         lineFlowAlertThreshold
     );
     const zone2 = getLineLoadingZoneOfSide(
-        line.permanentLimit2,
+        line.currentLimits2?.permanentLimit,
         line.i2,
         lineFlowAlertThreshold
     );
@@ -168,8 +168,14 @@ function getArrowSpeedOfSide(limit, intensity) {
 }
 
 function getArrowSpeed(line) {
-    const speed1 = getArrowSpeedOfSide(line.permanentLimit1, line.i1);
-    const speed2 = getArrowSpeedOfSide(line.permanentLimit2, line.i2);
+    const speed1 = getArrowSpeedOfSide(
+        line.currentLimits1?.permanentLimit,
+        line.i1
+    );
+    const speed2 = getArrowSpeedOfSide(
+        line.currentLimits2?.permanentLimit,
+        line.i2
+    );
     return Math.max(speed1, speed2);
 }
 
@@ -700,9 +706,11 @@ class LineLayer extends CompositeLayer {
                     distanceBetweenLines: this.props.distanceBetweenLines,
                     maxParallelOffset: this.props.maxParallelOffset,
                     minParallelOffset: this.props.minParallelOffset,
-                    visible: this.props.filteredNominalVoltages.includes(
-                        compositeData.nominalVoltage
-                    ),
+                    visible:
+                        !this.props.filteredNominalVoltages ||
+                        this.props.filteredNominalVoltages.includes(
+                            compositeData.nominalVoltage
+                        ),
                     updateTriggers: {
                         getPath: linePathUpdateTriggers,
                         getExtraAttributes: [
@@ -772,9 +780,10 @@ class LineLayer extends CompositeLayer {
                             LineFlowMode.ANIMATED_ARROWS,
                     visible:
                         this.props.showLineFlow &&
-                        this.props.filteredNominalVoltages.includes(
-                            compositeData.nominalVoltage
-                        ),
+                        (!this.props.filteredNominalVoltages ||
+                            this.props.filteredNominalVoltages.includes(
+                                compositeData.nominalVoltage
+                            )),
                     opacity:
                         this.props.loadFlowStatus !== RunningStatus.SUCCEED
                             ? INVALID_LOADFLOW_OPACITY
@@ -823,9 +832,11 @@ class LineLayer extends CompositeLayer {
                     getSubstationMaxPixel: this.props.substationMaxPixel,
                     getMinSubstationRadiusPixel:
                         this.props.minSubstationRadiusPixel,
-                    visible: this.props.filteredNominalVoltages.includes(
-                        compositeData.nominalVoltage
-                    ),
+                    visible:
+                        !this.props.filteredNominalVoltages ||
+                        this.props.filteredNominalVoltages.includes(
+                            compositeData.nominalVoltage
+                        ),
                     updateTriggers: {
                         getLineParallelIndex: linePathUpdateTriggers,
                         getSourcePosition: linePathUpdateTriggers,
@@ -871,9 +882,11 @@ class LineLayer extends CompositeLayer {
                     getSubstationMaxPixel: this.props.substationMaxPixel,
                     getMinSubstationRadiusPixel:
                         this.props.minSubstationRadiusPixel,
-                    visible: this.props.filteredNominalVoltages.includes(
-                        compositeData.nominalVoltage
-                    ),
+                    visible:
+                        !this.props.filteredNominalVoltages ||
+                        this.props.filteredNominalVoltages.includes(
+                            compositeData.nominalVoltage
+                        ),
                     updateTriggers: {
                         getLineParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: linePathUpdateTriggers,
@@ -909,9 +922,11 @@ class LineLayer extends CompositeLayer {
                         activePower.offset.map((x) => x),
                     getTextAnchor: 'middle',
                     visible:
-                        this.props.filteredNominalVoltages.includes(
-                            compositeData.nominalVoltage
-                        ) && this.props.labelsVisible,
+                        (!this.props.filteredNominalVoltages ||
+                            this.props.filteredNominalVoltages.includes(
+                                compositeData.nominalVoltage
+                            )) &&
+                        this.props.labelsVisible,
                     opacity:
                         this.props.loadFlowStatus !== RunningStatus.SUCCEED
                             ? INVALID_LOADFLOW_OPACITY
@@ -939,9 +954,11 @@ class LineLayer extends CompositeLayer {
                     getColor: (branchStatus) => this.props.labelColor,
                     getPixelOffset: (branchStatus) => branchStatus.offset,
                     visible:
-                        this.props.filteredNominalVoltages.includes(
-                            compositeData.nominalVoltage
-                        ) && this.props.labelsVisible,
+                        (!this.props.filteredNominalVoltages ||
+                            this.props.filteredNominalVoltages.includes(
+                                compositeData.nominalVoltage
+                            )) &&
+                        this.props.labelsVisible,
                     updateTriggers: {
                         getPosition: [
                             this.props.lineParallelPath,
@@ -967,7 +984,7 @@ LineLayer.defaultProps = {
     geoData: null,
     getNominalVoltageColor: { type: 'accessor', value: [255, 255, 255] },
     disconnectedLineColor: { type: 'color', value: [255, 255, 255] },
-    filteredNominalVoltages: [],
+    filteredNominalVoltages: null,
     lineFlowMode: LineFlowMode.FEEDERS,
     lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
     lineFlowAlertThreshold: 100,

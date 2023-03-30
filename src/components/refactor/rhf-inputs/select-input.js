@@ -24,7 +24,9 @@ const SelectInput = ({ options, ...props }) => {
         <AutocompleteInput
             options={options}
             getOptionLabel={(option) => {
-                return intl.formatMessage({ id: option.label });
+                return option?.label
+                    ? intl.formatMessage({ id: option?.label }) // If the option has a label property, display the label using internationalization
+                    : option?.id; // If the option doesn't have a label property, display the ID instead
             }}
             inputTransform={inputTransform}
             outputTransform={outputTransform}
@@ -38,7 +40,7 @@ SelectInput.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     options: PropTypes.array.isRequired,
-    previousValue: PropTypes.object,
+    previousValue: PropTypes.any,
 };
 
 export default SelectInput;

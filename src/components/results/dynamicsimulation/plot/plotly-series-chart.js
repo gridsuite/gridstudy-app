@@ -6,20 +6,17 @@
  */
 import PropTypes from 'prop-types';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Plot from 'react-plotly.js';
+import Plotly from 'plotly.js-basic-dist-min';
+import createPlotlyComponent from 'react-plotly.js/factory';
 import { baseColors, defaultLayout } from './plot-config';
 import { eventCenter, PlotEvents } from './plot-events';
 import { SeriesType } from './plot-types';
 import { debounce } from '@mui/material';
 
-const PlotlySeriesChart = ({
-    id,
-    groupId,
-    index,
-    leftSeries,
-    rightSeries,
-    sync,
-}) => {
+// create own Plot by using Plotly in basic dist for the reason of big size in standard dist plotly.js
+const Plot = createPlotlyComponent(Plotly);
+
+const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
     // these states used for responsible
     const plotRef = useRef(null);
     const resizeObserverRef = useRef(
@@ -42,7 +39,12 @@ const PlotlySeriesChart = ({
         return (s) => ({
             color: 'rgba(255,255,255,0.5)',
             line: {
-                color: baseColors[s.index % baseColors.length]['500'],
+                color: baseColors[s.index % baseColors.length][
+                    `${
+                        300 +
+                        (Math.floor(s.index / baseColors.length) % 7) * 100
+                    }` // compute from 300 to 900 with step = 100
+                ],
                 width: 1,
             },
             ...opts,
@@ -57,7 +59,12 @@ const PlotlySeriesChart = ({
                 mode: 'lines+markers',
                 marker: getMarker(s),
                 line: {
-                    color: baseColors[s.index % baseColors.length]['500'],
+                    color: baseColors[s.index % baseColors.length][
+                        `${
+                            300 +
+                            (Math.floor(s.index / baseColors.length) % 7) * 100
+                        }` // compute from 300 to 900 with step = 100
+                    ],
                 },
                 x: s.data.x ? s.data.x.map((value) => value / 1000) : [], // ms => s
                 y: s.data.y ? s.data.y : [],
@@ -162,6 +169,7 @@ const PlotlySeriesChart = ({
             ref={plotRef}
             data={data}
             layout={layout}
+            config={{ displaylogo: false }}
             useResizeHandler={true}
             style={{
                 width: '100%',
@@ -178,7 +186,6 @@ const PlotlySeriesChart = ({
 PlotlySeriesChart.propTypes = {
     id: PropTypes.string.isRequired,
     groupId: PropTypes.string.isRequired,
-    index: PropTypes.number,
     leftSeries: SeriesType,
     rightSerie: SeriesType,
     sync: PropTypes.bool,

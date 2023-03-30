@@ -41,6 +41,7 @@ import {
     selectFluxConvention,
     selectMapManualRefresh,
     selectEnableDeveloperMode,
+    setParamsLoaded,
 } from '../redux/actions';
 
 import {
@@ -87,7 +88,7 @@ import {
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_NAMES_INDEXES,
-} from './network/config-tables';
+} from './spreadsheet/utils/config-tables';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
@@ -336,17 +337,12 @@ const App = () => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchConfigParameters(COMMON_APP_NAME)
-                .then((params) => updateParams(params))
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    })
-                );
+            const fetchCommonConfigPromise = fetchConfigParameters(
+                COMMON_APP_NAME
+            ).then((params) => updateParams(params));
 
-            fetchConfigParameters(APP_NAME)
-                .then((params) => {
+            const fetchAppConfigPromise = fetchConfigParameters(APP_NAME).then(
+                (params) => {
                     fetchDefaultParametersValues()
                         .then((defaultValues) => {
                             // Browsing defaultParametersValues entries
@@ -374,6 +370,16 @@ const App = () => {
                                 headerId: 'paramsRetrievingError',
                             });
                         });
+                }
+            );
+
+            // Dispatch globally when all params are loaded to allow easy waiting.
+            // This might not be necessary but allows to gradually migrate parts
+            // of the code that don't subscribe to exactly the parameters they need.
+            // Code that depends on this could be rewritten to depend on what it acually needs.
+            Promise.all([fetchCommonConfigPromise, fetchAppConfigPromise])
+                .then(() => {
+                    dispatch(setParamsLoaded());
                 })
                 .catch((error) =>
                     snackError({

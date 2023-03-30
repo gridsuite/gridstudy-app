@@ -114,6 +114,8 @@
     "ActivePowerSide2": "p2 (MW)",
     "ActivePowerSide3": "p3 (MW)",
     "ReactivePower": "q (MVar)",
+    "ConstantReactivePower" : "Constant q (MVar)",
+    "ConstantActivePower": "Constant p (MW)",
     "ReactivePowerSide1": "q1 (MVar)",
     "ReactivePowerSide2": "q2 (MVar)",
     "ReactivePowerSide3": "q3 (MVar)",
@@ -226,7 +228,7 @@
 
     "descLfVoltageInitMode": "Voltage initialisation mode: ",
     "descLfTransformerVoltageControlOn": "Activate on-load tap changers: ",
-    "descLfNoGeneratorReactiveLimits": "Take the reactive limits of generators into account: ",
+    "descLfUseReactiveLimits": "Take the reactive limits of generators into account: ",
     "descLfPhaseShifterRegulationOn": "Enable automatic power flow control with phase shifting transformers: ",
     "descLfTwtSplitShuntAdmittance": "Split shunt admittance of two winding transformers: ",
     "descLfShuntCompensatorVoltageControlOn": "Enable voltage control by shunt compensators: ",
@@ -531,6 +533,14 @@
     "QatNominalV": "Q at nominal voltage",
     "QatNominalVLabel": "Q at nominal voltage (MVAr)",
     "SusceptanceLabel": "Susceptance (S)",
+    "LineLimitsTab": "Limits",
+    "LineCharacteristicsTab": "Characteristics",
+    "TemporaryCurrentLimitsText": "Temporary current limits",
+    "TemporaryLimitDuration": "Duration (s)",
+    "TemporaryLimitName": "Name",
+    "TemporaryLimitValue": "Value (A)",
+    "TemporaryLimitNameUnicityError": "Temporary limit names must be unique in the table",
+    "TemporaryLimitDurationUnicityError": "Temporary limit acceptable durations must be unique in the table",
 
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntIdenticalSections": "Identical sections",
@@ -548,6 +558,7 @@
     "AddProperty": "Add property",
     "PropertyName": "Property name",
     "PropertyValue": "Property value",
+    "DuplicatedProps": "Duplicated properties: each property must be unique",
 
     "CreateVoltageLevel": "Create a voltage level",
     "Substation": "Substation",
@@ -683,6 +694,7 @@
 
     "AddRowsDialogTitle": "How many rows do you want to add ?",
     "AddRowsButton": "Add",
+    "MaximumRowNumberError": "The number of rows must not exceed the value {value}",
 
     "DragAndDrop": "Drag and Drop",
 

@@ -34,9 +34,9 @@ import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
-    getConnectivityEmptyFormData,
+    getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
-    getConnectivityFormValidationSchema,
+    getConnectivityWithPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -49,7 +49,7 @@ import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    ...getConnectivityEmptyFormData(),
+    ...getConnectivityWithPositionEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
 };
 
@@ -58,7 +58,7 @@ const schema = yup
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
-        ...getConnectivityFormValidationSchema(),
+        ...getConnectivityWithPositionValidationSchema(),
         ...getCharacteristicsFormValidationSchema(),
     })
     .required();
@@ -173,7 +173,9 @@ const ShuntCompensatorCreationDialog = ({
                 editData ? editData.uuid : undefined,
                 shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,
-                shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME] ?? null,
+                sanitizeString(
+                    shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]
+                ),
                 shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION] ?? null
             ).catch((error) => {
                 snackError({
