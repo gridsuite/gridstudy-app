@@ -85,6 +85,7 @@ import {
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     STOP_DIAGRAM_BLINK,
+    NETWORK_EQUIPMENT_FETCHED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -176,6 +177,7 @@ const initialState = {
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
+    networkEquipmentsFetched: false, // indicate if network equipments are fetched
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -202,6 +204,10 @@ export const reducer = createReducer(initialState, {
 
     [NETWORK_CREATED]: (state, action) => {
         state.network = action.network;
+    },
+
+    [NETWORK_EQUIPMENT_FETCHED]: (state, action) => {
+        state.networkEquipmentsFetched = action.networkEquipmentsFetched;
     },
 
     [MAP_EQUIPMENTS_CREATED]: (state, action) => {
