@@ -4,17 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AgGridReact } from 'ag-grid-react';
-import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
 import { makeStyles, useTheme } from '@mui/styles';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import clsx from 'clsx';
-import { groupPostSort, groupSort } from './util/sort-functions';
+import { groupPostSort } from './util/sort-functions';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -30,8 +29,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export const ConnectableIdRenderer = (props) => {
+    return props.data.elementId ? undefined : props.value;
+};
+
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
+    const gridRef = useRef();
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
 
@@ -51,6 +55,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             },
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
+                cellRenderer: ConnectableIdRenderer,
                 field: 'connectableId',
                 filter: true,
             },
@@ -84,6 +89,10 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 field: 'shortCircuitPower',
                 // numeric: true,
                 // fractionDigits: 1,
+            },
+            {
+                field: 'linkedElementId',
+                hide: true,
             },
         ];
     }, [intl]);
@@ -175,6 +184,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             result &&
             shortCircuitNotif && (
                 <AgGridReact
+                    ref={gridRef}
                     rowData={rows}
                     defaultColDef={{ sortable: true }}
                     columnDefs={columns}
@@ -187,6 +197,44 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                             rows,
                             groupPostSort(rows, 'elementId', 'linkedElementId')
                         );
+                    }}
+                    onFilterChanged={(params) => {
+                        const filterModel =
+                            gridRef.current?.api?.getFilterInstance(
+                                params.columns[0].colId
+                            ).appliedModel;
+
+                        if (filterModel !== null) {
+                            const filterValue = filterModel?.filter;
+
+                            const groupIds = [
+                                ...new Set(
+                                    gridRef.current?.api
+                                        ?.getRenderedNodes()
+                                        .map(
+                                            (node) => node.data.linkedElementId
+                                        )
+                                ),
+                            ];
+
+                            gridRef.current?.api?.forEachNode((params) => {
+                                if (params.data.elementId !== undefined) {
+                                    if (
+                                        groupIds.includes(params.data.elementId)
+                                    ) {
+                                        const newData = params.data;
+                                        newData.connectableId = filterValue;
+
+                                        const transaction = {
+                                            update: [newData],
+                                        };
+                                        gridRef.current.api.applyTransaction(
+                                            transaction
+                                        );
+                                    }
+                                }
+                            });
+                        }
                     }}
                 />
             )
