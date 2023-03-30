@@ -35,6 +35,7 @@ const NetworkModificationDialog = ({
     open,
     onClose,
     onOpenDialog,
+    setIsUpdate,
     dialogs,
 }) => {
     const classes = useStyles();
@@ -74,7 +75,10 @@ const NetworkModificationDialog = ({
                                         className={classes.button}
                                         variant="outlined"
                                         startIcon={values.icon}
-                                        onClick={() => onOpenDialog(id)}
+                                        onClick={() => {
+                                            setIsUpdate(false);
+                                            onOpenDialog(id);
+                                        }}
                                     >
                                         <Typography align="left">
                                             <FormattedMessage

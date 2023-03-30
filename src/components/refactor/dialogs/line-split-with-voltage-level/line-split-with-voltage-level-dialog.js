@@ -37,6 +37,8 @@ import {
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { MODIFICATION_TYPES } from 'components/util/modification-type';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
+import { FORM_LOADING_DAILY } from 'components/network/constants';
 
 const emptyFormData = {
     [LINE1_ID]: '',
@@ -70,6 +72,7 @@ const LineSplitWithVoltageLevelDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -192,6 +195,11 @@ const LineSplitWithVoltageLevelDialog = ({
         }
     }, [getValues, newVoltageLevel]);
 
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        delay: FORM_LOADING_DAILY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -201,6 +209,9 @@ const LineSplitWithVoltageLevelDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-voltage-level-amidst-a-line"
                 titleId="LineSplitWithVoltageLevel"
+                open={open}
+                editData={editData}
+                isUpdate={isUpdate}
                 {...dialogProps}
             >
                 <LineSplitWithVoltageLevelForm

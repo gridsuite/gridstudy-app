@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 export const ModificationListItem = ({
     item: modif,
     onEdit,
-    setModificationType,
+    setEditDialogOpen,
     checked,
     index,
     handleToggle,
@@ -193,7 +193,7 @@ export const ModificationListItem = ({
                             isEditableModification(modif) && (
                                 <IconButton
                                     onClick={() => {
-                                        setModificationType(modif?.type);
+                                        setEditDialogOpen(modif?.type);
                                         onEdit(modif.uuid);
                                     }}
                                     size={'small'}

@@ -26,6 +26,8 @@ import { getPropertiesSchema } from './property/property-utils';
 import SubstationCreationForm from './substation-creation-form';
 import { createSubstation } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
+import { FORM_LOADING_DAILY } from 'components/network/constants';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -50,6 +52,7 @@ const SubstationCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -119,6 +122,11 @@ const SubstationCreationDialog = ({
         },
         [currentNodeUuid, editData, snackError, studyUuid]
     );
+
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        delay: FORM_LOADING_DAILY,
+    });
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -129,6 +137,9 @@ const SubstationCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateSubstation"
                 searchCopy={searchCopy}
+                open={open}
+                editData={editData}
+                isUpdate={isUpdate}
                 {...dialogProps}
             >
                 <SubstationCreationForm />

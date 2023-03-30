@@ -175,7 +175,7 @@ const NetworkModificationNodeEditor = () => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
-    const [modificationType, setModificationType] = useState();
+    const [isUpdate, setIsUpdate] = useState(false);
 
     const cleanClipboard = () => {
         if (copiedModifications.length <= 0) return;
@@ -203,12 +203,13 @@ const NetworkModificationNodeEditor = () => {
     function withDefaultParams(Dialog, props) {
         return (
             <Dialog
-                open={true}
+                open={true} // TODO To be deleted after timeout management and migration to React hook form
                 onClose={handleCloseDialog}
                 onValidated={handleValidatedDialog}
                 currentNode={currentNode}
                 studyUuid={studyUuid}
                 editData={editData}
+                isUpdate={isUpdate}
                 {...props}
             />
         );
@@ -378,13 +379,6 @@ const NetworkModificationNodeEditor = () => {
                 dispatch(setModificationsInProgress(false));
             });
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
-
-    useEffect(() => {
-        if (modificationType) {
-            setEditDialogOpen(modificationType);
-            setModificationType(null);
-        }
-    }, [modificationType]);
 
     useEffect(() => {
         // first time with currentNode initialized then fetch modifications
@@ -586,6 +580,7 @@ const NetworkModificationNodeEditor = () => {
     }
 
     const doEditModification = (modificationUuid, modificationType) => {
+        setIsUpdate(true);
         const modification = fetchNetworkModification(modificationUuid);
         modification
             .then((res) => {
@@ -678,9 +673,7 @@ const NetworkModificationNodeEditor = () => {
                                     <ModificationListItem
                                         key={props.item.uuid}
                                         onEdit={doEditModification}
-                                        setModificationType={
-                                            setModificationType
-                                        }
+                                        setEditDialogOpen={setEditDialogOpen}
                                         isDragging={isDragging}
                                         network={network}
                                         isOneNodeBuilding={isAnyNodeBuilding}
@@ -856,6 +849,7 @@ const NetworkModificationNodeEditor = () => {
                 onClose={closeNetworkModificationConfiguration}
                 currentNodeUuid={currentNode?.id}
                 onOpenDialog={setEditDialogOpen}
+                setIsUpdate={setIsUpdate}
                 dialogs={dialogs}
             />
             {editDialogOpen && renderDialog()}

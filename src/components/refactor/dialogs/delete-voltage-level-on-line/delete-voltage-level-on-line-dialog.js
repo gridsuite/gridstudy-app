@@ -6,6 +6,7 @@
  */
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { FORM_LOADING_DAILY } from 'components/network/constants';
 import {
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
@@ -18,6 +19,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { deleteVoltageLevelOnLine } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import yup from '../../utils/yup-config';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 import ModificationDialog from '../commons/modificationDialog';
 import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
 
@@ -49,6 +51,7 @@ const DeleteVoltageLevelOnLineDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -104,6 +107,11 @@ const DeleteVoltageLevelOnLineDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        delay: FORM_LOADING_DAILY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -113,6 +121,9 @@ const DeleteVoltageLevelOnLineDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-delete-voltage-level-on-line"
                 titleId="DeleteVoltageLevelOnLine"
+                open={open}
+                editData={editData}
+                isUpdate={isUpdate}
                 {...dialogProps}
             >
                 <DeleteVoltageLevelOnLineForm

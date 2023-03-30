@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
  *
  * @returns {boolean} A boolean indicating whether the form should be opened.
  */
-export const useOpenShortWaitFetching = (mainData, fetching, delay) => {
+export const useOpenShortWaitFetching = ({ mainData, fetching, delay }) => {
     // State to track whether the form should be opened or not.
     const [shouldOpen, setShouldOpen] = useState(false);
 

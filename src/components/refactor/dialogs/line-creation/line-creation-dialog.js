@@ -45,7 +45,10 @@ import {
 import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
+import {
+    FORM_LOADING_DAILY,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '../../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
@@ -69,6 +72,7 @@ import {
 } from './line-creation-dialog-utils';
 import { addSelectedFieldToRows } from '../../../util/dnd-table/dnd-table';
 import TextInput from '../../rhf-inputs/text-input';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -98,6 +102,7 @@ const LineCreationDialog = ({
     onCreateLine = createLine,
     displayConnectivity = true,
     voltageLevelOptionsPromise,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -366,6 +371,11 @@ const LineCreationDialog = ({
         </Box>
     );
 
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        delay: FORM_LOADING_DAILY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -378,6 +388,9 @@ const LineCreationDialog = ({
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
                 searchCopy={searchCopy}
+                open={open}
+                editData={editData}
+                isUpdate={isUpdate}
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs

@@ -6,6 +6,7 @@
  */
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { FORM_LOADING_DAILY } from 'components/network/constants';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -19,6 +20,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { deleteAttachingLine } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import yup from '../../utils/yup-config';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 import ModificationDialog from '../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
 
@@ -52,6 +54,7 @@ const DeleteAttachingLineDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -109,6 +112,11 @@ const DeleteAttachingLineDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        delay: FORM_LOADING_DAILY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -118,6 +126,9 @@ const DeleteAttachingLineDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-delete-attaching-line"
                 titleId="DeleteAttachingLine"
+                open={open}
+                editData={editData}
+                isUpdate={isUpdate}
                 {...dialogProps}
             >
                 <DeleteAttachingLineForm

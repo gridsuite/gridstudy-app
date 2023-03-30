@@ -31,7 +31,6 @@ import {
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { LinearProgress } from '@mui/material';
 
 const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
     const currentNodeUuid = currentNode?.id;
@@ -57,6 +56,7 @@ const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
 
     useEffect(() => {
         if (loadId) {
+            setIsDataFetched(false);
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -65,8 +65,8 @@ const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
                 true
             ).then((value) => {
                 if (value) {
-                    setIsDataFetched(true);
                     setLoadInfos(value);
+                    setIsDataFetched(true);
                 }
             });
         } else {
@@ -145,7 +145,6 @@ const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
 
     return (
         <>
-            {!loadInfos && <LinearProgress />}
             <Grid container spacing={2}>
                 {gridItem(loadIdField, 4)}
                 {gridItem(loadNameField, 4)}

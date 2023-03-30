@@ -30,8 +30,12 @@ import { createShuntCompensator } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
+import {
+    FORM_LOADING_DAILY,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '../../../network/constants';
 import yup from '../../utils/yup-config';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 import ModificationDialog from '../commons/modificationDialog';
 import {
     getConnectivityWithPositionEmptyFormData,
@@ -75,6 +79,7 @@ const ShuntCompensatorCreationDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -191,6 +196,11 @@ const ShuntCompensatorCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        delay: FORM_LOADING_DAILY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -201,6 +211,9 @@ const ShuntCompensatorCreationDialog = ({
                 aria-labelledby="dialog-create-shuntCompensator"
                 titleId="CreateShuntCompensator"
                 searchCopy={searchCopy}
+                open={open}
+                editData={editData}
+                isUpdate={isUpdate}
                 {...dialogProps}
             >
                 <ShuntCompensatorCreationForm

@@ -7,6 +7,7 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { FORM_LOADING_DAILY } from 'components/network/constants';
 import {
     ACTIVE_POWER,
     EQUIPMENT_ID,
@@ -49,6 +50,7 @@ const LoadModificationDialog = ({
     defaultIdValue,
     currentNode,
     studyUuid,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -121,7 +123,11 @@ const LoadModificationDialog = ({
         reset(emptyFormData);
     }, [reset, emptyFormData]);
 
-    const open = useOpenShortWaitFetching(editData, isDataFetched, 200);
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        fetching: isDataFetched,
+        delay: FORM_LOADING_DAILY,
+    });
 
     return (
         <FormProvider validationSchema={schema} {...methods}>
@@ -135,6 +141,10 @@ const LoadModificationDialog = ({
                 {...dialogProps}
                 open={open}
                 keepMounted={true}
+                isUpdate={isUpdate}
+                isDataFetched={isDataFetched}
+                editData={editData}
+                isModificationForm={true}
             >
                 <LoadModificationForm
                     currentNode={currentNode}

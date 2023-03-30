@@ -22,6 +22,7 @@ import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import {
+    FORM_LOADING_DAILY,
     UNDEFINED_CONNECTION_DIRECTION,
     UNDEFINED_LOAD_TYPE,
 } from '../../../network/constants';
@@ -34,6 +35,7 @@ import {
 } from '../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 
 /**
  * Dialog to create a load in the network
@@ -68,6 +70,7 @@ const LoadCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -113,51 +116,22 @@ const LoadCreationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'voltage-levels',
-                load.voltageLevelId,
-                true
-            )
-                .then((vlResult) => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            voltageLevelTopologyKind: vlResult.topologyKind,
-                            voltageLevelName: vlResult.name,
-                            voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                            voltageLevelSubstationId: vlResult.substationId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                }) // if voltage level can't be found, we fill the form with minimal infos
-                .catch(() => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                });
+            reset({
+                [EQUIPMENT_ID]: load.equipmentId,
+                [EQUIPMENT_NAME]: load.equipmentName ?? '',
+                [LOAD_TYPE]: load.loadType,
+                [ACTIVE_POWER]: load.activePower,
+                [REACTIVE_POWER]: load.reactivePower,
+                ...getConnectivityFormData({
+                    voltageLevelId: load.voltageLevelId,
+                    busbarSectionId: load.busOrBusbarSectionId,
+                    connectionDirection: load.connectionDirection,
+                    connectionName: load.connectionName,
+                    connectionPosition: load.connectionPosition,
+                }),
+            });
         },
-        [studyUuid, currentNodeUuid, reset]
+        [reset]
     );
 
     const searchCopy = useFormSearchCopy({
@@ -206,6 +180,11 @@ const LoadCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        delay: FORM_LOADING_DAILY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -216,6 +195,9 @@ const LoadCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
+                open={open}
+                editData={editData}
+                isUpdate={isUpdate}
                 {...dialogProps}
             >
                 <LoadCreationForm

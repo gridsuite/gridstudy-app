@@ -16,6 +16,8 @@ import ModificationDialog from '../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from '../../../util/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
+import { FORM_LOADING_DAILY } from 'components/network/constants';
 
 const schema = yup
     .object()
@@ -41,6 +43,7 @@ const EquipmentDeletionDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -95,6 +98,10 @@ const EquipmentDeletionDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        delay: FORM_LOADING_DAILY,
+    });
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -104,6 +111,9 @@ const EquipmentDeletionDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-equipment-deletion"
                 titleId="DeleteEquipment"
+                open={open}
+                editData={editData}
+                isUpdate={isUpdate}
                 {...dialogProps}
             >
                 <DeleteEquipmentForm

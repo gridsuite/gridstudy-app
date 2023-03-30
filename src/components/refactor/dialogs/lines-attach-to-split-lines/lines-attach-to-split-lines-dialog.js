@@ -36,6 +36,8 @@ import {
     getConnectivityWithoutPositionValidationSchema,
     getConnectivityData,
 } from '../connectivity/connectivity-form-utils';
+import { FORM_LOADING_DAILY } from 'components/network/constants';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
@@ -73,6 +75,7 @@ const LinesAttachToSplitLinesDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -134,6 +137,11 @@ const LinesAttachToSplitLinesDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        delay: FORM_LOADING_DAILY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -143,6 +151,9 @@ const LinesAttachToSplitLinesDialog = ({
                 maxWidth={'md'}
                 titleId="LinesAttachToSplitLines"
                 aria-labelledby="dialog-attach-lines-to-split-lines"
+                open={open}
+                editData={editData}
+                isUpdate={isUpdate}
                 {...dialogProps}
             >
                 <LinesAttachToSplitLinesForm

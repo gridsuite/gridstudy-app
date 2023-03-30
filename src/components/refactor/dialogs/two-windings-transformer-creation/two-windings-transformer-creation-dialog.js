@@ -64,6 +64,7 @@ import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import {
+    FORM_LOADING_DAILY,
     REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
@@ -92,6 +93,7 @@ import {
     getTwoWindingsTransformerValidationSchema,
 } from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
 import { addSelectedFieldToRows } from '../../../util/dnd-table/dnd-table';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form.js';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -129,6 +131,7 @@ const TwoWindingsTransformerCreationDialog = ({
     editData,
     studyUuid,
     currentNode,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -643,6 +646,11 @@ const TwoWindingsTransformerCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        mainData: editData,
+        delay: FORM_LOADING_DAILY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -655,6 +663,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 titleId="CreateTwoWindingsTransformer"
                 subtitle={tabs}
                 searchCopy={searchCopy}
+                open={open}
+                editData={editData}
+                isUpdate={isUpdate}
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
