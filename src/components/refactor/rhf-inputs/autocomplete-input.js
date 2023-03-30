@@ -6,7 +6,7 @@
  */
 
 import { Autocomplete, TextField } from '@mui/material';
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
     FieldLabel,
     genHelperError,
@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import { useController, useFormContext, useWatch } from 'react-hook-form';
 import { func_identity } from '../../dialogs/dialogUtils';
 import { getPreviousValueFieldName, isFieldRequired } from '../utils/utils';
+import { useIntl } from 'react-intl';
 
 /**
  * Autocomplete input
@@ -39,6 +40,7 @@ const AutocompleteInput = ({
     onChangeCallback, // method called when input value is changing
     ...props
 }) => {
+    const intl = useIntl();
     const { validationSchema, getValues, isEdit } = useFormContext();
     const {
         field: { onChange, value, ref },
@@ -47,6 +49,10 @@ const AutocompleteInput = ({
 
     const previousFieldName = getPreviousValueFieldName(name);
     const previousValueWatch = useWatch({ name: previousFieldName });
+    const previousValue = useMemo(
+        () => intl.messages[previousValueWatch] ?? previousValueWatch,
+        [previousValueWatch, intl.messages]
+    );
 
     const handleChange = (value) => {
         onChangeCallback && onChangeCallback();
@@ -87,6 +93,7 @@ const AutocompleteInput = ({
                     label={FieldLabel({
                         label: label,
                         optional:
+                            previousValue == null &&
                             !isFieldRequired(
                                 name,
                                 validationSchema,
@@ -97,7 +104,7 @@ const AutocompleteInput = ({
                     })}
                     inputRef={ref}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
-                    {...genHelperPreviousValue(previousValueWatch)}
+                    {...genHelperPreviousValue(previousValue)}
                     {...genHelperError(error?.message)}
                     {...formProps}
                     {...rest}

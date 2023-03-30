@@ -24,7 +24,6 @@ import ModificationDialog from '../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 import { getPreviousValueFieldName } from '../../../utils/utils';
 import { getLoadTypeLabel } from '../../../../network/constants';
-import { useIntl } from 'react-intl';
 
 /**
  * Dialog to create a load in the network
@@ -56,18 +55,11 @@ const assignEditDataValuesToForm = (load) => {
     };
 };
 
-const assignFetchedValuesToFrom = (load, loadId, intl) => {
-    const type =
-        load.type || load.type === 'UNDEFINED'
-            ? ''
-            : intl.formatMessage({
-                  id: getLoadTypeLabel(load?.type),
-              });
-
+const assignFetchedValuesToFrom = (load, loadId) => {
     return {
         [EQUIPMENT_ID]: loadId,
         [getPreviousValueFieldName(EQUIPMENT_NAME)]: load.name ?? '',
-        [getPreviousValueFieldName(LOAD_TYPE)]: type,
+        [getPreviousValueFieldName(LOAD_TYPE)]: getLoadTypeLabel(load.type),
         [getPreviousValueFieldName(ACTIVE_POWER)]: load.p0 ?? null,
         [getPreviousValueFieldName(REACTIVE_POWER)]: load.q0 ?? null,
     };
@@ -81,7 +73,6 @@ const LoadModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const intl = useIntl();
 
     const emptyFormData = useMemo(
         () => ({
@@ -141,21 +132,17 @@ const LoadModificationDialog = ({
                 ).then((value) => {
                     if (value) {
                         if (editData && editData.equipmentId === loadId) {
-                            reset(
-                                assignFetchedValuesToFrom(value, loadId, intl),
-                                {
-                                    keepDirtyValues: true,
-                                }
-                            );
-                        } else {
-                            reset({
-                                ...emptyFormData,
-                                ...assignFetchedValuesToFrom(
-                                    value,
-                                    loadId,
-                                    intl
-                                ),
+                            reset(assignFetchedValuesToFrom(value, loadId), {
+                                keepDirtyValues: true,
                             });
+                        } else {
+                            reset(
+                                {
+                                    ...emptyFormData,
+                                    ...assignFetchedValuesToFrom(value, loadId),
+                                },
+                                { keepDefaultValues: true }
+                            );
                         }
                     }
                 });
@@ -163,15 +150,7 @@ const LoadModificationDialog = ({
                 clear();
             }
         },
-        [
-            clear,
-            currentNodeUuid,
-            editData,
-            emptyFormData,
-            intl,
-            reset,
-            studyUuid,
-        ]
+        [clear, currentNodeUuid, editData, emptyFormData, reset, studyUuid]
     );
 
     useEffect(() => {

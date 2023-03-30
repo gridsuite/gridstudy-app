@@ -26,7 +26,8 @@ import VoltageRegulation from './voltage-regulation';
 import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
 import { FormattedMessage } from 'react-intl';
 import CheckboxNullableInput from 'components/refactor/rhf-inputs/boolean-nullable-input';
-import { PREVIOUS_VOLTAGE_REGULATION_TYPE } from '../modification/generator-modification-utils';
+import { PREVIOUS_VOLTAGE_REGULATION } from '../modification/generator-modification-utils';
+import { useMemo } from 'react';
 
 const SetPointsForm = ({
     studyUuid,
@@ -39,13 +40,16 @@ const SetPointsForm = ({
     });
 
     const watchVoltageRegulationPreviousValue = useWatch({
-        name: PREVIOUS_VOLTAGE_REGULATION_TYPE,
+        name: PREVIOUS_VOLTAGE_REGULATION,
     });
 
-    const isVoltageRegulationOn =
-        watchVoltageRegulation ||
-        (watchVoltageRegulation === null &&
-            watchVoltageRegulationPreviousValue);
+    const isVoltageRegulationOn = useMemo(
+        () =>
+            watchVoltageRegulation ||
+            !watchVoltageRegulation &
+                (watchVoltageRegulationPreviousValue?.props?.id === 'On'),
+        [watchVoltageRegulationPreviousValue, watchVoltageRegulation]
+    );
 
     const activePowerSetPointField = (
         <FloatInput

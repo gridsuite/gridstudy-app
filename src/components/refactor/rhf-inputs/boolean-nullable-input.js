@@ -11,16 +11,20 @@ import { useIntl } from 'react-intl';
 import { useController, useWatch } from 'react-hook-form';
 import { useCallback } from 'react';
 import { getPreviousValueFieldName } from '../utils/utils';
+import { useMemo } from 'react';
 
 const CheckboxNullableInput = ({ name, label, id, formProps }) => {
+    const intl = useIntl();
     const {
         field: { onChange, value },
     } = useController({ name });
 
     const previousFieldName = getPreviousValueFieldName(name);
     const previousValueWatch = useWatch({ name: previousFieldName });
-
-    const intl = useIntl();
+    const previousValue = useMemo(
+        () => intl.messages[previousValueWatch] ?? previousValueWatch,
+        [previousValueWatch, intl.messages]
+    );
 
     const handleChangeValue = useCallback(
         (event) => {
@@ -54,7 +58,7 @@ const CheckboxNullableInput = ({ name, label, id, formProps }) => {
                 })}
             />
             {previousValueWatch && (
-                <FormHelperText>{previousValueWatch}</FormHelperText>
+                <FormHelperText>{previousValue}</FormHelperText>
             )}
         </FormControl>
     );

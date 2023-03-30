@@ -18,6 +18,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types';
 import { useController, useFormContext, useWatch } from 'react-hook-form';
 import { getPreviousValueFieldName, isFieldRequired } from '../utils/utils';
+import { useMemo } from 'react';
+import { useIntl } from 'react-intl';
 
 const TextInput = ({
     name,
@@ -32,6 +34,7 @@ const TextInput = ({
     clearable,
     customAdornment,
 }) => {
+    const intl = useIntl();
     const classes = useStyles();
     const { validationSchema, getValues, isEdit } = useFormContext();
     const {
@@ -41,6 +44,10 @@ const TextInput = ({
 
     const previousFieldName = getPreviousValueFieldName(name);
     const previousValueWatch = useWatch({ name: previousFieldName });
+    const previousValue = useMemo(
+        () => intl.messages[previousValueWatch] ?? previousValueWatch,
+        [previousValueWatch, intl.messages]
+    );
 
     const Field = adornment ? TextFieldWithAdornment : TextField;
 
@@ -62,6 +69,7 @@ const TextInput = ({
               label,
               values: labelValues,
               optional:
+                  previousValue == null &&
                   !isFieldRequired(name, validationSchema, getValues()) &&
                   !formProps?.disabled &&
                   !isEdit,
@@ -102,7 +110,7 @@ const TextInput = ({
                 adornment && {
                     handleClearValue: handleClearValue,
                 })}
-            {...genHelperPreviousValue(previousValueWatch, adornment)}
+            {...genHelperPreviousValue(previousValue, adornment)}
             {...genHelperError(error?.message)}
             {...formProps}
         />
