@@ -120,7 +120,11 @@ const LoadModificationDialog = ({
     }, [reset, emptyFormData]);
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider
+            validationSchema={schema}
+            {...methods}
+            isHypothesisEditing={editData ? true : false}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}

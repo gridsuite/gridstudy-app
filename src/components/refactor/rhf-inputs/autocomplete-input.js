@@ -40,7 +40,8 @@ const AutocompleteInput = ({
     onChangeCallback, // method called when input value is changing
     ...props
 }) => {
-    const { validationSchema, getValues } = useFormContext();
+    const { validationSchema, getValues, isHypothesisEditing } =
+        useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
@@ -89,7 +90,9 @@ const AutocompleteInput = ({
                                 name,
                                 validationSchema,
                                 getValues()
-                            ) && !props?.disabled,
+                            ) &&
+                            !props?.disabled &&
+                            !isHypothesisEditing,
                     })}
                     inputRef={ref}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
