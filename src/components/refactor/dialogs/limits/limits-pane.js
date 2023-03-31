@@ -16,19 +16,27 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from 'components/refactor/utils/field-constants';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
+import makeStyles from '@mui/styles/makeStyles';
+import FloatInput from 'components/refactor/rhf-inputs/float-input';
 import {
     AmpereAdornment,
     gridItem,
     GridSection,
 } from 'components/dialogs/dialogUtils';
 import DndTable from 'components/util/dnd-table/dnd-table';
-import FloatInput from 'components/refactor/rhf-inputs/float-input';
+
+const useStyles = makeStyles((theme) => ({
+    h3: {
+        marginTop: 0,
+    },
+}));
 
 const LimitsPane = ({ id = LIMITS }) => {
     const intl = useIntl();
+    const classes = useStyles();
 
     const columnsDefinition = useMemo(() => {
         return [
@@ -74,7 +82,7 @@ const LimitsPane = ({ id = LIMITS }) => {
         }));
     }, [columnsDefinition]);
 
-    function createLimitRows(numberOfRows) {
+    function createLimitRows() {
         const newRows = [];
         newRows.push(newRowData);
         return newRows;
@@ -98,7 +106,13 @@ const LimitsPane = ({ id = LIMITS }) => {
 
     return (
         <>
-            <GridSection title="Side1" />
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h3 className={classes.h3}>
+                        <FormattedMessage id={'Side1'} />
+                    </h3>
+                </Grid>
+            </Grid>
             <Grid container spacing={2}>
                 {gridItem(permanentCurrentLimit1Field, 4)}
             </Grid>
