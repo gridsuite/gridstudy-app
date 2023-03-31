@@ -2114,6 +2114,8 @@ export function createLine(
     busOrBusbarSectionId2,
     permanentCurrentLimit1,
     permanentCurrentLimit2,
+    temporaryCurrentLimits1,
+    temporaryCurrentLimits2,
     isUpdate,
     modificationUuid,
     connectionName1,
@@ -2156,9 +2158,11 @@ export function createLine(
             busOrBusbarSectionId2: busOrBusbarSectionId2,
             currentLimits1: {
                 permanentLimit: permanentCurrentLimit1,
+                temporaryLimits: temporaryCurrentLimits1,
             },
             currentLimits2: {
                 permanentLimit: permanentCurrentLimit2,
+                temporaryLimits: temporaryCurrentLimits2,
             },
             connectionName1: connectionName1,
             connectionDirection1: connectionDirection1,
