@@ -34,8 +34,7 @@ const TextInput = ({
     customAdornment,
 }) => {
     const classes = useStyles();
-    const { validationSchema, getValues, isHypothesisEditing } =
-        useFormContext();
+    const { validationSchema, getValues, keepOptionnel } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
@@ -63,7 +62,7 @@ const TextInput = ({
               optional:
                   !isFieldRequired(name, validationSchema, getValues()) &&
                   !formProps?.disabled &&
-                  !isHypothesisEditing,
+                  keepOptionnel,
           });
 
     return (

@@ -123,7 +123,7 @@ const LoadModificationDialog = ({
         <FormProvider
             validationSchema={schema}
             {...methods}
-            isHypothesisEditing={editData ? true : false}
+            keepOptionnel={false}
         >
             <ModificationDialog
                 fullWidth
