@@ -57,7 +57,7 @@ function MultiCheckbox({
         [arrayToWatch]
     );
     const someRowSelected = useMemo(
-        () => arrayToWatch.find((row) => row[SELECTED]),
+        () => arrayToWatch.some((row) => row[SELECTED]),
         [arrayToWatch]
     );
 
