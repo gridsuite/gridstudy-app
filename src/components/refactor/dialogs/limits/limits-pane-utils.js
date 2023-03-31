@@ -15,9 +15,9 @@ import {
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_VALUE,
 } from 'components/refactor/utils/field-constants';
-import yup from '../../../utils/yup-config';
-import { areArrayElementsUnique } from '../../../utils/utils';
-import { sanitizeString } from '../../../../dialogs/dialogUtils';
+import yup from '../../utils/yup-config';
+import { areArrayElementsUnique } from '../../utils/utils';
+import { sanitizeString } from '../../../dialogs/dialogUtils';
 
 const temporaryLimitsTableValidationSchema = () => ({
     [PERMANENT_LIMIT]: yup

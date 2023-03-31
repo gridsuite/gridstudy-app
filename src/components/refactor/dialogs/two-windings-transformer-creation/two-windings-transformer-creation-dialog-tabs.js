@@ -66,7 +66,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                     onClick={() => setDialogWidth('md')}
                 />
                 <Tab
-                    label={<FormattedMessage id="LineLimitsTab" />}
+                    label={<FormattedMessage id="LimitsTab" />}
                     className={getTabClass(
                         TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
                     )}

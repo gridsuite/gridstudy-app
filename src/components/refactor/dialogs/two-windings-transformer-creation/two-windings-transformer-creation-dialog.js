@@ -96,12 +96,12 @@ import {
     PERMANENT_LIMIT,
     TEMPORARY_LIMITS,
 } from '../../utils/field-constants.js';
-import TwoWindingsTransformerLimitsPane from './limits-pane/two-windings-transformer-limits-pane.js';
+import LimitsPane from '../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
     getLimitsFormData,
     getLimitsValidationSchema,
-} from './limits-pane/two-windings-transfomer-limits-pane-utils.js';
+} from '../limits/limits-pane-utils';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -733,7 +733,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     }
                     p={1}
                 >
-                    <TwoWindingsTransformerLimitsPane />
+                    <LimitsPane />
                 </Box>
 
                 <Box

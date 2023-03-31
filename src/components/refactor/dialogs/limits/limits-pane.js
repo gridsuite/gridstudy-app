@@ -16,18 +16,18 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from 'components/refactor/utils/field-constants';
-import FloatInput from '../../../rhf-inputs/float-input';
 import { useIntl } from 'react-intl';
+import React, { useMemo } from 'react';
+import { useFieldArray } from 'react-hook-form';
 import {
     AmpereAdornment,
     gridItem,
     GridSection,
-} from '../../../../dialogs/dialogUtils';
-import React, { useMemo } from 'react';
-import DndTable from '../../../../util/dnd-table/dnd-table';
-import { useFieldArray } from 'react-hook-form';
+} from 'components/dialogs/dialogUtils';
+import DndTable from 'components/util/dnd-table/dnd-table';
+import FloatInput from 'components/refactor/rhf-inputs/float-input';
 
-const TwoWindingsTransformerLimitsPane = ({ id = LIMITS }) => {
+const LimitsPane = ({ id = LIMITS }) => {
     const intl = useIntl();
 
     const columnsDefinition = useMemo(() => {
@@ -132,4 +132,4 @@ const TwoWindingsTransformerLimitsPane = ({ id = LIMITS }) => {
     );
 };
 
-export default TwoWindingsTransformerLimitsPane;
+export default LimitsPane;
