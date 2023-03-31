@@ -68,6 +68,7 @@ const DeleteEquipmentItem = ({
     itemText,
     handleDeleteEquipment,
 }) => {
+    const currentNode = useSelector((state) => state.currentTreeNode);
     const classes = useStyles();
 
     return (
@@ -80,6 +81,7 @@ const DeleteEquipmentItem = ({
                 )
             }
             selected={false}
+            disabled={isNodeReadOnly(currentNode)}
         >
             <ListItemIcon>
                 <DeleteIcon />
