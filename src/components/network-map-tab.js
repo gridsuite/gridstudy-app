@@ -539,6 +539,10 @@ export const NetworkMapTab = ({
     }, [intlRef, lineFullPath, setErrorMessage, studyUuid]);
 
     const loadGeoData = useCallback(() => {
+        if (!isNodeBuilt(currentNodeRef.current)) {
+            return;
+        }
+
         if (studyUuid && currentNodeRef.current) {
             if (
                 // To manage a lineFullPath param change, if lineFullPath=true and linePositions is empty, we load all the geo data.
