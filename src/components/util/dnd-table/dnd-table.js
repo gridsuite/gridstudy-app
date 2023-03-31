@@ -38,7 +38,7 @@ export const MAX_ROWS_NUMBER = 100;
 
 export const addSelectedFieldToRows = (rows) => {
     return rows?.map((row) => {
-        return { ...row, selected: false };
+        return { ...row, [SELECTED]: false };
     });
 };
 
