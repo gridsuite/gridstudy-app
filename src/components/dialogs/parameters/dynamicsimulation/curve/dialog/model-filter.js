@@ -334,7 +334,15 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
                         onSelectionChanged={onSelectionChanged}
                         suppressRowClickSelection={true}
                     ></AgGridReact>*/}
-                    <CheckmarkTreeView data={data2} />
+                    <CheckmarkTreeView
+                        data={data2}
+                        sx={{
+                            height: 300,
+                            flexGrow: 1,
+                            maxWidth: 400,
+                            overflowY: 'auto',
+                        }}
+                    />
                 </div>
             </Grid>
         </>

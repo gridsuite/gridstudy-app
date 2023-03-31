@@ -72,25 +72,32 @@ export const data2 = [
     },
 ];
 
-export default function CheckmarkTreeView({ data }) {
-    const renderTree = (nodes) =>
-        nodes.map((node) => {
-            <TreeItem key={node.id} nodeId={node.id} label={node.name}>
-                {Array.isArray(nodes.children)
-                    ? nodes.children.map((node) => renderTree(node))
-                    : null}
-            </TreeItem>;
-        });
+export default function CheckmarkTreeView({ data: items, ...rest }) {
+    const renderChildren = (allItems, parentId) => {
+        const children = allItems.filter((elem) => elem.parentId === parentId);
+        return !children.length ? null : renderItems(allItems, children);
+    };
+
+    const renderItems = (allItems, itemsToRender = []) => {
+        if (!itemsToRender.length) {
+            // first level => auto lookup root items
+            itemsToRender = allItems.filter((item) => !item.parentId);
+        }
+
+        return itemsToRender.map((elem) => (
+            <TreeItem key={elem.id} nodeId={elem.id} label={elem.name}>
+                {renderChildren(allItems, elem.id)}
+            </TreeItem>
+        ));
+    };
 
     return (
         <TreeView
-            aria-label="rich object"
             defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpanded={['root']}
             defaultExpandIcon={<ChevronRightIcon />}
-            //sx={{ height: 110, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
+            {...rest}
         >
-            {renderTree(data)}
+            {renderItems(items)}
         </TreeView>
     );
 }
