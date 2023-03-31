@@ -30,6 +30,7 @@ import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
+import TabPanelLazy from './results/common/tab-panel-lazy';
 import { DiagramPane } from './diagrams/diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
@@ -355,11 +356,11 @@ const StudyPane = ({
             >
                 {renderTableView()}
             </div>
-            <div
+            {/* using a key in this tappanellazy because we can change the nodeuuid in this component */}
+            <TabPanelLazy
+                key={`results-${currentNode?.id}`}
                 className="singlestretch-child"
-                style={{
-                    display: props.view === StudyView.RESULTS ? null : 'none',
-                }}
+                selected={props.view === StudyView.RESULTS}
             >
                 <ResultViewTab
                     studyUuid={studyUuid}
@@ -369,7 +370,7 @@ const StudyPane = ({
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
                 />
-            </div>
+            </TabPanelLazy>
             <div
                 className="singlestretch-child"
                 style={{

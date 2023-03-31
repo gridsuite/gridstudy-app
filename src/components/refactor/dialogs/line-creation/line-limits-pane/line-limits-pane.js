@@ -17,7 +17,7 @@ import {
     TEMPORARY_LIMITS,
 } from 'components/refactor/utils/field-constants';
 import FloatInput from '../../../rhf-inputs/float-input';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
     AmpereAdornment,
     gridItem,
@@ -26,9 +26,17 @@ import {
 import React, { useMemo } from 'react';
 import DndTable from '../../../../util/dnd-table/dnd-table';
 import { useFieldArray } from 'react-hook-form';
+import makeStyles from '@mui/styles/makeStyles';
+
+const useStyles = makeStyles((theme) => ({
+    h3: {
+        marginTop: 0,
+    },
+}));
 
 const LineLimitsPane = ({ id = LIMITS }) => {
     const intl = useIntl();
+    const classes = useStyles();
 
     const columnsDefinition = useMemo(() => {
         return [
@@ -98,7 +106,13 @@ const LineLimitsPane = ({ id = LIMITS }) => {
 
     return (
         <>
-            <GridSection title="Side1" />
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h3 className={classes.h3}>
+                        <FormattedMessage id={'Side1'} />
+                    </h3>
+                </Grid>
+            </Grid>
             <Grid container spacing={2}>
                 {gridItem(permanentCurrentLimit1Field, 4)}
             </Grid>
