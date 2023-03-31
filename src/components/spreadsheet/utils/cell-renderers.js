@@ -16,6 +16,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useSelector } from 'react-redux';
+import {isNodeReadOnly} from "../../graph/util/model-functions";
 
 const useStyles = makeStyles((theme) => ({
     editCell: {
@@ -135,7 +136,7 @@ export const EditableCellRenderer = (props) => {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const isRootNode = useMemo(
-        () => currentNode?.type === 'ROOT',
+        () => isNodeReadOnly(currentNode),
         [currentNode]
     );
 
