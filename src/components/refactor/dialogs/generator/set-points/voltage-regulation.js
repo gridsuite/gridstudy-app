@@ -12,7 +12,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import React, { useCallback } from 'react';
+import React, { useMemo } from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     gridItem,
@@ -39,18 +39,14 @@ const VoltageRegulation = ({
         name: PREVIOUS_VOLTAGE_REGULATION_TYPE,
     });
 
-    const isPreviousRegulationDistant = useCallback(() => {
-        return (
-            voltageRegulationPreviousType &&
-            (voltageRegulationPreviousType === 'Remote' ||
+    const isDistantRegulation = useMemo(
+        () =>
+            voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
+            (!voltageRegulationType &&
                 voltageRegulationPreviousType ===
-                    REGULATION_TYPES.DISTANT.label)
-        );
-    }, [voltageRegulationPreviousType]);
-
-    const isDistantRegulation =
-        voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
-        (voltageRegulationType == null && isPreviousRegulationDistant());
+                    REGULATION_TYPES.DISTANT.label),
+        [voltageRegulationType, voltageRegulationPreviousType]
+    );
 
     const voltageRegulationTypeField = (
         <SelectInput

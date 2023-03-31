@@ -7,6 +7,7 @@ import {
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     FREQUENCY_REGULATION,
+    ID,
     MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
@@ -25,12 +26,12 @@ import {
     STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
+    TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/refactor/utils/field-constants';
-import { FormattedMessage } from 'react-intl';
 import { getPreviousValueFieldName } from 'components/refactor/utils/utils';
 import {
     getEnergySourceLabel,
@@ -92,9 +93,10 @@ export const PREVIOUS_EQUIPMENT = getPreviousValueFieldName(EQUIPMENT);
 export const PREVIOUS_DROOP = getPreviousValueFieldName(DROOP);
 export const PREVIOUS_VOLTAGE_SET_POINT =
     getPreviousValueFieldName(VOLTAGE_SET_POINT);
+export const PREVIOUS_Q_PERCENT = getPreviousValueFieldName(Q_PERCENT);
 
 export const getPreviousBooleanValue = (isPreviousValueOn) => {
-    return <FormattedMessage id={isPreviousValueOn ? 'On' : 'Off'} />;
+    return isPreviousValueOn ? 'On' : 'Off';
 };
 
 export function assignValuesToForm(editData) {
@@ -129,13 +131,13 @@ export function assignValuesToForm(editData) {
         [Q_PERCENT]: editData?.qPercent?.value ?? null,
         [VOLTAGE_LEVEL]: editData?.regulatingTerminalVlId?.value
             ? {
-                  id: editData?.regulatingTerminalVlId?.value,
+                  [ID]: editData?.regulatingTerminalVlId?.value,
               }
             : null,
         [EQUIPMENT]: editData?.regulatingTerminalId?.value
             ? {
-                  id: editData?.regulatingTerminalId?.value ?? null,
-                  type: editData?.regulatingTerminalType?.value ?? null,
+                  [ID]: editData?.regulatingTerminalId?.value ?? null,
+                  [TYPE]: editData?.regulatingTerminalType?.value ?? null,
               }
             : null,
         [REACTIVE_CAPABILITY_CURVE_CHOICE]:
@@ -145,50 +147,48 @@ export function assignValuesToForm(editData) {
                 : 'CURVE',
     };
 
-    if (editData?.reactiveCapabilityCurvePoints?.length > 0) {
-        const rcc = editData.reactiveCapabilityCurvePoints.map((point) => {
-            return {
-                [P]: point.p ?? null,
-                [Q_MAX_P]: point.qmaxP ?? null,
-                [Q_MIN_P]: point.qminP ?? null,
-                [PREVIOUS_Q_MAX_P]: point.oldQmaxP ?? point.qmaxP,
-                [PREVIOUS_Q_MIN_P]: point.oldQminP ?? point.qminP,
-                [PREVIOUS_P]: point.oldP ?? point.p,
-            };
-        });
-        const tableData = { [REACTIVE_CAPABILITY_CURVE_TABLE]: rcc };
-        return {
-            ...customEditData,
-            ...tableData,
-        };
-    }
+    // if (editData?.reactiveCapabilityCurvePoints?.length > 0) {
+    //     const rcc = editData.reactiveCapabilityCurvePoints.map((point) => {
+    //         return {
+    //             [P]: point.p ?? null,
+    //             [Q_MAX_P]: point.qmaxP ?? null,
+    //             [Q_MIN_P]: point.qminP ?? null,
+    //             [PREVIOUS_Q_MAX_P]: point.oldQmaxP ?? point.qmaxP,
+    //             [PREVIOUS_Q_MIN_P]: point.oldQminP ?? point.qminP,
+    //             [PREVIOUS_P]: point.oldP ?? point.p,
+    //         };
+    //     });
+    //     const tableData = { [REACTIVE_CAPABILITY_CURVE_TABLE]: rcc };
+    //     return {
+    //         ...customEditData,
+    //         ...tableData,
+    //     };
+    // }
 
     return {
         ...customEditData,
     };
 }
 
-export const assignPreviousValuesToForm = (
-    generator,
-    watchEquipmentId,
-    intl,
-    reactiveCapabilityCurvePoints
-) => {
-    const energySourceLabelId = getEnergySourceLabel(generator?.energySource);
-    const previousEnergySourceLabel = energySourceLabelId
-        ? intl.formatMessage({
-              id: energySourceLabelId,
-          })
-        : undefined;
-    const previousVoltageRegulationType = generator?.voltageRegulatorOn
-        ? generator?.regulatingTerminalVlId ||
-          generator?.regulatingTerminalConnectableId
-            ? intl.formatMessage({
-                  id: REGULATION_TYPES.DISTANT.label,
-              })
-            : intl.formatMessage({ id: REGULATION_TYPES.LOCAL.label })
-        : null;
+export const getReactiveCapabilityCurvePoint = ({
+    p,
+    qmaxP,
+    qminP,
+    previousP,
+    previousQminP,
+    previousQmaxP,
+}) => {
+    return {
+        [P]: p ?? null,
+        [Q_MAX_P]: qmaxP ?? null,
+        [Q_MIN_P]: qminP ?? null,
+        [PREVIOUS_Q_MAX_P]: previousQmaxP,
+        [PREVIOUS_Q_MIN_P]: previousQminP,
+        [PREVIOUS_P]: previousP,
+    };
+};
 
+export const assignPreviousValuesToForm = (generator, watchEquipmentId) => {
     const previousFrequencyRegulationState = getPreviousBooleanValue(
         generator?.activePowerControlOn
     );
@@ -197,34 +197,21 @@ export const assignPreviousValuesToForm = (
         generator?.regulatingTerminalConnectableId &&
         generator?.regulatingTerminalConnectableType
             ? generator?.regulatingTerminalConnectableType +
-              ':' +
+              ' : ' +
               generator?.regulatingTerminalConnectableId
             : null;
+
     return {
         [EQUIPMENT_ID]: watchEquipmentId,
-        [REACTIVE_CAPABILITY_CURVE_TABLE]: reactiveCapabilityCurvePoints,
+        [REACTIVE_CAPABILITY_CURVE_TABLE]:
+            generator.reactiveCapabilityCurvePoints,
         [REACTIVE_CAPABILITY_CURVE_CHOICE]: generator?.minMaxReactiveLimits
             ? 'MINMAX'
             : 'CURVE',
-        [VOLTAGE_REGULATION]: generator?.voltageRegulatorOn
-            ? generator?.voltageRegulatorOn
-            : null,
-        [FREQUENCY_REGULATION]: generator?.activePowerControlOn ?? null,
-        [VOLTAGE_LEVEL]: generator?.regulatingTerminalVlId
-            ? {
-                  id: generator?.regulatingTerminalVlId,
-              }
-            : null,
-        [EQUIPMENT]: generator?.regulatingTerminalConnectableId
-            ? {
-                  id: generator?.regulatingTerminalConnectableId ?? null,
-                  type: generator?.regulatingTerminalConnectableType ?? null,
-              }
-            : null,
         [PREVIOUS_VOLTAGE_LEVEL]: generator?.regulatingTerminalVlId ?? null,
         [PREVIOUS_EQUIPMENT]: previousEquipment,
         [PREVIOUS_EQUIPMENT_NAME]: generator?.name,
-        [PREVIOUS_ENERGY_SOURCE]: previousEnergySourceLabel,
+        [PREVIOUS_ENERGY_SOURCE]: getEnergySourceLabel(generator?.energySource),
         [PREVIOUS_MAXIMUM_ACTIVE_POWER]: generator?.maxP,
         [PREVIOUS_MINIMUM_ACTIVE_POWER]: generator?.minP,
         [PREVIOUS_MAXIMUM_REACTIVE_POWER]:
@@ -246,7 +233,13 @@ export const assignPreviousValuesToForm = (
         ),
         [PREVIOUS_REACTIVE_POWER_SET_POINT]: generator?.targetQ,
         [PREVIOUS_VOLTAGE_SET_POINT]: generator?.targetV,
-        [PREVIOUS_VOLTAGE_REGULATION_TYPE]: previousVoltageRegulationType,
+        [PREVIOUS_VOLTAGE_REGULATION_TYPE]: generator?.voltageRegulatorOn
+            ? generator?.regulatingTerminalVlId ||
+              generator?.regulatingTerminalConnectableId
+                ? REGULATION_TYPES.DISTANT.label
+                : REGULATION_TYPES.LOCAL.label
+            : null,
+        [PREVIOUS_Q_PERCENT]: generator?.qPercent,
         [PREVIOUS_FREQUENCY_REGULATION]: previousFrequencyRegulationState,
         [PREVIOUS_DROOP]: generator?.droop,
     };
@@ -277,5 +270,6 @@ export const getPreviousValuesEmptyForm = () => {
         [PREVIOUS_VOLTAGE_REGULATION_TYPE]: null,
         [PREVIOUS_FREQUENCY_REGULATION]: null,
         [PREVIOUS_DROOP]: null,
+        [PREVIOUS_Q_PERCENT]: null,
     };
 };

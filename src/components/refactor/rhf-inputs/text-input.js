@@ -16,8 +16,9 @@ import {
 import TextFieldWithAdornment from '../../util/text-field-with-adornment';
 import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types';
-import { useController, useFormContext, useWatch } from 'react-hook-form';
-import { getPreviousValueFieldName, isFieldRequired } from '../utils/utils';
+import { useController, useFormContext } from 'react-hook-form';
+import { isFieldRequired } from '../utils/utils';
+import { usePreviousValue } from './utils';
 
 const TextInput = ({
     name,
@@ -39,8 +40,7 @@ const TextInput = ({
         fieldState: { error },
     } = useController({ name });
 
-    const previousFieldName = getPreviousValueFieldName(name);
-    const previousValueWatch = useWatch({ name: previousFieldName });
+    const previousValue = usePreviousValue(name);
 
     const Field = adornment ? TextFieldWithAdornment : TextField;
 
@@ -102,7 +102,7 @@ const TextInput = ({
                 adornment && {
                     handleClearValue: handleClearValue,
                 })}
-            {...genHelperPreviousValue(previousValueWatch, adornment)}
+            {...genHelperPreviousValue(previousValue, adornment)}
             {...genHelperError(error?.message)}
             {...formProps}
         />

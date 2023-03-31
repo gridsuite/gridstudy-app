@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -26,11 +26,8 @@ import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
-    P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
-    Q_MAX_P,
-    Q_MIN_P,
     Q_PERCENT,
     RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
@@ -65,12 +62,12 @@ import {
     assignPreviousValuesToForm,
     assignValuesToForm,
     getPreviousValuesEmptyForm,
+    getReactiveCapabilityCurvePoint,
     PREVIOUS_P,
     PREVIOUS_Q_MAX_P,
     PREVIOUS_Q_MIN_P,
     PREVIOUS_VOLTAGE_REGULATION,
 } from './generator-modification-utils';
-import { useIntl } from 'react-intl';
 
 const schema = yup
     .object()
@@ -113,11 +110,12 @@ const GeneratorModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const intl = useIntl();
+    const originalEmptyFormData = useRef();
+    const isIdHasChanged = useRef(false);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
-    const emptyFormData = useMemo(
-        () => ({
+    const emptyFormData = useMemo(() => {
+        let emptyFormDataObject = {
             [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             [ENERGY_SOURCE]: null,
@@ -134,68 +132,65 @@ const GeneratorModificationDialog = ({
             ...getSetPointsEmptyFormData(null, null, null),
             ...getReactiveLimitsEmptyFormData(true),
             ...getPreviousValuesEmptyForm(),
-        }),
-        [defaultIdValue]
-    );
+        };
+
+        originalEmptyFormData.current = emptyFormDataObject;
+        if (editData && !isIdHasChanged.current) {
+            return assignValuesToForm(editData);
+        }
+
+        return emptyFormDataObject;
+    }, [defaultIdValue, editData, isIdHasChanged]);
 
     const methods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
 
-    const { reset, getValues, clearErrors } = methods;
+    const { reset, getValues } = methods;
 
-    //this method empties the form, and let us pass custom data that we want to set
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [reset, emptyFormData]);
-
-    const assignValuesToFormAndKeepEditData = useCallback(
-        (value, equipmentId, intl, getValues, reset) => {
-            const generator = assignPreviousValuesToForm(
-                value,
-                equipmentId,
-                intl,
-                getValues(REACTIVE_CAPABILITY_CURVE_TABLE)
-            );
-            reset(generator, { keepDirtyValues: true });
+    const clear = useCallback(
+        (customData = {}) => {
+            if (customData && Object.keys(customData).length > 0) {
+                reset({ ...customData });
+            } else {
+                isIdHasChanged.current = true;
+                reset({ ...originalEmptyFormData.current });
+            }
         },
-        []
+        [reset]
     );
 
-    const assignValuesToFormWithNoEditData = useCallback(
-        (value, equipmentId, intl, reset, emptyFormData) => {
-            const generatorWithReactiveCapabilityCurve =
-                value?.reactiveCapabilityCurvePoints?.length > 0;
-            const reactiveCapabilityCurvePoints =
-                generatorWithReactiveCapabilityCurve
-                    ? value?.reactiveCapabilityCurvePoints?.map((element) => {
-                          return {
-                              [P]: null,
-                              [Q_MIN_P]: null,
-                              [Q_MAX_P]: null,
-                              [PREVIOUS_P]: element.p ?? null,
-                              [PREVIOUS_Q_MIN_P]: element.qminP ?? null,
-                              [PREVIOUS_Q_MAX_P]: element.qmaxP ?? null,
-                          };
-                      })
-                    : [{}, {}];
-            const generator = assignPreviousValuesToForm(
-                value,
-                equipmentId,
-                intl,
-                reactiveCapabilityCurvePoints
-            );
-            reset({ ...emptyFormData, ...generator });
+    const getReactiveCapabilityCurveTable = useCallback(
+        (generator) => {
+            if (editData?.reactiveCapabilityCurvePoints?.length > 0) {
+                return editData.reactiveCapabilityCurvePoints.map((point) =>
+                    getReactiveCapabilityCurvePoint({
+                        p: point.p,
+                        qmaxP: point.qmaxP,
+                        qminP: point.qminP,
+                        previousP: point.oldP ?? point.p,
+                        previousQminP: point.oldQminP ?? point.qminP,
+                        previousQmaxP: point.oldQmaxP ?? point.qmaxP,
+                    })
+                );
+            } else if (generator?.reactiveCapabilityCurvePoints?.length > 0) {
+                return generator?.reactiveCapabilityCurvePoints?.map((point) =>
+                    getReactiveCapabilityCurvePoint({
+                        previousP: point.p,
+                        previousQminP: point.qminP,
+                        previousQmaxP: point.qmaxP,
+                    })
+                );
+            } else {
+                return [{}, {}];
+            }
         },
-        []
+        [editData?.reactiveCapabilityCurvePoints]
     );
 
-    //this useCallback fetches previous equipment properties values, resets form values
-    //then create empty reactive limits table depending on fetched equipment data
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
-            clearErrors();
             if (equipmentId) {
                 fetchEquipmentInfos(
                     studyUuid,
@@ -205,27 +200,19 @@ const GeneratorModificationDialog = ({
                     true
                 )
                     .then((value) => {
-                        if (value) {
-                            if (
-                                editData &&
-                                equipmentId === editData.equipmentId
-                            ) {
-                                assignValuesToFormAndKeepEditData(
-                                    value,
-                                    equipmentId,
-                                    intl,
-                                    getValues,
-                                    reset
-                                );
-                            } else {
-                                assignValuesToFormWithNoEditData(
-                                    value,
-                                    equipmentId,
-                                    intl,
-                                    reset,
-                                    emptyFormData
-                                );
-                            }
+                        value.reactiveCapabilityCurvePoints =
+                            getReactiveCapabilityCurveTable(value);
+                        const prevValues = assignPreviousValuesToForm(
+                            value,
+                            equipmentId
+                        );
+                        if (editData?.equipmentId === equipmentId) {
+                            reset({ ...emptyFormData, ...prevValues });
+                        } else {
+                            reset({
+                                ...originalEmptyFormData.current,
+                                ...prevValues,
+                            });
                         }
                     })
                     .catch(() => clear());
@@ -234,27 +221,15 @@ const GeneratorModificationDialog = ({
             }
         },
         [
-            clearErrors,
             studyUuid,
             currentNodeUuid,
+            getReactiveCapabilityCurveTable,
             editData,
-            assignValuesToFormAndKeepEditData,
-            intl,
-            getValues,
             reset,
-            assignValuesToFormWithNoEditData,
             emptyFormData,
             clear,
         ]
     );
-
-    useEffect(() => {
-        if (editData) {
-            reset({
-                ...assignValuesToForm(editData),
-            });
-        }
-    }, [editData, reset]);
 
     const calculateCurvePointsToStore = useCallback(() => {
         const reactiveCapabilityCurve = getValues(
