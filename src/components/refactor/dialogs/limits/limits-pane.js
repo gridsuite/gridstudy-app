@@ -43,7 +43,7 @@ const LimitsPane = ({ id = LIMITS }) => {
             {
                 label: 'TemporaryLimitName',
                 dataKey: TEMPORARY_LIMIT_NAME,
-                initialValue: undefined,
+                initialValue: '',
                 editable: true,
                 numeric: false,
             },
@@ -76,17 +76,13 @@ const LimitsPane = ({ id = LIMITS }) => {
     });
 
     const newRowData = useMemo(() => {
-        return columnsDefinition.reduce((accumulator, currentValue) => ({
-            ...accumulator,
-            [currentValue.dataKey]: currentValue.initialValue,
-        }));
+        const newRowData = {};
+        columnsDefinition.forEach(
+            (column) => (newRowData[column.dataKey] = column.initialValue)
+        );
+        return newRowData;
     }, [columnsDefinition]);
-
-    function createLimitRows() {
-        const newRows = [];
-        newRows.push(newRowData);
-        return newRows;
-    }
+    const createLimitRows = () => [newRowData];
 
     const permanentCurrentLimit1Field = (
         <FloatInput
