@@ -34,7 +34,7 @@ const TextInput = ({
     customAdornment,
 }) => {
     const classes = useStyles();
-    const { validationSchema, getValues, isEdit } = useFormContext();
+    const { validationSchema, getValues, removeOptionnel } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
@@ -64,7 +64,7 @@ const TextInput = ({
               optional:
                   !isFieldRequired(name, validationSchema, getValues()) &&
                   !formProps?.disabled &&
-                  !isEdit,
+                  !removeOptionnel,
           });
 
     return (

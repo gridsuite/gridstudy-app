@@ -186,7 +186,7 @@ const LoadModificationDialog = ({
         <FormProvider
             validationSchema={schema}
             {...methods}
-            isEdit={editData ? true : false}
+            removeOptionnel={true}
         >
             <ModificationDialog
                 fullWidth
