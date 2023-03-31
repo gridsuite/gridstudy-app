@@ -110,6 +110,10 @@ const TableWrapper = (props) => {
         (state) => state.allReorderedTableDefinitionIndexes
     );
 
+    const equipmentFetched = useSelector(
+        (state) => state.networkEquipmentsFetched
+    );
+
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
     const [
@@ -663,9 +667,12 @@ const TableWrapper = (props) => {
                         rowData={rowData}
                         columnData={columnData}
                         topPinnedData={topPinnedData}
-                        fetched={props.network?.isResourceFetched(
-                            TABLES_DEFINITION_INDEXES.get(tabIndex).resource
-                        )}
+                        fetched={
+                            equipmentFetched &&
+                            props.network?.isResourceFetched(
+                                TABLES_DEFINITION_INDEXES.get(tabIndex).resource
+                            )
+                        }
                         scrollToIndex={scrollToIndex}
                         visible={props.visible}
                         network={props.network}
