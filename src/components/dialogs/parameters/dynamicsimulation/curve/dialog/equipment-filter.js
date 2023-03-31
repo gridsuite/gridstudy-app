@@ -14,7 +14,7 @@ import { makeStyles, useTheme } from '@mui/styles';
 import CountrySelect from '../country-select';
 import CheckmarkSelect from '../checkmark-select';
 
-const EQUIPMENT_TYPE = {
+export const EQUIPMENT_TYPE = {
     GENERATOR: 'Generator',
     LOAD: 'Load',
     BUS: 'Line',
