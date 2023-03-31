@@ -16,7 +16,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useSelector } from 'react-redux';
-import {isNodeReadOnly} from "../../graph/util/model-functions";
+import { isNodeReadOnly } from '../../graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     editCell: {
