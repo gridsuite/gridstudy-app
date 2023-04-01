@@ -547,7 +547,7 @@
     "QatNominalV": "Q à tension nominale",
     "QatNominalVLabel": "Q à Unom (MVAr)",
     "SusceptanceLabel": "Susceptance (S)",
-    "LineLimitsTab": "Limites",
+    "LimitsTab": "Limites",
     "LineCharacteristicsTab": "Caractéristiques",
     "TemporaryCurrentLimitsText": "Limites d'intensité temporaires",
     "TemporaryLimitDuration": "Tempo (s)",
