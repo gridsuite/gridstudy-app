@@ -11,7 +11,6 @@ import {
     ENABLED,
     FLOW_SET_POINT_REGULATING_VALUE,
     PHASE_TAP_CHANGER,
-    REGULATING,
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
@@ -25,16 +24,14 @@ import {
     gridItem,
 } from '../../../../../dialogs/dialogUtils';
 import {
-    REGULATION_MODES,
+    PHASE_REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
 } from '../../../../../network/constants';
-import SwitchInput from '../../../../rhf-inputs/booleans/switch-input';
 import FloatInput from '../../../../rhf-inputs/float-input';
 import SelectInput from '../../../../rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
-import { useCallback } from 'react';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 const PhaseTapChangerPane = ({
@@ -51,60 +48,31 @@ const PhaseTapChangerPane = ({
         name: `${id}.${REGULATION_MODE}`,
     });
 
-    const regulatingWatch = useWatch({
-        name: `${id}.${REGULATING}`,
-    });
-
     const regulationTypeWatch = useWatch({
         name: `${id}.${REGULATION_TYPE}`,
     });
 
-    const phaseTapChangerEnabledField = (
-        <SwitchInput
-            name={`${id}.${ENABLED}`}
-            label="ConfigurePhaseTapChanger"
-        />
-    );
+    const regulationEnabled =
+        phaseTapChangerEnabledWatch &&
+        (regulationModeWatch === PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
+            regulationModeWatch ===
+                PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id);
 
     const regulationModeField = (
         <SelectInput
             name={`${id}.${REGULATION_MODE}`}
             label={'RegulationMode'}
-            options={Object.values(REGULATION_MODES)}
+            options={Object.values(PHASE_REGULATION_MODES)}
             disabled={!phaseTapChangerEnabledWatch}
         />
     );
-
-    const regulatingField = (
-        <SwitchInput
-            name={`${id}.${REGULATING}`}
-            label="Regulating"
-            formProps={{
-                disabled:
-                    !(
-                        regulationModeWatch ===
-                            REGULATION_MODES.CURRENT_LIMITER.id ||
-                        regulationModeWatch ===
-                            REGULATION_MODES.ACTIVE_POWER_CONTROL.id
-                    ) || !phaseTapChangerEnabledWatch,
-            }}
-        />
-    );
-
-    const isVoltageRegulationOn = useCallback(() => {
-        return (
-            regulatingWatch &&
-            regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id &&
-            phaseTapChangerEnabledWatch
-        );
-    }, [regulatingWatch, regulationModeWatch, phaseTapChangerEnabledWatch]);
 
     const regulationTypeField = (
         <SelectInput
             name={`${id}.${REGULATION_TYPE}`}
             label={'RegulationTypeText'}
             options={Object.values(REGULATION_TYPES)}
-            disabled={!isVoltageRegulationOn()}
+            disabled={!regulationEnabled}
             size={'small'}
             disableClearable
         />
@@ -115,7 +83,7 @@ const PhaseTapChangerPane = ({
             name={`${id}.${REGULATION_SIDE}`}
             label={'RegulatedSide'}
             options={Object.values(SIDE)}
-            disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
+            disabled={!regulationEnabled}
             size={'small'}
             disableClearable
         />
@@ -126,7 +94,7 @@ const PhaseTapChangerPane = ({
             name={`${id}.${CURRENT_LIMITER_REGULATING_VALUE}`}
             label="RegulatingValueCurrentLimiter"
             formProps={{
-                disabled: !regulatingWatch || !phaseTapChangerEnabledWatch,
+                disabled: !regulationEnabled,
             }}
             adornment={AmpereAdornment}
         />
@@ -138,7 +106,7 @@ const PhaseTapChangerPane = ({
             label="RegulatingValueActivePowerControl"
             adornment={ActivePowerAdornment}
             formProps={{
-                disabled: !regulatingWatch || !phaseTapChangerEnabledWatch,
+                disabled: !regulationEnabled,
             }}
         />
     );
@@ -149,7 +117,7 @@ const PhaseTapChangerPane = ({
             label="Deadband"
             adornment={ActivePowerAdornment}
             formProps={{
-                disabled: !regulatingWatch || !phaseTapChangerEnabledWatch,
+                disabled: !regulationEnabled,
             }}
         />
     );
@@ -157,7 +125,7 @@ const PhaseTapChangerPane = ({
     const regulatingTerminalField = (
         <RegulatingTerminalForm
             id={id}
-            disabled={!regulatingWatch || !phaseTapChangerEnabledWatch}
+            disabled={!regulationEnabled}
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
             }
@@ -172,47 +140,28 @@ const PhaseTapChangerPane = ({
             <Grid container spacing={2}>
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
-                        {phaseTapChangerEnabledField}
+                        {regulationModeField}
                     </Grid>
                 </Grid>
-                <Grid item xs={4}>
-                    {gridItem(regulationModeField, 12)}
-                </Grid>
-                <Grid item container spacing={2}>
-                    <Grid item xs={4}>
-                        {regulatingField}
-                    </Grid>
-                    <Grid item xs={4}>
-                        {regulationTypeField}
-                    </Grid>
-                </Grid>
-                <Grid
-                    item
-                    container
-                    spacing={2}
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        alignItems: 'center',
-                    }}
-                >
-                    {regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id && (
+                {regulationEnabled && (
+                    <Grid item container spacing={2}>
                         <Grid item xs={4}>
-                            {regulationModeWatch !==
-                                REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
+                            {regulationTypeField}
+                        </Grid>
+                        <Grid item xs={4}>
+                            {regulationModeWatch ===
+                                PHASE_REGULATION_MODES.CURRENT_LIMITER.id &&
                                 currentLimiterRegulatingValueField}
                             {regulationModeWatch ===
-                                REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
-                                flowSetPointRegulatingValueField}
+                                PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL
+                                    .id && flowSetPointRegulatingValueField}
                         </Grid>
-                    )}
-                    {regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id && (
                         <Grid item xs={4}>
                             {targetDeadbandField}
                         </Grid>
-                    )}
-                </Grid>
-                {regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id &&
+                    </Grid>
+                )}
+                {regulationEnabled &&
                     regulationTypeWatch === REGULATION_TYPES.DISTANT.id && (
                         <Grid item container spacing={2}>
                             <Grid
@@ -229,7 +178,7 @@ const PhaseTapChangerPane = ({
                             {gridItem(regulatingTerminalField, 8)}
                         </Grid>
                     )}
-                {regulationModeWatch !== REGULATION_MODES.FIXED_TAP.id &&
+                {regulationEnabled &&
                     regulationTypeWatch === REGULATION_TYPES.LOCAL.id && (
                         <Grid item container spacing={2}>
                             <Grid
@@ -246,7 +195,6 @@ const PhaseTapChangerPane = ({
                             {gridItem(sideField, 4)}
                         </Grid>
                     )}
-
                 <PhaseTapChangerPaneSteps
                     disabled={!phaseTapChangerEnabledWatch}
                 />
