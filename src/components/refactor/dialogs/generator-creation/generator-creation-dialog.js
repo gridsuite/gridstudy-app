@@ -104,7 +104,7 @@ const schema = yup
                 .number()
                 .nullable()
                 .when([TRANSFORMER_REACTANCE], {
-                    is: (transformerReactance) => transformerReactance !== null,
+                    is: (transformerReactance) => transformerReactance != null,
                     then: (schema) => schema.required(),
                 }),
             [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
