@@ -20,18 +20,8 @@ const useStyles = makeStyles((theme) => ({
         width: 'auto',
         height: '100%',
         position: 'relative',
-
-        //overrides the default computed max heigt for ag grid default selector editor to make it more usable
-        //can be removed if a custom selector editor is implemented
-        '& .ag-select-list': {
-            maxHeight: '300px !important',
-        },
     },
 }));
-
-export const ConnectableIdRenderer = (props) => {
-    return props.data.elementId ? undefined : props.value;
-};
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
@@ -55,11 +45,8 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             },
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
-                cellRenderer: ConnectableIdRenderer,
                 field: 'connectableId',
-                filter: true,
             },
-
             {
                 headerName: intl.formatMessage({ id: 'IscKA' }),
                 field: 'current',
@@ -73,26 +60,14 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
-                // numeric: true,
-                // nullable: true,
-                // fractionDigits: 1,
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
-                // numeric: true,
-                // nullable: true,
-                // fractionDigits: 1,
             },
             {
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
-                // numeric: true,
-                // fractionDigits: 1,
-            },
-            {
-                field: 'linkedElementId',
-                hide: true,
             },
         ];
     }, [intl]);
@@ -177,6 +152,14 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         return rows;
     }
 
+    const handlePostSortRows = useCallback((params) => {
+        const rows = params.nodes;
+        Object.assign(
+            rows,
+            groupPostSort(rows, 'elementId', 'linkedElementId')
+        );
+    }, []);
+
     function renderResult() {
         const rows = flattenResult(result);
 
@@ -190,52 +173,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     columnDefs={columns}
                     getLocaleText={getLocaleText}
                     getRowStyle={getRowStyle}
-                    postSortRows={(params) => {
-                        const rows = params.nodes;
-
-                        Object.assign(
-                            rows,
-                            groupPostSort(rows, 'elementId', 'linkedElementId')
-                        );
-                    }}
-                    onFilterChanged={(params) => {
-                        const filterModel =
-                            gridRef.current?.api?.getFilterInstance(
-                                params.columns[0].colId
-                            ).appliedModel;
-
-                        if (filterModel !== null) {
-                            const filterValue = filterModel?.filter;
-
-                            const groupIds = [
-                                ...new Set(
-                                    gridRef.current?.api
-                                        ?.getRenderedNodes()
-                                        .map(
-                                            (node) => node.data.linkedElementId
-                                        )
-                                ),
-                            ];
-
-                            gridRef.current?.api?.forEachNode((params) => {
-                                if (params.data.elementId !== undefined) {
-                                    if (
-                                        groupIds.includes(params.data.elementId)
-                                    ) {
-                                        const newData = params.data;
-                                        newData.connectableId = filterValue;
-
-                                        const transaction = {
-                                            update: [newData],
-                                        };
-                                        gridRef.current.api.applyTransaction(
-                                            transaction
-                                        );
-                                    }
-                                }
-                            });
-                        }
-                    }}
+                    postSortRows={handlePostSortRows}
                 />
             )
         );
