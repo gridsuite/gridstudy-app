@@ -348,11 +348,6 @@ const GeneratorModificationDialog = ({
                                         value?.minMaxReactiveLimits != null
                                             ? 'MINMAX'
                                             : 'CURVE',
-                                    [OLD_VOLTAGE_LEVEL]:
-                                        value?.regulatingTerminalVlId ?? null,
-                                    [OLD_EQUIPMENT]:
-                                        value?.regulatingTerminalConnectableId ??
-                                        null,
                                 },
                                 true
                             );
@@ -370,9 +365,6 @@ const GeneratorModificationDialog = ({
 
     const calculateCurvePointsToStore = useCallback(
         (reactiveCapabilityCurve) => {
-            const displayedPreviousValues =
-                generatorToModify?.reactiveCapabilityCurvePoints;
-
             if (
                 reactiveCapabilityCurve.filter(
                     (point) =>
@@ -384,24 +376,15 @@ const GeneratorModificationDialog = ({
                 return null;
             } else {
                 const pointsToStore = [];
-                reactiveCapabilityCurve.forEach((point, index) => {
+                reactiveCapabilityCurve.forEach((point) => {
                     if (point) {
                         let pointToStore = {
                             p: point?.p,
-                            oldP:
-                                displayedPreviousValues !== undefined
-                                    ? displayedPreviousValues[index]?.p
-                                    : null,
+                            oldP: point.p ?? point?.oldP,
                             qminP: point?.qminP,
-                            oldQminP:
-                                displayedPreviousValues !== undefined
-                                    ? displayedPreviousValues[index]?.qminP
-                                    : null,
+                            oldQminP: point?.qminP ?? point?.oldQminP,
                             qmaxP: point?.qmaxP,
-                            oldQmaxP:
-                                displayedPreviousValues !== undefined
-                                    ? displayedPreviousValues[index]?.qmaxP
-                                    : null,
+                            oldQmaxP: point.qmaxP ?? point.oldQmaxP,
                         };
 
                         pointsToStore.push(pointToStore);
@@ -410,7 +393,7 @@ const GeneratorModificationDialog = ({
                 return pointsToStore;
             }
         },
-        [generatorToModify]
+        []
     );
 
     const onSubmit = useCallback(
