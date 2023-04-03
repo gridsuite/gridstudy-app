@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -110,12 +110,9 @@ const GeneratorModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
-    const originalEmptyFormData = useRef();
-    const isIdHasChanged = useRef(false);
 
-    //in order to work properly, react hook form needs all fields to be set at least to null
-    const emptyFormData = useMemo(() => {
-        let emptyFormDataObject = {
+    const emptyFormData = useMemo(
+        () => ({
             [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             [ENERGY_SOURCE]: null,
@@ -132,34 +129,29 @@ const GeneratorModificationDialog = ({
             ...getSetPointsEmptyFormData(null, null, null),
             ...getReactiveLimitsEmptyFormData(true),
             ...getPreviousValuesEmptyForm(),
-        };
+        }),
+        [defaultIdValue]
+    );
 
-        originalEmptyFormData.current = emptyFormDataObject;
-        if (editData && !isIdHasChanged.current) {
+    //in order to work properly, react hook form needs all fields to be set at least to null
+    const defaultFormData = useMemo(() => {
+        if (editData) {
             return assignValuesToForm(editData);
         }
 
-        return emptyFormDataObject;
-    }, [defaultIdValue, editData, isIdHasChanged]);
+        return emptyFormData;
+    }, [editData, emptyFormData]);
 
     const methods = useForm({
-        defaultValues: emptyFormData,
+        defaultValues: defaultFormData,
         resolver: yupResolver(schema),
     });
 
-    const { reset, getValues } = methods;
+    const { reset } = methods;
 
-    const clear = useCallback(
-        (customData = {}) => {
-            if (customData && Object.keys(customData).length > 0) {
-                reset({ ...customData });
-            } else {
-                isIdHasChanged.current = true;
-                reset({ ...originalEmptyFormData.current });
-            }
-        },
-        [reset]
-    );
+    const clear = useCallback(() => {
+        reset({ ...emptyFormData });
+    }, [emptyFormData, reset]);
 
     const getReactiveCapabilityCurveTable = useCallback(
         (generator) => {
@@ -207,10 +199,10 @@ const GeneratorModificationDialog = ({
                             equipmentId
                         );
                         if (editData?.equipmentId === equipmentId) {
-                            reset({ ...emptyFormData, ...prevValues });
+                            reset({ ...defaultFormData, ...prevValues });
                         } else {
                             reset({
-                                ...originalEmptyFormData.current,
+                                ...emptyFormData,
                                 ...prevValues,
                             });
                         }
@@ -227,54 +219,58 @@ const GeneratorModificationDialog = ({
             editData,
             reset,
             emptyFormData,
+            defaultFormData,
             clear,
         ]
     );
 
-    const calculateCurvePointsToStore = useCallback(() => {
-        const reactiveCapabilityCurve = getValues(
-            REACTIVE_CAPABILITY_CURVE_TABLE
-        );
-        if (
-            reactiveCapabilityCurve.filter(
-                (point) =>
-                    point.p == null &&
-                    point.qminP == null &&
-                    point.qmaxP == null
-            ).length === reactiveCapabilityCurve?.length
-        ) {
-            return null;
-        }
-        const pointsToStore = [];
-        reactiveCapabilityCurve.forEach((point, index) => {
-            const reactiveCapabilityCurvePoint = reactiveCapabilityCurve[index];
-            if (point) {
-                let pointToStore = {
-                    p: point?.p,
-                    oldP:
-                        reactiveCapabilityCurve !== undefined
-                            ? reactiveCapabilityCurvePoint[PREVIOUS_P]
-                            : null,
-                    qminP: point?.qminP,
-                    oldQminP:
-                        reactiveCapabilityCurve !== undefined
-                            ? reactiveCapabilityCurvePoint[PREVIOUS_Q_MIN_P]
-                            : null,
-                    qmaxP: point?.qmaxP,
-                    oldQmaxP:
-                        reactiveCapabilityCurve !== undefined
-                            ? reactiveCapabilityCurvePoint[PREVIOUS_Q_MAX_P]
-                            : null,
-                };
-                pointsToStore.push(pointToStore);
+    const calculateCurvePointsToStore = useCallback(
+        (reactiveCapabilityCurve) => {
+            if (
+                reactiveCapabilityCurve.filter(
+                    (point) =>
+                        point.p == null &&
+                        point.qminP == null &&
+                        point.qmaxP == null
+                ).length === reactiveCapabilityCurve?.length
+            ) {
+                return null;
             }
-        });
-        return pointsToStore;
-    }, [getValues]);
+            const pointsToStore = [];
+            reactiveCapabilityCurve.forEach((point, index) => {
+                const reactiveCapabilityCurvePoint =
+                    reactiveCapabilityCurve[index];
+                if (point) {
+                    let pointToStore = {
+                        p: point?.p,
+                        oldP:
+                            reactiveCapabilityCurve !== undefined
+                                ? reactiveCapabilityCurvePoint[PREVIOUS_P]
+                                : null,
+                        qminP: point?.qminP,
+                        oldQminP:
+                            reactiveCapabilityCurve !== undefined
+                                ? reactiveCapabilityCurvePoint[PREVIOUS_Q_MIN_P]
+                                : null,
+                        qmaxP: point?.qmaxP,
+                        oldQmaxP:
+                            reactiveCapabilityCurve !== undefined
+                                ? reactiveCapabilityCurvePoint[PREVIOUS_Q_MAX_P]
+                                : null,
+                    };
+                    pointsToStore.push(pointToStore);
+                }
+            });
+            return pointsToStore;
+        },
+        []
+    );
 
     const onSubmit = useCallback(
         (generator) => {
-            const buildCurvePointsToStore = calculateCurvePointsToStore();
+            const buildCurvePointsToStore = calculateCurvePointsToStore(
+                generator[REACTIVE_CAPABILITY_CURVE_TABLE]
+            );
 
             const isFrequencyRegulationOn =
                 generator[FREQUENCY_REGULATION] === true ||
