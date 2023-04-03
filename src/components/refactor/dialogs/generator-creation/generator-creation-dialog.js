@@ -237,8 +237,8 @@ const GeneratorCreationDialog = ({
                     : REGULATION_TYPES.LOCAL.id,
                 [REACTIVE_CAPABILITY_CURVE_TABLE]:
                     editData.reactiveCapabilityCurvePoints,
-                [MINIMUM_REACTIVE_POWER]: editData?.minimumReactivePower,
-                [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower,
+                [MINIMUM_REACTIVE_POWER]: editData?.minimumReactivePower ?? null,
+                [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower ?? null,
                 [Q_PERCENT]: editData.qPercent,
                 [REACTIVE_CAPABILITY_CURVE_CHOICE]:
                     editData?.minimumReactivePower ||
