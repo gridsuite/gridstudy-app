@@ -107,10 +107,10 @@ export const NumericalField = forwardRef(
             ref,
             () => {
                 return {
-                    getValue() {
+                    getValue: () => {
                         return value;
                     },
-                    refreshValidation() {
+                    refreshValidation: () => {
                         setMaxValue(getMax());
                         setMinValue(getMin());
                         validateChange();
@@ -194,7 +194,7 @@ export const BooleanListField = forwardRef(
             ref,
             () => {
                 return {
-                    getValue() {
+                    getValue: () => {
                         return value;
                     },
                 };

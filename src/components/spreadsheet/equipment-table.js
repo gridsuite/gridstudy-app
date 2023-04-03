@@ -32,9 +32,9 @@ const useStyles = makeStyles((theme) => ({
 const GRID_PREFIX = 'grid.';
 
 export const EquipmentTable = ({
-    rows,
-    editingData,
-    columns,
+    rowData,
+    topPinnedData,
+    columnData,
     scrollToIndex,
     gridRef,
     handleColumnDrag,
@@ -104,9 +104,9 @@ export const EquipmentTable = ({
             network: network,
             editErrors: {},
             dynamicValidation: {},
-            isEditing: editingData ? true : false,
+            isEditing: topPinnedData ? true : false,
         };
-    }, [editingData, network]);
+    }, [network, topPinnedData]);
 
     return (
         <>
@@ -121,10 +121,10 @@ export const EquipmentTable = ({
                     <AgGridReact
                         ref={gridRef}
                         getRowId={getRowId}
-                        rowData={rows}
-                        pinnedTopRowData={editingData}
+                        rowData={rowData}
+                        pinnedTopRowData={topPinnedData}
                         getRowStyle={getRowStyle}
-                        columnDefs={columns}
+                        columnDefs={columnData}
                         defaultColDef={defaultColDef}
                         enableCellTextSelection={true}
                         alwaysMultiSort={true}
