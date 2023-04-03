@@ -9,7 +9,6 @@ import { Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import {
-    AmpereAdornment,
     filledTextField,
     gridItem,
     MicroSusceptanceAdornment,
@@ -24,13 +23,10 @@ import {
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
-    PERMANENT_LIMIT,
     RATED_S,
     RATED_VOLTAGE_1,
     RATED_VOLTAGE_2,
@@ -126,22 +122,6 @@ const TwoWindingsTransformerPane = ({
         />
     );
 
-    const permanentCurrentLimit1Field = (
-        <FloatInput
-            name={`${id}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`}
-            label="PermanentCurrentLimitText1"
-            adornment={AmpereAdornment}
-        />
-    );
-
-    const permanentCurrentLimit2Field = (
-        <FloatInput
-            name={`${id}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`}
-            label="PermanentCurrentLimitText2"
-            adornment={AmpereAdornment}
-        />
-    );
-
     const connectivity1Field = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_1}`}
@@ -149,7 +129,6 @@ const TwoWindingsTransformerPane = ({
             currentNode={currentNode}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            direction="column"
         />
     );
 
@@ -160,13 +139,12 @@ const TwoWindingsTransformerPane = ({
             currentNode={currentNode}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
-            direction="column"
         />
     );
 
     return (
         <>
-            <Grid container spacing={2}>
+            <Grid container item spacing={2} xs={8}>
                 {gridItem(twoWindingsTransformerIdField)}
                 {gridItem(twoWindingsTransformerNameField)}
             </Grid>
@@ -183,6 +161,15 @@ const TwoWindingsTransformerPane = ({
                         <FormattedMessage id="OriginSide" />
                     </h4>
                 </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+                <Grid item container direction="column">
+                    <Grid container direction="column" spacing={2}>
+                        {gridItem(connectivity1Field, 6)}
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid container spacing={2}>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
                         <FormattedMessage id="ExtremitySide" />
@@ -190,12 +177,7 @@ const TwoWindingsTransformerPane = ({
                 </Grid>
             </Grid>
             <Grid container spacing={2}>
-                <Grid item container xs={6} direction="column">
-                    <Grid container direction="column" spacing={2}>
-                        {gridItem(connectivity1Field, 12)}
-                    </Grid>
-                </Grid>
-                <Grid item container direction="column" xs={6}>
+                <Grid item container>
                     <Grid container direction="column" spacing={2}>
                         {gridItem(connectivity2Field, 12)}
                     </Grid>
@@ -208,14 +190,14 @@ const TwoWindingsTransformerPane = ({
                     </h3>
                 </Grid>
             </Grid>
-            <Grid container spacing={2}>
+            <Grid container item spacing={2} xs={8}>
                 {gridItem(seriesResistanceField)}
                 {gridItem(seriesReactanceField)}
                 {gridItem(magnetizingConductanceField)}
                 {gridItem(magnetizingSusceptanceField)}
                 {gridItem(ratedSField)}
             </Grid>
-            <Grid container spacing={2}>
+            <Grid container item spacing={2} xs={8}>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
                         <FormattedMessage id="OriginSide" />
@@ -227,33 +209,9 @@ const TwoWindingsTransformerPane = ({
                     </h4>
                 </Grid>
             </Grid>
-            <Grid container spacing={2}>
+            <Grid container item spacing={2} xs={8}>
                 {gridItem(ratedVoltage1Field)}
                 {gridItem(ratedVoltage2Field)}
-            </Grid>
-            {/* <br /> */}
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h3 className={classes.h3}>
-                        <FormattedMessage id="Limits" />
-                    </h3>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                <Grid item xs={6}>
-                    <h4 className={classes.h4}>
-                        <FormattedMessage id="OriginSide" />
-                    </h4>
-                </Grid>
-                <Grid item xs={6}>
-                    <h4 className={classes.h4}>
-                        <FormattedMessage id="ExtremitySide" />
-                    </h4>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                {gridItem(permanentCurrentLimit1Field)}
-                {gridItem(permanentCurrentLimit2Field)}
             </Grid>
         </>
     );
