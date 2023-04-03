@@ -99,18 +99,12 @@ const schema = yup
             [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
             [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
             [RATED_NOMINAL_POWER]: yup.number().nullable(),
+            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
             [TRANSIENT_REACTANCE]: yup
                 .number()
                 .nullable()
                 .when([TRANSFORMER_REACTANCE], {
                     is: (transformerReactance) => transformerReactance !== null,
-                    then: (schema) => schema.required(),
-                }),
-            [TRANSFORMER_REACTANCE]: yup
-                .number()
-                .nullable()
-                .when([TRANSIENT_REACTANCE], {
-                    is: (transientReactance) => transientReactance !== null,
                     then: (schema) => schema.required(),
                 }),
             [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
@@ -130,10 +124,7 @@ const schema = yup
             ...getReactiveLimitsSchema(),
             ...getConnectivityWithPositionValidationSchema(),
         },
-        [
-            [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER],
-            [TRANSFORMER_REACTANCE, TRANSIENT_REACTANCE],
-        ]
+        [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
     )
     .required();
 
