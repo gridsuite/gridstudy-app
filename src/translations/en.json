@@ -421,7 +421,6 @@
     "errDuplicateModificationMsg": "Network modifications copy error",
     "errCutModificationMsg": "Network modifications cut error",
     "warnDuplicateModificationMsg": "Number of modifications not copied :",
-    "warnCutModificationMsg": "Number of modifications not cut :",
     "errDeleteModificationMsg": "Network modifications deletion error",
     "DeleteEquipment": "Delete equipment",
     "Type": "Type",
