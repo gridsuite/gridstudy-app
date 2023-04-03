@@ -16,7 +16,6 @@ import React from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     gridItem,
-    italicFontTextField,
     percentageTextField,
     VoltageAdornment,
 } from '../../../../dialogs/dialogUtils';
@@ -53,7 +52,9 @@ const VoltageRegulation = ({
     });
 
     const isDistantRegulation =
-        voltageRegulationType === REGULATION_TYPES.DISTANT.id;
+        voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
+        getPreviousRegulationType(previousValues) ===
+            REGULATION_TYPES.DISTANT.label;
 
     const voltageRegulationTypeField = (
         <SelectInput
@@ -61,8 +62,6 @@ const VoltageRegulation = ({
             name={VOLTAGE_REGULATION_TYPE}
             label={'RegulationTypeText'}
             size={'small'}
-            disableClearable={true}
-            formProps={italicFontTextField}
             previousValue={getPreviousRegulationType(previousValues)}
         />
     );

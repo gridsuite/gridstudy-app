@@ -26,7 +26,7 @@ const ReactiveCapabilityCurveRowForm = ({
             label={'P'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ActivePowerAdornment}
-            previousValue={previousValues?.p}
+            previousValue={previousValues?.oldP}
         />
     );
 
@@ -36,7 +36,7 @@ const ReactiveCapabilityCurveRowForm = ({
             label={'QminP'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.qminP}
+            previousValue={previousValues?.oldQminP}
         />
     );
 
@@ -46,7 +46,7 @@ const ReactiveCapabilityCurveRowForm = ({
             label={'QmaxP'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.qmaxP}
+            previousValue={previousValues?.oldQmaxP}
         />
     );
 
