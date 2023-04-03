@@ -175,9 +175,9 @@ const GeneratorCreationDialog = ({
             [REACTIVE_CAPABILITY_CURVE_TABLE]:
                 generator.reactiveCapabilityCurvePoints,
             [MINIMUM_REACTIVE_POWER]:
-                generator?.minMaxReactiveLimits?.minimumReactivePower,
+                generator?.minMaxReactiveLimits?.minimumReactivePower ?? null,
             [MAXIMUM_REACTIVE_POWER]:
-                generator?.minMaxReactiveLimits?.maximumReactivePower,
+                generator?.minMaxReactiveLimits?.maximumReactivePower ?? null,
             [Q_PERCENT]: generator.qPercent,
             [REACTIVE_CAPABILITY_CURVE_CHOICE]: generator?.minMaxReactiveLimits
                 ? 'MINMAX'
