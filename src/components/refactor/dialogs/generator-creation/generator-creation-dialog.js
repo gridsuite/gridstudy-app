@@ -205,7 +205,6 @@ const GeneratorCreationDialog = ({
                 busbarSectionId: generator.busOrBusbarSectionId,
                 connectionDirection: generator.connectionDirection,
                 connectionName: generator.connectionName,
-                connectionPosition: generator.connectionPosition,
             }),
         });
     };
