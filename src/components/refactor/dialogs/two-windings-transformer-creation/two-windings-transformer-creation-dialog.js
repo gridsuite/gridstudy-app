@@ -17,8 +17,6 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_ID,
@@ -29,7 +27,6 @@ import {
     LOW_TAP_POSITION,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
-    PERMANENT_LIMIT,
     PHASE_TAP_CHANGER,
     RATED_S,
     RATED_VOLTAGE_1,
@@ -99,6 +96,19 @@ import {
 import { addSelectedFieldToRows } from '../../../util/dnd-table/dnd-table';
 import SwitchInput from '../../rhf-inputs/booleans/switch-input';
 import TextInput from '../../rhf-inputs/text-input';
+import {
+    CURRENT_LIMITS_1,
+    CURRENT_LIMITS_2,
+    LIMITS,
+    PERMANENT_LIMIT,
+    TEMPORARY_LIMITS,
+} from '../../utils/field-constants.js';
+import LimitsPane from '../limits/limits-pane';
+import {
+    getLimitsEmptyFormData,
+    getLimitsFormData,
+    getLimitsValidationSchema,
+} from '../limits/limits-pane-utils';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -110,6 +120,7 @@ import TextInput from '../../rhf-inputs/text-input';
 
 const emptyFormData = {
     ...getTwoWindingsTransformerEmptyFormData(),
+    ...getLimitsEmptyFormData(),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
 };
@@ -118,6 +129,7 @@ const schema = yup
     .object()
     .shape({
         ...getTwoWindingsTransformerValidationSchema(),
+        ...getLimitsValidationSchema(),
         ...getRatioTapChangerValidationSchema(),
         ...getPhaseTapChangerValidationSchema(),
     })
@@ -125,8 +137,9 @@ const schema = yup
 
 export const TwoWindingsTransformerCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
-    RATIO_TAP_TAB: 1,
-    PHASE_TAP_TAB: 2,
+    LIMITS_TAB: 1,
+    RATIO_TAP_TAB: 2,
+    PHASE_TAP_TAB: 3,
 };
 
 export const PHASE_TAP = 'dephasing';
@@ -246,6 +259,16 @@ const TwoWindingsTransformerCreationDialog = ({
                         CONNECTIVITY_2
                     ),
                 }),
+                ...getLimitsFormData({
+                    permanentLimit1: twt.currentLimits1?.permanentLimit,
+                    permanentLimit2: twt.currentLimits2?.permanentLimit,
+                    temporaryLimits1: addSelectedFieldToRows(
+                        twt.currentLimits1?.temporaryLimits
+                    ),
+                    temporaryLimits2: addSelectedFieldToRows(
+                        twt.currentLimits2?.temporaryLimits
+                    ),
+                }),
                 ...getPhaseTapChangerFormData({
                     enabled:
                         twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -352,6 +375,16 @@ const TwoWindingsTransformerCreationDialog = ({
                             voltageLevelId: twt.voltageLevelId2,
                         },
                         CONNECTIVITY_2
+                    ),
+                }),
+                ...getLimitsFormData({
+                    permanentLimit1: twt.currentLimits1?.permanentLimit,
+                    permanentLimit2: twt.currentLimits2?.permanentLimit,
+                    temporaryLimits1: addSelectedFieldToRows(
+                        twt.currentLimits1?.temporaryLimits
+                    ),
+                    temporaryLimits2: addSelectedFieldToRows(
+                        twt.currentLimits2?.temporaryLimits
                     ),
                 }),
                 ...getRatioTapChangerFormData({
@@ -589,20 +622,31 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
+    const sanitizeLimitNames = (temporaryLimitList) =>
+        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
+            ...temporaryLimit,
+            name: sanitizeString(name),
+        }));
+
     const onSubmit = useCallback(
         (twt) => {
             const enablePhaseTapChanger = twt[PHASE_TAP_CHANGER]?.[ENABLED];
             const enableRatioTapChanger = twt[RATIO_TAP_CHANGER]?.[ENABLED];
             const characteristics = twt[CHARACTERISTICS];
+            const limits = twt[LIMITS];
 
             const currentLimits1 = {
-                permanentLimit:
-                    characteristics[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
+                permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
+                temporaryLimits: sanitizeLimitNames(
+                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
+                ),
             };
 
             const currentLimits2 = {
-                permanentLimit:
-                    characteristics[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
+                permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
+                temporaryLimits: sanitizeLimitNames(
+                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
+                ),
             };
 
             characteristics[MAGNETIZING_CONDUCTANCE] = microUnitToUnit(
@@ -660,6 +704,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...twt[PHASE_TAP_CHANGER],
                 };
             }
+
             createTwoWindingsTransformer(
                 studyUuid,
                 currentNodeUuid,
@@ -721,6 +766,11 @@ const TwoWindingsTransformerCreationDialog = ({
                 TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
             );
         }
+        if (errors?.[LIMITS] !== undefined) {
+            tabsInError.push(
+                TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
+            );
+        }
         setTabIndexesWithError(tabsInError);
     };
 
@@ -759,6 +809,16 @@ const TwoWindingsTransformerCreationDialog = ({
                         currentNode={currentNode}
                         voltageLevelOptions={voltageLevelOptions}
                     />
+                </Box>
+
+                <Box
+                    hidden={
+                        tabIndex !==
+                        TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
+                    }
+                    p={1}
+                >
+                    <LimitsPane />
                 </Box>
 
                 <Box
