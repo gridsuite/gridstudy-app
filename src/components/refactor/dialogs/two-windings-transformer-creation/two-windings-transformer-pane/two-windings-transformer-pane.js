@@ -9,8 +9,6 @@ import { Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import {
-    AmpereAdornment,
-    filledTextField,
     gridItem,
     MicroSusceptanceAdornment,
     MVAPowerAdornment,
@@ -23,10 +21,6 @@ import {
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
     RATED_S,

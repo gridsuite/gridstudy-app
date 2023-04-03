@@ -65,7 +65,7 @@ const RatioTapChangerPane = ({
             trigger(`${id}.${REGULATION_SIDE}`);
             trigger(`${id}.${TARGET_V}`);
         }
-    }, [regulationModeWatch]);
+    }, [regulationModeWatch, trigger, id]);
 
     const ratioTapLoadTapChangingCapabilitiesField = (
         <SwitchInput
