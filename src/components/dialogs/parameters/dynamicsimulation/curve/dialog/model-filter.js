@@ -10,10 +10,10 @@ import { makeStyles, useTheme } from '@mui/styles';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import clsx from 'clsx';
-import { AgGridReact } from 'ag-grid-react';
 import CheckmarkSelect from '../checkmark-select';
 import { EQUIPMENT_TYPE } from './equipment-filter';
-import CheckmarkTreeView, { data, data2 } from '../checkmark-treeview';
+import CheckmarkTreeView from '../checkmark-treeview';
+import { lighten } from '@mui/material/styles';
 
 // take from table models in DB dynamicmappings
 const MODELS = {
@@ -71,145 +71,40 @@ const VARIABLES = {
     },
 };
 
-const VARIABLES_ARR = [
-    // EQUIPMENT_TYPE.LOAD
-    // LoadAlphaBeta
-    {
-        model: MODELS[EQUIPMENT_TYPE.LOAD].LoadAlphaBeta,
-        name: 'Load Alpha',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.LOAD].LoadAlphaBeta,
-        name: 'Load Beta',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.LOAD].LoadAlphaBeta,
-        name: 'Load P0Pu',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.LOAD].LoadAlphaBeta,
-        name: 'Load Q0Pu',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.LOAD].LoadAlphaBeta,
-        name: 'Load U0Pu',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.LOAD].LoadAlphaBeta,
-        name: 'Load UPhase0',
-    },
-    // LoadPQ
-    {
-        model: MODELS[EQUIPMENT_TYPE.LOAD].LoadPQ,
-        name: 'Load P0Pu',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.LOAD].LoadPQ,
-        name: 'Load Q0Pu',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.LOAD].LoadPQ,
-        name: 'Load U0Pu',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.LOAD].LoadPQ,
-        name: 'Load UPhase0',
-    },
-    // EQUIPMENT_TYPE.GENERATOR
-    // GeneratorSynchronousThreeWindings
-    {
-        model: MODELS[EQUIPMENT_TYPE.GENERATOR]
-            .GeneratorSynchronousThreeWindings,
-        name: 'Generator UNom',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.GENERATOR]
-            .GeneratorSynchronousThreeWindings,
-        name: 'Generator SNom',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.GENERATOR]
-            .GeneratorSynchronousThreeWindings,
-        name: 'Generator PNom Turb',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.GENERATOR]
-            .GeneratorSynchronousThreeWindings,
-        name: 'Generator PNom Alt',
-    },
-    // GeneratorSynchronousFourWindings
-    {
-        model: MODELS[EQUIPMENT_TYPE.GENERATOR]
-            .GeneratorSynchronousFourWindings,
-        name: 'Generator UNom',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.GENERATOR]
-            .GeneratorSynchronousFourWindings,
-        name: 'Generator SNom',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.GENERATOR]
-            .GeneratorSynchronousFourWindings,
-        name: 'Generator PNom Turb',
-    },
-    {
-        model: MODELS[EQUIPMENT_TYPE.GENERATOR]
-            .GeneratorSynchronousFourWindings,
-        name: 'Generator PNom Alt',
-    },
-];
+const flatteningObject = (variables, parentId) => {
+    let result = [];
+    Object.entries(variables).map(([key, value]) => {
+        if (typeof value === 'object') {
+            // make container element
+            result = [...result, { id: key, name: key }];
+            // make contained elements
+            result = [...result, ...flatteningObject(value, key)];
+        }
+        if (typeof value === 'string') {
+            result = [
+                ...result,
+                {
+                    id: parentId ? `${parentId}\/${key}` : key,
+                    name: value,
+                    parentId: parentId,
+                },
+            ];
+        }
+        return result;
+    });
+
+    return result;
+};
 
 const useStyles = makeStyles((theme) => ({
     grid: {
         width: '100%',
         height: '100%',
-
-        //overrides the default computed max height for ag grid default selector editor to make it more usable
-        //can be removed if a custom selector editor is implemented
-        // '& .ag-select-list': {
-        //     maxHeight: '300px !important',
-        // },
+        border: 'solid',
+        borderWidth: '.5px',
+        borderColor: lighten(theme.palette.background.paper, 0.5),
     },
 }));
-
-const variables = [
-    {
-        variable: 'generator_omegaPu',
-        variableName: 'Omega Pu',
-    },
-    {
-        variable: 'generator_PGen',
-        variableName: 'PGen',
-    },
-
-    {
-        variable: 'generator_QGen',
-        variableName: 'QGen',
-    },
-    {
-        variable: 'generator_UStatorPu',
-        variableName: 'UStatorPu',
-    },
-
-    {
-        variable: 'voltageRegulator_EfdPu',
-        variableName: 'Voltage Regulator EfdPu',
-    },
-
-    {
-        variable: 'load_PPu',
-        variableName: 'PPu',
-    },
-    {
-        variable: 'load_QPu',
-        variableName: 'QPu',
-    },
-    {
-        variable: 'Upu_value',
-        variableName: 'Upu',
-    },
-];
 
 const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
     const intl = useIntl();
@@ -217,81 +112,32 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
     const theme = useTheme();
     const gridRef = useRef();
 
-    const [model, setModel] = useState([]);
-    const handleModelChange = useCallback((event) => {
-        setModel(event.target.value);
+    const [models, setModels] = useState(Object.keys(MODELS[equipmentType]));
+    const handleModelChange = useCallback((selectedOptions) => {
+        setModels(selectedOptions);
     }, []);
 
-    // grid configuration
-    const [rowData, setRowData] = useState([]);
-    const [columnDefs, setColumnDefs] = useState([
-        { field: 'country', rowGroup: true, hide: true },
-        { field: 'sport', rowGroup: true, hide: true },
-        { field: 'gold', aggFunc: 'sum' },
-        /*{
-            field: 'model',
-            rowGroup: true,
-            hide: true,
-        },*/
-    ]);
-    const defaultColDef = useMemo(() => {
-        return {
-            flex: 1,
-            minWidth: 100,
-            filter: true,
-            sortable: true,
-            resizable: true,
-            lockPinned: true,
-            wrapHeaderText: true,
-            autoHeaderHeight: true,
-        };
-    }, []);
-
-    const autoGroupColumnDef = useMemo(() => {
-        return {
-            headerName: 'Athlete',
-            field: 'athlete',
-            minWidth: 250,
-            cellRenderer: 'agGroupCellRenderer',
-            cellRendererParams: {
-                checkbox: true,
-            },
-        };
-
-        /*{
-            headerName: intl.formatMessage({
-                id: 'DynamicSimulationCurveVariableHeader',
-            }),
-            field: 'name',
-            minWidth: 250,
-            cellRenderer: 'agGroupCellRenderer',
-            cellRendererParams: {
-                checkbox: true,
-                //suppressCount: true,
-            },
-        };*/
-    }, []);
-
-    const getDataPath = useMemo(() => {
-        return (data) => {
-            // transform into ag-grid format, i.e. ['path1', 'path2', 'path3']
-            console.log('data', data);
-            return [`${data.model}`, `${data.name}`];
-        };
-    }, []);
-
-    const onGridReady = useCallback((params) => {
-        fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
-            .then((resp) => resp.json())
-            .then((data) => setRowData(data));
-        //setRowData(variables);
-        //setRowData(VARIABLES_ARR);
-    }, []);
-
-    const onSelectionChanged = useCallback(() => {
-        const selectedRows = gridRef.current.api.getSelectedRows();
-        console.log('Number of selected row', selectedRows.length);
-    }, []);
+    const data = useMemo(() => flatteningObject(VARIABLES), []);
+    const getRoot = useCallback(
+        (item) => {
+            const parent = data.find((elem) => elem.id === item.parentId);
+            if (parent) {
+                return getRoot(parent);
+            } else {
+                return item;
+            }
+        },
+        [data]
+    );
+    const filteredData = useMemo(
+        () =>
+            data.filter((elem) =>
+                models.some((model) => {
+                    return elem.id.includes(MODELS[equipmentType][model]);
+                })
+            ),
+        [data, models, equipmentType]
+    );
 
     return (
         <>
@@ -309,10 +155,11 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
                         options={Object.keys(MODELS[equipmentType])}
                         getOptionLabel={(value) => MODELS[equipmentType][value]}
                         value={[...Object.keys(MODELS[equipmentType])]}
+                        onChange={handleModelChange}
                     />
                 </Grid>
             </Grid>
-            <Grid item xs sx={{ width: '100%' }}>
+            <Grid item sx={{ width: '100%' }}>
                 <Typography
                     sx={{ marginBottom: theme.spacing(1) }}
                     variant="subtitle1"
@@ -322,25 +169,14 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
                     ></FormattedMessage>
                 </Typography>
                 <div className={clsx([theme.aggrid, classes.grid])}>
-                    {/*<AgGridReact
-                        ref={gridRef}
-                        rowData={rowData}
-                        columnDefs={columnDefs}
-                        defaultColDef={defaultColDef}
-                        autoGroupColumnDef={autoGroupColumnDef}
-                        rowSelection={'multiple'}
-                        groupSelectsChildren={true}
-                        onGridReady={onGridReady}
-                        onSelectionChanged={onSelectionChanged}
-                        suppressRowClickSelection={true}
-                    ></AgGridReact>*/}
                     <CheckmarkTreeView
-                        data={data2}
+                        data={filteredData}
+                        checkAll
                         sx={{
-                            height: 300,
+                            height: '480px',
+                            maxWidth: '500px',
                             flexGrow: 1,
-                            maxWidth: 400,
-                            overflowY: 'auto',
+                            overflow: 'auto',
                         }}
                     />
                 </div>

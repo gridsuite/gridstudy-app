@@ -34,21 +34,29 @@ const CheckmarkSelect = ({
         initialSelectedOptions ?? []
     );
 
-    const handleChange = useCallback((event) => {
-        const {
-            target: { value: values },
-        } = event;
-        console.log(values);
-        if (values.find((elem) => elem === CHECK_ALL.value)) {
-            // must check all items
-            setSelectedOptions(options);
-        } else if (values.find((elem) => elem === UNCHECK_ALL.value)) {
-            // must un check all items
-            setSelectedOptions([]);
-        } else {
-            setSelectedOptions(values);
-        }
-    }, []);
+    const handleChange = useCallback(
+        (event) => {
+            const {
+                target: { value: values },
+            } = event;
+            let newSelectedOptions;
+            if (values.find((elem) => elem === CHECK_ALL.value)) {
+                // must check all items
+                newSelectedOptions = options;
+            } else if (values.find((elem) => elem === UNCHECK_ALL.value)) {
+                // must un check all items
+                newSelectedOptions = [];
+            } else {
+                newSelectedOptions = values;
+            }
+
+            setSelectedOptions(newSelectedOptions);
+
+            // propagate by callback
+            onChange(newSelectedOptions);
+        },
+        [onChange]
+    );
 
     const getOptionLabel = useCallback(
         (option) => {

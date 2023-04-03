@@ -10,69 +10,142 @@ import TreeView from '@mui/lab/TreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
+import { alpha, Checkbox } from '@mui/material';
+import { useCallback, useMemo, useState } from 'react';
+import { styled } from '@mui/material/styles';
+import { treeItemClasses } from '@mui/lab';
 
-export const data = {
-    id: 'root',
-    name: 'Parent',
-    children: [
-        {
-            id: '1',
-            name: 'Child - 1',
-        },
-        {
-            id: '3',
-            name: 'Child - 3',
-            children: [
-                {
-                    id: '4',
-                    name: 'Child - 4',
-                },
-            ],
-        },
-    ],
+export const CheckState = {
+    UNCHECKED: 0,
+    CHECKED: 1,
+    INDETERMINATE: 2,
 };
 
-export const data2 = [
-    {
-        id: 'parent-1',
-        name: 'Parent 1',
-    },
-    {
-        id: 'child-1-1',
-        name: 'Child 1 1',
-        parentId: 'parent-1',
-    },
-    {
-        id: 'child-1-2',
-        name: 'Child 1 2',
-        parentId: 'parent-1',
-    },
-    {
-        id: 'parent-2',
-        name: 'Parent 2',
-    },
-    {
-        id: 'child-2-1',
-        name: 'Child 2 1',
-        parentId: 'parent-2',
-    },
-    {
-        id: 'child-2-1-1',
-        name: 'Child 2 1 1',
-        parentId: 'child-2-1',
-    },
-    {
-        id: 'child-2-2',
-        name: 'Child 2 2',
-        parentId: 'parent-2',
-    },
-    {
-        id: 'parent-3',
-        name: 'Parent 3',
-    },
-];
+const BorderedTreeItem = styled(TreeItem)(({ theme, root }) => {
+    const border = `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`;
+    return {
+        position: 'relative',
+        '&:before': {
+            pointerEvents: 'none',
+            content: '""',
+            position: 'absolute',
+            width: 16,
+            left: -16,
+            top: 20,
+            borderBottom: root ? 'none' : border,
+        },
+        [`& .${treeItemClasses.group}`]: {
+            marginLeft: 15,
+            paddingLeft: 18,
+            borderLeft: border,
+        },
+    };
+});
 
-export default function CheckmarkTreeView({ data: items, ...rest }) {
+export default function CheckmarkTreeView({ data: items, checkAll, ...rest }) {
+    const [itemStates, setItemStates] = useState(
+        useMemo(() => {
+            return items.map((elem) => ({
+                id: elem.id,
+                state: checkAll ? CheckState.CHECKED : CheckState.UNCHECKED,
+            }));
+        }, [items, checkAll])
+    );
+
+    const updateItemState = useCallback((itemStates, items, onClickedId) => {
+        const getState = (itemStates, id) => {
+            return itemStates.find((elem) => elem.id === id);
+        };
+
+        const updateStateParent = (itemStates, items, childId) => {
+            const child = items.find((elem) => elem.id === childId);
+            const parent = items.find((elem) => elem.id === child.parentId);
+
+            if (!parent) return; // at root item
+
+            const childrenIds = items
+                .filter((elem) => elem.parentId === parent.id)
+                .map((elem) => elem.id);
+
+            const childrenStates = childrenIds.map((id) =>
+                getState(itemStates, id)
+            );
+
+            // recompute state of parent
+            const parentState = itemStates.find(
+                (elem) => elem.id === parent.id
+            );
+            // initial default state
+            parentState.state = CheckState.INDETERMINATE;
+            // all children checked => parent must be checked
+            if (
+                childrenStates.every(
+                    (elem) => elem.state === CheckState.CHECKED
+                )
+            ) {
+                parentState.state = CheckState.CHECKED;
+            }
+            // all children unchecked => parent must be unchecked
+            if (
+                childrenStates.every(
+                    (elem) => elem.state === CheckState.UNCHECKED
+                )
+            ) {
+                parentState.state = CheckState.UNCHECKED;
+            }
+
+            // recursive visit
+            updateStateParent(itemStates, items, parent.id);
+        };
+
+        const setState = (itemStates, items, id, newState) => {
+            itemStates.find((elem) => elem.id === id).state = newState;
+            // set all children the same state of current element
+            const children = items.filter((elem) => elem.parentId === id);
+            children.forEach((elem) =>
+                setState(itemStates, items, elem.id, newState)
+            );
+
+            // update parent's state of the current element
+            updateStateParent(itemStates, items, id);
+        };
+
+        // update item's state
+        const newItemStates = itemStates.map((elem) => ({ ...elem }));
+        // get current state
+        const currentState = getState(itemStates, onClickedId);
+        setState(
+            newItemStates,
+            items,
+            onClickedId,
+            currentState.state === CheckState.CHECKED
+                ? CheckState.UNCHECKED
+                : CheckState.CHECKED
+        );
+
+        return newItemStates;
+    }, []);
+
+    const handleItemSelect = useCallback(
+        (event, id) => {
+            event.stopPropagation();
+            const newItemStates = updateItemState(itemStates, items, id);
+            setItemStates(newItemStates);
+        },
+        [itemStates, items, updateItemState]
+    );
+
+    const handleExpand = (event) => {
+        event.stopPropagation();
+    };
+
+    const getState = useCallback(
+        (id) => {
+            return itemStates.find((elem) => elem.id === id).state;
+        },
+        [itemStates]
+    );
+
     const renderChildren = (allItems, parentId) => {
         const children = allItems.filter((elem) => elem.parentId === parentId);
         return !children.length ? null : renderItems(allItems, children);
@@ -85,9 +158,29 @@ export default function CheckmarkTreeView({ data: items, ...rest }) {
         }
 
         return itemsToRender.map((elem) => (
-            <TreeItem key={elem.id} nodeId={elem.id} label={elem.name}>
+            <BorderedTreeItem
+                key={elem.id}
+                nodeId={elem.id}
+                onClick={handleExpand}
+                root={!elem.parentId}
+                label={
+                    <>
+                        <Checkbox
+                            checked={CheckState.CHECKED === getState(elem.id)}
+                            indeterminate={
+                                CheckState.INDETERMINATE === getState(elem.id)
+                            }
+                            tabIndex={-1} // ??
+                            onClick={(event) =>
+                                handleItemSelect(event, elem.id)
+                            }
+                        />
+                        {elem.name}
+                    </>
+                }
+            >
                 {renderChildren(allItems, elem.id)}
-            </TreeItem>
+            </BorderedTreeItem>
         ));
     };
 
