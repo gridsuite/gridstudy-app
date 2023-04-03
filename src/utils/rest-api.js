@@ -1254,7 +1254,7 @@ export function fetchDynamicSimulationResultTimeSeries(
         timeSeriesNames.length > 0 &&
         '?' + getQueryParamsList(timeSeriesNames, 'timeSeriesNames');
 
-    url += paramsList && '';
+    url += paramsList || '';
 
     console.debug(url);
     return backendFetchJson(url);
@@ -2114,6 +2114,8 @@ export function createLine(
     busOrBusbarSectionId2,
     permanentCurrentLimit1,
     permanentCurrentLimit2,
+    temporaryCurrentLimits1,
+    temporaryCurrentLimits2,
     isUpdate,
     modificationUuid,
     connectionName1,
@@ -2156,9 +2158,11 @@ export function createLine(
             busOrBusbarSectionId2: busOrBusbarSectionId2,
             currentLimits1: {
                 permanentLimit: permanentCurrentLimit1,
+                temporaryLimits: temporaryCurrentLimits1,
             },
             currentLimits2: {
                 permanentLimit: permanentCurrentLimit2,
+                temporaryLimits: temporaryCurrentLimits2,
             },
             connectionName1: connectionName1,
             connectionDirection1: connectionDirection1,
@@ -2182,8 +2186,8 @@ export function createTwoWindingsTransformer(
     ratedS,
     ratedVoltage1,
     ratedVoltage2,
-    permanentCurrentLimit1,
-    permanentCurrentLimit2,
+    currentLimit1,
+    currentLimit2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -2228,8 +2232,8 @@ export function createTwoWindingsTransformer(
             ratedS: ratedS,
             ratedVoltage1: ratedVoltage1,
             ratedVoltage2: ratedVoltage2,
-            currentLimits1: permanentCurrentLimit1,
-            currentLimits2: permanentCurrentLimit2,
+            currentLimits1: currentLimit1,
+            currentLimits2: currentLimit2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
