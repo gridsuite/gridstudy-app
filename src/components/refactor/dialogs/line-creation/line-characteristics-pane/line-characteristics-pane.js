@@ -27,6 +27,14 @@ import {
 } from 'components/refactor/utils/field-constants';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import makeStyles from '@mui/styles/makeStyles';
+
+const useStyles = makeStyles((theme) => ({
+    h3: {
+        marginTop: 0,
+        marginBottom: 0,
+    },
+}));
 
 const LineCharacteristicsPane = ({
     id = CHARACTERISTICS,
@@ -35,6 +43,8 @@ const LineCharacteristicsPane = ({
     voltageLevelOptions,
     displayConnectivity,
 }) => {
+    const classes = useStyles();
+
     const seriesResistanceField = (
         <FloatInput
             name={`${id}.${SERIES_RESISTANCE}`}
@@ -107,17 +117,14 @@ const LineCharacteristicsPane = ({
         <>
             {displayConnectivity && (
                 <>
-                    <Grid container spacing={0}>
-                        {/* prettier (less empty spaces) than having GridSection x 2 */}
+                    <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <h3>
+                            <h3 className={classes.h3}>
                                 <FormattedMessage id={'Connectivity'} />
                             </h3>
-                            <h4>
-                                <FormattedMessage id={'Side1'} />
-                            </h4>
                         </Grid>
                     </Grid>
+                    <GridSection title="Side1" heading="4" />
                     <Grid container spacing={2}>
                         {gridItem(connectivity1Field, 12)}
                     </Grid>

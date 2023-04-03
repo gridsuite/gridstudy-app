@@ -62,7 +62,7 @@ const LineCreationDialogTabs = ({
                     )}
                 />
                 <Tab
-                    label={<FormattedMessage id="LineLimitsTab" />}
+                    label={<FormattedMessage id="LimitsTab" />}
                     className={getTabClass(LineCreationDialogTab.LIMITS_TAB)}
                 />
             </Tabs>
