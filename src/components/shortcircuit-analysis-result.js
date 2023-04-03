@@ -15,22 +15,25 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import clsx from 'clsx';
 import { groupPostSort } from './util/sort-functions';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     grid: {
         width: 'auto',
         height: '100%',
         position: 'relative',
-
-        //overrides the default computed max heigt for ag grid default selector editor to make it more usable
-        //can be removed if a custom selector editor is implemented
-        '& .ag-select-list': {
-            maxHeight: '300px !important',
-        },
     },
 }));
 
-export const ConnectableIdRenderer = (props) => {
-    return props.data.elementId ? undefined : props.value;
+const FILTER_TYPES = {
+    PARENT: 'parent',
+    CHILD: 'child',
+};
+
+export const FilteringRenderer = (props) => {
+    if (props.colDef.filterType === FILTER_TYPES.CHILD) {
+        return !props.data.linkedElementId ? undefined : props.value;
+    } else if (props.colDef.filterType === FILTER_TYPES.PARENT) {
+        return props.data.linkedElementId ? undefined : props.value;
+    }
 };
 
 const ShortCircuitAnalysisResult = ({ result }) => {
@@ -48,48 +51,63 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
+                cellRenderer: FilteringRenderer,
+                filter: true,
+                filterType: FILTER_TYPES.PARENT,
             },
             {
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
+                cellRenderer: FilteringRenderer,
+                filter: true,
+                filterType: FILTER_TYPES.PARENT,
             },
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
-                cellRenderer: ConnectableIdRenderer,
                 field: 'connectableId',
+                //cellRenderer: FilteringRenderer,
                 filter: true,
+                filterParams: {
+                    filterOptions: ['contains', 'startsWith', 'endsWith'],
+                },
+                filterType: FILTER_TYPES.CHILD,
             },
 
             {
                 headerName: intl.formatMessage({ id: 'IscKA' }),
                 field: 'current',
             },
-
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
+                cellRenderer: FilteringRenderer,
+                filter: true,
+                filterType: FILTER_TYPES.PARENT,
             },
 
             {
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
-                // numeric: true,
-                // nullable: true,
-                // fractionDigits: 1,
+                cellRenderer: FilteringRenderer,
+                filter: 'agNumberColumnFilter',
+                filterType: FILTER_TYPES.PARENT,
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
-                // numeric: true,
-                // nullable: true,
-                // fractionDigits: 1,
+                cellRenderer: FilteringRenderer,
+                filter: 'agNumberColumnFilter',
+                filterType: FILTER_TYPES.PARENT,
             },
             {
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
-                // numeric: true,
-                // fractionDigits: 1,
+                cellRenderer: FilteringRenderer,
+                filter: 'agNumberColumnFilter',
+                filterType: FILTER_TYPES.PARENT,
             },
+            //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
+            //it is used for sorting and filtering actions
             {
                 field: 'linkedElementId',
                 hide: true,
@@ -99,7 +117,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
 
     const getRowStyle = useCallback(
         (params) => {
-            if (params?.data?.elementId) {
+            if (!params?.data?.linkedElementId) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
@@ -114,6 +132,94 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             return intl.messages[key] || params.defaultValue;
         },
         [intl]
+    );
+
+    const handlePostSortRows = useCallback((params) => {
+        const rows = params.nodes;
+        Object.assign(
+            rows,
+            groupPostSort(rows, 'elementId', 'linkedElementId')
+        );
+    }, []);
+
+    const isChildRow = (row) => !!row.data.linkedElementId;
+
+    const computeFilterValue = useCallback((filterModel) => {
+        if (filterModel.operator) {
+            return (
+                filterModel.condition1.filter + filterModel.condition2.filter
+            );
+        } else {
+            return filterModel?.filter;
+        }
+    }, []);
+
+    const applyFilter = useCallback(
+        (parentIds, filteringColumn, filterValue) => {
+            const filterType =
+                gridRef.current.columnApi.getColumn(filteringColumn).colDef
+                    .filterType;
+
+            gridRef.current?.api?.forEachNode((node) => {
+                if (filterType === FILTER_TYPES.CHILD && !isChildRow(node)) {
+                    if (parentIds.includes(node.data.faultId)) {
+                        node.setDataValue(filteringColumn, filterValue);
+                    }
+                } else if (
+                    filterType === FILTER_TYPES.PARENT &&
+                    isChildRow(node)
+                ) {
+                    if (parentIds.includes(node.data.linkedElementId)) {
+                        node.setDataValue(filteringColumn, filterValue);
+                    }
+                }
+            });
+
+            //we need to refresh the row model after updating rows data in order to reapply the filtering on the updated rows
+            gridRef.current.api.refreshClientSideRowModel();
+            console.log(gridRef.current.api.getRenderedNodes());
+        },
+        []
+    );
+
+    const handleFilterChanged = useCallback(
+        (params) => {
+            const filteringColumn = params.columns[0];
+            const filterModel = gridRef.current?.api?.getFilterInstance(
+                filteringColumn.colId
+            ).appliedModel;
+
+            if (filterModel !== null) {
+                const filterValue = computeFilterValue(filterModel);
+
+                let parentIds = [];
+                //depending on which column we are filtering it is either necessary to gather parents ids through the link column linkedElementId
+                //when resulting rows are expected to only be children rows or faultId in the opposite situation
+                if (filteringColumn.colDef.filterType === FILTER_TYPES.CHILD) {
+                    parentIds = [
+                        ...new Set(
+                            gridRef.current?.api
+                                ?.getRenderedNodes()
+                                .filter((node) => node.data.linkedElementId)
+                                .map((node) => node.data.linkedElementId)
+                        ),
+                    ];
+                } else if (
+                    filteringColumn.colDef.filterType === FILTER_TYPES.PARENT
+                ) {
+                    parentIds = [
+                        ...new Set(
+                            gridRef.current?.api
+                                ?.getRenderedNodes()
+                                .filter((node) => !node.data.linkedElementId)
+                                .map((node) => node.data.faultId)
+                        ),
+                    ];
+                }
+                applyFilter(parentIds, filteringColumn.colId, filterValue);
+            }
+        },
+        [applyFilter, computeFilterValue]
     );
 
     function flattenResult(shortcutAnalysisResult) {
@@ -141,8 +247,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 };
             }
             rows.push({
-                faultId: fault.id,
-                elementId: fault.elementId,
+                elementId: fault.id,
                 faultType: intl.formatMessage({ id: fault.faultType }),
                 shortCircuitPower: f.shortCircuitPower,
                 current: f.current,
@@ -170,7 +275,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 rows.push({
                     connectableId: fr.connectableId,
                     current: fr.current,
-                    linkedElementId: fault.elementId,
+                    linkedElementId: fault.id,
                 });
             });
         });
@@ -178,64 +283,20 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     }
 
     function renderResult() {
-        const rows = flattenResult(result);
-
+        const rowData = flattenResult(result);
         return (
             result &&
             shortCircuitNotif && (
                 <AgGridReact
                     ref={gridRef}
-                    rowData={rows}
+                    rowData={rowData}
                     defaultColDef={{ sortable: true }}
                     columnDefs={columns}
                     getLocaleText={getLocaleText}
                     getRowStyle={getRowStyle}
-                    postSortRows={(params) => {
-                        const rows = params.nodes;
-
-                        Object.assign(
-                            rows,
-                            groupPostSort(rows, 'elementId', 'linkedElementId')
-                        );
-                    }}
-                    onFilterChanged={(params) => {
-                        const filterModel =
-                            gridRef.current?.api?.getFilterInstance(
-                                params.columns[0].colId
-                            ).appliedModel;
-
-                        if (filterModel !== null) {
-                            const filterValue = filterModel?.filter;
-
-                            const groupIds = [
-                                ...new Set(
-                                    gridRef.current?.api
-                                        ?.getRenderedNodes()
-                                        .map(
-                                            (node) => node.data.linkedElementId
-                                        )
-                                ),
-                            ];
-
-                            gridRef.current?.api?.forEachNode((params) => {
-                                if (params.data.elementId !== undefined) {
-                                    if (
-                                        groupIds.includes(params.data.elementId)
-                                    ) {
-                                        const newData = params.data;
-                                        newData.connectableId = filterValue;
-
-                                        const transaction = {
-                                            update: [newData],
-                                        };
-                                        gridRef.current.api.applyTransaction(
-                                            transaction
-                                        );
-                                    }
-                                }
-                            });
-                        }
-                    }}
+                    postSortRows={handlePostSortRows}
+                    onFilterChanged={handleFilterChanged}
+                    suppressPropertyNamesCheck={true}
                 />
             )
         );
