@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -10,7 +10,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { TwoWindingsTransformerCreationDialogTab } from './two-windings-transformer-creation-dialog';
+import { LineCreationDialogTab } from './line-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     tabWithError: {
@@ -22,11 +22,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const TwoWindingsTransformerCreationDialogTabs = ({
+const LineCreationDialogTabs = ({
     tabIndex,
     tabIndexesWithError,
     setTabIndex,
-    setDialogWidth,
 }) => {
     const classes = useStyles();
 
@@ -57,42 +56,18 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                 classes={getTabIndicatorClass(tabIndex)}
             >
                 <Tab
-                    label={
-                        <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
-                    }
+                    label={<FormattedMessage id="LineCharacteristicsTab" />}
                     className={getTabClass(
-                        TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
+                        LineCreationDialogTab.CHARACTERISTICS_TAB
                     )}
-                    onClick={() => setDialogWidth('md')}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
-                    className={getTabClass(
-                        TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
-                    )}
-                    onClick={() => setDialogWidth('md')}
-                />
-                <Tab
-                    onClick={() => setDialogWidth('xl')}
-                    label={
-                        <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
-                    }
-                    className={getTabClass(
-                        TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB
-                    )}
-                />
-                <Tab
-                    onClick={() => setDialogWidth('xl')}
-                    label={
-                        <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
-                    }
-                    className={getTabClass(
-                        TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB
-                    )}
+                    className={getTabClass(LineCreationDialogTab.LIMITS_TAB)}
                 />
             </Tabs>
         </Grid>
     );
 };
 
-export default TwoWindingsTransformerCreationDialogTabs;
+export default LineCreationDialogTabs;

@@ -9,13 +9,10 @@ import {
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
-    PERMANENT_LIMIT,
     RATED_S,
     RATED_VOLTAGE_1,
     RATED_VOLTAGE_2,
@@ -42,18 +39,6 @@ const twoWindingsTransformerValidationSchema = (id) => ({
             .positive('RatedNominalPowerGreaterThanZero'),
         [RATED_VOLTAGE_1]: yup.number().nullable().required(),
         [RATED_VOLTAGE_2]: yup.number().nullable().required(),
-        [CURRENT_LIMITS_1]: yup.object().shape({
-            [PERMANENT_LIMIT]: yup
-                .number()
-                .nullable()
-                .positive('permanentCurrentLimitGreaterThanZero'),
-        }),
-        [CURRENT_LIMITS_2]: yup.object().shape({
-            [PERMANENT_LIMIT]: yup
-                .number()
-                .nullable()
-                .positive('permanentCurrentLimitGreaterThanZero'),
-        }),
         ...getConnectivityWithPositionValidationSchema(CONNECTIVITY_1),
         ...getConnectivityWithPositionValidationSchema(CONNECTIVITY_2),
     }),
@@ -76,12 +61,6 @@ const twoWindingsTransformerEmptyFormData = (id) => ({
         [RATED_S]: null,
         [RATED_VOLTAGE_1]: null,
         [RATED_VOLTAGE_2]: null,
-        [CURRENT_LIMITS_1]: {
-            [PERMANENT_LIMIT]: null,
-        },
-        [CURRENT_LIMITS_2]: {
-            [PERMANENT_LIMIT]: null,
-        },
         ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_1),
         ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_2),
     },
@@ -104,8 +83,6 @@ export const getTwoWindingsTransformerFormData = (
         ratedS = null,
         ratedVoltage1 = null,
         ratedVoltage2 = null,
-        permanentLimit1 = null,
-        permanentLimit2 = null,
         connectivity1 = null,
         connectivity2 = null,
     },
@@ -122,12 +99,6 @@ export const getTwoWindingsTransformerFormData = (
             [RATED_S]: ratedS,
             [RATED_VOLTAGE_1]: ratedVoltage1,
             [RATED_VOLTAGE_2]: ratedVoltage2,
-            [CURRENT_LIMITS_1]: {
-                [PERMANENT_LIMIT]: permanentLimit1,
-            },
-            [CURRENT_LIMITS_2]: {
-                [PERMANENT_LIMIT]: permanentLimit2,
-            },
             [CONNECTIVITY_1]: connectivity1,
             [CONNECTIVITY_2]: connectivity2,
         },
