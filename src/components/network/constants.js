@@ -39,12 +39,23 @@ export const UPDATE_TYPE = [
     'deletingInProgress',
 ];
 
-export const REGULATION_MODES = {
+export const PHASE_REGULATION_MODES = {
     FIXED_TAP: { id: 'FIXED_TAP', label: 'FixedTap' },
     CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
     ACTIVE_POWER_CONTROL: {
         id: 'ACTIVE_POWER_CONTROL',
         label: 'PhaseActivePowerControl',
+    },
+};
+
+export const RATIO_REGULATION_MODES = {
+    FIXED_RATIO: {
+        id: 'FIXED_RATIO',
+        label: 'FixedRatio',
+    },
+    VOLTAGE_REGULATION: {
+        id: 'VOLTAGE_REGULATION',
+        label: 'VoltageRegulation',
     },
 };
 

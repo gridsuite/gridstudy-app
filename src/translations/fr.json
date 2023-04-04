@@ -421,7 +421,6 @@
     "errDuplicateModificationMsg": "Une erreur est survenue lors de la copie des modifications",
     "errCutModificationMsg": "Une erreur est survenue lors du coupage des modifications",
     "warnDuplicateModificationMsg": "Nombre de modifications non copiées :",
-    "warnCutModificationMsg": "Nombre de modifications non coupées :",
     "errDeleteModificationMsg": "Une erreur est survenue lors de la suppression des modifications",
     "DeleteEquipment": "Supprimer ouvrage",
     "Type": "Type",
@@ -527,7 +526,7 @@
     "QatNominalV": "Q à tension nominale",
     "QatNominalVLabel": "Q à Unom (MVAr)",
     "SusceptanceLabel": "Susceptance (S)",
-    "LineLimitsTab": "Limites",
+    "LimitsTab": "Limites",
     "LineCharacteristicsTab": "Caractéristiques",
     "TemporaryCurrentLimitsText": "Limites d'intensité temporaires",
     "TemporaryLimitDuration": "Tempo (s)",
@@ -669,9 +668,12 @@
     "ImportFileAlpha": "Dephasage",
 
     "RegulationMode": "Mode de réglage",
+
     "FixedTap": "Déphasage constant",
     "CurrentLimiter": "Limitation de courant",
     "PhaseActivePowerControl": "Suivi de transit",
+
+    "FixedRatio": "Rapport fixe",
 
     "RegulatingValueCurrentLimiter": "Limitation du courant",
     "CurrentLimiterGreaterThanZero": "La valeur de la limitation du courant doit être strictement positive",
