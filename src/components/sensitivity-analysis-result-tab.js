@@ -136,8 +136,8 @@ function PagedSensitivityResult({
     const [allowsShowingLoader, setAllowsShowingLoader] = useState(false);
     const timerRef = useRef(null);
 
-    const synthRef = useRef();
-    const [next, prev] = [{}, synthRef.current];
+    const prevRenderRef = useRef();
+    const [next, prev] = [{}, prevRenderRef.current];
     next.sensiKindIndex = sensiKindIndex;
     next.nOrNkIndex = nOrNkIndex;
     next.nodeUuid = nodeUuid;
@@ -307,7 +307,7 @@ function PagedSensitivityResult({
     next.fetched = fetched;
     next.isLoading = isLoading;
 
-    synthRef.current = next;
+    prevRenderRef.current = next;
 
     const result = (!next.isFetchNeedy && fetched?.sensitivities) || [];
     const showsLoading = isLoading && allowsShowingLoader;

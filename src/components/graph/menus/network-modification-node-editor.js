@@ -155,7 +155,7 @@ const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const { snackInfo, snackError, snackWarning } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -176,14 +176,14 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
-    const cleanClipboard = () => {
+    const cleanClipboard = useCallback(() => {
         if (copiedModifications.length <= 0) return;
         setCopyInfos(null);
         setCopiedModifications([]);
         snackInfo({
             messageId: 'CopiedModificationInvalidationMessage',
         });
-    };
+    }, [snackInfo, copiedModifications]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -457,101 +457,95 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const doDeleteModification = useCallback(() => {
+        const selectedModificationsUuid = [...selectedItems.values()].map(
+            (item) => item.uuid
+        );
         deleteModifications(
             studyUuid,
             currentNode.id,
-            [...selectedItems.values()].map((item) => item.uuid)
+            selectedModificationsUuid
         )
-            .then()
+            .then(() => {
+                //if one of the deleted element was in the clipboard we invalidate the clipboard
+                if (
+                    copiedModifications.some((aCopiedModification) =>
+                        selectedModificationsUuid.includes(aCopiedModification)
+                    )
+                ) {
+                    cleanClipboard();
+                }
+            })
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errDeleteModificationMsg',
                 });
             });
-    }, [currentNode?.id, selectedItems, snackError, studyUuid]);
+    }, [
+        currentNode?.id,
+        selectedItems,
+        snackError,
+        studyUuid,
+        cleanClipboard,
+        copiedModifications,
+    ]);
 
-    const doCutModification = useCallback(() => {
-        // just memorize the list of selected modifications
-        setCopiedModifications(
-            Array.from(selectedItems).map((item) => item.uuid)
-        );
+    const selectedModificationsIds = useCallback(() => {
+        const allModificationsIds = modifications.map((m) => m.uuid);
+        // sort the selected modifications in the same order as they appear in the whole modifications list
+        return Array.from(selectedItems)
+            .sort(
+                (a, b) =>
+                    allModificationsIds.indexOf(a.uuid) -
+                    allModificationsIds.indexOf(b.uuid)
+            )
+            .map((m) => m.uuid);
+    }, [modifications, selectedItems]);
+
+    const doCutModifications = useCallback(() => {
+        setCopiedModifications(selectedModificationsIds());
         setCopyInfos({
             copyType: CopyType.MOVE,
             originNodeUuid: currentNode.id,
         });
-    }, [currentNode?.id, selectedItems]);
+    }, [currentNode?.id, selectedModificationsIds]);
 
-    const doCopyModification = useCallback(() => {
-        // just memorize the list of selected modifications
-        setCopiedModifications(
-            Array.from(selectedItems).map((item) => item.uuid)
-        );
+    const doCopyModifications = useCallback(() => {
+        setCopiedModifications(selectedModificationsIds());
         setCopyInfos({ copyType: CopyType.COPY });
-    }, [selectedItems]);
+    }, [selectedModificationsIds]);
 
-    const doPasteModification = useCallback(() => {
+    const doPasteModifications = useCallback(() => {
         if (copyInfos.copyType === CopyType.MOVE) {
             copyOrMoveModifications(
                 studyUuid,
                 currentNode.id,
                 copiedModifications,
                 copyInfos
-            )
-                .then((message) => {
-                    let modificationsInFailure = JSON.parse(message);
-                    if (modificationsInFailure.length > 0) {
-                        console.warn(
-                            'Modifications not moved:',
-                            modificationsInFailure
-                        );
-                        snackWarning({
-                            messageTxt: modificationsInFailure.length,
-                            headerId: 'warnCutModificationMsg',
-                        });
-                    }
-                    setCopyInfos(null);
-                    setCopiedModifications([]);
-                })
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'errCutModificationMsg',
-                    });
+            ).catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errCutModificationMsg',
                 });
+            });
         } else {
             copyOrMoveModifications(
                 studyUuid,
                 currentNode.id,
                 copiedModifications,
                 copyInfos
-            )
-                .then((message) => {
-                    let modificationsInFailure = JSON.parse(message);
-                    if (modificationsInFailure.length > 0) {
-                        console.warn(
-                            'Modifications not pasted:',
-                            modificationsInFailure
-                        );
-                        snackWarning({
-                            messageTxt: modificationsInFailure.length,
-                            headerId: 'warnDuplicateModificationMsg',
-                        });
-                    }
-                })
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'errDuplicateModificationMsg',
-                    });
+            ).catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errDuplicateModificationMsg',
                 });
+            });
         }
     }, [
         copiedModifications,
         currentNode?.id,
         copyInfos,
         snackError,
-        snackWarning,
         studyUuid,
     ]);
 
@@ -766,7 +760,7 @@ const NetworkModificationNodeEditor = () => {
                 />
                 <div className={classes.filler} />
                 <IconButton
-                    onClick={doCutModification}
+                    onClick={doCutModifications}
                     size={'small'}
                     className={classes.toolbarIcon}
                     disabled={
@@ -778,7 +772,7 @@ const NetworkModificationNodeEditor = () => {
                     <ContentCutIcon />
                 </IconButton>
                 <IconButton
-                    onClick={doCopyModification}
+                    onClick={doCopyModifications}
                     size={'small'}
                     className={classes.toolbarIcon}
                     disabled={selectedItems.size === 0 || isAnyNodeBuilding}
@@ -799,7 +793,7 @@ const NetworkModificationNodeEditor = () => {
                 >
                     <span>
                         <IconButton
-                            onClick={doPasteModification}
+                            onClick={doPasteModifications}
                             size={'small'}
                             className={classes.toolbarIcon}
                             disabled={

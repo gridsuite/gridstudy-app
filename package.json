@@ -51,7 +51,9 @@
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
         "typeface-roboto": "^1.0.0",
-        "yup": "^0.32.11"
+        "yup": "^0.32.11",
+        "ag-grid-community": "^29.0.0",
+        "ag-grid-react": "^29.0.0"
     },
     "scripts": {
         "start": "react-scripts start",
