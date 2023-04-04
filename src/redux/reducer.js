@@ -683,8 +683,14 @@ export const reducer = createReducer(initialState, {
                             diagram.state = ViewState.MINIMIZED;
                         }
                     });
+                    const diagramToOpen = diagramStates[diagramToOpenIndex];
+
+                    // we push the diagram to the last position, so when we reopen it, it opens at the last position available.
+                    diagramStates.splice(diagramToOpenIndex, 1);
+                    diagramStates.push(diagramToOpen);
+
                     // And update the one to open.
-                    diagramStates[diagramToOpenIndex].state = ViewState.OPENED;
+                    diagramToOpen.state = ViewState.OPENED;
                 } else {
                     console.info(
                         'Diagram already opened : ' +
@@ -741,12 +747,8 @@ export const reducer = createReducer(initialState, {
                     diagram.svgType === action.svgType
             );
             if (diagramToMinimizeIndex >= 0) {
-                const diagramToMinimize = diagramStates[diagramToMinimizeIndex];
-                diagramToMinimize.state = ViewState.MINIMIZED;
-
-                // we push the diagram to the last position, so when we reopen it, it opens at the last position available.
-                diagramStates.splice(diagramToMinimizeIndex, 1);
-                diagramStates.push(diagramToMinimize);
+                diagramStates[diagramToMinimizeIndex].state =
+                    ViewState.MINIMIZED;
             }
         }
         state.diagramStates = diagramStates;
