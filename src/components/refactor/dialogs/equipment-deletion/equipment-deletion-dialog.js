@@ -17,7 +17,7 @@ import { EQUIPMENT_TYPES } from '../../../util/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
-import { FORM_LOADING_DAILY } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 
 const schema = yup
     .object()
@@ -100,7 +100,7 @@ const EquipmentDeletionDialog = ({
 
     const open = useOpenShortWaitFetching({
         mainData: editData,
-        delay: FORM_LOADING_DAILY,
+        delay: FORM_LOADING_DELAY,
     });
     return (
         <FormProvider validationSchema={schema} {...methods}>

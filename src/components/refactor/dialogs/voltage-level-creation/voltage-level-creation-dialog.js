@@ -40,7 +40,7 @@ import {
 } from './voltage-level-creation-utils';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
-import { FORM_LOADING_DAILY } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 
 /**
  * Dialog to create a load in the network
@@ -177,7 +177,7 @@ const VoltageLevelCreationDialog = ({
 
     const open = useOpenShortWaitFetching({
         mainData: editData,
-        delay: FORM_LOADING_DAILY,
+        delay: FORM_LOADING_DELAY,
     });
 
     return (

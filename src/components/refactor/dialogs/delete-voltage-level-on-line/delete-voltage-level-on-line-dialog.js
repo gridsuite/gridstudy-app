@@ -6,7 +6,7 @@
  */
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FORM_LOADING_DAILY } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
@@ -109,7 +109,7 @@ const DeleteVoltageLevelOnLineDialog = ({
 
     const open = useOpenShortWaitFetching({
         mainData: editData,
-        delay: FORM_LOADING_DAILY,
+        delay: FORM_LOADING_DELAY,
     });
 
     return (

@@ -27,7 +27,7 @@ import SubstationCreationForm from './substation-creation-form';
 import { createSubstation } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
-import { FORM_LOADING_DAILY } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -125,7 +125,7 @@ const SubstationCreationDialog = ({
 
     const open = useOpenShortWaitFetching({
         mainData: editData,
-        delay: FORM_LOADING_DAILY,
+        delay: FORM_LOADING_DELAY,
     });
     return (
         <FormProvider validationSchema={schema} {...methods}>

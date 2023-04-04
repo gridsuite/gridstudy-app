@@ -6,7 +6,7 @@
  */
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FORM_LOADING_DAILY } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -114,7 +114,7 @@ const DeleteAttachingLineDialog = ({
 
     const open = useOpenShortWaitFetching({
         mainData: editData,
-        delay: FORM_LOADING_DAILY,
+        delay: FORM_LOADING_DELAY,
     });
 
     return (

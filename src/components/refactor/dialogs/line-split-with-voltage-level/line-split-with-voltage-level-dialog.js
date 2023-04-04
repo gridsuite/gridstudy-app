@@ -38,7 +38,7 @@ import {
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { MODIFICATION_TYPES } from 'components/util/modification-type';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
-import { FORM_LOADING_DAILY } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 
 const emptyFormData = {
     [LINE1_ID]: '',
@@ -197,7 +197,7 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const open = useOpenShortWaitFetching({
         mainData: editData,
-        delay: FORM_LOADING_DAILY,
+        delay: FORM_LOADING_DELAY,
     });
 
     return (

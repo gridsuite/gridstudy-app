@@ -7,7 +7,7 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FORM_LOADING_DAILY } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ACTIVE_POWER,
     EQUIPMENT_ID,
@@ -125,8 +125,8 @@ const LoadModificationDialog = ({
 
     const open = useOpenShortWaitFetching({
         mainData: editData,
-        fetching: isDataFetched,
-        delay: FORM_LOADING_DAILY,
+        fetched: isDataFetched,
+        delay: FORM_LOADING_DELAY,
     });
 
     return (

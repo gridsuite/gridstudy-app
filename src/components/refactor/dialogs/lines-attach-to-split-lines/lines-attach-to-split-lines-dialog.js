@@ -36,7 +36,7 @@ import {
     getConnectivityWithoutPositionValidationSchema,
     getConnectivityData,
 } from '../connectivity/connectivity-form-utils';
-import { FORM_LOADING_DAILY } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 
 const emptyFormData = {
@@ -139,7 +139,7 @@ const LinesAttachToSplitLinesDialog = ({
 
     const open = useOpenShortWaitFetching({
         mainData: editData,
-        delay: FORM_LOADING_DAILY,
+        delay: FORM_LOADING_DELAY,
     });
 
     return (

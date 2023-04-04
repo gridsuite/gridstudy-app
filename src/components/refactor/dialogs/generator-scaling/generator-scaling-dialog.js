@@ -16,7 +16,7 @@ import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
 import { generatorScaling } from '../../../../utils/rest-api';
 import {
-    FORM_LOADING_DAILY,
+    FORM_LOADING_DELAY,
     VARIATION_TYPES,
 } from '../../../network/constants';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
@@ -84,7 +84,7 @@ const GeneratorScalingDialog = ({
 
     const open = useOpenShortWaitFetching({
         mainData: editData,
-        delay: FORM_LOADING_DAILY,
+        delay: FORM_LOADING_DELAY,
     });
 
     return (
