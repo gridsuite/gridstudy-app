@@ -13,8 +13,6 @@ import {
     ID,
     NAME,
     NOMINAL_VOLTAGE,
-    OLD_EQUIPMENT,
-    OLD_VOLTAGE_LEVEL,
     Q_PERCENT,
     REACTIVE_POWER_SET_POINT,
     SUBSTATION_ID,
@@ -67,14 +65,14 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
         .string()
         .nullable()
         .when([VOLTAGE_REGULATION], {
-            is: (value) => !value && !isGeneratorModification,
+            is: (value) => !isGeneratorModification && !value,
             then: (schema) => schema.required(),
         }),
     [VOLTAGE_SET_POINT]: yup
         .number()
         .nullable()
         .when([VOLTAGE_REGULATION], {
-            is: (value) => value && !isGeneratorModification,
+            is: (value) => !isGeneratorModification && value,
             then: (schema) => schema.required(),
         }),
     [Q_PERCENT]: yup
@@ -82,7 +80,6 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
         .nullable()
         .max(100, 'NormalizedPercentage')
         .min(0, 'NormalizedPercentage'),
-    [OLD_VOLTAGE_LEVEL]: yup.string().nullable(),
     [VOLTAGE_LEVEL]: yup
         .object()
         .nullable()
@@ -93,20 +90,13 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
             [NOMINAL_VOLTAGE]: yup.string(),
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
-        .when(
-            [VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE, OLD_VOLTAGE_LEVEL],
-            {
-                is: (
-                    voltageRegulation,
-                    voltageRegulationType,
-                    oldVoltageLevel
-                ) =>
-                    oldVoltageLevel == null &&
-                    (voltageRegulation == null || voltageRegulation) &&
-                    voltageRegulationType === REGULATION_TYPES.DISTANT.id,
-                then: (schema) => schema.required(),
-            }
-        ),
+        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
+            is: (voltageRegulation, voltageRegulationType) =>
+                !isGeneratorModification &&
+                voltageRegulation &&
+                voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+            then: (schema) => schema.required(),
+        }),
     [EQUIPMENT]: yup
         .object()
         .nullable()
@@ -115,28 +105,13 @@ const getVoltageRegulationSchema = (isGeneratorModification) => ({
             [NAME]: yup.string().nullable(),
             [TYPE]: yup.string(),
         })
-        .when(
-            [
-                VOLTAGE_REGULATION,
-                VOLTAGE_REGULATION_TYPE,
-                OLD_EQUIPMENT,
-                VOLTAGE_LEVEL,
-            ],
-            {
-                is: (
-                    voltageRegulation,
-                    voltageRegulationType,
-                    oldEquipment,
-                    vl
-                ) =>
-                    (!oldEquipment &&
-                        (voltageRegulation == null || voltageRegulation) &&
-                        voltageRegulationType ===
-                            REGULATION_TYPES.DISTANT.id) ||
-                    vl,
-                then: (schema) => schema.required(),
-            }
-        ),
+        .when([VOLTAGE_REGULATION, VOLTAGE_REGULATION_TYPE], {
+            is: (voltageRegulation, voltageRegulationType, vl) =>
+                !isGeneratorModification &&
+                voltageRegulation &&
+                voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+            then: (schema) => schema.required(),
+        }),
 });
 
 export const getSetPointsEmptyFormData = (isGeneratorModification = false) => ({
@@ -166,7 +141,7 @@ const getReactivePowerSetPointSchema = (isGeneratorModification) => ({
         .number()
         .nullable()
         .when([VOLTAGE_REGULATION], {
-            is: (value) => !value && !isGeneratorModification,
+            is: (value) => !isGeneratorModification && !value,
             then: (schema) => schema.required(),
         }),
 });
