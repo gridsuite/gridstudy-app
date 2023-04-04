@@ -185,9 +185,6 @@ const GeneratorModificationDialog = ({
                               editData?.regulatingTerminalType?.value,
                           voltageLevelId:
                               editData?.regulatingTerminalVlId?.value,
-                          oldEquipment: editData?.regulatingTerminalId?.value,
-                          oldVoltageLevel:
-                              editData?.regulatingTerminalVlId?.value,
                       }),
                   }
                 : null,
