@@ -698,14 +698,14 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
                 state: ViewState.OPENED,
             },
             {
-                id: 47,
-                svgType: DiagramType.SUBSTATION,
-                state: ViewState.MINIMIZED,
-            },
-            {
                 id: 25,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
+            },
+            {
+                id: 47,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.MINIMIZED,
             },
         ],
     };
@@ -738,17 +738,17 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
         diagramStates: [
             {
                 id: 1,
-                svgType: DiagramType.SUBSTATION,
-                state: ViewState.PINNED,
-            },
-            {
-                id: 1,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
                 id: 22,
                 svgType: DiagramType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 1,
+                svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
         ],
@@ -813,17 +813,17 @@ test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
                 state: ViewState.MINIMIZED,
             },
             {
-                id: 200,
-                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
-                state: ViewState.MINIMIZED,
-            },
-            {
                 id: 3,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
                 id: 4,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.MINIMIZED,
+            },
+            {
+                id: 200,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
