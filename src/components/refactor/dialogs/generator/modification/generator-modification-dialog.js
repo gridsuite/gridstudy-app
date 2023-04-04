@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -80,7 +80,26 @@ const GeneratorModificationDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
+    const shouldEmptyFormOnGeneratorIdChangeRef = useRef();
 
+    //in order to work properly, react hook form needs all fields to be set at least to null
+    const completeReactiveCapabilityCurvePointsData = (
+        reactiveCapabilityCurvePoints
+    ) => {
+        reactiveCapabilityCurvePoints.map((rcc) => {
+            if (!(P in rcc)) {
+                rcc[P] = null;
+            }
+            if (!(Q_MAX_P in rcc)) {
+                rcc[Q_MAX_P] = null;
+            }
+            if (!(Q_MIN_P in rcc)) {
+                rcc[Q_MIN_P] = null;
+            }
+            return rcc;
+        });
+        return reactiveCapabilityCurvePoints;
+    };
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_ID]: defaultIdValue ?? null,
@@ -152,15 +171,22 @@ const GeneratorModificationDialog = ({
                               ? 'MINMAX'
                               : 'CURVE',
                       [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                          editData?.reactiveCapabilityCurvePoints ?? [
-                              getModificationRowEmptyFormData(),
-                              getModificationRowEmptyFormData(),
-                          ],
+                          editData?.reactiveCapabilityCurvePoints.length > 0
+                              ? completeReactiveCapabilityCurvePointsData(
+                                    editData?.reactiveCapabilityCurvePoints
+                                )
+                              : [
+                                    getModificationRowEmptyFormData(),
+                                    getModificationRowEmptyFormData(),
+                                ],
                       ...getRegulatingTerminalFormData({
                           equipmentId: editData?.regulatingTerminalId?.value,
                           equipmentType:
                               editData?.regulatingTerminalType?.value,
                           voltageLevelId:
+                              editData?.regulatingTerminalVlId?.value,
+                          oldEquipment: editData?.regulatingTerminalId?.value,
+                          oldVoltageLevel:
                               editData?.regulatingTerminalVlId?.value,
                       }),
                   }
@@ -264,51 +290,9 @@ const GeneratorModificationDialog = ({
         });
     };
 
-    const getReactiveCapabilityCurvePoint = ({
-        p,
-        qmaxP,
-        qminP,
-        oldP,
-        oldQminP,
-        oldQmaxP,
-    }) => {
-        return {
-            [P]: p ?? null,
-            [Q_MAX_P]: qmaxP ?? null,
-            [Q_MIN_P]: qminP ?? null,
-            [OLD_Q_MAX_P]: oldQmaxP,
-            [OLD_Q_MIN_P]: oldQminP,
-            [OLD_P]: oldP,
-        };
-    };
-
-    const getReactiveCapabilityCurveTable = useCallback(
-        (generator) => {
-            if (editData?.reactiveCapabilityCurvePoints?.length > 0) {
-                return editData.reactiveCapabilityCurvePoints.map((point) =>
-                    getReactiveCapabilityCurvePoint({
-                        p: point.p,
-                        qmaxP: point.qmaxP,
-                        qminP: point.qminP,
-                        oldP: point.oldP ?? point.p,
-                        oldQminP: point.oldQminP ?? point.qminP,
-                        oldQmaxP: point.oldQmaxP ?? point.qmaxP,
-                    })
-                );
-            } else if (generator?.reactiveCapabilityCurvePoints?.length > 0) {
-                return generator?.reactiveCapabilityCurvePoints?.map((point) =>
-                    getReactiveCapabilityCurvePoint({
-                        oldP: point.p,
-                        oldQminP: point.qminP,
-                        oldQmaxP: point.qmaxP,
-                    })
-                );
-            } else {
-                return [{}, {}];
-            }
-        },
-        [editData?.reactiveCapabilityCurvePoints]
-    );
+    useEffect(() => {
+        if (!editData) shouldEmptyFormOnGeneratorIdChangeRef.current = true;
+    }, [editData]);
 
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
@@ -322,21 +306,49 @@ const GeneratorModificationDialog = ({
                 )
                     .then((value) => {
                         if (value) {
-                            value.reactiveCapabilityCurvePoints =
-                                getReactiveCapabilityCurveTable(value);
-                            // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
-                            clear(
-                                {
-                                    [EQUIPMENT_ID]: equipmentId,
-                                    [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                                        value.reactiveCapabilityCurvePoints,
-                                    [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                                        value?.minMaxReactiveLimits != null
-                                            ? 'MINMAX'
-                                            : 'CURVE',
-                                },
-                                true
-                            );
+                            // when editing modification form, first render should not trigger this reset
+                            // which would empty the form instead of displaying data of existing form
+                            if (
+                                shouldEmptyFormOnGeneratorIdChangeRef?.current
+                            ) {
+                                //creating empty table depending on existing generator
+                                let reactiveCapabilityCurvePoints = [
+                                    getModificationRowEmptyFormData(),
+                                    getModificationRowEmptyFormData(),
+                                ];
+                                if (value?.reactiveCapabilityCurvePoints) {
+                                    reactiveCapabilityCurvePoints = [];
+                                }
+                                value?.reactiveCapabilityCurvePoints?.forEach(
+                                    (element) => {
+                                        reactiveCapabilityCurvePoints.push({
+                                            [P]: null,
+                                            [Q_MIN_P]: null,
+                                            [Q_MAX_P]: null,
+                                            [OLD_P]: element.p ?? null,
+                                            [OLD_Q_MIN_P]:
+                                                element.qminP ?? null,
+                                            [OLD_Q_MAX_P]:
+                                                element.qmaxP ?? null,
+                                        });
+                                    }
+                                );
+                                // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
+                                clear(
+                                    {
+                                        [EQUIPMENT_ID]: equipmentId,
+                                        [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                                            reactiveCapabilityCurvePoints,
+                                        [REACTIVE_CAPABILITY_CURVE_CHOICE]:
+                                            value?.minMaxReactiveLimits != null
+                                                ? 'MINMAX'
+                                                : 'CURVE',
+                                    },
+                                    true
+                                );
+                            }
+                            shouldEmptyFormOnGeneratorIdChangeRef.current = true;
+                            setGeneratorToModify(value);
                             setGeneratorToModify(value);
                         }
                     })
@@ -346,7 +358,7 @@ const GeneratorModificationDialog = ({
                 setGeneratorToModify(null);
             }
         },
-        [clear, currentNodeUuid, getReactiveCapabilityCurveTable, studyUuid]
+        [clear, currentNodeUuid, studyUuid]
     );
 
     const calculateCurvePointsToStore = useCallback(
