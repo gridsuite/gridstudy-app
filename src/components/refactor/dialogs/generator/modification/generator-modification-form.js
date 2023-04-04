@@ -101,6 +101,7 @@ const GeneratorModificationForm = ({
     const generatorIdField = (
         <AutocompleteInput
             allowNewValue
+            forcePopupIcon
             name={EQUIPMENT_ID}
             label={'ID'}
             options={equipmentOptions}

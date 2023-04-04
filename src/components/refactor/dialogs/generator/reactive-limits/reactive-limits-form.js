@@ -17,12 +17,12 @@ import React from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     gridItem,
-    GridSection,
     ReactivePowerAdornment,
 } from '../../../../dialogs/dialogUtils';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
+import { FormattedMessage } from 'react-intl';
 
 const headerIds = [
     'ActivePowerText',
@@ -46,7 +46,7 @@ const ReactiveLimitsForm = ({
             name={`${REACTIVE_CAPABILITY_CURVE_CHOICE}`}
             defaultValue={'CURVE'}
             options={REACTIVE_LIMIT_TYPES}
-            formProps={{ style: { marginBottom: '5px', marginTop: '-10px' } }}
+            formProps={{ style: { marginTop: '-12px' } }}
         />
     );
 
@@ -86,11 +86,16 @@ const ReactiveLimitsForm = ({
 
     return (
         <>
-            <GridSection title="ReactiveLimits" />
             <Grid container spacing={2}>
-                {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
+                <Grid item xs={12}>
+                    <h4>
+                        <FormattedMessage id="ReactiveLimits" />
+                    </h4>
+                </Grid>
             </Grid>
             <Grid container spacing={2}>
+                {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
+
                 {!isReactiveCapabilityCurveOn &&
                     gridItem(minimumReactivePowerField, 4)}
                 {!isReactiveCapabilityCurveOn &&

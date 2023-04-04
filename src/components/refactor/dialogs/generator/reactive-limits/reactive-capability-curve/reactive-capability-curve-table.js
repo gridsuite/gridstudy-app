@@ -54,10 +54,32 @@ export const ReactiveCapabilityCurveTable = ({
             updatePreviousReactiveCapabilityCurveTable(REMOVE, index);
         remove(index);
     };
+    /*
+0 1 2
+prev : 0 1
+
+
+*/
+    const calculateIndexOfPreviousValue = (index) => {
+        // console.log(index, rows.length - 1, previousValues.length - 1);
+        // if (rows.length === previousValues.length) {
+        //     return index;
+        // }
+
+        // if (index === previousValues.length - 1) {
+        //     return -1;
+        // }
+
+        // if (index === rows.length - 1) {
+        //     return previousValues.length - 1;
+        // }
+
+        return index;
+    };
 
     return (
         <Grid item container spacing={2}>
-            <Grid item xs={12}>
+            <Grid xs={12}>
                 <ErrorInput name={id} InputField={MidFormError} />
             </Grid>
 
@@ -80,7 +102,11 @@ export const ReactiveCapabilityCurveTable = ({
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
-                            previousValues={previousValues?.[index]}
+                            previousValues={
+                                previousValues?.[
+                                    calculateIndexOfPreviousValue(index)
+                                ]
+                            }
                         />
                         <Grid item xs={1}>
                             <IconButton
