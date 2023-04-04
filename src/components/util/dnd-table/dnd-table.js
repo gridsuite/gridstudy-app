@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { Box } from '@mui/system';
 import {
@@ -38,7 +38,7 @@ export const MAX_ROWS_NUMBER = 100;
 
 export const addSelectedFieldToRows = (rows) => {
     return rows?.map((row) => {
-        return { ...row, selected: false };
+        return { ...row, [SELECTED]: false };
     });
 };
 
@@ -52,11 +52,19 @@ function MultiCheckbox({
         name: arrayFormName,
     });
 
-    const allRowSelected = arrayToWatch.every((row) => row[SELECTED]);
+    const allRowSelected = useMemo(
+        () => arrayToWatch.every((row) => row[SELECTED]),
+        [arrayToWatch]
+    );
+    const someRowSelected = useMemo(
+        () => arrayToWatch.some((row) => row[SELECTED]),
+        [arrayToWatch]
+    );
 
     return (
         <Checkbox
             checked={arrayToWatch.length > 0 && allRowSelected}
+            indeterminate={someRowSelected && !allRowSelected}
             onChange={(event) => {
                 event.target.checked
                     ? handleClickCheck()

@@ -1246,7 +1246,7 @@ export function fetchDynamicSimulationResultTimeSeries(
         timeSeriesNames.length > 0 &&
         '?' + getQueryParamsList(timeSeriesNames, 'timeSeriesNames');
 
-    url += paramsList && '';
+    url += paramsList || '';
 
     console.debug(url);
     return backendFetchJson(url);
@@ -1523,7 +1523,7 @@ export function copyOrMoveModifications(
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
-    return backendFetchText(copyOrMoveModificationUrl, {
+    return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -2245,8 +2245,8 @@ export function createTwoWindingsTransformer(
     ratedS,
     ratedVoltage1,
     ratedVoltage2,
-    permanentCurrentLimit1,
-    permanentCurrentLimit2,
+    currentLimit1,
+    currentLimit2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -2291,8 +2291,8 @@ export function createTwoWindingsTransformer(
             ratedS: ratedS,
             ratedVoltage1: ratedVoltage1,
             ratedVoltage2: ratedVoltage2,
-            currentLimits1: permanentCurrentLimit1,
-            currentLimits2: permanentCurrentLimit2,
+            currentLimits1: currentLimit1,
+            currentLimits2: currentLimit2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
