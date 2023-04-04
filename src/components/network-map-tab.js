@@ -466,12 +466,16 @@ export const NetworkMapTab = ({
                 })
                 .catch(function (error) {
                     console.error(error.message);
-                    setErrorMessage(
-                        intlRef.current.formatMessage(
-                            { id: 'geoDataLoadingFail' },
-                            { studyUuid: studyUuid }
-                        )
-                    );
+
+                    // we display the error to the user only if the node is built
+                    if (isNodeBuilt(currentNodeRef.current)) {
+                        setErrorMessage(
+                            intlRef.current.formatMessage(
+                                { id: 'geoDataLoadingFail' },
+                                { studyUuid: studyUuid }
+                            )
+                        );
+                    }
                 })
                 .finally(() => setWaitingLoadData(false));
         }
@@ -528,12 +532,16 @@ export const NetworkMapTab = ({
             })
             .catch(function (error) {
                 console.error(error.message);
-                setErrorMessage(
-                    intlRef.current.formatMessage(
-                        { id: 'geoDataLoadingFail' },
-                        { studyUuid: studyUuid }
-                    )
-                );
+
+                // we display the error to the user only if the node is built
+                if (isNodeBuilt(currentNodeRef.current)) {
+                    setErrorMessage(
+                        intlRef.current.formatMessage(
+                            { id: 'geoDataLoadingFail' },
+                            { studyUuid: studyUuid }
+                        )
+                    );
+                }
             })
             .finally(() => setWaitingLoadData(false));
     }, [intlRef, lineFullPath, setErrorMessage, studyUuid]);
