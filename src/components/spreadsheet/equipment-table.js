@@ -27,15 +27,12 @@ const useStyles = makeStyles((theme) => ({
             maxHeight: '300px !important',
         },
 
-    },
-}));
-            },
         '& .ag-body-horizontal-scroll:not(.ag-scrollbar-invisible) .ag-horizontal-left-spacer:not(.ag-scroller-corner)':
             {
                 visibility: 'hidden',
             },
     },
-});
+}));
 
 const GRID_PREFIX = 'grid.';
 
@@ -113,8 +110,6 @@ export const EquipmentTable = ({
             },
         }),
         [filterIcon]
-    );
-        []
     );
 
     const gridContext = useMemo(() => {
