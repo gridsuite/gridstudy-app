@@ -13,6 +13,7 @@ import {
     useCallback,
     useEffect,
     useImperativeHandle,
+    useMemo,
     useRef,
 } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
@@ -28,69 +29,68 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const GlobalFilter = forwardRef(
-    ({ gridRef, disabled, visible }, ref) => {
-        const classes = useStyles();
-        const intl = useIntl();
-        const inputRef = useRef();
+export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
+    const classes = useStyles();
+    const intl = useIntl();
+    const inputRef = useRef();
 
-        const applyQuickFilter = useCallback(
-            (filterValue) => {
-                gridRef.current?.api?.setQuickFilter(filterValue);
-            },
-            [gridRef]
-        );
+    const applyQuickFilter = useCallback(
+        (filterValue) => {
+            gridRef.current?.api?.setQuickFilter(filterValue);
+        },
+        [gridRef]
+    );
 
-        const resetFilter = useCallback(() => {
-            inputRef.current.value = '';
-            applyQuickFilter();
-        }, [applyQuickFilter]);
+    const resetFilter = useCallback(() => {
+        inputRef.current.value = '';
+        applyQuickFilter();
+    }, [applyQuickFilter]);
 
-        useImperativeHandle(
-            ref,
-            () => {
-                return {
-                    resetFilter: resetFilter,
-                };
-            },
-            [resetFilter]
-        );
+    const getFilterValue = useCallback(() => {
+        return inputRef.current?.value;
+    }, []);
 
-        const handleChangeFilter = useCallback(
-            (event) => {
-                applyQuickFilter(event.target.value);
-            },
-            [applyQuickFilter]
-        );
+    useImperativeHandle(
+        ref,
+        () => {
+            return {
+                resetFilter: resetFilter,
+                getFilterValue: getFilterValue,
+            };
+        },
+        [getFilterValue, resetFilter]
+    );
 
-        useEffect(() => {
-            applyQuickFilter(inputRef.current.value);
-        }, [applyQuickFilter, visible]);
+    const handleChangeFilter = useCallback(
+        (event) => {
+            applyQuickFilter(event.target.value);
+        },
+        [applyQuickFilter]
+    );
 
-        return (
-            <Grid item className={classes.containerInputSearch}>
-                <TextField
-                    disabled={disabled}
-                    className={classes.textField}
-                    size="small"
-                    placeholder={intl.formatMessage({ id: 'filter' }) + '...'}
-                    onChange={handleChangeFilter}
-                    inputRef={inputRef}
-                    fullWidth
-                    InputProps={{
-                        classes: {
-                            input: classes.searchSection,
-                        },
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon
-                                    color={disabled ? 'disabled' : 'inherit'}
-                                />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-            </Grid>
-        );
-    }
-);
+    return (
+        <Grid item className={classes.containerInputSearch}>
+            <TextField
+                disabled={disabled}
+                className={classes.textField}
+                size="small"
+                placeholder={intl.formatMessage({ id: 'filter' }) + '...'}
+                onChange={handleChangeFilter}
+                inputRef={inputRef}
+                fullWidth
+                InputProps={{
+                    classes: {
+                        input: classes.searchSection,
+                    },
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon
+                                color={disabled ? 'disabled' : 'inherit'}
+                            />
+                        </InputAdornment>
+                    ),
+                }}
+            />
+        </Grid>
+    );
+});

@@ -47,6 +47,7 @@ export const EquipmentTable = ({
     handleRowEditing,
     handleCellEditing,
     handleEditingStopped,
+    handleGridReady,
     fetched,
     network,
 }) => {
@@ -153,6 +154,7 @@ export const EquipmentTable = ({
                         suppressClickEdit={true}
                         getLocaleText={getLocaleText}
                         context={gridContext}
+                        onGridReady={handleGridReady}
                     />
                 )}
             </div>
