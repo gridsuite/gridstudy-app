@@ -155,7 +155,7 @@ const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const { snackInfo, snackError, snackWarning } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -176,14 +176,14 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
-    const cleanClipboard = () => {
+    const cleanClipboard = useCallback(() => {
         if (copiedModifications.length <= 0) return;
         setCopyInfos(null);
         setCopiedModifications([]);
         snackInfo({
             messageId: 'CopiedModificationInvalidationMessage',
         });
-    };
+    }, [snackInfo, copiedModifications]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -457,19 +457,38 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const doDeleteModification = useCallback(() => {
+        const selectedModificationsUuid = [...selectedItems.values()].map(
+            (item) => item.uuid
+        );
         deleteModifications(
             studyUuid,
             currentNode.id,
-            [...selectedItems.values()].map((item) => item.uuid)
+            selectedModificationsUuid
         )
-            .then()
+            .then(() => {
+                //if one of the deleted element was in the clipboard we invalidate the clipboard
+                if (
+                    copiedModifications.some((aCopiedModification) =>
+                        selectedModificationsUuid.includes(aCopiedModification)
+                    )
+                ) {
+                    cleanClipboard();
+                }
+            })
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errDeleteModificationMsg',
                 });
             });
-    }, [currentNode?.id, selectedItems, snackError, studyUuid]);
+    }, [
+        currentNode?.id,
+        selectedItems,
+        snackError,
+        studyUuid,
+        cleanClipboard,
+        copiedModifications,
+    ]);
 
     const selectedModificationsIds = useCallback(() => {
         const allModificationsIds = modifications.map((m) => m.uuid);
@@ -503,61 +522,30 @@ const NetworkModificationNodeEditor = () => {
                 currentNode.id,
                 copiedModifications,
                 copyInfos
-            )
-                .then((message) => {
-                    let modificationsInFailure = JSON.parse(message);
-                    if (modificationsInFailure.length > 0) {
-                        console.warn(
-                            'Modifications not moved:',
-                            modificationsInFailure
-                        );
-                        snackWarning({
-                            messageTxt: modificationsInFailure.length,
-                            headerId: 'warnCutModificationMsg',
-                        });
-                    }
-                    setCopyInfos(null);
-                    setCopiedModifications([]);
-                })
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'errCutModificationMsg',
-                    });
+            ).catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errCutModificationMsg',
                 });
+            });
         } else {
             copyOrMoveModifications(
                 studyUuid,
                 currentNode.id,
                 copiedModifications,
                 copyInfos
-            )
-                .then((message) => {
-                    let modificationsInFailure = JSON.parse(message);
-                    if (modificationsInFailure.length > 0) {
-                        console.warn(
-                            'Modifications not pasted:',
-                            modificationsInFailure
-                        );
-                        snackWarning({
-                            messageTxt: modificationsInFailure.length,
-                            headerId: 'warnDuplicateModificationMsg',
-                        });
-                    }
-                })
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'errDuplicateModificationMsg',
-                    });
+            ).catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errDuplicateModificationMsg',
                 });
+            });
         }
     }, [
         copiedModifications,
         currentNode?.id,
         copyInfos,
         snackError,
-        snackWarning,
         studyUuid,
     ]);
 
