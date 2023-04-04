@@ -81,9 +81,6 @@ const GeneratorModificationDialog = ({
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
 
-    const isSelectedGeneratorUndefined = generatorToModify === undefined;
-    const isEditDataUndefined = editData === undefined;
-
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_ID]: defaultIdValue ?? null,
@@ -165,9 +162,6 @@ const GeneratorModificationDialog = ({
                               editData?.regulatingTerminalType?.value,
                           voltageLevelId:
                               editData?.regulatingTerminalVlId?.value,
-                          oldEquipment: editData?.regulatingTerminalId?.value,
-                          oldVoltageLevel:
-                              editData?.regulatingTerminalVlId?.value,
                       }),
                   }
                 : null,
@@ -191,27 +185,20 @@ const GeneratorModificationDialog = ({
                         [EQUIPMENT_ID]: yup.string().nullable().required(),
                         [EQUIPMENT_NAME]: yup.string(),
                         [ENERGY_SOURCE]: yup.string().nullable(),
-                        [MAXIMUM_ACTIVE_POWER]: yup
-                            .number()
-                            .nullable()
-                            .when([], {
-                                is: () =>
-                                    isSelectedGeneratorUndefined &&
-                                    isEditDataUndefined,
-                                then: (schema) => schema.required(),
-                            }),
+                        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
                         [MINIMUM_ACTIVE_POWER]: yup
                             .number()
                             .nullable()
-                            .when([MAXIMUM_ACTIVE_POWER], {
-                                is: (maximumActivePower) =>
-                                    maximumActivePower != null,
-                                then: (schema) =>
-                                    schema.max(
-                                        yup.ref(MAXIMUM_ACTIVE_POWER),
-                                        'MinActivePowerLessThanMaxActivePower'
-                                    ),
-                            }),
+                            .when(
+                                MAXIMUM_ACTIVE_POWER,
+                                (maximumActivePower, schema) =>
+                                    maximumActivePower != null
+                                        ? schema.max(
+                                              maximumActivePower,
+                                              'MinActivePowerLessThanMaxActivePower'
+                                          )
+                                        : schema
+                            ),
                         [RATED_NOMINAL_POWER]: yup.number().nullable(),
                         [TRANSIENT_REACTANCE]: yup.number().nullable(),
                         [TRANSFORMER_REACTANCE]: yup.number().nullable(),
@@ -236,8 +223,9 @@ const GeneratorModificationDialog = ({
                     [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
                 )
                 .required(),
-        [isSelectedGeneratorUndefined, isEditDataUndefined]
+        []
     );
+
     const methods = useForm({
         defaultValues: defaultFormData,
         resolver: yupResolver(schema),
