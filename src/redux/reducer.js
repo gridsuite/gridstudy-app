@@ -741,8 +741,12 @@ export const reducer = createReducer(initialState, {
                     diagram.svgType === action.svgType
             );
             if (diagramToMinimizeIndex >= 0) {
-                diagramStates[diagramToMinimizeIndex].state =
-                    ViewState.MINIMIZED;
+                const diagramToMinimize = diagramStates[diagramToMinimizeIndex];
+                diagramToMinimize.state = ViewState.MINIMIZED;
+
+                // we push the diagram to the last position, so when we reopen it, it opens at the last position available.
+                diagramStates.splice(diagramToMinimizeIndex, 1);
+                diagramStates.push(diagramToMinimize);
             }
         }
         state.diagramStates = diagramStates;
