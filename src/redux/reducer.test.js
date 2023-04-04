@@ -742,14 +742,14 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
                 state: ViewState.PINNED,
             },
             {
-                id: 22,
-                svgType: DiagramType.VOLTAGE_LEVEL,
-                state: ViewState.PINNED,
-            },
-            {
                 id: 1,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
+            },
+            {
+                id: 22,
+                svgType: DiagramType.VOLTAGE_LEVEL,
+                state: ViewState.PINNED,
             },
         ],
     };
