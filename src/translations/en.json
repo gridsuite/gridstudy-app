@@ -441,7 +441,6 @@
     "errDuplicateModificationMsg": "Network modifications copy error",
     "errCutModificationMsg": "Network modifications cut error",
     "warnDuplicateModificationMsg": "Number of modifications not copied :",
-    "warnCutModificationMsg": "Number of modifications not cut :",
     "errDeleteModificationMsg": "Network modifications deletion error",
     "DeleteEquipment": "Delete equipment",
     "Type": "Type",
@@ -688,9 +687,12 @@
     "ImportFileAlpha": "ShiftAngle",
 
     "RegulationMode": "Regulation mode",
+
     "FixedTap": "Fixed tap",
     "CurrentLimiter": "Current limiter",
     "PhaseActivePowerControl": "Active power control",
+
+    "FixedRatio": "Fixed ratio",
 
     "RegulatingValueCurrentLimiter": "Current limiter",
     "CurrentLimiterGreaterThanZero": "The current limiter value must be strictly positive",

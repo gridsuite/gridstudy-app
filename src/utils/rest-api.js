@@ -1523,7 +1523,7 @@ export function copyOrMoveModifications(
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
-    return backendFetchText(copyOrMoveModificationUrl, {
+    return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',

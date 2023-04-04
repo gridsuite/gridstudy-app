@@ -9,7 +9,6 @@ import { Grid } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import {
-    filledTextField,
     gridItem,
     MicroSusceptanceAdornment,
     MVAPowerAdornment,
@@ -17,14 +16,11 @@ import {
     VoltageAdornment,
 } from '../../../../dialogs/dialogUtils';
 import FloatInput from '../../../rhf-inputs/float-input';
-import TextInput from '../../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import {
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
     RATED_S,
@@ -50,22 +46,6 @@ const TwoWindingsTransformerPane = ({
     const classes = useStyles();
 
     // CHARACTERISTICS TAP PANE
-    const twoWindingsTransformerIdField = (
-        <TextInput
-            name={`${id}.${EQUIPMENT_ID}`}
-            label="ID"
-            formProps={filledTextField}
-        />
-    );
-
-    const twoWindingsTransformerNameField = (
-        <TextInput
-            name={`${id}.${EQUIPMENT_NAME}`}
-            label="Name"
-            formProps={filledTextField}
-        />
-    );
-
     const seriesResistanceField = (
         <FloatInput
             name={`${id}.${SERIES_RESISTANCE}`}
@@ -144,10 +124,6 @@ const TwoWindingsTransformerPane = ({
 
     return (
         <>
-            <Grid container item spacing={2} xs={8}>
-                {gridItem(twoWindingsTransformerIdField)}
-                {gridItem(twoWindingsTransformerNameField)}
-            </Grid>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <h3 className={classes.h3}>
