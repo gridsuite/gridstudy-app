@@ -260,6 +260,25 @@ export const NetworkModificationTreePane = ({
                     });
                     broadcastChannel.postMessage(noSelectionForCopy);
                 }
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeRenamed'
+            ) {
+                updateNodes([studyUpdatedForce.eventData.headers['node']]);
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeBuildStatusUpdated'
+            ) {
+                updateNodes(studyUpdatedForce.eventData.headers['nodes']);
+                if (
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) => nodeId === currentNodeRef.current?.id
+                    )
+                ) {
+                    dispatch(
+                        removeNotificationByNode([currentNodeRef.current?.id])
+                    );
+                }
             }
         }
     }, [
