@@ -624,6 +624,7 @@ const TableWrapper = (props) => {
                 <Grid container>
                     <GlobalFilter
                         disabled={!!(props.disabled || editingData)}
+                        visible={props.visible}
                         gridRef={gridRef}
                         ref={globalFilterRef}
                     />

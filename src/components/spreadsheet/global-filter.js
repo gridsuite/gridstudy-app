@@ -8,7 +8,13 @@
 import { Grid, InputAdornment, TextField } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useIntl } from 'react-intl';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import {
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+} from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 
 const useStyles = makeStyles((theme) => ({
@@ -22,57 +28,69 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
-    const classes = useStyles();
-    const intl = useIntl();
+export const GlobalFilter = forwardRef(
+    ({ gridRef, disabled, visible }, ref) => {
+        const classes = useStyles();
+        const intl = useIntl();
+        const inputRef = useRef();
 
-    const inputRef = useRef();
-    const resetFilter = useCallback(() => {
-        inputRef.current.value = '';
-        gridRef.current?.api?.setQuickFilter();
-    }, [gridRef]);
+        const applyQuickFilter = useCallback(
+            (filterValue) => {
+                gridRef.current?.api?.setQuickFilter(filterValue);
+            },
+            [gridRef]
+        );
 
-    useImperativeHandle(
-        ref,
-        () => {
-            return {
-                resetFilter: resetFilter,
-            };
-        },
-        [resetFilter]
-    );
+        const resetFilter = useCallback(() => {
+            inputRef.current.value = '';
+            applyQuickFilter();
+        }, [applyQuickFilter]);
 
-    const handleChangeFilter = useCallback(
-        (event) => {
-            gridRef.current.api.setQuickFilter(event.target.value);
-        },
-        [gridRef]
-    );
+        useImperativeHandle(
+            ref,
+            () => {
+                return {
+                    resetFilter: resetFilter,
+                };
+            },
+            [resetFilter]
+        );
 
-    return (
-        <Grid item className={classes.containerInputSearch}>
-            <TextField
-                ref={ref}
-                disabled={disabled}
-                className={classes.textField}
-                size="small"
-                placeholder={intl.formatMessage({ id: 'filter' }) + '...'}
-                onChange={handleChangeFilter}
-                inputRef={inputRef}
-                fullWidth
-                InputProps={{
-                    classes: {
-                        input: classes.searchSection,
-                    },
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon
-                                color={disabled ? 'disabled' : 'inherit'}
-                            />
-                        </InputAdornment>
-                    ),
-                }}
-            />
-        </Grid>
-    );
-});
+        const handleChangeFilter = useCallback(
+            (event) => {
+                applyQuickFilter(event.target.value);
+            },
+            [applyQuickFilter]
+        );
+
+        useEffect(() => {
+            applyQuickFilter(inputRef.current.value);
+        }, [applyQuickFilter, visible]);
+
+        return (
+            <Grid item className={classes.containerInputSearch}>
+                <TextField
+                    disabled={disabled}
+                    className={classes.textField}
+                    size="small"
+                    placeholder={intl.formatMessage({ id: 'filter' }) + '...'}
+                    onChange={handleChangeFilter}
+                    inputRef={inputRef}
+                    fullWidth
+                    InputProps={{
+                        classes: {
+                            input: classes.searchSection,
+                        },
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon
+                                    color={disabled ? 'disabled' : 'inherit'}
+                                />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+            </Grid>
+        );
+    }
+);

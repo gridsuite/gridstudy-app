@@ -26,8 +26,16 @@ const useStyles = makeStyles((theme) => ({
         '& .ag-select-list': {
             maxHeight: '300px !important',
         },
+
     },
 }));
+            },
+        '& .ag-body-horizontal-scroll:not(.ag-scrollbar-invisible) .ag-horizontal-left-spacer:not(.ag-scroller-corner)':
+            {
+                visibility: 'hidden',
+            },
+    },
+});
 
 const GRID_PREFIX = 'grid.';
 
@@ -86,6 +94,11 @@ export const EquipmentTable = ({
         return !ALLOWED_KEYS.includes(params.event.key);
     };
 
+    const filterIcon = useMemo(
+        () => '<span class="ag-icon ag-icon-filter"/>',
+        []
+    );
+
     const defaultColDef = useMemo(
         () => ({
             filter: true,
@@ -95,7 +108,12 @@ export const EquipmentTable = ({
             wrapHeaderText: true,
             autoHeaderHeight: true,
             suppressKeyboardEvent: (params) => suppressKeyEvent(params),
+            icons: {
+                menu: filterIcon,
+            },
         }),
+        [filterIcon]
+    );
         []
     );
 
@@ -127,7 +145,6 @@ export const EquipmentTable = ({
                         columnDefs={columnData}
                         defaultColDef={defaultColDef}
                         enableCellTextSelection={true}
-                        alwaysMultiSort={true}
                         undoRedoCellEditing={true}
                         editType={'fullRow'}
                         onCellValueChanged={handleCellEditing}
