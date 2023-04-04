@@ -16,17 +16,17 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from 'components/refactor/utils/field-constants';
-import FloatInput from '../../../rhf-inputs/float-input';
 import { FormattedMessage, useIntl } from 'react-intl';
+import React, { useMemo } from 'react';
+import { useFieldArray } from 'react-hook-form';
+import makeStyles from '@mui/styles/makeStyles';
+import FloatInput from 'components/refactor/rhf-inputs/float-input';
 import {
     AmpereAdornment,
     gridItem,
     GridSection,
-} from '../../../../dialogs/dialogUtils';
-import React, { useMemo } from 'react';
-import DndTable from '../../../../util/dnd-table/dnd-table';
-import { useFieldArray } from 'react-hook-form';
-import makeStyles from '@mui/styles/makeStyles';
+} from 'components/dialogs/dialogUtils';
+import DndTable from 'components/util/dnd-table/dnd-table';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LineLimitsPane = ({ id = LIMITS }) => {
+const LimitsPane = ({ id = LIMITS }) => {
     const intl = useIntl();
     const classes = useStyles();
 
@@ -43,7 +43,7 @@ const LineLimitsPane = ({ id = LIMITS }) => {
             {
                 label: 'TemporaryLimitName',
                 dataKey: TEMPORARY_LIMIT_NAME,
-                initialValue: undefined,
+                initialValue: '',
                 editable: true,
                 numeric: false,
             },
@@ -76,17 +76,13 @@ const LineLimitsPane = ({ id = LIMITS }) => {
     });
 
     const newRowData = useMemo(() => {
-        return columnsDefinition.reduce((accumulator, currentValue) => ({
-            ...accumulator,
-            [currentValue.dataKey]: currentValue.initialValue,
-        }));
+        const newRowData = {};
+        columnsDefinition.forEach(
+            (column) => (newRowData[column.dataKey] = column.initialValue)
+        );
+        return newRowData;
     }, [columnsDefinition]);
-
-    function createLimitRows() {
-        const newRows = [];
-        newRows.push(newRowData);
-        return newRows;
-    }
+    const createLimitRows = () => [newRowData];
 
     const permanentCurrentLimit1Field = (
         <FloatInput
@@ -146,4 +142,4 @@ const LineLimitsPane = ({ id = LIMITS }) => {
     );
 };
 
-export default LineLimitsPane;
+export default LimitsPane;
