@@ -804,11 +804,16 @@ test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
             },
             {
                 id: 200,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.PINNED,
+            },
+            {
+                id: 10,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: 10,
+                id: 200,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
@@ -821,7 +826,7 @@ test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
                 id: 4,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
-            }
+            },
         ],
     };
 
