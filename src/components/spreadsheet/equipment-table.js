@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
             maxHeight: '300px !important',
         },
 
+        //allows to hide the scrollbar in the pinned rows section as it is unecessary to our implementation
         '& .ag-body-horizontal-scroll:not(.ag-scrollbar-invisible) .ag-horizontal-left-spacer:not(.ag-scroller-corner)':
             {
                 visibility: 'hidden',
