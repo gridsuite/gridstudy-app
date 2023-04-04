@@ -8,14 +8,7 @@
 import { Grid, InputAdornment, TextField } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { useIntl } from 'react-intl';
-import {
-    forwardRef,
-    useCallback,
-    useEffect,
-    useImperativeHandle,
-    useMemo,
-    useRef,
-} from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 
 const useStyles = makeStyles((theme) => ({
