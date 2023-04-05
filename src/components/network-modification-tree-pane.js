@@ -36,7 +36,7 @@ import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
-import { BUILD_STATUS } from "./network/constants";
+import { BUILD_STATUS } from './network/constants';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {

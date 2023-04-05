@@ -15,7 +15,7 @@ import { OverflowableText } from '@gridsuite/commons-ui';
 import { CopyType } from '../../network-modification-tree-pane';
 import { getLocalStorageTheme } from '../../../redux/local-storage';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
-import { BUILD_STATUS } from "../../network/constants";
+import { BUILD_STATUS } from '../../network/constants';
 
 const BUILT_NODE_BANNER_COLOR = '#74a358';
 const BUILT_WITH_WARNING_NODE_BANNER_COLOR = '#FFA500';

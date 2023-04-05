@@ -64,7 +64,7 @@ import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { equipments } from './network/network-equipments';
-import { BUILD_STATUS } from "./network/constants";
+import { BUILD_STATUS } from './network/constants';
 
 function isWorthUpdate(
     studyUpdatedForce,
