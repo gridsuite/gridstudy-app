@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useState,
+    useRef,
+    useMemo,
+} from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from '../network/network';
@@ -42,21 +48,21 @@ import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
 
 const useEditBuffer = () => {
-    const [data, setData] = useState({});
+    //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
+    const data = useRef({});
 
     const addDataToBuffer = useCallback(
         (field, value) => {
-            data[field] = value;
-            setData(data);
+            data.current[field] = value;
         },
         [data]
     );
 
     const resetBuffer = useCallback(() => {
-        setData({});
-    }, []);
+        data.current = {};
+    }, [data]);
 
-    return [data, addDataToBuffer, resetBuffer];
+    return [data.current, addDataToBuffer, resetBuffer];
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -104,6 +110,10 @@ const TableWrapper = (props) => {
         (state) => state.allReorderedTableDefinitionIndexes
     );
 
+    const equipmentFetched = useSelector(
+        (state) => state.networkEquipmentsFetched
+    );
+
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
     const [
@@ -119,7 +129,10 @@ const TableWrapper = (props) => {
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
     const [editingData, setEditingData] = useState();
-    const [isValidatingData, setIsValidatingData] = useState(false);
+
+    //the following variable needs to be a ref because its usage in EditingCellRenderer sets and reads
+    //the value although it is not rerendered so storing it in a state wouldn't fill its purpose
+    const isValidatingData = useRef(false);
 
     const globalFilterRef = useRef();
 
@@ -144,7 +157,7 @@ const TableWrapper = (props) => {
         });
         resetBuffer();
         setEditingData();
-        setIsValidatingData(false);
+        isValidatingData.current = false;
     }, [priorValuesBuffer, resetBuffer]);
 
     const cleanTableState = useCallback(() => {
@@ -188,6 +201,7 @@ const TableWrapper = (props) => {
             column.width = column.columnWidth || MIN_COLUMN_WIDTH;
 
             //if it is not the first render the column might already have a pinned value so we need to handle the case where it needs to be reseted to undefined
+            //we reuse and mutate the column objects so we need to clear to undefined
             column.pinned = lockedColumnsNames.has(column.id)
                 ? 'left'
                 : undefined;
@@ -216,7 +230,6 @@ const TableWrapper = (props) => {
                             params: {
                                 setEditingData: setEditingData,
                                 startEditing: startEditing,
-                                setIsValidatingData: setIsValidatingData,
                                 isValidatingData: isValidatingData,
                             },
                         };
@@ -238,7 +251,7 @@ const TableWrapper = (props) => {
                 },
             });
         },
-        [editingData?.id, isValidatingData, startEditing, tabIndex]
+        [editingData?.id, startEditing, tabIndex]
     );
 
     const generateTableColumns = useCallback(
@@ -363,7 +376,9 @@ const TableWrapper = (props) => {
                 props.equipmentType
             );
             setTabIndex(newTabIndex); // select the right table type
-            // calculate row index to scroll to
+
+            //calculate row index to scroll to
+            //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
             const newRowIndex = gridRef.current?.api?.getRowNode(
                 props.equipmentId
             )?.rowIndex;
@@ -378,6 +393,14 @@ const TableWrapper = (props) => {
         props.equipmentChanged,
         manualTabSwitch,
     ]);
+
+    const handleGridReady = useCallback(() => {
+        if (globalFilterRef.current) {
+            gridRef.current?.api?.setQuickFilter(
+                globalFilterRef.current.getFilterValue()
+            );
+        }
+    }, []);
 
     useEffect(() => {
         if (scrollToIndex) {
@@ -535,7 +558,8 @@ const TableWrapper = (props) => {
                     };
                     gridRef.current.api.applyTransaction(transaction);
                     setEditingData();
-                    setIsValidatingData(false);
+                    resetBuffer();
+                    isValidatingData.current = false;
                 })
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
@@ -554,6 +578,7 @@ const TableWrapper = (props) => {
             editingData,
             intl,
             priorValuesBuffer,
+            resetBuffer,
             rollbackEdit,
             snackError,
             tabIndex,
@@ -571,24 +596,29 @@ const TableWrapper = (props) => {
     //this listener is called once all cells listener have been called
     const handleRowEditing = useCallback(
         (params) => {
-            if (isValidatingData) {
+            if (isValidatingData.current) {
                 validateEdit(params);
             }
         },
-        [isValidatingData, validateEdit]
+        [validateEdit]
     );
 
     const handleEditingStopped = useCallback(
         (params) => {
             if (
-                !isValidatingData ||
+                !isValidatingData.current ||
                 Object.values(priorValuesBuffer).length === 0
             ) {
                 rollbackEdit();
             }
             params.context.dynamicValidation = {};
         },
-        [isValidatingData, priorValuesBuffer, rollbackEdit]
+        [priorValuesBuffer, rollbackEdit]
+    );
+
+    const topPinnedData = useMemo(
+        () => (editingData ? [editingData] : undefined),
+        [editingData]
     );
 
     return (
@@ -602,6 +632,7 @@ const TableWrapper = (props) => {
                 <Grid container>
                     <GlobalFilter
                         disabled={!!(props.disabled || editingData)}
+                        visible={props.visible}
                         gridRef={gridRef}
                         ref={globalFilterRef}
                     />
@@ -642,12 +673,15 @@ const TableWrapper = (props) => {
                     <EquipmentTable
                         gridRef={gridRef}
                         currentNode={props.currentNode}
-                        rows={rowData}
-                        columns={columnData}
-                        editingData={editingData ? [editingData] : undefined}
-                        fetched={props.network?.isResourceFetched(
-                            TABLES_DEFINITION_INDEXES.get(tabIndex).resource
-                        )}
+                        rowData={rowData}
+                        columnData={columnData}
+                        topPinnedData={topPinnedData}
+                        fetched={
+                            equipmentFetched &&
+                            props.network?.isResourceFetched(
+                                TABLES_DEFINITION_INDEXES.get(tabIndex).resource
+                            )
+                        }
                         scrollToIndex={scrollToIndex}
                         visible={props.visible}
                         network={props.network}
@@ -655,6 +689,7 @@ const TableWrapper = (props) => {
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}
                         handleEditingStopped={handleEditingStopped}
+                        handleGridReady={handleGridReady}
                     />
                 </div>
             )}

@@ -15,6 +15,8 @@ import { useCallback, useEffect, useMemo } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { useSelector } from 'react-redux';
+import { isNodeReadOnly } from '../../graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     editCell: {
@@ -132,6 +134,12 @@ export const NumericCellRenderer = (props) => {
 export const EditableCellRenderer = (props) => {
     const classes = useStyles();
 
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const isRootNode = useMemo(
+        () => isNodeReadOnly(currentNode),
+        [currentNode]
+    );
+
     const handleStartEditing = useCallback(() => {
         props.setEditingData({
             ...props.data,
@@ -146,7 +154,7 @@ export const EditableCellRenderer = (props) => {
             <IconButton
                 size={'small'}
                 onClick={handleStartEditing}
-                disabled={props.context.isEditing}
+                disabled={isRootNode || props.context.isEditing}
             >
                 <EditIcon />
             </IconButton>
@@ -182,7 +190,7 @@ export const EditingCellRenderer = (props) => {
     const validateEdit = useCallback(() => {
         //stopEditing triggers the events onCellValueChanged and once every cells have been processed it triggers onRowValueChanged
         props.api?.stopEditing();
-        props.setIsValidatingData(true);
+        props.isValidatingData.current = true;
     }, [props]);
 
     const resetEdit = useCallback(() => {
@@ -197,7 +205,7 @@ export const EditingCellRenderer = (props) => {
 
     useEffect(() => {
         //startEditing enables the cell editors to show up, we need to explicitly call it only when the editing row finished to render thus it is placed here
-        if (!props.isValidatingData) {
+        if (!props.isValidatingData.current) {
             props.startEditing();
         }
     }, [props]);
