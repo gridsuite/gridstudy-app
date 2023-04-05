@@ -52,27 +52,17 @@ const getModificationRowSchema = () =>
         [P]: yup.number().nullable(),
     });
 
-const getCreationRowEmptyFormData = () => ({
-    [P]: null,
-    [Q_MAX_P]: null,
-    [Q_MIN_P]: null,
-});
-
-export const getModificationRowEmptyFormData = () => ({
+const getRowEmptyFormData = () => ({
     [P]: null,
     [Q_MAX_P]: null,
     [Q_MIN_P]: null,
 });
 
 export const getReactiveCapabilityCurveEmptyFormData = (
-    id = REACTIVE_CAPABILITY_CURVE_TABLE,
-    isGeneratorModification = false
+    id = REACTIVE_CAPABILITY_CURVE_TABLE
 ) => {
-    const rowEmptyFormData = isGeneratorModification
-        ? getModificationRowEmptyFormData()
-        : getCreationRowEmptyFormData();
     return {
-        [id]: [rowEmptyFormData, rowEmptyFormData],
+        [id]: [getRowEmptyFormData(), getRowEmptyFormData()],
     };
 };
 

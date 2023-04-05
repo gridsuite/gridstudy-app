@@ -63,7 +63,7 @@ import {
 } from '../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
 import {
-    getModificationRowEmptyFormData,
+    getRowEmptyFormData,
     REMOVE,
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
@@ -172,10 +172,7 @@ const GeneratorModificationDialog = ({
                               ? completeReactiveCapabilityCurvePointsData(
                                     editData?.reactiveCapabilityCurvePoints
                                 )
-                              : [
-                                    getModificationRowEmptyFormData(),
-                                    getModificationRowEmptyFormData(),
-                                ],
+                              : [getRowEmptyFormData(), getRowEmptyFormData()],
                       ...getRegulatingTerminalFormData({
                           equipmentId: editData?.regulatingTerminalId?.value,
                           equipmentType:
@@ -285,8 +282,8 @@ const GeneratorModificationDialog = ({
         (value, equipmentId) => {
             //creating empty table depending on existing generator
             let reactiveCapabilityCurvePoints = [
-                getModificationRowEmptyFormData(),
-                getModificationRowEmptyFormData(),
+                getRowEmptyFormData(),
+                getRowEmptyFormData(),
             ];
             if (value?.reactiveCapabilityCurvePoints) {
                 reactiveCapabilityCurvePoints = [];

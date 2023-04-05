@@ -23,10 +23,7 @@ export const getReactiveLimitsEmptyFormData = (
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
     [MINIMUM_REACTIVE_POWER]: null,
     [MAXIMUM_REACTIVE_POWER]: null,
-    ...getReactiveCapabilityCurveEmptyFormData(
-        REACTIVE_CAPABILITY_CURVE_TABLE,
-        isGeneratorModification
-    ),
+    ...getReactiveCapabilityCurveEmptyFormData(REACTIVE_CAPABILITY_CURVE_TABLE),
 });
 
 export const getReactiveLimitsSchema = (isGeneratorModification = false) => ({
