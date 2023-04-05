@@ -15,14 +15,7 @@ import { useStyles } from '../../../../../dialogs/dialogUtils';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
 import ErrorInput from '../../../../rhf-inputs/error-inputs/error-input';
-import {
-    OLD_P,
-    OLD_Q_MAX_P,
-    OLD_Q_MIN_P,
-    P,
-    Q_MAX_P,
-    Q_MIN_P,
-} from 'components/refactor/utils/field-constants';
+import { P, Q_MAX_P, Q_MIN_P } from 'components/refactor/utils/field-constants';
 import MidFormError from 'components/refactor/rhf-inputs/error-inputs/mid-form-error';
 import { INSERT, REMOVE } from './reactive-capability-utils';
 
@@ -43,9 +36,6 @@ export const ReactiveCapabilityCurveTable = ({
             [P]: null,
             [Q_MIN_P]: null,
             [Q_MAX_P]: null,
-            [OLD_P]: null,
-            [OLD_Q_MIN_P]: null,
-            [OLD_Q_MAX_P]: null,
         });
     };
 
@@ -53,28 +43,6 @@ export const ReactiveCapabilityCurveTable = ({
         if (previousValues && updatePreviousReactiveCapabilityCurveTable)
             updatePreviousReactiveCapabilityCurveTable(REMOVE, index);
         remove(index);
-    };
-    /*
-0 1 2
-prev : 0 1
-
-
-*/
-    const calculateIndexOfPreviousValue = (index) => {
-        // console.log(index, rows.length - 1, previousValues.length - 1);
-        // if (rows.length === previousValues.length) {
-        //     return index;
-        // }
-
-        // if (index === previousValues.length - 1) {
-        //     return -1;
-        // }
-
-        // if (index === rows.length - 1) {
-        //     return previousValues.length - 1;
-        // }
-
-        return index;
     };
 
     return (
@@ -102,11 +70,7 @@ prev : 0 1
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
-                            previousValues={
-                                previousValues?.[
-                                    calculateIndexOfPreviousValue(index)
-                                ]
-                            }
+                            previousValues={previousValues?.[index]}
                         />
                         <Grid item xs={1}>
                             <IconButton

@@ -26,9 +26,6 @@ import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
-    OLD_P,
-    OLD_Q_MAX_P,
-    OLD_Q_MIN_P,
     P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
@@ -192,7 +189,6 @@ const GeneratorModificationDialog = ({
     );
 
     const defaultFormData = useMemo(() => {
-        console.log('EDIT DATA', editData);
         if (!editData) {
             return emptyFormData;
         } else {
@@ -258,7 +254,7 @@ const GeneratorModificationDialog = ({
     const { reset, getValues, setValue } = methods;
 
     //this method empties the form, and let us pass custom data that we want to set
-    const clear = useCallback(
+    const setValuesAndEmptyOthers = useCallback(
         (customData = {}, keepDefaultValues = false) => {
             reset(
                 { ...emptyFormData, ...customData },
@@ -277,9 +273,6 @@ const GeneratorModificationDialog = ({
                       [P]: null,
                       [Q_MIN_P]: null,
                       [Q_MAX_P]: null,
-                      [OLD_P]: null,
-                      [OLD_Q_MIN_P]: null,
-                      [OLD_Q_MAX_P]: null,
                   });
             return {
                 ...previousValue,
@@ -303,13 +296,10 @@ const GeneratorModificationDialog = ({
                     [P]: null,
                     [Q_MIN_P]: null,
                     [Q_MAX_P]: null,
-                    [OLD_P]: element.p ?? null,
-                    [OLD_Q_MIN_P]: element.qminP ?? null,
-                    [OLD_Q_MAX_P]: element.qmaxP ?? null,
                 });
             });
             // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
-            clear(
+            setValuesAndEmptyOthers(
                 {
                     [EQUIPMENT_ID]: equipmentId,
                     [REACTIVE_CAPABILITY_CURVE_TABLE]:
@@ -322,8 +312,16 @@ const GeneratorModificationDialog = ({
                 true
             );
         },
-        [clear]
+        [setValuesAndEmptyOthers]
     );
+
+    const insertEmptyRowAtSecondToLastIndex = (table) => {
+        table.splice(table.length - 1, 0, {
+            [P]: null,
+            [Q_MAX_P]: null,
+            [Q_MIN_P]: null,
+        });
+    };
 
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
@@ -339,8 +337,8 @@ const GeneratorModificationDialog = ({
                         if (value) {
                             // when editing modification form, first render should not trigger this reset
                             // which would empty the form instead of displaying data of existing form
-                            // const previousReactiveCapabilityCurveTable =
-                            //     value.reactiveCapabilityCurvePoints;
+                            const previousReactiveCapabilityCurveTable =
+                                value.reactiveCapabilityCurvePoints;
                             if (
                                 shouldEmptyFormOnGeneratorIdChangeRef?.current
                             ) {
@@ -349,48 +347,44 @@ const GeneratorModificationDialog = ({
                                     equipmentId
                                 );
                             } else {
-                                // when editting data, if previousValues and edit data reactive capability tables have different size, we need to adjust the UI
-                                // const currentReactiveCapabilityCurveTable =
-                                //     getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
-                                // const sizeDiff =
-                                //     previousReactiveCapabilityCurveTable.length -
-                                //     currentReactiveCapabilityCurveTable.length;
-                                // // if there are more values in previousValues table, we need to add
-                                // if (sizeDiff > 0) {
-                                //     for (let i = 0; i < sizeDiff; i++) {
-                                //         currentReactiveCapabilityCurveTable.splice(
-                                //             currentReactiveCapabilityCurveTable.length -
-                                //                 2,
-                                //             0,
-                                //             {}
-                                //         );
-                                //         setValue(
-                                //             REACTIVE_CAPABILITY_CURVE_TABLE,
-                                //             currentReactiveCapabilityCurveTable
-                                //         );
-                                //     }
-                                // } else if (sizeDiff < 0) {
-                                //     for (let i = 0; i > sizeDiff; i--) {
-                                //         previousReactiveCapabilityCurveTable.splice(
-                                //             previousReactiveCapabilityCurveTable.length -
-                                //                 1,
-                                //             0,
-                                //             {}
-                                //         );
-                                //     }
-                                // }
+                                // on first render, we need to adjust the UI for the reactive capability curve table
+                                const currentReactiveCapabilityCurveTable =
+                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
+                                const sizeDiff =
+                                    previousReactiveCapabilityCurveTable.length -
+                                    currentReactiveCapabilityCurveTable.length;
+
+                                // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
+                                if (sizeDiff > 0) {
+                                    for (let i = 0; i < sizeDiff; i++) {
+                                        insertEmptyRowAtSecondToLastIndex(
+                                            currentReactiveCapabilityCurveTable
+                                        );
+                                    }
+                                    setValue(
+                                        REACTIVE_CAPABILITY_CURVE_TABLE,
+                                        currentReactiveCapabilityCurveTable
+                                    );
+                                } else if (sizeDiff < 0) {
+                                    // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
+                                    for (let i = 0; i > sizeDiff; i--) {
+                                        insertEmptyRowAtSecondToLastIndex(
+                                            previousReactiveCapabilityCurveTable
+                                        );
+                                    }
+                                }
                             }
                             shouldEmptyFormOnGeneratorIdChangeRef.current = true;
                             setGeneratorToModify({
                                 ...value,
-                                // reactiveCapabilityCurveTable:
-                                //     previousReactiveCapabilityCurveTable,
+                                reactiveCapabilityCurveTable:
+                                    previousReactiveCapabilityCurveTable,
                             });
                         }
                     })
                     .catch(() => setGeneratorToModify(null));
             } else {
-                clear();
+                setValuesAndEmptyOthers();
                 setGeneratorToModify(null);
             }
         },
@@ -398,7 +392,7 @@ const GeneratorModificationDialog = ({
             emptyFormAndFormatReactiveCapabilityCurveTable,
             setValue,
             getValues,
-            clear,
+            setValuesAndEmptyOthers,
             currentNodeUuid,
             studyUuid,
         ]
@@ -406,35 +400,40 @@ const GeneratorModificationDialog = ({
 
     const calculateCurvePointsToStore = useCallback(
         (reactiveCapabilityCurve) => {
-            if (
-                reactiveCapabilityCurve.filter(
+            const pointsToStore = [];
+            reactiveCapabilityCurve
+                .filter(
                     (point) =>
-                        point.p == null &&
-                        point.qminP == null &&
-                        point.qmaxP == null
-                ).length === reactiveCapabilityCurve?.length
-            ) {
-                return null;
-            } else {
-                const pointsToStore = [];
-                reactiveCapabilityCurve.forEach((point) => {
+                        point.p != null ||
+                        point.qminP != null ||
+                        point.qmaxP != null
+                )
+                .forEach((point, index) => {
                     if (point) {
                         let pointToStore = {
                             p: point?.[P],
-                            oldP: point?.[OLD_P] ?? null,
+                            oldP:
+                                generatorToModify
+                                    .reactiveCapabilityCurveTable?.[index]?.p ??
+                                null,
                             qminP: point?.qminP,
-                            oldQminP: point?.[OLD_Q_MIN_P] ?? null,
+                            oldQminP:
+                                generatorToModify
+                                    .reactiveCapabilityCurveTable?.[index]
+                                    ?.qminP ?? null,
                             qmaxP: point?.qmaxP,
-                            oldQmaxP: point?.[OLD_Q_MAX_P] ?? null,
+                            oldQmaxP:
+                                generatorToModify
+                                    .reactiveCapabilityCurveTable?.[index]
+                                    ?.qmaxP ?? null,
                         };
 
                         pointsToStore.push(pointToStore);
                     }
                 });
-                return pointsToStore;
-            }
+            return pointsToStore.length > 0 ? pointsToStore : null;
         },
-        []
+        [generatorToModify]
     );
 
     const getPreviousRegulationType = useCallback(() => {
@@ -549,7 +548,7 @@ const GeneratorModificationDialog = ({
         >
             <ModificationDialog
                 fullWidth
-                onClear={clear}
+                onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
                 aria-labelledby="dialog-modification-generator"
                 maxWidth={'md'}

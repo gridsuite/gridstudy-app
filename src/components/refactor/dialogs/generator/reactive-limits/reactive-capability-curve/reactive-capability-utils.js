@@ -11,9 +11,6 @@ import {
 } from '../../../../../util/validation-functions';
 import yup from '../../../../utils/yup-config';
 import {
-    OLD_P,
-    OLD_Q_MAX_P,
-    OLD_Q_MIN_P,
     P,
     Q_MAX_P,
     Q_MIN_P,
@@ -40,20 +37,10 @@ const getCreationRowSchema = () =>
 
 const getModificationRowSchema = () =>
     yup.object().shape({
-        [Q_MAX_P]: yup
-            .number()
-            .nullable()
-            .when([OLD_Q_MAX_P], {
-                is: (oldQmaxP) => oldQmaxP === null,
-                then: (schema) => schema.required(),
-            }),
+        [Q_MAX_P]: yup.number().nullable(),
         [Q_MIN_P]: yup
             .number()
             .nullable()
-            .when([OLD_Q_MIN_P], {
-                is: (oldQminP) => oldQminP === null,
-                then: (schema) => schema.required(),
-            })
             .when([Q_MAX_P], {
                 is: (value) => value != null,
                 then: (schema) =>
@@ -61,22 +48,8 @@ const getModificationRowSchema = () =>
                         yup.ref(Q_MAX_P),
                         'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
                     ),
-                otherwise: (schema) =>
-                    schema.max(
-                        yup.ref(OLD_Q_MAX_P),
-                        'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
-                    ),
             }),
-        [P]: yup
-            .number()
-            .nullable()
-            .when([OLD_P], {
-                is: (oldP) => oldP === null,
-                then: (schema) => schema.required(),
-            }),
-        [OLD_Q_MAX_P]: yup.number().nullable(),
-        [OLD_Q_MIN_P]: yup.number().nullable(),
-        [OLD_P]: yup.number().nullable(),
+        [P]: yup.number().nullable(),
     });
 
 const getCreationRowEmptyFormData = () => ({
@@ -89,9 +62,6 @@ export const getModificationRowEmptyFormData = () => ({
     [P]: null,
     [Q_MAX_P]: null,
     [Q_MIN_P]: null,
-    [OLD_P]: null,
-    [OLD_Q_MAX_P]: null,
-    [OLD_Q_MIN_P]: null,
 });
 
 export const getReactiveCapabilityCurveEmptyFormData = (
@@ -109,11 +79,7 @@ export const getReactiveCapabilityCurveEmptyFormData = (
 function getNotNullPFromArray(values, isGeneratorModification) {
     return values
         .map((element) => {
-            //in case of modification, if p is null, we validate old_p value
-            const pValue =
-                isGeneratorModification && element[P] === null
-                    ? element[OLD_P]
-                    : element[P];
+            const pValue = element[P];
 
             // Note : convertion toNumber is necessary here to prevent corner cases like if
             // two values are "-0" and "0", which would be considered different by the Set below.
