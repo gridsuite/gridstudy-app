@@ -314,14 +314,25 @@ export function DiagramPane({
             } else {
                 let singleLineDiagramView = createView(diagramState);
                 // if current view cannot be found, it returns undefined
-                // in this case, we remove it from diagram states
+                // in this case, we keep it in the diagram states and show a warning message inside the SLD
                 if (singleLineDiagramView) {
                     diagramViews.push({
                         ...singleLineDiagramView,
                         align: 'left',
                     });
                 } else {
-                    closeDiagramView(diagramState.id, diagramState.svgType);
+                    // because current view cannot be found, the id will be assigned to the name.
+                    const emptyDiagramView = {
+                        ...diagramState,
+                        name: diagramState?.id,
+                        // this varibale is used to show a warning message inside the  SLD
+                        hasNonVoltageLevelOrSubstation: true,
+                    };
+
+                    diagramViews.push({
+                        ...emptyDiagramView,
+                        align: 'left',
+                    });
                 }
             }
         });
@@ -717,6 +728,9 @@ export function DiagramPane({
                                 diagramId={diagramView.id}
                                 diagramTitle={diagramView.name}
                                 disabled={disabled}
+                                hasNonVoltageLevelOrSubstation={
+                                    diagramView?.hasNonVoltageLevelOrSubstation
+                                }
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
                                 width={getWidthForPaneDisplay(

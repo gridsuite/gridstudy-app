@@ -403,15 +403,12 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                             error: error.message,
                             svgUrl: props.svgUrl,
                         });
-                        let msg;
-                        if (error.status === 404) {
-                            msg = `Voltage level not found`;
-                        } else {
-                            msg = error.message;
+                        // if service not found, no need to show snackError
+                        if (error.status !== 404) {
+                            snackError({
+                                messageTxt: error.message,
+                            });
                         }
-                        snackError({
-                            messageTxt: msg,
-                        });
                     })
                     .finally(() => {
                         setLoadingState(false);

@@ -832,6 +832,8 @@
     "grid.inRangeStart": "Début",
     "grid.inRangeEnd": "Fin",
     "grid.filterOoo": "Filtrer...",
-    "grid.noRowsToShow": "Aucune Donnée"
-    
+    "grid.noRowsToShow": "Aucune Donnée",
+
+    "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
+    "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau"
 }

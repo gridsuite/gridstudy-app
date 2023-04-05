@@ -29,6 +29,7 @@ import {
 import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
+import AlertCustomMessageNode from '../util/alert-custom-message-node';
 
 const Diagram = (props) => {
     const dispatch = useDispatch();
@@ -95,6 +96,23 @@ const Diagram = (props) => {
         dispatch(decrementNetworkAreaDiagramDepth());
     };
 
+    const showAlert = () => {
+        const { hasNonVoltageLevelOrSubstation, disabled, svgType } = props;
+        const isVoltageLevel = DiagramType.VOLTAGE_LEVEL === svgType;
+        const message = isVoltageLevel
+            ? 'VoltageLevelNotFound'
+            : 'SubstationNotFound';
+        return (
+            <Box position="relative" left={0} right={0} top={0}>
+                {hasNonVoltageLevelOrSubstation && !disabled ? (
+                    <AlertCustomMessageNode message={message} noMargin={true} />
+                ) : (
+                    <AlertInvalidNode noMargin={true} />
+                )}
+            </Box>
+        );
+    };
+
     /**
      * RENDER
      */
@@ -137,10 +155,8 @@ const Diagram = (props) => {
                     onClose={onCloseHandler}
                 />
 
-                {props.disabled ? (
-                    <Box position="relative" left={0} right={0} top={0}>
-                        <AlertInvalidNode noMargin={true} />
-                    </Box>
+                {props.disabled || props.hasNonVoltageLevelOrSubstation ? (
+                    showAlert()
                 ) : (
                     <Box height={'100%'}>
                         {props.children}
@@ -177,6 +193,7 @@ const Diagram = (props) => {
 Diagram.defaultProps = {
     pinned: false,
     disabled: false,
+    hasNonVoltageLevelOrSubstation: false,
     align: 'left',
     width: LOADING_WIDTH,
     height: LOADING_HEIGHT,
@@ -189,6 +206,7 @@ Diagram.propTypes = {
     diagramId: PropTypes.string.isRequired,
     diagramTitle: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
+    hasNonVoltageLevelOrSubstation: PropTypes.bool,
     pinned: PropTypes.bool,
     svgType: PropTypes.string.isRequired,
     children: PropTypes.node,
