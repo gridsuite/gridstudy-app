@@ -26,6 +26,12 @@ const useStyles = makeStyles((theme) => ({
         '& .ag-select-list': {
             maxHeight: '300px !important',
         },
+
+        //allows to hide the scrollbar in the pinned rows section as it is unecessary to our implementation
+        '& .ag-body-horizontal-scroll:not(.ag-scrollbar-invisible) .ag-horizontal-left-spacer:not(.ag-scroller-corner)':
+            {
+                visibility: 'hidden',
+            },
     },
 }));
 
@@ -41,6 +47,7 @@ export const EquipmentTable = ({
     handleRowEditing,
     handleCellEditing,
     handleEditingStopped,
+    handleGridReady,
     fetched,
     network,
 }) => {
@@ -95,6 +102,9 @@ export const EquipmentTable = ({
             wrapHeaderText: true,
             autoHeaderHeight: true,
             suppressKeyboardEvent: (params) => suppressKeyEvent(params),
+            icons: {
+                menu: '<span class="ag-icon ag-icon-filter" />',
+            },
         }),
         []
     );
@@ -127,7 +137,6 @@ export const EquipmentTable = ({
                         columnDefs={columnData}
                         defaultColDef={defaultColDef}
                         enableCellTextSelection={true}
-                        alwaysMultiSort={true}
                         undoRedoCellEditing={true}
                         editType={'fullRow'}
                         onCellValueChanged={handleCellEditing}
@@ -140,6 +149,7 @@ export const EquipmentTable = ({
                         suppressClickEdit={true}
                         getLocaleText={getLocaleText}
                         context={gridContext}
+                        onGridReady={handleGridReady}
                     />
                 )}
             </div>
