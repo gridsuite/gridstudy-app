@@ -21,8 +21,8 @@ const MenuProps = {
     },
 };
 
-const CHECK_ALL = { label: 'Check all', value: 'check_all' };
-const UNCHECK_ALL = { label: 'Uncheck all', value: 'uncheck_all' };
+const CHECK_ALL = { label: 'Select all', value: 'check_all' };
+const UNCHECK_ALL = { label: 'Unselect all', value: 'uncheck_all' };
 
 const CheckboxSelect = ({
     options,
@@ -33,6 +33,14 @@ const CheckboxSelect = ({
     const [selectedOptions, setSelectedOptions] = useState(
         initialSelectedOptions ?? []
     );
+
+    // used to reset internal state when initial selected value changed
+    const [prevInitialSelectedOptions, setPrevInitialSelectedOptions] =
+        useState(initialSelectedOptions);
+    if (initialSelectedOptions !== prevInitialSelectedOptions) {
+        setPrevInitialSelectedOptions(initialSelectedOptions);
+        setSelectedOptions(initialSelectedOptions);
+    }
 
     const handleChange = useCallback(
         (event) => {
@@ -53,7 +61,7 @@ const CheckboxSelect = ({
             setSelectedOptions(newSelectedOptions);
 
             // propagate by callback
-            onChange(newSelectedOptions);
+            onChange && onChange(newSelectedOptions);
         },
         [options, onChange]
     );

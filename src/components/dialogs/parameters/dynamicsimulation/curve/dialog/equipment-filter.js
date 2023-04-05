@@ -7,45 +7,35 @@
 
 import { Grid, MenuItem, Select, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import clsx from 'clsx';
 import { AgGridReact } from 'ag-grid-react';
 import { makeStyles, useTheme } from '@mui/styles';
 import CountrySelect from '../country-select';
 import CheckboxSelect from '../common/checkbox-select';
+import { useSelector } from 'react-redux';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPES as ALL_EQUIPMENT_TYPES } from '../../../../../util/equipment-types';
 
-export const EQUIPMENT_TYPE = {
-    GENERATOR: 'Generator',
-    LOAD: 'Load',
-    BUS: 'Line',
-};
-
-const POSTS = {
-    ['.A.ZA 6']: '.A.ZA 6',
-    ['.ABAD 6']: '.ABAD 6',
-    ['.ABAN 7']: '.ABAN 7',
-    ['.ABRE 6']: '.ABRE 6',
-    ['.ACE 6']: '.ACE 6',
-    ['.ACHE 7']: '.ACHE 7',
+export const EQUIPMENT_TYPES = {
+    [ALL_EQUIPMENT_TYPES.GENERATOR.type]: ALL_EQUIPMENT_TYPES.GENERATOR,
+    [ALL_EQUIPMENT_TYPES.LOAD.type]: ALL_EQUIPMENT_TYPES.LOAD,
+    [ALL_EQUIPMENT_TYPES.LINE.type]: ALL_EQUIPMENT_TYPES.LINE,
 };
 
 const REGIONS = {
-    ['GERMANY']: 'GERMANY',
-    ['ENGLAND']: 'ENGLAND',
-    ['PARIS']: 'PARIS',
-    ['NANTES']: 'NANTES',
-    ['LYON']: 'LYON',
-    ['SUISSE']: 'SUISSE',
-};
-
-const TENSIONS = {
-    ['20']: 20,
-    ['45']: 45,
-    ['63']: 63,
-    ['90']: 90,
-    ['150']: 150,
-    ['225']: 225,
-    ['400']: 400,
+    ['GERMANY']: 'Germany',
+    ['ENGLAND']: 'England',
+    ['PARIS']: 'Paris',
+    ['NANTES']: 'Nantes',
+    ['LYON']: 'Lyon',
+    ['SUISSE']: 'Suisse',
 };
 
 const TENSION_UNIT = 'kV';
@@ -94,30 +84,136 @@ const EquipmentFilter = ({
     equipmentType: initialEquipmentType,
     onChangeEquipmentType,
 }) => {
+    const { snackError } = useSnackMessage();
+
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const treeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
+
+    // TODO provide a getter getRootNode() in NetworkModificationTreeModel
+    const rootNodeUuid = treeModel.treeNodes[0].id;
+
     const intl = useIntl();
     const classes = useStyles();
     const theme = useTheme();
     const gridRef = useRef();
 
+    // --- Equipment types --- //
     const [equipmentType, setEquipmentType] = useState(initialEquipmentType);
+
     const handleEquipmentTypeChange = useCallback(
         (event) => {
-            const newEquipmentType = event.target.value;
-            setEquipmentType(newEquipmentType);
-            onChangeEquipmentType(newEquipmentType);
+            const selectedEquipmentType = event.target.value;
+            setEquipmentType(selectedEquipmentType);
+            onChangeEquipmentType(selectedEquipmentType);
         },
         [onChangeEquipmentType]
     );
 
-    const [post, setPost] = useState([]);
-    const handlePostChange = useCallback((event) => {
-        setPost(event.target.value);
+    // --- Voltage levels, tension (nominalV) --- //
+    const [selectedVoltageLevelIds, setSelectedVoltageLevelIds] = useState([]);
+    const [voltageLevels, setVoltageLevels] = useState({});
+    const voltageLevelIds = useMemo(
+        () => Object.keys(voltageLevels),
+        [voltageLevels]
+    );
+
+    const handleVoltageLevelChange = useCallback((selectedVoltageLevelIds) => {
+        setSelectedVoltageLevelIds(selectedVoltageLevelIds);
     }, []);
 
-    const [country, setCountry] = useState([]);
-    const handleCountryChange = useCallback((event) => {
-        setCountry(event.target.value);
+    const [selectedTensionIds, setSelectedTensionIds] = useState([]);
+    const [tensions, setTensions] = useState({});
+    const tensionIds = useMemo(() => Object.keys(tensions), [tensions]);
+
+    const handleTensionChange = useCallback((selectedVoltageLevelIds) => {
+        setSelectedVoltageLevelIds(selectedVoltageLevelIds);
     }, []);
+
+    // load VoltageLevels from backend
+    useEffect(() => {
+        Promise.all(
+            ALL_EQUIPMENT_TYPES.VOLTAGE_LEVEL.fetchers.map((fetchPromise) =>
+                fetchPromise(studyUuid, rootNodeUuid)
+            )
+        ).then((vals) => {
+            console.log('vals', vals);
+            // convert array to voltageLevels object
+            const voltageLevelsObj = vals
+                .flat()
+                .reduce((obj, curr) => ({ ...obj, [curr.id]: curr.name }), {});
+
+            // convert array to tensions object
+            const tensionObj = vals.flat().reduce(
+                (obj, curr) => ({
+                    ...obj,
+                    [`${curr.nominalVoltage}`]: curr.nominalVoltage,
+                }),
+                {}
+            );
+
+            // update voltage level states
+            setVoltageLevels(voltageLevelsObj);
+            setSelectedVoltageLevelIds(Object.keys(voltageLevelsObj));
+
+            // update tension states
+            setTensions(tensionObj);
+            setSelectedTensionIds(Object.keys(tensionObj));
+        });
+    }, [rootNodeUuid, studyUuid]);
+
+    // --- country, region => lookup in substation --- //
+    const [selectedCountries, setSelectedCountries] = useState([]);
+    const [countries, setCountries] = useState([]);
+    const handleCountryChange = useCallback((selectedCountries) => {
+        setSelectedCountries(selectedCountries);
+    }, []);
+
+    const [selectedRegions, setSelectedRegions] = useState([]);
+    const [regions, setRegions] = useState([]);
+    const handleRegionChange = useCallback((selectedRegions) => {
+        setSelectedRegions(selectedRegions);
+    }, []);
+
+    // load substation from backend to infer countries and (regions from geographicalTags ?? TO CONFIRM)
+    useEffect(() => {
+        Promise.all(
+            ALL_EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
+                fetchPromise(studyUuid, rootNodeUuid)
+            )
+        ).then((vals) => {
+            // get countries codes
+            let countries = [
+                ...vals.flat().reduce((set, substation) => {
+                    substation.countryCode && set.add(substation.countryCode);
+                    return set;
+                }, new Set()),
+            ];
+
+            // get regions codes
+            let regions = [
+                ...vals.flat().reduce((set, substation) => {
+                    substation.geographicalTags &&
+                        set.add(substation.geographicalTags);
+                    return set;
+                }, new Set()),
+            ];
+
+            // TODO : mock regions in case any regions found
+            if (!regions.length) {
+                regions = Object.keys(REGIONS);
+            }
+
+            // update countries states
+            setSelectedCountries(countries);
+            setCountries(countries);
+
+            // update regions states
+            setSelectedRegions(regions);
+            setRegions(regions);
+        });
+    }, [rootNodeUuid, studyUuid]);
 
     // grid configuration
     const [rowData, setRowData] = useState([]);
@@ -150,6 +246,14 @@ const EquipmentFilter = ({
         /*fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
             .then((resp) => resp.json())
             .then((data) => setRowData(data));*/
+        Promise.all(
+            Object.values(EQUIPMENT_TYPES)
+                .map((equipmentType) => equipmentType.fetchers)
+                .flat()
+                .map((fetchPromise) => fetchPromise(studyUuid, rootNodeUuid))
+        ).then((vals) => {
+            console.log('fetch all equipments', vals);
+        });
         setRowData(equipments);
     }, []);
 
@@ -177,9 +281,9 @@ const EquipmentFilter = ({
                         size="small"
                         sx={{ width: '100%' }}
                     >
-                        {Object.entries(EQUIPMENT_TYPE).map(([key, value]) => (
+                        {Object.entries(EQUIPMENT_TYPES).map(([key, value]) => (
                             <MenuItem key={key} value={value}>
-                                {value}
+                                {value.type}
                             </MenuItem>
                         ))}
                     </Select>
@@ -196,9 +300,10 @@ const EquipmentFilter = ({
                 </Grid>
                 <Grid item xs={6}>
                     <CheckboxSelect
-                        options={Object.keys(POSTS)}
-                        getOptionLabel={(value) => POSTS[value]}
-                        value={[Object.keys(POSTS)[0], Object.keys(POSTS)[1]]}
+                        value={selectedVoltageLevelIds}
+                        options={voltageLevelIds}
+                        getOptionLabel={(value) => voltageLevels[value]}
+                        onChange={handleVoltageLevelChange}
                     />
                 </Grid>
             </Grid>
@@ -212,7 +317,11 @@ const EquipmentFilter = ({
                     </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <CountrySelect value={['DE', 'FR']} />
+                    <CountrySelect
+                        value={selectedCountries}
+                        options={countries}
+                        onChange={handleCountryChange}
+                    />
                 </Grid>
             </Grid>
             {/* Region */}
@@ -226,12 +335,10 @@ const EquipmentFilter = ({
                 </Grid>
                 <Grid item xs={6}>
                     <CheckboxSelect
-                        options={Object.keys(REGIONS)}
+                        value={selectedRegions}
+                        options={regions}
                         getOptionLabel={(value) => REGIONS[value]}
-                        value={[
-                            Object.keys(REGIONS)[0],
-                            Object.keys(REGIONS)[1],
-                        ]}
+                        onChange={handleRegionChange}
                     />
                 </Grid>
             </Grid>
@@ -246,14 +353,12 @@ const EquipmentFilter = ({
                 </Grid>
                 <Grid item xs={6}>
                     <CheckboxSelect
-                        options={Object.keys(TENSIONS)}
+                        options={tensionIds}
                         getOptionLabel={(value) =>
-                            `${TENSIONS[value]} ${TENSION_UNIT}`
+                            `${tensions[value]} ${TENSION_UNIT}`
                         }
-                        value={[
-                            Object.keys(TENSIONS)[0],
-                            Object.keys(TENSIONS)[1],
-                        ]}
+                        value={selectedTensionIds}
+                        onChange={handleTensionChange}
                     />
                 </Grid>
             </Grid>

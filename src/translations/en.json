@@ -186,7 +186,7 @@
     "DynamicSimulationCurveSelectorDialogTitle": "Edit curves list to trace",
     "DynamicSimulationCurveToAdd": "Curve to add",
     "DynamicSimulationCurveEquipmentType": "Equipement type",
-    "DynamicSimulationCurvePost": "Posts",
+    "DynamicSimulationCurvePost": "Voltage levels",
     "DynamicSimulationCurveCountry": "Country",
     "DynamicSimulationCurveRegion": "Region",
     "DynamicSimulationCurveTension": "Tension",
@@ -197,6 +197,7 @@
     "DynamicSimulationCurveVariable": "Variables",
     "DynamicSimulationAdd": "Add",
     "DynamicSimulationClose": "Close",
+    "DynamicSimulationFetchVoltageLevelError": "An error occurred while fetching voltage levels",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",

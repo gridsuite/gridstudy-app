@@ -197,6 +197,8 @@
     "DynamicSimulationCurveVariable": "Variables",
     "DynamicSimulationAdd": "Ajouter",
     "DynamicSimulationClose": "Fermer",
+    "DynamicSimulationFetchVoltageLevelError": "Une erreur est survenue lors du chargement des postes",
+
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",

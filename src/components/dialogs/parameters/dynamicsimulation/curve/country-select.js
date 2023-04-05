@@ -8,7 +8,7 @@
 import { useMemo } from 'react';
 import CheckboxSelect from './common/checkbox-select';
 
-const CountrySelect = ({ value }) => {
+const CountrySelect = ({ value, options, onChange }) => {
     // take from CountrySelector
     const countriesList = useMemo(() => {
         let countriesList;
@@ -30,9 +30,10 @@ const CountrySelect = ({ value }) => {
 
     return (
         <CheckboxSelect
-            options={Object.keys(countriesList.object())}
+            options={options}
             getOptionLabel={(code) => countriesList.get(code)}
             value={value}
+            onChange={onChange}
         />
     );
 };

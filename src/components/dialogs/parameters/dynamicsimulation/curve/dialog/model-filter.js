@@ -11,19 +11,19 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import clsx from 'clsx';
 import CheckboxSelect from '../common/checkbox-select';
-import { EQUIPMENT_TYPE } from './equipment-filter';
+import { EQUIPMENT_TYPES } from './equipment-filter';
 import CheckboxTreeview from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 
 // take from table models in DB dynamicmappings
 const MODELS = {
-    // EQUIPMENT_TYPE.LOAD
-    [EQUIPMENT_TYPE.LOAD]: {
+    // EQUIPMENT_TYPES.LOAD
+    [EQUIPMENT_TYPES.LOAD.type]: {
         LoadAlphaBeta: 'Load Alpha Beta',
         LoadPQ: 'Load PQ',
     },
-    // EQUIPMENT_TYPE.GENERATOR
-    [EQUIPMENT_TYPE.GENERATOR]: {
+    // EQUIPMENT_TYPES.GENERATOR
+    [EQUIPMENT_TYPES.GENERATOR.type]: {
         GeneratorSynchronousThreeWindings:
             'Generator Synchronous Three Windings',
         GeneratorSynchronousFourWindings: 'Generator Synchronous Four Windings',
@@ -37,9 +37,9 @@ const MODELS = {
 };
 
 const VARIABLES = {
-    // EQUIPMENT_TYPE.LOAD
+    // EQUIPMENT_TYPES.LOAD
     // LoadAlphaBeta
-    [MODELS[EQUIPMENT_TYPE.LOAD].LoadAlphaBeta]: {
+    [MODELS[EQUIPMENT_TYPES.LOAD.type].LoadAlphaBeta]: {
         load_alpha: 'Load Alpha',
         load_beta: 'Load Beta',
         load_P0Pu: 'Load P0Pu',
@@ -48,22 +48,23 @@ const VARIABLES = {
         load_UPhase0: 'Load UPhase0',
     },
     // LoadPQ
-    [MODELS[EQUIPMENT_TYPE.LOAD].LoadPQ]: {
+    [MODELS[EQUIPMENT_TYPES.LOAD.type].LoadPQ]: {
         load_P0Pu: 'Load P0Pu',
         load_Q0Pu: 'Load Q0Pu',
         load_U0Pu: 'Load U0Pu',
         load_UPhase0: 'Load UPhase0',
     },
-    // EQUIPMENT_TYPE.GENERATOR
+    // EQUIPMENT_TYPES.GENERATOR
     // GeneratorSynchronousThreeWindings
-    [MODELS[EQUIPMENT_TYPE.GENERATOR].GeneratorSynchronousThreeWindings]: {
-        generator_UNom: 'Generator UNom',
-        generator_SNom: 'Generator SNom',
-        generator_PNomTurb: 'Generator PNom Turb',
-        generator_PNomAlt: 'Generator PNom Alt',
-    },
+    [MODELS[EQUIPMENT_TYPES.GENERATOR.type].GeneratorSynchronousThreeWindings]:
+        {
+            generator_UNom: 'Generator UNom',
+            generator_SNom: 'Generator SNom',
+            generator_PNomTurb: 'Generator PNom Turb',
+            generator_PNomAlt: 'Generator PNom Alt',
+        },
     // GeneratorSynchronousFourWindings
-    [MODELS[EQUIPMENT_TYPE.GENERATOR].GeneratorSynchronousFourWindings]: {
+    [MODELS[EQUIPMENT_TYPES.GENERATOR.type].GeneratorSynchronousFourWindings]: {
         generator_UNom: 'Generator UNom',
         generator_SNom: 'Generator SNom',
         generator_PNomTurb: 'Generator PNom Turb',
@@ -106,13 +107,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
+const ModelFilter = ({ equipmentType = EQUIPMENT_TYPES.LOAD }) => {
     const classes = useStyles();
     const theme = useTheme();
 
     // --- models CheckboxSelect --- //
-    const filteredOptions = MODELS[equipmentType] ?? {};
-    const initialOptions = Object.keys(filteredOptions) ?? [];
+    const filteredOptions = useMemo(
+        () => MODELS[equipmentType.type] ?? {},
+        [equipmentType.type]
+    );
+    const initialOptions = useMemo(
+        () => Object.keys(filteredOptions) ?? [],
+        [filteredOptions]
+    );
 
     const [variablesRevision, setVariablesRevision] = useState(0);
     const [models, setModels] = useState(initialOptions);
@@ -160,7 +167,7 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
                     <CheckboxSelect
                         options={initialOptions}
                         getOptionLabel={(value) => filteredOptions[value]}
-                        value={[...initialOptions]}
+                        value={initialOptions}
                         onChange={handleModelChange}
                     />
                 </Grid>

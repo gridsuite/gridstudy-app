@@ -6,7 +6,7 @@
  */
 
 import { Grid, Typography } from '@mui/material';
-import EquipmentFilter, { EQUIPMENT_TYPE } from './equipment-filter';
+import EquipmentFilter, { EQUIPMENT_TYPES } from './equipment-filter';
 import ModelFilter from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import React, { useCallback, useState } from 'react';
@@ -15,7 +15,7 @@ import { useTheme } from '@mui/styles';
 const CurveSelector = (props) => {
     const [modelFilterRevision, setModelFilterRevision] = useState(0);
     const [equipmentType, setEquipmentType] = useState(
-        EQUIPMENT_TYPE.GENERATOR
+        EQUIPMENT_TYPES.GENERATOR
     );
 
     const handleChangeEquipmentType = useCallback((newEquipmentType) => {
