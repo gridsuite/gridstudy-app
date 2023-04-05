@@ -25,34 +25,45 @@ const useStyles = makeStyles((theme) => ({
 export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
     const classes = useStyles();
     const intl = useIntl();
-
     const inputRef = useRef();
+
+    const applyQuickFilter = useCallback(
+        (filterValue) => {
+            gridRef.current?.api?.setQuickFilter(filterValue);
+        },
+        [gridRef]
+    );
+
     const resetFilter = useCallback(() => {
         inputRef.current.value = '';
-        gridRef.current?.api?.setQuickFilter();
-    }, [gridRef]);
+        applyQuickFilter();
+    }, [applyQuickFilter]);
+
+    const getFilterValue = useCallback(() => {
+        return inputRef.current?.value;
+    }, []);
 
     useImperativeHandle(
         ref,
         () => {
             return {
                 resetFilter: resetFilter,
+                getFilterValue: getFilterValue,
             };
         },
-        [resetFilter]
+        [getFilterValue, resetFilter]
     );
 
     const handleChangeFilter = useCallback(
         (event) => {
-            gridRef.current.api.setQuickFilter(event.target.value);
+            applyQuickFilter(event.target.value);
         },
-        [gridRef]
+        [applyQuickFilter]
     );
 
     return (
         <Grid item className={classes.containerInputSearch}>
             <TextField
-                ref={ref}
                 disabled={disabled}
                 className={classes.textField}
                 size="small"
