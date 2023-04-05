@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { makeStyles, useTheme } from '@mui/styles';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import clsx from 'clsx';
 import CheckboxSelect from '../common/checkbox-select';
@@ -84,7 +84,7 @@ const flatteningObject = (variables, parentId) => {
             result = [
                 ...result,
                 {
-                    id: parentId ? `${parentId}\/${key}` : key,
+                    id: parentId ? `${parentId}/${key}` : key,
                     name: value,
                     parentId: parentId,
                 },
@@ -107,16 +107,22 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
-    const intl = useIntl();
     const classes = useStyles();
     const theme = useTheme();
-    const gridRef = useRef();
 
-    const [models, setModels] = useState(Object.keys(MODELS[equipmentType]));
+    // --- models CheckboxSelect --- //
+    const filteredOptions = MODELS[equipmentType] ?? {};
+    const initialOptions = Object.keys(filteredOptions) ?? [];
+
+    const [variablesRevision, setVariablesRevision] = useState(0);
+    const [models, setModels] = useState(initialOptions);
     const handleModelChange = useCallback((selectedOptions) => {
         setModels(selectedOptions);
+        // to force remount component since it has internal state needed to clear
+        setVariablesRevision((prev) => ++prev);
     }, []);
 
+    // --- variables CheckboxTreeview --- //
     const data = useMemo(() => flatteningObject(VARIABLES), []);
     const getRoot = useCallback(
         (item) => {
@@ -133,10 +139,10 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
         () =>
             data.filter((elem) =>
                 models.some((model) => {
-                    return elem.id.includes(MODELS[equipmentType][model]);
+                    return elem.id.includes(filteredOptions[model]);
                 })
             ),
-        [data, models, equipmentType]
+        [data, models, filteredOptions]
     );
 
     return (
@@ -152,9 +158,9 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
                 </Grid>
                 <Grid item xs={6}>
                     <CheckboxSelect
-                        options={Object.keys(MODELS[equipmentType])}
-                        getOptionLabel={(value) => MODELS[equipmentType][value]}
-                        value={[...Object.keys(MODELS[equipmentType])]}
+                        options={initialOptions}
+                        getOptionLabel={(value) => filteredOptions[value]}
+                        value={[...initialOptions]}
                         onChange={handleModelChange}
                     />
                 </Grid>
@@ -170,6 +176,7 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
                 </Typography>
                 <div className={clsx([theme.aggrid, classes.grid])}>
                     <CheckboxTreeview
+                        key={`variables-${variablesRevision}`}
                         data={filteredData}
                         checkAll
                         sx={{

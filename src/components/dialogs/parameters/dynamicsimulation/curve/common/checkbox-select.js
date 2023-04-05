@@ -55,7 +55,7 @@ const CheckboxSelect = ({
             // propagate by callback
             onChange(newSelectedOptions);
         },
-        [onChange]
+        [options, onChange]
     );
 
     const getOptionLabel = useCallback(

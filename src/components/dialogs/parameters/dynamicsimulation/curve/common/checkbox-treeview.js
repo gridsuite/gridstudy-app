@@ -170,7 +170,6 @@ export default function CheckboxTreeview({ data: items, checkAll, ...rest }) {
                             indeterminate={
                                 CheckState.INDETERMINATE === getState(elem.id)
                             }
-                            tabIndex={-1} // ??
                             onClick={(event) =>
                                 handleItemSelect(event, elem.id)
                             }

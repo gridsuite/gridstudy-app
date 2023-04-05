@@ -6,13 +6,24 @@
  */
 
 import { Grid, Typography } from '@mui/material';
-import EquipmentFilter from './equipment-filter';
+import EquipmentFilter, { EQUIPMENT_TYPE } from './equipment-filter';
 import ModelFilter from './model-filter';
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTheme } from '@mui/styles';
 
 const CurveSelector = (props) => {
+    const [modelFilterRevision, setModelFilterRevision] = useState(0);
+    const [equipmentType, setEquipmentType] = useState(
+        EQUIPMENT_TYPE.GENERATOR
+    );
+
+    const handleChangeEquipmentType = useCallback((newEquipmentType) => {
+        setEquipmentType(newEquipmentType);
+        // to force remount component since it has internal state
+        setModelFilterRevision((prev) => ++prev);
+    }, []);
+
     const theme = useTheme();
     return (
         <>
@@ -33,7 +44,10 @@ const CurveSelector = (props) => {
                         id={'DynamicSimulationCurveEquipmentFilter'}
                     ></FormattedMessage>
                 </Typography>
-                <EquipmentFilter />
+                <EquipmentFilter
+                    equipmentType={equipmentType}
+                    onChangeEquipmentType={handleChangeEquipmentType}
+                />
             </Grid>
             <Grid
                 item
@@ -52,7 +66,10 @@ const CurveSelector = (props) => {
                         id={'DynamicSimulationCurveCurveFilter'}
                     ></FormattedMessage>
                 </Typography>
-                <ModelFilter />
+                <ModelFilter
+                    key={`model-filter-${modelFilterRevision}`}
+                    equipmentType={equipmentType}
+                />
             </Grid>
         </>
     );

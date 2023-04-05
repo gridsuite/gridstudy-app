@@ -90,18 +90,24 @@ const equipments = [
     },
 ];
 
-const EquipmentFilter = (props) => {
+const EquipmentFilter = ({
+    equipmentType: initialEquipmentType,
+    onChangeEquipmentType,
+}) => {
     const intl = useIntl();
     const classes = useStyles();
     const theme = useTheme();
     const gridRef = useRef();
 
-    const [equipmentType, setEquipmentType] = useState(
-        EQUIPMENT_TYPE.GENERATOR
+    const [equipmentType, setEquipmentType] = useState(initialEquipmentType);
+    const handleEquipmentTypeChange = useCallback(
+        (event) => {
+            const newEquipmentType = event.target.value;
+            setEquipmentType(newEquipmentType);
+            onChangeEquipmentType(newEquipmentType);
+        },
+        [onChangeEquipmentType]
     );
-    const handleEquipmentTypeChange = useCallback((event) => {
-        setEquipmentType(event.target.value);
-    }, []);
 
     const [post, setPost] = useState([]);
     const handlePostChange = useCallback((event) => {
