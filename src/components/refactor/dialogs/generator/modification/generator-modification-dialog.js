@@ -12,7 +12,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
 import {
-    ACTIVE_POWER_CONTROL_ON,
     ACTIVE_POWER_SET_POINT,
     DROOP,
     ENERGY_SOURCE,
@@ -41,7 +40,6 @@ import {
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION,
-    VOLTAGE_REGULATION_ON,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
@@ -397,15 +395,18 @@ const GeneratorModificationDialog = ({
 
     const calculateCurvePointsToStore = useCallback(
         (reactiveCapabilityCurve) => {
-            const pointsToStore = [];
-            reactiveCapabilityCurve
-                .filter(
+            if (
+                reactiveCapabilityCurve.filter(
                     (point) =>
-                        point.p != null ||
-                        point.qminP != null ||
-                        point.qmaxP != null
-                )
-                .forEach((point, index) => {
+                        point.p == null &&
+                        point.qminP == null &&
+                        point.qmaxP == null
+                ).length === reactiveCapabilityCurve?.length
+            ) {
+                return null;
+            } else {
+                const pointsToStore = [];
+                reactiveCapabilityCurve.forEach((point, index) => {
                     if (point) {
                         let pointToStore = {
                             p: point?.[P],
@@ -424,17 +425,25 @@ const GeneratorModificationDialog = ({
                                     .reactiveCapabilityCurveTable?.[index]
                                     ?.qmaxP ?? null,
                         };
-
                         pointsToStore.push(pointToStore);
                     }
                 });
-            return pointsToStore.length > 0 ? pointsToStore : null;
+                return pointsToStore.filter(
+                    (point) =>
+                        point.p != null ||
+                        point.oldP != null ||
+                        point.qmaxP != null ||
+                        point.oldQmaxP != null ||
+                        point.qminP != null ||
+                        point.oldQminP != null
+                );
+            }
         },
         [generatorToModify]
     );
 
     const getPreviousRegulationType = useCallback(() => {
-        if (generatorToModify?.[VOLTAGE_REGULATION_ON]) {
+        if (generatorToModify?.voltageRegulationOn) {
             return generatorToModify?.regulatingTerminalVlId ||
                 generatorToModify?.regulatingTerminalConnectableId
                 ? REGULATION_TYPES.DISTANT
@@ -453,12 +462,12 @@ const GeneratorModificationDialog = ({
             const isFrequencyRegulationOn =
                 generator[FREQUENCY_REGULATION] === true ||
                 (generator[FREQUENCY_REGULATION] === null &&
-                    generatorToModify[ACTIVE_POWER_CONTROL_ON] === true);
+                    generatorToModify.activePowerControlOn === true);
 
             const isVoltageRegulationOn =
                 generator[VOLTAGE_REGULATION] === true ||
                 (generator[VOLTAGE_REGULATION] === null &&
-                    generatorToModify[VOLTAGE_REGULATION_ON]);
+                    generatorToModify.voltageRegulatorOn);
 
             const isReactiveCapabilityCurveOn =
                 generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
