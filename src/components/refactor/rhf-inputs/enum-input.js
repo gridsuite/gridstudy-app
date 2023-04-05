@@ -17,7 +17,7 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { FieldLabel } from '../../dialogs/inputs/hooks-helpers';
 import { useController } from 'react-hook-form';
-const EnumInput = ({ options, name, label, size }) => {
+const EnumInput = ({ options, name, label, size, labelValues }) => {
     const {
         field: { onChange, value },
         fieldState: { error },
@@ -26,7 +26,7 @@ const EnumInput = ({ options, name, label, size }) => {
     return (
         <FormControl fullWidth size={size} error={error ? true : false}>
             <InputLabel id="enum-type-label">
-                <FieldLabel label={label} />
+                <FieldLabel label={label} values={labelValues} />
             </InputLabel>
             <Select
                 label={label}

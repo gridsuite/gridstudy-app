@@ -36,6 +36,7 @@ import {
 import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
 import { MODIFICATION_TYPES } from 'components/util/modification-type';
 import {
+    buildNewBusbarSections,
     getLineToAttachOrSplitEmptyFormData,
     getLineToAttachOrSplitFormData,
     getLineToAttachOrSplitFormValidationSchema,
@@ -118,6 +119,12 @@ const LineAttachToVoltageLevelDialog = ({
                 }),
             });
             setAttachmentLine(lineAttach?.attachmentLine);
+            const newVoltageLevel = lineAttach?.mayNewVoltageLevelInfos;
+            newVoltageLevel.busbarSections = buildNewBusbarSections(
+                lineAttach?.mayNewVoltageLevelInfos?.equipmentId,
+                lineAttach?.mayNewVoltageLevelInfos?.sectionCount,
+                lineAttach?.mayNewVoltageLevelInfos?.busbarCount
+            );
             setNewVoltageLevel(lineAttach?.mayNewVoltageLevelInfos);
         },
         [reset]
@@ -225,21 +232,38 @@ const LineAttachToVoltageLevelDialog = ({
             currentNodeUuid,
             voltageLevelId,
             voltageLevelName,
-            nominalVoltage,
             substationId,
-            busbarSections,
-            busbarConnections,
+            nominalVoltage,
+            lowVoltageLimit,
+            highVoltageLimit,
+            ipMin,
+            ipMax,
+            busbarCount,
+            sectionCount,
+            switchKinds,
+            couplingDevices,
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
                     type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
-                    nominalVoltage: nominalVoltage,
                     substationId: substationId,
-                    busbarSections: busbarSections,
-                    busbarConnections: busbarConnections,
+                    nominalVoltage: nominalVoltage,
+                    lowVoltageLimit: lowVoltageLimit,
+                    highVoltageLimit: highVoltageLimit,
+                    ipMin: ipMin,
+                    ipMax: ipMax,
+                    busbarCount: busbarCount,
+                    sectionCount: sectionCount,
+                    switchKinds: switchKinds,
+                    couplingDevices: couplingDevices,
                 };
+                preparedVoltageLevel.busbarSections = buildNewBusbarSections(
+                    preparedVoltageLevel.equipmentId,
+                    preparedVoltageLevel.sectionCount,
+                    preparedVoltageLevel.busbarCount
+                );
                 setNewVoltageLevel(preparedVoltageLevel);
                 setValue(
                     `${CONNECTIVITY}.${VOLTAGE_LEVEL}`,

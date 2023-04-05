@@ -11,19 +11,25 @@ import { sanitizeString } from 'components/dialogs/dialogUtils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import {
-    BUS_BAR_CONNECTIONS,
-    BUS_BAR_SECTIONS,
+    BUS_BAR_COUNT,
+    BUS_BAR_SECTIONS_OPTIONS,
+    BUS_BAR_SECTION_ID1,
+    BUS_BAR_SECTION_ID2,
+    COUPLING_OMNIBUS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    FROM_BBS,
-    HORIZONTAL_POSITION,
+    HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
+    HIGH_VOLTAGE_LIMIT,
     ID,
+    LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+    LOW_VOLTAGE_LIMIT,
     NAME,
     NOMINAL_VOLTAGE,
+    SECTION_COUNT,
     SUBSTATION_ID,
+    SWITCHES_BETWEEN_SECTIONS,
     SWITCH_KIND,
-    TO_BBS,
-    VERTICAL_POSITION,
+    SWITCH_KINDS,
 } from 'components/refactor/utils/field-constants';
 import yup from 'components/refactor/utils/yup-config';
 import PropTypes from 'prop-types';
@@ -33,12 +39,10 @@ import { createVoltageLevel } from 'utils/rest-api';
 import ModificationDialog from 'components/refactor/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
-import {
-    controleBusBarSectionLink,
-    controleUniqueHorizontalVertical as uniqueHorizontalVerticalControl,
-    controleUniqueId as controlUniqueId,
-} from './voltage-level-creation-utils';
+import { controlCouplingOmnibusBetweenSections } from './voltage-level-creation-utils';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import { useIntl } from 'react-intl';
+import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 
 /**
  * Dialog to create a load in the network
@@ -52,47 +56,48 @@ import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
-    [NOMINAL_VOLTAGE]: '',
     [SUBSTATION_ID]: null,
-    [BUS_BAR_SECTIONS]: [],
-    [BUS_BAR_CONNECTIONS]: [],
+    [NOMINAL_VOLTAGE]: '',
+    [LOW_VOLTAGE_LIMIT]: '',
+    [HIGH_VOLTAGE_LIMIT]: '',
+    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: '',
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: '',
+    [BUS_BAR_COUNT]: 1,
+    [SECTION_COUNT]: 1,
+    [SWITCHES_BETWEEN_SECTIONS]: '',
+    [COUPLING_OMNIBUS]: [],
+    [SWITCH_KINDS]: [],
+    [BUS_BAR_SECTIONS_OPTIONS]: [],
 };
 
 const schema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().required(),
     [EQUIPMENT_NAME]: yup.string(),
-    [NOMINAL_VOLTAGE]: yup.string().required(),
     [SUBSTATION_ID]: yup.string().nullable().required(),
-    [BUS_BAR_SECTIONS]: yup
+    [NOMINAL_VOLTAGE]: yup.string().required(),
+    [LOW_VOLTAGE_LIMIT]: yup.string(),
+    [HIGH_VOLTAGE_LIMIT]: yup.string(),
+    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.string(),
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.string(),
+    [BUS_BAR_COUNT]: yup.number().min(1).nullable().required(),
+    [SECTION_COUNT]: yup.number().min(1).nullable().required(),
+    [SWITCHES_BETWEEN_SECTIONS]: yup.string().when([SECTION_COUNT], {
+        is: (sectionCount) => sectionCount > 1,
+        then: (schema) => schema.required(),
+    }),
+    [COUPLING_OMNIBUS]: yup
         .array()
         .of(
             yup.object().shape({
-                [ID]: yup.string().required(),
-                [NAME]: yup.string(),
-                [HORIZONTAL_POSITION]: yup
-                    .number()
-                    .min(0)
-                    .nullable()
-                    .required(),
-                [VERTICAL_POSITION]: yup.number().min(0).nullable().required(),
+                [BUS_BAR_SECTION_ID1]: yup.string().nullable().required(),
+                [BUS_BAR_SECTION_ID2]: yup.string().nullable().required(),
             })
         )
-        .min(1, 'EmptyList/bbs')
-        .test('unique-positions', (values) =>
-            uniqueHorizontalVerticalControl(values, 'SameHorizAndVertPos')
-        )
-        .test('unique-ids', (values) => controlUniqueId(values, 'DuplicateId')),
-    [BUS_BAR_CONNECTIONS]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [FROM_BBS]: yup.string().nullable().required(),
-                [TO_BBS]: yup.string().nullable().required(),
-                [SWITCH_KIND]: yup.string().nullable().required(),
-            })
-        )
-        .test('bus-bar-section-link', (values) =>
-            controleBusBarSectionLink(values, 'DisconnectorBetweenSameBusbar')
+        .test('coupling-omnibus-between-sections', (values) =>
+            controlCouplingOmnibusBetweenSections(
+                values,
+                'CouplingOmnibusBetweenSameBusbar'
+            )
         ),
 });
 
@@ -104,7 +109,7 @@ const VoltageLevelCreationDialog = ({
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
     const equipmentPath = 'voltage-levels';
 
     const methods = useForm({
@@ -113,6 +118,7 @@ const VoltageLevelCreationDialog = ({
     });
 
     const { reset } = methods;
+    const intl = useIntl();
 
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
@@ -122,13 +128,36 @@ const VoltageLevelCreationDialog = ({
                     (fromCopy ? '(1)' : ''),
                 [EQUIPMENT_NAME]:
                     voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
-                [NOMINAL_VOLTAGE]: voltageLevel[NOMINAL_VOLTAGE],
                 [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
-                [BUS_BAR_SECTIONS]: voltageLevel[BUS_BAR_SECTIONS],
-                [BUS_BAR_CONNECTIONS]: voltageLevel[BUS_BAR_CONNECTIONS],
+                [NOMINAL_VOLTAGE]: voltageLevel[NOMINAL_VOLTAGE],
+                [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
+                [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
+                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
+                    voltageLevel.ipMin
+                ),
+                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
+                    voltageLevel.ipMax
+                ),
+                [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT],
+                [SECTION_COUNT]: voltageLevel[SECTION_COUNT],
+                [SWITCHES_BETWEEN_SECTIONS]: voltageLevel.switchKinds
+                    ?.map((switchKind) => {
+                        return intl.formatMessage({ id: switchKind });
+                    })
+                    .join(' / '),
+                [COUPLING_OMNIBUS]: voltageLevel.couplingDevices,
+                [SWITCH_KINDS]: voltageLevel.switchKinds?.map((switchKind) => ({
+                    [SWITCH_KIND]: switchKind,
+                })),
             });
+            if (voltageLevel.isPartiallyCopied) {
+                snackWarning({
+                    messageTxt:
+                        'Copy was partially made, some fields were not copied',
+                });
+            }
         },
-        [reset]
+        [intl, reset, snackWarning]
     );
 
     const searchCopy = useFormSearchCopy({
@@ -152,10 +181,22 @@ const VoltageLevelCreationDialog = ({
                 currentNodeUuid,
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
-                nominalVoltage: voltageLevel[NOMINAL_VOLTAGE],
                 substationId: voltageLevel[SUBSTATION_ID],
-                busbarSections: voltageLevel[BUS_BAR_SECTIONS],
-                busbarConnections: voltageLevel[BUS_BAR_CONNECTIONS],
+                nominalVoltage: voltageLevel[NOMINAL_VOLTAGE],
+                lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
+                highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
+                ipMin: kiloUnitToUnit(
+                    voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
+                ),
+                ipMax: kiloUnitToUnit(
+                    voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
+                ),
+                busbarCount: voltageLevel[BUS_BAR_COUNT],
+                sectionCount: voltageLevel[SECTION_COUNT],
+                switchKinds: voltageLevel[SWITCH_KINDS].map((e) => {
+                    return e.switchKind;
+                }),
+                couplingDevices: voltageLevel[COUPLING_OMNIBUS],
                 isUpdate: editData ? true : false,
                 modificationUuid: editData?.uuid,
             }).catch((error) => {
