@@ -167,7 +167,7 @@ const TwoWindingsTransformerCreationDialog = ({
         TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
     );
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
-    const [dialogWidth, setDialogWidth] = useState('md');
+    const [dialogWidth, setDialogWidth] = useState('xl');
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     const computeRatioTapChangerRegulationMode = (
@@ -361,7 +361,6 @@ const TwoWindingsTransformerCreationDialog = ({
                             busbarSectionId: twt.busOrBusbarSectionId1,
                             connectionDirection: twt.connectionDirection1,
                             connectionName: twt.connectionName1,
-                            connectionPosition: twt.connectionPosition1,
                             voltageLevelId: twt.voltageLevelId1,
                         },
                         CONNECTIVITY_1
@@ -371,7 +370,6 @@ const TwoWindingsTransformerCreationDialog = ({
                             busbarSectionId: twt.busOrBusbarSectionId2,
                             connectionDirection: twt.connectionDirection2,
                             connectionName: twt.connectionName2,
-                            connectionPosition: twt.connectionPosition2,
                             voltageLevelId: twt.voltageLevelId2,
                         },
                         CONNECTIVITY_2

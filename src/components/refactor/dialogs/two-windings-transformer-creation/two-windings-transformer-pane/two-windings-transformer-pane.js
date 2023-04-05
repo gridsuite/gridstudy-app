@@ -32,6 +32,7 @@ import {
 
 const useStyles = makeStyles((theme) => ({
     h3: {
+        marginTop: 0,
         marginBottom: 0,
         paddingBottom: 1,
     },

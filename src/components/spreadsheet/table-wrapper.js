@@ -394,6 +394,14 @@ const TableWrapper = (props) => {
         manualTabSwitch,
     ]);
 
+    const handleGridReady = useCallback(() => {
+        if (globalFilterRef.current) {
+            gridRef.current?.api?.setQuickFilter(
+                globalFilterRef.current.getFilterValue()
+            );
+        }
+    }, []);
+
     useEffect(() => {
         if (scrollToIndex) {
             gridRef.current.api?.ensureIndexVisible(scrollToIndex, 'top');
@@ -624,6 +632,7 @@ const TableWrapper = (props) => {
                 <Grid container>
                     <GlobalFilter
                         disabled={!!(props.disabled || editingData)}
+                        visible={props.visible}
                         gridRef={gridRef}
                         ref={globalFilterRef}
                     />
@@ -680,6 +689,7 @@ const TableWrapper = (props) => {
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}
                         handleEditingStopped={handleEditingStopped}
+                        handleGridReady={handleGridReady}
                     />
                 </div>
             )}
