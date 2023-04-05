@@ -130,7 +130,11 @@ const LoadModificationDialog = ({
     });
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider
+            validationSchema={schema}
+            removeOptional={true}
+            {...methods}
+        >
             <ModificationDialog
                 fullWidth
                 onClear={clear}
