@@ -101,30 +101,35 @@ export function RunButtonContainer({
             ranLoadflow &&
             studyUpdatedForce?.eventData?.headers?.updateType === 'loadflow'
         ) {
+            setLoadFlowStatusState(loadFlowStatus);
             dispatch(addLoadflowNotif());
         } else if (
             ranSA &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'securityAnalysisResult'
         ) {
+            setSecurityAnalysisStatusState(securityAnalysisStatus);
             dispatch(addSANotif());
         } else if (
             ranSensi &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'sensitivityAnalysisResult'
         ) {
+            setSensiStatusState(sensiStatus);
             dispatch(addSensiNotif());
         } else if (
             ranShortCircuit &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'shortCircuitAnalysisResult'
         ) {
+            setShortCircuitStatusState(shortCircuitStatus);
             dispatch(addShortCircuitNotif());
         } else if (
             ranDynamicSimulation &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'dynamicSimulationResult'
         ) {
+            setDynamicSimulationStatusState(dynamicSimulationStatus);
             dispatch(addDynamicSimulationNotif());
         }
     }, [

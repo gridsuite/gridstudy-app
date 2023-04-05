@@ -110,6 +110,10 @@ const TableWrapper = (props) => {
         (state) => state.allReorderedTableDefinitionIndexes
     );
 
+    const equipmentFetched = useSelector(
+        (state) => state.networkEquipmentsFetched
+    );
+
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
     const [
@@ -390,6 +394,14 @@ const TableWrapper = (props) => {
         manualTabSwitch,
     ]);
 
+    const handleGridReady = useCallback(() => {
+        if (globalFilterRef.current) {
+            gridRef.current?.api?.setQuickFilter(
+                globalFilterRef.current.getFilterValue()
+            );
+        }
+    }, []);
+
     useEffect(() => {
         if (scrollToIndex) {
             gridRef.current.api?.ensureIndexVisible(scrollToIndex, 'top');
@@ -620,6 +632,7 @@ const TableWrapper = (props) => {
                 <Grid container>
                     <GlobalFilter
                         disabled={!!(props.disabled || editingData)}
+                        visible={props.visible}
                         gridRef={gridRef}
                         ref={globalFilterRef}
                     />
@@ -663,9 +676,12 @@ const TableWrapper = (props) => {
                         rowData={rowData}
                         columnData={columnData}
                         topPinnedData={topPinnedData}
-                        fetched={props.network?.isResourceFetched(
-                            TABLES_DEFINITION_INDEXES.get(tabIndex).resource
-                        )}
+                        fetched={
+                            equipmentFetched &&
+                            props.network?.isResourceFetched(
+                                TABLES_DEFINITION_INDEXES.get(tabIndex).resource
+                            )
+                        }
                         scrollToIndex={scrollToIndex}
                         visible={props.visible}
                         network={props.network}
@@ -673,6 +689,7 @@ const TableWrapper = (props) => {
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}
                         handleEditingStopped={handleEditingStopped}
+                        handleGridReady={handleGridReady}
                     />
                 </div>
             )}
