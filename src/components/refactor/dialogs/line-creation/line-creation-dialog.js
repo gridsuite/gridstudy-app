@@ -372,7 +372,7 @@ const LineCreationDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -389,8 +389,7 @@ const LineCreationDialog = ({
                 subtitle={headerAndTabs}
                 searchCopy={searchCopy}
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs

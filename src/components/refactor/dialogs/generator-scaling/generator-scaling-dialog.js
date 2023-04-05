@@ -83,7 +83,7 @@ const GeneratorScalingDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -97,8 +97,7 @@ const GeneratorScalingDialog = ({
                 maxWidth={'md'}
                 titleId="GeneratorScaling"
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <GeneratorScalingForm />

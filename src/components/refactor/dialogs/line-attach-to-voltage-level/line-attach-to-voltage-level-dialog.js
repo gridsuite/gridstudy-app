@@ -272,7 +272,7 @@ const LineAttachToVoltageLevelDialog = ({
     }, [getValues, newVoltageLevel]);
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -286,8 +286,7 @@ const LineAttachToVoltageLevelDialog = ({
                 aria-labelledby="dialog-attach-voltage-level-to-a-line"
                 titleId="LineAttachToVoltageLevel"
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <LineAttachToVoltageLevelForm

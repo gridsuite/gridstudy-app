@@ -99,7 +99,7 @@ const EquipmentDeletionDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -112,8 +112,7 @@ const EquipmentDeletionDialog = ({
                 aria-labelledby="dialog-equipment-deletion"
                 titleId="DeleteEquipment"
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <DeleteEquipmentForm

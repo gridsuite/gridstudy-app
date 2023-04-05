@@ -108,7 +108,7 @@ const DeleteVoltageLevelOnLineDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -122,8 +122,7 @@ const DeleteVoltageLevelOnLineDialog = ({
                 aria-labelledby="dialog-delete-voltage-level-on-line"
                 titleId="DeleteVoltageLevelOnLine"
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <DeleteVoltageLevelOnLineForm

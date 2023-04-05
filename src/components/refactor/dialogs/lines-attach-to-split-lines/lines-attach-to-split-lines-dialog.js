@@ -138,7 +138,7 @@ const LinesAttachToSplitLinesDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -152,8 +152,7 @@ const LinesAttachToSplitLinesDialog = ({
                 titleId="LinesAttachToSplitLines"
                 aria-labelledby="dialog-attach-lines-to-split-lines"
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <LinesAttachToSplitLinesForm

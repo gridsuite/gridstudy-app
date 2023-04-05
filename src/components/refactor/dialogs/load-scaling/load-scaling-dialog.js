@@ -83,7 +83,7 @@ const LoadScalingDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -97,8 +97,7 @@ const LoadScalingDialog = ({
                 maxWidth={'md'}
                 titleId="LoadScaling"
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <LoadScalingForm />

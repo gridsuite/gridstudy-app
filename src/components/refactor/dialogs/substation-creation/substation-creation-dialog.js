@@ -124,7 +124,7 @@ const SubstationCreationDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -138,8 +138,7 @@ const SubstationCreationDialog = ({
                 titleId="CreateSubstation"
                 searchCopy={searchCopy}
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <SubstationCreationForm />

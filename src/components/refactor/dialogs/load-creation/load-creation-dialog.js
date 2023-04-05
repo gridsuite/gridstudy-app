@@ -181,7 +181,7 @@ const LoadCreationDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -196,8 +196,7 @@ const LoadCreationDialog = ({
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <LoadCreationForm

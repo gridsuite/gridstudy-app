@@ -176,7 +176,7 @@ const VoltageLevelCreationDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -191,8 +191,7 @@ const VoltageLevelCreationDialog = ({
                 titleId="CreateVoltageLevel"
                 searchCopy={searchCopy}
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <VoltageLevelCreationForm

@@ -124,8 +124,7 @@ const LoadModificationDialog = ({
     }, [reset, emptyFormData]);
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
-        fetched: isDataFetched,
+        isDataFetched: editData && isDataFetched,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -145,10 +144,7 @@ const LoadModificationDialog = ({
                 {...dialogProps}
                 open={open}
                 keepMounted={true}
-                isUpdate={isUpdate}
-                isDataFetched={isDataFetched}
-                editData={editData}
-                isModificationForm={true}
+                isDataFetching={isUpdate && (!editData || !isDataFetched)}
             >
                 <LoadModificationForm
                     currentNode={currentNode}

@@ -42,10 +42,7 @@ const ModificationDialog = ({
     searchCopy,
     subtitle,
     onValidated,
-    editData,
-    isUpdate = false,
-    isDataFetched = true,
-    isModificationForm,
+    isDataFetching = false,
     ...dialogProps
 }) => {
     const { handleSubmit } = useFormContext();
@@ -88,7 +85,7 @@ const ModificationDialog = ({
             aria-labelledby={titleId}
             {...dialogProps}
         >
-            {isUpdate && (!editData || !isDataFetched) && <LinearProgress />}
+            {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container justifyContent={'space-between'}>
                     <Grid item xs={11}>

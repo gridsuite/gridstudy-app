@@ -113,7 +113,7 @@ const DeleteAttachingLineDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -127,8 +127,7 @@ const DeleteAttachingLineDialog = ({
                 aria-labelledby="dialog-delete-attaching-line"
                 titleId="DeleteAttachingLine"
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <DeleteAttachingLineForm

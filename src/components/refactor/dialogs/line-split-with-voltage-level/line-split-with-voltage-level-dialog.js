@@ -196,7 +196,7 @@ const LineSplitWithVoltageLevelDialog = ({
     }, [getValues, newVoltageLevel]);
 
     const open = useOpenShortWaitFetching({
-        mainData: editData,
+        isDataFetched: editData,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -210,8 +210,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 aria-labelledby="dialog-create-voltage-level-amidst-a-line"
                 titleId="LineSplitWithVoltageLevel"
                 open={open}
-                editData={editData}
-                isUpdate={isUpdate}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <LineSplitWithVoltageLevelForm
