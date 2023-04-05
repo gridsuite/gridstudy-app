@@ -21,6 +21,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import { CloseButton, LabelledButton, useStyles } from './parameters';
 import { DropDown, SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';
+import { useImportExportParams } from '@gridsuite/commons-ui';
 
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
@@ -330,57 +331,12 @@ const SpecificLoadFlowParameters = ({
     currentProvider,
     specificParamsDescription,
 }) => {
-    /*
-    Create a param definition structure just like the constants in
-    BasicLoadFlowParameters / AdvancedLoadFlowParameters
-     */
-    function extractParamsDefinition(paramsDesc) {
-        const definitions = {};
-        for (var i = 0; i < paramsDesc.length; i++) {
-            if (paramsDesc[i].provider === currentProvider) {
-                let paramType = null;
-                let enumValues = null;
-                if (paramsDesc[i].type === 'BOOLEAN') {
-                    paramType = TYPES.bool;
-                } else if (paramsDesc[i].type === 'STRING') {
-                    if (
-                        paramsDesc[i].possibleValues !== null &&
-                        paramsDesc[i].possibleValues.length > 0
-                    ) {
-                        paramType = TYPES.enum;
-                        enumValues = {};
-                        for (
-                            var p = 0;
-                            p < paramsDesc[i].possibleValues.length;
-                            p++
-                        ) {
-                            const enumValue = paramsDesc[i].possibleValues[p];
-                            enumValues[enumValue] =
-                                paramsDesc[i].name + '_' + enumValue;
-                        }
-                    } else {
-                        paramType = TYPES.string;
-                    }
-                } else if (paramsDesc[i].type === 'DOUBLE') {
-                    paramType = TYPES.double;
-                } else if (paramsDesc[i].type === 'INTEGER') {
-                    paramType = TYPES.integer;
-                }
-
-                if (paramType) {
-                    definitions[paramsDesc[i].name] = {
-                        type: paramType,
-                        description:
-                            paramsDesc[i].provider + '_' + paramsDesc[i].name, // translation key
-                    };
-                    if (enumValues !== null) {
-                        definitions[paramsDesc[i].name].values = enumValues;
-                    }
-                }
-            }
-        }
-        return definitions;
-    }
+    const [currentParameters, paramsComponent] = useImportExportParams(
+        specificParamsDescription.filter(
+            (spd) => spd.provider === currentProvider
+        )
+    );
+    console.debug('SpecificLoadFlowParameters', specificParamsDescription);
 
     return (
         <>
@@ -389,18 +345,7 @@ const SpecificLoadFlowParameters = ({
                 label={'showSpecificParameters'}
                 callback={() => setShowSpecificLfParams(!showSpecificLfParams)}
             />
-            {showSpecificLfParams &&
-                makeComponentsFor(
-                    specificParamsDescription
-                        ? extractParamsDefinition(specificParamsDescription)
-                        : {},
-                    lfParams?.specificParametersPerProvider?.[
-                        currentProvider
-                    ] || {},
-                    lfParams,
-                    commitLFParameter,
-                    currentProvider
-                )}
+            {showSpecificLfParams && paramsComponent}
         </>
     );
 };
