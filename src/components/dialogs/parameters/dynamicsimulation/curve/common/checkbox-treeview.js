@@ -42,7 +42,7 @@ const BorderedTreeItem = styled(TreeItem)(({ theme, root }) => {
     };
 });
 
-export default function CheckmarkTreeView({ data: items, checkAll, ...rest }) {
+export default function CheckboxTreeview({ data: items, checkAll, ...rest }) {
     const [itemStates, setItemStates] = useState(
         useMemo(() => {
             return items.map((elem) => ({

@@ -24,7 +24,7 @@ const MenuProps = {
 const CHECK_ALL = { label: 'Check all', value: 'check_all' };
 const UNCHECK_ALL = { label: 'Uncheck all', value: 'uncheck_all' };
 
-const CheckmarkSelect = ({
+const CheckboxSelect = ({
     options,
     getOptionLabel: defaultGetOptionLabel,
     onChange,
@@ -109,4 +109,4 @@ const CheckmarkSelect = ({
     );
 };
 
-export default CheckmarkSelect;
+export default CheckboxSelect;

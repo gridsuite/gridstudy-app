@@ -10,9 +10,9 @@ import { makeStyles, useTheme } from '@mui/styles';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import clsx from 'clsx';
-import CheckmarkSelect from '../checkmark-select';
+import CheckboxSelect from '../common/checkbox-select';
 import { EQUIPMENT_TYPE } from './equipment-filter';
-import CheckmarkTreeView from '../checkmark-treeview';
+import CheckboxTreeview from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 
 // take from table models in DB dynamicmappings
@@ -151,7 +151,7 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
                     </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <CheckmarkSelect
+                    <CheckboxSelect
                         options={Object.keys(MODELS[equipmentType])}
                         getOptionLabel={(value) => MODELS[equipmentType][value]}
                         value={[...Object.keys(MODELS[equipmentType])]}
@@ -169,7 +169,7 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPE.LOAD }) => {
                     ></FormattedMessage>
                 </Typography>
                 <div className={clsx([theme.aggrid, classes.grid])}>
-                    <CheckmarkTreeView
+                    <CheckboxTreeview
                         data={filteredData}
                         checkAll
                         sx={{

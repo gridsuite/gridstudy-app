@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { AgGridReact } from 'ag-grid-react';
 import { makeStyles, useTheme } from '@mui/styles';
 import CountrySelect from '../country-select';
-import CheckmarkSelect from '../checkmark-select';
+import CheckboxSelect from '../common/checkbox-select';
 
 export const EQUIPMENT_TYPE = {
     GENERATOR: 'Generator',
@@ -189,7 +189,7 @@ const EquipmentFilter = (props) => {
                     </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <CheckmarkSelect
+                    <CheckboxSelect
                         options={Object.keys(POSTS)}
                         getOptionLabel={(value) => POSTS[value]}
                         value={[Object.keys(POSTS)[0], Object.keys(POSTS)[1]]}
@@ -219,7 +219,7 @@ const EquipmentFilter = (props) => {
                     </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <CheckmarkSelect
+                    <CheckboxSelect
                         options={Object.keys(REGIONS)}
                         getOptionLabel={(value) => REGIONS[value]}
                         value={[
@@ -239,7 +239,7 @@ const EquipmentFilter = (props) => {
                     </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                    <CheckmarkSelect
+                    <CheckboxSelect
                         options={Object.keys(TENSIONS)}
                         getOptionLabel={(value) =>
                             `${TENSIONS[value]} ${TENSION_UNIT}`

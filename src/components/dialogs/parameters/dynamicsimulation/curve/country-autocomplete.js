@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CheckboxAutocomplete from './checkbox-autocomplete';
+import CheckboxAutocomplete from './common/checkbox-autocomplete';
 import { useMemo } from 'react';
 
 const CountryAutocomplete = () => {
