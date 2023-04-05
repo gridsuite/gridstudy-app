@@ -93,11 +93,6 @@ export const EquipmentTable = ({
         return !ALLOWED_KEYS.includes(params.event.key);
     };
 
-    const filterIcon = useMemo(
-        () => '<span class="ag-icon ag-icon-filter"/>',
-        []
-    );
-
     const defaultColDef = useMemo(
         () => ({
             filter: true,
@@ -108,10 +103,10 @@ export const EquipmentTable = ({
             autoHeaderHeight: true,
             suppressKeyboardEvent: (params) => suppressKeyEvent(params),
             icons: {
-                menu: filterIcon,
+                menu: '<span class="ag-icon ag-icon-filter" />',
             },
         }),
-        [filterIcon]
+        []
     );
 
     const gridContext = useMemo(() => {
