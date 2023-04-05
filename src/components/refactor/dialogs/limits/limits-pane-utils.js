@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { sanitizeString } from 'components/dialogs/dialogUtils';
 import {
     LIMITS,
     CURRENT_LIMITS_1,
@@ -15,9 +16,8 @@ import {
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_VALUE,
 } from 'components/refactor/utils/field-constants';
-import yup from '../../../utils/yup-config';
-import { areArrayElementsUnique } from '../../../utils/utils';
-import { sanitizeString } from '../../../../dialogs/dialogUtils';
+import { areArrayElementsUnique } from 'components/refactor/utils/utils';
+import yup from 'components/refactor/utils/yup-config';
 
 const temporaryLimitsTableValidationSchema = () => ({
     [PERMANENT_LIMIT]: yup

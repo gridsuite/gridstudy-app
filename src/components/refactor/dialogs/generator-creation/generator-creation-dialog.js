@@ -99,8 +99,14 @@ const schema = yup
             [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
             [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
             [RATED_NOMINAL_POWER]: yup.number().nullable(),
-            [TRANSIENT_REACTANCE]: yup.number().nullable(),
             [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+            [TRANSIENT_REACTANCE]: yup
+                .number()
+                .nullable()
+                .when([TRANSFORMER_REACTANCE], {
+                    is: (transformerReactance) => transformerReactance != null,
+                    then: (schema) => schema.required(),
+                }),
             [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
             [STARTUP_COST]: yup.number().nullable(),
             [MARGINAL_COST]: yup.number().nullable(),
@@ -169,9 +175,9 @@ const GeneratorCreationDialog = ({
             [REACTIVE_CAPABILITY_CURVE_TABLE]:
                 generator.reactiveCapabilityCurvePoints,
             [MINIMUM_REACTIVE_POWER]:
-                generator?.minMaxReactiveLimits?.minimumReactivePower,
+                generator?.minMaxReactiveLimits?.minimumReactivePower ?? null,
             [MAXIMUM_REACTIVE_POWER]:
-                generator?.minMaxReactiveLimits?.maximumReactivePower,
+                generator?.minMaxReactiveLimits?.maximumReactivePower ?? null,
             [Q_PERCENT]: generator.qPercent,
             [REACTIVE_CAPABILITY_CURVE_CHOICE]: generator?.minMaxReactiveLimits
                 ? 'MINMAX'
@@ -190,7 +196,6 @@ const GeneratorCreationDialog = ({
                 busbarSectionId: generator.busOrBusbarSectionId,
                 connectionDirection: generator.connectionDirection,
                 connectionName: generator.connectionName,
-                connectionPosition: generator.connectionPosition,
             }),
         });
     };

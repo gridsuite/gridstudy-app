@@ -105,7 +105,6 @@ const LoadCreationDialog = ({
                     voltageLevelSubstationId: vlResult.substationId,
                     connectionDirection: load.connectionDirection,
                     connectionName: load.connectionName,
-                    connectionPosition: load.connectionPosition,
                 }),
             });
         });

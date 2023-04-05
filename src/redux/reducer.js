@@ -683,8 +683,12 @@ export const reducer = createReducer(initialState, {
                             diagram.state = ViewState.MINIMIZED;
                         }
                     });
-                    // And update the one to open.
-                    diagramStates[diagramToOpenIndex].state = ViewState.OPENED;
+                    const diagramToOpen = diagramStates[diagramToOpenIndex];
+
+                    // We open and push the SLD to the last position in the array, so it is displayed at the right of the others
+                    diagramToOpen.state = ViewState.OPENED;
+                    diagramStates.splice(diagramToOpenIndex, 1);
+                    diagramStates.push(diagramToOpen);
                 } else {
                     console.info(
                         'Diagram already opened : ' +
