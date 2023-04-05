@@ -167,7 +167,7 @@ const TwoWindingsTransformerCreationDialog = ({
         TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
     );
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
-    const [dialogWidth, setDialogWidth] = useState('md');
+    const [dialogWidth, setDialogWidth] = useState('xl');
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     const computeRatioTapChangerRegulationMode = (
