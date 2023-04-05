@@ -52,7 +52,7 @@ const getModificationRowSchema = () =>
         [P]: yup.number().nullable(),
     });
 
-const getRowEmptyFormData = () => ({
+export const getRowEmptyFormData = () => ({
     [P]: null,
     [Q_MAX_P]: null,
     [Q_MIN_P]: null,
