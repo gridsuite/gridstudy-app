@@ -87,18 +87,24 @@ export const SwitchesBetweenSections = () => {
         </TextInput>
     );
 
-    return (
-        <>
-            {gridItem(switchesBetweenSectionsField, 4)}
-            {openCreateSwitchesDialog && (
-                <CreateSwitchesDialog
-                    openCreateSwitchesDialog={openCreateSwitchesDialog}
-                    setOpenCreateSwitchesDialog={setOpenCreateSwitchesDialog}
-                    handleCreateSwitchesDialog={handleCreateSwitchesDialog}
-                    sectionCount={getValues(SECTION_COUNT)}
-                    switchKinds={getValues(SWITCH_KINDS)}
-                />
-            )}
-        </>
-    );
+    if (watchSectionCount < 1) {
+        return <></>;
+    } else {
+        return (
+            <>
+                {gridItem(switchesBetweenSectionsField, 4)}
+                {openCreateSwitchesDialog && (
+                    <CreateSwitchesDialog
+                        openCreateSwitchesDialog={openCreateSwitchesDialog}
+                        setOpenCreateSwitchesDialog={
+                            setOpenCreateSwitchesDialog
+                        }
+                        handleCreateSwitchesDialog={handleCreateSwitchesDialog}
+                        sectionCount={getValues(SECTION_COUNT)}
+                        switchKinds={getValues(SWITCH_KINDS)}
+                    />
+                )}
+            </>
+        );
+    }
 };
