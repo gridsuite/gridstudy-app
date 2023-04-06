@@ -35,8 +35,8 @@ export const CouplingOmnibusForm = () => {
         if (watchVoltageLevelID && watchBusBarCount && watchSectionCount) {
             return buildNewBusbarSections(
                 watchVoltageLevelID,
-                watchBusBarCount,
-                watchSectionCount
+                watchSectionCount,
+                watchBusBarCount
             ).map((section) => {
                 return section.id;
             });
