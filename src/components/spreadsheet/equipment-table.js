@@ -14,6 +14,7 @@ import LoaderWithOverlay from '../util/loader-with-overlay';
 import { useIntl } from 'react-intl';
 import clsx from 'clsx';
 import { ALLOWED_KEYS } from './utils/config-tables';
+import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -120,39 +121,38 @@ export const EquipmentTable = ({
 
     return (
         <>
-            <div className={clsx([theme.aggrid, classes.grid])}>
-                {!fetched ? (
+            {!fetched ? (
+                <div>
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
                         loadingMessageText={'LoadingRemoteData'}
                     />
-                ) : (
-                    <AgGridReact
-                        ref={gridRef}
-                        getRowId={getRowId}
-                        rowData={rowData}
-                        pinnedTopRowData={topPinnedData}
-                        getRowStyle={getRowStyle}
-                        columnDefs={columnData}
-                        defaultColDef={defaultColDef}
-                        enableCellTextSelection={true}
-                        undoRedoCellEditing={true}
-                        editType={'fullRow'}
-                        onCellValueChanged={handleCellEditing}
-                        onRowValueChanged={handleRowEditing}
-                        onRowEditingStopped={handleEditingStopped}
-                        onColumnMoved={handleColumnDrag}
-                        suppressDragLeaveHidesColumns={true}
-                        suppressPropertyNamesCheck={true}
-                        suppressColumnVirtualisation={true}
-                        suppressClickEdit={true}
-                        getLocaleText={getLocaleText}
-                        context={gridContext}
-                        onGridReady={handleGridReady}
-                    />
-                )}
-            </div>
+                </div>
+            ) : (
+                <CustomAGGrid
+                    ref={gridRef}
+                    getRowId={getRowId}
+                    rowData={rowData}
+                    pinnedTopRowData={topPinnedData}
+                    getRowStyle={getRowStyle}
+                    columnDefs={columnData}
+                    defaultColDef={defaultColDef}
+                    enableCellTextSelection={true}
+                    undoRedoCellEditing={true}
+                    editType={'fullRow'}
+                    onCellValueChanged={handleCellEditing}
+                    onRowValueChanged={handleRowEditing}
+                    onRowEditingStopped={handleEditingStopped}
+                    onColumnMoved={handleColumnDrag}
+                    suppressDragLeaveHidesColumns={true}
+                    suppressPropertyNamesCheck={true}
+                    suppressColumnVirtualisation={true}
+                    suppressClickEdit={true}
+                    context={gridContext}
+                    onGridReady={handleGridReady}
+                />
+            )}
         </>
     );
 };

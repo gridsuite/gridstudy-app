@@ -4,34 +4,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { AgGridReact } from 'ag-grid-react';
-import { makeStyles, useTheme } from '@mui/styles';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
-import clsx from 'clsx';
 import { groupPostSort } from './util/sort-functions';
-
-const useStyles = makeStyles((theme) => ({
-    grid: {
-        width: 'auto',
-        height: '100%',
-        position: 'relative',
-    },
-}));
+import { CustomAGGrid } from './dialogs/custom-aggrid';
+import { useTheme } from '@mui/styles';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
-    const gridRef = useRef();
+    const theme = useTheme();
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
-
-    const theme = useTheme();
-    const GRID_PREFIX = 'grid.';
-    const classes = useStyles();
 
     const columns = useMemo(() => {
         return [
@@ -81,14 +66,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             }
         },
         [theme.selectedRow.background]
-    );
-
-    const getLocaleText = useCallback(
-        (params) => {
-            const key = GRID_PREFIX + params.key;
-            return intl.messages[key] || params.defaultValue;
-        },
-        [intl]
     );
 
     function flattenResult(shortcutAnalysisResult) {
@@ -160,30 +137,24 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         );
     }, []);
 
-    function renderResult() {
+    const renderResult = () => {
         const rows = flattenResult(result);
 
         return (
             result &&
             shortCircuitNotif && (
-                <AgGridReact
-                    ref={gridRef}
+                <CustomAGGrid
                     rowData={rows}
                     defaultColDef={{ sortable: true }}
                     columnDefs={columns}
-                    getLocaleText={getLocaleText}
-                    getRowStyle={getRowStyle}
                     postSortRows={handlePostSortRows}
+                    getRowStyle={getRowStyle}
                 />
             )
         );
-    }
+    };
 
-    return (
-        <div className={clsx([theme.aggrid, classes.grid])}>
-            {renderResult()}
-        </div>
-    );
+    return renderResult();
 };
 
 ShortCircuitAnalysisResult.defaultProps = {
