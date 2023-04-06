@@ -20,6 +20,8 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { buildNewBusbarSections } from 'components/refactor/utils/utils';
 
 export const CouplingOmnibusForm = () => {
+    const { setValue } = useFormContext();
+
     const couplingOmnibusCreation = {
         [BUS_BAR_SECTION_ID1]: null,
         [BUS_BAR_SECTION_ID2]: null,
@@ -43,9 +45,6 @@ export const CouplingOmnibusForm = () => {
     }, [watchVoltageLevelID, watchBusBarCount, watchSectionCount]);
 
     const sectionOptionsRef = useRef(sectionOptions);
-
-    const { setValue } = useFormContext();
-
     useEffect(() => {
         if (sectionOptionsRef.current !== sectionOptions) {
             setValue(COUPLING_OMNIBUS, []);

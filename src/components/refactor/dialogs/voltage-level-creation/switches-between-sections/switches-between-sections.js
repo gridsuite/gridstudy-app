@@ -21,11 +21,15 @@ import { CreateSwitchesDialog } from './create-switches-between-sections/create-
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export const SwitchesBetweenSections = () => {
+    const { getValues, setValue } = useFormContext();
     const [openCreateSwitchesDialog, setOpenCreateSwitchesDialog] =
         useState(false);
 
-    const sectionCount = useWatch({ name: SECTION_COUNT });
-    const { getValues, setValue } = useFormContext();
+    const watchSectionCount = useWatch({ name: SECTION_COUNT });
+    const watchSwitchesBetweenSections = useWatch({
+        name: SWITCHES_BETWEEN_SECTIONS,
+    });
+
     const addIconAdorment = useCallback((clickCallback) => {
         return (
             <IconButton onClick={clickCallback}>
@@ -35,10 +39,10 @@ export const SwitchesBetweenSections = () => {
     }, []);
 
     const handleClickOpenSwitchesPane = useCallback(() => {
-        if (sectionCount > 1) {
+        if (watchSectionCount > 1) {
             setOpenCreateSwitchesDialog(true);
         }
-    }, [sectionCount]);
+    }, [watchSectionCount]);
 
     const intl = useIntl();
     const handleCreateSwitchesDialog = useCallback(
@@ -54,14 +58,20 @@ export const SwitchesBetweenSections = () => {
         },
         [intl, setValue]
     );
-    const sectionCountRef = useRef(sectionCount);
+    const sectionCountRef = useRef(watchSectionCount);
+    const switchesBetweenSectionsRef = useRef(watchSwitchesBetweenSections);
     useEffect(() => {
-        if (sectionCountRef.current !== sectionCount) {
+        // If the user changes the section count, we reset the switches between sections
+        if (
+            sectionCountRef.current !== watchSectionCount &&
+            switchesBetweenSectionsRef.current === watchSwitchesBetweenSections
+        ) {
             setValue(SWITCH_KINDS, []);
             setValue(SWITCHES_BETWEEN_SECTIONS, '');
         }
-        sectionCountRef.current = sectionCount;
-    }, [sectionCount, setValue]);
+        sectionCountRef.current = watchSectionCount;
+        switchesBetweenSectionsRef.current = watchSwitchesBetweenSections;
+    }, [watchSectionCount, setValue, watchSwitchesBetweenSections]);
 
     const switchesBetweenSectionsField = (
         <TextInput

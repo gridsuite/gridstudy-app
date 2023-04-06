@@ -122,9 +122,9 @@ const LineAttachToVoltageLevelDialog = ({
             const newVoltageLevel = lineAttach?.mayNewVoltageLevelInfos;
             if (newVoltageLevel) {
                 newVoltageLevel.busbarSections = buildNewBusbarSections(
-                    lineAttach?.mayNewVoltageLevelInfos?.equipmentId,
-                    lineAttach?.mayNewVoltageLevelInfos?.sectionCount,
-                    lineAttach?.mayNewVoltageLevelInfos?.busbarCount
+                    newVoltageLevel?.equipmentId,
+                    newVoltageLevel?.sectionCount,
+                    newVoltageLevel?.busbarCount
                 );
                 setNewVoltageLevel(newVoltageLevel);
             }

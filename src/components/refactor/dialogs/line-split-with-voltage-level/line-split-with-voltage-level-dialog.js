@@ -107,9 +107,9 @@ const LineSplitWithVoltageLevelDialog = ({
             const newVoltageLevel = lineSplit?.mayNewVoltageLevelInfos;
             if (newVoltageLevel) {
                 newVoltageLevel.busbarSections = buildNewBusbarSections(
-                    lineSplit?.mayNewVoltageLevelInfos?.equipmentId,
-                    lineSplit?.mayNewVoltageLevelInfos?.sectionCount,
-                    lineSplit?.mayNewVoltageLevelInfos?.busbarCount
+                    newVoltageLevel?.equipmentId,
+                    newVoltageLevel?.sectionCount,
+                    newVoltageLevel?.busbarCount
                 );
                 setNewVoltageLevel(newVoltageLevel);
             }
