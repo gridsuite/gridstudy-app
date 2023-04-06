@@ -19,7 +19,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/refactor/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
-import { getPreviousBooleanValue } from './set-points-utils';
 
 const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
     const intl = useIntl();
@@ -36,12 +35,16 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
     );
 
     const previousFrequencyRegulation = useMemo(() => {
-        const prevValue = getPreviousBooleanValue(
-            previousValues?.activePowerControlOn
-        );
-        if (prevValue === null) return '';
-        return intl.formatMessage({ id: prevValue });
-    }, [intl, previousValues?.activePowerControlOn]);
+        if (previousValues?.activePowerControlOn) {
+            return intl.formatMessage({ id: 'On' });
+        } else if (
+            previousValues?.activePowerControlOn === false ||
+            (previousValues &&
+                previousValues?.activePowerControlOn === undefined)
+        ) {
+            return intl.formatMessage({ id: 'Off' });
+        }
+    }, [intl, previousValues]);
 
     const frequencyRegulationField = isGeneratorModification ? (
         /** wrappe with box to avoid warning */
