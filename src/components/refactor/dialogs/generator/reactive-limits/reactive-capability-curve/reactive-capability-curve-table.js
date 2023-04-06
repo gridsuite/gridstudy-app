@@ -47,7 +47,7 @@ export const ReactiveCapabilityCurveTable = ({
 
     return (
         <Grid item container spacing={2}>
-            <Grid xs={12}>
+            <Grid container>
                 <ErrorInput name={id} InputField={MidFormError} />
             </Grid>
 
