@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { sortByAlign, groupPostSort } from './sort-functions';
+import { sortByAlign } from './sort-functions';
 
 test('sort-functions.sortByAlign', () => {
     const table = [
