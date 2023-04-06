@@ -11,7 +11,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem from '@mui/lab/TreeItem';
 import { alpha, Checkbox } from '@mui/material';
-import { useCallback, useMemo, useState } from 'react';
+import {
+    forwardRef,
+    useCallback,
+    useImperativeHandle,
+    useMemo,
+    useState,
+} from 'react';
 import { styled } from '@mui/material/styles';
 import { treeItemClasses } from '@mui/lab';
 
@@ -42,180 +48,205 @@ const BorderedTreeItem = styled(TreeItem)(({ theme, root }) => {
     };
 });
 
-const CheckboxTreeview = ({
-    data: items,
-    checkAll,
-    onSelectionChanged,
-    ...rest
-}) => {
-    console.log('CheckboxTreeview re-render');
-    const initialItemStates = useMemo(() => {
-        return items.map((elem) => ({
-            id: elem.id,
-            state: checkAll ? CheckState.CHECKED : CheckState.UNCHECKED,
-        }));
-    }, [items, checkAll]);
+const CheckboxTreeview = forwardRef(
+    ({ data: items, checkAll, onSelectionChanged, ...rest }, ref) => {
+        console.log('CheckboxTreeview re-render');
+        const initialItemStates = useMemo(() => {
+            return items.map((elem) => ({
+                id: elem.id,
+                state: checkAll ? CheckState.CHECKED : CheckState.UNCHECKED,
+            }));
+        }, [items, checkAll]);
 
-    const [itemStates, setItemStates] = useState(initialItemStates);
+        const [itemStates, setItemStates] = useState(initialItemStates);
 
-    // used to reset internal state when initial data changed
-    const [prevItems, setPrevItems] = useState(items);
-    if (items !== prevItems) {
-        setPrevItems(items);
-        setItemStates(initialItemStates);
-    }
-
-    const updateItemState = useCallback((itemStates, items, onClickedId) => {
-        const getState = (itemStates, id) => {
-            return itemStates.find((elem) => elem.id === id);
-        };
-
-        const updateStateParent = (itemStates, items, childId) => {
-            const child = items.find((elem) => elem.id === childId);
-            const parent = items.find((elem) => elem.id === child.parentId);
-
-            if (!parent) return; // at root item
-
-            const childrenIds = items
-                .filter((elem) => elem.parentId === parent.id)
-                .map((elem) => elem.id);
-
-            const childrenStates = childrenIds.map((id) =>
-                getState(itemStates, id)
-            );
-
-            // recompute state of parent
-            const parentState = itemStates.find(
-                (elem) => elem.id === parent.id
-            );
-            // initial default state
-            parentState.state = CheckState.INDETERMINATE;
-            // all children checked => parent must be checked
-            if (
-                childrenStates.every(
-                    (elem) => elem.state === CheckState.CHECKED
-                )
-            ) {
-                parentState.state = CheckState.CHECKED;
-            }
-            // all children unchecked => parent must be unchecked
-            if (
-                childrenStates.every(
-                    (elem) => elem.state === CheckState.UNCHECKED
-                )
-            ) {
-                parentState.state = CheckState.UNCHECKED;
-            }
-
-            // recursive visit
-            updateStateParent(itemStates, items, parent.id);
-        };
-
-        const setState = (itemStates, items, id, newState) => {
-            itemStates.find((elem) => elem.id === id).state = newState;
-            // set all children the same state of current element
-            const children = items.filter((elem) => elem.parentId === id);
-            children.forEach((elem) =>
-                setState(itemStates, items, elem.id, newState)
-            );
-
-            // update parent's state of the current element
-            updateStateParent(itemStates, items, id);
-        };
-
-        // update item's state
-        const newItemStates = itemStates.map((elem) => ({ ...elem }));
-        // get current state
-        const currentState = getState(itemStates, onClickedId);
-        setState(
-            newItemStates,
-            items,
-            onClickedId,
-            currentState.state === CheckState.CHECKED
-                ? CheckState.UNCHECKED
-                : CheckState.CHECKED
-        );
-
-        return newItemStates;
-    }, []);
-
-    const handleItemSelect = useCallback(
-        (event, id) => {
-            event.stopPropagation();
-            const newItemStates = updateItemState(itemStates, items, id);
-            setItemStates(newItemStates);
-            if (onSelectionChanged) {
-                // compute selected items
-                const selectedItems = items.filter(
-                    (item) =>
-                        newItemStates.find((elem) => elem.id === item.id)
-                            ?.state === CheckState.CHECKED &&
-                        !items.find((elem) => elem.parentId === item.id) // no children
-                );
-                onSelectionChanged(selectedItems);
-            }
-        },
-        [itemStates, items, updateItemState]
-    );
-
-    const handleExpand = (event) => {
-        event.stopPropagation();
-    };
-
-    const getState = useCallback(
-        (id) => {
-            return itemStates.find((elem) => elem.id === id)?.state;
-        },
-        [itemStates]
-    );
-
-    // render functions (recursive rendering)
-    const renderChildren = (allItems, parentId) => {
-        const children = allItems.filter((elem) => elem.parentId === parentId);
-        return !children.length ? null : renderItems(allItems, children);
-    };
-
-    const renderItems = (allItems, itemsToRender = []) => {
-        if (!itemsToRender.length) {
-            // first level => auto lookup root items
-            itemsToRender = allItems.filter((item) => !item.parentId);
+        // used to reset internal state when initial data changed
+        const [prevItems, setPrevItems] = useState(items);
+        if (items !== prevItems) {
+            setPrevItems(items);
+            setItemStates(initialItemStates);
         }
 
-        return itemsToRender.map((elem) => (
-            <BorderedTreeItem
-                key={elem.id}
-                nodeId={elem.id}
-                onClick={handleExpand}
-                root={!elem.parentId}
-                label={
-                    <>
-                        <Checkbox
-                            checked={CheckState.CHECKED === getState(elem.id)}
-                            indeterminate={
-                                CheckState.INDETERMINATE === getState(elem.id)
-                            }
-                            onClick={(event) =>
-                                handleItemSelect(event, elem.id)
-                            }
-                        />
-                        {elem.name}
-                    </>
-                }
-            >
-                {renderChildren(allItems, elem.id)}
-            </BorderedTreeItem>
-        ));
-    };
+        const updateItemState = useCallback(
+            (itemStates, items, onClickedId) => {
+                const getState = (itemStates, id) => {
+                    return itemStates.find((elem) => elem.id === id);
+                };
 
-    return (
-        <TreeView
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpandIcon={<ChevronRightIcon />}
-            {...rest}
-        >
-            {renderItems(items)}
-        </TreeView>
-    );
-};
+                const updateStateParent = (itemStates, items, childId) => {
+                    const child = items.find((elem) => elem.id === childId);
+                    const parent = items.find(
+                        (elem) => elem.id === child.parentId
+                    );
+
+                    if (!parent) return; // at root item
+
+                    const childrenIds = items
+                        .filter((elem) => elem.parentId === parent.id)
+                        .map((elem) => elem.id);
+
+                    const childrenStates = childrenIds.map((id) =>
+                        getState(itemStates, id)
+                    );
+
+                    // recompute state of parent
+                    const parentState = itemStates.find(
+                        (elem) => elem.id === parent.id
+                    );
+                    // initial default state
+                    parentState.state = CheckState.INDETERMINATE;
+                    // all children checked => parent must be checked
+                    if (
+                        childrenStates.every(
+                            (elem) => elem.state === CheckState.CHECKED
+                        )
+                    ) {
+                        parentState.state = CheckState.CHECKED;
+                    }
+                    // all children unchecked => parent must be unchecked
+                    if (
+                        childrenStates.every(
+                            (elem) => elem.state === CheckState.UNCHECKED
+                        )
+                    ) {
+                        parentState.state = CheckState.UNCHECKED;
+                    }
+
+                    // recursive visit
+                    updateStateParent(itemStates, items, parent.id);
+                };
+
+                const setState = (itemStates, items, id, newState) => {
+                    itemStates.find((elem) => elem.id === id).state = newState;
+                    // set all children the same state of current element
+                    const children = items.filter(
+                        (elem) => elem.parentId === id
+                    );
+                    children.forEach((elem) =>
+                        setState(itemStates, items, elem.id, newState)
+                    );
+
+                    // update parent's state of the current element
+                    updateStateParent(itemStates, items, id);
+                };
+
+                // update item's state
+                const newItemStates = itemStates.map((elem) => ({ ...elem }));
+                // get current state
+                const currentState = getState(itemStates, onClickedId);
+                setState(
+                    newItemStates,
+                    items,
+                    onClickedId,
+                    currentState.state === CheckState.CHECKED
+                        ? CheckState.UNCHECKED
+                        : CheckState.CHECKED
+                );
+
+                return newItemStates;
+            },
+            []
+        );
+
+        const handleItemSelect = useCallback(
+            (event, id) => {
+                event.stopPropagation();
+                const newItemStates = updateItemState(itemStates, items, id);
+                setItemStates(newItemStates);
+                if (onSelectionChanged) {
+                    // compute selected items on newItemStates
+                    const selectedItems = items.filter(
+                        (item) =>
+                            newItemStates.find((elem) => elem.id === item.id)
+                                ?.state === CheckState.CHECKED &&
+                            !items.find((elem) => elem.parentId === item.id) // no children
+                    );
+                    onSelectionChanged(selectedItems);
+                }
+            },
+            [itemStates, items, updateItemState, onSelectionChanged]
+        );
+
+        const handleExpand = (event) => {
+            event.stopPropagation();
+        };
+
+        const getState = useCallback(
+            (id) => {
+                return itemStates.find((elem) => elem.id === id)?.state;
+            },
+            [itemStates]
+        );
+
+        // expose some interfaces for the component by using ref
+        useImperativeHandle(
+            ref,
+            () => ({
+                api: {
+                    getSelectedItems: () =>
+                        items.filter(
+                            (item) =>
+                                getState(item.id) === CheckState.CHECKED &&
+                                !items.find((elem) => elem.parentId === item.id) // no children
+                        ),
+                },
+            }),
+            [items, getState]
+        );
+
+        // render functions (recursive rendering)
+        const renderChildren = (allItems, parentId) => {
+            const children = allItems.filter(
+                (elem) => elem.parentId === parentId
+            );
+            return !children.length ? null : renderItems(allItems, children);
+        };
+
+        const renderItems = (allItems, itemsToRender = []) => {
+            if (!itemsToRender.length) {
+                // first level => auto lookup root items
+                itemsToRender = allItems.filter((item) => !item.parentId);
+            }
+
+            return itemsToRender.map((elem) => (
+                <BorderedTreeItem
+                    key={elem.id}
+                    nodeId={elem.id}
+                    onClick={handleExpand}
+                    root={!elem.parentId}
+                    label={
+                        <>
+                            <Checkbox
+                                checked={
+                                    CheckState.CHECKED === getState(elem.id)
+                                }
+                                indeterminate={
+                                    CheckState.INDETERMINATE ===
+                                    getState(elem.id)
+                                }
+                                onClick={(event) =>
+                                    handleItemSelect(event, elem.id)
+                                }
+                            />
+                            {elem.name}
+                        </>
+                    }
+                >
+                    {renderChildren(allItems, elem.id)}
+                </BorderedTreeItem>
+            ));
+        };
+
+        return (
+            <TreeView
+                defaultCollapseIcon={<ExpandMoreIcon />}
+                defaultExpandIcon={<ChevronRightIcon />}
+                {...rest}
+            >
+                {renderItems(items)}
+            </TreeView>
+        );
+    }
+);
 
 export default CheckboxTreeview;

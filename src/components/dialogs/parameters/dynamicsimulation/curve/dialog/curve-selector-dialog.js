@@ -13,7 +13,7 @@ import {
     Grid,
     Typography,
 } from '@mui/material';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useStyles } from '../../../parameters';
 import CurveSelector from './curve-selector';
@@ -26,6 +26,10 @@ import { useTheme } from '@mui/styles';
 const CurveSelectorDialog = ({ open, onClose, onSave }) => {
     const classes = useStyles();
     const theme = useTheme();
+
+    const selectorRef = useRef();
+    const previewRef = useRef();
+
     const handleClose = useCallback(() => {
         console.log('handleClose is called');
         onClose();
@@ -40,6 +44,32 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
 
     const handleAddButton = useCallback(() => {
         console.log('handleAddButton called');
+        const selectedEquipments =
+            selectorRef.current.api.getSelectedEquipments();
+        console.log('selectedEquipments retrieved', selectedEquipments);
+
+        const selectedVariables =
+            selectorRef.current.api.getSelectedVariables();
+        console.log('selectedVariables retrieved', selectedVariables);
+
+        // combine between equipments and variables
+        const curves = selectedEquipments.reduce(
+            (arr, equipment) =>
+                selectedVariables.reduce(
+                    (acc, variable) => [
+                        ...acc,
+                        {
+                            equipmentId: equipment.id,
+                            equipmentName: equipment.name,
+                            variableId: variable.id,
+                            variableName: variable.name,
+                        },
+                    ],
+                    arr
+                ),
+            []
+        );
+        previewRef.current.api.addCurves(curves);
     }, []);
     const handleDeleteButton = useCallback(() => {
         console.log('handleDeleteButton called');
@@ -65,8 +95,8 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
             </DialogTitle>
             <DialogContent style={{ overflowY: 'hidden', height: '60vh' }}>
                 <Grid container maxWidth={'xl'} sx={{ height: '100%' }}>
-                    <Grid item container xs={6} spacing={theme.spacing(1)}>
-                        <CurveSelector />
+                    <Grid item container xs={8} spacing={theme.spacing(1)}>
+                        <CurveSelector ref={selectorRef} />
                     </Grid>
                     <Grid
                         item
@@ -114,7 +144,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
                         </Grid>
                     </Grid>
                     <Grid item xs>
-                        <CurvePreview />
+                        <CurvePreview ref={previewRef} />
                     </Grid>
                 </Grid>
             </DialogContent>

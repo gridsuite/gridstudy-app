@@ -9,10 +9,21 @@ import { Grid, Typography } from '@mui/material';
 import EquipmentFilter, { EQUIPMENT_TYPES } from './equipment-filter';
 import ModelFilter from './model-filter';
 import { FormattedMessage } from 'react-intl';
-import React, { useCallback, useState } from 'react';
+import React, {
+    forwardRef,
+    useCallback,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from 'react';
 import { useTheme } from '@mui/styles';
 
-const CurveSelector = (props) => {
+const CurveSelector = forwardRef((props, ref) => {
+    const theme = useTheme();
+
+    const equipmentFilterRef = useRef();
+    const modelFilterRef = useRef();
+
     const [equipmentType, setEquipmentType] = useState(
         EQUIPMENT_TYPES.GENERATOR
     );
@@ -21,7 +32,22 @@ const CurveSelector = (props) => {
         setEquipmentType(newEquipmentType);
     }, []);
 
-    const theme = useTheme();
+    // expose some interfaces for the component by using ref
+    useImperativeHandle(
+        ref,
+        () => ({
+            api: {
+                getSelectedEquipments: () => {
+                    return equipmentFilterRef.current.api.getSelectedEquipments();
+                },
+                getSelectedVariables: () => {
+                    return modelFilterRef.current.api.getSelectedVariables();
+                },
+            },
+        }),
+        []
+    );
+
     return (
         <>
             <Grid
@@ -42,6 +68,7 @@ const CurveSelector = (props) => {
                     ></FormattedMessage>
                 </Typography>
                 <EquipmentFilter
+                    ref={equipmentFilterRef}
                     equipmentType={equipmentType}
                     onChangeEquipmentType={handleChangeEquipmentType}
                 />
@@ -63,10 +90,13 @@ const CurveSelector = (props) => {
                         id={'DynamicSimulationCurveCurveFilter'}
                     ></FormattedMessage>
                 </Typography>
-                <ModelFilter equipmentType={equipmentType} />
+                <ModelFilter
+                    ref={modelFilterRef}
+                    equipmentType={equipmentType}
+                />
             </Grid>
         </>
     );
-};
+});
 
 export default CurveSelector;

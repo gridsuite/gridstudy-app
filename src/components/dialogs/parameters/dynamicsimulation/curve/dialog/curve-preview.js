@@ -7,7 +7,14 @@
 
 import clsx from 'clsx';
 import { AgGridReact } from 'ag-grid-react';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+    forwardRef,
+    useCallback,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { makeStyles, useTheme } from '@mui/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Typography } from '@mui/material';
@@ -25,33 +32,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const curves = [
-    {
-        dynamicModelId: '_GEN____6_SM',
-        dynamicModelName: 'GEN    6_SM',
-        variable: 'generator_UStatorPu',
-        variableName: 'UStatorPu',
-    },
-    {
-        dynamicModelId: '_GEN____3_SM',
-        dynamicModelName: 'GEN    3_SM',
-        variable: 'voltageRegulator_EfdPu',
-        variableName: 'Voltage Regulator EfdPu',
-    },
-    {
-        dynamicModelId: '_GEN____6_SM',
-        dynamicModelName: 'GEN    6_SM',
-        variable: 'voltageRegulator_EfdPu',
-        variableName: 'Voltage Regulator EfdPu',
-    },
-    {
-        dynamicModelId: '_LOAD___2_EC',
-        dynamicModelName: 'LOAD   2_EC',
-        variable: 'load_PPu',
-        variableName: 'PPu',
-    },
-];
-const CurvePreview = (props) => {
+const CurvePreview = forwardRef((props, ref) => {
     const intl = useIntl();
     const classes = useStyles();
     const theme = useTheme();
@@ -60,7 +41,7 @@ const CurvePreview = (props) => {
     const [rowData, setRowData] = useState([]);
     const [columnDefs, setColumnDefs] = useState([
         {
-            field: 'dynamicModelName',
+            field: 'equipmentName',
             minWidth: '80',
             headerName: intl.formatMessage({
                 id: 'DynamicSimulationCurveDynamicModelHeader',
@@ -91,13 +72,37 @@ const CurvePreview = (props) => {
         /*fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
             .then((resp) => resp.json())
             .then((data) => setRowData(data));*/
-        setRowData(curves);
+        // setRowData(curves);
     }, []);
 
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current.api.getSelectedRows();
         console.log('Number of selected row', selectedRows.length);
     }, []);
+
+    // expose some interfaces for the component by using ref
+    useImperativeHandle(
+        ref,
+        () => ({
+            api: {
+                addCurves: (curves) => {
+                    setRowData((prev) => {
+                        const notYetAddedCurves = curves.filter(
+                            (curve) =>
+                                !prev.find(
+                                    (elem) =>
+                                        elem.equipmentId ===
+                                            curve.equipmentId &&
+                                        elem.variableId === curve.variableId
+                                )
+                        );
+                        return [...prev, ...notYetAddedCurves];
+                    });
+                },
+            },
+        }),
+        []
+    );
 
     return (
         <>
@@ -119,6 +124,6 @@ const CurvePreview = (props) => {
             </div>
         </>
     );
-};
+});
 
 export default CurvePreview;
