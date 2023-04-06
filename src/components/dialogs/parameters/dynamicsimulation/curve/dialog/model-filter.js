@@ -7,13 +7,14 @@
 
 import { FormattedMessage } from 'react-intl';
 import { makeStyles, useTheme } from '@mui/styles';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import clsx from 'clsx';
 import CheckboxSelect from '../common/checkbox-select';
 import { EQUIPMENT_TYPES } from './equipment-filter';
 import CheckboxTreeview from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
+import { useSelector } from 'react-redux';
 
 // take from table models in DB dynamicmappings
 const MODELS = {
@@ -72,6 +73,15 @@ const VARIABLES = {
     },
 };
 
+// fake API fetchDynamicSimulationModelsParameters
+const fetchDynamicSimulationModelsVariables = (studyUuid, nodeUuid) => {
+    console.info(
+        `Fetching dynamic simulation models and variables sets on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    return Promise.resolve({ models: MODELS, variables: VARIABLES });
+};
+
 const flatteningObject = (variables, parentId) => {
     let result = [];
     Object.entries(variables).map(([key, value]) => {
@@ -108,29 +118,41 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ModelFilter = ({ equipmentType = EQUIPMENT_TYPES.LOAD }) => {
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+
     const classes = useStyles();
     const theme = useTheme();
 
+    const [allModels, setAllModels] = useState({});
+    const [allVariables, setAllVariables] = useState({});
+
     // --- models CheckboxSelect --- //
-    const filteredOptions = useMemo(
-        () => MODELS[equipmentType.type] ?? {},
-        [equipmentType.type]
+    const associatedModels = useMemo(
+        () => allModels[equipmentType.type] ?? {},
+        [equipmentType.type, allModels]
     );
-    const initialOptions = useMemo(
-        () => Object.keys(filteredOptions) ?? [],
-        [filteredOptions]
+    const initialSelectedModels = useMemo(
+        () => Object.keys(associatedModels) ?? [],
+        [associatedModels]
     );
 
-    const [variablesRevision, setVariablesRevision] = useState(0);
-    const [models, setModels] = useState(initialOptions);
-    const handleModelChange = useCallback((selectedOptions) => {
-        setModels(selectedOptions);
-        // to force remount component since it has internal state needed to clear
-        setVariablesRevision((prev) => ++prev);
+    // const [variablesRevision, setVariablesRevision] = useState(0);
+    const [selectedModels, setSelectedModels] = useState([]);
+    const handleModelChange = useCallback((selectedModels) => {
+        setSelectedModels(selectedModels);
     }, []);
 
+    useEffect(() => {
+        setSelectedModels(initialSelectedModels);
+    }, [initialSelectedModels]);
+
     // --- variables CheckboxTreeview --- //
-    const data = useMemo(() => flatteningObject(VARIABLES), []);
+    const data = useMemo(() => flatteningObject(allVariables), [allVariables]);
+
+    // TODO remove
+    console.log('data', data);
+
     const getRoot = useCallback(
         (item) => {
             const parent = data.find((elem) => elem.id === item.parentId);
@@ -142,15 +164,34 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPES.LOAD }) => {
         },
         [data]
     );
+
+    console.log('models', selectedModels);
     const filteredData = useMemo(
         () =>
             data.filter((elem) =>
-                models.some((model) => {
-                    return elem.id.includes(filteredOptions[model]);
+                selectedModels.some((model) => {
+                    return elem.id.includes(associatedModels[model]);
                 })
             ),
-        [data, models, filteredOptions]
+        [data, selectedModels, associatedModels]
     );
+    console.log('filteredData', filteredData);
+
+    // fetch all associated models and variables for current node and study
+    useEffect(() => {
+        setTimeout(() => {
+            fetchDynamicSimulationModelsVariables(
+                studyUuid,
+                currentNode.id
+            ).then(({ models, variables }) => {
+                setAllModels(models);
+                setAllVariables(variables);
+
+                // to force remount component since it has internal state needed to clear
+                // setVariablesRevision((prev) => ++prev);
+            });
+        }, 500);
+    }, [studyUuid, currentNode.id]);
 
     return (
         <>
@@ -165,9 +206,9 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPES.LOAD }) => {
                 </Grid>
                 <Grid item xs={6}>
                     <CheckboxSelect
-                        options={initialOptions}
-                        getOptionLabel={(value) => filteredOptions[value]}
-                        value={initialOptions}
+                        options={initialSelectedModels}
+                        getOptionLabel={(value) => associatedModels[value]}
+                        value={initialSelectedModels}
                         onChange={handleModelChange}
                     />
                 </Grid>
@@ -183,7 +224,6 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPES.LOAD }) => {
                 </Typography>
                 <div className={clsx([theme.aggrid, classes.grid])}>
                     <CheckboxTreeview
-                        key={`variables-${variablesRevision}`}
                         data={filteredData}
                         checkAll
                         sx={{

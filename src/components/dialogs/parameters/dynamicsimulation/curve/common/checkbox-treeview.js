@@ -43,14 +43,21 @@ const BorderedTreeItem = styled(TreeItem)(({ theme, root }) => {
 });
 
 export default function CheckboxTreeview({ data: items, checkAll, ...rest }) {
-    const [itemStates, setItemStates] = useState(
-        useMemo(() => {
-            return items.map((elem) => ({
-                id: elem.id,
-                state: checkAll ? CheckState.CHECKED : CheckState.UNCHECKED,
-            }));
-        }, [items, checkAll])
-    );
+    const initialItemStates = useMemo(() => {
+        return items.map((elem) => ({
+            id: elem.id,
+            state: checkAll ? CheckState.CHECKED : CheckState.UNCHECKED,
+        }));
+    }, [items, checkAll]);
+
+    const [itemStates, setItemStates] = useState(initialItemStates);
+
+    // used to reset internal state when initial data changed
+    const [prevItems, setPrevItems] = useState(items);
+    if (items !== prevItems) {
+        setPrevItems(items);
+        setItemStates(initialItemStates);
+    }
 
     const updateItemState = useCallback((itemStates, items, onClickedId) => {
         const getState = (itemStates, id) => {
@@ -141,7 +148,7 @@ export default function CheckboxTreeview({ data: items, checkAll, ...rest }) {
 
     const getState = useCallback(
         (id) => {
-            return itemStates.find((elem) => elem.id === id).state;
+            return itemStates.find((elem) => elem.id === id)?.state;
         },
         [itemStates]
     );

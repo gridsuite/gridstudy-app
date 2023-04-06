@@ -13,15 +13,12 @@ import React, { useCallback, useState } from 'react';
 import { useTheme } from '@mui/styles';
 
 const CurveSelector = (props) => {
-    const [modelFilterRevision, setModelFilterRevision] = useState(0);
     const [equipmentType, setEquipmentType] = useState(
         EQUIPMENT_TYPES.GENERATOR
     );
 
     const handleChangeEquipmentType = useCallback((newEquipmentType) => {
         setEquipmentType(newEquipmentType);
-        // to force remount component since it has internal state
-        setModelFilterRevision((prev) => ++prev);
     }, []);
 
     const theme = useTheme();
@@ -66,10 +63,7 @@ const CurveSelector = (props) => {
                         id={'DynamicSimulationCurveCurveFilter'}
                     ></FormattedMessage>
                 </Typography>
-                <ModelFilter
-                    key={`model-filter-${modelFilterRevision}`}
-                    equipmentType={equipmentType}
-                />
+                <ModelFilter equipmentType={equipmentType} />
             </Grid>
         </>
     );
