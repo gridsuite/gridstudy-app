@@ -49,7 +49,6 @@ import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
-import LineLimitsPane from './line-limits-pane/line-limits-pane';
 import LineCreationDialogTabs from './line-creation-dialog-tabs';
 import LineCharacteristicsPane from './line-characteristics-pane/line-characteristics-pane';
 import {
@@ -58,17 +57,18 @@ import {
     getCharacteristicsValidationSchema,
 } from './line-characteristics-pane/line-characteristics-pane-utils';
 import {
-    getLimitsEmptyFormData,
-    getLimitsFormData,
-    getLimitsValidationSchema,
-} from './line-limits-pane/line-limits-pane-utils';
-import {
     getHeaderEmptyFormData,
     getHeaderFormData,
     getHeaderValidationSchema,
 } from './line-creation-dialog-utils';
 import { addSelectedFieldToRows } from '../../../util/dnd-table/dnd-table';
 import TextInput from '../../rhf-inputs/text-input';
+import LimitsPane from '../limits/limits-pane';
+import {
+    getLimitsEmptyFormData,
+    getLimitsFormData,
+    getLimitsValidationSchema,
+} from '../limits/limits-pane-utils';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -151,7 +151,6 @@ const LineCreationDialog = ({
                                 busbarSectionId: line.busOrBusbarSectionId1,
                                 connectionDirection: line.connectionDirection1,
                                 connectionName: line.connectionName1,
-                                connectionPosition: line.connectionPosition1,
                             },
                             CONNECTIVITY_1
                         )),
@@ -162,7 +161,6 @@ const LineCreationDialog = ({
                                 busbarSectionId: line.busOrBusbarSectionId2,
                                 connectionDirection: line.connectionDirection2,
                                 connectionName: line.connectionName2,
-                                connectionPosition: line.connectionPosition2,
                             },
                             CONNECTIVITY_2
                         )),
@@ -403,7 +401,7 @@ const LineCreationDialog = ({
                     hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB}
                     p={1}
                 >
-                    <LineLimitsPane />
+                    <LimitsPane />
                 </Box>
 
                 <EquipmentSearchDialog
