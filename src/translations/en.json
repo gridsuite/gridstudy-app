@@ -198,6 +198,8 @@
     "DynamicSimulationAdd": "Add",
     "DynamicSimulationClose": "Close",
     "DynamicSimulationFetchVoltageLevelError": "An error occurred while fetching voltage levels",
+    "DynamicSimulationFetchSubstationError": "An error occurred while fetching substations",
+    "DynamicSimulationFetchEquipmentError": "An error occurred while fetching equipments",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",

@@ -198,7 +198,8 @@
     "DynamicSimulationAdd": "Ajouter",
     "DynamicSimulationClose": "Fermer",
     "DynamicSimulationFetchVoltageLevelError": "Une erreur est survenue lors du chargement des postes",
-
+    "DynamicSimulationFetchSubstationError": "Une erreur est survenue lors du chargement des sites",
+    "DynamicSimulationFetchEquipmentError": "Une erreur est survenue lors du chargement des ouvrages",
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
