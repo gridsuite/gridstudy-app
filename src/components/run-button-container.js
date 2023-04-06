@@ -154,6 +154,7 @@ export function RunButtonContainer({
         shortCircuitStatus,
         dynamicSimulationStatus,
         securityAnalysisStatus,
+        currentNode,
     ]);
 
     const ACTION_ON_RUNNABLES = {
