@@ -121,10 +121,6 @@ const VoltageLevelCreationDialog = ({
     const { reset } = methods;
     const intl = useIntl();
 
-    const data = methods.watch();
-    useEffect(() => {
-        console.log(data);
-    }, [data]);
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
             reset({
