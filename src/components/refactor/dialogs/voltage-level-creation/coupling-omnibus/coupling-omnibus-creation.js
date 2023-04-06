@@ -8,16 +8,12 @@
 import { gridItem } from 'components/dialogs/dialogUtils';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
 import {
-    BUS_BAR_SECTIONS_OPTIONS,
     BUS_BAR_SECTION_ID1,
     BUS_BAR_SECTION_ID2,
     COUPLING_OMNIBUS,
 } from 'components/refactor/utils/field-constants';
-import { useFormContext } from 'react-hook-form';
 
-export const CouplingOmnibusCreation = ({ index }) => {
-    const { getValues } = useFormContext();
-    const sectionOptions = getValues(BUS_BAR_SECTIONS_OPTIONS);
+export const CouplingOmnibusCreation = ({ index, sectionOptions }) => {
     const busBarSectionId1Field = (
         <AutocompleteInput
             allowNewValue

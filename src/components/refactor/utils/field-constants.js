@@ -139,7 +139,6 @@ export const SECTION_COUNT = 'sectionCount';
 export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
 export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
-export const BUS_BAR_SECTIONS_OPTIONS = 'busbarSectionsOptions';
 // dnd table
 export const SELECTED = 'selected';
 

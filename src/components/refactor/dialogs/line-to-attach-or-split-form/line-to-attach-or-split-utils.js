@@ -41,20 +41,3 @@ export const getLineToAttachOrSplitFormData = ({
         }),
     };
 };
-
-export const buildNewBusbarSections = (
-    equipmentId,
-    sectionCount,
-    busbarCount
-) => {
-    const newBusbarSections = [];
-    for (let i = 0; i < sectionCount; i++) {
-        for (let j = 0; j < busbarCount; j++) {
-            newBusbarSections.push({
-                id: equipmentId + '_' + (j + 1) + '_' + (i + 1),
-                name: '',
-            });
-        }
-    }
-    return newBusbarSections.sort((a, b) => a?.id?.localeCompare(b?.id));
-};

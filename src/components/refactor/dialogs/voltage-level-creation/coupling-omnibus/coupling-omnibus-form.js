@@ -8,7 +8,6 @@
 import ExpandableInput from 'components/refactor/rhf-inputs/expandable-input';
 import {
     BUS_BAR_COUNT,
-    BUS_BAR_SECTIONS_OPTIONS,
     BUS_BAR_SECTION_ID1,
     BUS_BAR_SECTION_ID2,
     COUPLING_OMNIBUS,
@@ -18,6 +17,7 @@ import {
 import { CouplingOmnibusCreation } from './coupling-omnibus-creation';
 import { useEffect, useMemo, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { buildNewBusbarSections } from 'components/refactor/utils/utils';
 
 export const CouplingOmnibusForm = () => {
     const couplingOmnibusCreation = {
@@ -25,47 +25,39 @@ export const CouplingOmnibusForm = () => {
         [BUS_BAR_SECTION_ID2]: null,
     };
 
-    const voltageLevelID = useWatch({ name: EQUIPMENT_ID });
-    const busBarCount = useWatch({ name: BUS_BAR_COUNT });
-    const sectionCount = useWatch({ name: SECTION_COUNT });
+    const watchVoltageLevelID = useWatch({ name: EQUIPMENT_ID });
+    const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
+    const watchSectionCount = useWatch({ name: SECTION_COUNT });
 
     const sectionOptions = useMemo(() => {
-        const options = [];
-        if (voltageLevelID && busBarCount && sectionCount) {
-            for (let i = 0; i < sectionCount; i++) {
-                for (let j = 0; j < busBarCount; j++) {
-                    options.push(
-                        voltageLevelID + '_' + (j + 1) + '_' + (i + 1)
-                    );
-                }
-            }
+        if (watchVoltageLevelID && watchBusBarCount && watchSectionCount) {
+            return buildNewBusbarSections(
+                watchVoltageLevelID,
+                watchBusBarCount,
+                watchSectionCount
+            ).map((section) => {
+                return section.id;
+            });
         }
-        return options.sort((a, b) => a.localeCompare(b));
-    }, [voltageLevelID, busBarCount, sectionCount]);
+        return [];
+    }, [watchVoltageLevelID, watchBusBarCount, watchSectionCount]);
 
     const sectionOptionsRef = useRef(sectionOptions);
 
-    const { setValue, getValues } = useFormContext();
+    const { setValue } = useFormContext();
 
     useEffect(() => {
         if (sectionOptionsRef.current !== sectionOptions) {
             setValue(COUPLING_OMNIBUS, []);
         }
         sectionOptionsRef.current = sectionOptions;
-        setValue(BUS_BAR_SECTIONS_OPTIONS, sectionOptions);
-    }, [
-        voltageLevelID,
-        busBarCount,
-        sectionCount,
-        sectionOptions,
-        setValue,
-        getValues,
-    ]);
+    }, [sectionOptions, setValue]);
 
     return (
         <ExpandableInput
             name={COUPLING_OMNIBUS}
             Field={CouplingOmnibusCreation}
+            fieldProps={{ sectionOptions }}
             addButtonLabel={'AddCoupling_Omnibus'}
             initialValue={couplingOmnibusCreation}
         />

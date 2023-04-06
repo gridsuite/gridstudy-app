@@ -36,11 +36,11 @@ import {
 import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
 import { MODIFICATION_TYPES } from 'components/util/modification-type';
 import {
-    buildNewBusbarSections,
     getLineToAttachOrSplitEmptyFormData,
     getLineToAttachOrSplitFormData,
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
+import { buildNewBusbarSections } from 'components/refactor/utils/utils';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -120,12 +120,14 @@ const LineAttachToVoltageLevelDialog = ({
             });
             setAttachmentLine(lineAttach?.attachmentLine);
             const newVoltageLevel = lineAttach?.mayNewVoltageLevelInfos;
-            newVoltageLevel.busbarSections = buildNewBusbarSections(
-                lineAttach?.mayNewVoltageLevelInfos?.equipmentId,
-                lineAttach?.mayNewVoltageLevelInfos?.sectionCount,
-                lineAttach?.mayNewVoltageLevelInfos?.busbarCount
-            );
-            setNewVoltageLevel(lineAttach?.mayNewVoltageLevelInfos);
+            if (newVoltageLevel) {
+                newVoltageLevel.busbarSections = buildNewBusbarSections(
+                    lineAttach?.mayNewVoltageLevelInfos?.equipmentId,
+                    lineAttach?.mayNewVoltageLevelInfos?.sectionCount,
+                    lineAttach?.mayNewVoltageLevelInfos?.busbarCount
+                );
+                setNewVoltageLevel(newVoltageLevel);
+            }
         },
         [reset]
     );

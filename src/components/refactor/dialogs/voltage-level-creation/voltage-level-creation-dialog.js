@@ -12,7 +12,6 @@ import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import {
     BUS_BAR_COUNT,
-    BUS_BAR_SECTIONS_OPTIONS,
     BUS_BAR_SECTION_ID1,
     BUS_BAR_SECTION_ID2,
     COUPLING_OMNIBUS,
@@ -57,34 +56,36 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [SUBSTATION_ID]: null,
-    [NOMINAL_VOLTAGE]: '',
-    [LOW_VOLTAGE_LIMIT]: '',
-    [HIGH_VOLTAGE_LIMIT]: '',
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: '',
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: '',
+    [NOMINAL_VOLTAGE]: null,
+    [LOW_VOLTAGE_LIMIT]: null,
+    [HIGH_VOLTAGE_LIMIT]: null,
+    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
     [BUS_BAR_COUNT]: 1,
     [SECTION_COUNT]: 1,
     [SWITCHES_BETWEEN_SECTIONS]: '',
     [COUPLING_OMNIBUS]: [],
     [SWITCH_KINDS]: [],
-    [BUS_BAR_SECTIONS_OPTIONS]: [],
 };
 
 const schema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().required(),
-    [EQUIPMENT_NAME]: yup.string(),
+    [EQUIPMENT_NAME]: yup.string().nullable(),
     [SUBSTATION_ID]: yup.string().nullable().required(),
-    [NOMINAL_VOLTAGE]: yup.string().required(),
-    [LOW_VOLTAGE_LIMIT]: yup.string(),
-    [HIGH_VOLTAGE_LIMIT]: yup.string(),
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.string(),
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.string(),
+    [NOMINAL_VOLTAGE]: yup.number().nullable().required(),
+    [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
+    [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
+    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.number().nullable(),
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.number().nullable(),
     [BUS_BAR_COUNT]: yup.number().min(1).nullable().required(),
     [SECTION_COUNT]: yup.number().min(1).nullable().required(),
-    [SWITCHES_BETWEEN_SECTIONS]: yup.string().when([SECTION_COUNT], {
-        is: (sectionCount) => sectionCount > 1,
-        then: (schema) => schema.required(),
-    }),
+    [SWITCHES_BETWEEN_SECTIONS]: yup
+        .string()
+        .nullable()
+        .when([SECTION_COUNT], {
+            is: (sectionCount) => sectionCount > 1,
+            then: (schema) => schema.required(),
+        }),
     [COUPLING_OMNIBUS]: yup
         .array()
         .of(
@@ -120,6 +121,10 @@ const VoltageLevelCreationDialog = ({
     const { reset } = methods;
     const intl = useIntl();
 
+    const data = methods.watch();
+    useEffect(() => {
+        console.log(data);
+    }, [data]);
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
             reset({
@@ -130,8 +135,12 @@ const VoltageLevelCreationDialog = ({
                     voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
                 [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
                 [NOMINAL_VOLTAGE]: voltageLevel[NOMINAL_VOLTAGE],
-                [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
-                [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
+                [LOW_VOLTAGE_LIMIT]: isNaN(voltageLevel[LOW_VOLTAGE_LIMIT])
+                    ? null
+                    : voltageLevel[LOW_VOLTAGE_LIMIT],
+                [HIGH_VOLTAGE_LIMIT]: isNaN(voltageLevel[HIGH_VOLTAGE_LIMIT])
+                    ? null
+                    : voltageLevel[HIGH_VOLTAGE_LIMIT],
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
                     voltageLevel.ipMin
                 ),

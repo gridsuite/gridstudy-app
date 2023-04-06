@@ -32,5 +32,7 @@ export const roundToDefaultPrecision = (num) =>
 
 export const unitToMicroUnit = (num) => roundToDefaultPrecision(num * 1e6);
 export const microUnitToUnit = (num) => roundToDefaultPrecision(num / 1e6);
-export const kiloUnitToUnit = (num) => roundToDefaultPrecision(num * 1e3);
-export const unitToKiloUnit = (num) => roundToDefaultPrecision(num / 1e3);
+export const kiloUnitToUnit = (num) =>
+    num ? roundToDefaultPrecision(num * 1e3) : undefined;
+export const unitToKiloUnit = (num) =>
+    num ? roundToDefaultPrecision(num / 1e3) : undefined;

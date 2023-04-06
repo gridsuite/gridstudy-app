@@ -35,11 +35,10 @@ export const SwitchesBetweenSections = () => {
     }, []);
 
     const handleClickOpenSwitchesPane = useCallback(() => {
-        const sectionCount = getValues(SECTION_COUNT);
         if (sectionCount > 1) {
             setOpenCreateSwitchesDialog(true);
         }
-    }, [getValues]);
+    }, [sectionCount]);
 
     const intl = useIntl();
     const handleCreateSwitchesDialog = useCallback(
