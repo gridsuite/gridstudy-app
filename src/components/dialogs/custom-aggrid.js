@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import React from 'react';
 import { makeStyles, useTheme } from '@mui/styles';
 import { AgGridReact } from 'ag-grid-react';
 import clsx from 'clsx';
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const CustomAGGrid = (props) => {
+export const CustomAGGrid = React.forwardRef((props, ref) => {
     const theme = useTheme();
     const classes = useStyles();
     const intl = useIntl();
@@ -51,7 +52,7 @@ export const CustomAGGrid = (props) => {
 
     return (
         <div className={clsx([theme.aggrid, classes.grid])}>
-            <AgGridReact getLocaleText={getLocaleText} {...props} />
+            <AgGridReact ref={ref} getLocaleText={getLocaleText} {...props} />
         </div>
     );
-};
+});
