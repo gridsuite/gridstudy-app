@@ -279,20 +279,14 @@ const GeneratorModificationDialog = ({
     const emptyFormAndFormatReactiveCapabilityCurveTable = useCallback(
         (value, equipmentId) => {
             //creating empty table depending on existing generator
-            let reactiveCapabilityCurvePoints = [
-                getRowEmptyFormData(),
-                getRowEmptyFormData(),
-            ];
-            if (value?.reactiveCapabilityCurvePoints) {
-                reactiveCapabilityCurvePoints = [];
-            }
-            value?.reactiveCapabilityCurvePoints?.forEach((element) => {
-                reactiveCapabilityCurvePoints.push({
-                    [P]: null,
-                    [Q_MIN_P]: null,
-                    [Q_MAX_P]: null,
-                });
-            });
+            const reactiveCapabilityCurvePoints =
+                value?.reactiveCapabilityCurvePoints
+                    ? value?.reactiveCapabilityCurvePoints.map((val) => ({
+                          [P]: null,
+                          [Q_MIN_P]: null,
+                          [Q_MAX_P]: null,
+                      }))
+                    : [getRowEmptyFormData(), getRowEmptyFormData()];
             // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
             setValuesAndEmptyOthers(
                 {
@@ -396,12 +390,12 @@ const GeneratorModificationDialog = ({
     const calculateCurvePointsToStore = useCallback(
         (reactiveCapabilityCurve) => {
             if (
-                reactiveCapabilityCurve.filter(
+                reactiveCapabilityCurve.every(
                     (point) =>
                         point.p == null &&
                         point.qminP == null &&
                         point.qmaxP == null
-                ).length === reactiveCapabilityCurve?.length
+                )
             ) {
                 return null;
             } else {
@@ -446,8 +440,8 @@ const GeneratorModificationDialog = ({
         if (generatorToModify?.voltageRegulationOn) {
             return generatorToModify?.regulatingTerminalVlId ||
                 generatorToModify?.regulatingTerminalConnectableId
-                ? REGULATION_TYPES.DISTANT
-                : REGULATION_TYPES.LOCAL;
+                ? REGULATION_TYPES.DISTANT.id
+                : REGULATION_TYPES.LOCAL.id;
         } else {
             return null;
         }

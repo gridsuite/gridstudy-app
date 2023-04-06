@@ -12,7 +12,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
     gridItem,
@@ -32,29 +32,35 @@ const VoltageRegulation = ({
     previousValues,
 }) => {
     const intl = useIntl();
-    function getPreviousRegulationType(previousValues) {
-        if (previousValues?.voltageRegulatorOn) {
-            return previousValues?.regulatingTerminalVlId ||
-                previousValues?.regulatingTerminalConnectableId
-                ? intl.formatMessage({
-                      id: REGULATION_TYPES.DISTANT.label,
-                  })
-                : intl.formatMessage({
-                      id: REGULATION_TYPES.LOCAL.label,
-                  });
-        } else {
-            return null;
-        }
-    }
+    const getPreviousRegulationType = useCallback(
+        (previousValues) => {
+            if (previousValues?.voltageRegulatorOn) {
+                return previousValues?.regulatingTerminalVlId ||
+                    previousValues?.regulatingTerminalConnectableId
+                    ? intl.formatMessage({
+                          id: REGULATION_TYPES.DISTANT.label,
+                      })
+                    : intl.formatMessage({
+                          id: REGULATION_TYPES.LOCAL.label,
+                      });
+            } else {
+                return null;
+            }
+        },
+        [intl]
+    );
 
     const voltageRegulationType = useWatch({
         name: VOLTAGE_REGULATION_TYPE,
     });
 
-    const isDistantRegulation =
-        voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
-        getPreviousRegulationType(previousValues) ===
-            REGULATION_TYPES.DISTANT.label;
+    const isDistantRegulation = useMemo(() => {
+        return (
+            voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
+            getPreviousRegulationType(previousValues) ===
+                REGULATION_TYPES.DISTANT.label
+        );
+    }, [getPreviousRegulationType, previousValues, voltageRegulationType]);
 
     const voltageRegulationTypeField = (
         <SelectInput

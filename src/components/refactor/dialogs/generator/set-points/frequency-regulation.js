@@ -12,13 +12,14 @@ import {
 } from '../../../../dialogs/dialogUtils';
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from '../../../utils/field-constants';
-import React from 'react';
+import React, { useMemo } from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import SwitchInput from '../../../rhf-inputs/booleans/switch-input';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/refactor/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
+import { getPreviousBooleanValue } from './set-points-utils';
 
 const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
     const intl = useIntl();
@@ -26,20 +27,21 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
         name: FREQUENCY_REGULATION,
     });
 
-    const isFrequencyRegulationOn =
-        watchFrequencyRegulation === true ||
-        (watchFrequencyRegulation === null &&
-            previousValues?.activePowerControlOn === true);
+    const isFrequencyRegulationOn = useMemo(
+        () =>
+            watchFrequencyRegulation === true ||
+            (watchFrequencyRegulation === null &&
+                previousValues?.activePowerControlOn === true),
+        [watchFrequencyRegulation, previousValues?.activePowerControlOn]
+    );
 
-    let previousFrequencyRegulation = '';
-    if (previousValues?.activePowerControlOn) {
-        previousFrequencyRegulation = intl.formatMessage({ id: 'On' });
-    } else if (
-        previousValues?.activePowerControlOn === false ||
-        (previousValues && previousValues.activePowerControlOn === undefined)
-    ) {
-        previousFrequencyRegulation = intl.formatMessage({ id: 'Off' });
-    }
+    const previousFrequencyRegulation = useMemo(() => {
+        const prevValue = getPreviousBooleanValue(
+            previousValues?.activePowerControlOn
+        );
+        if (prevValue === null) return '';
+        return intl.formatMessage({ id: prevValue });
+    }, [intl, previousValues?.activePowerControlOn]);
 
     const frequencyRegulationField = isGeneratorModification ? (
         /** wrappe with box to avoid warning */
