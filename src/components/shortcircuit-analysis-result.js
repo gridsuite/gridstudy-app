@@ -134,6 +134,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [intl]
     );
 
+    //TODO: this method does not work in the case of multiple limit violation, this needs to be fixed
     const handlePostSortRows = useCallback((params) => {
         const rows = params.nodes;
         Object.assign(
