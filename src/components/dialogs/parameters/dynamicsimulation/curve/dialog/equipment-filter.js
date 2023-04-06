@@ -69,7 +69,7 @@ const EquipmentFilter = ({
     const intl = useIntl();
     const classes = useStyles();
     const theme = useTheme();
-    const gridRef = useRef();
+    const equipmentsRef = useRef();
 
     // --- Equipment types --- //
     const [equipmentType, setEquipmentType] = useState(initialEquipmentType);
@@ -318,7 +318,7 @@ const EquipmentFilter = ({
     useEffect(() => {
         if (gridReady && voltageLevelsFiltersReady && substationsFiltersReady) {
             loadFilteredEquipments().then((equipments) => {
-                setRowData(equipments);
+                setEquipmentRowData(equipments);
             });
         }
     }, [
@@ -329,7 +329,7 @@ const EquipmentFilter = ({
     ]);
 
     // grid configuration
-    const [rowData, setRowData] = useState([]);
+    const [equipmentRowData, setEquipmentRowData] = useState([]);
     const [columnDefs, setColumnDefs] = useState([
         {
             field: 'name',
@@ -359,8 +359,8 @@ const EquipmentFilter = ({
         setGridReady(true);
     }, []);
 
-    const onSelectionChanged = useCallback(() => {
-        const selectedRows = gridRef.current.api.getSelectedRows();
+    const handleEquipmentSelectionChanged = useCallback(() => {
+        const selectedRows = equipmentsRef.current.api.getSelectedRows();
         console.log('Number of selected row', selectedRows.length);
     }, []);
 
@@ -476,13 +476,13 @@ const EquipmentFilter = ({
                 </Typography>
                 <div className={clsx([theme.aggrid, classes.grid])}>
                     <AgGridReact
-                        ref={gridRef}
-                        rowData={rowData}
+                        ref={equipmentsRef}
+                        rowData={equipmentRowData}
                         columnDefs={columnDefs}
                         defaultColDef={defaultColDef}
                         rowSelection={'multiple'}
                         onGridReady={onGridReady}
-                        onSelectionChanged={onSelectionChanged}
+                        onSelectionChanged={handleEquipmentSelectionChanged}
                     ></AgGridReact>
                 </div>
             </Grid>

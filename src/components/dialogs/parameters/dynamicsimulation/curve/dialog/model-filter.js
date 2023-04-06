@@ -148,34 +148,25 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPES.LOAD }) => {
     }, [initialSelectedModels]);
 
     // --- variables CheckboxTreeview --- //
-    const data = useMemo(() => flatteningObject(allVariables), [allVariables]);
-
-    // TODO remove
-    console.log('data', data);
-
-    const getRoot = useCallback(
-        (item) => {
-            const parent = data.find((elem) => elem.id === item.parentId);
-            if (parent) {
-                return getRoot(parent);
-            } else {
-                return item;
-            }
-        },
-        [data]
+    const variables = useMemo(
+        () => flatteningObject(allVariables),
+        [allVariables]
     );
 
+    // TODO remove
+    console.log('variables', variables);
+
     console.log('models', selectedModels);
-    const filteredData = useMemo(
+    const filteredVariables = useMemo(
         () =>
-            data.filter((elem) =>
+            variables.filter((elem) =>
                 selectedModels.some((model) => {
                     return elem.id.includes(associatedModels[model]);
                 })
             ),
-        [data, selectedModels, associatedModels]
+        [variables, selectedModels, associatedModels]
     );
-    console.log('filteredData', filteredData);
+    console.log('filteredVariables', filteredVariables);
 
     // fetch all associated models and variables for current node and study
     useEffect(() => {
@@ -193,9 +184,14 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPES.LOAD }) => {
         }, 500);
     }, [studyUuid, currentNode.id]);
 
+    const handleVariableSelectionChanged = useCallback((selectedItems) => {
+        const selectedVariables = [...selectedItems];
+        console.log('Items selected', selectedVariables);
+    }, []);
+
     return (
         <>
-            {/* Equipment type */}
+            {/* Associated models */}
             <Grid item container sx={{ width: '100%' }}>
                 <Grid item xs={6}>
                     <Typography>
@@ -213,6 +209,7 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPES.LOAD }) => {
                     />
                 </Grid>
             </Grid>
+            {/* Variables (also called parameters in dynamic mapping) */}
             <Grid item sx={{ width: '100%' }}>
                 <Typography
                     sx={{ marginBottom: theme.spacing(1) }}
@@ -224,7 +221,7 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPES.LOAD }) => {
                 </Typography>
                 <div className={clsx([theme.aggrid, classes.grid])}>
                     <CheckboxTreeview
-                        data={filteredData}
+                        data={filteredVariables}
                         checkAll
                         sx={{
                             height: '480px',
@@ -232,6 +229,7 @@ const ModelFilter = ({ equipmentType = EQUIPMENT_TYPES.LOAD }) => {
                             flexGrow: 1,
                             overflow: 'auto',
                         }}
+                        onSelectionChanged={handleVariableSelectionChanged}
                     />
                 </div>
             </Grid>

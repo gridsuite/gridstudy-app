@@ -42,7 +42,13 @@ const BorderedTreeItem = styled(TreeItem)(({ theme, root }) => {
     };
 });
 
-export default function CheckboxTreeview({ data: items, checkAll, ...rest }) {
+const CheckboxTreeview = ({
+    data: items,
+    checkAll,
+    onSelectionChanged,
+    ...rest
+}) => {
+    console.log('CheckboxTreeview re-render');
     const initialItemStates = useMemo(() => {
         return items.map((elem) => ({
             id: elem.id,
@@ -138,6 +144,16 @@ export default function CheckboxTreeview({ data: items, checkAll, ...rest }) {
             event.stopPropagation();
             const newItemStates = updateItemState(itemStates, items, id);
             setItemStates(newItemStates);
+            if (onSelectionChanged) {
+                // compute selected items
+                const selectedItems = items.filter(
+                    (item) =>
+                        newItemStates.find((elem) => elem.id === item.id)
+                            ?.state === CheckState.CHECKED &&
+                        !items.find((elem) => elem.parentId === item.id) // no children
+                );
+                onSelectionChanged(selectedItems);
+            }
         },
         [itemStates, items, updateItemState]
     );
@@ -153,6 +169,7 @@ export default function CheckboxTreeview({ data: items, checkAll, ...rest }) {
         [itemStates]
     );
 
+    // render functions (recursive rendering)
     const renderChildren = (allItems, parentId) => {
         const children = allItems.filter((elem) => elem.parentId === parentId);
         return !children.length ? null : renderItems(allItems, children);
@@ -199,4 +216,6 @@ export default function CheckboxTreeview({ data: items, checkAll, ...rest }) {
             {renderItems(items)}
         </TreeView>
     );
-}
+};
+
+export default CheckboxTreeview;
