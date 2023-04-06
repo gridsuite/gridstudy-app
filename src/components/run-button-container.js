@@ -101,35 +101,30 @@ export function RunButtonContainer({
             ranLoadflow &&
             studyUpdatedForce?.eventData?.headers?.updateType === 'loadflow'
         ) {
-            setLoadFlowStatusState(loadFlowStatus);
             dispatch(addLoadflowNotif());
         } else if (
             ranSA &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'securityAnalysisResult'
         ) {
-            setSecurityAnalysisStatusState(securityAnalysisStatus);
             dispatch(addSANotif());
         } else if (
             ranSensi &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'sensitivityAnalysisResult'
         ) {
-            setSensiStatusState(sensiStatus);
             dispatch(addSensiNotif());
         } else if (
             ranShortCircuit &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'shortCircuitAnalysisResult'
         ) {
-            setShortCircuitStatusState(shortCircuitStatus);
             dispatch(addShortCircuitNotif());
         } else if (
             ranDynamicSimulation &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'dynamicSimulationResult'
         ) {
-            setDynamicSimulationStatusState(dynamicSimulationStatus);
             dispatch(addDynamicSimulationNotif());
         }
     }, [
@@ -140,6 +135,20 @@ export function RunButtonContainer({
         ranSensi,
         ranShortCircuit,
         ranDynamicSimulation,
+        loadFlowStatus,
+        sensiStatus,
+        shortCircuitStatus,
+        dynamicSimulationStatus,
+        securityAnalysisStatus,
+    ]);
+
+    useEffect(() => {
+        setLoadFlowStatusState(loadFlowStatus);
+        setSecurityAnalysisStatusState(securityAnalysisStatus);
+        setSensiStatusState(sensiStatus);
+        setShortCircuitStatusState(shortCircuitStatus);
+        setDynamicSimulationStatusState(dynamicSimulationStatus);
+    }, [
         loadFlowStatus,
         sensiStatus,
         shortCircuitStatus,
@@ -290,22 +299,6 @@ export function RunButtonContainer({
     const getRunningText = (runnableName, runnableStatus) => {
         return runnableName;
     };
-
-    useEffect(() => {
-        setLoadFlowStatusState(loadFlowStatus);
-    }, [loadFlowStatus]);
-    useEffect(() => {
-        setSensiStatusState(sensiStatus);
-    }, [sensiStatus]);
-    useEffect(() => {
-        setShortCircuitStatusState(shortCircuitStatus);
-    }, [shortCircuitStatus]);
-    useEffect(() => {
-        setSecurityAnalysisStatusState(securityAnalysisStatus);
-    }, [securityAnalysisStatus]);
-    useEffect(() => {
-        setDynamicSimulationStatusState(dynamicSimulationStatus);
-    }, [dynamicSimulationStatus]);
 
     const runnables = useMemo(() => {
         let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];
