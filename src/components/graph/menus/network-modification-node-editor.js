@@ -61,6 +61,7 @@ import DeleteAttachingLineDialog from 'components/refactor/dialogs/delete-attach
 import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 import GeneratorScalingDialog from 'components/refactor/dialogs/generator-scaling/generator-scaling-dialog';
 import SubstationCreationDialog from 'components/refactor/dialogs/substation-creation/substation-creation-dialog';
+import SubstationModificationDialog from 'components/refactor/dialogs/substation-modification/substation-modification-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -269,6 +270,11 @@ const NetworkModificationNodeEditor = () => {
         SUBSTATION_CREATION: {
             label: 'CreateSubstation',
             dialog: () => adapt(SubstationCreationDialog),
+            icon: <AddIcon />,
+        },
+        SUBSTATION_MODIFICATION: {
+            label: 'ModifySubstation',
+            dialog: () => adapt(SubstationModificationDialog),
             icon: <AddIcon />,
         },
         VOLTAGE_LEVEL_CREATION: {
