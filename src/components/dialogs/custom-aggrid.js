@@ -14,11 +14,23 @@ import { useIntl } from 'react-intl';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     grid: {
         width: 'auto',
         height: '100%',
         position: 'relative',
+
+        //overrides the default computed max heigt for ag grid default selector editor to make it more usable
+        //can be removed if a custom selector editor is implemented
+        '& .ag-select-list': {
+            maxHeight: '300px !important',
+        },
+
+        //allows to hide the scrollbar in the pinned rows section as it is unecessary to our implementation
+        '& .ag-body-horizontal-scroll:not(.ag-scrollbar-invisible) .ag-horizontal-left-spacer:not(.ag-scroller-corner)':
+            {
+                visibility: 'hidden',
+            },
     },
 }));
 

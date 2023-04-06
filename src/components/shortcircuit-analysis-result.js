@@ -8,7 +8,6 @@ import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { groupPostSort } from './util/sort-functions';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
 
@@ -122,20 +121,11 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 rows.push({
                     connectableId: fr.connectableId,
                     current: fr.current,
-                    linkedElementId: fault.elementId,
                 });
             });
         });
         return rows;
     }
-
-    const handlePostSortRows = useCallback((params) => {
-        const rows = params.nodes;
-        Object.assign(
-            rows,
-            groupPostSort(rows, 'elementId', 'linkedElementId')
-        );
-    }, []);
 
     const renderResult = () => {
         const rows = flattenResult(result);
@@ -145,9 +135,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             shortCircuitNotif && (
                 <CustomAGGrid
                     rowData={rows}
-                    defaultColDef={{ sortable: true }}
                     columnDefs={columns}
-                    postSortRows={handlePostSortRows}
                     getRowStyle={getRowStyle}
                 />
             )
