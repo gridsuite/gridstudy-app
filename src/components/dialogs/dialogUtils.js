@@ -87,6 +87,12 @@ export const AmpereAdornment = {
     position: 'end',
     text: 'A',
 };
+
+export const KiloAmpereAdornment = {
+    position: 'end',
+    text: 'kA',
+};
+
 export const ActivePowerAdornment = {
     position: 'end',
     text: 'MW',
