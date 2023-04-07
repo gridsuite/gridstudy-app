@@ -176,7 +176,7 @@
     "DynamicSimulationSimplifiedSolverHMax": "Maximum step",
     "DynamicSimulationSimplifiedSolverKReduceStep": "Reduction factor of step",
     "DynamicSimulationSimplifiedSolverNEff": "Maximum number of iterations with h too small",
-    "DynamicSimulationSimplifiedSolverNDeadband": " acceptable H minimum",
+    "DynamicSimulationSimplifiedSolverNDeadband": "Acceptable H minimum",
     "DynamicSimulationSimplifiedSolverMaxNewtonTry": "Maximum number of Newton's resolution (for one step)",
     "DynamicSimulationSimplifiedSolverLinearSolverName": "Chosen linear solver",
     "DynamicSimulationSimplifiedSolverRecalculateStep": "Activate step recalculation",
