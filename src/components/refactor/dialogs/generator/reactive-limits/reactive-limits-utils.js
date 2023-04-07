@@ -9,6 +9,7 @@ import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
+    REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../utils/field-constants';
 import {
     getReactiveCapabilityCurveEmptyFormData,
@@ -16,14 +17,16 @@ import {
 } from './reactive-capability-curve/reactive-capability-utils';
 import yup from '../../../utils/yup-config';
 
-export const getReactiveLimitsEmptyFormData = () => ({
+export const getReactiveLimitsEmptyFormData = (
+    isGeneratorModification = false
+) => ({
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
     [MINIMUM_REACTIVE_POWER]: null,
     [MAXIMUM_REACTIVE_POWER]: null,
-    ...getReactiveCapabilityCurveEmptyFormData(),
+    ...getReactiveCapabilityCurveEmptyFormData(REACTIVE_CAPABILITY_CURVE_TABLE),
 });
 
-export const getReactiveLimitsSchema = () => ({
+export const getReactiveLimitsSchema = (isGeneratorModification = false) => ({
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
     [MINIMUM_REACTIVE_POWER]: yup
         .number()
@@ -39,5 +42,8 @@ export const getReactiveLimitsSchema = () => ({
             is: (minimumReactivePower) => minimumReactivePower != null,
             then: (schema) => schema.required(),
         }),
-    ...getReactiveCapabilityCurveValidationSchema(),
+    ...getReactiveCapabilityCurveValidationSchema(
+        REACTIVE_CAPABILITY_CURVE_TABLE,
+        isGeneratorModification
+    ),
 });

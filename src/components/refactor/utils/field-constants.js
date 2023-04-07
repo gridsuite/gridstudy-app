@@ -142,6 +142,11 @@ export const SWITCH_KINDS = 'switchKinds';
 // dnd table
 export const SELECTED = 'selected';
 
+//generator
+export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
+export const REGULATING_TERMINAL = 'regulatingTerminal';
+export const ACTIVE_POWER_CONTROL_ON = 'activePowerControlOn';
+export const GENERATOR = 'generator';
 //line-attach-to-voltage-level
 export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';
