@@ -21,6 +21,7 @@ import MidFormError from './error-inputs/mid-form-error';
 const ExpandableInput = ({
     name,
     Field, // Used to display each object of an array
+    fieldProps, // Props to pass to Field
     addButtonLabel,
     initialValue, // Initial value to display when adding a new entry to array
 }) => {
@@ -40,7 +41,7 @@ const ExpandableInput = ({
             </Grid>
             {values.map((value, idx) => (
                 <Grid key={value.id} container spacing={2} item>
-                    <Field name={name} index={idx} />
+                    <Field name={name} index={idx} {...fieldProps} />
                     <Grid item xs={1}>
                         <IconButton
                             className={classes.icon}

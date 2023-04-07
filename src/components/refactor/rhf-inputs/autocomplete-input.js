@@ -14,7 +14,7 @@ import {
 } from '../../dialogs/inputs/hooks-helpers';
 import PropTypes from 'prop-types';
 import { useController, useFormContext } from 'react-hook-form';
-import { func_identity } from '../../dialogs/dialogUtils';
+import { func_identity, useStyles } from '../../dialogs/dialogUtils';
 import { isFieldRequired } from '../utils/utils';
 
 /**
@@ -45,6 +45,7 @@ const AutocompleteInput = ({
         field: { onChange, value, ref },
         fieldState: { error },
     } = useController({ name });
+    const classes = useStyles();
 
     const handleChange = (value) => {
         onChangeCallback && onChangeCallback();
@@ -93,6 +94,9 @@ const AutocompleteInput = ({
                             !props?.disabled &&
                             !removeOptional,
                     })}
+                    FormHelperTextProps={{
+                        className: classes.helperText,
+                    }}
                     inputRef={ref}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
                     {...genHelperPreviousValue(previousValue)}
