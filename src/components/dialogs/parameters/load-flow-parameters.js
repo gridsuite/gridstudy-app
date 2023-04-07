@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
     Grid,
@@ -21,7 +21,11 @@ import CheckIcon from '@mui/icons-material/Check';
 import { CloseButton, LabelledButton, useStyles } from './parameters';
 import { DropDown, SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import { useImportExportParams } from '@gridsuite/commons-ui';
+import {
+    FlatParameters,
+    extractDefaultMap,
+    makeDeltaMap,
+} from '@gridsuite/commons-ui';
 
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
@@ -323,6 +327,8 @@ const AdvancedLoadFlowParameters = ({
     );
 };
 
+var spfCount = 0;
+
 const SpecificLoadFlowParameters = ({
     lfParams,
     commitLFParameter,
@@ -331,12 +337,78 @@ const SpecificLoadFlowParameters = ({
     currentProvider,
     specificParamsDescription,
 }) => {
-    const [currentParameters, paramsComponent] = useImportExportParams(
-        specificParamsDescription.filter(
-            (spd) => spd.provider === currentProvider
-        )
-    );
     console.debug('SpecificLoadFlowParameters', specificParamsDescription);
+    const [instanceId] = useState(() => {
+        console.debug('SpecificLoadFlowParameters.instanceInit', spfCount);
+        spfCount += 1;
+        return spfCount;
+    });
+    useEffect(() => {
+        console.debug('SpecificLoadFlowParameters.mount', instanceId, spfCount);
+        return () => {
+            console.debug('SpecificLoadFlowParameters.unmount', instanceId);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const [currentParameters, setCurrentParameters] = useState(null);
+    const defaultValues = useMemo(() => {
+        return extractDefaultMap(specificParamsDescription);
+    }, [specificParamsDescription]);
+
+    useEffect(() => {
+        setCurrentParameters({
+            ...defaultValues,
+            ...lfParams?.specificParametersPerProvider?.[currentProvider],
+        });
+    }, [lfParams, currentProvider, defaultValues]);
+
+    const onChange = useCallback(
+        (paramName, value, isEdit) => {
+            console.debug('SpecificLoadFlowParameters.onChange', {
+                paramName,
+                value,
+                isEdit,
+                instanceId,
+                lfParams,
+            });
+            if (isEdit) return;
+            setCurrentParameters((prevCurrentParameters) => {
+                const nextCurrentParameters = {
+                    ...prevCurrentParameters,
+                    ...{ [paramName]: value },
+                };
+                const deltaMap = makeDeltaMap(
+                    defaultValues,
+                    nextCurrentParameters
+                );
+                const toSend = { ...lfParams };
+                toSend['specificParametersPerProvider'] = {
+                    [currentProvider]: deltaMap ?? {},
+                };
+                commitLFParameter(toSend);
+                return nextCurrentParameters;
+            });
+        },
+        [
+            commitLFParameter,
+            currentProvider,
+            defaultValues,
+            instanceId,
+            lfParams,
+        ]
+    );
+
+    const paramsComponent = useMemo(() => {
+        console.debug('SpecificLoadFlowParameters.1', { currentParameters, lfParams });
+        return (
+            <FlatParameters
+                paramsAsArray={specificParamsDescription}
+                initValues={currentParameters}
+                onChange={onChange}
+            />
+        );
+    }, [specificParamsDescription, currentParameters, onChange, lfParams]);
 
     return (
         <>
@@ -350,6 +422,8 @@ const SpecificLoadFlowParameters = ({
     );
 };
 
+let instanceCount = 0;
+
 export const LoadFlowParameters = ({
     hideParameters,
     parametersBackend,
@@ -358,6 +432,24 @@ export const LoadFlowParameters = ({
     setShowAdvancedLfParams,
     setShowSpecificLfParams,
 }) => {
+    const [instanceId] = useState(() => {
+        console.debug('LoadFlowParameters.instanceInit', instanceCount);
+        instanceCount += 1;
+        return instanceCount;
+    });
+    console.debug('LoadFlowParameters', {
+        instanceId,
+        showAdvancedLfParams,
+        showSpecificLfParams,
+    });
+    useEffect(() => {
+        console.debug('LoadFlowParameters.mount', instanceId, instanceCount);
+        return () => {
+            console.debug('LoadFlowParameters.unmount', instanceId);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const classes = useStyles();
 
     const [
@@ -382,6 +474,25 @@ export const LoadFlowParameters = ({
         resetParameters();
         resetProvider();
     }, [resetParameters, resetProvider]);
+
+    const specificLoadFlowParameters = useMemo(() => {
+        return (
+            <SpecificLoadFlowParameters
+                lfParams={params || {}}
+                commitLFParameter={updateParameters}
+                showSpecificLfParams={showSpecificLfParams}
+                setShowSpecificLfParams={setShowSpecificLfParams}
+                currentProvider={provider}
+                specificParamsDescription={specificParamsDescription[provider]}
+            />
+        );
+    }, [
+        showSpecificLfParams,
+        params,
+        specificParamsDescription,
+        provider,
+        specificParamsDescription?.[provider],
+    ]);
 
     return (
         <>
@@ -410,14 +521,7 @@ export const LoadFlowParameters = ({
                     showAdvancedLfParams={showAdvancedLfParams}
                     setShowAdvancedLfParams={setShowAdvancedLfParams}
                 />
-                <SpecificLoadFlowParameters
-                    lfParams={params || {}}
-                    commitLFParameter={updateParameters}
-                    showSpecificLfParams={showSpecificLfParams}
-                    setShowSpecificLfParams={setShowSpecificLfParams}
-                    currentProvider={provider}
-                    specificParamsDescription={specificParamsDescription}
-                />
+                {specificLoadFlowParameters}
             </Grid>
             <Grid
                 container

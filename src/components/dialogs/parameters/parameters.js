@@ -343,6 +343,7 @@ export const useParametersBackend = (
             if (backendFetchParameters) {
                 backendFetchParameters(studyUuid)
                     .then((params) => {
+                        console.trace('useParametersBackend.then.common', { params });
                         setParams(params);
                     })
                     .catch((error) => {
@@ -370,6 +371,7 @@ export const useParametersBackend = (
             if (backendFetchSpecificParameters) {
                 backendFetchSpecificParameters()
                     .then((specificParams) => {
+                        console.debug('useParametersBackend.then.spec', { specificParams });
                         setSpecificParamsDescription(specificParams);
                     })
                     .catch((error) => {
@@ -444,7 +446,27 @@ const TAB_VALUES = {
     advancedParamsTabValue: 'Advanced',
 };
 
+let instanceCount = 0;
+
 const Parameters = ({ user, isParametersOpen, hideParameters }) => {
+    const [instanceId] = useState(() => {
+        console.debug('FParameters.instanceInit', instanceCount);
+        instanceCount += 1;
+        return instanceCount;
+    });
+    console.debug('FParameters', {
+        instanceId,
+        isParametersOpen,
+        user,
+    });
+    useEffect(() => {
+        console.debug('FParameters.mount', instanceId, instanceCount);
+        return () => {
+            console.debug('FParameters.unmount', instanceId);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const classes = useStyles();
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.sldParamsTabValue);
