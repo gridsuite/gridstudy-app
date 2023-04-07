@@ -10,6 +10,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
+import { NumericCellRenderer } from './spreadsheet/utils/cell-renderers';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
@@ -34,6 +35,9 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'IscKA' }),
                 field: 'current',
+                cellRenderer: NumericCellRenderer,
+                fractionDigits: 1,
+                numeric: true,
             },
 
             {
@@ -44,14 +48,23 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
+                cellRenderer: NumericCellRenderer,
+                fractionDigits: 1,
+                numeric: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
+                cellRenderer: NumericCellRenderer,
+                fractionDigits: 1,
+                numeric: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
+                cellRenderer: NumericCellRenderer,
+                fractionDigits: 1,
+                numeric: true,
             },
         ];
     }, [intl]);
