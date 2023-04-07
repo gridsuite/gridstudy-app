@@ -140,7 +140,7 @@ export const VOLTAGE_LEVEL_COMPONENTS = {
     BUS_BAR_SECTION_CONNECTION: 'BusBarSectionConnection',
 };
 
-export const SWITCH_TYPE = [
-    { id: 'BREAKER', label: 'Breaker' },
-    { id: 'DISCONNECTOR', label: 'Disconnector' },
-];
+export const SWITCH_TYPE = {
+    BREAKER: { id: 'BREAKER', label: 'Breaker' },
+    DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
+};
