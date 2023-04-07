@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from '../../rhf-inputs/text-input';
+import TextInput from '../../../rhf-inputs/text-input';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -20,32 +20,55 @@ import {
     STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
-} from '../../utils/field-constants';
+} from '../../../utils/field-constants';
 import {
     ActivePowerAdornment,
     filledTextField,
     gridItem,
     GridSection,
-    italicFontTextField,
     MVAPowerAdornment,
     OhmAdornment,
-} from '../../../dialogs/dialogUtils';
-import SelectInput from '../../rhf-inputs/select-input';
-import { ENERGY_SOURCES } from '../../../network/constants';
+} from '../../../../dialogs/dialogUtils';
+import SelectInput from '../../../rhf-inputs/select-input';
+import {
+    ENERGY_SOURCES,
+    getEnergySourceLabel,
+} from '../../../../network/constants';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
-import FloatInput from '../../rhf-inputs/float-input';
-import ReactiveLimitsForm from './reactive-limits/reactive-limits-form';
-import SetPointsForm from './set-points/set-points-form';
-import { fetchVoltageLevelsIdAndTopology } from '../../../../utils/rest-api';
+import React, { useCallback, useEffect, useState } from 'react';
+import FloatInput from '../../../rhf-inputs/float-input';
+import {
+    fetchEquipmentsIds,
+    fetchVoltageLevelsIdAndTopology,
+} from '../../../../../utils/rest-api';
+import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
+import SetPointsForm from '../set-points/set-points-form';
+import { FormattedMessage, useIntl } from 'react-intl';
+import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
+import { useWatch } from 'react-hook-form';
 
-const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
+const GeneratorModificationForm = ({
+    studyUuid,
+    currentNode,
+    onEquipmentIdChange,
+    generatorToModify,
+    updatePreviousReactiveCapabilityCurveTable,
+}) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+    const [equipmentOptions, setEquipmentOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
+    const intl = useIntl();
+
+    const watchEquipmentId = useWatch({
+        name: EQUIPMENT_ID,
+    });
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        onEquipmentIdChange(watchEquipmentId);
+    }, [watchEquipmentId, onEquipmentIdChange]);
+
+    useEffect(() => {
+        if (studyUuid && currentNodeUuid) {
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -53,13 +76,38 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
                     );
                 }
             );
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNodeUuid,
+                undefined,
+                'GENERATOR',
+                true
+            ).then((values) => {
+                setEquipmentOptions(values.sort());
+            });
+        }
     }, [studyUuid, currentNodeUuid]);
 
+    const energySourceLabelId = getEnergySourceLabel(
+        generatorToModify?.energySource
+    );
+    const previousEnergySourceLabel = energySourceLabelId
+        ? intl.formatMessage({
+              id: energySourceLabelId,
+          })
+        : undefined;
+    const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
+
     const generatorIdField = (
-        <TextInput
+        <AutocompleteInput
+            allowNewValue
+            forcePopupIcon
             name={EQUIPMENT_ID}
             label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
+            options={equipmentOptions}
+            formProps={{ ...filledTextField }}
+            size={'small'}
+            isOptionEqualToValue={areIdsEqual}
         />
     );
 
@@ -68,6 +116,8 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
+            previousValue={generatorToModify?.name}
+            clearable={true}
         />
     );
 
@@ -78,17 +128,8 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             options={ENERGY_SOURCES}
             fullWidth
             size={'small'}
-            disableClearable={true}
-            formProps={{ ...italicFontTextField, ...filledTextField }}
-        />
-    );
-
-    const connectivityForm = (
-        <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
-            withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
+            formProps={{ ...filledTextField }}
+            previousValue={previousEnergySourceLabel}
         />
     );
 
@@ -97,6 +138,8 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             name={MAXIMUM_ACTIVE_POWER}
             label={'MaximumActivePowerText'}
             adornment={ActivePowerAdornment}
+            previousValue={generatorToModify?.maxP}
+            clearable={true}
         />
     );
 
@@ -105,6 +148,8 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             name={MINIMUM_ACTIVE_POWER}
             label={'MinimumActivePowerText'}
             adornment={ActivePowerAdornment}
+            previousValue={generatorToModify?.minP}
+            clearable={true}
         />
     );
 
@@ -113,6 +158,8 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             name={RATED_NOMINAL_POWER}
             label={'RatedNominalPowerText'}
             adornment={MVAPowerAdornment}
+            previousValue={generatorToModify?.ratedS}
+            clearable={true}
         />
     );
 
@@ -121,6 +168,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             name={TRANSIENT_REACTANCE}
             label={'TransientReactance'}
             adornment={OhmAdornment}
+            previousValue={generatorToModify?.transientReactance}
         />
     );
 
@@ -129,6 +177,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             name={TRANSFORMER_REACTANCE}
             label={'TransformerReactance'}
             adornment={OhmAdornment}
+            previousValue={generatorToModify?.stepUpTransformerReactance}
         />
     );
 
@@ -137,23 +186,40 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             name={PLANNED_ACTIVE_POWER_SET_POINT}
             label={'PlannedActivePowerSetPoint'}
             adornment={ActivePowerAdornment}
+            previousValue={generatorToModify?.plannedActivePowerSetPoint}
         />
     );
 
     const startupCostField = (
-        <FloatInput name={STARTUP_COST} label={'StartupCost'} />
+        <FloatInput
+            name={STARTUP_COST}
+            label={'StartupCost'}
+            previousValue={generatorToModify?.startupCost}
+        />
     );
 
     const marginalCostField = (
-        <FloatInput name={MARGINAL_COST} label={'MarginalCost'} />
+        <FloatInput
+            name={MARGINAL_COST}
+            label={'MarginalCost'}
+            previousValue={generatorToModify?.marginalCost}
+        />
     );
 
     const plannedOutageRateField = (
-        <FloatInput name={PLANNED_OUTAGE_RATE} label={'PlannedOutageRate'} />
+        <FloatInput
+            name={PLANNED_OUTAGE_RATE}
+            label={'PlannedOutageRate'}
+            previousValue={generatorToModify?.plannedOutageRate}
+        />
     );
 
     const forcedOutageRateField = (
-        <FloatInput name={FORCED_OUTAGE_RATE} label={'ForcedOutageRate'} />
+        <FloatInput
+            name={FORCED_OUTAGE_RATE}
+            label={'ForcedOutageRate'}
+            previousValue={generatorToModify?.forcedOutageRate}
+        />
     );
 
     return (
@@ -164,14 +230,17 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
                 {gridItem(energySourceField, 4)}
             </Grid>
 
-            {/* Connectivity part */}
-            <GridSection title="Connectivity" />
+            {/* Limits part */}
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
+                <Grid item xs={12}>
+                    <h3>
+                        <FormattedMessage id="Limits" />
+                    </h3>
+                    <h4>
+                        <FormattedMessage id="ActiveLimits" />
+                    </h4>
+                </Grid>
             </Grid>
-
-            {/* ActiveLimits part */}
-            <GridSection title="ActiveLimits" />
             <Grid container spacing={2}>
                 {gridItem(minimumActivePowerField, 4)}
                 {gridItem(maximumActivePowerField, 4)}
@@ -179,13 +248,20 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             </Grid>
 
             {/* Reactive limits part */}
-            <ReactiveLimitsForm />
+            <ReactiveLimitsForm
+                generatorToModify={generatorToModify}
+                updatePreviousReactiveCapabilityCurveTable={
+                    updatePreviousReactiveCapabilityCurveTable
+                }
+            />
 
             {/* Set points part */}
             <SetPointsForm
                 studyUuid={studyUuid}
                 currentNodeUuid={currentNodeUuid}
                 voltageLevelOptions={voltageLevelOptions}
+                isGeneratorModification={true}
+                previousValues={generatorToModify}
             />
 
             {/* Short Circuit of start part */}
@@ -212,4 +288,4 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     );
 };
 
-export default GeneratorCreationForm;
+export default GeneratorModificationForm;
