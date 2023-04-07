@@ -325,7 +325,7 @@ export function DiagramPane({
                     const emptyDiagramView = {
                         ...diagramState,
                         name: diagramState?.id,
-                        // this varibale is used to show a warning message inside the  SLD
+                        // this variable is used to show a warning message inside the  SLD
                         hasNonVoltageLevelOrSubstation: true,
                     };
 
