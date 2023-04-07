@@ -403,7 +403,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                             error: error.message,
                             svgUrl: props.svgUrl,
                         });
-                        // if service not found, no need to show snackError
+                        // if svg is not found, an empty SLD with a warning message is now displayed. No need to show snackError.
                         if (error.status !== 404) {
                             snackError({
                                 messageTxt: error.message,

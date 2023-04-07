@@ -97,14 +97,14 @@ const Diagram = (props) => {
     };
 
     const showAlert = () => {
-        const { hasNonVoltageLevelOrSubstation, disabled, svgType } = props;
+        const { isSvgNotFound, disabled, svgType } = props;
         const isVoltageLevel = DiagramType.VOLTAGE_LEVEL === svgType;
         const message = isVoltageLevel
             ? 'VoltageLevelNotFound'
             : 'SubstationNotFound';
         return (
             <Box position="relative" left={0} right={0} top={0}>
-                {hasNonVoltageLevelOrSubstation && !disabled ? (
+                {isSvgNotFound && !disabled ? (
                     <AlertCustomMessageNode message={message} noMargin={true} />
                 ) : (
                     <AlertInvalidNode noMargin={true} />
@@ -155,7 +155,7 @@ const Diagram = (props) => {
                     onClose={onCloseHandler}
                 />
 
-                {props.disabled || props.hasNonVoltageLevelOrSubstation ? (
+                {props.disabled || props.isSvgNotFound ? (
                     showAlert()
                 ) : (
                     <Box height={'100%'}>
@@ -193,7 +193,7 @@ const Diagram = (props) => {
 Diagram.defaultProps = {
     pinned: false,
     disabled: false,
-    hasNonVoltageLevelOrSubstation: false,
+    isSvgNotFound: false,
     align: 'left',
     width: LOADING_WIDTH,
     height: LOADING_HEIGHT,
@@ -206,7 +206,7 @@ Diagram.propTypes = {
     diagramId: PropTypes.string.isRequired,
     diagramTitle: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
-    hasNonVoltageLevelOrSubstation: PropTypes.bool,
+    isSvgNotFound: PropTypes.bool,
     pinned: PropTypes.bool,
     svgType: PropTypes.string.isRequired,
     children: PropTypes.node,

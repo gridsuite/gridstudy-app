@@ -325,8 +325,8 @@ export function DiagramPane({
                     const emptyDiagramView = {
                         ...diagramState,
                         name: diagramState?.id,
-                        // this varibale is used to show a warning message inside the  SLD
-                        hasNonVoltageLevelOrSubstation: true,
+                        // this variable is used to show a warning message inside the SLD
+                        isSvgNotFound: true,
                     };
 
                     diagramViews.push({
@@ -728,8 +728,8 @@ export function DiagramPane({
                                 diagramId={diagramView.id}
                                 diagramTitle={diagramView.name}
                                 disabled={disabled}
-                                hasNonVoltageLevelOrSubstation={
-                                    diagramView?.hasNonVoltageLevelOrSubstation
+                                isSvgNotFound={
+                                    diagramView?.isSvgNotFound
                                 }
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
