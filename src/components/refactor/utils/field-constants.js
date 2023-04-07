@@ -127,12 +127,18 @@ export const TEMPORARY_LIMIT_VALUE = 'value';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
-export const HORIZONTAL_POSITION = 'horizPos';
-export const VERTICAL_POSITION = 'vertPos';
-export const BUS_BAR_CONNECTIONS = 'busbarConnections';
-export const FROM_BBS = 'fromBBS';
-export const TO_BBS = 'toBBS';
+export const BUS_BAR_SECTION_ID1 = 'busbarSectionId1';
+export const BUS_BAR_SECTION_ID2 = 'busbarSectionId2';
 export const SWITCH_KIND = 'switchKind';
+export const HIGH_VOLTAGE_LIMIT = 'highVoltageLimit';
+export const LOW_VOLTAGE_LIMIT = 'lowVoltageLimit';
+export const LOW_SHORT_CIRCUIT_CURRENT_LIMIT = 'lowShortCircuitCurrentLimit';
+export const HIGH_SHORT_CIRCUIT_CURRENT_LIMIT = 'highShortCircuitCurrentLimit';
+export const BUS_BAR_COUNT = 'busbarCount';
+export const SECTION_COUNT = 'sectionCount';
+export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
+export const COUPLING_OMNIBUS = 'couplingOmnibus';
+export const SWITCH_KINDS = 'switchKinds';
 // dnd table
 export const SELECTED = 'selected';
 
