@@ -124,7 +124,7 @@ const LoadModificationDialog = ({
     }, [reset, emptyFormData]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: editData && isDataFetched,
+        isDataFetched: !isUpdate || (editData && isDataFetched),
         delay: FORM_LOADING_DELAY,
     });
 

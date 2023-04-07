@@ -372,7 +372,7 @@ const LineCreationDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: editData,
+        isDataFetched: !isUpdate || editData,
         delay: FORM_LOADING_DELAY,
     });
 
