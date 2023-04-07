@@ -131,12 +131,8 @@ const VoltageLevelCreationDialog = ({
                     voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
                 [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
                 [NOMINAL_VOLTAGE]: voltageLevel[NOMINAL_VOLTAGE],
-                [LOW_VOLTAGE_LIMIT]: isNaN(voltageLevel[LOW_VOLTAGE_LIMIT])
-                    ? null
-                    : voltageLevel[LOW_VOLTAGE_LIMIT],
-                [HIGH_VOLTAGE_LIMIT]: isNaN(voltageLevel[HIGH_VOLTAGE_LIMIT])
-                    ? null
-                    : voltageLevel[HIGH_VOLTAGE_LIMIT],
+                [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
+                [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
                     voltageLevel.ipMin
                 ),
