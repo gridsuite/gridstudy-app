@@ -24,11 +24,11 @@ const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
 
     const defParams = {
         startTime: {
-            type: TYPES.integer,
+            type: TYPES.float,
             description: 'DynamicSimulationStartTime',
         },
         stopTime: {
-            type: TYPES.integer,
+            type: TYPES.float,
             description: 'DynamicSimulationStopTime',
         },
     };
