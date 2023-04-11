@@ -20,9 +20,10 @@ import MidFormError from './error-inputs/mid-form-error';
 // This component is used to display Array of objects
 const ExpandableInput = ({
     name,
-    Field, // Used to display each object of an array
+    Field, // Used to display/edit each object of an array
     addButtonLabel,
-    initialValue, // Initial value to display when adding a new entry to array
+    initialValue, // Initial value to display when we add a new entry to array
+    deleteIconDisableCallback = null,
 }) => {
     const classes = useStyles();
     const {
@@ -33,37 +34,47 @@ const ExpandableInput = ({
         name: name,
     });
 
-    return (
-        <Grid item container spacing={2}>
-            <Grid item xs={12}>
-                <ErrorInput name={name} InputField={MidFormError} />
-            </Grid>
-            {values.map((value, idx) => (
-                <Grid key={value.id} container spacing={2} item>
-                    <Field name={name} index={idx} />
-                    <Grid item xs={1}>
-                        <IconButton
-                            className={classes.icon}
-                            key={value.id}
-                            onClick={() => remove(idx)}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Grid>
+    function renderFieldArrayValues() {
+        console.log('DBR renderFieldArrayValues', values);
+        return (
+            <Grid item container spacing={2}>
+                <Grid item xs={12}>
+                    <ErrorInput name={name} InputField={MidFormError} />
                 </Grid>
-            ))}
-            <span>
-                <Button
-                    fullWidth
-                    className={classes.button}
-                    startIcon={<AddIcon />}
-                    onClick={() => append(initialValue)}
-                >
-                    <FormattedMessage id={addButtonLabel} />
-                </Button>
-            </span>
-        </Grid>
-    );
+                {values.map((value, idx) => (
+                    <Grid key={value.id} container spacing={2} item>
+                        <Field name={name} index={idx} />
+                        <Grid item xs={1}>
+                            <IconButton
+                                className={classes.icon}
+                                key={value.id}
+                                disabled={
+                                    deleteIconDisableCallback
+                                        ? deleteIconDisableCallback(idx)
+                                        : false
+                                }
+                                onClick={() => remove(idx)}
+                            >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Grid>
+                    </Grid>
+                ))}
+                <span>
+                    <Button
+                        fullWidth
+                        className={classes.button}
+                        startIcon={<AddIcon />}
+                        onClick={() => append(initialValue)}
+                    >
+                        <FormattedMessage id={addButtonLabel} />
+                    </Button>
+                </span>
+            </Grid>
+        );
+    }
+
+    return renderFieldArrayValues();
 };
 
 export default ExpandableInput;

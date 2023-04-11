@@ -17,6 +17,7 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     NAME,
+    PREVIOUS_VALUE,
     VALUE,
 } from '../../utils/field-constants';
 import { getPropertiesSchema } from '../substation-creation/property/property-utils';
@@ -28,13 +29,17 @@ const schema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().nullable().required(),
     [EQUIPMENT_NAME]: yup.string(),
     [COUNTRY]: yup.string().nullable(),
-    ...getPropertiesSchema(), // TODO
+    ...getPropertiesSchema(),
 });
 
 const getProperties = (properties) => {
     return properties
         ? Object.entries(properties).map((p) => {
-              return { [NAME]: p[0], [VALUE]: p[1] };
+              return {
+                  [NAME]: p[0],
+                  [VALUE]: p[1],
+                  [PREVIOUS_VALUE]: undefined,
+              };
           })
         : null;
 };
@@ -62,6 +67,7 @@ const SubstationModificationDialog = ({
             [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             [COUNTRY]: null,
+            [ADDITIONAL_PROPERTIES]: null,
         }),
         [defaultIdValue]
     );
@@ -70,7 +76,6 @@ const SubstationModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
-
     const { reset } = methods;
 
     useEffect(() => {

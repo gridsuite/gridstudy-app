@@ -10,6 +10,7 @@ import yup from '../../../utils/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
     NAME,
+    PREVIOUS_VALUE,
     VALUE,
 } from '../../../utils/field-constants';
 
@@ -35,6 +36,7 @@ export const getPropertyInitialValues = () => {
     return {
         [NAME]: null,
         [VALUE]: null,
+        [PREVIOUS_VALUE]: null,
     };
 };
 export const getPropertiesSchema = (id = ADDITIONAL_PROPERTIES) => ({
@@ -44,6 +46,7 @@ export const getPropertiesSchema = (id = ADDITIONAL_PROPERTIES) => ({
             yup.object().shape({
                 [NAME]: yup.string().nullable().required(),
                 [VALUE]: yup.string().nullable().required(),
+                [PREVIOUS_VALUE]: yup.string().nullable(),
             })
         )
         .test('checkUniqueProperties', 'DuplicatedProps', (values) =>

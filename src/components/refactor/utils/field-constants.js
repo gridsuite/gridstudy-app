@@ -178,4 +178,5 @@ export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
 // substation
 export const COUNTRY = 'country';
 export const VALUE = 'value';
+export const PREVIOUS_VALUE = 'previousValue';
 export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
