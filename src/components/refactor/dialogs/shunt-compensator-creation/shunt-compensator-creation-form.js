@@ -19,7 +19,7 @@ import {
 } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
+import ConnectivityForm from '../connectivity/connectivity-form';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import { CharacteristicsForm } from './characteristics-pane/characteristics-form';
 

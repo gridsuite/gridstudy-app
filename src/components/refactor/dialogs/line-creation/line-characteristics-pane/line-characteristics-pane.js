@@ -13,7 +13,7 @@ import {
     OhmAdornment,
 } from '../../../../dialogs/dialogUtils';
 import FloatInput from '../../../rhf-inputs/float-input';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import ConnectivityForm from '../../connectivity/connectivity-form';
 import {
     CHARACTERISTICS,
     CONNECTIVITY_1,

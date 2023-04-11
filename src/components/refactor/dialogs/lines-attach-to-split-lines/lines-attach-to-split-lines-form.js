@@ -24,7 +24,7 @@ import {
 } from 'utils/rest-api';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
 import TextInput from 'components/refactor/rhf-inputs/text-input';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
+import ConnectivityForm from '../connectivity/connectivity-form';
 
 const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

@@ -6,7 +6,7 @@
  */
 
 import { IconButton, InputAdornment, TextField } from '@mui/material';
-import React from 'react';
+import React, { FC } from 'react';
 import { func_identity, useStyles } from '../../dialogs/dialogUtils';
 import {
     FieldLabel,
@@ -19,7 +19,22 @@ import PropTypes from 'prop-types';
 import { useController, useFormContext } from 'react-hook-form';
 import { isFieldRequired } from '../utils/utils';
 
-const TextInput = ({
+interface TextInputProps {
+    name: string;
+    label?: string;
+    labelValues?: any;
+    id?: string;
+    adornment?: any;
+    outputTransform?: (val: string) => string;
+    inputTransform?: (val: string) => string;
+    acceptValue?: (val: string) => boolean;
+    formProps?: any;
+    previousValue?: string;
+    clearable?: boolean;
+    customAdornment?: any;
+}
+
+const TextInput: FC<TextInputProps> = ({
     name,
     label,
     labelValues, // this prop is used to add a value to label. this value is displayed without being translated
@@ -34,7 +49,7 @@ const TextInput = ({
     customAdornment,
 }) => {
     const classes = useStyles();
-    const { validationSchema, getValues, removeOptional } = useFormContext();
+    const { getValues } = useFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },
@@ -60,9 +75,9 @@ const TextInput = ({
               label,
               values: labelValues,
               optional:
-                  !isFieldRequired(name, validationSchema, getValues()) &&
+                  !isFieldRequired(name, {}, getValues()) &&
                   !formProps?.disabled &&
-                  !removeOptional,
+                  !true,
           });
 
     return (
@@ -110,12 +125,10 @@ const TextInput = ({
 TextInput.propTypes = {
     label: PropTypes.string,
     labelValues: PropTypes.object,
-    errorMessage: PropTypes.string,
-    value: PropTypes.any,
-    onChange: PropTypes.func,
     adornment: PropTypes.object,
     customAdornment: PropTypes.object,
-    transformValue: PropTypes.func,
+    outputTransform: PropTypes.func,
+    inputTransform: PropTypes.func,
     acceptValue: PropTypes.func,
     formProps: PropTypes.object,
     previousValue: PropTypes.any,

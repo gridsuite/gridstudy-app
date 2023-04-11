@@ -37,6 +37,7 @@ import {
     getConnectivityBusBarSectionData,
     getConnectivityVoltageLevelData,
 } from './connectivity-form-utils';
+import PropTypes from 'prop-types';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -49,16 +50,16 @@ import {
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
  * @param onVoltageLevelChangeCallback callback to be called when the voltage level changes
- * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
+ * @returns {Component}
  */
-export const ConnectivityForm = ({
+const ConnectivityForm = ({
     id = CONNECTIVITY,
     label = 'VoltageLevel',
     direction = 'row',
     withDirectionsInfos = true,
     withPosition = false,
     voltageLevelOptions = [],
-    newBusOrBusbarSectionOptions,
+    newBusOrBusbarSectionOptions = undefined,
     studyUuid,
     currentNode,
     onVoltageLevelChangeCallback,
@@ -291,3 +292,9 @@ export const ConnectivityForm = ({
         </>
     );
 };
+
+ConnectivityForm.propTypes = {
+    onVoltageLevelChangeCallback: PropTypes.func,
+};
+
+export default ConnectivityForm;

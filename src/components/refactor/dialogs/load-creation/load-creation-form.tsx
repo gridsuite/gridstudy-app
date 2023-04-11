@@ -26,7 +26,8 @@ import { LOAD_TYPES } from '../../../network/constants';
 import FloatInput from '../../rhf-inputs/float-input';
 import SelectInput from '../../rhf-inputs/select-input';
 import TextInput from '../../rhf-inputs/text-input';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
+import ConnectivityForm from '../connectivity/connectivity-form';
+import Title from './title';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -103,6 +104,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
                 {gridItem(loadTypeField, 4)}
             </Grid>
             <GridSection title="Connectivity" />
+            <Title title="test" />
             <Grid container spacing={2}>
                 {gridItem(connectivityForm, 12)}
             </Grid>

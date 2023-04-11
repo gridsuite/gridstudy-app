@@ -6,16 +6,37 @@
  */
 
 import { Autocomplete, TextField } from '@mui/material';
-import React from 'react';
+import React, { FC } from 'react';
 import {
     FieldLabel,
     genHelperError,
     genHelperPreviousValue,
 } from '../../dialogs/inputs/hooks-helpers';
 import PropTypes from 'prop-types';
-import { useController, useFormContext } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 import { func_identity, useStyles } from '../../dialogs/dialogUtils';
 import { isFieldRequired } from '../utils/utils';
+import { useCustomFormContext } from '../utils/custom-form-context';
+
+interface AutocompleteProps {
+    forcePopupIcon?: boolean;
+    getOptionLabel?: (val: any) => any;
+    isOptionEqualToValue?: (val1: any, val2: any) => boolean;
+    size?: string;
+}
+
+interface AutocompleteInputProps extends AutocompleteProps {
+    name: string;
+    label?: string;
+    outputTransform?: (val: any) => any;
+    inputTransform?: (val: any) => any;
+    options: Array<any>;
+    readOnly?: boolean;
+    previousValue?: any;
+    formProps?: any;
+    allowNewValue?: any;
+    onChangeCallback?: () => void;
+}
 
 /**
  * Autocomplete input
@@ -27,7 +48,7 @@ import { isFieldRequired } from '../utils/utils';
  * @param value input value
  * @returns autocomplete field containing the options values
  */
-const AutocompleteInput = ({
+const AutocompleteInput: FC<AutocompleteInputProps> = ({
     name,
     label,
     outputTransform = func_identity, //transform materialUi input value before sending it to react hook form, mostly used to deal with select fields that need to return a string
@@ -40,7 +61,8 @@ const AutocompleteInput = ({
     onChangeCallback, // method called when input value is changing
     ...props
 }) => {
-    const { validationSchema, getValues, removeOptional } = useFormContext();
+    const { validationSchema, getValues, removeOptional } =
+        useCustomFormContext();
     const {
         field: { onChange, value, ref },
         fieldState: { error },

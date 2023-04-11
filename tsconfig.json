@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "outDir": "./built",
+        "jsx": "react",
+        "esModuleInterop": true,
+        "allowJs": true,
+        "target": "es6",
+        "moduleResolution": "node"
+        //"strict": true
+    },
+    "include": ["src"]
+}

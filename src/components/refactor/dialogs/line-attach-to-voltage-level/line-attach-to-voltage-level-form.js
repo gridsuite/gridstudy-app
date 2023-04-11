@@ -19,7 +19,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../../dialogs/dialogUtils';
 
 import TextInput from '../../rhf-inputs/text-input';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
+import ConnectivityForm from '../connectivity/connectivity-form';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';

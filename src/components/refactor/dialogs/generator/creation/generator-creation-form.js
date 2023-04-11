@@ -34,7 +34,7 @@ import SelectInput from '../../../rhf-inputs/select-input';
 import { ENERGY_SOURCES } from '../../../../network/constants';
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import ConnectivityForm from '../../connectivity/connectivity-form';
 import FloatInput from '../../../rhf-inputs/float-input';
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';

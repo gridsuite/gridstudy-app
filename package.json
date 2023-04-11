@@ -8,14 +8,20 @@
         "@emotion/styled": "^11.8.1",
         "@gridsuite/commons-ui": "0.31.1",
         "@hookform/resolvers": "^2.9.10",
-        "@powsybl/diagram-viewer": "0.1.8",
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
         "@mui/material": "^5.5.3",
         "@mui/styles": "^5.5.3",
+        "@powsybl/diagram-viewer": "0.1.8",
         "@reduxjs/toolkit": "^1.2.3",
         "@svgdotjs/svg.js": "^3.0.12",
         "@svgdotjs/svg.panzoom.js": "^2.1.2",
+        "@types/jest": "^29.5.0",
+        "@types/node": "^18.15.11",
+        "@types/react": "^18.0.33",
+        "@types/react-dom": "^18.0.11",
+        "ag-grid-community": "^29.0.0",
+        "ag-grid-react": "^29.0.0",
         "cheap-ruler": "^3.0.0",
         "clsx": "^1.0.4",
         "core-js": "^3.6.4",
@@ -51,9 +57,8 @@
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
         "typeface-roboto": "^1.0.0",
-        "yup": "^0.32.11",
-        "ag-grid-community": "^29.0.0",
-        "ag-grid-react": "^29.0.0"
+        "typescript": "^5.0.0",
+        "yup": "^0.32.11"
     },
     "scripts": {
         "start": "react-scripts start",
@@ -85,9 +90,10 @@
         ]
     },
     "devDependencies": {
-        "http-proxy-middleware": "^2.0.0",
         "eslint-config-prettier": "^8.0.0",
         "eslint-plugin-prettier": "^4.0.0",
+        "fork-ts-checker-webpack-plugin": "^6.5.3",
+        "http-proxy-middleware": "^2.0.0",
         "prettier": "^2.0.5"
     }
 }

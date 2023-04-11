@@ -17,7 +17,7 @@ import { gridItem, GridSection } from '../../../dialogs/dialogUtils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import TextInput from '../../rhf-inputs/text-input';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
+import ConnectivityForm from '../connectivity/connectivity-form';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
