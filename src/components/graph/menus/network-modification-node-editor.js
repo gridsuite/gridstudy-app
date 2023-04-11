@@ -12,12 +12,10 @@ import {
     deleteModifications,
     fetchNetworkModification,
     fetchNetworkModifications,
-    fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from '../../refactor/dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
@@ -55,11 +53,12 @@ import {
 import { UPDATE_TYPE } from '../../network/constants';
 import LoadScalingDialog from 'components/refactor/dialogs/load-scaling/load-scaling-dialog';
 import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
-import GeneratorCreationDialog from 'components/refactor/dialogs/generator-creation/generator-creation-dialog';
+import GeneratorCreationDialog from 'components/refactor/dialogs/generator/creation/generator-creation-dialog';
 import DeleteVoltageLevelOnLineDialog from 'components/refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
 import DeleteAttachingLineDialog from 'components/refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
 import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 import GeneratorScalingDialog from 'components/refactor/dialogs/generator-scaling/generator-scaling-dialog';
+import GeneratorModificationDialog from 'components/refactor/dialogs/generator/modification/generator-modification-dialog';
 import SubstationCreationDialog from 'components/refactor/dialogs/substation-creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/refactor/dialogs/substation-modification/substation-modification-dialog';
 
@@ -144,14 +143,6 @@ export const CopyType = {
     MOVE: 'MOVE',
 };
 
-export function withVLsIdsAndTopology(studyUuid, currentTreeNodeId) {
-    const voltageLevelsIdsAndTopologyPromise = fetchVoltageLevelsIdAndTopology(
-        studyUuid,
-        currentTreeNodeId
-    );
-    return voltageLevelsIdsAndTopologyPromise;
-}
-
 const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
@@ -219,16 +210,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLsIdsAndTopology(p) {
-        const voltageLevelsIdsAndTopologyPromise =
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id);
-        return {
-            ...p,
-            voltageLevelsIdsAndTopologyPromise:
-                voltageLevelsIdsAndTopologyPromise,
-        };
-    }
-
     const dialogs = {
         LOAD_CREATION: {
             label: 'CreateLoad',
@@ -247,8 +228,7 @@ const NetworkModificationNodeEditor = () => {
         },
         GENERATOR_MODIFICATION: {
             label: 'ModifyGenerator',
-            dialog: () =>
-                adapt(GeneratorModificationDialog, withVLsIdsAndTopology),
+            dialog: () => adapt(GeneratorModificationDialog),
             icon: <AddIcon />,
         },
         SHUNT_COMPENSATOR_CREATION: {

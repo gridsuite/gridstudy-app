@@ -36,6 +36,8 @@ const PREFIX_LOADFLOW_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/loadflow';
 const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/security-analysis';
+const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/dynamic-simulation';
 
 function getToken() {
     const state = store.getState();
@@ -1156,13 +1158,9 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
 }
 
 // --- Dynamic simulation API - BEGIN
-export function getDynamicMappings(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching dynamic mappings on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/dynamic-simulation/mappings';
+export function getDynamicMappings(studyUuid) {
+    console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/mappings';
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -1170,7 +1168,6 @@ export function getDynamicMappings(studyUuid, currentNodeUuid) {
 export function startDynamicSimulation(
     studyUuid,
     currentNodeUuid,
-    mappingName,
     dynamicSimulationConfiguration
 ) {
     console.info(
@@ -1180,11 +1177,6 @@ export function startDynamicSimulation(
     let startDynamicSimulationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/dynamic-simulation/run?';
-
-    // add request params
-    if (mappingName) {
-        startDynamicSimulationUrl += `mappingName=${mappingName}`;
-    }
 
     // add body
     const body = JSON.stringify(dynamicSimulationConfiguration ?? {});
@@ -1292,6 +1284,73 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
     );
 }
 
+// -- Parameters API - BEGIN
+function getDynamicSimulationUrl() {
+    return PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES + '/v1/';
+}
+
+export function fetchDynamicSimulationProviders() {
+    console.info('fetch dynamic simulation providers');
+    const url = getDynamicSimulationUrl() + 'providers';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+export function fetchDynamicSimulationProvider(studyUuid) {
+    console.info('fetch dynamic simulation provider');
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
+    console.debug(url);
+    return backendFetchText(url);
+}
+export function fetchDefaultDynamicSimulationProvider() {
+    console.info('fetch default dynamic simulation provider');
+    const url =
+        PREFIX_STUDY_QUERIES + '/v1/dynamic-simulation-default-provider';
+    console.debug(url);
+    return backendFetchText(url);
+}
+export function updateDynamicSimulationProvider(studyUuid, newProvider) {
+    console.info('update dynamic simulation provider');
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: newProvider,
+    });
+}
+
+export function fetchDynamicSimulationParameters(studyUuid) {
+    console.info(
+        `Fetching dynamic simulation parameters on '${studyUuid}' ...`
+    );
+    let url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
+
+    console.debug(url);
+    const parametersPromise = backendFetchJson(url);
+
+    const mappingsPromise = getDynamicMappings(studyUuid);
+
+    return Promise.all([parametersPromise, mappingsPromise]).then(
+        ([parameters, mappings]) => ({ ...parameters, mappings })
+    );
+}
+export function updateDynamicSimulationParameters(studyUuid, newParams) {
+    console.info('set dynamic simulation parameters');
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
+}
+// -- Parameters API - END
 // --- Dynamic simulation API - END
 
 export function fetchContingencyAndFiltersLists(listIds) {
@@ -2339,10 +2398,16 @@ export function createVoltageLevel({
     currentNodeUuid,
     voltageLevelId,
     voltageLevelName,
-    nominalVoltage,
     substationId,
-    busbarSections,
-    busbarConnections,
+    nominalVoltage,
+    lowVoltageLimit,
+    highVoltageLimit,
+    ipMin,
+    ipMax,
+    busbarCount,
+    sectionCount,
+    switchKinds,
+    couplingDevices,
     isUpdate,
     modificationUuid,
 }) {
@@ -2361,10 +2426,16 @@ export function createVoltageLevel({
         type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
         equipmentId: voltageLevelId,
         equipmentName: voltageLevelName,
-        nominalVoltage: nominalVoltage,
         substationId: substationId,
-        busbarSections: busbarSections,
-        busbarConnections: busbarConnections,
+        nominalVoltage: nominalVoltage,
+        lowVoltageLimit: lowVoltageLimit,
+        highVoltageLimit: highVoltageLimit,
+        ipMin: ipMin,
+        ipMax: ipMax,
+        busbarCount: busbarCount,
+        sectionCount: sectionCount,
+        switchKinds: switchKinds,
+        couplingDevices: couplingDevices,
     });
 
     return backendFetchText(createVoltageLevelUrl, {
