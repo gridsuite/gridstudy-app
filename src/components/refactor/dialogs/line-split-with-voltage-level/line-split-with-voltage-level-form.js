@@ -71,17 +71,6 @@ const LineSplitWithVoltageLevelForm = ({
         }
     }, [voltageLevelToEdit, voltageLevelOptions]);
 
-    const formatedBusOrBusbarSectionOptions = useMemo(() => {
-        return voltageLevelToEdit?.busbarSections
-            ?.sort((a, b) => a?.id?.localeCompare(b?.id))
-            .map((busbarSection) => {
-                return {
-                    id: busbarSection.id,
-                    name: busbarSection.name ?? '',
-                };
-            });
-    }, [voltageLevelToEdit]);
-
     const lineToSplitForm = (
         <LineToAttachOrSplitForm
             label={'LineToSplit'}
@@ -108,7 +97,7 @@ const LineSplitWithVoltageLevelForm = ({
             withPosition={false}
             withDirectionsInfos={false}
             voltageLevelOptions={allVoltageLevelOptions}
-            newBusOrBusbarSectionOptions={formatedBusOrBusbarSectionOptions}
+            newBusOrBusbarSectionOptions={voltageLevelToEdit?.busbarSections}
             studyUuid={studyUuid}
             currentNode={currentNode}
             onVoltageLevelChangeCallback={onVoltageLevelChange}

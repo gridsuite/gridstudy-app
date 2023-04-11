@@ -85,3 +85,20 @@ export const areIdsEqual = (val1, val2) => {
 export const getObjectId = (object) => {
     return typeof object === 'string' ? object : object?.id ?? null;
 };
+
+export const buildNewBusbarSections = (
+    equipmentId,
+    sectionCount,
+    busbarCount
+) => {
+    const newBusbarSections = [];
+    for (let i = 0; i < busbarCount; i++) {
+        for (let j = 0; j < sectionCount; j++) {
+            newBusbarSections.push({
+                id: equipmentId + '_' + (i + 1) + '_' + (j + 1),
+                name: '',
+            });
+        }
+    }
+    return newBusbarSections;
+};

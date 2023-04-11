@@ -35,7 +35,9 @@ import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
-import DynamicSimulationParametersSelector from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+import DynamicSimulationParametersSelector, {
+    checkDynamicSimulationParameters,
+} from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 
 export function RunButtonContainer({
     studyUuid,
@@ -101,35 +103,30 @@ export function RunButtonContainer({
             ranLoadflow &&
             studyUpdatedForce?.eventData?.headers?.updateType === 'loadflow'
         ) {
-            setLoadFlowStatusState(loadFlowStatus);
             dispatch(addLoadflowNotif());
         } else if (
             ranSA &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'securityAnalysisResult'
         ) {
-            setSecurityAnalysisStatusState(securityAnalysisStatus);
             dispatch(addSANotif());
         } else if (
             ranSensi &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'sensitivityAnalysisResult'
         ) {
-            setSensiStatusState(sensiStatus);
             dispatch(addSensiNotif());
         } else if (
             ranShortCircuit &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'shortCircuitAnalysisResult'
         ) {
-            setShortCircuitStatusState(shortCircuitStatus);
             dispatch(addShortCircuitNotif());
         } else if (
             ranDynamicSimulation &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'dynamicSimulationResult'
         ) {
-            setDynamicSimulationStatusState(dynamicSimulationStatus);
             dispatch(addDynamicSimulationNotif());
         }
     }, [
@@ -145,6 +142,21 @@ export function RunButtonContainer({
         shortCircuitStatus,
         dynamicSimulationStatus,
         securityAnalysisStatus,
+    ]);
+
+    useEffect(() => {
+        setLoadFlowStatusState(loadFlowStatus);
+        setSecurityAnalysisStatusState(securityAnalysisStatus);
+        setSensiStatusState(sensiStatus);
+        setShortCircuitStatusState(shortCircuitStatus);
+        setDynamicSimulationStatusState(dynamicSimulationStatus);
+    }, [
+        loadFlowStatus,
+        sensiStatus,
+        shortCircuitStatus,
+        dynamicSimulationStatus,
+        securityAnalysisStatus,
+        currentNode,
     ]);
 
     const ACTION_ON_RUNNABLES = {
@@ -199,10 +211,7 @@ export function RunButtonContainer({
         });
     };
 
-    const handleStartDynamicSimulation = ({
-        mappingName,
-        dynamicSimulationConfiguration,
-    }) => {
+    const handleStartDynamicSimulation = (dynamicSimulationConfiguration) => {
         // close the dialog
         setShowDynamicSimulationParametersSelector(false);
 
@@ -210,10 +219,9 @@ export function RunButtonContainer({
         setDynamicSimulationStatusState(RunningStatus.RUNNING);
 
         // start server side dynamic simulation
-        startDynamicSimulation(
+        return startDynamicSimulation(
             studyUuid,
             currentNode?.id,
-            mappingName,
             dynamicSimulationConfiguration
         ).catch((error) => {
             setDynamicSimulationStatusState(RunningStatus.FAILED);
@@ -254,8 +262,31 @@ export function RunButtonContainer({
                     });
                 });
         } else if (action === runnable.DYNAMIC_SIMULATION) {
-            setShowDynamicSimulationParametersSelector(true);
-            setRanDynamicSimulation(true);
+            checkDynamicSimulationParameters(studyUuid)
+                .then((isValid) => {
+                    if (!isValid) {
+                        // open parameters selector to configure mandatory params
+                        setShowDynamicSimulationParametersSelector(true);
+                        setRanDynamicSimulation(true);
+                    } else {
+                        // start server side dynamic simulation directly
+                        startDynamicSimulation(
+                            studyUuid,
+                            currentNode?.id
+                        ).catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'DynamicSimulationRunError',
+                            });
+                        });
+                    }
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'DynamicSimulationRunError',
+                    });
+                });
         }
     };
 
@@ -290,22 +321,6 @@ export function RunButtonContainer({
     const getRunningText = (runnableName, runnableStatus) => {
         return runnableName;
     };
-
-    useEffect(() => {
-        setLoadFlowStatusState(loadFlowStatus);
-    }, [loadFlowStatus]);
-    useEffect(() => {
-        setSensiStatusState(sensiStatus);
-    }, [sensiStatus]);
-    useEffect(() => {
-        setShortCircuitStatusState(shortCircuitStatus);
-    }, [shortCircuitStatus]);
-    useEffect(() => {
-        setSecurityAnalysisStatusState(securityAnalysisStatus);
-    }, [securityAnalysisStatus]);
-    useEffect(() => {
-        setDynamicSimulationStatusState(dynamicSimulationStatus);
-    }, [dynamicSimulationStatus]);
 
     const runnables = useMemo(() => {
         let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];

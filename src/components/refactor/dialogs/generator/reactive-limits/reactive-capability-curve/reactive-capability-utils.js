@@ -18,7 +18,10 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
 } from '../../../../utils/field-constants';
 
-const getRowSchema = () =>
+export const INSERT = 'INSERT';
+export const REMOVE = 'REMOVE';
+
+const getCreationRowSchema = () =>
     yup.object().shape({
         [Q_MAX_P]: yup.number().nullable().required(),
         [Q_MIN_P]: yup
@@ -32,7 +35,24 @@ const getRowSchema = () =>
         [P]: yup.number().nullable().required(),
     });
 
-const getRowEmptyFormData = () => ({
+const getModificationRowSchema = () =>
+    yup.object().shape({
+        [Q_MAX_P]: yup.number().nullable(),
+        [Q_MIN_P]: yup
+            .number()
+            .nullable()
+            .when([Q_MAX_P], {
+                is: (value) => value != null,
+                then: (schema) =>
+                    schema.max(
+                        yup.ref(Q_MAX_P),
+                        'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
+                    ),
+            }),
+        [P]: yup.number().nullable(),
+    });
+
+export const getRowEmptyFormData = () => ({
     [P]: null,
     [Q_MAX_P]: null,
     [Q_MIN_P]: null,
@@ -40,28 +60,38 @@ const getRowEmptyFormData = () => ({
 
 export const getReactiveCapabilityCurveEmptyFormData = (
     id = REACTIVE_CAPABILITY_CURVE_TABLE
-) => ({
-    [id]: [getRowEmptyFormData(), getRowEmptyFormData()],
-});
+) => {
+    return {
+        [id]: [getRowEmptyFormData(), getRowEmptyFormData()],
+    };
+};
 
-function getNotNullNumbersFromArray(values) {
+function getNotNullPFromArray(values, isGeneratorModification) {
     return values
-        .map((element) =>
+        .map((element) => {
+            const pValue = element[P];
+
             // Note : convertion toNumber is necessary here to prevent corner cases like if
             // two values are "-0" and "0", which would be considered different by the Set below.
-            validateValueIsANumber(element.p) ? toNumber(element.p) : null
-        )
+            return validateValueIsANumber(pValue) ? toNumber(pValue) : null;
+        })
         .filter((p) => p !== null);
 }
 
-function checkAllValuesAreUnique(values) {
-    const validActivePowerValues = getNotNullNumbersFromArray(values);
+function checkAllPValuesAreUnique(values, isGeneratorModification) {
+    const validActivePowerValues = getNotNullPFromArray(
+        values,
+        isGeneratorModification
+    );
     const setOfPs = [...new Set(validActivePowerValues)];
     return setOfPs.length === validActivePowerValues.length;
 }
 
-function checkAllValuesBetweenMinMax(values) {
-    const validActivePowerValues = getNotNullNumbersFromArray(values);
+function checkAllPValuesBetweenMinMax(values, isGeneratorModification) {
+    const validActivePowerValues = getNotNullPFromArray(
+        values,
+        isGeneratorModification
+    );
     const minP = validActivePowerValues[0];
     const maxP = validActivePowerValues[validActivePowerValues.length - 1];
 
@@ -69,7 +99,8 @@ function checkAllValuesBetweenMinMax(values) {
 }
 
 export const getReactiveCapabilityCurveValidationSchema = (
-    id = REACTIVE_CAPABILITY_CURVE_TABLE
+    id = REACTIVE_CAPABILITY_CURVE_TABLE,
+    isGeneratorModification = false
 ) => ({
     [id]: yup
         .array()
@@ -78,17 +109,30 @@ export const getReactiveCapabilityCurveValidationSchema = (
             is: 'CURVE',
             then: (schema) =>
                 schema
-                    .of(getRowSchema())
+                    .when([], {
+                        is: () => !isGeneratorModification,
+                        then: (schema) => schema.of(getCreationRowSchema()),
+                        otherwise: (schema) =>
+                            schema.of(getModificationRowSchema()),
+                    })
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
                     .test(
                         'checkAllValuesAreUnique',
                         'ReactiveCapabilityCurveCreationErrorPInvalid',
-                        (values) => checkAllValuesAreUnique(values)
+                        (values) =>
+                            checkAllPValuesAreUnique(
+                                values,
+                                isGeneratorModification
+                            )
                     )
                     .test(
                         'checkAllValuesBetweenMinMax',
                         'ReactiveCapabilityCurveCreationErrorPOutOfRange',
-                        (values) => checkAllValuesBetweenMinMax(values)
+                        (values) =>
+                            checkAllPValuesBetweenMinMax(
+                                values,
+                                isGeneratorModification
+                            )
                     ),
         }),
 });
