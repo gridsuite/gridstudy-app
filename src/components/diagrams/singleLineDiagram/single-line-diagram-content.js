@@ -54,7 +54,7 @@ import GeneratorModificationDialog from 'components/refactor/dialogs/generator/m
 import LoadModificationDialog from '../../refactor/dialogs/load-modification/load-modification-dialog';
 
 const SingleLineDiagramContent = forwardRef((props, ref) => {
-    const { studyUuid } = props;
+    const { studyUuid, setWarning } = props;
     const [svg, setSvg] = useState(NoSvg);
     const classes = useDiagramStyles();
     const { diagramSizeSetter } = props;
@@ -373,6 +373,13 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         diagramSizeSetter,
     ]);
 
+    const handleWarning = useCallback(
+        (id) => {
+            setWarning(id);
+        },
+        [setWarning]
+    );
+
     useEffect(() => {
         if (props.svgUrl) {
             if (!isNodeinNotifs) {
@@ -403,6 +410,8 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                             snackError({
                                 messageTxt: error.message,
                             });
+                        } else {
+                            handleWarning(props.diagramId);
                         }
                     })
                     .finally(() => {
@@ -421,6 +430,8 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         intlRef,
         props.svgType,
         isNodeinNotifs,
+        handleWarning,
+        props.diagramId,
     ]);
 
     /**

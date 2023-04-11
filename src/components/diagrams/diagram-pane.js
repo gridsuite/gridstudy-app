@@ -287,6 +287,7 @@ export function DiagramPane({
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
     const classes = useStyles();
+    const [warnings, setWarnings] = useState(new Set());
 
     /**
      * BUILDS THE DIAGRAMS LIST
@@ -357,6 +358,7 @@ export function DiagramPane({
             }
         }
         setViews(diagramViews);
+        setWarnings(new Set());
     }, [
         diagramStates,
         visible,
@@ -631,6 +633,11 @@ export function DiagramPane({
         ]
     );
 
+    const handleWarning = (id) => {
+        // Add the id of the diagramView where to display the warning
+        setWarnings((prev) => new Set(prev.add(id)));
+    };
+
     /*
      * Calculate a diagram's ideal height, based on its natural height, the available space in
      * the pane, and the other diagrams' sizes.
@@ -729,7 +736,8 @@ export function DiagramPane({
                                 diagramTitle={diagramView.name}
                                 disabled={disabled}
                                 isSvgNotFound={
-                                    diagramView?.isSvgNotFound
+                                    diagramView?.isSvgNotFound ||
+                                    warnings?.has(diagramView.id)
                                 }
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
@@ -756,6 +764,7 @@ export function DiagramPane({
                                         isComputationRunning={
                                             isComputationRunning
                                         }
+                                        setWarning={handleWarning}
                                         showInSpreadsheet={showInSpreadsheet}
                                         studyUuid={studyUuid}
                                         diagramId={diagramView.id}
