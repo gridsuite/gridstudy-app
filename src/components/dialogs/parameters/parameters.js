@@ -59,6 +59,7 @@ import {
 } from './short-circuit-parameters';
 import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
+import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
@@ -92,7 +93,7 @@ export const SwitchWithLabel = ({ value, label, callback }) => {
     );
 };
 
-export const DropDown = ({ value, label, values, callback }) => {
+export const DropDown = ({ value, label, values, callback, renderValue }) => {
     const classes = useStyles();
     return (
         <>
@@ -112,7 +113,11 @@ export const DropDown = ({ value, label, values, callback }) => {
                 >
                     {Object.entries(values).map(([key, value]) => (
                         <MenuItem key={key} value={key}>
-                            <FormattedMessage id={value} />
+                            {renderValue ? (
+                                renderValue(value)
+                            ) : (
+                                <FormattedMessage id={value} />
+                            )}
                         </MenuItem>
                     ))}
                 </Select>
@@ -166,6 +171,23 @@ export const LabelledButton = ({ callback, label, name }) => {
         <Button onClick={callback} className={name}>
             <FormattedMessage id={label} />
         </Button>
+    );
+};
+
+export const TabPanel = (props) => {
+    const { children, value, index, ...other } = props;
+    return (
+        <Typography
+            component="div"
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            style={{ flexGrow: 1 }}
+            {...other}
+        >
+            {value === index && <Box p={1}>{children}</Box>}
+        </Typography>
     );
 };
 
@@ -276,32 +298,40 @@ export const useParametersBackend = (
         ]
     );
 
-    const resetParameters = useCallback(() => {
-        backendUpdateParameters(studyUuid, null)
-            .then(() => {
-                return backendFetchParameters(studyUuid)
-                    .then((params) => setParams(params))
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'fetch' + type + 'ParametersError',
+    const resetParameters = useCallback(
+        (callBack) => {
+            backendUpdateParameters(studyUuid, null)
+                .then(() => {
+                    return backendFetchParameters(studyUuid)
+                        .then((params) => {
+                            setParams(params);
+                            if (callBack) {
+                                callBack();
+                            }
+                        })
+                        .catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'fetch' + type + 'ParametersError',
+                            });
                         });
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'update' + type + 'ParametersError',
                     });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'update' + type + 'ParametersError',
                 });
-            });
-    }, [
-        studyUuid,
-        type,
-        backendUpdateParameters,
-        backendFetchParameters,
-        snackError,
-        setParams,
-    ]);
+        },
+        [
+            studyUuid,
+            type,
+            backendUpdateParameters,
+            backendFetchParameters,
+            snackError,
+            setParams,
+        ]
+    );
 
     useEffect(() => {
         if (studyUuid) {
@@ -388,6 +418,7 @@ const TAB_VALUES = {
     securityAnalysisParamsTabValue: 'SecurityAnalysis',
     sensitivityAnalysisParamsTabValue: 'SensitivityAnalysis',
     shortCircuitParamsTabValue: 'ShortCircuit',
+    dynamicSimulationParamsTabValue: 'DynamicSimulation',
     advancedParamsTabValue: 'Advanced',
 };
 
@@ -435,29 +466,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
-    function TabPanel(props) {
-        const { children, value, index, ...other } = props;
-        return (
-            <Typography
-                component="div"
-                role="tabpanel"
-                hidden={value !== index}
-                id={`simple-tabpanel-${index}`}
-                aria-labelledby={`simple-tab-${index}`}
-                style={{ flexGrow: 1 }}
-                {...other}
-            >
-                {value === index && <Box p={1}>{children}</Box>}
-            </Typography>
-        );
-    }
-
     useEffect(() => {
         setTabValue((oldValue) => {
             if (
                 !enableDeveloperMode &&
                 (oldValue === TAB_VALUES.sensitivityAnalysisParamsTabValue ||
-                    oldValue === TAB_VALUES.shortCircuitParamsTabValue)
+                    oldValue === TAB_VALUES.shortCircuitParamsTabValue ||
+                    oldValue === TAB_VALUES.dynamicSimulationParamsTabValue)
             ) {
                 return TAB_VALUES.securityAnalysisParamsTabValue;
             }
@@ -524,6 +539,17 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 disabled={!studyUuid}
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
+                            />
+                        )}
+                        {enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={
+                                    <FormattedMessage id="DynamicSimulation" />
+                                }
+                                value={
+                                    TAB_VALUES.dynamicSimulationParamsTabValue
+                                }
                             />
                         )}
                         <Tab
@@ -613,6 +639,24 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                             useShortCircuitParameters={
                                                 useShortCircuitParameters
                                             }
+                                        />
+                                    )}
+                                </TabPanel>
+                            )
+                        }
+                        {
+                            //To be removed when DynamicSimulation is not in developer mode only.
+                            enableDeveloperMode && (
+                                <TabPanel
+                                    value={tabValue}
+                                    index={
+                                        TAB_VALUES.dynamicSimulationParamsTabValue
+                                    }
+                                >
+                                    {studyUuid && (
+                                        <DynamicSimulationParameters
+                                            user={user}
+                                            hideParameters={hideParameters}
                                         />
                                     )}
                                 </TabPanel>
