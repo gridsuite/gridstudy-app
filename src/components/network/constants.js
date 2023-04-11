@@ -145,6 +145,7 @@ export const BUILD_STATUS = {
     BUILT: 'BUILT',
     BUILT_WITH_WARNING: 'BUILT_WITH_WARNING',
     BUILT_WITH_ERROR: 'BUILT_WITH_ERROR',
+};
 
 export const SWITCH_TYPE = {
     BREAKER: { id: 'BREAKER', label: 'Breaker' },
