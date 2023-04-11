@@ -116,7 +116,10 @@ export const DropDown = ({ value, label, values, callback, renderValue }) => {
                             {renderValue ? (
                                 renderValue(value)
                             ) : (
-                                <FormattedMessage id={value} />
+                                <FormattedMessage
+                                    id={value}
+                                    defaultMessage={value}
+                                />
                             )}
                         </MenuItem>
                     ))}
