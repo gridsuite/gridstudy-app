@@ -15,9 +15,21 @@ import { OverflowableText } from '@gridsuite/commons-ui';
 import { CopyType } from '../../network-modification-tree-pane';
 import { getLocalStorageTheme } from '../../../redux/local-storage';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
+import { BUILD_STATUS } from '../../network/constants';
 
-const VALID_NODE_BANNER_COLOR = '#74a358';
-const INVALID_NODE_BANNER_COLOR = '#9196a1';
+const BUILT_NODE_BANNER_COLOR = '#74a358';
+const BUILT_WITH_WARNING_NODE_BANNER_COLOR = '#FFA500';
+const BUILT_WITH_ERROR_NODE_BANNER_COLOR = '#DC143C';
+const NOT_BUILT_NODE_BANNER_COLOR = '#9196a1';
+
+const buildBanner = {
+    display: 'flex',
+    height: '100%',
+    width: '15%',
+    position: 'absolute',
+    top: '0px',
+    left: '0px',
+};
 
 const useStyles = makeStyles((theme) => ({
     networkModificationSelected: {
@@ -64,22 +76,20 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 'auto',
     },
     buildBannerOK: {
-        display: 'flex',
-        height: '100%',
-        width: '15%',
-        position: 'absolute',
-        top: '0px',
-        left: '0px',
-        background: VALID_NODE_BANNER_COLOR,
+        ...buildBanner,
+        background: BUILT_NODE_BANNER_COLOR,
     },
-    buildBannerInvalid: {
-        display: 'flex',
-        height: '100%',
-        width: '15%',
-        position: 'absolute',
-        top: '0px',
-        left: '0px',
-        background: INVALID_NODE_BANNER_COLOR,
+    buildBannerWarning: {
+        ...buildBanner,
+        background: BUILT_WITH_WARNING_NODE_BANNER_COLOR,
+    },
+    buildBannerError: {
+        ...buildBanner,
+        background: BUILT_WITH_ERROR_NODE_BANNER_COLOR,
+    },
+    buildBannerNotBuilt: {
+        ...buildBanner,
+        background: NOT_BUILT_NODE_BANNER_COLOR,
     },
     margin: {
         marginLeft: theme.spacing(1.25),
@@ -117,6 +127,19 @@ const NetworkModificationNode = (props) => {
             : 'unset';
     };
 
+    function getClassForBanner(buildStatus) {
+        switch (buildStatus) {
+            case BUILD_STATUS.BUILT:
+                return classes.buildBannerOK;
+            case BUILD_STATUS.BUILT_WITH_ERROR:
+                return classes.buildBannerError;
+            case BUILD_STATUS.BUILT_WITH_WARNING:
+                return classes.buildBannerWarning;
+            default:
+                return classes.buildBannerNotBuilt;
+        }
+    }
+
     return (
         <>
             <Handle
@@ -141,13 +164,7 @@ const NetworkModificationNode = (props) => {
                         : classes.networkModification
                 }
             >
-                <div
-                    className={
-                        props.data.buildStatus === 'BUILT'
-                            ? classes.buildBannerOK
-                            : classes.buildBannerInvalid
-                    }
-                >
+                <div className={getClassForBanner(props.data.buildStatus)}>
                     {props.data.buildStatus === 'BUILDING' && (
                         <CircularProgress
                             size={20}
