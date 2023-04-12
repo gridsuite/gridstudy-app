@@ -117,7 +117,7 @@ export const DropDown = ({ value, label, values, callback, renderValue }) => {
                             {renderValue ? (
                                 renderValue(value)
                             ) : (
-                            <FormattedMessage id={value} />
+                                <FormattedMessage id={value} />
                             )}
                         </MenuItem>
                     ))}
@@ -305,36 +305,36 @@ export const useParametersBackend = (
 
     const resetParameters = useCallback(
         (callBack) => {
-        backendUpdateParameters(studyUuid, null)
-            .then(() => {
-                return backendFetchParameters(studyUuid)
+            backendUpdateParameters(studyUuid, null)
+                .then(() => {
+                    return backendFetchParameters(studyUuid)
                         .then((params) => {
                             setParams(params);
                             if (callBack) {
                                 callBack();
                             }
                         })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'fetch' + type + 'ParametersError',
+                        .catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'fetch' + type + 'ParametersError',
+                            });
                         });
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'update' + type + 'ParametersError',
                     });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'update' + type + 'ParametersError',
                 });
-            });
         },
         [
-        studyUuid,
-        type,
-        backendUpdateParameters,
-        backendFetchParameters,
-        snackError,
-        setParams,
+            studyUuid,
+            type,
+            backendUpdateParameters,
+            backendFetchParameters,
+            snackError,
+            setParams,
         ]
     );
 
@@ -343,7 +343,9 @@ export const useParametersBackend = (
             if (backendFetchParameters) {
                 backendFetchParameters(studyUuid)
                     .then((params) => {
-                        console.trace('useParametersBackend.then.common', { params });
+                        console.trace('useParametersBackend.then.common', {
+                            params,
+                        });
                         setParams(params);
                     })
                     .catch((error) => {
@@ -371,7 +373,9 @@ export const useParametersBackend = (
             if (backendFetchSpecificParameters) {
                 backendFetchSpecificParameters()
                     .then((specificParams) => {
-                        console.debug('useParametersBackend.then.spec', { specificParams });
+                        console.debug('useParametersBackend.then.spec', {
+                            specificParams,
+                        });
                         setSpecificParamsDescription(specificParams);
                     })
                     .catch((error) => {

@@ -400,7 +400,10 @@ const SpecificLoadFlowParameters = ({
     );
 
     const paramsComponent = useMemo(() => {
-        console.debug('SpecificLoadFlowParameters.1', { currentParameters, lfParams });
+        console.debug('SpecificLoadFlowParameters.1', {
+            currentParameters,
+            lfParams,
+        });
         return (
             <FlatParameters
                 paramsAsArray={specificParamsDescription}
@@ -460,7 +463,7 @@ export const LoadFlowParameters = ({
         params,
         updateParameters,
         resetParameters,
-        specificParamsDescription,
+        specificParamsDescriptions,
     ] = parametersBackend;
 
     const updateLfProviderCallback = useCallback(
@@ -475,6 +478,7 @@ export const LoadFlowParameters = ({
         resetProvider();
     }, [resetParameters, resetProvider]);
 
+    const specificParamsDescription = specificParamsDescriptions[provider];
     const specificLoadFlowParameters = useMemo(() => {
         return (
             <SpecificLoadFlowParameters
@@ -483,15 +487,16 @@ export const LoadFlowParameters = ({
                 showSpecificLfParams={showSpecificLfParams}
                 setShowSpecificLfParams={setShowSpecificLfParams}
                 currentProvider={provider}
-                specificParamsDescription={specificParamsDescription[provider]}
+                specificParamsDescription={specificParamsDescription}
             />
         );
     }, [
         showSpecificLfParams,
         params,
-        specificParamsDescription,
         provider,
-        specificParamsDescription?.[provider],
+        specificParamsDescription,
+        updateParameters,
+        setShowSpecificLfParams,
     ]);
 
     return (

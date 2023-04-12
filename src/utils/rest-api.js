@@ -1692,7 +1692,8 @@ export function getLoadFlowParameters(studyUuid) {
 
 export function getLoadFlowSpecificParametersDescription() {
     console.info('get load flow specific parameters description');
-    const getLoadFlowSpecificParameterssUrl = getLoadFlowUrl() + 'specific-parameters';
+    const getLoadFlowSpecificParameterssUrl =
+        getLoadFlowUrl() + 'specific-parameters';
     console.debug(getLoadFlowSpecificParameterssUrl);
     return backendFetchJson(getLoadFlowSpecificParameterssUrl);
 }
