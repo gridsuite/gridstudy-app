@@ -108,6 +108,7 @@ const VoltageRegulation = ({
             label={'QPercentText'}
             adornment={percentageTextField}
             previousValue={previousValues?.qPercent}
+            clearable={true}
         />
     );
 
