@@ -169,6 +169,7 @@ const GeneratorModificationForm = ({
             label={'TransientReactance'}
             adornment={OhmAdornment}
             previousValue={generatorToModify?.transientReactance}
+            clearable={true}
         />
     );
 
@@ -178,6 +179,7 @@ const GeneratorModificationForm = ({
             label={'TransformerReactance'}
             adornment={OhmAdornment}
             previousValue={generatorToModify?.stepUpTransformerReactance}
+            clearable={true}
         />
     );
 
@@ -187,6 +189,7 @@ const GeneratorModificationForm = ({
             label={'PlannedActivePowerSetPoint'}
             adornment={ActivePowerAdornment}
             previousValue={generatorToModify?.plannedActivePowerSetPoint}
+            clearable={true}
         />
     );
 
@@ -195,6 +198,7 @@ const GeneratorModificationForm = ({
             name={STARTUP_COST}
             label={'StartupCost'}
             previousValue={generatorToModify?.startupCost}
+            clearable={true}
         />
     );
 
@@ -203,6 +207,7 @@ const GeneratorModificationForm = ({
             name={MARGINAL_COST}
             label={'MarginalCost'}
             previousValue={generatorToModify?.marginalCost}
+            clearable={true}
         />
     );
 
@@ -211,6 +216,7 @@ const GeneratorModificationForm = ({
             name={PLANNED_OUTAGE_RATE}
             label={'PlannedOutageRate'}
             previousValue={generatorToModify?.plannedOutageRate}
+            clearable={true}
         />
     );
 
@@ -219,6 +225,7 @@ const GeneratorModificationForm = ({
             name={FORCED_OUTAGE_RATE}
             label={'ForcedOutageRate'}
             previousValue={generatorToModify?.forcedOutageRate}
+            clearable={true}
         />
     );
 
