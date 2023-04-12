@@ -323,6 +323,7 @@ function SingleLineDiagramContent(props) {
         theme,
         modificationInProgress,
         props.loadingState,
+        locallySwitchedBreaker,
         handleBreakerClick,
         handleNextVoltageLevelClick,
         diagramSizeSetter,

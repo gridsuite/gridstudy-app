@@ -264,4 +264,9 @@ export const useDiagram = () => {
     };
 };
 
-export const NoSvg = { svg: null, metadata: null, additionalMetadata: null, error: null };
+export const NoSvg = {
+    svg: null,
+    metadata: null,
+    additionalMetadata: null,
+    error: null,
+};
