@@ -327,8 +327,6 @@ const AdvancedLoadFlowParameters = ({
     );
 };
 
-var spfCount = 0;
-
 const SpecificLoadFlowParameters = ({
     lfParams,
     commitLFParameter,
@@ -337,20 +335,6 @@ const SpecificLoadFlowParameters = ({
     currentProvider,
     specificParamsDescription,
 }) => {
-    console.debug('SpecificLoadFlowParameters', specificParamsDescription);
-    const [instanceId] = useState(() => {
-        console.debug('SpecificLoadFlowParameters.instanceInit', spfCount);
-        spfCount += 1;
-        return spfCount;
-    });
-    useEffect(() => {
-        console.debug('SpecificLoadFlowParameters.mount', instanceId, spfCount);
-        return () => {
-            console.debug('SpecificLoadFlowParameters.unmount', instanceId);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     const [currentParameters, setCurrentParameters] = useState(null);
     const defaultValues = useMemo(() => {
         return extractDefaultMap(specificParamsDescription);
@@ -365,13 +349,6 @@ const SpecificLoadFlowParameters = ({
 
     const onChange = useCallback(
         (paramName, value, isEdit) => {
-            console.debug('SpecificLoadFlowParameters.onChange', {
-                paramName,
-                value,
-                isEdit,
-                instanceId,
-                lfParams,
-            });
             if (isEdit) return;
             setCurrentParameters((prevCurrentParameters) => {
                 const nextCurrentParameters = {
@@ -390,20 +367,10 @@ const SpecificLoadFlowParameters = ({
                 return nextCurrentParameters;
             });
         },
-        [
-            commitLFParameter,
-            currentProvider,
-            defaultValues,
-            instanceId,
-            lfParams,
-        ]
+        [commitLFParameter, currentProvider, defaultValues, lfParams]
     );
 
     const paramsComponent = useMemo(() => {
-        console.debug('SpecificLoadFlowParameters.1', {
-            currentParameters,
-            lfParams,
-        });
         return (
             <FlatParameters
                 paramsAsArray={specificParamsDescription}
@@ -411,7 +378,7 @@ const SpecificLoadFlowParameters = ({
                 onChange={onChange}
             />
         );
-    }, [specificParamsDescription, currentParameters, onChange, lfParams]);
+    }, [specificParamsDescription, currentParameters, onChange]);
 
     return (
         <>
@@ -425,8 +392,6 @@ const SpecificLoadFlowParameters = ({
     );
 };
 
-let instanceCount = 0;
-
 export const LoadFlowParameters = ({
     hideParameters,
     parametersBackend,
@@ -435,24 +400,6 @@ export const LoadFlowParameters = ({
     setShowAdvancedLfParams,
     setShowSpecificLfParams,
 }) => {
-    const [instanceId] = useState(() => {
-        console.debug('LoadFlowParameters.instanceInit', instanceCount);
-        instanceCount += 1;
-        return instanceCount;
-    });
-    console.debug('LoadFlowParameters', {
-        instanceId,
-        showAdvancedLfParams,
-        showSpecificLfParams,
-    });
-    useEffect(() => {
-        console.debug('LoadFlowParameters.mount', instanceId, instanceCount);
-        return () => {
-            console.debug('LoadFlowParameters.unmount', instanceId);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
     const classes = useStyles();
 
     const [
