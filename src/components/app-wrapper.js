@@ -132,6 +132,13 @@ const AppWrapperWithRedux = () => {
         <IntlProvider
             locale={computedLanguage}
             messages={messages[computedLanguage]}
+            onError={(err) => {
+                if (err.code === 'MISSING_TRANSLATION') {
+                    console.warn('Missing translation', err.message);
+                    return;
+                }
+                throw err;
+            }}
         >
             <BrowserRouter basename={basename}>
                 <StyledEngineProvider injectFirst>
