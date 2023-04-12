@@ -14,10 +14,10 @@ import {
     VALUE,
 } from '../../../utils/field-constants';
 
-function checkUniqueProperties(properties) {
+export const checkUniqueProperties = (properties) => {
     const validValues = properties.filter((v) => v?.name && v?.value);
     return validValues.length === new Set(validValues.map((v) => v.name)).size;
-}
+};
 
 export const fetchPredefinedProperties = () => {
     return fetchAppsAndUrls().then((res) => {

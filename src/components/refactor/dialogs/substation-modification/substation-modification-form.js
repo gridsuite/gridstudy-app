@@ -17,6 +17,7 @@ import TextInput from '../../rhf-inputs/text-input';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
+    DELETION_MARK,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     NAME,
@@ -48,6 +49,7 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
             [NAME]: propKey,
             [VALUE]: null,
             [PREVIOUS_VALUE]: propValue,
+            [DELETION_MARK]: false,
         };
     };
 
@@ -81,7 +83,7 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
                         equipmentProperties &&
                         property[NAME] in equipmentProperties
                             ? equipmentProperties[property[NAME]]
-                            : undefined,
+                            : null,
                 });
             });
 
@@ -120,12 +122,55 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
     const deleteIconDisableCallback = useCallback(
         (idx) => {
             const props = getValues(`${ADDITIONAL_PROPERTIES}`);
-            if (typeof props[idx] !== 'undefined') {
-                return !!props[idx][PREVIOUS_VALUE];
+            if (props && typeof props[idx] !== 'undefined') {
+                return props[idx][DELETION_MARK];
             }
             return false;
         },
         [getValues]
+    );
+
+    const deleteCallback = useCallback(
+        (idx) => {
+            console.log('deleteCallback', idx);
+            const props = getValues(`${ADDITIONAL_PROPERTIES}`);
+            let removeLine = true;
+            if (props && typeof props[idx] !== 'undefined') {
+                const modificationProperties = getValues(
+                    `${ADDITIONAL_PROPERTIES}`
+                );
+                let newModificationProperties = [];
+                modificationProperties.forEach(function (property, forEachIdx) {
+                    console.log(
+                        'deleteCallback property',
+                        forEachIdx,
+                        property
+                    );
+                    if (
+                        forEachIdx !== idx ||
+                        property[PREVIOUS_VALUE] === null
+                    ) {
+                        newModificationProperties.push({ ...property });
+                        console.log('deleteCallback removeLine', forEachIdx);
+                    } else {
+                        // line is not deleted, but just marked
+                        newModificationProperties.push({
+                            ...property,
+                            [DELETION_MARK]: true,
+                        });
+                        removeLine = false;
+                        console.log(
+                            'deleteCallback dont removeLine',
+                            forEachIdx
+                        );
+                    }
+                });
+                setValue(`${ADDITIONAL_PROPERTIES}`, newModificationProperties);
+            }
+            console.log('deleteCallback return', removeLine);
+            return removeLine;
+        },
+        [getValues, setValue]
     );
 
     useEffect(() => {
@@ -202,6 +247,7 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
             addButtonLabel={'AddProperty'}
             initialValue={getPropertyInitialValues()}
             deleteIconDisableCallback={deleteIconDisableCallback}
+            deleteCallback={deleteCallback}
         />
     );
 

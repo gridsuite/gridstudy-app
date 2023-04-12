@@ -14,13 +14,14 @@ import yup from '../../utils/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
+    DELETION_MARK,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     NAME,
     PREVIOUS_VALUE,
     VALUE,
 } from '../../utils/field-constants';
-import { getPropertiesSchema } from '../substation-creation/property/property-utils';
+import { checkUniqueProperties } from '../substation-creation/property/property-utils';
 import SubstationModificationForm from './substation-modification-form';
 import { modifySubstation } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
@@ -29,7 +30,25 @@ const schema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().nullable().required(),
     [EQUIPMENT_NAME]: yup.string(),
     [COUNTRY]: yup.string().nullable(),
-    ...getPropertiesSchema(),
+    [ADDITIONAL_PROPERTIES]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [NAME]: yup.string().nullable().required(),
+                [VALUE]: yup
+                    .string()
+                    .nullable()
+                    .when([PREVIOUS_VALUE], {
+                        is: (prev) => prev === null,
+                        then: (schema) => schema.required(),
+                    }),
+                [PREVIOUS_VALUE]: yup.string().nullable(),
+                [DELETION_MARK]: yup.boolean(),
+            })
+        )
+        .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
+            checkUniqueProperties(values)
+        ),
 });
 
 const getProperties = (properties) => {
@@ -38,7 +57,8 @@ const getProperties = (properties) => {
               return {
                   [NAME]: p[0],
                   [VALUE]: p[1],
-                  [PREVIOUS_VALUE]: undefined,
+                  [PREVIOUS_VALUE]: null,
+                  [DELETION_MARK]: false,
               };
           })
         : null;

@@ -8,7 +8,12 @@
 import { gridItem, italicFontTextField } from '../../../../dialogs/dialogUtils';
 import React, { useEffect, useMemo, useState } from 'react';
 import AutocompleteInput from '../../../rhf-inputs/autocomplete-input';
-import { NAME, VALUE, PREVIOUS_VALUE } from '../../../utils/field-constants';
+import {
+    NAME,
+    VALUE,
+    PREVIOUS_VALUE,
+    DELETION_MARK,
+} from '../../../utils/field-constants';
 import { fetchPredefinedProperties } from './property-utils';
 import { useWatch } from 'react-hook-form';
 import TextInput from '../../../rhf-inputs/text-input';
@@ -18,6 +23,9 @@ const PropertyForm = ({ name, index }) => {
     const watchPropertyName = useWatch({ name: `${name}.${index}.${NAME}` });
     const watchPropertyPreviousValue = useWatch({
         name: `${name}.${index}.${PREVIOUS_VALUE}`,
+    });
+    const watchPropertyDeletionMark = useWatch({
+        name: `${name}.${index}.${DELETION_MARK}`,
     });
 
     const predefinedNames = useMemo(() => {
@@ -66,6 +74,16 @@ const PropertyForm = ({ name, index }) => {
         />
     );
 
+    const valueReadOnlyField = (
+        <TextInput
+            name={`${name}.${index}.${VALUE}`}
+            label={'PropertyValue'}
+            formProps={italicFontTextField}
+            readonly={true}
+            previousValue={watchPropertyPreviousValue}
+        />
+    );
+
     function renderPropertyLine() {
         console.log('DBR myRender Property', watchPropertyPreviousValue);
         return (
@@ -73,7 +91,9 @@ const PropertyForm = ({ name, index }) => {
                 {watchPropertyPreviousValue
                     ? gridItem(nameReadOnlyField, 5)
                     : gridItem(nameField, 5)}
-                {gridItem(valueField, 5)}
+                {watchPropertyDeletionMark
+                    ? gridItem(valueReadOnlyField, 5)
+                    : gridItem(valueField, 5)}
             </>
         );
     }

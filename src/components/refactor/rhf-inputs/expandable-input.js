@@ -25,6 +25,7 @@ const ExpandableInput = ({
     addButtonLabel,
     initialValue, // Initial value to display when we add a new entry to array
     deleteIconDisableCallback = null,
+    deleteCallback = null,
 }) => {
     const classes = useStyles();
     const {
@@ -49,10 +50,18 @@ const ExpandableInput = ({
                             key={value.id}
                             disabled={
                                 deleteIconDisableCallback
-                                  ? deleteIconDisableCallback(idx)
-                                  : false
+                                    ? deleteIconDisableCallback(idx)
+                                    : false
                             }
-                            onClick={() => remove(idx)}
+                            onClick={() => {
+                                if (deleteCallback) {
+                                    if (deleteCallback(idx) === true) {
+                                        remove(idx);
+                                    }
+                                } else {
+                                    remove(idx);
+                                }
+                            }}
                         >
                             <DeleteIcon />
                         </IconButton>
