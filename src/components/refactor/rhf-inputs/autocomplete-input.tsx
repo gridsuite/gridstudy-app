@@ -22,7 +22,7 @@ interface AutocompleteProps {
     forcePopupIcon?: boolean;
     getOptionLabel?: (val: any) => any;
     isOptionEqualToValue?: (val1: any, val2: any) => boolean;
-    size?: string;
+    size?: 'small' | 'medium';
 }
 
 interface AutocompleteInputProps extends AutocompleteProps {
@@ -113,7 +113,7 @@ const AutocompleteInput: FC<AutocompleteInputProps> = ({
                                 validationSchema,
                                 getValues()
                             ) &&
-                            !props?.disabled &&
+                            //!props?.disabled &&
                             !removeOptional,
                     })}
                     FormHelperTextProps={{
@@ -135,7 +135,6 @@ const AutocompleteInput: FC<AutocompleteInputProps> = ({
 AutocompleteInput.propTypes = {
     name: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    isRequired: PropTypes.bool,
     options: PropTypes.array.isRequired,
     outputTransform: PropTypes.func,
     inputTransform: PropTypes.func,

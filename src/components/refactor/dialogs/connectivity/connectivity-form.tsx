@@ -39,6 +39,13 @@ import {
 } from './connectivity-form-utils';
 import PropTypes from 'prop-types';
 
+//@ts-strict
+
+interface BusBarSectionInterface {
+    id: Array<string>;
+    name: string;
+}
+
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
  * @param id optional id that has to be defined if the component is used more than once in a form
@@ -64,10 +71,11 @@ const ConnectivityForm = ({
     currentNode,
     onVoltageLevelChangeCallback,
 }) => {
+    const name: string = null;
     const currentNodeUuid = currentNode?.id;
-    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
-        []
-    );
+    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState<
+        Array<BusBarSectionInterface>
+    >([]);
 
     const [isDiagramPaneOpen, setIsDiagramPaneOpen] = useState(false);
 
@@ -88,13 +96,35 @@ const ConnectivityForm = ({
             )?.topologyKind;
             switch (voltageLevelTopologyKind) {
                 case 'NODE_BREAKER':
-                    fetchBusbarSectionsForVoltageLevel(
-                        studyUuid,
-                        currentNodeUuid,
-                        watchVoltageLevelId
-                    ).then((busbarSections) => {
-                        setBusOrBusbarSectionOptions(busbarSections);
-                    });
+                    // fetchBusbarSectionsForVoltageLevel(
+                    //     studyUuid,
+                    //     currentNodeUuid,
+                    //     watchVoltageLevelId
+                    // );
+                    fetch('http://localhost:3002/').then((result) =>
+                        result
+                            .json()
+                            .then(
+                                (jsonR) =>
+                                    jsonR as Array<BusBarSectionInterface>
+                            )
+                            .then(
+                                (
+                                    busbarSections: Array<BusBarSectionInterface>
+                                ) => {
+                                    console.log('RESULT', busbarSections);
+                                    busbarSections.forEach((bbs) => {
+                                        console.log(
+                                            'type of id',
+                                            typeof bbs.id
+                                        );
+                                    });
+                                    setBusOrBusbarSectionOptions(
+                                        busbarSections
+                                    );
+                                }
+                            )
+                    );
                     break;
 
                 case 'BUS_BREAKER':
@@ -250,11 +280,11 @@ const ConnectivityForm = ({
     const conditionalSize = withPosition && withDirectionsInfos ? 4 : gridSize;
     return (
         <>
-            <Grid container direction={direction || 'row'} spacing={2}>
-                <Grid item xs={conditionalSize} align="start">
+            <Grid container spacing={2}>
+                <Grid item xs={conditionalSize}>
                     {newVoltageLevelField}
                 </Grid>
-                <Grid item xs={conditionalSize} align="start">
+                <Grid item xs={conditionalSize}>
                     {newBusOrBusbarSectionField}
                 </Grid>
 
@@ -262,19 +292,19 @@ const ConnectivityForm = ({
                     <>
                         {withPosition && (
                             <>
-                                <Grid item xs={gridSize} align="start" />
-                                <Grid item xs={gridSize} align="start" />
+                                <Grid item xs={gridSize} />
+                                <Grid item xs={gridSize} />
                             </>
                         )}
-                        <Grid item xs={conditionalSize} align="start">
+                        <Grid item xs={conditionalSize}>
                             {newConnectionNameField}
                         </Grid>
-                        <Grid item xs={conditionalSize} align="start">
+                        <Grid item xs={conditionalSize}>
                             {newConnectionDirectionField}
                         </Grid>
                         {withPosition && (
                             <>
-                                <Grid xs={conditionalSize} item align="start">
+                                <Grid xs={conditionalSize} item>
                                     {newConnectionPositionField}
                                 </Grid>
                             </>

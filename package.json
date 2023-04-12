@@ -94,6 +94,7 @@
         "eslint-plugin-prettier": "^4.0.0",
         "fork-ts-checker-webpack-plugin": "^6.5.3",
         "http-proxy-middleware": "^2.0.0",
-        "prettier": "^2.0.5"
+        "prettier": "^2.0.5",
+        "typescript-strict-plugin": "^2.1.0"
     }
 }

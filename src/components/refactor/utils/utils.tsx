@@ -9,13 +9,14 @@ import { getIn } from 'yup/lib/util/reach';
 import { toNumber } from '../../util/validation-functions';
 
 export const isFieldRequired = (fieldName, schema, values) => {
-    const { schema: fieldSchema, parent: parentValues } =
-        getIn(schema, fieldName, values) || {};
+    return false;
+    // const { schema: fieldSchema, parent: parentValues } =
+    //     getIn(schema, fieldName, values) || {};
 
-    return (
-        fieldSchema.resolve({ parent: parentValues })?.exclusiveTests
-            ?.required === true
-    );
+    // return (
+    //     fieldSchema.resolve({ parent: parentValues })?.exclusiveTests
+    //         ?.required === true
+    // );
 
     //static way, not working when using "when" in schema, but does not need form values
     //return yup.reach(schema, fieldName)?.exclusiveTests?.required === true;
