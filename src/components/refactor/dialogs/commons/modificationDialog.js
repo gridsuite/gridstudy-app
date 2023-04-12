@@ -17,6 +17,9 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../../../dialogs/inputs/input-hooks';
+import FindInPageIcon from '@mui/icons-material/FindInPage';
+import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
+
 import { useFormContext } from 'react-hook-form';
 import SubmitButton from './submitButton';
 
@@ -27,6 +30,7 @@ import SubmitButton from './submitButton';
  * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
  * @param {CallbackEvent} onSave callback when saving the modification
  * @param {Boolean} disabledSave to control disabled prop of the validate button
+ * @param {Object} onOpenDictionaryDialog Object managing dictionary
  * @param {Object} searchCopy Object managing search equipments for copy
  * @param {ReactElement} subtitle subtitle component to put inside DialogTitle
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
@@ -38,6 +42,7 @@ const ModificationDialog = ({
     onSave,
     onValidationError,
     disabledSave = false,
+    onOpenDictionaryDialog,
     searchCopy,
     subtitle,
     onValidated,
@@ -45,9 +50,16 @@ const ModificationDialog = ({
 }) => {
     const { handleSubmit } = useFormContext();
 
+    const dictionaryButton = useButtonWithTooltip({
+        label: 'DictionaryButtonTooltip',
+        handleClick: onOpenDictionaryDialog,
+        icon: <AutoStoriesOutlinedIcon />,
+    });
+
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: searchCopy?.handleOpenSearchDialog,
+        icon: <FindInPageIcon />,
     });
 
     const closeAndClear = (event, reason) => {
@@ -88,6 +100,9 @@ const ModificationDialog = ({
                     <Grid item xs={11}>
                         <FormattedMessage id={titleId} />
                     </Grid>
+                    {onOpenDictionaryDialog && (
+                        <Grid item> {dictionaryButton} </Grid>
+                    )}
                     {searchCopy && <Grid item> {copyEquipmentButton} </Grid>}
                 </Grid>
                 {subtitle}

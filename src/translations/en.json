@@ -845,5 +845,8 @@
 
     "YupRequired": "This field is required",
     "YupNotTypeNumber": "This field only accepts numeric values",
-    "YupNotTypeDefault": "Field value format is incorrect"
+    "YupNotTypeDefault": "Field value format is incorrect",
+
+    "DictionaryButtonTooltip": "Open catalog",
+    "LineDictionaryDialogTitle": "Define line segments"
 }

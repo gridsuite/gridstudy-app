@@ -45,6 +45,8 @@ import {
 import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
+import LineDictionaryDialog from '../line-dictionary/line-dictionary-dialog';
+
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
@@ -110,6 +112,13 @@ const LineCreationDialog = ({
     );
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    const [isOpenLineDictionaryDialog, setOpenLineDictionaryDialog] =
+        useState(false);
+
+    const handleCloseLineDictionaryDialog = () => {
+        setOpenLineDictionaryDialog(false);
+    };
 
     const schema = yup
         .object()
@@ -375,6 +384,7 @@ const LineCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
+                onOpenDictionaryDialog={() => setOpenLineDictionaryDialog(true)}
                 searchCopy={searchCopy}
                 PaperProps={{
                     sx: {
@@ -410,6 +420,10 @@ const LineCreationDialog = ({
                     equipmentType={EQUIPMENT_TYPES.LINE.type}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                />
+                <LineDictionaryDialog
+                    open={isOpenLineDictionaryDialog}
+                    onClose={handleCloseLineDictionaryDialog}
                 />
             </ModificationDialog>
         </FormProvider>

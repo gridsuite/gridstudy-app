@@ -867,6 +867,8 @@
     "grid.inRangeStart": "Début",
     "grid.inRangeEnd": "Fin",
     "grid.filterOoo": "Filtrer...",
-    "grid.noRowsToShow": "Aucune Donnée"
+    "grid.noRowsToShow": "Aucune Donnée",
     
+    "DictionaryButtonTooltip": "Ouvrir le catalogue",
+    "LineDictionaryDialogTitle": "Définir les segments de ligne"
 }
