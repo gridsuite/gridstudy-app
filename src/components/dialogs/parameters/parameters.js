@@ -75,12 +75,8 @@ export const SwitchWithLabel = ({ value, label, callback }) => {
     const classes = useStyles();
     return (
         <>
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
+            <Grid item xs={8} className={classes.parameterName}>
+                <FormattedMessage id={label} />
             </Grid>
             <Grid item container xs={4} className={classes.controlItem}>
                 <Switch
@@ -98,12 +94,8 @@ export const DropDown = ({ value, label, values, callback, renderValue }) => {
     const classes = useStyles();
     return (
         <>
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
+            <Grid item xs={8} className={classes.parameterName}>
+                <FormattedMessage id={label} />
             </Grid>
             <Grid item container xs={4} className={classes.controlItem}>
                 <Select
@@ -133,6 +125,10 @@ export const useStyles = makeStyles((theme) => ({
     },
     minWidthMedium: {
         minWidth: theme.spacing(20),
+    },
+    parameterName: {
+        fontWeight: 'bold',
+        marginTop: theme.spacing(1),
     },
     controlItem: {
         justifyContent: 'flex-end',

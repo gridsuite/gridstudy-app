@@ -7,15 +7,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import {
-    Grid,
-    Box,
-    Typography,
-    Autocomplete,
-    TextField,
-    Chip,
-    Button,
-} from '@mui/material';
+import { Grid, Autocomplete, TextField, Chip, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
 import { CloseButton, LabelledButton, useStyles } from './parameters';
@@ -47,12 +39,8 @@ const CountrySelector = ({ value, label, callback }) => {
 
     return (
         <>
-            <Grid item xs={6}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
+            <Grid item xs={6} className={classes.parameterName}>
+                <FormattedMessage id={label} />
             </Grid>
             <Grid item container xs={6} className={classes.controlItem}>
                 <Autocomplete
@@ -335,6 +323,7 @@ const SpecificLoadFlowParameters = ({
     currentProvider,
     specificParamsDescription,
 }) => {
+    const classes = useStyles();
     const [currentParameters, setCurrentParameters] = useState(null);
     const defaultValues = useMemo(() => {
         return extractDefaultMap(specificParamsDescription);
@@ -373,12 +362,18 @@ const SpecificLoadFlowParameters = ({
     const paramsComponent = useMemo(() => {
         return (
             <FlatParameters
+                className={classes.parameterName}
                 paramsAsArray={specificParamsDescription}
                 initValues={currentParameters}
                 onChange={onChange}
             />
         );
-    }, [specificParamsDescription, currentParameters, onChange]);
+    }, [
+        specificParamsDescription,
+        currentParameters,
+        onChange,
+        classes.parameterName,
+    ]);
 
     return (
         <>
