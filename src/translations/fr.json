@@ -385,6 +385,13 @@
     "updateSensitivityAnalysisParametersError": "Une erreur est survenue lors de la mise a jour des paramètres de l'analyse de sensibilité",
     "fetchSensitivityAnalysisParametersError": "Une erreur est survenue lors de la récupération des paramètres de l'analyse de sensibilité",
 
+    "fetchDynamicSimulationProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs de simulation dynamique",
+    "fetchDynamicSimulationProviderError": "Une erreur est survenue lors de la récupération du fournisseur courant de simulation dynamique",
+    "fetchDefaultDynamicSimulationProviderError": "Une erreur est survenue lors de la récupération du fournisseur de simulation dynamique par défaut",
+    "updateDynamicSimulationProviderError": "Une erreur est survenue lors de la mise a jour du fournisseur courant de simulation dynamique",
+    "updateDynamicSimulationParametersError": "Une erreur est survenue lors de la mise a jour des paramètres de la simulation dynamique",
+    "fetchDynamicSimulationParametersError": "Une erreur est survenue lors de la récupération des paramètres de la simulation dynamique",
+
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre décisionnel",
     "HybridDisplay": "Affichage hybride",
