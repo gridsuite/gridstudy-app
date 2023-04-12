@@ -232,7 +232,11 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                         <CurveParameters
                             key={`curve-${resetRevision}`} // to force remount a component having internal states
                             curves={
-                                parameters ? [...parameters.curves] : undefined
+                                parameters
+                                    ? parameters.curves
+                                        ? [...parameters.curves]
+                                        : []
+                                    : undefined
                             }
                             onUpdateCurve={handleUpdateCurve}
                         />

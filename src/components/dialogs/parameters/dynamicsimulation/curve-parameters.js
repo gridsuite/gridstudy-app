@@ -34,19 +34,38 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const CurveParameters = ({ curves, onUpdateCurve }) => {
+const CurveParameters = ({ curves = [], onUpdateCurve }) => {
+    console.log('CurveParameters re-render', curves);
     const intl = useIntl();
+    const [rowData, setRowData] = useState([]);
 
     // handle open/close/save curve selector dialog
     const [open, setOpen] = useState(false);
     const handleClose = useCallback(() => {
         setOpen((prevState) => !prevState);
     }, []);
-    const handleSave = useCallback(() => {
-        // do save here
-        console.log('handleSave of CurveParameters is called');
-        setOpen((prevState) => !prevState);
-    }, []);
+    const handleSave = useCallback(
+        (newCurves) => {
+            // do save here
+            console.log(
+                'handleSave of CurveParameters is called with newCurves',
+                newCurves
+            );
+            const notYetAddedCurves = newCurves.filter(
+                (curve) =>
+                    !curves.find(
+                        (elem) =>
+                            elem.equipmentId === curve.equipmentId &&
+                            elem.variableId === curve.variableId
+                    )
+            );
+            const newParameterCurves = [...curves, ...notYetAddedCurves];
+            setRowData(newParameterCurves);
+            onUpdateCurve(newParameterCurves);
+            setOpen((prevState) => !prevState);
+        },
+        [curves, onUpdateCurve]
+    );
 
     const quickFilterRef = useRef();
 
@@ -60,10 +79,9 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
         []
     );
     const gridStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
-    const [rowData, setRowData] = useState();
     const [columnDefs, setColumnDefs] = useState([
         {
-            field: 'dynamicModelName',
+            field: 'equipmentName',
             minWidth: '80',
             headerName: intl.formatMessage({
                 id: 'DynamicSimulationCurveDynamicModelHeader',
@@ -112,6 +130,22 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
 
     const handleDelete = useCallback(() => {
         console.log('handleDelete is called');
+        const selectedRows = gridRef.current.api.getSelectedRows();
+        setRowData((prev) => {
+            const remainingRows = prev.filter(
+                (elem) =>
+                    !selectedRows.find(
+                        (selectedElem) =>
+                            elem.equipmentId === selectedElem.equipmentId &&
+                            elem.variableId === selectedElem.variableId
+                    )
+            );
+
+            // update parameter curves
+            onUpdateCurve(remainingRows);
+
+            return remainingRows;
+        });
     }, []);
 
     return (
@@ -141,11 +175,13 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
                         onSelectionChanged={onSelectionChanged}
                     ></AgGridReact>
                 </div>
-                <CurveSelectorDialog
-                    open={open}
-                    onClose={handleClose}
-                    onSave={handleSave}
-                />
+                {open && (
+                    <CurveSelectorDialog
+                        open={open}
+                        onClose={handleClose}
+                        onSave={handleSave}
+                    />
+                )}
             </>
         )
     );

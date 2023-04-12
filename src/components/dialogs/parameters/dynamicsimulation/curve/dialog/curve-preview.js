@@ -99,9 +99,28 @@ const CurvePreview = forwardRef((props, ref) => {
                         return [...prev, ...notYetAddedCurves];
                     });
                 },
+                removeCurves: () => {
+                    const selectedRows = gridRef.current.api.getSelectedRows();
+                    setRowData((prev) => {
+                        const remainingRows = prev.filter(
+                            (elem) =>
+                                !selectedRows.find(
+                                    (selectedElem) =>
+                                        elem.equipmentId ===
+                                            selectedElem.equipmentId &&
+                                        elem.variableId ===
+                                            selectedElem.variableId
+                                )
+                        );
+                        return remainingRows;
+                    });
+                },
+                getCurves: () => {
+                    return rowData;
+                },
             },
         }),
-        []
+        [rowData]
     );
 
     return (

@@ -156,11 +156,11 @@ const EquipmentFilter = forwardRef(
             setSelectedCountries(selectedCountries);
         }, []);
 
-        const [selectedRegions, setSelectedRegions] = useState([]);
-        const [regions, setRegions] = useState([]);
-        const handleRegionChange = useCallback((selectedRegions) => {
+        //const [selectedRegions, setSelectedRegions] = useState([]);
+        //const [regions, setRegions] = useState([]);
+        /*const handleRegionChange = useCallback((selectedRegions) => {
             setSelectedRegions(selectedRegions);
-        }, []);
+        }, []);*/
 
         // load substation from backend to infer countries and (regions from geographicalTags ?? TO CONFIRM)
         useEffect(() => {
@@ -180,7 +180,7 @@ const EquipmentFilter = forwardRef(
                     ];
 
                     // get regions codes
-                    let regions = [
+                    /*let regions = [
                         ...vals.flat().reduce((set, substation) => {
                             substation.geographicalTags &&
                                 set.add(substation.geographicalTags);
@@ -191,15 +191,15 @@ const EquipmentFilter = forwardRef(
                     // TODO : mock regions in case any regions found
                     if (!regions.length) {
                         regions = Object.keys(REGIONS);
-                    }
+                    }*/
 
                     // update countries states
                     setSelectedCountries(countries);
                     setCountries(countries);
 
                     // update regions states
-                    setSelectedRegions(regions);
-                    setRegions(regions);
+                    /*setSelectedRegions(regions);
+                    setRegions(regions);*/
 
                     // update loading state
                     setVoltageLevelsFiltersReady(true);
@@ -450,7 +450,7 @@ const EquipmentFilter = forwardRef(
                     </Grid>
                 </Grid>
                 {/* Region */}
-                <Grid item container sx={{ width: '100%' }}>
+                {/*<Grid item container sx={{ width: '100%' }}>
                     <Grid item xs={6}>
                         <Typography>
                             <FormattedMessage
@@ -466,7 +466,7 @@ const EquipmentFilter = forwardRef(
                             onChange={handleRegionChange}
                         />
                     </Grid>
-                </Grid>
+                </Grid>*/}
                 {/* Tension */}
                 <Grid item container sx={{ width: '100%' }}>
                     <Grid item xs={6}>

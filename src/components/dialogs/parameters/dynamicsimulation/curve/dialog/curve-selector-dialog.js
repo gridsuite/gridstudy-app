@@ -36,8 +36,8 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
     }, [onClose]);
 
     const handleAdd = useCallback(() => {
-        console.log('hanldeAdd is called');
-        onSave();
+        console.log('hanldeAdd is called', previewRef.current.api.getCurves());
+        onSave(previewRef.current.api.getCurves());
     }, [onSave]);
 
     const intl = useIntl();
@@ -73,6 +73,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
     }, []);
     const handleDeleteButton = useCallback(() => {
         console.log('handleDeleteButton called');
+        previewRef.current.api.removeCurves();
     }, []);
 
     const hasSelectedRow = false;

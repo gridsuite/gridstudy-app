@@ -1322,6 +1322,16 @@ export function updateDynamicSimulationProvider(studyUuid, newProvider) {
     });
 }
 
+const CURVES_KEY = 'CURVES_KEY';
+const curvesStorage = {
+    getCurves: function () {
+        return JSON.parse(localStorage.getItem(CURVES_KEY));
+    },
+    updateCurves: function (curves) {
+        localStorage.setItem(CURVES_KEY, JSON.stringify(curves));
+    },
+};
+
 export function fetchDynamicSimulationParameters(studyUuid) {
     console.info(
         `Fetching dynamic simulation parameters on '${studyUuid}' ...`
@@ -1333,93 +1343,8 @@ export function fetchDynamicSimulationParameters(studyUuid) {
 
     const mappingsPromise = getDynamicMappings(studyUuid);
 
-    // fake API curves
-    const curvesPromise = Promise.resolve([
-        {
-            dynamicModelId: '_GEN____1_SM',
-            dynamicModelName: 'GEN    1_SM',
-            variable: 'generator_omegaPu',
-            variableName: 'Omega Pu',
-        },
-        {
-            dynamicModelId: '_GEN____2_SM',
-            dynamicModelName: 'GEN    2_SM',
-            variable: 'generator_omegaPu',
-            variableName: 'Omega Pu',
-        },
-        {
-            dynamicModelId: '_GEN____2_SM',
-            dynamicModelName: 'GEN    2_SM',
-            variable: 'generator_PGen',
-            variableName: 'PGen',
-        },
-        {
-            dynamicModelId: '_GEN____3_SM',
-            dynamicModelName: 'GEN    3_SM',
-            variable: 'generator_omegaPu',
-            variableName: 'Omega Pu',
-        },
-        {
-            dynamicModelId: '_GEN____6_SM',
-            dynamicModelName: 'GEN    6_SM',
-            variable: 'generator_omegaPu',
-            variableName: 'Omega Pu',
-        },
-        {
-            dynamicModelId: '_GEN____3_SM',
-            dynamicModelName: 'GEN    3_SM',
-            variable: 'generator_QGen',
-            variableName: 'QGen',
-        },
-        {
-            dynamicModelId: '_GEN____6_SM',
-            dynamicModelName: 'GEN    6_SM',
-            variable: 'generator_QGen',
-            variableName: 'QGen',
-        },
-        {
-            dynamicModelId: '_GEN____3_SM',
-            dynamicModelName: 'GEN    3_SM',
-            variable: 'generator_UStatorPu',
-            variableName: 'UStatorPu',
-        },
-        {
-            dynamicModelId: '_GEN____6_SM',
-            dynamicModelName: 'GEN    6_SM',
-            variable: 'generator_UStatorPu',
-            variableName: 'UStatorPu',
-        },
-        {
-            dynamicModelId: '_GEN____3_SM',
-            dynamicModelName: 'GEN    3_SM',
-            variable: 'voltageRegulator_EfdPu',
-            variableName: 'Voltage Regulator EfdPu',
-        },
-        {
-            dynamicModelId: '_GEN____6_SM',
-            dynamicModelName: 'GEN    6_SM',
-            variable: 'voltageRegulator_EfdPu',
-            variableName: 'Voltage Regulator EfdPu',
-        },
-        {
-            dynamicModelId: '_LOAD___2_EC',
-            dynamicModelName: 'LOAD   2_EC',
-            variable: 'load_PPu',
-            variableName: 'PPu',
-        },
-        {
-            dynamicModelId: '_LOAD___2_EC',
-            dynamicModelName: 'LOAD   2_EC',
-            variable: 'load_QPu',
-            variableName: 'QPu',
-        },
-        {
-            dynamicModelId: '_BUS____7_TN',
-            dynamicModelName: 'BUS    7_TN',
-            variable: 'Upu_value',
-            variableName: 'Upu',
-        },
-    ]);
+    // fake API get curves
+    const curvesPromise = Promise.resolve(curvesStorage.getCurves());
 
     return Promise.all([
         parametersPromise,
@@ -1435,6 +1360,12 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
+
+    // Fake API post curves
+    console.log('API curves to post', newParams.curves);
+    curvesStorage.updateCurves(newParams.curves);
+    console.log('API curves are added');
+
     return backendFetch(url, {
         method: 'POST',
         headers: {
