@@ -54,7 +54,7 @@ import GeneratorModificationDialog from 'components/refactor/dialogs/generator/m
 import LoadModificationDialog from '../../refactor/dialogs/load-modification/load-modification-dialog';
 
 const SingleLineDiagramContent = forwardRef((props, ref) => {
-    const { studyUuid } = props;
+    const { studyUuid, setWarning } = props;
     const [svg, setSvg] = useState(NoSvg);
     const classes = useDiagramStyles();
     const { diagramSizeSetter } = props;
@@ -373,6 +373,14 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         diagramSizeSetter,
     ]);
 
+    const handleMissingEquipment = useCallback(() => {
+        const isVoltageLevel = DiagramType.VOLTAGE_LEVEL === props.svgType;
+        const message = isVoltageLevel
+            ? 'VoltageLevelNotFound'
+            : 'SubstationNotFound';
+        setWarning(props.diagramId, message);
+    }, [setWarning, props.svgType, props.diagramId]);
+
     useEffect(() => {
         if (props.svgUrl) {
             if (!isNodeinNotifs) {
@@ -398,15 +406,14 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                             error: error.message,
                             svgUrl: props.svgUrl,
                         });
-                        let msg;
-                        if (error.status === 404) {
-                            msg = `Voltage level not found`;
+                        // if svg is not found, an empty SLD with a warning message is now displayed. No need to show snackError.
+                        if (error.status !== 404) {
+                            snackError({
+                                messageTxt: error.message,
+                            });
                         } else {
-                            msg = error.message;
+                            handleMissingEquipment();
                         }
-                        snackError({
-                            messageTxt: msg,
-                        });
                     })
                     .finally(() => {
                         setLoadingState(false);
@@ -424,6 +431,8 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         intlRef,
         props.svgType,
         isNodeinNotifs,
+        handleMissingEquipment,
+        props.diagramId,
     ]);
 
     /**
@@ -489,6 +498,7 @@ SingleLineDiagramContent.propTypes = {
     svgUrl: PropTypes.string,
     diagramSizeSetter: PropTypes.func,
     diagramId: PropTypes.string,
+    setWarning: PropTypes.func,
 };
 
 export default SingleLineDiagramContent;
