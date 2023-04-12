@@ -6,7 +6,11 @@
  */
 
 import { mapEquipmentsCreated } from '../../redux/actions';
-import { fetchMapLines, fetchMapSubstations } from '../../utils/rest-api';
+import {
+    fetchMapHvdcLines,
+    fetchMapLines,
+    fetchMapSubstations,
+} from '../../utils/rest-api';
 import { equipments } from './network-equipments';
 import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
@@ -23,6 +27,10 @@ export default class MapEquipments {
     lines = [];
 
     linesById = new Map();
+
+    hvdcLines = [];
+
+    hvdcLinesById = new Map();
 
     voltageLevels = [];
 
@@ -50,6 +58,22 @@ export default class MapEquipments {
         fetchMapLines(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.dispatch(mapEquipmentsCreated(this, val, undefined));
+            })
+            .catch((error) => {
+                console.error(error.message);
+                if (this.errHandler) {
+                    this.errHandler(
+                        this.intlRef.current.formatMessage({
+                            id: 'MapEquipmentsLoadError',
+                        })
+                    );
+                }
+            });
+        fetchMapHvdcLines(studyUuid, currentNodeUuid, undefined, false)
+            .then((val) => {
+                this.dispatch(
+                    mapEquipmentsCreated(this, undefined, undefined, val)
+                );
             })
             .catch((error) => {
                 console.error(error.message);
@@ -227,6 +251,19 @@ export default class MapEquipments {
         }
         this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
         this.completeLinesInfos(fullReload ? [] : lines);
+    }
+
+    completeHvdcLinesInfos(equipementsToIndex) {
+        if (equipementsToIndex?.length > 0) {
+            equipementsToIndex.forEach((hvdcLine) => {
+                this.linesById?.set(hvdcLine.id, hvdcLine);
+            });
+        } else {
+            this.hvdcLinesById = this.hvdcLines.reduce(
+                elementIdIndexer,
+                new Map()
+            );
+        }
     }
 
     removeBranchesOfVoltageLevel(branchesList, voltageLevelId) {

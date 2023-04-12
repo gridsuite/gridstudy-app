@@ -98,6 +98,12 @@ const NetworkMap = (props) => {
         props.mapEquipments.voltageLevels &&
         props.geoData.substationPositionsById.size > 0;
 
+    const readyToDisplayHvdcLines =
+        readyToDisplay &&
+        props.mapEquipments.hvdcLines &&
+        props.mapEquipments.voltageLevels &&
+        props.geoData.substationPositionsById.size > 0;
+
     const classes = useStyles();
 
     useEffect(() => {
@@ -348,6 +354,47 @@ const NetworkMap = (props) => {
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
                 data: props.mapEquipments?.lines,
+                network: props.mapEquipments,
+                updatedLines: props.updatedLines,
+                geoData: props.geoData,
+                getNominalVoltageColor: getNominalVoltageColor,
+                disconnectedLineColor: foregroundNeutralColor,
+                filteredNominalVoltages: props.filteredNominalVoltages,
+                lineFlowMode: props.lineFlowMode,
+                showLineFlow: props.visible && showLineFlow,
+                lineFlowColorMode: props.lineFlowColorMode,
+                lineFlowAlertThreshold: props.lineFlowAlertThreshold,
+                loadFlowStatus: props.loadFlowStatus,
+                lineFullPath:
+                    props.geoData.linePositionsById.size > 0 &&
+                    props.lineFullPath,
+                lineParallelPath: props.lineParallelPath,
+                labelsVisible: labelsVisible,
+                labelColor: foregroundNeutralColor,
+                labelSize: LABEL_SIZE,
+                pickable: true,
+                onHover: ({ object, x, y }) => {
+                    if (object) {
+                        setCursorType('pointer');
+                        setTooltip({
+                            message: getNameOrId(object),
+                            pointerX: x,
+                            pointerY: y,
+                        });
+                    } else {
+                        setCursorType('grab');
+                        setTooltip(null);
+                    }
+                },
+            })
+        );
+    }
+
+    if (readyToDisplayHvdcLines) {
+        layers.push(
+            new LineLayer({
+                id: LINE_LAYER_PREFIX,
+                data: props.mapEquipments?.hvdcLines,
                 network: props.mapEquipments,
                 updatedLines: props.updatedLines,
                 geoData: props.geoData,

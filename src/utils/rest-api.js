@@ -2875,3 +2875,19 @@ export function fetchMapLines(
         inUpstreamBuiltParentNode
     );
 }
+
+export function fetchMapHvdcLines(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchMapEquipment(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'lines',
+        'map-hvdc-lines',
+        inUpstreamBuiltParentNode
+    );
+}
