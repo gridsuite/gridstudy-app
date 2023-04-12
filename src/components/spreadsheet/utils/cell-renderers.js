@@ -87,11 +87,7 @@ export const formatCell = (props) => {
     if (props.colDef.normed) {
         value = props.colDef.normed(props.fluxConvention, value);
     }
-    if (
-        value !== undefined &&
-        props.colDef.numeric &&
-        props.colDef.fractionDigits
-    ) {
+    if (value != null && props.colDef.numeric && props.colDef.fractionDigits) {
         // only numeric rounded cells have a tooltip (their raw numeric value)
         tooltipValue = value;
         value = parseFloat(value).toFixed(props.colDef.fractionDigits);
