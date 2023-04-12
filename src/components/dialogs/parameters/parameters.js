@@ -93,7 +93,7 @@ export const SwitchWithLabel = ({ value, label, callback }) => {
     );
 };
 
-export const DropDown = ({ value, label, values, callback, renderValue }) => {
+export const DropDown = ({ value, label, values, callback }) => {
     const classes = useStyles();
     return (
         <>
@@ -113,11 +113,7 @@ export const DropDown = ({ value, label, values, callback, renderValue }) => {
                 >
                     {Object.entries(values).map(([key, value]) => (
                         <MenuItem key={key} value={key}>
-                            {renderValue ? (
-                                renderValue(value)
-                            ) : (
-                                <FormattedMessage id={value} />
-                            )}
+                            <FormattedMessage id={value} />
                         </MenuItem>
                     ))}
                 </Select>
