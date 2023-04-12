@@ -62,6 +62,7 @@
     "loadingGeoData": "Loading geographic data in progress...",
     "LoadingRemoteData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",
+    "LoadingOf": "Loading of {value}...",
 
     "centerOnMap": "Center on the map",
     "openVoltageLevel": "Open the voltage level",

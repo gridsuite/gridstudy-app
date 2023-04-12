@@ -62,6 +62,7 @@
     "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
+    "LoadingOf": "Chargement de {value}...",
 
     "centerOnMap": "Centrer sur la carte",
     "openVoltageLevel": "Ouvrir le poste",
