@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
+import React from 'react';
 
 interface TitleProps {
     title: string;
 }
 
-const Title: FC<TitleProps> = ({ title }) => {
+const Title = ({ title }: TitleProps) => {
     return (
         <>
             <h2>test h2</h2>

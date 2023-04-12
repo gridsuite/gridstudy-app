@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 /**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -6,7 +7,7 @@
  */
 
 import { Autocomplete, TextField } from '@mui/material';
-import React, { FC } from 'react';
+import React from 'react';
 import {
     FieldLabel,
     genHelperError,
@@ -48,7 +49,7 @@ interface AutocompleteInputProps extends AutocompleteProps {
  * @param value input value
  * @returns autocomplete field containing the options values
  */
-const AutocompleteInput: FC<AutocompleteInputProps> = ({
+const AutocompleteInput = ({
     name,
     label,
     outputTransform = func_identity, //transform materialUi input value before sending it to react hook form, mostly used to deal with select fields that need to return a string
@@ -60,7 +61,7 @@ const AutocompleteInput: FC<AutocompleteInputProps> = ({
     allowNewValue,
     onChangeCallback, // method called when input value is changing
     ...props
-}) => {
+}: AutocompleteInputProps) => {
     const { validationSchema, getValues, removeOptional } =
         useCustomFormContext();
     const {

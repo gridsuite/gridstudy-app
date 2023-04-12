@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useContext } from 'react';
+import React, { ReactNode, useContext } from 'react';
 import { FieldValues, useFormContext, UseFormReturn } from 'react-hook-form';
 import { FormProvider, FormProviderProps } from 'react-hook-form';
 import yup from './yup-config';
@@ -18,9 +18,7 @@ const CustomFormContext = React.createContext<CustomFormContextProps>({
     validationSchema: null,
 });
 
-const CustomFormContextProvider: FC<CustomFormContextProviderProps> = (
-    props
-) => {
+const CustomFormContextProvider = (props: CustomFormContextProviderProps) => {
     const { methods, validationSchema, removeOptional, children } = props;
 
     return (

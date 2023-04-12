@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 /**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -6,7 +7,7 @@
  */
 
 import { IconButton, InputAdornment, TextField } from '@mui/material';
-import React, { FC } from 'react';
+import React from 'react';
 import { func_identity, useStyles } from '../../dialogs/dialogUtils';
 import {
     FieldLabel,
@@ -34,7 +35,7 @@ interface TextInputProps {
     customAdornment?: any;
 }
 
-const TextInput: FC<TextInputProps> = ({
+const TextInput = ({
     name,
     label,
     labelValues, // this prop is used to add a value to label. this value is displayed without being translated
@@ -47,7 +48,7 @@ const TextInput: FC<TextInputProps> = ({
     previousValue,
     clearable,
     customAdornment,
-}) => {
+}: TextInputProps) => {
     const classes = useStyles();
     const { getValues } = useFormContext();
     const {

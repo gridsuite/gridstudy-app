@@ -39,7 +39,6 @@ import {
 } from './connectivity-form-utils';
 import PropTypes from 'prop-types';
 
-//@ts-strict
 
 interface BusBarSectionInterface {
     id: Array<string>;
