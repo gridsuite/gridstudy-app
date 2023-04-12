@@ -373,12 +373,13 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         diagramSizeSetter,
     ]);
 
-    const handleWarning = useCallback(
-        (id, svgType) => {
-            setWarning(id, svgType);
-        },
-        [setWarning]
-    );
+    const handleMissingEquipment = useCallback(() => {
+        const isVoltageLevel = DiagramType.VOLTAGE_LEVEL === props.svgType;
+        const message = isVoltageLevel
+            ? 'VoltageLevelNotFound'
+            : 'SubstationNotFound';
+        setWarning(props.diagramId, message);
+    }, [setWarning, props.svgType, props.diagramId]);
 
     useEffect(() => {
         if (props.svgUrl) {
@@ -411,7 +412,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                                 messageTxt: error.message,
                             });
                         } else {
-                            handleWarning(props.diagramId, props.svgType);
+                            handleMissingEquipment();
                         }
                     })
                     .finally(() => {
@@ -430,7 +431,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         intlRef,
         props.svgType,
         isNodeinNotifs,
-        handleWarning,
+        handleMissingEquipment,
         props.diagramId,
     ]);
 

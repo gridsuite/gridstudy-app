@@ -327,8 +327,7 @@ export function DiagramPane({
                         ...diagramState,
                         name: diagramState?.id,
                         // this variable is used to show a warning message inside the SLD
-                        isSvgNotFound: true,
-                        messageNotFound:
+                        warningMessage:
                             DiagramType.VOLTAGE_LEVEL === diagramState.svgType
                                 ? 'VoltageLevelNotFound'
                                 : 'SubstationNotFound',
@@ -637,21 +636,17 @@ export function DiagramPane({
         ]
     );
 
-    const handleWarning = (id, svgType) => {
-        // Add the id of the diagramView and the warning to display based on svg type
-        const isVoltageLevel = DiagramType.VOLTAGE_LEVEL === svgType;
-        const message = isVoltageLevel
-            ? 'VoltageLevelNotFound'
-            : 'SubstationNotFound';
+    const handleWarning = (id, message) => {
+        // Add the id of the diagramView and the warning to display.
         setWarnings(
             (prev) => new Map(prev.set(id, disabled ? 'InvalidNode' : message))
         );
     };
 
-    const hadleWarningToDisplay = (diagramView) => {
+    const handleWarningToDisplay = (diagramView) => {
         // First, check if the node is built(the highest priority) then do the warning checks..
         if (disabled) return 'InvalidNode';
-        if (diagramView.isSvgNotFound) return diagramView?.messageNotFound;
+        if (diagramView?.warningMessage) return diagramView?.warningMessage;
         return warnings.has(diagramView.id)
             ? warnings.get(diagramView.id)
             : undefined;
@@ -753,7 +748,7 @@ export function DiagramPane({
                                 align={diagramView.align}
                                 diagramId={diagramView.id}
                                 diagramTitle={diagramView.name}
-                                warningToDisplay={hadleWarningToDisplay(
+                                warningToDisplay={handleWarningToDisplay(
                                     diagramView
                                 )}
                                 pinned={diagramView.state === ViewState.PINNED}
