@@ -374,8 +374,8 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
     ]);
 
     const handleWarning = useCallback(
-        (id) => {
-            setWarning(id);
+        (id, svgType) => {
+            setWarning(id, svgType);
         },
         [setWarning]
     );
@@ -411,7 +411,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                                 messageTxt: error.message,
                             });
                         } else {
-                            handleWarning(props.diagramId);
+                            handleWarning(props.diagramId, props.svgType);
                         }
                     })
                     .finally(() => {
@@ -497,6 +497,7 @@ SingleLineDiagramContent.propTypes = {
     svgUrl: PropTypes.string,
     diagramSizeSetter: PropTypes.func,
     diagramId: PropTypes.string,
+    setWarning: PropTypes.func,
 };
 
 export default SingleLineDiagramContent;

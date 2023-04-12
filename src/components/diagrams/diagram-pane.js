@@ -287,7 +287,7 @@ export function DiagramPane({
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
     const classes = useStyles();
-    const [warnings, setWarnings] = useState(new Set());
+    const [warnings, setWarnings] = useState(new Map());
 
     /**
      * BUILDS THE DIAGRAMS LIST
@@ -328,6 +328,10 @@ export function DiagramPane({
                         name: diagramState?.id,
                         // this variable is used to show a warning message inside the SLD
                         isSvgNotFound: true,
+                        messageNotFound:
+                            DiagramType.VOLTAGE_LEVEL === diagramState.svgType
+                                ? 'VoltageLevelNotFound'
+                                : 'SubstationNotFound',
                     };
 
                     diagramViews.push({
@@ -358,7 +362,7 @@ export function DiagramPane({
             }
         }
         setViews(diagramViews);
-        setWarnings(new Set());
+        setWarnings(new Map());
     }, [
         diagramStates,
         visible,
@@ -633,9 +637,24 @@ export function DiagramPane({
         ]
     );
 
-    const handleWarning = (id) => {
-        // Add the id of the diagramView where to display the warning
-        setWarnings((prev) => new Set(prev.add(id)));
+    const handleWarning = (id, svgType) => {
+        // Add the id of the diagramView and the warning to display based on svg type
+        const isVoltageLevel = DiagramType.VOLTAGE_LEVEL === svgType;
+        const message = isVoltageLevel
+            ? 'VoltageLevelNotFound'
+            : 'SubstationNotFound';
+        setWarnings(
+            (prev) => new Map(prev.set(id, disabled ? 'InvalidNode' : message))
+        );
+    };
+
+    const hadleWarningToDisplay = (diagramView) => {
+        // First, check if the node is built(the highest priority) then do the warning checks..
+        if (disabled) return 'InvalidNode';
+        if (diagramView.isSvgNotFound) return diagramView?.messageNotFound;
+        return warnings.has(diagramView.id)
+            ? warnings.get(diagramView.id)
+            : undefined;
     };
 
     /*
@@ -734,11 +753,9 @@ export function DiagramPane({
                                 align={diagramView.align}
                                 diagramId={diagramView.id}
                                 diagramTitle={diagramView.name}
-                                disabled={disabled}
-                                isSvgNotFound={
-                                    diagramView?.isSvgNotFound ||
-                                    warnings?.has(diagramView.id)
-                                }
+                                warningToDisplay={hadleWarningToDisplay(
+                                    diagramView
+                                )}
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
                                 width={getWidthForPaneDisplay(
