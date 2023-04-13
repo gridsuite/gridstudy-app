@@ -373,28 +373,16 @@ export function DiagramPane({
     // Here, the goal is to build a list of view, each view corresponding to a diagram.
     // We get the diagram data from the redux store.
     // In the case of SLD, each SLD corresponds to one view, but in the case of NAD, each open NAD is merged
-    // into one view.
+    // into one view.s
 
     const addSLDs = useCallback(
         (diagramStates) => {
             if (diagramStates?.length) {
                 // First we add the empty diagrams in the views
                 setViews((views) => {
-                    const updatedViews = diagramStates
-                        .map((diagramState) => ({
-                            ...diagramState,
-                            name: intl.formatMessage(
-                                { id: 'LoadingOf' },
-                                { value: diagramState.id }
-                            ),
-                            align: 'left',
-                            loadingState: true,
-                        }))
-                        .concat(views)
-                        // we want to keep the same order as in the redux store
-                        .sort((a, b) => {
-                            return a.reduxIndex - b.reduxIndex;
-                        });
+                    const updatedViews = views
+                        .concat(diagramStates)
+                        .sort(sortByAlign);
                     return updatedViews;
                 });
 
@@ -435,7 +423,6 @@ export function DiagramPane({
                     ),
                     state: networkAreaViewState,
                     svgType: DiagramType.NETWORK_AREA_DIAGRAM,
-                    reduxIndex: Number.MAX_VALUE,
                     align: 'right',
                     loadingState: true,
                 };
@@ -594,7 +581,7 @@ export function DiagramPane({
 
         // ADDING SLD
         const diagramsToAdd = [];
-        diagramStates.forEach((diagramState, index) => {
+        diagramStates.forEach((diagramState) => {
             if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                 const diagramAlreadyPresentInViews = viewsRef.current.find(
                     (diagramView) =>
@@ -605,7 +592,12 @@ export function DiagramPane({
                 if (!diagramAlreadyPresentInViews) {
                     diagramsToAdd.push({
                         ...diagramState,
-                        reduxIndex: index,
+                        name: intl.formatMessage(
+                            { id: 'LoadingOf' },
+                            { value: diagramState.id }
+                        ),
+                        align: 'left',
+                        loadingState: true,
                     });
                 }
             }
