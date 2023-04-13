@@ -163,6 +163,7 @@
     "DynamicSimulationTimeDelay": "Time delay",
     "DynamicSimulationSolver": "Solver",
     "DynamicSimulationMapping": "Mapping",
+    "DynamicSimulationNetwork": "Network",
     "DynamicSimulationSolverType": "Solver type",
     "DynamicSimulationSolverIDA": "IDA Solver",
     "DynamicSimulationSolverSIM": "Simplified Solver",
