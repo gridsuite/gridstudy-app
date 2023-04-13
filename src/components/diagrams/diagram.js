@@ -16,7 +16,6 @@ import {
     setFullScreenDiagram,
 } from '../../redux/actions';
 import { useIntl } from 'react-intl';
-import AlertInvalidNode from '../util/alert-invalid-node';
 import {
     DiagramType,
     useDiagram,
@@ -29,6 +28,7 @@ import {
 import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
+import AlertCustomMessageNode from '../util/alert-custom-message-node';
 
 const Diagram = (props) => {
     const dispatch = useDispatch();
@@ -137,9 +137,12 @@ const Diagram = (props) => {
                     onClose={onCloseHandler}
                 />
 
-                {props.disabled ? (
+                {props.warningToDisplay ? (
                     <Box position="relative" left={0} right={0} top={0}>
-                        <AlertInvalidNode noMargin={true} />
+                        <AlertCustomMessageNode
+                            message={props.warningToDisplay}
+                            noMargin={true}
+                        />
                     </Box>
                 ) : (
                     <Box height={'100%'}>
@@ -176,7 +179,7 @@ const Diagram = (props) => {
 
 Diagram.defaultProps = {
     pinned: false,
-    disabled: false,
+    warningToDisplay: '',
     align: 'left',
     width: LOADING_WIDTH,
     height: LOADING_HEIGHT,
@@ -188,7 +191,7 @@ Diagram.propTypes = {
     align: PropTypes.string,
     diagramId: PropTypes.string.isRequired,
     diagramTitle: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
+    warningToDisplay: PropTypes.string,
     pinned: PropTypes.bool,
     svgType: PropTypes.string.isRequired,
     children: PropTypes.node,
