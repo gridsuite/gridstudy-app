@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -74,14 +74,24 @@ const withBranchMenu =
                 equipmentType === equipments.lines ? 'Line' : '2WTransformer'
             );
         };
-
+        const getEquipmentPath = useCallback((equipmentType) => {
+            switch (equipmentType) {
+                case equipments.lines:
+                    return 'lines';
+                case equipments.hvdcLines:
+                    return 'hvdc-lines';
+                case equipments.twoWindingsTransformers:
+                    return '2-windings-transformers';
+                default:
+                    break;
+            }
+        }, []);
         useEffect(() => {
+            const equipmentPath = getEquipmentPath(equipmentType);
             fetchEquipmentInfos(
                 studyUuid,
                 currentNode?.id,
-                equipmentType === equipments.lines
-                    ? 'lines'
-                    : '2-windings-transformers',
+                equipmentPath,
                 id,
                 false
             ).then((value) => {
@@ -89,7 +99,7 @@ const withBranchMenu =
                     setBranch(value);
                 }
             });
-        }, [studyUuid, currentNode?.id, equipmentType, id]);
+        }, [studyUuid, currentNode?.id, equipmentType, id, getEquipmentPath]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -202,29 +212,31 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleTrip()}
-                    disabled={
-                        !isNodeEditable ||
-                        branch.branchStatus === 'FORCED_OUTAGE'
-                    }
-                >
-                    <ListItemIcon>
-                        <OfflineBoltOutlinedIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({
-                                    id: getTranslationKey('Trip'),
-                                })}
-                            </Typography>
+                {equipmentType !== equipments.hvdcLines && (
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleTrip()}
+                        disabled={
+                            !isNodeEditable ||
+                            branch.branchStatus === 'FORCED_OUTAGE'
                         }
-                    />
-                </MenuItem>
+                    >
+                        <ListItemIcon>
+                            <OfflineBoltOutlinedIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({
+                                        id: getTranslationKey('Trip'),
+                                    })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                )}
                 {equipmentType === equipments.lines && (
                     <MenuItem
                         className={classes.menuItem}
@@ -323,31 +335,33 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() =>
-                        handleDeleteEquipment(
-                            getFeederTypeFromEquipmentType(equipmentType),
-                            id
-                        )
-                    }
-                    disabled={!isNodeEditable}
-                >
-                    <ListItemIcon>
-                        <DeleteIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({
-                                    id: 'DeleteFromMenu',
-                                })}
-                            </Typography>
+                {equipmentType !== equipments.hvdcLines && (
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() =>
+                            handleDeleteEquipment(
+                                getFeederTypeFromEquipmentType(equipmentType),
+                                id
+                            )
                         }
-                    />
-                </MenuItem>
+                        disabled={!isNodeEditable}
+                    >
+                        <ListItemIcon>
+                            <DeleteIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({
+                                        id: 'DeleteFromMenu',
+                                    })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                )}
             </Menu>
         );
     };

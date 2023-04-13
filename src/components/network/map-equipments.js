@@ -345,4 +345,12 @@ export default class MapEquipments {
     getLine(id) {
         return this.linesById.get(id);
     }
+
+    getHvdcLines() {
+        return this.hvdcLines;
+    }
+
+    getHvdcLine(id) {
+        return this.hvdcLinesById.get(id);
+    }
 }

@@ -744,12 +744,14 @@ export const NetworkMapTab = ({
             return <></>;
         return (
             <>
-                {equipmentMenu.equipmentType === equipments.lines &&
+                {(equipmentMenu.equipmentType === equipments.lines ||
+                    equipmentMenu.equipmentType === equipments.hvdcLines) &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
+
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
                 {equipmentMenu.equipmentType === equipments.voltageLevels &&
@@ -806,6 +808,9 @@ export const NetworkMapTab = ({
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(equipment, x, y, equipments.lines)
+            }
+            onHvdcLineMenuClick={(equipment, x, y) =>
+                showEquipmentMenu(equipment, x, y, equipments.hvdcLines)
             }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
