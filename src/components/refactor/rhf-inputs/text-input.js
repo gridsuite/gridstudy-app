@@ -32,7 +32,6 @@ const TextInput = ({
     previousValue,
     clearable,
     customAdornment,
-    readonly = false,
 }) => {
     const classes = useStyles();
     const { validationSchema, getValues, removeOptional } = useFormContext();
@@ -82,7 +81,6 @@ const TextInput = ({
             FormHelperTextProps={{
                 className: classes.helperText,
             }}
-            inputProps={{ readOnly: readonly }}
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">

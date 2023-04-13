@@ -58,8 +58,7 @@ const PropertyForm = ({ name, index }) => {
         <TextInput
             name={`${name}.${index}.${NAME}`}
             label={'PropertyName'}
-            formProps={italicFontTextField}
-            readonly={true}
+            formProps={{ disabled: true, ...italicFontTextField }}
         />
     );
 
@@ -78,9 +77,8 @@ const PropertyForm = ({ name, index }) => {
         <TextInput
             name={`${name}.${index}.${VALUE}`}
             label={'PropertyValue'}
-            formProps={italicFontTextField}
-            readonly={true}
             previousValue={watchPropertyPreviousValue}
+            formProps={{ disabled: true, ...italicFontTextField }}
         />
     );
 
