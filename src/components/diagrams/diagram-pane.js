@@ -409,7 +409,7 @@ export function DiagramPane({
                 });
             }
         },
-        [createView, intl]
+        [createView]
     );
 
     const addNAD = useCallback(
