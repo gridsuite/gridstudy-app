@@ -9,6 +9,7 @@ import { fetchAppsAndUrls } from '../../../../../utils/rest-api';
 import yup from '../../../utils/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
+    DELETION_MARK,
     NAME,
     PREVIOUS_VALUE,
     VALUE,
@@ -37,6 +38,7 @@ export const getPropertyInitialValues = () => {
         [NAME]: null,
         [VALUE]: null,
         [PREVIOUS_VALUE]: null,
+        [DELETION_MARK]: false,
     };
 };
 export const getPropertiesSchema = (id = ADDITIONAL_PROPERTIES) => ({
@@ -47,6 +49,7 @@ export const getPropertiesSchema = (id = ADDITIONAL_PROPERTIES) => ({
                 [NAME]: yup.string().nullable().required(),
                 [VALUE]: yup.string().nullable().required(),
                 [PREVIOUS_VALUE]: yup.string().nullable(),
+                [DELETION_MARK]: yup.boolean(),
             })
         )
         .test('checkUniqueProperties', 'DuplicatedProps', (values) =>

@@ -85,10 +85,9 @@ const PropertyForm = ({ name, index }) => {
     );
 
     function renderPropertyLine() {
-        console.log('DBR myRender Property', watchPropertyPreviousValue);
         return (
             <>
-                {watchPropertyPreviousValue
+                {watchPropertyPreviousValue || watchPropertyDeletionMark
                     ? gridItem(nameReadOnlyField, 5)
                     : gridItem(nameField, 5)}
                 {watchPropertyDeletionMark

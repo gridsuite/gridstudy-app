@@ -38,8 +38,9 @@ const schema = yup.object().shape({
                 [VALUE]: yup
                     .string()
                     .nullable()
-                    .when([PREVIOUS_VALUE], {
-                        is: (prev) => prev === null,
+                    .when([PREVIOUS_VALUE, DELETION_MARK], {
+                        is: (previousValue, deletionMark) =>
+                            previousValue === null && deletionMark === false,
                         then: (schema) => schema.required(),
                     }),
                 [PREVIOUS_VALUE]: yup.string().nullable(),
@@ -53,12 +54,12 @@ const schema = yup.object().shape({
 
 const getProperties = (properties) => {
     return properties
-        ? Object.entries(properties).map((p) => {
+        ? properties.map((p) => {
               return {
-                  [NAME]: p[0],
-                  [VALUE]: p[1],
+                  [NAME]: p[NAME],
+                  [VALUE]: p[VALUE],
                   [PREVIOUS_VALUE]: null,
-                  [DELETION_MARK]: false,
+                  [DELETION_MARK]: p[DELETION_MARK],
               };
           })
         : null;
@@ -123,7 +124,9 @@ const SubstationModificationDialog = ({
                 substation[COUNTRY],
                 !!editData,
                 editData ? editData.uuid : undefined,
-                substation[ADDITIONAL_PROPERTIES]
+                substation[ADDITIONAL_PROPERTIES].filter(
+                    (p) => p[VALUE] != null || p[DELETION_MARK]
+                )
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

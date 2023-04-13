@@ -2373,10 +2373,6 @@ export function modifySubstation(
         console.info('Creating substation modification');
     }
 
-    const asObj = !properties?.length
-        ? undefined
-        : Object.fromEntries(properties.map((p) => [p.name, p.value]));
-
     return backendFetchText(modifyUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -2388,7 +2384,7 @@ export function modifySubstation(
             equipmentId: id,
             equipmentName: toModificationOperation(name),
             substationCountry: toModificationOperation(substationCountry),
-            properties: asObj,
+            properties: properties,
         }),
     });
 }

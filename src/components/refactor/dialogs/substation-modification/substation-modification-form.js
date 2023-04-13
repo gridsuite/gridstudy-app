@@ -56,27 +56,17 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
     const updateWithEquipmentInfos = useCallback(
         (equipmentInfos) => {
             setEquipmentInfos(equipmentInfos);
-            /*
-                1- update modifications with previous value / real equipment value
-                2- add any property defined for this equipment, but not in modifications
-                3- remove all infos from 1/2 below if no more equipment (equipmentInfos is null)
-             */
-
             // comes from existing eqpt in network, ex: Object { p1: "v1", p2: "v2" }
             const equipmentProperties = equipmentInfos?.properties;
-            // comes from modification in db, ex: Array [ {Object {  name: "p1", value: "v1", previousValue: undefined } }, {...} ]
+            // comes from modification in db,
+            // ex: Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, deletionMark: false } }, {...} ]
             const modificationProperties = getValues(
                 `${ADDITIONAL_PROPERTIES}`
-            );
-            console.log(
-                'DBR updateWithEquipmentInfos',
-                equipmentProperties,
-                modificationProperties
             );
 
             let newModificationProperties = [];
             // update array field with previous value / real equipment value
-            modificationProperties.forEach(function (property, idx) {
+            modificationProperties.forEach(function (property) {
                 newModificationProperties.push({
                     ...property,
                     [PREVIOUS_VALUE]:
@@ -86,14 +76,8 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
                             : null,
                 });
             });
-
-            console.log(
-                'DBR newModificationProperties1',
-                newModificationProperties
-            );
-
             if (equipmentProperties) {
-                // add any property defined for this equipment, but missing in modifications
+                // add any property defined for this equipment, but missing in modification
                 const modificationPropertiesNames = modificationProperties.map(
                     (obj) => obj[NAME]
                 );
@@ -109,10 +93,6 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
                         );
                     }
                 }
-                console.log(
-                    'DBR newModificationProperties2',
-                    newModificationProperties
-                );
             }
             setValue(`${ADDITIONAL_PROPERTIES}`, newModificationProperties);
         },
@@ -121,9 +101,10 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
 
     const deleteIconDisableCallback = useCallback(
         (idx) => {
-            const props = getValues(`${ADDITIONAL_PROPERTIES}`);
-            if (props && typeof props[idx] !== 'undefined') {
-                return props[idx][DELETION_MARK];
+            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
+            if (properties && typeof properties[idx] !== 'undefined') {
+                // we cannot remove a line that has been marked for property deletion
+                return properties[idx][DELETION_MARK];
             }
             return false;
         },
@@ -132,43 +113,26 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
 
     const deleteCallback = useCallback(
         (idx) => {
-            console.log('deleteCallback', idx);
-            const props = getValues(`${ADDITIONAL_PROPERTIES}`);
-            let removeLine = true;
-            if (props && typeof props[idx] !== 'undefined') {
-                const modificationProperties = getValues(
-                    `${ADDITIONAL_PROPERTIES}`
-                );
-                let newModificationProperties = [];
-                modificationProperties.forEach(function (property, forEachIdx) {
-                    console.log(
-                        'deleteCallback property',
-                        forEachIdx,
-                        property
-                    );
-                    if (
-                        forEachIdx !== idx ||
-                        property[PREVIOUS_VALUE] === null
-                    ) {
-                        newModificationProperties.push({ ...property });
-                        console.log('deleteCallback removeLine', forEachIdx);
-                    } else {
-                        // line is not deleted, but just marked
-                        newModificationProperties.push({
-                            ...property,
-                            [DELETION_MARK]: true,
-                        });
-                        removeLine = false;
-                        console.log(
-                            'deleteCallback dont removeLine',
-                            forEachIdx
-                        );
-                    }
-                });
+            let canRemoveLine = true;
+            let newModificationProperties = [];
+
+            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
+            properties.forEach(function (property, forEachIdx) {
+                if (forEachIdx !== idx || property[PREVIOUS_VALUE] === null) {
+                    newModificationProperties.push({ ...property });
+                } else {
+                    // line is not deleted, and property is marked for deletion
+                    newModificationProperties.push({
+                        ...property,
+                        [DELETION_MARK]: true,
+                    });
+                    canRemoveLine = false;
+                }
+            });
+            if (canRemoveLine === false) {
                 setValue(`${ADDITIONAL_PROPERTIES}`, newModificationProperties);
             }
-            console.log('deleteCallback return', removeLine);
-            return removeLine;
+            return canRemoveLine;
         },
         [getValues, setValue]
     );
@@ -181,7 +145,6 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
             'SUBSTATION',
             true
         ).then((values) => {
-            console.log('DBR useEff setEquipmentOptions', values);
             setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
         });
     }, [studyUuid, currentNodeUuid]);
@@ -196,7 +159,6 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
                 true
             )
                 .then((value) => {
-                    console.log('DBR useEff setEquipmentInfos', value);
                     updateWithEquipmentInfos(value);
                 })
                 .catch(() => {
