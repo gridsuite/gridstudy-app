@@ -47,6 +47,7 @@
 
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
+    "svgLoadingFail": "The diagram couldn't be loaded",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
     "geoDataLoadingFail": "Geographical data of study with id \"{studyUuid}\" couldn't be loaded",
 

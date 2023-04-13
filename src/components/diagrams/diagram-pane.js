@@ -140,40 +140,41 @@ const useDisplayView = (studyUuid, currentNode) => {
 
     // this callback return a promise
     const fetchSvgData = useCallback(
-        (svgUrl) => {
+        (svgUrl, svgType) => {
             if (svgUrl) {
                 return fetchSvg(svgUrl)
                     .then((data) => {
-                        if (data !== null) {
-                            return {
-                                svg: data.svg,
-                                metadata: data.metadata,
-                                additionalMetadata: data.additionalMetadata,
-                                error: null,
-                            };
-                        } else {
-                            return NoSvg;
-                        }
+                        return {
+                            svg: data.svg,
+                            metadata: data.metadata,
+                            additionalMetadata: data.additionalMetadata,
+                            error: null,
+                        };
                     })
                     .catch((error) => {
                         console.error(
                             'Error while fetching SVG',
                             error.message
                         );
-                        let msg;
+                        let errorMessage;
                         if (error.status === 404) {
-                            msg = `Diagram not found`;
+                            if (svgType === DiagramType.SUBSTATION) {
+                                errorMessage = 'SubstationNotFound';
+                            }
+                            // if VL (SLD or NAD)
+                            else {
+                                errorMessage = 'VoltageLevelNotFound';
+                            }
                         } else {
-                            msg = error.message;
+                            snackError({
+                                headerId: 'svgLoadingFail',
+                            });
                         }
-                        snackError({
-                            messageTxt: msg,
-                        });
                         return {
                             svg: null,
                             metadata: null,
                             additionalMetadata: null,
-                            error: error.message,
+                            error: errorMessage,
                         };
                     });
             } else {
@@ -190,62 +191,70 @@ const useDisplayView = (studyUuid, currentNode) => {
 
             function createSubstationDiagramView(id, state) {
                 const svgUrl = checkAndGetSubstationSingleLineDiagramUrl(id);
-                return fetchSvgData(svgUrl).then((svg) => {
-                    let label = getNameOrId(svg.additionalMetadata);
-                    const countryName = svg.additionalMetadata.countryName;
-                    if (countryName) {
-                        label += ' - ' + countryName;
+                return fetchSvgData(svgUrl, DiagramType.SUBSTATION).then(
+                    (svg) => {
+                        let label = getNameOrId(svg.additionalMetadata) ?? id;
+                        const countryName = svg.additionalMetadata?.countryName;
+                        if (countryName) {
+                            label += ' - ' + countryName;
+                        }
+                        return {
+                            id: id,
+                            nodeId: currentNode.id,
+                            state: state,
+                            name: label,
+                            fetchSvg: () =>
+                                fetchSvgData(svgUrl, DiagramType.SUBSTATION),
+                            svgType: DiagramType.SUBSTATION,
+                            ...svg,
+                        };
                     }
-                    return {
-                        id: id,
-                        nodeId: currentNode.id,
-                        state: state,
-                        name: label,
-                        fetchSvg: () => fetchSvgData(svgUrl),
-                        svgType: DiagramType.SUBSTATION,
-                        ...svg,
-                    };
-                });
+                );
             }
 
             function createVoltageLevelDiagramView(id, state) {
                 const svgUrl = checkAndGetVoltageLevelSingleLineDiagramUrl(id);
-                return fetchSvgData(svgUrl).then((svg) => {
-                    let label = getNameOrId(svg.additionalMetadata);
-                    let substationId = svg.additionalMetadata.substationId;
-                    const countryName = svg.additionalMetadata.countryName;
-                    if (countryName) {
-                        label += ' - ' + countryName;
+                return fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL).then(
+                    (svg) => {
+                        let label = getNameOrId(svg.additionalMetadata) ?? id;
+                        let substationId = svg.additionalMetadata?.substationId;
+                        const countryName = svg.additionalMetadata?.countryName;
+                        if (countryName) {
+                            label += ' - ' + countryName;
+                        }
+                        return {
+                            id: id,
+                            nodeId: currentNode.id,
+                            state: state,
+                            name: label,
+                            fetchSvg: () =>
+                                fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL),
+                            svgType: DiagramType.VOLTAGE_LEVEL,
+                            substationId: substationId,
+                            ...svg,
+                        };
                     }
-                    return {
-                        id: id,
-                        nodeId: currentNode.id,
-                        state: state,
-                        name: label,
-                        fetchSvg: () => fetchSvgData(svgUrl),
-                        svgType: DiagramType.VOLTAGE_LEVEL,
-                        substationId: substationId,
-                        ...svg,
-                    };
-                });
+                );
             }
 
             function createNetworkAreaDiagramView(ids, state, depth = 0) {
                 if (ids?.length) {
                     const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth);
-                    return fetchSvgData(svgUrl).then((svg) => {
+                    return fetchSvgData(
+                        svgUrl,
+                        DiagramType.NETWORK_AREA_DIAGRAM
+                    ).then((svg) => {
                         let nadTitle = '';
                         svg.additionalMetadata?.voltageLevels.forEach(
                             (voltageLevel) => {
                                 const name = getNameOrId(voltageLevel);
                                 if (name !== null) {
-                                    nadTitle =
-                                        nadTitle +
-                                        (nadTitle !== '' ? ' + ' : '') +
-                                        name;
+                                    nadTitle +=
+                                        (nadTitle !== '' ? ' + ' : '') + name;
                                 }
                             }
                         );
+                        if (nadTitle === '') nadTitle = ids.toString();
                         dispatch(
                             setNetworkAreaDiagramNbVoltageLevels(
                                 svg.metadata?.nbVoltageLevels
@@ -257,7 +266,11 @@ const useDisplayView = (studyUuid, currentNode) => {
                             nodeId: currentNode.id,
                             state: state,
                             name: nadTitle,
-                            fetchSvg: () => fetchSvgData(svgUrl),
+                            fetchSvg: () =>
+                                fetchSvgData(
+                                    svgUrl,
+                                    DiagramType.NETWORK_AREA_DIAGRAM
+                                ),
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
                             ...svg,
@@ -387,26 +400,24 @@ export function DiagramPane({
 
                 // Then we add the data when the fetch is finished
                 diagramStates.forEach((diagramState) => {
-                    createView(diagramState)
-                        .then((singleLineDiagramView) => {
-                            setViews((views) => {
-                                const diagramViewId = views.findIndex(
-                                    (view) =>
-                                        view.svgType !==
-                                            DiagramType.NETWORK_AREA_DIAGRAM &&
-                                        view.id === diagramState.id
-                                );
-                                const updatedViews = views.slice();
-                                // we update the SLD with the fetched data
-                                updatedViews[diagramViewId] = {
-                                    ...updatedViews[diagramViewId],
-                                    ...singleLineDiagramView,
-                                    loadingState: false,
-                                };
-                                return updatedViews;
-                            });
-                        })
-                        .catch(() => console.error('Failed to fetch SLD data'));
+                    createView(diagramState).then((singleLineDiagramView) => {
+                        setViews((views) => {
+                            const diagramViewId = views.findIndex(
+                                (view) =>
+                                    view.svgType !==
+                                        DiagramType.NETWORK_AREA_DIAGRAM &&
+                                    view.id === diagramState.id
+                            );
+                            const updatedViews = views.slice();
+                            // we update the SLD with the fetched data
+                            updatedViews[diagramViewId] = {
+                                ...updatedViews[diagramViewId],
+                                ...singleLineDiagramView,
+                                loadingState: false,
+                            };
+                            return updatedViews;
+                        });
+                    });
                 });
             }
         },
@@ -454,20 +465,18 @@ export function DiagramPane({
                 state: networkAreaViewState,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 depth: networkAreaDiagramDepth,
-            })
-                .then((networkAreaDiagramView) => {
-                    setViews((views) => {
-                        const updatedViews = views.slice();
-                        // the NAD is always in last position
-                        updatedViews[updatedViews.length - 1] = {
-                            ...updatedViews[updatedViews.length - 1],
-                            ...networkAreaDiagramView,
-                            loadingState: false,
-                        };
-                        return updatedViews;
-                    });
-                })
-                .catch(() => console.error('Failed to fetch NAD data'));
+            }).then((networkAreaDiagramView) => {
+                setViews((views) => {
+                    const updatedViews = views.slice();
+                    // the NAD is always in last position
+                    updatedViews[updatedViews.length - 1] = {
+                        ...updatedViews[updatedViews.length - 1],
+                        ...networkAreaDiagramView,
+                        loadingState: false,
+                    };
+                    return updatedViews;
+                });
+            });
         },
         [createView, intl]
     );
@@ -952,6 +961,13 @@ export function DiagramPane({
         ]
     );
 
+    const handleWarningToDisplay = (diagramView) => {
+        // First, check if the node is built(the highest priority) then do the warning checks..
+        if (disabled) return 'InvalidNode';
+        if (diagramView?.error) return diagramView.error;
+        return undefined;
+    };
+
     /*
      * Calculate a diagram's ideal height, based on its natural height, the available space in
      * the pane, and the other diagrams' sizes.
@@ -1032,10 +1048,10 @@ export function DiagramPane({
                         >
                             {
                                 /*
-                                We put a space (a separator) before the first right aligned diagram.
-                                This space takes all the remaining space on screen and "pushes" the right aligned
-                                diagrams to the right of the screen.
-                                */
+                We put a space (a separator) before the first right aligned diagram.
+                This space takes all the remaining space on screen and "pushes" the right aligned
+                diagrams to the right of the screen.
+                */
                                 array[index]?.align === 'right' &&
                                     (index === 0 ||
                                         array[index - 1]?.align === 'left') && (
@@ -1048,7 +1064,9 @@ export function DiagramPane({
                                 align={diagramView.align}
                                 diagramId={diagramView.id}
                                 diagramTitle={diagramView.name}
-                                disabled={disabled}
+                                warningToDisplay={handleWarningToDisplay(
+                                    diagramView
+                                )}
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
                                 width={getWidthForPaneDisplay(
