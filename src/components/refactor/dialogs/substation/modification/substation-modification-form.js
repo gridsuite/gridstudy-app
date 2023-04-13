@@ -34,6 +34,7 @@ import {
 } from '../../../../../utils/rest-api';
 import { useFormContext, useWatch } from 'react-hook-form';
 import AutocompleteInput from '../../../rhf-inputs/autocomplete-input';
+import { LocalizedCountries } from '../../../../util/localized-countries';
 
 const SubstationModificationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -43,6 +44,7 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
         name: `${EQUIPMENT_ID}`,
     });
     const { getValues, setValue } = useFormContext();
+    const { translate } = LocalizedCountries();
 
     const createPropertyValuesFromExistingEquipement = (propKey, propValue) => {
         return {
@@ -198,7 +200,7 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
             label={'Country'}
             formProps={filledTextField}
             size={'small'}
-            previousValue={equipmentInfos?.countryName}
+            previousValue={translate(equipmentInfos?.countryCode)}
         />
     );
 
