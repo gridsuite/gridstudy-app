@@ -103,7 +103,6 @@ RunButton.propTypes = {
     runnables: PropTypes.array.isRequired,
     getStatus: PropTypes.func.isRequired,
     getText: PropTypes.func.isRequired,
-    getStartIcon: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
     actionOnRunnable: PropTypes.object.isRequired,
     computationStopped: PropTypes.bool.isRequired,

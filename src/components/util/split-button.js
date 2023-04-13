@@ -297,8 +297,6 @@ SplitButton.propTypes = {
     onClick: PropTypes.func,
     buttonDisabled: PropTypes.bool,
     selectionDisabled: PropTypes.bool,
-    className: PropTypes.string,
-    startIcon: PropTypes.element,
     text: PropTypes.string,
     actionOnRunnable: PropTypes.func.isRequired,
     isRunning: PropTypes.bool,

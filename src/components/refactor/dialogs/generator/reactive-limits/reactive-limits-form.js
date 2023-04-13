@@ -58,6 +58,7 @@ const ReactiveLimitsForm = ({
             previousValue={
                 generatorToModify?.minMaxReactiveLimits?.minimumReactivePower
             }
+            clearable={true}
         />
     );
 
@@ -69,6 +70,7 @@ const ReactiveLimitsForm = ({
             previousValue={
                 generatorToModify?.minMaxReactiveLimits?.maximumReactivePower
             }
+            clearable={true}
         />
     );
 

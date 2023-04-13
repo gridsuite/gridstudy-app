@@ -287,6 +287,7 @@ export function DiagramPane({
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
     const classes = useStyles();
+    const [warnings, setWarnings] = useState(new Map());
 
     /**
      * BUILDS THE DIAGRAMS LIST
@@ -314,14 +315,28 @@ export function DiagramPane({
             } else {
                 let singleLineDiagramView = createView(diagramState);
                 // if current view cannot be found, it returns undefined
-                // in this case, we remove it from diagram states
+                // in this case, we keep it in the diagram states and show a warning message inside the SLD
                 if (singleLineDiagramView) {
                     diagramViews.push({
                         ...singleLineDiagramView,
                         align: 'left',
                     });
                 } else {
-                    closeDiagramView(diagramState.id, diagramState.svgType);
+                    // because current view cannot be found, the id will be assigned to the name.
+                    const emptyDiagramView = {
+                        ...diagramState,
+                        name: diagramState?.id,
+                        // this variable is used to show a warning message inside the SLD
+                        warningMessage:
+                            DiagramType.VOLTAGE_LEVEL === diagramState.svgType
+                                ? 'VoltageLevelNotFound'
+                                : 'SubstationNotFound',
+                    };
+
+                    diagramViews.push({
+                        ...emptyDiagramView,
+                        align: 'left',
+                    });
                 }
             }
         });
@@ -346,6 +361,7 @@ export function DiagramPane({
             }
         }
         setViews(diagramViews);
+        setWarnings(new Map());
     }, [
         diagramStates,
         visible,
@@ -620,6 +636,22 @@ export function DiagramPane({
         ]
     );
 
+    const handleWarning = (id, message) => {
+        // Add the id of the diagramView and the warning to display.
+        setWarnings(
+            (prev) => new Map(prev.set(id, disabled ? 'InvalidNode' : message))
+        );
+    };
+
+    const handleWarningToDisplay = (diagramView) => {
+        // First, check if the node is built(the highest priority) then do the warning checks..
+        if (disabled) return 'InvalidNode';
+        if (diagramView?.warningMessage) return diagramView?.warningMessage;
+        return warnings.has(diagramView.id)
+            ? warnings.get(diagramView.id)
+            : undefined;
+    };
+
     /*
      * Calculate a diagram's ideal height, based on its natural height, the available space in
      * the pane, and the other diagrams' sizes.
@@ -716,7 +748,9 @@ export function DiagramPane({
                                 align={diagramView.align}
                                 diagramId={diagramView.id}
                                 diagramTitle={diagramView.name}
-                                disabled={disabled}
+                                warningToDisplay={handleWarningToDisplay(
+                                    diagramView
+                                )}
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
                                 width={getWidthForPaneDisplay(
@@ -742,6 +776,7 @@ export function DiagramPane({
                                         isComputationRunning={
                                             isComputationRunning
                                         }
+                                        setWarning={handleWarning}
                                         showInSpreadsheet={showInSpreadsheet}
                                         studyUuid={studyUuid}
                                         diagramId={diagramView.id}
