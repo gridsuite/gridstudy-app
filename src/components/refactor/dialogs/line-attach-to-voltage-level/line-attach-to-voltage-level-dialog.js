@@ -33,13 +33,14 @@ import {
     getConnectivityData,
     getConnectivityWithoutPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
-import LineSplitWithVoltageLevelForm from './line-attach-to-voltage-level-form';
+import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
 import { MODIFICATION_TYPES } from 'components/util/modification-type';
 import {
     getLineToAttachOrSplitEmptyFormData,
     getLineToAttachOrSplitFormData,
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
+import { buildNewBusbarSections } from 'components/refactor/utils/utils';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -118,7 +119,15 @@ const LineAttachToVoltageLevelDialog = ({
                 }),
             });
             setAttachmentLine(lineAttach?.attachmentLine);
-            setNewVoltageLevel(lineAttach?.mayNewVoltageLevelInfos);
+            const newVoltageLevel = lineAttach?.mayNewVoltageLevelInfos;
+            if (newVoltageLevel) {
+                newVoltageLevel.busbarSections = buildNewBusbarSections(
+                    newVoltageLevel?.equipmentId,
+                    newVoltageLevel?.sectionCount,
+                    newVoltageLevel?.busbarCount
+                );
+                setNewVoltageLevel(newVoltageLevel);
+            }
         },
         [reset]
     );
@@ -186,8 +195,8 @@ const LineAttachToVoltageLevelDialog = ({
             connectivity2BobbsId,
             permanentCurrentLimit1,
             permanentCurrentLimit2,
-            isUpdate,
-            modificationUuid
+            temporaryCurrentLimits1,
+            temporaryCurrentLimits2
         ) => {
             return new Promise(() => {
                 const preparedLine = {
@@ -202,9 +211,11 @@ const LineAttachToVoltageLevelDialog = ({
                     shuntSusceptance2: shuntSusceptance2,
                     currentLimits1: {
                         permanentLimit: permanentCurrentLimit1,
+                        temporaryLimits: temporaryCurrentLimits1,
                     },
                     currentLimits2: {
                         permanentLimit: permanentCurrentLimit2,
+                        temporaryLimits: temporaryCurrentLimits2,
                     },
                 };
                 setAttachmentLine(preparedLine);
@@ -223,21 +234,38 @@ const LineAttachToVoltageLevelDialog = ({
             currentNodeUuid,
             voltageLevelId,
             voltageLevelName,
-            nominalVoltage,
             substationId,
-            busbarSections,
-            busbarConnections,
+            nominalVoltage,
+            lowVoltageLimit,
+            highVoltageLimit,
+            ipMin,
+            ipMax,
+            busbarCount,
+            sectionCount,
+            switchKinds,
+            couplingDevices,
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
                     type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
                     equipmentId: voltageLevelId,
                     equipmentName: voltageLevelName,
-                    nominalVoltage: nominalVoltage,
                     substationId: substationId,
-                    busbarSections: busbarSections,
-                    busbarConnections: busbarConnections,
+                    nominalVoltage: nominalVoltage,
+                    lowVoltageLimit: lowVoltageLimit,
+                    highVoltageLimit: highVoltageLimit,
+                    ipMin: ipMin,
+                    ipMax: ipMax,
+                    busbarCount: busbarCount,
+                    sectionCount: sectionCount,
+                    switchKinds: switchKinds,
+                    couplingDevices: couplingDevices,
                 };
+                preparedVoltageLevel.busbarSections = buildNewBusbarSections(
+                    preparedVoltageLevel.equipmentId,
+                    preparedVoltageLevel.sectionCount,
+                    preparedVoltageLevel.busbarCount
+                );
                 setNewVoltageLevel(preparedVoltageLevel);
                 setValue(
                     `${CONNECTIVITY}.${VOLTAGE_LEVEL}`,
@@ -277,7 +305,7 @@ const LineAttachToVoltageLevelDialog = ({
                 titleId="LineAttachToVoltageLevel"
                 {...dialogProps}
             >
-                <LineSplitWithVoltageLevelForm
+                <LineAttachToVoltageLevelForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     onLineCreationDo={onLineCreationDo}

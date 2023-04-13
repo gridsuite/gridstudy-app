@@ -5,22 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import {
-    Grid,
-    Box,
-    Typography,
-    Autocomplete,
-    TextField,
-    Chip,
-    Button,
-} from '@mui/material';
+import { Grid, Autocomplete, TextField, Chip, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
 import { CloseButton, LabelledButton, useStyles } from './parameters';
 import { DropDown, SwitchWithLabel } from './parameters';
 import { LineSeparator } from '../dialogUtils';
+import {
+    FlatParameters,
+    extractDefaultMap,
+    makeDeltaMap,
+} from '@gridsuite/commons-ui';
 
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
@@ -42,12 +39,8 @@ const CountrySelector = ({ value, label, callback }) => {
 
     return (
         <>
-            <Grid item xs={6}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
+            <Grid item xs={6} className={classes.parameterName}>
+                <FormattedMessage id={label} />
             </Grid>
             <Grid item container xs={6} className={classes.controlItem}>
                 <Autocomplete
@@ -330,57 +323,57 @@ const SpecificLoadFlowParameters = ({
     currentProvider,
     specificParamsDescription,
 }) => {
-    /*
-    Create a param definition structure just like the constants in
-    BasicLoadFlowParameters / AdvancedLoadFlowParameters
-     */
-    function extractParamsDefinition(paramsDesc) {
-        const definitions = {};
-        for (var i = 0; i < paramsDesc.length; i++) {
-            if (paramsDesc[i].provider === currentProvider) {
-                let paramType = null;
-                let enumValues = null;
-                if (paramsDesc[i].type === 'BOOLEAN') {
-                    paramType = TYPES.bool;
-                } else if (paramsDesc[i].type === 'STRING') {
-                    if (
-                        paramsDesc[i].possibleValues !== null &&
-                        paramsDesc[i].possibleValues.length > 0
-                    ) {
-                        paramType = TYPES.enum;
-                        enumValues = {};
-                        for (
-                            var p = 0;
-                            p < paramsDesc[i].possibleValues.length;
-                            p++
-                        ) {
-                            const enumValue = paramsDesc[i].possibleValues[p];
-                            enumValues[enumValue] =
-                                paramsDesc[i].name + '_' + enumValue;
-                        }
-                    } else {
-                        paramType = TYPES.string;
-                    }
-                } else if (paramsDesc[i].type === 'DOUBLE') {
-                    paramType = TYPES.double;
-                } else if (paramsDesc[i].type === 'INTEGER') {
-                    paramType = TYPES.integer;
-                }
+    const classes = useStyles();
+    const [currentParameters, setCurrentParameters] = useState(null);
+    const defaultValues = useMemo(() => {
+        return extractDefaultMap(specificParamsDescription);
+    }, [specificParamsDescription]);
 
-                if (paramType) {
-                    definitions[paramsDesc[i].name] = {
-                        type: paramType,
-                        description:
-                            paramsDesc[i].provider + '_' + paramsDesc[i].name, // translation key
-                    };
-                    if (enumValues !== null) {
-                        definitions[paramsDesc[i].name].values = enumValues;
-                    }
-                }
-            }
-        }
-        return definitions;
-    }
+    useEffect(() => {
+        setCurrentParameters({
+            ...defaultValues,
+            ...lfParams?.specificParametersPerProvider?.[currentProvider],
+        });
+    }, [lfParams, currentProvider, defaultValues]);
+
+    const onChange = useCallback(
+        (paramName, value, isEdit) => {
+            if (isEdit) return;
+            setCurrentParameters((prevCurrentParameters) => {
+                const nextCurrentParameters = {
+                    ...prevCurrentParameters,
+                    ...{ [paramName]: value },
+                };
+                const deltaMap = makeDeltaMap(
+                    defaultValues,
+                    nextCurrentParameters
+                );
+                const toSend = { ...lfParams };
+                toSend['specificParametersPerProvider'] = {
+                    [currentProvider]: deltaMap ?? {},
+                };
+                commitLFParameter(toSend);
+                return nextCurrentParameters;
+            });
+        },
+        [commitLFParameter, currentProvider, defaultValues, lfParams]
+    );
+
+    const paramsComponent = useMemo(() => {
+        return (
+            <FlatParameters
+                className={classes.parameterName}
+                paramsAsArray={specificParamsDescription}
+                initValues={currentParameters}
+                onChange={onChange}
+            />
+        );
+    }, [
+        specificParamsDescription,
+        currentParameters,
+        onChange,
+        classes.parameterName,
+    ]);
 
     return (
         <>
@@ -389,18 +382,7 @@ const SpecificLoadFlowParameters = ({
                 label={'showSpecificParameters'}
                 callback={() => setShowSpecificLfParams(!showSpecificLfParams)}
             />
-            {showSpecificLfParams &&
-                makeComponentsFor(
-                    specificParamsDescription
-                        ? extractParamsDefinition(specificParamsDescription)
-                        : {},
-                    lfParams?.specificParametersPerProvider?.[
-                        currentProvider
-                    ] || {},
-                    lfParams,
-                    commitLFParameter,
-                    currentProvider
-                )}
+            {showSpecificLfParams && paramsComponent}
         </>
     );
 };
@@ -423,7 +405,7 @@ export const LoadFlowParameters = ({
         params,
         updateParameters,
         resetParameters,
-        specificParamsDescription,
+        specificParamsDescriptions,
     ] = parametersBackend;
 
     const updateLfProviderCallback = useCallback(
@@ -437,6 +419,27 @@ export const LoadFlowParameters = ({
         resetParameters();
         resetProvider();
     }, [resetParameters, resetProvider]);
+
+    const specificParamsDescription = specificParamsDescriptions[provider];
+    const specificLoadFlowParameters = useMemo(() => {
+        return (
+            <SpecificLoadFlowParameters
+                lfParams={params || {}}
+                commitLFParameter={updateParameters}
+                showSpecificLfParams={showSpecificLfParams}
+                setShowSpecificLfParams={setShowSpecificLfParams}
+                currentProvider={provider}
+                specificParamsDescription={specificParamsDescription}
+            />
+        );
+    }, [
+        showSpecificLfParams,
+        params,
+        provider,
+        specificParamsDescription,
+        updateParameters,
+        setShowSpecificLfParams,
+    ]);
 
     return (
         <>
@@ -465,14 +468,7 @@ export const LoadFlowParameters = ({
                     showAdvancedLfParams={showAdvancedLfParams}
                     setShowAdvancedLfParams={setShowAdvancedLfParams}
                 />
-                <SpecificLoadFlowParameters
-                    lfParams={params || {}}
-                    commitLFParameter={updateParameters}
-                    showSpecificLfParams={showSpecificLfParams}
-                    setShowSpecificLfParams={setShowSpecificLfParams}
-                    currentProvider={provider}
-                    specificParamsDescription={specificParamsDescription}
-                />
+                {specificLoadFlowParameters}
             </Grid>
             <Grid
                 container

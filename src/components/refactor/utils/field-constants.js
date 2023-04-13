@@ -118,18 +118,35 @@ export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
 export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';
 export const SHUNT_SUSCEPTANCE_1 = 'shuntSusceptance1';
 export const SHUNT_SUSCEPTANCE_2 = 'shuntSusceptance2';
+export const LIMITS = 'limits';
+export const TAB_HEADER = 'tabHeader';
+export const TEMPORARY_LIMITS = 'temporaryLimits';
+export const TEMPORARY_LIMIT_NAME = 'name';
+export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
+export const TEMPORARY_LIMIT_VALUE = 'value';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
-export const HORIZONTAL_POSITION = 'horizPos';
-export const VERTICAL_POSITION = 'vertPos';
-export const BUS_BAR_CONNECTIONS = 'busbarConnections';
-export const FROM_BBS = 'fromBBS';
-export const TO_BBS = 'toBBS';
+export const BUS_BAR_SECTION_ID1 = 'busbarSectionId1';
+export const BUS_BAR_SECTION_ID2 = 'busbarSectionId2';
 export const SWITCH_KIND = 'switchKind';
+export const HIGH_VOLTAGE_LIMIT = 'highVoltageLimit';
+export const LOW_VOLTAGE_LIMIT = 'lowVoltageLimit';
+export const LOW_SHORT_CIRCUIT_CURRENT_LIMIT = 'lowShortCircuitCurrentLimit';
+export const HIGH_SHORT_CIRCUIT_CURRENT_LIMIT = 'highShortCircuitCurrentLimit';
+export const BUS_BAR_COUNT = 'busbarCount';
+export const SECTION_COUNT = 'sectionCount';
+export const SWITCHES_BETWEEN_SECTIONS = 'switchesBetweenSections';
+export const COUPLING_OMNIBUS = 'couplingOmnibus';
+export const SWITCH_KINDS = 'switchKinds';
 // dnd table
 export const SELECTED = 'selected';
 
+//generator
+export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
+export const REGULATING_TERMINAL = 'regulatingTerminal';
+export const ACTIVE_POWER_CONTROL_ON = 'activePowerControlOn';
+export const GENERATOR = 'generator';
 //line-attach-to-voltage-level
 export const LINE_TO_ATTACH_OR_SPLIT_ID = 'lineToAttachOrSplitId';
 export const ATTACHMENT_POINT_ID = 'attachmentPointId';

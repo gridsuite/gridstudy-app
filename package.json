@@ -6,7 +6,7 @@
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
-        "@gridsuite/commons-ui": "0.31.0",
+        "@gridsuite/commons-ui": "0.31.1",
         "@hookform/resolvers": "^2.9.10",
         "@powsybl/diagram-viewer": "0.1.8",
         "@mui/icons-material": "^5.5.1",
@@ -51,7 +51,9 @@
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
         "typeface-roboto": "^1.0.0",
-        "yup": "^0.32.11"
+        "yup": "^0.32.11",
+        "ag-grid-community": "^29.0.0",
+        "ag-grid-react": "^29.0.0"
     },
     "scripts": {
         "start": "react-scripts start",

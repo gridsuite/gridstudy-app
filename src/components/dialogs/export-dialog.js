@@ -57,6 +57,7 @@ const ExportDialog = ({
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
+                console.debug('ExportDialog.formats', formats);
                 setFormatsWithParameters(formats);
             });
         }
