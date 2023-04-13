@@ -370,24 +370,50 @@ export function DiagramPane({
      * BUILDS THE DIAGRAMS LIST
      */
 
-    // Here, the goal is to build a list of view, each view corresponding to a diagram.
+    // Here (for the next 300 lines), the goal is to build a list of view, each view corresponding to a diagram.
     // We get the diagram data from the redux store.
     // In the case of SLD, each SLD corresponds to one view, but in the case of NAD, each open NAD is merged
     // into one view.s
 
+    // Check if we need to add new SLDs in the 'views' and add them if necessary
     const addSLDs = useCallback(
         (diagramStates) => {
-            if (diagramStates?.length) {
+            // We check if we need to add new diagrams
+            const diagramsToAdd = [];
+            diagramStates.forEach((diagramState) => {
+                if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
+                    const diagramAlreadyPresentInViews = viewsRef.current.find(
+                        (diagramView) =>
+                            diagramView.svgType !==
+                                DiagramType.NETWORK_AREA_DIAGRAM &&
+                            diagramView.id === diagramState.id
+                    );
+                    if (!diagramAlreadyPresentInViews) {
+                        diagramsToAdd.push({
+                            ...diagramState,
+                            name: intl.formatMessage(
+                                { id: 'LoadingOf' },
+                                { value: diagramState.id }
+                            ),
+                            align: 'left',
+                            loadingState: true,
+                        });
+                    }
+                }
+            });
+
+            // If we found diagrams to add, we add them
+            if (diagramsToAdd?.length) {
                 // First we add the empty diagrams in the views
                 setViews((views) => {
                     const updatedViews = views
-                        .concat(diagramStates)
+                        .concat(diagramsToAdd)
                         .sort(sortByAlign);
                     return updatedViews;
                 });
 
                 // Then we add the data when the fetch is finished
-                diagramStates.forEach((diagramState) => {
+                diagramsToAdd.forEach((diagramState) => {
                     createView(diagramState).then((singleLineDiagramView) => {
                         setViews((views) => {
                             const diagramViewId = views.findIndex(
@@ -409,10 +435,50 @@ export function DiagramPane({
                 });
             }
         },
-        [createView]
+        [createView, intl]
     );
 
-    const addNAD = useCallback(
+    // Check if we need to remove old SLDs from the 'views' and remove them if necessary
+    const removeSLDs = useCallback((diagramStates) => {
+        // We check if we need to remove old diagrams
+        const diagramIdsToRemove = [];
+        viewsRef.current.forEach((diagramView) => {
+            if (diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
+                const diagramStillPresentInRedux = diagramStates.find(
+                    (diagramState) =>
+                        diagramState.svgType !==
+                            DiagramType.NETWORK_AREA_DIAGRAM &&
+                        diagramState.id === diagramView.id
+                );
+                if (!diagramStillPresentInRedux) {
+                    diagramIdsToRemove.push(diagramView.id);
+                }
+            }
+        });
+
+        // If we found diagrams to remove, we remove them
+        if (diagramIdsToRemove?.length) {
+            setViews((views) => {
+                const updatedViews = views.filter(
+                    (view) =>
+                        view.svgType === DiagramType.NETWORK_AREA_DIAGRAM ||
+                        !diagramIdsToRemove.includes(view.id)
+                );
+                return updatedViews;
+            });
+        }
+    }, []);
+
+    // Check if we need to remove or add SLDs
+    const updateSLDs = useCallback(
+        (diagramStates) => {
+            removeSLDs(diagramStates);
+            addSLDs(diagramStates);
+        },
+        [removeSLDs, addSLDs]
+    );
+
+    const addOrReplaceNAD = useCallback(
         (networkAreaIds, networkAreaViewState, networkAreaDiagramDepth) => {
             // First we add the empty diagram in the views
             setViews((views) => {
@@ -468,19 +534,6 @@ export function DiagramPane({
         [createView, intl]
     );
 
-    const removeSLDs = useCallback((diagramIds) => {
-        if (diagramIds?.length) {
-            setViews((views) => {
-                const updatedViews = views.filter(
-                    (view) =>
-                        view.svgType === DiagramType.NETWORK_AREA_DIAGRAM ||
-                        !diagramIds.includes(view.id)
-                );
-                return updatedViews;
-            });
-        }
-    }, []);
-
     const removeNAD = useCallback(() => {
         setViews((views) => {
             const updatedViews = views.filter(
@@ -490,32 +543,48 @@ export function DiagramPane({
         });
     }, []);
 
-    const updateDiagramStates = useCallback((diagramsInfos) => {
-        if (diagramsInfos?.length) {
-            setViews((views) => {
-                let updatedViews = views.slice();
-                diagramsInfos.forEach((diagramInfo) => {
-                    updatedViews[diagramInfo.index] = {
-                        ...updatedViews[diagramInfo.index],
-                        state: diagramInfo.state,
-                    };
-                });
-                return updatedViews;
+    const updateNAD = useCallback(
+        (diagramStates) => {
+            const networkAreaIds = [];
+            let networkAreaViewState = ViewState.OPENED;
+            diagramStates.forEach((diagramState) => {
+                if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+                    networkAreaIds.push(diagramState.id);
+                    networkAreaViewState = diagramState.state; // They should all be the same value
+                }
             });
-        }
-    }, []);
+            if (networkAreaIds.length > 0) {
+                const sameNadAlreadyPresentInViews = viewsRef.current.find(
+                    (diagramView) =>
+                        diagramView.svgType ===
+                            DiagramType.NETWORK_AREA_DIAGRAM &&
+                        diagramView.ids?.toString() ===
+                            networkAreaIds.toString() &&
+                        diagramView.depth === networkAreaDiagramDepth
+                );
+                if (!sameNadAlreadyPresentInViews) {
+                    addOrReplaceNAD(
+                        networkAreaIds,
+                        networkAreaViewState,
+                        networkAreaDiagramDepth
+                    );
+                }
+            } else if (
+                viewsRef.current.find(
+                    (diagramView) =>
+                        diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                )
+            ) {
+                // no more NAD, remove it from the views
+                removeNAD();
+            }
+        },
+        [addOrReplaceNAD, removeNAD, networkAreaDiagramDepth]
+    );
 
-    // UPDATE DIAGRAM VIEWS
-    useEffect(() => {
-        if (
-            !visible ||
-            !currentNode ||
-            isNodeInNotificationList(currentNode, notificationIdList)
-        ) {
-            return;
-        }
-
-        // UPDATING DIAGRAM STATES (before removing or adding new diagrams)
+    // Update only the state of the diagrams (opened, minimized, etc)
+    const updateDiagramStates = useCallback((diagramStates) => {
+        // We check if we need to update some diagrams
         let diagramsToUpdate = [];
         diagramStates.forEach((diagramState) => {
             // if SLD
@@ -560,94 +629,45 @@ export function DiagramPane({
                 }
             }
         });
-        updateDiagramStates(diagramsToUpdate);
 
-        // REMOVING SLD
-        const diagramIdsToRemove = [];
-        viewsRef.current.forEach((diagramView) => {
-            if (diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
-                const diagramStillPresentInRedux = diagramStates.find(
-                    (diagramState) =>
-                        diagramState.svgType !==
-                            DiagramType.NETWORK_AREA_DIAGRAM &&
-                        diagramState.id === diagramView.id
-                );
-                if (!diagramStillPresentInRedux) {
-                    diagramIdsToRemove.push(diagramView.id);
-                }
-            }
-        });
-        removeSLDs(diagramIdsToRemove);
-
-        // ADDING SLD
-        const diagramsToAdd = [];
-        diagramStates.forEach((diagramState) => {
-            if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
-                const diagramAlreadyPresentInViews = viewsRef.current.find(
-                    (diagramView) =>
-                        diagramView.svgType !==
-                            DiagramType.NETWORK_AREA_DIAGRAM &&
-                        diagramView.id === diagramState.id
-                );
-                if (!diagramAlreadyPresentInViews) {
-                    diagramsToAdd.push({
-                        ...diagramState,
-                        name: intl.formatMessage(
-                            { id: 'LoadingOf' },
-                            { value: diagramState.id }
-                        ),
-                        align: 'left',
-                        loadingState: true,
-                    });
-                }
-            }
-        });
-        addSLDs(diagramsToAdd);
-
-        // NAD MANAGEMENT
-        const networkAreaIds = [];
-        let networkAreaViewState = ViewState.OPENED;
-        diagramStates.forEach((diagramState) => {
-            if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                networkAreaIds.push(diagramState.id);
-                networkAreaViewState = diagramState.state; // They should all be the same value
-            }
-        });
-        if (networkAreaIds.length > 0) {
-            const sameNadAlreadyPresentInViews = viewsRef.current.find(
-                (diagramView) =>
-                    diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM &&
-                    diagramView.ids?.toString() === networkAreaIds.toString() &&
-                    diagramView.depth === networkAreaDiagramDepth
-            );
-            if (!sameNadAlreadyPresentInViews) {
-                addNAD(
-                    networkAreaIds,
-                    networkAreaViewState,
-                    networkAreaDiagramDepth
-                );
-            }
-        } else if (
-            viewsRef.current.find(
-                (diagramView) =>
-                    diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-            )
-        ) {
-            // no more NAD, remove it from the views
-            removeNAD();
+        // If we found diagrams to update, we update them
+        if (diagramsToUpdate?.length) {
+            setViews((views) => {
+                let updatedViews = views.slice();
+                diagramsToUpdate.forEach((diagramInfo) => {
+                    updatedViews[diagramInfo.index] = {
+                        ...updatedViews[diagramInfo.index],
+                        state: diagramInfo.state,
+                    };
+                });
+                return updatedViews;
+            });
         }
+    }, []);
+
+    // UPDATE DIAGRAM VIEWS
+    useEffect(() => {
+        if (
+            !visible ||
+            !currentNode ||
+            isNodeInNotificationList(currentNode, notificationIdList)
+        ) {
+            return;
+        }
+        // UPDATING DIAGRAM STATES (before removing or adding new diagrams, for both SLDs and NAD)
+        updateDiagramStates(diagramStates);
+        // SLD MANAGEMENT (adding or removing SLDs)
+        updateSLDs(diagramStates);
+        // NAD MANAGEMENT (adding, removing or updating the NAD)
+        updateNAD(diagramStates);
     }, [
         diagramStates,
         visible,
         currentNode,
         notificationIdList,
-        addSLDs,
-        addNAD,
-        removeSLDs,
-        removeNAD,
         updateDiagramStates,
-        networkAreaDiagramDepth,
-        intl,
+        updateSLDs,
+        updateNAD,
     ]);
 
     const displayedDiagrams = views
