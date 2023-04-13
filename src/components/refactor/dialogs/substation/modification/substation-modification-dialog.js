@@ -6,11 +6,11 @@
  */
 
 import { FormProvider, useForm } from 'react-hook-form';
-import ModificationDialog from '../commons/modificationDialog';
+import ModificationDialog from '../../commons/modificationDialog';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../utils/yup-config';
+import yup from '../../../utils/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
@@ -20,11 +20,11 @@ import {
     NAME,
     PREVIOUS_VALUE,
     VALUE,
-} from '../../utils/field-constants';
-import { checkUniqueProperties } from '../substation-creation/property/property-utils';
+} from '../../../utils/field-constants';
+import { checkUniqueProperties } from '../property/property-utils';
 import SubstationModificationForm from './substation-modification-form';
-import { modifySubstation } from '../../../../utils/rest-api';
-import { sanitizeString } from '../../../dialogs/dialogUtils';
+import { modifySubstation } from '../../../../../utils/rest-api';
+import { sanitizeString } from '../../../../dialogs/dialogUtils';
 
 const schema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().nullable().required(),

@@ -10,19 +10,19 @@ import {
     filledTextField,
     gridItem,
     GridSection,
-} from '../../../dialogs/dialogUtils';
+} from '../../../../dialogs/dialogUtils';
 import React from 'react';
-import TextInput from '../../rhf-inputs/text-input';
+import TextInput from '../../../rhf-inputs/text-input';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-} from '../../utils/field-constants';
-import CountrySelectionInput from '../../rhf-inputs/country-selection-input';
-import ExpandableInput from '../../rhf-inputs/expandable-input';
-import PropertyForm from './property/property-form';
-import { getPropertyInitialValues } from './property/property-utils';
+} from '../../../utils/field-constants';
+import CountrySelectionInput from '../../../rhf-inputs/country-selection-input';
+import ExpandableInput from '../../../rhf-inputs/expandable-input';
+import PropertyForm from '../property/property-form';
+import { getPropertyInitialValues } from '../property/property-utils';
 
 const SubstationCreationForm = () => {
     const substationIdField = (

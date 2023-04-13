@@ -10,10 +10,10 @@ import {
     filledTextField,
     gridItem,
     GridSection,
-} from '../../../dialogs/dialogUtils';
+} from '../../../../dialogs/dialogUtils';
 import { getObjectId } from 'components/refactor/utils/utils';
 import React, { useCallback, useEffect, useState } from 'react';
-import TextInput from '../../rhf-inputs/text-input';
+import TextInput from '../../../rhf-inputs/text-input';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
@@ -23,17 +23,17 @@ import {
     NAME,
     PREVIOUS_VALUE,
     VALUE,
-} from '../../utils/field-constants';
-import CountrySelectionInput from '../../rhf-inputs/country-selection-input';
-import ExpandableInput from '../../rhf-inputs/expandable-input';
-import PropertyForm from '../substation-creation/property/property-form';
-import { getPropertyInitialValues } from '../substation-creation/property/property-utils';
+} from '../../../utils/field-constants';
+import CountrySelectionInput from '../../../rhf-inputs/country-selection-input';
+import ExpandableInput from '../../../rhf-inputs/expandable-input';
+import PropertyForm from '../property/property-form';
+import { getPropertyInitialValues } from '../property/property-utils';
 import {
     fetchEquipmentInfos,
     fetchEquipmentsIds,
-} from '../../../../utils/rest-api';
+} from '../../../../../utils/rest-api';
 import { useFormContext, useWatch } from 'react-hook-form';
-import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
+import AutocompleteInput from '../../../rhf-inputs/autocomplete-input';
 
 const SubstationModificationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
