@@ -23,81 +23,52 @@ import { EQUIPMENT_TYPES } from './equipment-filter';
 import CheckboxTreeview from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
+import { fetchDynamicSimulationModels } from '../../../../../../utils/rest-api';
 
-// take from table models in DB dynamicmappings
-const MODELS = {
-    // EQUIPMENT_TYPES.LOAD
-    [EQUIPMENT_TYPES.LOAD.type]: {
-        LoadAlphaBeta: 'Load Alpha Beta',
-        LoadPQ: 'Load PQ',
-    },
-    // EQUIPMENT_TYPES.GENERATOR
-    [EQUIPMENT_TYPES.GENERATOR.type]: {
-        GeneratorSynchronousThreeWindings:
-            'Generator Synchronous Three Windings',
-        GeneratorSynchronousFourWindings: 'Generator Synchronous Four Windings',
-        GeneratorSynchronousThreeWindingsProportionalRegulations:
-            'Generator Synchronous Three Windings Proportional Regulations',
-        GeneratorSynchronousFourWindingsProportionalRegulations:
-            'Generator Synchronous Four Windings Proportional Regulations',
-        GeneratorPQ: 'Generator PQ',
-        GeneratorPV: 'Generator PV',
-    },
-};
-
-const VARIABLES = {
-    // EQUIPMENT_TYPES.LOAD
-    // LoadAlphaBeta
-    [MODELS[EQUIPMENT_TYPES.LOAD.type].LoadAlphaBeta]: {
-        load_alpha: 'Load Alpha',
-        load_beta: 'Load Beta',
-        load_P0Pu: 'Load P0Pu',
-        load_Q0Pu: 'Load Q0Pu',
-        load_U0Pu: 'Load U0Pu',
-        load_UPhase0: 'Load UPhase0',
-    },
-    // LoadPQ
-    [MODELS[EQUIPMENT_TYPES.LOAD.type].LoadPQ]: {
-        load_P0Pu: 'Load P0Pu',
-        load_Q0Pu: 'Load Q0Pu',
-        load_U0Pu: 'Load U0Pu',
-        load_UPhase0: 'Load UPhase0',
-    },
-    // EQUIPMENT_TYPES.GENERATOR
-    // GeneratorSynchronousThreeWindings
-    [MODELS[EQUIPMENT_TYPES.GENERATOR.type].GeneratorSynchronousThreeWindings]:
-        {
-            generator_UNom: 'Generator UNom',
-            generator_SNom: 'Generator SNom',
-            generator_PNomTurb: 'Generator PNom Turb',
-            generator_PNomAlt: 'Generator PNom Alt',
-        },
-    // GeneratorSynchronousFourWindings
-    [MODELS[EQUIPMENT_TYPES.GENERATOR.type].GeneratorSynchronousFourWindings]: {
-        generator_UNom: 'Generator UNom',
-        generator_SNom: 'Generator SNom',
-        generator_PNomTurb: 'Generator PNom Turb',
-        generator_PNomAlt: 'Generator PNom Alt',
-    },
-};
-
-// fake API fetchDynamicSimulationModelsParameters
-const fetchDynamicSimulationModelsVariables = (studyUuid, nodeUuid) => {
-    console.info(
-        `Fetching dynamic simulation models and variables sets on '${studyUuid}' and node '${nodeUuid}' ...`
+const transformModelsToVariables = (models) => {
+    return models.reduce(
+        (obj, model) => ({
+            ...obj,
+            [model.modelName]: model.setsGroups.reduce(
+                (obj, setGroup) => ({
+                    ...obj,
+                    [setGroup.name]: setGroup.sets.reduce(
+                        (obj, set) => ({
+                            ...obj,
+                            [set.name]: set.parameters.reduce(
+                                (obj, parameter) => ({
+                                    ...obj,
+                                    [parameter.name]: parameter.name,
+                                }),
+                                {}
+                            ),
+                        }),
+                        {}
+                    ),
+                }),
+                {}
+            ),
+        }),
+        {}
     );
-
-    return Promise.resolve({ models: MODELS, variables: VARIABLES });
 };
 
 const flatteningObject = (variables, parentId) => {
     let result = [];
     Object.entries(variables).map(([key, value]) => {
         if (typeof value === 'object') {
+            const id = parentId ? `${parentId}/${key}` : key;
             // make container element
-            result = [...result, { id: key, name: key }];
+            result = [
+                ...result,
+                {
+                    id: id,
+                    name: key,
+                    parentId: parentId,
+                },
+            ];
             // make contained elements
-            result = [...result, ...flatteningObject(value, key)];
+            result = [...result, ...flatteningObject(value, id)];
         }
         if (typeof value === 'string') {
             result = [
@@ -133,16 +104,27 @@ const ModelFilter = forwardRef(
         const classes = useStyles();
         const theme = useTheme();
 
-        const [allModels, setAllModels] = useState({});
+        const [allModels, setAllModels] = useState([]);
         const [allVariables, setAllVariables] = useState({});
 
         const variablesRef = useRef();
 
         // --- models CheckboxSelect --- //
-        const associatedModels = useMemo(
-            () => allModels[equipmentType.type] ?? {},
-            [equipmentType.type, allModels]
-        );
+        const associatedModels = useMemo(() => {
+            const associatedModels = allModels?.filter(
+                (model) => model.equipmentType === equipmentType.type
+            );
+            // convert array to object
+            return associatedModels
+                ? associatedModels.reduce(
+                      (obj, model) => ({
+                          ...obj,
+                          [model.name]: model.name,
+                      }),
+                      {}
+                  )
+                : {};
+        }, [equipmentType.type, allModels]);
         const initialSelectedModels = useMemo(
             () => Object.keys(associatedModels) ?? [],
             [associatedModels]
@@ -181,18 +163,24 @@ const ModelFilter = forwardRef(
 
         // fetch all associated models and variables for current node and study
         useEffect(() => {
-            setTimeout(() => {
-                fetchDynamicSimulationModelsVariables(
-                    studyUuid,
-                    currentNode.id
-                ).then(({ models, variables }) => {
-                    setAllModels(models);
-                    setAllVariables(variables);
+            fetchDynamicSimulationModels(studyUuid, currentNode.id).then(
+                (models) => {
+                    console.log('Models from dynamic mapping', models);
+                    setAllModels(
+                        models.map((model) => ({
+                            name: model.modelName,
+                            equipmentType: model.equipmentType,
+                        }))
+                    );
 
+                    // transform models to variables representation
+                    const variables = transformModelsToVariables(models);
+                    console.log('transformed variables', variables);
+                    setAllVariables(variables);
                     // to force remount component since it has internal state needed to clear
                     // setVariablesRevision((prev) => ++prev);
-                });
-            }, 500);
+                }
+            );
         }, [studyUuid, currentNode.id]);
 
         // expose some interfaces for the component by using ref

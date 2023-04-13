@@ -10,7 +10,7 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-material.css';
 
-import { Grid } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { makeStyles, useTheme } from '@mui/styles';
 import GridQuickFilter from './curve/grid-quick-filter';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -38,6 +38,7 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
     console.log('CurveParameters re-render', curves);
     const intl = useIntl();
     const [rowData, setRowData] = useState([]);
+    const [selectedRowsLength, setSelectedRowsLength] = useState(0);
 
     // handle open/close/save curve selector dialog
     const [open, setOpen] = useState(false);
@@ -120,6 +121,7 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
 
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current.api.getSelectedRows();
+        setSelectedRowsLength(selectedRows.length);
         console.log('Number of selected row', selectedRows.length);
     }, []);
 
@@ -144,20 +146,42 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
             // update parameter curves
             onUpdateCurve(remainingRows);
 
+            // reset selected rows length
+            setSelectedRowsLength(0);
+
             return remainingRows;
         });
-    }, []);
+    }, [onUpdateCurve]);
 
     return (
         curves && (
             <>
                 <Grid container item sx={{ marginBottom: theme.spacing(1) }}>
-                    <GridQuickFilter
-                        key={'curve-quick-filter'}
-                        ref={quickFilterRef}
-                        gridRef={gridRef}
-                        disabled={false}
-                    />
+                    <Grid container item xs={'auto'}>
+                        <GridQuickFilter
+                            key={'curve-quick-filter'}
+                            ref={quickFilterRef}
+                            gridRef={gridRef}
+                            disabled={false}
+                        />
+                    </Grid>
+                    <Grid
+                        container
+                        item
+                        xs={'auto'}
+                        sx={{
+                            justifyContent: 'flex-end',
+                            alignItems: 'flex-end',
+                            paddingLeft: theme.spacing(1),
+                        }}
+                    >
+                        <Typography
+                            //sx={{ marginBottom: theme.spacing(1) }}
+                            variant="subtitle1"
+                        >
+                            {`(${selectedRowsLength} / ${rowData.length})`}
+                        </Typography>
+                    </Grid>
                     <GridButtons
                         onAddButton={handleAdd}
                         onDeleteButton={handleDelete}

@@ -39,6 +39,7 @@ const CurvePreview = forwardRef((props, ref) => {
     const gridRef = useRef();
 
     const [rowData, setRowData] = useState([]);
+    const [selectedRowsLength, setSelectedRowsLength] = useState(0);
     const [columnDefs, setColumnDefs] = useState([
         {
             field: 'equipmentName',
@@ -77,6 +78,7 @@ const CurvePreview = forwardRef((props, ref) => {
 
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current.api.getSelectedRows();
+        setSelectedRowsLength(selectedRows.length);
         console.log('Number of selected row', selectedRows.length);
     }, []);
 
@@ -101,6 +103,10 @@ const CurvePreview = forwardRef((props, ref) => {
                 },
                 removeCurves: () => {
                     const selectedRows = gridRef.current.api.getSelectedRows();
+
+                    // reset selected rows length
+                    setSelectedRowsLength(0);
+
                     setRowData((prev) => {
                         const remainingRows = prev.filter(
                             (elem) =>
@@ -129,6 +135,7 @@ const CurvePreview = forwardRef((props, ref) => {
                 <FormattedMessage
                     id={'DynamicSimulationCurveToAdd'}
                 ></FormattedMessage>
+                {` (${selectedRowsLength} / ${rowData.length})`}
             </Typography>
             <div className={clsx([theme.aggrid, classes.grid])}>
                 <AgGridReact

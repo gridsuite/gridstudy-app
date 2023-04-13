@@ -338,6 +338,7 @@ const EquipmentFilter = forwardRef(
 
         // grid configuration
         const [equipmentRowData, setEquipmentRowData] = useState([]);
+        const [selectedRowsLength, setSelectedRowsLength] = useState(0);
         const [columnDefs, setColumnDefs] = useState([
             {
                 field: 'name',
@@ -369,6 +370,7 @@ const EquipmentFilter = forwardRef(
 
         const handleEquipmentSelectionChanged = useCallback(() => {
             const selectedRows = equipmentsRef.current.api.getSelectedRows();
+            setSelectedRowsLength(selectedRows.length);
             console.log('Number of selected row', selectedRows.length);
         }, []);
 
@@ -496,6 +498,7 @@ const EquipmentFilter = forwardRef(
                         <FormattedMessage
                             id={'DynamicSimulationCurveEquipment'}
                         ></FormattedMessage>
+                        {` (${selectedRowsLength} / ${equipmentRowData.length})`}
                     </Typography>
                     <div className={clsx([theme.aggrid, classes.grid])}>
                         <AgGridReact

@@ -1289,6 +1289,18 @@ function getDynamicSimulationUrl() {
     return PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES + '/v1/';
 }
 
+export function fetchDynamicSimulationModels(studyUuid, nodeUuid) {
+    console.info(
+        `Fetching dynamic simulation models on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/dynamic-simulation/models';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function fetchDynamicSimulationProviders() {
     console.info('fetch dynamic simulation providers');
     const url = getDynamicSimulationUrl() + 'providers';
