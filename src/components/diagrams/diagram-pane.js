@@ -56,7 +56,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 
-// Return a callback that return a promise
+// Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
@@ -138,7 +138,7 @@ const useDisplayView = (studyUuid, currentNode) => {
         [studyUuid, currentNode]
     );
 
-    // this callback return a promise
+    // this callback returns a promise
     const fetchSvgData = useCallback(
         (svgUrl, svgType) => {
             if (svgUrl) {
@@ -184,7 +184,7 @@ const useDisplayView = (studyUuid, currentNode) => {
         [snackError]
     );
 
-    // this callback return a promise
+    // this callback returns a promise
     return useCallback(
         (diagramState) => {
             if (!studyUuid || !currentNode) return Promise.reject();
@@ -705,59 +705,56 @@ export function DiagramPane({
      */
 
     // Updates particular diagrams or every diagram for the current node
-    const updateDiagrams = useCallback(
-        (ids) => {
-            if (ids?.length) {
-                // Before we get the results, we set loadingState = true
-                setViews((views) => {
-                    const updatedViews = views.slice();
-                    for (let i = 0; i < views.length; i++) {
-                        const currentView = views[i];
-                        if (ids.includes(currentView.id)) {
+    const updateDiagrams = useCallback((ids) => {
+        if (ids?.length) {
+            // Before we get the results, we set loadingState = true
+            setViews((views) => {
+                const updatedViews = views.slice();
+                for (let i = 0; i < views.length; i++) {
+                    const currentView = views[i];
+                    if (ids.includes(currentView.id)) {
+                        updatedViews[i] = {
+                            ...updatedViews[i],
+                            loadingState: true,
+                        };
+                    }
+                }
+                return updatedViews;
+            });
+            // Then we add the data once we have it
+            for (let i = 0; i < viewsRef.current.length; i++) {
+                const currentView = viewsRef.current[i];
+                if (ids.includes(currentView.id)) {
+                    currentView.fetchSvg().then((svg) => {
+                        setViews((views) => {
+                            const updatedViews = views.slice();
                             updatedViews[i] = {
                                 ...updatedViews[i],
-                                loadingState: true,
+                                ...svg,
+                                loadingState: false,
                             };
-                        }
-                    }
-                    return updatedViews;
-                });
-                // Then we add the data once we have it
-                for (let i = 0; i < viewsRef.current.length; i++) {
-                    const currentView = viewsRef.current[i];
-                    if (ids.includes(currentView.id)) {
-                        currentView.fetchSvg().then((svg) => {
-                            setViews((views) => {
-                                const updatedViews = views.slice();
-                                updatedViews[i] = {
-                                    ...updatedViews[i],
-                                    ...svg,
-                                    loadingState: false,
-                                };
-                                return updatedViews;
-                            });
+                            return updatedViews;
                         });
-                    }
-                }
-            } else {
-                // We search the diagrams based on the current node's ID to determine if the diagram should be updated
-                let idsToUpdate = viewsRef.current
-                    .filter(
-                        (diagramView) =>
-                            diagramView.nodeId === currentNodeRef.current?.id
-                    )
-                    .map((diagramView) => diagramView.id);
-                if (idsToUpdate?.length) {
-                    // we remove duplicates (because of NAD)
-                    idsToUpdate = idsToUpdate.filter(
-                        (id, index) => idsToUpdate.indexOf(id) === index
-                    );
-                    updateDiagrams(idsToUpdate);
+                    });
                 }
             }
-        },
-        [setViews]
-    );
+        } else {
+            // We search the diagrams based on the current node's ID to determine if the diagram should be updated
+            let idsToUpdate = viewsRef.current
+                .filter(
+                    (diagramView) =>
+                        diagramView.nodeId === currentNodeRef.current?.id
+                )
+                .map((diagramView) => diagramView.id);
+            if (idsToUpdate?.length) {
+                // we remove duplicates (because of NAD)
+                idsToUpdate = idsToUpdate.filter(
+                    (id, index) => idsToUpdate.indexOf(id) === index
+                );
+                updateDiagrams(idsToUpdate);
+            }
+        }
+    }, []);
 
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
@@ -790,8 +787,7 @@ export function DiagramPane({
                     viewsRef.current
                         .filter(
                             (diagramView) =>
-                                diagramView.svgType ===
-                                DiagramType.VOLTAGE_LEVEL
+                                diagramView.svgType !== DiagramType.SUBSTATION
                         )
                         .forEach((v) => {
                             const vl = network.getVoltageLevel(v.id);
@@ -802,7 +798,9 @@ export function DiagramPane({
                                 diagramIds.push(vl.id);
                             }
                         });
-                    updateDiagrams(diagramIds);
+                    if (diagramIds.length) {
+                        updateDiagrams(diagramIds);
+                    }
                 } else {
                     updateDiagrams(undefined);
                 }
@@ -973,13 +971,6 @@ export function DiagramPane({
         ]
     );
 
-    const handleWarningToDisplay = (diagramView) => {
-        // First, check if the node is built(the highest priority) then do the warning checks..
-        if (disabled) return 'InvalidNode';
-        if (diagramView?.error) return diagramView.error;
-        return undefined;
-    };
-
     /*
      * Calculate a diagram's ideal height, based on its natural height, the available space in
      * the pane, and the other diagrams' sizes.
@@ -1041,6 +1032,13 @@ export function DiagramPane({
     /**
      * RENDER
      */
+
+    const handleWarningToDisplay = (diagramView) => {
+        // First, check if the node is built(the highest priority) then do the warning checks..
+        if (disabled) return 'InvalidNode';
+        if (diagramView?.error) return diagramView.error;
+        return undefined;
+    };
 
     return (
         <AutoSizer>
