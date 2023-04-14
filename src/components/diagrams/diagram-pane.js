@@ -1062,7 +1062,7 @@ export function DiagramPane({
      */
 
     const handleWarningToDisplay = (diagramView) => {
-        // First, check if the node is built(the highest priority) then do the warning checks..
+        // First, we check if the node is built (the highest priority), so when disabled is true
         if (disabled) return 'InvalidNode';
         if (diagramView?.error) return diagramView.error;
         return undefined;
