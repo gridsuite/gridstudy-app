@@ -709,56 +709,75 @@ export function DiagramPane({
      */
 
     // Updates particular diagrams or every diagram for the current node
-    const updateDiagrams = useCallback((ids) => {
-        if (ids?.length) {
-            // Before we get the results, we set loadingState = true
-            setViews((views) => {
-                const updatedViews = views.slice();
-                for (let i = 0; i < views.length; i++) {
-                    const currentView = views[i];
-                    if (ids.includes(currentView.id)) {
-                        updatedViews[i] = {
-                            ...updatedViews[i],
-                            loadingState: true,
-                        };
-                    }
-                }
-                return updatedViews;
-            });
-            // Then we add the data once we have it
-            for (let i = 0; i < viewsRef.current.length; i++) {
-                const currentView = viewsRef.current[i];
-                if (ids.includes(currentView.id)) {
-                    currentView.fetchSvg().then((svg) => {
-                        setViews((views) => {
-                            const updatedViews = views.slice();
+    const updateDiagrams = useCallback(
+        (ids, fromScratch) => {
+            if (ids?.length) {
+                // Before we get the results, we set loadingState = true
+                setViews((views) => {
+                    const updatedViews = views.slice();
+                    for (let i = 0; i < views.length; i++) {
+                        const currentView = views[i];
+                        if (ids.includes(currentView.id)) {
                             updatedViews[i] = {
                                 ...updatedViews[i],
-                                ...svg,
-                                loadingState: false,
+                                loadingState: true,
                             };
-                            return updatedViews;
+                        }
+                    }
+                    return updatedViews;
+                });
+                // Then we add the data once we have it
+                for (let i = 0; i < viewsRef.current.length; i++) {
+                    const currentView = viewsRef.current[i];
+                    if (ids.includes(currentView.id)) {
+                        let updatedDiagramPromise;
+                        if (fromScratch) {
+                            updatedDiagramPromise = createView(currentView);
+                        } else {
+                            updatedDiagramPromise = currentView.fetchSvg();
+                        }
+                        updatedDiagramPromise.then((svg) => {
+                            setViews((views) => {
+                                const updatedViews = views.slice();
+                                updatedViews[i] = {
+                                    ...updatedViews[i],
+                                    ...svg,
+                                    loadingState: false,
+                                };
+                                return updatedViews;
+                            });
                         });
-                    });
+                    }
+                }
+            } else {
+                // We search the diagrams based on the current node's ID to determine if the diagram should be updated
+                let idsToUpdate = viewsRef.current
+                    .filter(
+                        (diagramView) =>
+                            diagramView.nodeId === currentNodeRef.current?.id
+                    )
+                    .map((diagramView) => diagramView.id);
+                if (idsToUpdate?.length) {
+                    // we remove duplicates (because of NAD)
+                    idsToUpdate = idsToUpdate.filter(
+                        (id, index) => idsToUpdate.indexOf(id) === index
+                    );
+                    updateDiagrams(idsToUpdate, false);
                 }
             }
-        } else {
-            // We search the diagrams based on the current node's ID to determine if the diagram should be updated
-            let idsToUpdate = viewsRef.current
-                .filter(
-                    (diagramView) =>
-                        diagramView.nodeId === currentNodeRef.current?.id
-                )
-                .map((diagramView) => diagramView.id);
-            if (idsToUpdate?.length) {
-                // we remove duplicates (because of NAD)
-                idsToUpdate = idsToUpdate.filter(
-                    (id, index) => idsToUpdate.indexOf(id) === index
-                );
-                updateDiagrams(idsToUpdate);
-            }
-        }
-    }, []);
+        },
+        [createView]
+    );
+
+    // When the current node change, we reset all the diagrams
+    useEffect(() => {
+        let allDiagramIds = viewsRef.current.map((view) => view.id);
+        // we remove duplicates (because of NAD)
+        allDiagramIds = allDiagramIds.filter(
+            (id, index) => allDiagramIds.indexOf(id) === index
+        );
+        updateDiagrams(allDiagramIds, true);
+    }, [currentNode, updateDiagrams]);
 
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
@@ -767,7 +786,7 @@ export function DiagramPane({
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
-                updateDiagrams(undefined);
+                updateDiagrams(undefined, false);
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'study'
             ) {
@@ -803,10 +822,10 @@ export function DiagramPane({
                             }
                         });
                     if (diagramIds.length) {
-                        updateDiagrams(diagramIds);
+                        updateDiagrams(diagramIds, false);
                     }
                 } else {
-                    updateDiagrams(undefined);
+                    updateDiagrams(undefined, false);
                 }
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
@@ -816,7 +835,7 @@ export function DiagramPane({
                     studyUpdatedForce.eventData.headers['node'] ===
                     currentNodeRef.current?.id
                 ) {
-                    updateDiagrams(undefined);
+                    updateDiagrams(undefined, false);
                 }
             }
         }
