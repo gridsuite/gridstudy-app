@@ -372,15 +372,15 @@ export function DiagramPane({
 
     /**
      * BUILDS THE DIAGRAMS LIST
+     *
+     * Here, the goal is to build a list of views, each view corresponding to a diagram.
+     * We get the diagrams from the redux store.
+     * In the case of SLD, each SLD corresponds to one view, but in the case of NAD,
+     * each opened NAD is merged into one view.
      */
 
-    // Here (for the next 300 lines), the goal is to build a list of view, each view corresponding to a diagram.
-    // We get the diagram data from the redux store.
-    // In the case of SLD, each SLD corresponds to one view, but in the case of NAD, each open NAD is merged
-    // into one view.s
-
     // Check if we need to add new SLDs in the 'views' and add them if necessary
-    const addSLDs = useCallback(
+    const addMissingSLDs = useCallback(
         (diagramStates) => {
             // We check if we need to add new diagrams
             const diagramsToAdd = [];
@@ -443,7 +443,7 @@ export function DiagramPane({
     );
 
     // Check if we need to remove old SLDs from the 'views' and remove them if necessary
-    const removeSLDs = useCallback((diagramStates) => {
+    const removeObsoleteSLDs = useCallback((diagramStates) => {
         // We check if we need to remove old diagrams
         const diagramIdsToRemove = [];
         viewsRef.current.forEach((diagramView) => {
@@ -476,12 +476,13 @@ export function DiagramPane({
     // Check if we need to remove or add SLDs
     const updateSLDs = useCallback(
         (diagramStates) => {
-            removeSLDs(diagramStates);
-            addSLDs(diagramStates);
+            removeObsoleteSLDs(diagramStates);
+            addMissingSLDs(diagramStates);
         },
-        [removeSLDs, addSLDs]
+        [removeObsoleteSLDs, addMissingSLDs]
     );
 
+    // Add a new NAD in the 'views' (if a NAD is already present, we replace it)
     const addOrReplaceNAD = useCallback(
         (networkAreaIds, networkAreaViewState, networkAreaDiagramDepth) => {
             // First we add the empty diagram in the views
@@ -558,7 +559,7 @@ export function DiagramPane({
                 }
             });
             if (networkAreaIds.length > 0) {
-                const sameNadAlreadyPresentInViews = viewsRef.current.find(
+                const isSameNadAlreadyPresentInViews = viewsRef.current.find(
                     (diagramView) =>
                         diagramView.svgType ===
                             DiagramType.NETWORK_AREA_DIAGRAM &&
@@ -566,7 +567,7 @@ export function DiagramPane({
                             networkAreaIds.toString() &&
                         diagramView.depth === networkAreaDiagramDepth
                 );
-                if (!sameNadAlreadyPresentInViews) {
+                if (!isSameNadAlreadyPresentInViews) {
                     addOrReplaceNAD(
                         networkAreaIds,
                         networkAreaViewState,
@@ -586,7 +587,7 @@ export function DiagramPane({
         [addOrReplaceNAD, removeNAD, networkAreaDiagramDepth]
     );
 
-    // Update only the state of the diagrams (opened, minimized, etc)
+    // Update the state of the diagrams (opened, minimized, etc) in the 'views'
     const updateDiagramStates = useCallback((diagramStates) => {
         // We check if we need to update some diagrams
         let diagramsToUpdate = [];
@@ -708,8 +709,8 @@ export function DiagramPane({
      * FORCED UPDATE MECHANISM
      */
 
-    // Updates particular diagrams or every diagram for the current node
-    const updateDiagrams = useCallback(
+    // Updates particular diagrams from their IDs
+    const updateDiagramsByIds = useCallback(
         (ids, fromScratch) => {
             if (ids?.length) {
                 // Before we get the results, we set loadingState = true
@@ -749,25 +750,28 @@ export function DiagramPane({
                         });
                     }
                 }
-            } else {
-                // We search the diagrams based on the current node's ID to determine if the diagram should be updated
-                let idsToUpdate = viewsRef.current
-                    .filter(
-                        (diagramView) =>
-                            diagramView.nodeId === currentNodeRef.current?.id
-                    )
-                    .map((diagramView) => diagramView.id);
-                if (idsToUpdate?.length) {
-                    // we remove duplicates (because of NAD)
-                    idsToUpdate = idsToUpdate.filter(
-                        (id, index) => idsToUpdate.indexOf(id) === index
-                    );
-                    updateDiagrams(idsToUpdate, false);
-                }
             }
         },
         [createView]
     );
+
+    // Updates particular diagrams from the current node
+    const updateDiagramsByCurrentNode = useCallback(() => {
+        // We search the diagrams based on the current node's ID to determine if the diagram should be updated
+        let idsToUpdate = viewsRef.current
+            .filter(
+                (diagramView) =>
+                    diagramView.nodeId === currentNodeRef.current?.id
+            )
+            .map((diagramView) => diagramView.id);
+        if (idsToUpdate?.length) {
+            // we remove duplicates (because of NAD)
+            idsToUpdate = idsToUpdate.filter(
+                (id, index) => idsToUpdate.indexOf(id) === index
+            );
+            updateDiagramsByIds(idsToUpdate, false);
+        }
+    }, [updateDiagramsByIds]);
 
     // When the current node change, we reset all the diagrams
     useEffect(() => {
@@ -776,8 +780,8 @@ export function DiagramPane({
         allDiagramIds = allDiagramIds.filter(
             (id, index) => allDiagramIds.indexOf(id) === index
         );
-        updateDiagrams(allDiagramIds, true);
-    }, [currentNode, updateDiagrams]);
+        updateDiagramsByIds(allDiagramIds, true);
+    }, [currentNode, updateDiagramsByIds]);
 
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
@@ -786,7 +790,7 @@ export function DiagramPane({
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
-                updateDiagrams(undefined, false);
+                updateDiagramsByCurrentNode();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'study'
             ) {
@@ -822,10 +826,10 @@ export function DiagramPane({
                             }
                         });
                     if (diagramIds.length) {
-                        updateDiagrams(diagramIds, false);
+                        updateDiagramsByIds(diagramIds, false);
                     }
                 } else {
-                    updateDiagrams(undefined, false);
+                    updateDiagramsByCurrentNode();
                 }
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
@@ -835,7 +839,7 @@ export function DiagramPane({
                     studyUpdatedForce.eventData.headers['node'] ===
                     currentNodeRef.current?.id
                 ) {
-                    updateDiagrams(undefined, false);
+                    updateDiagramsByCurrentNode();
                 }
             }
         }
@@ -843,7 +847,8 @@ export function DiagramPane({
     }, [
         studyUpdatedForce,
         studyUuid,
-        updateDiagrams,
+        updateDiagramsByCurrentNode,
+        updateDiagramsByIds,
         closeDiagramViews,
         network,
     ]);
