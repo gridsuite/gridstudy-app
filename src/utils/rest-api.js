@@ -1356,16 +1356,15 @@ export function fetchDynamicSimulationParameters(studyUuid) {
     const mappingsPromise = getDynamicMappings(studyUuid);
 
     // fake API get curves
-    const curvesPromise = Promise.resolve(curvesStorage.getCurves());
+    //const curvesPromise = Promise.resolve(curvesStorage.getCurves());
 
     return Promise.all([
         parametersPromise,
         mappingsPromise,
-        curvesPromise,
-    ]).then(([parameters, mappings, curves]) => ({
+        //curvesPromise,
+    ]).then(([parameters, mappings]) => ({
         ...parameters,
         mappings,
-        curves,
     }));
 }
 export function updateDynamicSimulationParameters(studyUuid, newParams) {
@@ -1374,9 +1373,9 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.debug(url);
 
     // Fake API post curves
-    console.log('API curves to post', newParams.curves);
-    curvesStorage.updateCurves(newParams.curves);
-    console.log('API curves are added');
+    //console.log('API curves to post', newParams.curves);
+    //curvesStorage.updateCurves(newParams.curves);
+    //console.log('API curves are added');
 
     return backendFetch(url, {
         method: 'POST',
