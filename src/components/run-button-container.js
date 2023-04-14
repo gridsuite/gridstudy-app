@@ -35,7 +35,9 @@ import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
-import DynamicSimulationParametersSelector from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+import DynamicSimulationParametersSelector, {
+    checkDynamicSimulationParameters,
+} from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 
 export function RunButtonContainer({
     studyUuid,
@@ -209,10 +211,7 @@ export function RunButtonContainer({
         });
     };
 
-    const handleStartDynamicSimulation = ({
-        mappingName,
-        dynamicSimulationConfiguration,
-    }) => {
+    const handleStartDynamicSimulation = (dynamicSimulationConfiguration) => {
         // close the dialog
         setShowDynamicSimulationParametersSelector(false);
 
@@ -220,10 +219,9 @@ export function RunButtonContainer({
         setDynamicSimulationStatusState(RunningStatus.RUNNING);
 
         // start server side dynamic simulation
-        startDynamicSimulation(
+        return startDynamicSimulation(
             studyUuid,
             currentNode?.id,
-            mappingName,
             dynamicSimulationConfiguration
         ).catch((error) => {
             setDynamicSimulationStatusState(RunningStatus.FAILED);
@@ -264,8 +262,31 @@ export function RunButtonContainer({
                     });
                 });
         } else if (action === runnable.DYNAMIC_SIMULATION) {
-            setShowDynamicSimulationParametersSelector(true);
-            setRanDynamicSimulation(true);
+            checkDynamicSimulationParameters(studyUuid)
+                .then((isValid) => {
+                    if (!isValid) {
+                        // open parameters selector to configure mandatory params
+                        setShowDynamicSimulationParametersSelector(true);
+                        setRanDynamicSimulation(true);
+                    } else {
+                        // start server side dynamic simulation directly
+                        startDynamicSimulation(
+                            studyUuid,
+                            currentNode?.id
+                        ).catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'DynamicSimulationRunError',
+                            });
+                        });
+                    }
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'DynamicSimulationRunError',
+                    });
+                });
         }
     };
 
