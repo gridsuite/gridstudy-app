@@ -144,12 +144,16 @@ const useDisplayView = (studyUuid, currentNode) => {
             if (svgUrl) {
                 return fetchSvg(svgUrl)
                     .then((data) => {
-                        return {
-                            svg: data.svg,
-                            metadata: data.metadata,
-                            additionalMetadata: data.additionalMetadata,
-                            error: null,
-                        };
+                        if (data !== null) {
+                            return {
+                                svg: data.svg,
+                                metadata: data.metadata,
+                                additionalMetadata: data.additionalMetadata,
+                                error: null,
+                            };
+                        } else {
+                            return NoSvg;
+                        }
                     })
                     .catch((error) => {
                         console.error(
