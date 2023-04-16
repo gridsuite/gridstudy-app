@@ -101,11 +101,10 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
         [getValues, setValue]
     );
 
-    const deleteIconDisableCallback = useCallback(
+    const getDeletionMark = useCallback(
         (idx) => {
             const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
             if (properties && typeof properties[idx] !== 'undefined') {
-                // we cannot remove a line that has been marked for property deletion
                 return properties[idx][DELETION_MARK];
             }
             return false;
@@ -123,10 +122,11 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
                 if (forEachIdx !== idx || property[PREVIOUS_VALUE] === null) {
                     newModificationProperties.push({ ...property });
                 } else {
-                    // line is not deleted, and property is marked for deletion
+                    // line is not deleted, and property is marked or unmarked for deletion
+                    let currentDeletionMark = property[DELETION_MARK];
                     newModificationProperties.push({
                         ...property,
-                        [DELETION_MARK]: true,
+                        [DELETION_MARK]: !currentDeletionMark,
                     });
                     canRemoveLine = false;
                 }
@@ -210,7 +210,7 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
             Field={PropertyForm}
             addButtonLabel={'AddProperty'}
             initialValue={getPropertyInitialValues()}
-            deleteIconDisableCallback={deleteIconDisableCallback}
+            getDeletionMark={getDeletionMark}
             deleteCallback={deleteCallback}
         />
     );

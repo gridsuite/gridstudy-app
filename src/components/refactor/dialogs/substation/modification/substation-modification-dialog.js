@@ -21,10 +21,14 @@ import {
     PREVIOUS_VALUE,
     VALUE,
 } from '../../../utils/field-constants';
-import { checkUniqueProperties } from '../property/property-utils';
 import SubstationModificationForm from './substation-modification-form';
 import { modifySubstation } from '../../../../../utils/rest-api';
 import { sanitizeString } from '../../../../dialogs/dialogUtils';
+
+const checkUniquePropertiesNames = (properties) => {
+    const validValues = properties.filter((v) => v?.name);
+    return validValues.length === new Set(validValues.map((v) => v.name)).size;
+};
 
 const schema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().nullable().required(),
@@ -48,7 +52,7 @@ const schema = yup.object().shape({
             })
         )
         .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
-            checkUniqueProperties(values)
+            checkUniquePropertiesNames(values)
         ),
 });
 

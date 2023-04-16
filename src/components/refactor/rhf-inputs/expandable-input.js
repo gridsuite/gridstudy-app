@@ -9,6 +9,7 @@ import { useFieldArray } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
@@ -17,14 +18,18 @@ import { useStyles } from '../../dialogs/dialogUtils';
 import ErrorInput from './error-inputs/error-input';
 import MidFormError from './error-inputs/mid-form-error';
 
-// This component is used to display Array of objects
+// This component is used to display Array of objects.
+// We can manage 2 states for deletion:
+// - only 1 state and 1 delete icon that removes the current line
+// - a second state "mark for deletion" with a second icon: the line is not removed
+// and we can cancel this mark to go back to normal state.
 const ExpandableInput = ({
     name,
     Field, // Used to display each object of an array
     fieldProps, // Props to pass to Field
     addButtonLabel,
     initialValue, // Initial value to display when we add a new entry to array
-    deleteIconDisableCallback = null,
+    getDeletionMark = null,
     deleteCallback = null,
 }) => {
     const classes = useStyles();
@@ -48,11 +53,6 @@ const ExpandableInput = ({
                         <IconButton
                             className={classes.icon}
                             key={value.id}
-                            disabled={
-                                deleteIconDisableCallback
-                                    ? deleteIconDisableCallback(idx)
-                                    : false
-                            }
                             onClick={() => {
                                 if (deleteCallback) {
                                     if (deleteCallback(idx) === true) {
@@ -63,7 +63,11 @@ const ExpandableInput = ({
                                 }
                             }}
                         >
-                            <DeleteIcon />
+                            {getDeletionMark && getDeletionMark(idx) ? (
+                                <RestoreFromTrashIcon />
+                            ) : (
+                                <DeleteIcon />
+                            )}
                         </IconButton>
                     </Grid>
                 </Grid>
