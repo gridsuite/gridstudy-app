@@ -29,22 +29,10 @@ const transformModelsToVariables = (models) => {
     return models.reduce(
         (obj, model) => ({
             ...obj,
-            [model.modelName]: model.setsGroups.reduce(
-                (obj, setGroup) => ({
+            [model.modelName]: model.variableDefinitions.reduce(
+                (obj, variable) => ({
                     ...obj,
-                    [setGroup.name]: setGroup.sets.reduce(
-                        (obj, set) => ({
-                            ...obj,
-                            [set.name]: set.parameters.reduce(
-                                (obj, parameter) => ({
-                                    ...obj,
-                                    [parameter.name]: parameter.name,
-                                }),
-                                {}
-                            ),
-                        }),
-                        {}
-                    ),
+                    [variable.name]: variable.name,
                 }),
                 {}
             ),
@@ -77,6 +65,7 @@ const flatteningObject = (variables, parentId) => {
                     id: parentId ? `${parentId}/${key}` : key,
                     name: value,
                     parentId: parentId,
+                    isVariable: true,
                 },
             ];
         }
@@ -189,7 +178,9 @@ const ModelFilter = forwardRef(
             () => ({
                 api: {
                     getSelectedVariables: () => {
-                        return variablesRef.current.api.getSelectedItems();
+                        return variablesRef.current.api
+                            .getSelectedItems()
+                            .filter((item) => item.isVariable);
                     },
                 },
             }),
