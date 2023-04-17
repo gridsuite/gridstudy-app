@@ -131,6 +131,11 @@ const TableWrapper = (props) => {
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
     const [editingData, setEditingData] = useState();
 
+    const isLockedColumnNamesEmpty = useMemo(
+        () => lockedColumnsNames.size === 0,
+        [lockedColumnsNames.size]
+    );
+
     //the following variable needs to be a ref because its usage in EditingCellRenderer sets and reads
     //the value although it is not rerendered so storing it in a state wouldn't fill its purpose
     const isValidatingData = useRef(false);
@@ -696,6 +701,9 @@ const TableWrapper = (props) => {
                         handleCellEditing={handleCellEditing}
                         handleEditingStopped={handleEditingStopped}
                         handleGridReady={handleGridReady}
+                        shouldHidePinnedHeaderRightBorder={
+                            isLockedColumnNamesEmpty
+                        }
                     />
                 </div>
             )}

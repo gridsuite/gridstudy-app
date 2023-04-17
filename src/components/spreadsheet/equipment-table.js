@@ -24,6 +24,7 @@ export const EquipmentTable = ({
     handleGridReady,
     fetched,
     network,
+    shouldHidePinnedHeaderRightBorder,
 }) => {
     const theme = useTheme();
 
@@ -114,6 +115,9 @@ export const EquipmentTable = ({
                     suppressClickEdit={true}
                     context={gridContext}
                     onGridReady={handleGridReady}
+                    shouldHidePinnedHeaderRightBorder={
+                        shouldHidePinnedHeaderRightBorder
+                    }
                 />
             )}
         </>

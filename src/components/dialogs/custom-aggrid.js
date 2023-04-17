@@ -32,12 +32,18 @@ const useStyles = makeStyles((theme) => ({
             {
                 visibility: 'hidden',
             },
+
+        '& .ag-pinned-left-header': {
+            borderRight: (props) =>
+                props.shouldHidePinnedHeaderRightBorder ? 'none' : '',
+        },
     },
 }));
 
 export const CustomAGGrid = React.forwardRef((props, ref) => {
+    const { shouldHidePinnedHeaderRightBorder = false } = props;
     const theme = useTheme();
-    const classes = useStyles();
+    const classes = useStyles({ shouldHidePinnedHeaderRightBorder });
     const intl = useIntl();
 
     const GRID_PREFIX = 'grid.';
