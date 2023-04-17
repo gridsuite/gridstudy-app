@@ -794,22 +794,25 @@ export function DiagramPane({
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'study'
             ) {
+                const payload = studyUpdatedForce.eventData.payload;
+                const deletedEquipments = payload?.deletedEquipments;
+                const substationsIds = payload?.impactedSubstationsIds;
                 //If the SLD of the deleted substation is open, we close it
-                if (studyUpdatedForce.eventData.headers['deletedEquipmentId']) {
-                    const deletedId =
-                        studyUpdatedForce.eventData.headers[
-                            'deletedEquipmentId'
-                        ];
-                    const vlToClose = viewsRef.current.filter(
-                        (vl) =>
-                            vl.substationId === deletedId || vl.id === deletedId
+                if (deletedEquipments?.length > 0) {
+                    const deletedIds = deletedEquipments.map(
+                        (deletedEquipment) => deletedEquipment.equipmentId
                     );
-                    if (vlToClose.length > 0) {
-                        closeDiagramViews([...vlToClose, deletedId]);
+                    const diagramIdsToClose = viewsRef.current
+                        .filter(
+                            (vl) =>
+                                deletedIds.includes(vl.substationId) ||
+                                deletedIds.includes(vl.id)
+                        )
+                        .map((vl) => vl.id);
+                    if (diagramIdsToClose.length > 0) {
+                        closeDiagramViews([...diagramIdsToClose]);
                     }
 
-                    const substationsIds =
-                        studyUpdatedForce.eventData.headers['substationsIds'];
                     let diagramIds = [];
                     viewsRef.current
                         .filter(
