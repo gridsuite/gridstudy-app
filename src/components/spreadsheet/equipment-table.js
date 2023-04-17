@@ -67,9 +67,6 @@ export const EquipmentTable = ({
             wrapHeaderText: true,
             autoHeaderHeight: true,
             suppressKeyboardEvent: (params) => suppressKeyEvent(params),
-            icons: {
-                menu: '<span class="ag-icon ag-icon-filter" />',
-            },
         }),
         []
     );
