@@ -77,6 +77,7 @@ export default class MapEquipments {
         this.errHandler = errHandler;
         this.intlRef = intlRef;
         this.initEquipments(studyUuid, currentNodeUuid);
+        this.waitingForUpdate = false;
     }
 
     reloadImpactedSubstationsEquipments(
@@ -84,6 +85,7 @@ export default class MapEquipments {
         currentNode,
         substationsIds
     ) {
+        this.waitingForUpdate = true;
         const updatedSubstations = fetchMapSubstations(
             studyUuid,
             currentNode?.id,
@@ -96,6 +98,7 @@ export default class MapEquipments {
         );
         updatedSubstations.catch((error) => {
             console.error(error.message);
+            this.waitingForUpdate = false;
             if (this.errHandler) {
                 this.errHandler(
                     this.intlRef.current.formatMessage({
@@ -106,6 +109,7 @@ export default class MapEquipments {
         });
         updatedLines.catch((error) => {
             console.error(error.message);
+            this.waitingForUpdate = false;
             if (this.errHandler) {
                 this.errHandler(
                     this.intlRef.current.formatMessage({
@@ -222,6 +226,9 @@ export default class MapEquipments {
     }
 
     updateLines(lines, fullReload) {
+        // lines are asked slightly after substations and are heavier (>3x) to retrieve,
+        // so we consider not being waiting anymore when we receive lines.
+        this.waitingForUpdate = false;
         if (fullReload) {
             this.lines = [];
         }
