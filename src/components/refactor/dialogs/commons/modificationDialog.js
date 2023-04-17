@@ -41,6 +41,7 @@ const ModificationDialog = ({
     searchCopy,
     subtitle,
     onValidated,
+    children,
     ...dialogProps
 }) => {
     const { handleSubmit } = useFormContext();
@@ -92,7 +93,7 @@ const ModificationDialog = ({
                 </Grid>
                 {subtitle}
             </DialogTitle>
-            <DialogContent>{dialogProps.children}</DialogContent>
+            <DialogContent>{children}</DialogContent>
             <DialogActions>
                 <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
@@ -119,6 +120,7 @@ ModificationDialog.propTypes = {
     disabledSave: PropTypes.bool,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
+    children: PropTypes.node,
 };
 
 export default ModificationDialog;

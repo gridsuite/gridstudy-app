@@ -69,6 +69,7 @@ import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
 } from '../reactive-limits/reactive-limits-utils';
+import Title from '../../load-creation/title';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -345,6 +346,7 @@ const GeneratorCreationDialog = ({
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                 />
+                <Title title={4} />
 
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

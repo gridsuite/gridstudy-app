@@ -19,6 +19,14 @@ import { useSearchMatchingEquipments } from '../util/search-matching-equipments'
 
 const useEquipmentStyles = makeStyles(equipmentStyles);
 
+interface EquipmentSearchDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onSelectionChange: (val: any) => void;
+    equipmentType: any;
+    currentNodeUuid: any;
+}
+
 /**
  * Dialog to search equipment with a given type
  * @param {Boolean} open: Is the dialog open ?
@@ -33,7 +41,7 @@ const EquipmentSearchDialog = ({
     onSelectionChange,
     equipmentType,
     currentNodeUuid,
-}) => {
+}: EquipmentSearchDialogProps) => {
     const equipmentClasses = useEquipmentStyles();
 
     const intl = useIntl();

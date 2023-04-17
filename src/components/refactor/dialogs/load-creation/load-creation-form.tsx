@@ -28,6 +28,7 @@ import FloatInput from '../../rhf-inputs/float-input';
 import SelectInput from '../../rhf-inputs/select-input';
 import TextInput from '../../rhf-inputs/text-input';
 import ConnectivityForm from '../connectivity/connectivity-form';
+import TestJS from './testJs';
 import Title from './title';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
@@ -106,6 +107,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
             </Grid>
             <GridSection title="Connectivity" />
             <Title title="test" />
+            <TestJS />
             <Grid container spacing={2}>
                 {gridItem(connectivityForm, 12)}
             </Grid>

@@ -26,6 +26,7 @@ import { getPropertiesSchema } from './property/property-utils';
 import SubstationCreationForm from './substation-creation-form';
 import { createSubstation } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
+import CustomFormContextProvider from 'components/refactor/utils/custom-form-context';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -120,27 +121,29 @@ const SubstationCreationDialog = ({
         [currentNodeUuid, editData, snackError, studyUuid]
     );
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <CustomFormContextProvider validationSchema={schema} {...methods}>
             <ModificationDialog
-                fullWidth
+                //fullWidth
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-substation"
-                maxWidth={'md'}
+                //maxWidth={'md'}
                 titleId="CreateSubstation"
                 searchCopy={searchCopy}
                 {...dialogProps}
             >
-                <SubstationCreationForm />
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.SUBSTATION.type}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                />
+                <>
+                    <SubstationCreationForm />
+                    <EquipmentSearchDialog
+                        open={searchCopy.isDialogSearchOpen}
+                        onClose={searchCopy.handleCloseSearchDialog}
+                        equipmentType={EQUIPMENT_TYPES.SUBSTATION.type}
+                        onSelectionChange={searchCopy.handleSelectionChange}
+                        currentNodeUuid={currentNodeUuid}
+                    />
+                </>
             </ModificationDialog>
-        </FormProvider>
+        </CustomFormContextProvider>
     );
 };
 
