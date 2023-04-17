@@ -294,17 +294,22 @@ export const useReactiveCapabilityCurveTableValues = ({
     const isFieldRequired = useCallback(
         (index) => {
             if (isModificationForm) {
-                if (isReactiveCapabilityCurveOn) return true;
+                if (isReactiveCapabilityCurveOn) {
+                    return true;
+                }
                 // The first and last element have the previous value, so they are not required.
-                else if (index === values.length - 1 || index === 0) {
-                    return undefined;
-                } else {
-                    // the fields are required if new intermediate lines are added
-                    if (
-                        displayedPreviousValues === undefined ||
-                        displayedPreviousValues[index]?.p === ''
-                    )
-                        return true;
+                else {
+                    if (index === values.length - 1 || index === 0) {
+                        return undefined;
+                    } else {
+                        // the fields are required if new intermediate lines are added
+                        if (
+                            displayedPreviousValues === undefined ||
+                            displayedPreviousValues[index]?.p === ''
+                        ) {
+                            return true;
+                        }
+                    }
                 }
             }
             return isReactiveCapabilityCurveOn;
@@ -329,10 +334,15 @@ export const useReactiveCapabilityCurveTableValues = ({
                 {displayedValues.map((value, index, displayedValues) => {
                     const id = getId(value);
                     let labelSuffix;
-                    if (index === 0) labelSuffix = 'min';
-                    else if (index === displayedValues.length - 1)
-                        labelSuffix = 'max';
-                    else labelSuffix = index.toString();
+                    if (index === 0) {
+                        labelSuffix = 'min';
+                    } else {
+                        if (index === displayedValues.length - 1) {
+                            labelSuffix = 'max';
+                        } else {
+                            labelSuffix = index.toString();
+                        }
+                    }
                     return (
                         <Grid key={id + index} container spacing={3} item>
                             <ReactiveCapabilityCurveReactiveRange

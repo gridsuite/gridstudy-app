@@ -30,8 +30,9 @@ export const ReactiveCapabilityCurveTable = ({
     const classes = useStyles();
 
     const handleInsertRow = () => {
-        if (previousValues && updatePreviousReactiveCapabilityCurveTable)
+        if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
             updatePreviousReactiveCapabilityCurveTable(INSERT, rows.length - 1);
+        }
         insert(rows.length - 1, {
             [P]: null,
             [Q_MIN_P]: null,
@@ -40,8 +41,9 @@ export const ReactiveCapabilityCurveTable = ({
     };
 
     const handleRemoveRow = (index) => {
-        if (previousValues && updatePreviousReactiveCapabilityCurveTable)
+        if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
             updatePreviousReactiveCapabilityCurveTable(REMOVE, index);
+        }
         remove(index);
     };
 
@@ -59,10 +61,15 @@ export const ReactiveCapabilityCurveTable = ({
 
             {rows.map((value, index, displayedValues) => {
                 let labelSuffix;
-                if (index === 0) labelSuffix = 'min';
-                else if (index === displayedValues.length - 1)
-                    labelSuffix = 'max';
-                else labelSuffix = index.toString();
+                if (index === 0) {
+                    labelSuffix = 'min';
+                } else {
+                    if (index === displayedValues.length - 1) {
+                        labelSuffix = 'max';
+                    } else {
+                        labelSuffix = index.toString();
+                    }
+                }
                 return (
                     <Grid key={value.id} container spacing={3} item>
                         <ReactiveCapabilityCurveRowForm
