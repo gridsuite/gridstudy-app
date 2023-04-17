@@ -298,18 +298,15 @@ export const useReactiveCapabilityCurveTableValues = ({
                     return true;
                 }
                 // The first and last element have the previous value, so they are not required.
-                else {
-                    if (index === values.length - 1 || index === 0) {
-                        return undefined;
-                    } else {
-                        // the fields are required if new intermediate lines are added
-                        if (
-                            displayedPreviousValues === undefined ||
-                            displayedPreviousValues[index]?.p === ''
-                        ) {
-                            return true;
-                        }
-                    }
+                if (index === values.length - 1 || index === 0) {
+                    return undefined;
+                }
+                // the fields are required if new intermediate lines are added
+                if (
+                    displayedPreviousValues === undefined ||
+                    displayedPreviousValues[index]?.p === ''
+                ) {
+                    return true;
                 }
             }
             return isReactiveCapabilityCurveOn;
@@ -336,12 +333,10 @@ export const useReactiveCapabilityCurveTableValues = ({
                     let labelSuffix;
                     if (index === 0) {
                         labelSuffix = 'min';
+                    } else if (index === displayedValues.length - 1) {
+                        labelSuffix = 'max';
                     } else {
-                        if (index === displayedValues.length - 1) {
-                            labelSuffix = 'max';
-                        } else {
-                            labelSuffix = index.toString();
-                        }
+                        labelSuffix = index.toString();
                     }
                     return (
                         <Grid key={id + index} container spacing={3} item>

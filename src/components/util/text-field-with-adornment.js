@@ -44,13 +44,11 @@ const TextFieldWithAdornment = (props) => {
         (variant) => {
             if (variant === 'filled') {
                 return classes.adornRightFilled;
-            } else {
-                if (variant === 'standard') {
-                    return classes.adornRightOther;
-                } else {
-                    return null;
-                }
             }
+            if (variant === 'standard') {
+                return classes.adornRightOther;
+            }
+            return null;
         },
         [classes.adornRightFilled, classes.adornRightOther]
     );

@@ -96,10 +96,9 @@ export const useNullableBooleanValue = ({
             setValue((oldVal) => {
                 if (oldVal) {
                     return null;
-                } else {
-                    if (oldVal === null) {
-                        return false;
-                    }
+                }
+                if (oldVal === null) {
+                    return false;
                 }
                 return true;
             });

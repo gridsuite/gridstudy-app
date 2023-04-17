@@ -48,13 +48,11 @@ const SetPointsForm = ({
     const previousRegulation = () => {
         if (previousValues?.voltageRegulatorOn) {
             return intl.formatMessage({ id: 'On' });
-        } else {
-            if (previousValues?.voltageRegulatorOn === false) {
-                return intl.formatMessage({ id: 'Off' });
-            } else {
-                return null;
-            }
         }
+        if (previousValues?.voltageRegulatorOn === false) {
+            return intl.formatMessage({ id: 'Off' });
+        }
+        return null;
     };
 
     const activePowerSetPointField = (

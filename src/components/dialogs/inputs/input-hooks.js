@@ -715,14 +715,12 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
         }
         if (checking) {
             setAdornment(inputAdornment(<CircularProgress size="1rem" />));
+        } else if (!isValidName) {
+            setAdornment(undefined);
         } else {
-            if (!isValidName) {
-                setAdornment(undefined);
-            } else {
-                setAdornment(
-                    inputAdornment(<CheckIcon style={{ color: 'green' }} />)
-                );
-            }
+            setAdornment(
+                inputAdornment(<CheckIcon style={{ color: 'green' }} />)
+            );
         }
     }, [checking, isValidName]);
 
