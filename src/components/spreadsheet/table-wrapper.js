@@ -39,6 +39,7 @@ import { RunningStatus } from '../util/running-status';
 import {
     EditableCellRenderer,
     EditingCellRenderer,
+    DefaultCellRenderer,
     ReferenceLineCellRenderer,
 } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
@@ -198,6 +199,10 @@ const TableWrapper = (props) => {
                 }
             }
 
+            if (column.cellRenderer == null) {
+                column.cellRenderer = DefaultCellRenderer;
+            }
+
             column.width = column.columnWidth || MIN_COLUMN_WIDTH;
 
             //if it is not the first render the column might already have a pinned value so we need to handle the case where it needs to be reseted to undefined
@@ -223,6 +228,7 @@ const TableWrapper = (props) => {
                 resizable: false,
                 width: 100,
                 headerName: '',
+                cellStyle: { border: 'none' },
                 cellRendererSelector: (params) => {
                     if (params.node.rowPinned) {
                         return {

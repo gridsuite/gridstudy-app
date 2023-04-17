@@ -95,7 +95,7 @@ export const formatCell = (props) => {
     return { value: value, tooltip: tooltipValue };
 };
 
-export const NumericCellRenderer = (props) => {
+export const DefaultCellRenderer = (props) => {
     const classes = useStyles();
     const cellValue = formatCell(props);
     return (
