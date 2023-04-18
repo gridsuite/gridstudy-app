@@ -180,9 +180,15 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         function sortAndAddResults(result, array) {
             const compareValue = (a, b) => {
                 const mult = reverse ? 1 : -1;
-                if (a === undefined && b === undefined) return 0;
-                else if (b === undefined) return -mult;
-                else if (a === undefined) return mult;
+                if (a === undefined && b === undefined) {
+                    return 0;
+                }
+                if (b === undefined) {
+                    return -mult;
+                }
+                if (a === undefined) {
+                    return mult;
+                }
                 return isNumeric
                     ? (Number(a) < Number(b) ? 1 : -1) * mult
                     : ('' + a).localeCompare(b) * mult;

@@ -153,8 +153,9 @@ export const useTextValue = ({
 
     const handleChangeValue = useCallback(
         (event) => {
-            if (acceptValue === undefined || acceptValue(event.target.value))
+            if (acceptValue === undefined || acceptValue(event.target.value)) {
                 setValue(transformValue(event.target.value));
+            }
             inputForm.setHasChanged(true);
         },
         [acceptValue, inputForm, transformValue]
@@ -518,12 +519,13 @@ export const useRegulatingTerminalValue = ({
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        if (studyUuid && currentNodeUuid) {
             voltageLevelsIdsAndTopologyPromise.then((values) => {
                 setVoltageLevelOptions(
                     values.sort((a, b) => a.id.localeCompare(b.id))
                 );
             });
+        }
     }, [studyUuid, currentNodeUuid, voltageLevelsIdsAndTopologyPromise]);
 
     useEffect(() => {
@@ -543,7 +545,9 @@ export const useRegulatingTerminalValue = ({
     }, [regulatingTerminal, studyUuid, currentNodeUuid]);
 
     useEffect(() => {
-        if (!voltageLevelOptions) return;
+        if (!voltageLevelOptions) {
+            return;
+        }
         setRegulatingTerminal({
             voltageLevel: voltageLevelIdDefaultValue
                 ? {
@@ -706,18 +710,24 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     );
 
     useEffect(() => {
-        if (checking === undefined) setAdornment(null);
-        if (checking)
+        if (checking === undefined) {
+            setAdornment(null);
+        }
+        if (checking) {
             setAdornment(inputAdornment(<CircularProgress size="1rem" />));
-        else if (!isValidName) setAdornment(undefined);
-        else
+        } else if (!isValidName) {
+            setAdornment(undefined);
+        } else {
             setAdornment(
                 inputAdornment(<CheckIcon style={{ color: 'green' }} />)
             );
+        }
     }, [checking, isValidName]);
 
     useEffect(() => {
-        if (name === '' && !timer.current) return; // initial render
+        if (name === '' && !timer.current) {
+            return;
+        } // initial render
 
         clearTimeout(timer.current);
         setIsValidName(false);

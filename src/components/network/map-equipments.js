@@ -165,7 +165,9 @@ export default class MapEquipments {
             (eqpt) =>
                 !currentEquipments.some((otherEqpt) => otherEqpt.id === eqpt.id)
         );
-        if (eqptsToAdd.length === 0) return currentEquipments;
+        if (eqptsToAdd.length === 0) {
+            return currentEquipments;
+        }
         return [...currentEquipments, ...eqptsToAdd];
     }
 

@@ -16,16 +16,24 @@ export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
     } = useController({ name });
 
     const inputTransform = (value) => {
-        if (['-', '.'].includes(value)) return value;
+        if (['-', '.'].includes(value)) {
+            return value;
+        }
         return value === null || isNaN(value) ? '' : value.toString();
     };
 
     const outputTransform = (value) => {
-        if (value === '-') return value;
-        if (value === '') return null;
+        if (value === '-') {
+            return value;
+        }
+        if (value === '') {
+            return null;
+        }
 
         const tmp = value?.replace(',', '.') || '';
-        if (tmp.endsWith('.') || tmp.endsWith('0')) return value;
+        if (tmp.endsWith('.') || tmp.endsWith('0')) {
+            return value;
+        }
         return parseFloat(tmp) || null;
     };
 
