@@ -341,7 +341,6 @@ const useStyles = makeStyles((theme) => ({
 
 export function DiagramPane({
     studyUuid,
-    network,
     isComputationRunning,
     showInSpreadsheet,
     loadFlowStatus,
@@ -700,12 +699,12 @@ export function DiagramPane({
 
     const handleOpenDiagramView = useCallback(
         (id, type) => {
-            if (!network) {
+            if (!studyUuid || !currentNode) {
                 return;
             }
             openDiagramView(id, type);
         },
-        [network, openDiagramView]
+        [studyUuid, currentNode, openDiagramView]
     );
 
     /**
@@ -1165,7 +1164,6 @@ export function DiagramPane({
 DiagramPane.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
-    network: PropTypes.object,
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
     loadFlowStatus: PropTypes.any,

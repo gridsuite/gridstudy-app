@@ -33,7 +33,6 @@ import {
 } from '../utils/rest-api';
 import {
     closeStudy,
-    filteredNominalVoltagesUpdated,
     loadNetworkModificationTreeSuccess,
     networkCreated,
     openStudy,
@@ -738,7 +737,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 ws.close();
                 wsDirectory.close();
                 dispatch(closeStudy());
-                dispatch(filteredNominalVoltagesUpdated(null));
             };
         }
         // Note: dispach, loadGeoData

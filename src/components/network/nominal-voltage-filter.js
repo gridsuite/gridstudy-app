@@ -16,8 +16,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
-import { useDispatch, useSelector } from 'react-redux';
-import { filteredNominalVoltagesUpdated } from '../../redux/actions';
+import { useNominalVoltages } from '../../hooks/useNominalVoltages';
 
 const useStyles = makeStyles((theme) => ({
     nominalVoltageZone: {
@@ -47,14 +46,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const NominalVoltageFilter = (props) => {
-    const network = useSelector((state) => state.network);
-
-    const filteredNominalVoltages = useSelector(
-        (state) => state.filteredNominalVoltages
-    );
-
-    const dispatch = useDispatch();
+const NominalVoltageFilter = ({ filteredNominalVoltages, onChange }) => {
+    const nominalVoltages = useNominalVoltages();
 
     const classes = useStyles();
 
@@ -73,10 +66,10 @@ const NominalVoltageFilter = (props) => {
         } else {
             newFiltered = [...vnoms];
         }
-        dispatch(filteredNominalVoltagesUpdated(newFiltered));
+        onChange(newFiltered);
     };
 
-    if (!network?.getNominalVoltages()?.length > 0) {
+    if (!nominalVoltages?.length > 0) {
         return false;
     }
     return (
@@ -86,10 +79,7 @@ const NominalVoltageFilter = (props) => {
                     <Button
                         size={'small'}
                         className={classes.nominalVoltageSelectionControl}
-                        onClick={handleToggle(
-                            network.getNominalVoltages(),
-                            false
-                        )}
+                        onClick={handleToggle(nominalVoltages, false)}
                     >
                         <FormattedMessage id="CBAll" />
                     </Button>
@@ -105,7 +95,7 @@ const NominalVoltageFilter = (props) => {
                         <FormattedMessage id="CBNone" />
                     </Button>
                 </ListItem>
-                {network.getNominalVoltages().map((value) => {
+                {nominalVoltages.map((value) => {
                     return (
                         <ListItem
                             className={classes.nominalVoltageItem}

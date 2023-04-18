@@ -6,7 +6,11 @@
  */
 
 import { useNodeData } from './study-container';
-import { fetchSecurityAnalysisResult } from '../utils/rest-api';
+import {
+    fetchLineOrTransformer,
+    fetchSecurityAnalysisResult,
+    fetchVoltageLevel,
+} from '../utils/rest-api';
 import WaitingLoader from './util/waiting-loader';
 import SecurityAnalysisResult from './security-analysis-result';
 
@@ -15,7 +19,6 @@ const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
 export const SecurityAnalysisResultTab = ({
     studyUuid,
     nodeUuid,
-    network,
     openVoltageLevelDiagram,
 }) => {
     const [securityAnalysisResult, isWaiting] = useNodeData(
@@ -26,33 +29,54 @@ export const SecurityAnalysisResultTab = ({
     );
 
     function onClickNmKConstraint(row, column) {
-        if (network) {
+        if (studyUuid && nodeUuid) {
             if (column.dataKey === 'subjectId') {
                 let vlId;
                 let substationId;
-
-                let equipment = network.getLineOrTransformer(row.subjectId);
-                if (equipment) {
-                    if (row.side) {
-                        vlId =
-                            row.side === 'ONE'
-                                ? equipment.voltageLevelId1
-                                : row.side === 'TWO'
-                                ? equipment.voltageLevelId2
-                                : equipment.voltageLevelId3;
-                    } else {
-                        vlId = equipment.voltageLevelId1;
-                    }
-                    const vl = network.getVoltageLevel(vlId);
-                    substationId = vl.substationId;
-                } else {
-                    equipment = network.getVoltageLevel(row.subjectId);
-                    if (equipment) {
-                        vlId = equipment.id;
-                        substationId = equipment.substationId;
-                    }
-                }
-                openVoltageLevelDiagram(vlId, substationId);
+                // TODO ideally we would have the type of the equipment but we don't, that's why we do these calls
+                fetchLineOrTransformer(studyUuid, nodeUuid, row.subjectId)
+                    .then((equipment) => {
+                        if (row.side) {
+                            if (row.side === 'ONE') {
+                                vlId = equipment.voltageLevel1.id;
+                                substationId =
+                                    equipment.voltageLevel1.substationId;
+                            } else if (row.side === 'TWO') {
+                                vlId = equipment.voltageLevel2.id;
+                                substationId =
+                                    equipment.voltageLevel2.substationId;
+                            } else {
+                                vlId = equipment.voltageLevel3.id;
+                                substationId =
+                                    equipment.voltageLevel3.substationId;
+                            }
+                        } else {
+                            vlId = equipment.voltageLevel1.id;
+                            substationId = equipment.voltageLevel1.substationId;
+                        }
+                    })
+                    // if we didnt find a line or transformer, it's a voltage level
+                    .catch(() => {
+                        return fetchVoltageLevel(
+                            studyUuid,
+                            nodeUuid,
+                            row.subjectId
+                        ).then((vl) => {
+                            vlId = vl.id;
+                            substationId = vl.substationId;
+                        });
+                    })
+                    .finally(() => {
+                        if (!vlId) {
+                            console.error(
+                                "Impossible to open the SLD for equipment ID '" +
+                                    row.subjectId +
+                                    "'"
+                            );
+                        } else {
+                            openVoltageLevelDiagram(vlId, substationId);
+                        }
+                    });
             }
         }
     }

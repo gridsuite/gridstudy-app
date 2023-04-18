@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
  * @param studyUuid : string uuid of study
  * @param currentNode : object current node
  * @param loadFlowInfos : object result of load flow
- * @param network : object network
  * @param openVoltageLevelDiagram : function
  * @returns {JSX.Element}
  * @constructor
@@ -57,7 +56,6 @@ export const ResultViewTab = ({
     studyUuid,
     currentNode,
     loadFlowInfos,
-    network,
     openVoltageLevelDiagram,
     disabled,
 }) => {
@@ -83,7 +81,6 @@ export const ResultViewTab = ({
                 <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
-                    network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
@@ -213,7 +210,6 @@ export const ResultViewTab = ({
 
 ResultViewTab.propTypes = {
     loadFlowInfos: PropTypes.object,
-    network: PropTypes.object,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,

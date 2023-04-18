@@ -99,7 +99,6 @@ export const NetworkMapTab = ({
     /* callbacks */
     openVoltageLevel,
     setIsComputationRunning,
-    filteredNominalVoltages,
     showInSpreadsheet,
     setErrorMessage,
 }) => {
@@ -113,6 +112,7 @@ export const NetworkMapTab = ({
 
     const { snackError } = useSnackMessage();
 
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
 
@@ -823,7 +823,10 @@ export const NetworkMapTab = ({
     function renderNominalVoltageFilter() {
         return (
             <div className={classes.divNominalVoltageFilter}>
-                <NominalVoltageFilter />
+                <NominalVoltageFilter
+                    filteredNominalVoltages={filteredNominalVoltages}
+                    onChange={setFilteredNominalVoltages}
+                />
             </div>
         );
     }
@@ -868,7 +871,6 @@ export const NetworkMapTab = ({
 
 NetworkMapTab.propTypes = {
     updatedLines: PropTypes.arrayOf(PropTypes.any),
-    filteredNominalVoltages: PropTypes.any,
     lineFullPath: PropTypes.any,
     lineParallelPath: PropTypes.any,
     lineFlowMode: PropTypes.any,

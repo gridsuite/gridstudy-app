@@ -750,6 +750,66 @@ export function fetchEquipmentsIds(
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
+export function fetchSubstation(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'substations',
+        equipmentId,
+      true
+    );
+}
+
+export function fetchLine(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'lines',
+        equipmentId,
+      true
+    );
+}
+
+export function fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'voltage-levels',
+        equipmentId,
+      true
+    );
+}
+
+export function fetchTwoWindingsTransformer(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+      studyUuid,
+      currentNodeUuid,
+      '2-windings-transformers',
+      equipmentId,
+      true
+    );
+}
+
+export function fetchThreeWindingsTransformer(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+      studyUuid,
+      currentNodeUuid,
+      '3-windings-transformers',
+      equipmentId,
+      true
+    );
+}
+
+export function fetchLineOrTransformer(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+      studyUuid,
+      currentNodeUuid,
+      'branch-or-3wt',
+      equipmentId,
+      true
+    );
+}
+
 export function fetchEquipmentInfos(
     studyUuid,
     currentNodeUuid,
@@ -758,7 +818,7 @@ export function fetchEquipmentInfos(
     inUpstreamBuiltParentNode
 ) {
     console.info(
-        `Fetching specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching specific equipment '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
 
     let urlSearchParams = new URLSearchParams();
@@ -779,6 +839,19 @@ export function fetchEquipmentInfos(
         urlSearchParams.toString();
     console.debug(fetchEquipmentInfosUrl);
     return backendFetchJson(fetchEquipmentInfosUrl);
+}
+
+export function fetchNominalVoltages(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching nominal voltages of study '${studyUuid}' and node '${currentNodeUuid}'...`
+    );
+
+    const fetchNominalVoltagesUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network/nominal-voltages';
+    console.debug(fetchNominalVoltagesUrl);
+
+    return backendFetchJson(fetchNominalVoltagesUrl);
 }
 
 export function fetchBusesForVoltageLevel(
