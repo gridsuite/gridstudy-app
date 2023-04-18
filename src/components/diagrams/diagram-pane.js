@@ -785,7 +785,7 @@ export function DiagramPane({
 
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers && viewsRef.current) {
+        if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
@@ -794,46 +794,8 @@ export function DiagramPane({
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'study'
             ) {
-                const payload = studyUpdatedForce.eventData.payload;
-                const deletedEquipments = payload?.deletedEquipments;
-                const substationsIds = payload?.impactedSubstationsIds;
-                //If the SLD of the deleted substation is open, we close it
-                if (deletedEquipments?.length > 0) {
-                    const deletedIds = deletedEquipments.map(
-                        (deletedEquipment) => deletedEquipment.equipmentId
-                    );
-                    const diagramIdsToClose = viewsRef.current
-                        .filter(
-                            (vl) =>
-                                deletedIds.includes(vl.substationId) ||
-                                deletedIds.includes(vl.id)
-                        )
-                        .map((vl) => vl.id);
-                    if (diagramIdsToClose.length > 0) {
-                        closeDiagramViews([...diagramIdsToClose]);
-                    }
-
-                    let diagramIds = [];
-                    viewsRef.current
-                        .filter(
-                            (diagramView) =>
-                                diagramView.svgType !== DiagramType.SUBSTATION
-                        )
-                        .forEach((v) => {
-                            const vl = network.getVoltageLevel(v.id);
-                            if (
-                                vl &&
-                                substationsIds.includes(vl.substationId)
-                            ) {
-                                diagramIds.push(vl.id);
-                            }
-                        });
-                    if (diagramIds.length) {
-                        updateDiagramsByIds(diagramIds, false);
-                    }
-                } else {
-                    updateDiagramsByCurrentNode();
-                }
+                // FM if we want to reload data more precisely we need more information from notifications
+                updateDiagramsByCurrentNode();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'buildCompleted'
@@ -846,14 +808,12 @@ export function DiagramPane({
                 }
             }
         }
-        // Note: studyUuid, and loadNetwork don't change
     }, [
         studyUpdatedForce,
         studyUuid,
         updateDiagramsByCurrentNode,
         updateDiagramsByIds,
         closeDiagramViews,
-        network,
     ]);
 
     /**
