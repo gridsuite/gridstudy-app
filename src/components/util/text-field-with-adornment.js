@@ -42,9 +42,13 @@ const TextFieldWithAdornment = (props) => {
 
     const getAdornmentClassName = useCallback(
         (variant) => {
-            if (variant === 'filled') return classes.adornRightFilled;
-            else if (variant === 'standard') return classes.adornRightOther;
-            else return null;
+            if (variant === 'filled') {
+                return classes.adornRightFilled;
+            }
+            if (variant === 'standard') {
+                return classes.adornRightOther;
+            }
+            return null;
         },
         [classes.adornRightFilled, classes.adornRightOther]
     );
