@@ -249,6 +249,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                         DiagramType.NETWORK_AREA_DIAGRAM
                     ).then((svg) => {
                         let nadTitle = '';
+                        let substationsIds = [];
                         svg.additionalMetadata?.voltageLevels.forEach(
                             (voltageLevel) => {
                                 const name = getNameOrId(voltageLevel);
@@ -256,6 +257,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                                     nadTitle +=
                                         (nadTitle !== '' ? ' + ' : '') + name;
                                 }
+                                substationsIds.push(voltageLevel.substationId);
                             }
                         );
                         if (nadTitle === '') nadTitle = ids.toString();
@@ -277,6 +279,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                                 ),
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
+                            substationIds: substationsIds,
                             ...svg,
                         };
                     });
