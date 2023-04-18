@@ -848,5 +848,16 @@
     "YupNotTypeDefault": "Field value format is incorrect",
 
     "DictionaryButtonTooltip": "Open catalog",
-    "LineDictionaryDialogTitle": "Define line segments"
+    "LineDictionaryDialogTitle": "Define line segments",
+    "SelectType": "Type selection",
+    "dictionary.type": "Type",
+    "dictionary.voltage": "Voltage",
+    "dictionary.conductorType": "Type of conductor",
+    "dictionary.section": "Section",
+    "dictionary.conductorsNumber": "Number of conductors",
+    "dictionary.circuitsNumber": "Number of circuits",
+    "dictionary.groundWiresNumber": "Number of ground wires",
+    "dictionary.linearResistance": "Linear resistance",
+    "dictionary.linearReactance": "Linear reactance",
+    "dictionary.linearCapacity": "Linear capacity"
 }

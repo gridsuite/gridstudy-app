@@ -4,14 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import LineDictionaryForm from './line-dictionary-form';
+import { getLineDictionary } from '../../../../utils/rest-api';
+import { NumericCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
+import { useIntl } from 'react-intl';
+import LineDictionarySelectorDialog from './line-dictionary-selector-dialog';
 
 const schema = yup
     .object()
@@ -32,7 +35,112 @@ const LineDictionaryDialog = ({ ...dialogProps }) => {
         resolver: yupResolver(schema),
     });
 
+    const intl = useIntl();
+    const [lineDictionary, setLineDictionary] = useState([]);
+    const [openDictionaryDialogIndex, setOpenDictionaryDialogIndex] =
+        useState(null);
+    const [lineValues, setLineValues] = useState(new Map());
+
+    const onDictionaryDialogClose = () => {
+        setOpenDictionaryDialogIndex(null);
+    };
+
+    const openDictionaryDialog = (index) => {
+        setOpenDictionaryDialogIndex(index);
+    };
+
+    const onSelectDictionaryLine = (selectedLine) => {
+        setLineValues((prevLineValues) => {
+            const nextLineValues = prevLineValues.set(
+                openDictionaryDialogIndex,
+                selectedLine
+            );
+            return nextLineValues;
+        });
+    };
+
     const { reset } = methods;
+
+    useEffect(() => {
+        getLineDictionary().then((values) => {
+            setLineDictionary(values);
+        });
+    }, []);
+
+    const columns = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'dictionary.type' }),
+                field: 'type',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'dictionary.voltage' }),
+                field: 'voltage',
+                cellRenderer: NumericCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'dictionary.conductorType',
+                }),
+                field: 'conductorType',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'dictionary.section' }),
+                field: 'section',
+                cellRenderer: NumericCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'dictionary.conductorsNumber',
+                }),
+                field: 'conductorsNumber',
+                cellRenderer: NumericCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'dictionary.circuitsNumber',
+                }),
+                field: 'circuitsNumber',
+                cellRenderer: NumericCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'dictionary.groundWiresNumber',
+                }),
+                field: 'groundWiresNumber',
+                cellRenderer: NumericCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'dictionary.linearResistance',
+                }),
+                field: 'linearResistance',
+                cellRenderer: NumericCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'dictionary.linearReactance',
+                }),
+                field: 'linearReactance',
+                cellRenderer: NumericCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'dictionary.linearCapacity',
+                }),
+                field: 'linearCapacity',
+                cellRenderer: NumericCellRenderer,
+                numeric: true,
+            },
+        ];
+    }, [intl]);
 
     const onSubmit = useCallback((formData) => {}, []);
     const clear = useCallback(() => {
@@ -50,7 +158,26 @@ const LineDictionaryDialog = ({ ...dialogProps }) => {
                 titleId="LineDictionaryDialogTitle"
                 {...dialogProps}
             >
-                <LineDictionaryForm />
+                {/* TODO temporary proof of concept for multiple editable lines */}
+                {[0, 1, 2, 3].map((line, index) => (
+                    <LineDictionaryForm
+                        key={'lineDictionary' + index}
+                        onEditButtonClick={() => openDictionaryDialog(index)}
+                        value={
+                            lineValues.has(index) ? lineValues.get(index) : []
+                        }
+                    />
+                ))}
+                {openDictionaryDialogIndex !== null && (
+                    <LineDictionarySelectorDialog
+                        open={true}
+                        onClose={onDictionaryDialogClose}
+                        rowData={lineDictionary}
+                        columnDefs={columns}
+                        onSelectLine={onSelectDictionaryLine}
+                        titleId={'SelectType'}
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );
