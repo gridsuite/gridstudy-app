@@ -14,7 +14,7 @@ const WaitingLoader = ({ loading, message, errMessage, children }) => {
     if (errMessage !== undefined) {
         /* TODO errMessage -> error {status, message} to get 404, 403 and adapt Page*/
         return <PageNotFound message={errMessage} />;
-    } else if (loading === true)
+    } else if (loading === true) {
         return (
             <Paper className={'singlestretch-child'}>
                 <LoaderWithOverlay
@@ -24,6 +24,7 @@ const WaitingLoader = ({ loading, message, errMessage, children }) => {
                 />
             </Paper>
         );
+    }
     return <>{children}</>;
 };
 
