@@ -239,7 +239,7 @@ const LineCreationDialog = ({
     });
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        if (studyUuid && currentNodeUuid) {
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -247,6 +247,7 @@ const LineCreationDialog = ({
                     );
                 }
             );
+        }
     }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {

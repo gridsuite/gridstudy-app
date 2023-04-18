@@ -28,7 +28,9 @@ export class RemoteResourceHandler {
                     this.setter(val);
                 })
                 .catch((error) => {
-                    if (this.errorHandler) this.errorHandler(error);
+                    if (this.errorHandler) {
+                        this.errorHandler(error);
+                    }
                 });
         }
         return this.fetched;

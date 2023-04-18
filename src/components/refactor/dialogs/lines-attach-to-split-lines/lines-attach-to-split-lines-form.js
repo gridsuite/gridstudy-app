@@ -32,7 +32,7 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
     const [linesIds, setLinesIds] = useState([]);
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        if (studyUuid && currentNodeUuid) {
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -40,6 +40,7 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
                     );
                 }
             );
+        }
     }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {
