@@ -33,9 +33,13 @@ const QUESTIONABLE_SIZE = 1000;
  * @returns {number|undefined}
  */
 function arraysMismatchIndex(a1, a2) {
-    if (!Array.isArray(a1) || !Array.isArray(a2)) return undefined;
+    if (!Array.isArray(a1) || !Array.isArray(a2)) {
+        return undefined;
+    }
 
-    if (a1.length !== a2.length) return Math.min(a1.length, a2.length);
+    if (a1.length !== a2.length) {
+        return Math.min(a1.length, a2.length);
+    }
 
     for (var i in a2) {
         if (a1[i] !== a2[i]) {
@@ -104,7 +108,9 @@ export const useAutocompleteField = ({
     validationRef.current = validation;
 
     useEffect(() => {
-        if (defaultValue !== undefined) setValue(defaultValue);
+        if (defaultValue !== undefined) {
+            setValue(defaultValue);
+        }
     }, [defaultValue]);
 
     useEffect(() => {
@@ -126,7 +132,9 @@ export const useAutocompleteField = ({
     );
 
     useEffect(() => {
-        if (selectedValue) setValue(selectedValue);
+        if (selectedValue) {
+            setValue(selectedValue);
+        }
     }, [selectedValue]);
 
     useEffect(() => {
@@ -139,9 +147,13 @@ export const useAutocompleteField = ({
         prevValues.current = values;
 
         if (mismatchIdx === -1) {
-            if (valuesChanged) setIsLoading(false);
+            if (valuesChanged) {
+                setIsLoading(false);
+            }
 
-            if (!getLabel) return;
+            if (!getLabel) {
+                return;
+            }
 
             const inOps = presentedOptions.find((o) => getLabel(o) === value);
             if (inOps) {
@@ -156,7 +168,9 @@ export const useAutocompleteField = ({
             return;
         }
 
-        if (typeof values?.then === 'function') setIsLoading(true);
+        if (typeof values?.then === 'function') {
+            setIsLoading(true);
+        }
         const valuePromise = Promise.resolve(values);
         valuePromise.then((vals) => {
             setPresentedOptions(vals);
@@ -164,13 +178,17 @@ export const useAutocompleteField = ({
                 setValue(vals[mismatchIdx]);
             }
             setIsLoading(false);
-            if (values?.length === 0) setExpanded(false);
+            if (values?.length === 0) {
+                setExpanded(false);
+            }
         });
     }, [values, id, defaultValue, getLabel, presentedOptions, value]);
 
     const handleForcedSearch = useCallback(
         (term) => {
-            if (!onSearchTermChange) return;
+            if (!onSearchTermChange) {
+                return;
+            }
             setIsLoading(true);
             setExpanded(true);
             onSearchTermChange(term, true);
@@ -181,7 +199,9 @@ export const useAutocompleteField = ({
     const onOpen = useCallback(() => {
         setExpanded(true);
 
-        if (!onSearchTermChange) return;
+        if (!onSearchTermChange) {
+            return;
+        }
         if (isWorthLoading(userStr, presentedOptions, userStr, 0)) {
             setIsLoading(true);
             onSearchTermChange(userStr, false);
@@ -202,7 +222,9 @@ export const useAutocompleteField = ({
                 inputForm?.setHasChanged(true);
             }
 
-            if (!onSearchTermChange) return;
+            if (!onSearchTermChange) {
+                return;
+            }
 
             const min = minCharsBeforeSearch;
 

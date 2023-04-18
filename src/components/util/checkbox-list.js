@@ -36,7 +36,9 @@ const CheckboxList = ({
     refVals.current = { values, onChecked };
 
     useEffect(() => {
-        if (toggleSelectAll === undefined) return;
+        if (toggleSelectAll === undefined) {
+            return;
+        }
         setChecked((oldVals) => {
             return oldVals.size > 0
                 ? new Set()

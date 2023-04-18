@@ -6,8 +6,12 @@
  */
 
 const innerSortByAlign = (align) => {
-    if (align === 'left') return 10;
-    if (align === 'right') return 20;
+    if (align === 'left') {
+        return 10;
+    }
+    if (align === 'right') {
+        return 20;
+    }
     return 30;
 };
 
