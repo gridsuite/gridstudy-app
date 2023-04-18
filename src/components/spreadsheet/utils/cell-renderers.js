@@ -69,6 +69,7 @@ export const BooleanCellRenderer = (props) => {
         <div>
             {isChecked !== undefined && (
                 <Checkbox
+                    style={{ padding: 0 }}
                     color="default"
                     checked={isChecked}
                     disableRipple={true}

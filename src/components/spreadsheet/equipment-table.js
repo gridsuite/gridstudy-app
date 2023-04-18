@@ -11,6 +11,9 @@ import LoaderWithOverlay from '../util/loader-with-overlay';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
 
+const PINNED_ROW_HEIGHT = 42;
+const DEFAULT_ROW_HEIGHT = 28;
+
 export const EquipmentTable = ({
     rowData,
     topPinnedData,
@@ -80,6 +83,12 @@ export const EquipmentTable = ({
         };
     }, [network, topPinnedData]);
 
+    const getRowHeight = useCallback(
+        (params) =>
+            params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
+        []
+    );
+
     return (
         <>
             {!fetched ? (
@@ -115,6 +124,7 @@ export const EquipmentTable = ({
                     shouldHidePinnedHeaderRightBorder={
                         shouldHidePinnedHeaderRightBorder
                     }
+                    getRowHeight={getRowHeight}
                 />
             )}
         </>

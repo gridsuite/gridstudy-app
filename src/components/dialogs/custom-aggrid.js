@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { makeStyles, useTheme } from '@mui/styles';
 import { AgGridReact } from 'ag-grid-react';
 import clsx from 'clsx';
-import { useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 import 'ag-grid-community/styles/ag-grid.css';
@@ -33,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
                 visibility: 'hidden',
             },
 
+        // hides right border for header of "Edit" column due to column being pinned
         '& .ag-pinned-left-header': {
             borderRight: (props) =>
                 props.shouldHidePinnedHeaderRightBorder ? 'none' : '',
