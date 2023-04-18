@@ -333,14 +333,20 @@ function updatedTree(prevRoots, prevMap, nodeId, children) {
 }
 
 function sameRights(a, b) {
-    if (!a && !b) return true;
-    if (!a || !b) return false;
+    if (!a && !b) {
+        return true;
+    }
+    if (!a || !b) {
+        return false;
+    }
     return a.isPrivate === b.isPrivate;
 }
 
 function flattenDownNodes(n, cef) {
     const subs = cef(n);
-    if (subs.length === 0) return [n];
+    if (subs.length === 0) {
+        return [n];
+    }
     const ret = Array.prototype.concat(
         [n],
         ...subs.map((sn) => flattenDownNodes(sn, cef))
@@ -349,8 +355,12 @@ function flattenDownNodes(n, cef) {
 }
 
 function refreshedUpNodes(m, nn) {
-    if (!nn?.elementUuid) return [];
-    if (nn.parentUuid === null) return [nn];
+    if (!nn?.elementUuid) {
+        return [];
+    }
+    if (nn.parentUuid === null) {
+        return [nn];
+    }
     const parent = m[nn.parentUuid];
     const nextChildren = parent.children.map((c) =>
         c.elementUuid === nn.elementUuid ? nn : c

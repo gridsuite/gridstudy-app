@@ -16,46 +16,61 @@ import { validateField } from '../util/validation-functions';
 
 function genHelperError(...errors) {
     const inError = errors.find((e) => e);
-    if (inError)
+    if (inError) {
         return {
             error: true,
             helperText: <FormattedMessage id={inError} />,
         };
+    }
     return {};
 }
 
 const maxDecimals = 1;
 
 function asMostlyPercentStr(value) {
-    if (value < 0) return '0';
-    if (value > 100) return '100';
-    if (typeof value === 'number') return value.toFixed(maxDecimals);
-    if (typeof value !== 'string') return '';
+    if (value < 0) {
+        return '0';
+    }
+    if (value > 100) {
+        return '100';
+    }
+    if (typeof value === 'number') {
+        return value.toFixed(maxDecimals);
+    }
+    if (typeof value !== 'string') {
+        return '';
+    }
     const rgxra = /^([0-9]*)([.,]*)([0-9]*)/.exec(value);
-    if (!rgxra) return '';
+    if (!rgxra) {
+        return '';
+    }
     return (
         rgxra[1] + rgxra[2].substring(0, 1) + rgxra[3].substring(0, maxDecimals)
     );
 }
 
 function leftSideValue(str) {
-    if (typeof str === 'string' && str.substring(0, 4) === '100-')
+    if (typeof str === 'string' && str.substring(0, 4) === '100-') {
         return str.substring(0, 3) - str.substring(4);
+    }
     return str;
 }
 
 function slideValue(str) {
     if (typeof str === 'string' && str.substring(0, 4) === '100-') {
         const rest = str.substring(4);
-        if (isNaN(rest)) return 100;
+        if (isNaN(rest)) {
+            return 100;
+        }
         return str.substring(0, 3) - rest;
     }
     return parseFloat(str);
 }
 
 function rightSideValue(str) {
-    if (typeof str === 'string' && str.substring(0, 4) === '100-')
+    if (typeof str === 'string' && str.substring(0, 4) === '100-') {
         return str.substring(4);
+    }
     const diff = 100 - str;
     return isNaN(diff) || diff === 100.0 ? '100' : diff.toFixed(maxDecimals);
 }
@@ -170,8 +185,12 @@ export const useComplementaryPercentage = ({
 };
 
 export function makeVoltageLevelCreationParams(vlId, bobbsId, vl) {
-    if (!vlId) return null;
-    if (!bobbsId) return { id: vlId };
+    if (!vlId) {
+        return null;
+    }
+    if (!bobbsId) {
+        return { id: vlId };
+    }
     return {
         ...(vl || {}),
         equipmentId: vlId,

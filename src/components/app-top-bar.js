@@ -119,7 +119,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
     if (
         element.type === EQUIPMENT_TYPES.SUBSTATION.type ||
         element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
-    )
+    ) {
         return (
             <>
                 {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type && (
@@ -147,6 +147,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 </IconButton>
             </>
         );
+    }
 
     return (
         <TagRenderer
@@ -352,15 +353,17 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     }
 
     function getDisableReason() {
-        if (studyDisplayMode === STUDY_DISPLAY_MODE.TREE)
+        if (studyDisplayMode === STUDY_DISPLAY_MODE.TREE) {
             return intl.formatMessage({
                 id: 'UnsupportedView',
             });
+        }
 
-        if (!isNodeBuilt(currentNode))
+        if (!isNodeBuilt(currentNode)) {
             return intl.formatMessage({
                 id: 'InvalidNode',
             });
+        }
         return '';
     }
 

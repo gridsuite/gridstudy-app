@@ -480,7 +480,7 @@ const TwoWindingsTransformerCreationDialog = ({
     });
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        if (studyUuid && currentNodeUuid) {
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -488,6 +488,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     );
                 }
             );
+        }
     }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {

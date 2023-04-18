@@ -33,7 +33,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        if (studyUuid && currentNodeUuid) {
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -41,6 +41,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
                     );
                 }
             );
+        }
     }, [studyUuid, currentNodeUuid]);
 
     const loadIdField = (
