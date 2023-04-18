@@ -587,8 +587,9 @@ export const reducer = createReducer(initialState, {
             // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
             // Some actions in the TREE display mode could change this value after that
             // ex: change current Node, current Node updated ...
-            if (action.studyDisplayMode === STUDY_DISPLAY_MODE.TREE)
+            if (action.studyDisplayMode === STUDY_DISPLAY_MODE.TREE) {
                 state.reloadMap = false;
+            }
 
             state.studyDisplayMode = action.studyDisplayMode;
         }

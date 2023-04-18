@@ -25,7 +25,9 @@ const nominalVoltage = (network, voltageLevelId) => {
 };
 
 const applyFluxConvention = (convention, val) => {
-    if (convention === FluxConventions.TARGET && val !== undefined) return -val;
+    if (convention === FluxConventions.TARGET && val !== undefined) {
+        return -val;
+    }
     return val;
 };
 

@@ -385,6 +385,13 @@
     "updateSensitivityAnalysisParametersError": "An error occurred while updating the sensitivity analysis parameters",
     "fetchSensitivityAnalysisParametersError": "An error occured when fetching the sensitivity analysis parameters",
 
+    "fetchDynamicSimulationProvidersError": "An error occured when fetching dynamic simulation provider list",
+    "fetchDynamicSimulationProviderError": "An error occured when fetching dynamic simulation provider",
+    "fetchDefaultDynamicSimulationProviderError": "An error occured when fetching default dynamic simulation provider",
+    "updateDynamicSimulationProviderError": "An error occured when updating dynamic simulation provider",
+    "updateDynamicSimulationParametersError": "An error occurred while updating the dynamic simulation parameters",
+    "fetchDynamicSimulationParametersError": "An error occured when fetching the dynamic simulation parameters",
+
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
     "HybridDisplay": "Hybrid display",
@@ -846,6 +853,9 @@
     "YupRequired": "This field is required",
     "YupNotTypeNumber": "This field only accepts numeric values",
     "YupNotTypeDefault": "Field value format is incorrect",
+
+    "SubstationNotFound": "This substation does not exist in this network",
+    "VoltageLevelNotFound": "This voltage level does not exist in this network",
 
     "DictionaryButtonTooltip": "Open catalog",
     "LineDictionaryDialogTitle": "Define line segments",

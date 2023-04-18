@@ -71,8 +71,12 @@ export function makeRefreshBusOrBusbarSectionsCallback(
 }
 
 function ided(objOrId) {
-    if (!objOrId) return null;
-    if (typeof objOrId?.id === 'string') return objOrId;
+    if (!objOrId) {
+        return null;
+    }
+    if (typeof objOrId?.id === 'string') {
+        return objOrId;
+    }
 
     return { id: objOrId };
 }
@@ -125,7 +129,9 @@ export const useConnectivityValue = ({
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     useEffect(() => {
-        if (!voltageLevelOptionsPromise) return;
+        if (!voltageLevelOptionsPromise) {
+            return;
+        }
 
         voltageLevelOptionsPromise.then((values) => {
             setVoltageLevelOptions(
@@ -266,7 +272,7 @@ export const useConnectivityValue = ({
             : 6;
 
     const connectivity = useMemo(() => {
-        if (!voltageLevelObjOrId)
+        if (!voltageLevelObjOrId) {
             return {
                 voltageLevel: null,
                 busOrBusbarSection: null,
@@ -274,6 +280,7 @@ export const useConnectivityValue = ({
                 connectionName: null,
                 connectionPosition: null,
             };
+        }
 
         const ret = {
             voltageLevel: ided(voltageLevelObjOrId),
