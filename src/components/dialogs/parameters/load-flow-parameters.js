@@ -340,7 +340,9 @@ const SpecificLoadFlowParameters = ({
 
     const onChange = useCallback(
         (paramName, value, isEdit) => {
-            if (isEdit) return;
+            if (isEdit) {
+                return;
+            }
             setCurrentParameters((prevCurrentParameters) => {
                 const nextCurrentParameters = {
                     ...prevCurrentParameters,
