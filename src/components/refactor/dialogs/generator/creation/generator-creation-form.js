@@ -38,7 +38,7 @@ import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import FloatInput from '../../../rhf-inputs/float-input';
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
-import { fetchVoltageLevelsIdAndTopology } from '../../../../../utils/rest-api';
+import { fetchVoltageLevelsListInfos } from '../../../../../utils/rest-api';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
@@ -46,7 +46,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid)
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))

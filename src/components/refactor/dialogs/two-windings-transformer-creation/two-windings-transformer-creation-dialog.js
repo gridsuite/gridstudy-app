@@ -51,7 +51,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
     createTwoWindingsTransformer,
-    fetchVoltageLevelsIdAndTopology,
+    fetchVoltageLevelsListInfos,
 } from 'utils/rest-api';
 import {
     microUnitToUnit,
@@ -481,7 +481,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid)
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))

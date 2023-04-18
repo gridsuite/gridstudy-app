@@ -36,7 +36,7 @@ import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLine, fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
+import { createLine, fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import {
     filledTextField,
     gridItem,
@@ -240,7 +240,7 @@ const LineCreationDialog = ({
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid)
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))

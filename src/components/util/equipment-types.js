@@ -15,6 +15,13 @@ import {
     fetchVscConverterStations,
 } from 'utils/rest-api';
 
+export const EQUIPMENT_INFOS_TYPES = {
+    LIST: { type: 'LIST' },
+    MAP: { type: 'MAP' },
+    FORM: { type: 'FORM' },
+    TAB: { type: 'TAB' },
+};
+
 export const EQUIPMENT_TYPES = {
     SUBSTATION: {
         type: 'SUBSTATION',

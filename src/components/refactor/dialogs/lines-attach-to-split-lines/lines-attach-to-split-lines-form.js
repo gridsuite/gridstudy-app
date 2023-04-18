@@ -20,7 +20,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import {
     fetchEquipmentsIds,
-    fetchVoltageLevelsIdAndTopology,
+    fetchVoltageLevelsListInfos,
 } from 'utils/rest-api';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
 import TextInput from 'components/refactor/rhf-inputs/text-input';
@@ -33,7 +33,7 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid)
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))

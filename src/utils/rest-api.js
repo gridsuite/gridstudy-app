@@ -12,7 +12,10 @@ import {
     BRANCH_SIDE,
 } from '../components/network/constants';
 import { MODIFICATION_TYPES } from '../components/util/modification-type';
-import { EQUIPMENT_TYPES } from '../components/util/equipment-types';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../components/util/equipment-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -396,12 +399,12 @@ export function fetchSvg(svgUrl) {
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Substations',
-        'substations',
+        EQUIPMENT_TYPES.SUBSTATION.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
         true
     );
 }
@@ -440,27 +443,27 @@ export function fetchLines(studyUuid, currentNodeUuid, substationsIds) {
 }
 
 export function fetchVoltageLevels(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Voltage-levels',
-        'voltage-levels',
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
         true
     );
 }
 
-export function fetchVoltageLevelsIdAndTopology(
+export function fetchVoltageLevelsListInfos(
     studyUuid,
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Voltage-levels',
-        'voltage-levels-topology',
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+        EQUIPMENT_INFOS_TYPES.LIST.type,
         true
     );
 }
@@ -519,12 +522,13 @@ export function fetchGenerators(studyUuid, currentNodeUuid, substationsIds) {
 }
 
 export function fetchLoads(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Loads',
-        'loads'
+        EQUIPMENT_TYPES.LOAD.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 
@@ -549,12 +553,13 @@ export function fetchBatteries(studyUuid, currentNodeUuid, substationsIds) {
 }
 
 export function fetchHvdcLines(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Hvdc lines',
-        'hvdc-lines'
+        EQUIPMENT_TYPES.HVDC_LINE.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 
@@ -682,6 +687,36 @@ export function fetchEquipments(
         equipmentPath +
         '?' +
         getQueryParamsList(substationsIds, 'substationId') +
+        urlSearchParams.toString();
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
+}
+
+export function fetchNetworkElementsInfos(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    equipmentType,
+    infoType,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching network '${equipmentType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+    urlSearchParams.append('equipmentType', equipmentType);
+    urlSearchParams.append('infoType', infoType);
+    const fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network/elements_infos' +
+        '?' +
+        getQueryParamsList(substationsIds, 'substationsIds') +
         urlSearchParams.toString();
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
