@@ -61,7 +61,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
                         {
                             equipmentId: equipment.id,
                             equipmentName: equipment.name,
-                            variableId: variable.id,
+                            variableId: variable.variableId,
                             variableName: variable.name,
                         },
                     ],

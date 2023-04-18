@@ -44,8 +44,8 @@ const transformModelsToVariables = (models) => {
 const flatteningObject = (variables, parentId) => {
     let result = [];
     Object.entries(variables).map(([key, value]) => {
+        const id = parentId ? `${parentId}/${key}` : key;
         if (typeof value === 'object') {
-            const id = parentId ? `${parentId}/${key}` : key;
             // make container element
             result = [
                 ...result,
@@ -62,10 +62,10 @@ const flatteningObject = (variables, parentId) => {
             result = [
                 ...result,
                 {
-                    id: parentId ? `${parentId}/${key}` : key,
+                    id: id,
                     name: value,
                     parentId: parentId,
-                    isVariable: true,
+                    variableId: key,
                 },
             ];
         }
@@ -180,7 +180,14 @@ const ModelFilter = forwardRef(
                     getSelectedVariables: () => {
                         return variablesRef.current.api
                             .getSelectedItems()
-                            .filter((item) => item.isVariable);
+                            .filter((item) => item.variableId) // filter to keep only variable item
+                            .filter(
+                                (item, index, arr) =>
+                                    arr.findIndex(
+                                        (elem) =>
+                                            elem.variableId === item.variableId
+                                    ) === index
+                            ); // remove duplicated by variableId
                     },
                 },
             }),
