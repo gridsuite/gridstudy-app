@@ -353,7 +353,9 @@ const SpecificLoadFlowParameters = ({
                     nextCurrentParameters
                 );
                 const toSend = { ...lfParams };
+                const oldSpecifics = toSend['specificParametersPerProvider'];
                 toSend['specificParametersPerProvider'] = {
+                    ...oldSpecifics,
                     [currentProvider]: deltaMap ?? {},
                 };
                 commitLFParameter(toSend);
