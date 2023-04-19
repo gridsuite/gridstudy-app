@@ -170,7 +170,7 @@ function makeComponentFor(
                 }}
             />
         );
-    } // TODO else if double, integer, string
+    }
 }
 
 const TYPES = {
