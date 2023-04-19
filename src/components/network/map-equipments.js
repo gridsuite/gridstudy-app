@@ -86,8 +86,7 @@ export default class MapEquipments {
         substationsIds
     ) {
         const substationsIdsToFetch =
-            substationsIds &&
-            substationsIds.length > MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
+            substationsIds?.length > MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
                 ? undefined
                 : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
 
