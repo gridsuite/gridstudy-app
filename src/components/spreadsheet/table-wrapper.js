@@ -296,7 +296,9 @@ const TableWrapper = (props) => {
                 ? tableDefinition.getter(props.network)
                 : props.network[tableDefinition.resource];
 
-            if (!datasourceRows) return [];
+            if (!datasourceRows) {
+                return [];
+            }
 
             //the method returns a new array so that the table component detects its data changed thus rerendering its rows
             return [...datasourceRows];
@@ -351,7 +353,9 @@ const TableWrapper = (props) => {
 
     useEffect(() => {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        if (!props.network || props.disabled) return;
+        if (!props.network || props.disabled) {
+            return;
+        }
         props.network.useEquipment(resource);
     }, [props.network, props.disabled, tabIndex]);
 

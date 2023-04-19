@@ -191,7 +191,9 @@ const useDisplayView = (studyUuid, currentNode) => {
     // this callback returns a promise
     return useCallback(
         (diagramState) => {
-            if (!studyUuid || !currentNode) return Promise.reject();
+            if (!studyUuid || !currentNode) {
+                return Promise.reject();
+            }
 
             function createSubstationDiagramView(id, state) {
                 const svgUrl = checkAndGetSubstationSingleLineDiagramUrl(id);
@@ -260,7 +262,9 @@ const useDisplayView = (studyUuid, currentNode) => {
                                 substationsIds.push(voltageLevel.substationId);
                             }
                         );
-                        if (nadTitle === '') nadTitle = ids.toString();
+                        if (nadTitle === '') {
+                            nadTitle = ids.toString();
+                        }
                         dispatch(
                             setNetworkAreaDiagramNbVoltageLevels(
                                 svg.metadata?.nbVoltageLevels
@@ -889,7 +893,9 @@ export function DiagramPane({
     );
 
     const getRatioWidthByHeight = (width, height) => {
-        if (Number(height) > 0) return Number(width) / Number(height);
+        if (Number(height) > 0) {
+            return Number(width) / Number(height);
+        }
         return 1.0;
     };
 
@@ -1028,8 +1034,12 @@ export function DiagramPane({
 
     const handleWarningToDisplay = (diagramView) => {
         // First, we check if the node is built (the highest priority), so when disabled is true
-        if (disabled) return 'InvalidNode';
-        if (diagramView?.error) return diagramView.error;
+        if (disabled) {
+            return 'InvalidNode';
+        }
+        if (diagramView?.error) {
+            return diagramView.error;
+        }
         return undefined;
     };
 

@@ -26,7 +26,9 @@ const nonEditableModificationTypes = new Set([
 ]);
 
 const isEditableModification = (modif) => {
-    if (!modif) return false;
+    if (!modif) {
+        return false;
+    }
     return !nonEditableModificationTypes.has(modif.type);
 };
 

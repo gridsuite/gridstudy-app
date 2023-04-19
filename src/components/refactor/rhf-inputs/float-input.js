@@ -13,18 +13,26 @@ import { isFloatNumber } from '../../dialogs/inputs/input-hooks';
 const FloatInput = (props) => {
     const inputTransform = (value) => {
         const sanitizedValue = value?.toString().replace(',', '.');
-        if (['-', '.'].includes(sanitizedValue)) return sanitizedValue;
+        if (['-', '.'].includes(sanitizedValue)) {
+            return sanitizedValue;
+        }
         return sanitizedValue === null || isNaN(sanitizedValue)
             ? ''
             : sanitizedValue;
     };
 
     const outputTransform = (value) => {
-        if (value === '-') return value;
-        if (value === '') return null;
+        if (value === '-') {
+            return value;
+        }
+        if (value === '') {
+            return null;
+        }
 
         const tmp = value?.replace(',', '.') || '';
-        if (tmp.endsWith('.') || tmp.endsWith('0')) return tmp;
+        if (tmp.endsWith('.') || tmp.endsWith('0')) {
+            return tmp;
+        }
         return parseFloat(tmp) || null;
     };
 

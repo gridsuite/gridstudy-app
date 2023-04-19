@@ -133,7 +133,9 @@ function isChecked(s1) {
 }
 
 function isPartial(s1, s2) {
-    if (s1 === 0) return false;
+    if (s1 === 0) {
+        return false;
+    }
     return s1 !== s2;
 }
 
@@ -167,7 +169,9 @@ const NetworkModificationNodeEditor = () => {
     const [launchLoader, setLaunchLoader] = useState(false);
 
     const cleanClipboard = useCallback(() => {
-        if (copiedModifications.length <= 0) return;
+        if (copiedModifications.length <= 0) {
+            return;
+        }
         setCopyInfos(null);
         setCopiedModifications([]);
         snackInfo({
@@ -180,8 +184,9 @@ const NetworkModificationNodeEditor = () => {
     // a modification on a public study which is in the clipboard.
     // We don't have precision on notifications to do this for now.
     const handleValidatedDialog = () => {
-        if (editData?.uuid && copiedModifications.includes(editData?.uuid))
+        if (editData?.uuid && copiedModifications.includes(editData?.uuid)) {
             cleanClipboard();
+        }
     };
 
     const handleCloseDialog = (e, reason) => {
@@ -335,7 +340,9 @@ const NetworkModificationNodeEditor = () => {
 
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') return;
+        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+            return;
+        }
         setLaunchLoader(true);
         fetchNetworkModifications(studyUuid, currentNode.id)
             .then((res) => {
@@ -382,8 +389,9 @@ const NetworkModificationNodeEditor = () => {
             if (
                 currentNodeIdRef.current !==
                 studyUpdatedForce.eventData.headers['parentNode']
-            )
+            ) {
                 return;
+            }
 
             if (
                 UPDATE_TYPE.includes(
@@ -579,8 +587,9 @@ const NetworkModificationNodeEditor = () => {
                 !currentNode?.id ||
                 destination === null ||
                 source.index === destination.index
-            )
+            ) {
                 return;
+            }
             const res = [...modifications];
             const [item] = res.splice(source.index, 1);
             const before = res[destination.index]?.uuid;
@@ -717,8 +726,12 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const renderPaneSubtitle = () => {
-        if (isLoading()) return renderNetworkModificationsListTitleLoading();
-        if (launchLoader) return renderNetworkModificationsListTitleUpdating();
+        if (isLoading()) {
+            return renderNetworkModificationsListTitleLoading();
+        }
+        if (launchLoader) {
+            return renderNetworkModificationsListTitleUpdating();
+        }
         return renderNetworkModificationsListTitle();
     };
 
