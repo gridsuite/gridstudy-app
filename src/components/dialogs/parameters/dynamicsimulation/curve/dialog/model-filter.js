@@ -29,13 +29,29 @@ const transformModelsToVariables = (models) => {
     return models.reduce(
         (obj, model) => ({
             ...obj,
-            [model.modelName]: model.variableDefinitions.reduce(
-                (obj, variable) => ({
-                    ...obj,
-                    [variable.name]: variable.name,
-                }),
-                {}
-            ),
+            [model.modelName]: {
+                ...model.variableDefinitions.reduce(
+                    (obj, variable) => ({
+                        ...obj,
+                        [variable.name]: variable.name,
+                    }),
+                    {}
+                ),
+                ...model.variablesSets.reduce(
+                    (obj, variablesSet) => ({
+                        ...obj,
+                        [variablesSet.name]:
+                            variablesSet.variableDefinitions.reduce(
+                                (obj, variable) => ({
+                                    ...obj,
+                                    [variable.name]: variable.name,
+                                }),
+                                {}
+                            ),
+                    }),
+                    {}
+                ),
+            },
         }),
         {}
     );
