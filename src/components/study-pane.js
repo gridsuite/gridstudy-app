@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
@@ -119,8 +119,6 @@ const StudyPane = ({
         type: null,
         changed: false,
     });
-
-    const dispatch = useDispatch();
 
     const classes = useStyles();
 
