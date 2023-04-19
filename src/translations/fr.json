@@ -891,5 +891,7 @@
     "dictionary.groundWiresNumber": "Nb câbles de garde",
     "dictionary.linearResistance": "Résistance linéique directe",
     "dictionary.linearReactance": "Réactance linéique directe",
-    "dictionary.linearCapacity": "Capacité linéique directe"
+    "dictionary.linearCapacity": "Capacité linéique directe",
+    "dictionary.aerial": "Aérien",
+    "dictionary.underground": "Souterrain"
 }

@@ -2952,71 +2952,8 @@ export function fetchMapLines(
 
 export function getLineDictionary() {
     console.info(`get line dictionary`);
-    console.warn('THIS IS A WORK IN PROGRESS'); // TODO Update this
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve([
-                {
-                    type: 'TEST1 123AB',
-                    voltage: 63,
-                    conductorType: 'AL - Aluminium',
-                    section: 27.5,
-                    conductorsNumber: 1,
-                    circuitsNumber: 1,
-                    groundWiresNumber: 0,
-                    linearResistance: 0.00047,
-                    linearReactance: 0.000345,
-                    linearCapacity: 0.00000000727,
-                },
-                {
-                    type: 'TEST1 123AB',
-                    voltage: 45,
-                    conductorType: 'AL - Aluminium',
-                    section: 27.5,
-                    conductorsNumber: 1,
-                    circuitsNumber: 1,
-                    groundWiresNumber: 1,
-                    linearResistance: 0.00014,
-                    linearReactance: 0.000333,
-                    linearCapacity: 0.00000000922,
-                },
-                {
-                    type: 'TEST2 456CD',
-                    voltage: 90,
-                    conductorType: 'CU - Cuivre',
-                    section: 1700,
-                    conductorsNumber: 3,
-                    circuitsNumber: 2,
-                    groundWiresNumber: 0,
-                    linearResistance: 0.000345,
-                    linearReactance: 0.000444,
-                    linearCapacity: 0.00000000815,
-                },
-                {
-                    type: 'TEST3 789EF',
-                    voltage: 225,
-                    conductorType: 'CU - Cuivre',
-                    section: 15,
-                    conductorsNumber: 4,
-                    circuitsNumber: 1,
-                    groundWiresNumber: 0,
-                    linearResistance: 0.00009876,
-                    linearReactance: 0.0005,
-                    linearCapacity: 0.000000009,
-                },
-                {
-                    type: 'TEST3 789EF',
-                    voltage: 225,
-                    conductorType: 'AL - Aluminium',
-                    section: 15,
-                    conductorsNumber: 4,
-                    circuitsNumber: 1,
-                    groundWiresNumber: 2,
-                    linearResistance: 0.00005,
-                    linearReactance: 0.000513,
-                    linearCapacity: 0.00000000877,
-                },
-            ]);
-        }, 300);
-    });
+    const url =
+        PREFIX_NETWORK_MODIFICATION_QUERIES +
+        '/v1/network-modifications/line/catalog';
+    return backendFetchJson(url);
 }

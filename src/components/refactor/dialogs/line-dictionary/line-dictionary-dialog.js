@@ -4,16 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
-
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import LineDictionaryForm from './line-dictionary-form';
 import { getLineDictionary } from '../../../../utils/rest-api';
-import { NumericCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
-import { useIntl } from 'react-intl';
 import LineDictionarySelectorDialog from './line-dictionary-selector-dialog';
 
 const schema = yup
@@ -35,7 +32,6 @@ const LineDictionaryDialog = ({ ...dialogProps }) => {
         resolver: yupResolver(schema),
     });
 
-    const intl = useIntl();
     const [lineDictionary, setLineDictionary] = useState([]);
     const [openDictionaryDialogIndex, setOpenDictionaryDialogIndex] =
         useState(null);
@@ -66,81 +62,6 @@ const LineDictionaryDialog = ({ ...dialogProps }) => {
             setLineDictionary(values);
         });
     }, []);
-
-    const columns = useMemo(() => {
-        return [
-            {
-                headerName: intl.formatMessage({ id: 'dictionary.type' }),
-                field: 'type',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'dictionary.voltage' }),
-                field: 'voltage',
-                cellRenderer: NumericCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'dictionary.conductorType',
-                }),
-                field: 'conductorType',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'dictionary.section' }),
-                field: 'section',
-                cellRenderer: NumericCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'dictionary.conductorsNumber',
-                }),
-                field: 'conductorsNumber',
-                cellRenderer: NumericCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'dictionary.circuitsNumber',
-                }),
-                field: 'circuitsNumber',
-                cellRenderer: NumericCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'dictionary.groundWiresNumber',
-                }),
-                field: 'groundWiresNumber',
-                cellRenderer: NumericCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'dictionary.linearResistance',
-                }),
-                field: 'linearResistance',
-                cellRenderer: NumericCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'dictionary.linearReactance',
-                }),
-                field: 'linearReactance',
-                cellRenderer: NumericCellRenderer,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'dictionary.linearCapacity',
-                }),
-                field: 'linearCapacity',
-                cellRenderer: NumericCellRenderer,
-                numeric: true,
-            },
-        ];
-    }, [intl]);
 
     const onSubmit = useCallback((formData) => {}, []);
     const clear = useCallback(() => {
@@ -173,7 +94,6 @@ const LineDictionaryDialog = ({ ...dialogProps }) => {
                         open={true}
                         onClose={onDictionaryDialogClose}
                         rowData={lineDictionary}
-                        columnDefs={columns}
                         onSelectLine={onSelectDictionaryLine}
                         titleId={'SelectType'}
                     />

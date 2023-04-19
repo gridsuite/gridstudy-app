@@ -869,5 +869,7 @@
     "dictionary.groundWiresNumber": "Number of ground wires",
     "dictionary.linearResistance": "Linear resistance",
     "dictionary.linearReactance": "Linear reactance",
-    "dictionary.linearCapacity": "Linear capacity"
+    "dictionary.linearCapacity": "Linear capacity",
+    "dictionary.aerial": "Aerial",
+    "dictionary.underground": "Underground"
 }
