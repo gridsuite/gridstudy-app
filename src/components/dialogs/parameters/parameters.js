@@ -254,7 +254,9 @@ export const useParametersBackend = (
                         defaultProvider in providers
                             ? defaultProvider
                             : providerNames[0];
-                    updateProvider(newProvider);
+                    if (newProvider !== provider) {
+                        updateProvider(newProvider);
+                    }
                 }
             })
             .catch((error) => {
@@ -267,6 +269,7 @@ export const useParametersBackend = (
         type,
         backendFetchDefaultProvider,
         providers,
+        provider,
         updateProvider,
         snackError,
     ]);
