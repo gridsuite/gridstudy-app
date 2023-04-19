@@ -27,7 +27,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
-        if (studyUuid && currentNode?.id)
+        if (studyUuid && currentNode?.id) {
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -35,6 +35,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
                     );
                 }
             );
+        }
     }, [studyUuid, currentNode?.id]);
 
     const shuntCompensatorIdField = (

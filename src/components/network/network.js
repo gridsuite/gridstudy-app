@@ -367,16 +367,18 @@ export default class Network {
     // TODO investigate turn this into a custom hook ?
     useEquipment(equipment) {
         const fetcher = this.lazyLoaders.get(equipment);
-        if (fetcher) return fetcher.fetch();
-        else {
+        if (fetcher) {
+            return fetcher.fetch();
+        } else {
             console.error('not found ' + equipment);
         }
     }
 
     isResourceFetched(equipement) {
         const fetcher = this.lazyLoaders.get(equipement);
-        if (fetcher) return fetcher.isFetched();
-        else {
+        if (fetcher) {
+            return fetcher.isFetched();
+        } else {
             console.error('not found ' + equipement);
         }
     }
@@ -426,7 +428,7 @@ export default class Network {
         const nodeBeforeFetch = currentNodeRef.current;
         equipments.forEach((equipment) => {
             const fetcher = this.lazyLoaders.get(equipment);
-            if (fetcher)
+            if (fetcher) {
                 fetchers.push(
                     fetcher.fetcher().then((values) => {
                         if (nodeBeforeFetch === currentNodeRef.current) {
@@ -434,6 +436,7 @@ export default class Network {
                         }
                     })
                 );
+            }
         });
 
         Promise.all(fetchers).then((values) => {
@@ -555,7 +558,9 @@ export default class Network {
                 })
                 .catch(function (error) {
                     console.error(error.message);
-                    if (this.errHandler) this.errHandler(error);
+                    if (this.errHandler) {
+                        this.errHandler(error);
+                    }
                 });
         }
     }

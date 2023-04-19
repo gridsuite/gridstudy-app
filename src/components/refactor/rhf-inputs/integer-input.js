@@ -11,13 +11,19 @@ import PropTypes from 'prop-types';
 
 const IntegerInput = ({ ...props }) => {
     const inputTransform = (value) => {
-        if ('-' === value) return value;
+        if ('-' === value) {
+            return value;
+        }
         return value === null || isNaN(value) ? '' : value.toString();
     };
 
     const toIntOrNullValue = (value) => {
-        if (value === '-') return value;
-        if (value === '0') return 0;
+        if (value === '-') {
+            return value;
+        }
+        if (value === '0') {
+            return 0;
+        }
         return parseInt(value) || null;
     };
 

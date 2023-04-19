@@ -125,12 +125,13 @@ export function backendFetchJson(url, init, token) {
 
 export function fetchValidateUser(user) {
     const sub = user?.profile?.sub;
-    if (!sub)
+    if (!sub) {
         return Promise.reject(
             new Error(
                 'Error : Fetching access for missing user.profile.sub : ' + user
             )
         );
+    }
 
     console.info(`Fetching access for user...`);
     const CheckAccessUrl =
@@ -149,8 +150,11 @@ export function fetchValidateUser(user) {
             return response.status === 200;
         })
         .catch((error) => {
-            if (error.status === 403) return false;
-            else throw error;
+            if (error.status === 403) {
+                return false;
+            } else {
+                throw error;
+            }
         });
 }
 
