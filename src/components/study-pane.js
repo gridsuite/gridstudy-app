@@ -11,9 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import {
-    STUDY_DISPLAY_MODE,
-} from '../redux/actions';
+import { STUDY_DISPLAY_MODE } from '../redux/actions';
 import Paper from '@mui/material/Paper';
 import { equipments } from './network/network-equipments';
 import PropTypes from 'prop-types';

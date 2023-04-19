@@ -760,7 +760,7 @@ export function fetchSubstation(studyUuid, currentNodeUuid, equipmentId) {
         currentNodeUuid,
         'substations',
         equipmentId,
-      true
+        true
     );
 }
 
@@ -770,7 +770,7 @@ export function fetchLine(studyUuid, currentNodeUuid, equipmentId) {
         currentNodeUuid,
         'lines',
         equipmentId,
-      true
+        true
     );
 }
 
@@ -780,37 +780,49 @@ export function fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId) {
         currentNodeUuid,
         'voltage-levels',
         equipmentId,
-      true
+        true
     );
 }
 
-export function fetchTwoWindingsTransformer(studyUuid, currentNodeUuid, equipmentId) {
+export function fetchTwoWindingsTransformer(
+    studyUuid,
+    currentNodeUuid,
+    equipmentId
+) {
     return fetchEquipmentInfos(
-      studyUuid,
-      currentNodeUuid,
-      '2-windings-transformers',
-      equipmentId,
-      true
+        studyUuid,
+        currentNodeUuid,
+        '2-windings-transformers',
+        equipmentId,
+        true
     );
 }
 
-export function fetchThreeWindingsTransformer(studyUuid, currentNodeUuid, equipmentId) {
+export function fetchThreeWindingsTransformer(
+    studyUuid,
+    currentNodeUuid,
+    equipmentId
+) {
     return fetchEquipmentInfos(
-      studyUuid,
-      currentNodeUuid,
-      '3-windings-transformers',
-      equipmentId,
-      true
+        studyUuid,
+        currentNodeUuid,
+        '3-windings-transformers',
+        equipmentId,
+        true
     );
 }
 
-export function fetchLineOrTransformer(studyUuid, currentNodeUuid, equipmentId) {
+export function fetchLineOrTransformer(
+    studyUuid,
+    currentNodeUuid,
+    equipmentId
+) {
     return fetchEquipmentInfos(
-      studyUuid,
-      currentNodeUuid,
-      'branch-or-3wt',
-      equipmentId,
-      true
+        studyUuid,
+        currentNodeUuid,
+        'branch-or-3wt',
+        equipmentId,
+        true
     );
 }
 
@@ -1372,12 +1384,14 @@ export function fetchDynamicSimulationProviders() {
     console.debug(url);
     return backendFetchJson(url);
 }
+
 export function fetchDynamicSimulationProvider(studyUuid) {
     console.info('fetch dynamic simulation provider');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
     console.debug(url);
     return backendFetchText(url);
 }
+
 export function fetchDefaultDynamicSimulationProvider() {
     console.info('fetch default dynamic simulation provider');
     const url =
@@ -1385,6 +1399,7 @@ export function fetchDefaultDynamicSimulationProvider() {
     console.debug(url);
     return backendFetchText(url);
 }
+
 export function updateDynamicSimulationProvider(studyUuid, newProvider) {
     console.info('update dynamic simulation provider');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
@@ -1414,6 +1429,7 @@ export function fetchDynamicSimulationParameters(studyUuid) {
         ([parameters, mappings]) => ({ ...parameters, mappings })
     );
 }
+
 export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
@@ -1427,6 +1443,7 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
 // -- Parameters API - END
 // --- Dynamic simulation API - END
 

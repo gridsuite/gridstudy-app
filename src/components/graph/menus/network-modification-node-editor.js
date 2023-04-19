@@ -651,7 +651,6 @@ const NetworkModificationNodeEditor = () => {
                                         key={props.item.uuid}
                                         onEdit={doEditModification}
                                         isDragging={isDragging}
-
                                         isOneNodeBuilding={isAnyNodeBuilding}
                                         {...props}
                                         disabled={isLoading()}

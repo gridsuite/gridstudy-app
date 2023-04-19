@@ -15,8 +15,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { useNameOrId } from '../../util/equipmentInfosHandler';
-import { fetchLine, fetchVoltageLevel } from '../../../utils/rest-api';
+import { fetchLine } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
 
 const nonEditableModificationTypes = new Set([
