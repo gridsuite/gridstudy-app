@@ -134,7 +134,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (diagramState) => {
             function createSubstationDiagramView(id, state) {
                 const substation = network.getSubstation(id);
-                if (!substation) return;
+                if (!substation) {
+                    return;
+                }
                 let label = getNameOrId(substation);
                 const countryName = substation?.countryName;
                 if (countryName) {
@@ -154,7 +156,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
             function createVoltageLevelDiagramView(id, state) {
                 const voltageLevel = network.getVoltageLevel(id);
-                if (!voltageLevel) return;
+                if (!voltageLevel) {
+                    return;
+                }
                 let label = getNameOrId(voltageLevel);
                 const substation = network.getSubstation(
                     voltageLevel.substationId
@@ -185,7 +189,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     );
                 }
 
-                if (displayedVoltageLevels.length === 0) return;
+                if (displayedVoltageLevels.length === 0) {
+                    return;
+                }
                 displayedVoltageLevels.forEach((voltageLevel) => {
                     const name = getNameOrId(voltageLevel);
                     if (name !== null) {
@@ -206,7 +212,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 };
             }
 
-            if (!network) return;
+            if (!network) {
+                return;
+            }
             if (diagramState.svgType === DiagramType.VOLTAGE_LEVEL) {
                 return createVoltageLevelDiagramView(
                     diagramState.id,
@@ -561,7 +569,9 @@ export function DiagramPane({
     );
 
     const getRatioWidthByHeight = (width, height) => {
-        if (Number(height) > 0) return Number(width) / Number(height);
+        if (Number(height) > 0) {
+            return Number(width) / Number(height);
+        }
         return 1.0;
     };
 
@@ -645,8 +655,12 @@ export function DiagramPane({
 
     const handleWarningToDisplay = (diagramView) => {
         // First, check if the node is built(the highest priority) then do the warning checks..
-        if (disabled) return 'InvalidNode';
-        if (diagramView?.warningMessage) return diagramView?.warningMessage;
+        if (disabled) {
+            return 'InvalidNode';
+        }
+        if (diagramView?.warningMessage) {
+            return diagramView?.warningMessage;
+        }
         return warnings.has(diagramView.id)
             ? warnings.get(diagramView.id)
             : undefined;

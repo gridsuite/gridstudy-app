@@ -157,6 +157,8 @@ const getActivePowerSetPointSchema = (isGeneratorModification) => ({
 });
 
 export const getPreviousBooleanValue = (value) => {
-    if (value === null) return null;
+    if (value === null) {
+        return null;
+    }
     return value ? 'On' : 'Off';
 };
