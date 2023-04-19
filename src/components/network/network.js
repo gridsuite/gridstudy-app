@@ -28,6 +28,7 @@ import {
     fetchVscConverterStations,
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
+import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 const elementIdIndexer = (map, element) => {
@@ -513,10 +514,15 @@ export default class Network {
         substationsIds
     ) {
         if (substationsIds) {
+            const substationsIdsToFetch =
+                substationsIds &&
+                substationsIds.length > MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
+                    ? undefined
+                    : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
                 currentNode?.id,
-                substationsIds
+                substationsIdsToFetch
             );
             updatedEquipments
                 .then((values) => {
