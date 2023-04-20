@@ -36,7 +36,6 @@ const NetworkModificationDialog = ({
     onClose,
     onOpenDialog,
     dialogs,
-    setIsUpdate,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -102,6 +101,8 @@ const NetworkModificationDialog = ({
 NetworkModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    onOpenDialog: PropTypes.func.isRequired,
+    dialogs: PropTypes.array,
 };
 
 export default NetworkModificationDialog;
