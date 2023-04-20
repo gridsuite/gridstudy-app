@@ -61,7 +61,6 @@ export const ModificationListItem = ({
     isDragging,
     isOneNodeBuilding,
     network,
-    setEditDialogOpen,
     ...props
 }) => {
     const intl = useIntl();
@@ -199,8 +198,7 @@ export const ModificationListItem = ({
                             isEditableModification(modif) && (
                                 <IconButton
                                     onClick={() => {
-                                        setEditDialogOpen(modif?.type);
-                                        onEdit(modif.uuid);
+                                        onEdit(modif.uuid, modif?.type);
                                     }}
                                     size={'small'}
                                     className={classes.iconEdit}

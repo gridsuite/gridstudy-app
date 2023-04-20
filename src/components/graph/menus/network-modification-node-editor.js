@@ -558,8 +558,9 @@ const NetworkModificationNodeEditor = () => {
         return dataTemp;
     }
 
-    const doEditModification = (modificationUuid) => {
+    const doEditModification = (modificationUuid, type) => {
         setIsUpdate(true);
+        setEditDialogOpen(type);
         const modification = fetchNetworkModification(modificationUuid);
         modification
             .then((res) => {
@@ -657,7 +658,6 @@ const NetworkModificationNodeEditor = () => {
                                         network={network}
                                         isOneNodeBuilding={isAnyNodeBuilding}
                                         disabled={isLoading()}
-                                        setEditDialogOpen={setEditDialogOpen}
                                         {...props}
                                     />
                                 )}
