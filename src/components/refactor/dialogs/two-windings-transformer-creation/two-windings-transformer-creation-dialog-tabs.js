@@ -11,6 +11,12 @@ import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerCreationDialogTab } from './two-windings-transformer-creation-dialog';
+import { useWatch } from 'react-hook-form';
+import {
+    ENABLED,
+    PHASE_TAP_CHANGER,
+    RATIO_TAP_CHANGER,
+} from '../../utils/field-constants';
 
 const useStyles = makeStyles((theme) => ({
     tabWithError: {
@@ -29,6 +35,14 @@ const TwoWindingsTransformerCreationDialogTabs = ({
     setDialogWidth,
 }) => {
     const classes = useStyles();
+
+    const ratioTapChangerEnabledWatch = useWatch({
+        name: `${RATIO_TAP_CHANGER}.${ENABLED}`,
+    });
+
+    const phaseTapChangerEnabledWatch = useWatch({
+        name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
+    });
 
     const getTabIndicatorClass = useCallback(
         (index) =>
@@ -49,7 +63,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
     );
 
     return (
-        <Grid container>
+        <Grid container item>
             <Tabs
                 value={tabIndex}
                 variant="scrollable"
@@ -63,14 +77,14 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                     className={getTabClass(
                         TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
                     )}
-                    onClick={() => setDialogWidth('md')}
+                    onClick={() => setDialogWidth('xl')}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
                     className={getTabClass(
                         TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
                     )}
-                    onClick={() => setDialogWidth('md')}
+                    onClick={() => setDialogWidth('xl')}
                 />
                 <Tab
                     onClick={() => setDialogWidth('xl')}
@@ -80,6 +94,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                     className={getTabClass(
                         TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB
                     )}
+                    disabled={!ratioTapChangerEnabledWatch}
                 />
                 <Tab
                     onClick={() => setDialogWidth('xl')}
@@ -89,6 +104,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                     className={getTabClass(
                         TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB
                     )}
+                    disabled={!phaseTapChangerEnabledWatch}
                 />
             </Tabs>
         </Grid>

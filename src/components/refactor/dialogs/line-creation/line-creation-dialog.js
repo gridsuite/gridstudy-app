@@ -151,7 +151,6 @@ const LineCreationDialog = ({
                                 busbarSectionId: line.busOrBusbarSectionId1,
                                 connectionDirection: line.connectionDirection1,
                                 connectionName: line.connectionName1,
-                                connectionPosition: line.connectionPosition1,
                             },
                             CONNECTIVITY_1
                         )),
@@ -162,7 +161,6 @@ const LineCreationDialog = ({
                                 busbarSectionId: line.busOrBusbarSectionId2,
                                 connectionDirection: line.connectionDirection2,
                                 connectionName: line.connectionName2,
-                                connectionPosition: line.connectionPosition2,
                             },
                             CONNECTIVITY_2
                         )),
@@ -241,7 +239,7 @@ const LineCreationDialog = ({
     });
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        if (studyUuid && currentNodeUuid) {
             fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -249,6 +247,7 @@ const LineCreationDialog = ({
                     );
                 }
             );
+        }
     }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {

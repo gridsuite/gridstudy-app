@@ -8,6 +8,7 @@
 export const SUBSTATION_RADIUS = 500;
 export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
+export const MAX_NUMBER_OF_IMPACTED_SUBSTATIONS = 500;
 
 // Relevant LoadType Powsybl enum values
 export const LOAD_TYPES = [
@@ -38,12 +39,23 @@ export const UPDATE_TYPE = [
     'deletingInProgress',
 ];
 
-export const REGULATION_MODES = {
+export const PHASE_REGULATION_MODES = {
     FIXED_TAP: { id: 'FIXED_TAP', label: 'FixedTap' },
     CURRENT_LIMITER: { id: 'CURRENT_LIMITER', label: 'CurrentLimiter' },
     ACTIVE_POWER_CONTROL: {
         id: 'ACTIVE_POWER_CONTROL',
         label: 'PhaseActivePowerControl',
+    },
+};
+
+export const RATIO_REGULATION_MODES = {
+    FIXED_RATIO: {
+        id: 'FIXED_RATIO',
+        label: 'FixedRatio',
+    },
+    VOLTAGE_REGULATION: {
+        id: 'VOLTAGE_REGULATION',
+        label: 'VoltageRegulation',
     },
 };
 
@@ -129,7 +141,14 @@ export const VOLTAGE_LEVEL_COMPONENTS = {
     BUS_BAR_SECTION_CONNECTION: 'BusBarSectionConnection',
 };
 
-export const SWITCH_TYPE = [
-    { id: 'BREAKER', label: 'Breaker' },
-    { id: 'DISCONNECTOR', label: 'Disconnector' },
-];
+export const BUILD_STATUS = {
+    NOT_BUILT: 'NOT_BUILT',
+    BUILT: 'BUILT',
+    BUILT_WITH_WARNING: 'BUILT_WITH_WARNING',
+    BUILT_WITH_ERROR: 'BUILT_WITH_ERROR',
+};
+
+export const SWITCH_TYPE = {
+    BREAKER: { id: 'BREAKER', label: 'Breaker' },
+    DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
+};

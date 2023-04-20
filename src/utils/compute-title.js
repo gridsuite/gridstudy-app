@@ -52,9 +52,13 @@ const limitChar = (str, limit) => {
 };
 
 export const computePageTitle = (appName, studyName, parents) => {
-    if (!studyName) return appName;
+    if (!studyName) {
+        return appName;
+    }
     let pageTitle = appName + SEPARATOR + limitChar(studyName, 30);
-    if (!parents?.length) return pageTitle;
+    if (!parents?.length) {
+        return pageTitle;
+    }
 
     pageTitle = pageTitle + SEPARATOR;
     // Rule 1 : if first repository causes exceeding of the maximum number of characters, truncates this repository name

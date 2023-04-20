@@ -591,8 +591,9 @@ export const reducer = createReducer(initialState, {
             // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
             // Some actions in the TREE display mode could change this value after that
             // ex: change current Node, current Node updated ...
-            if (action.studyDisplayMode === STUDY_DISPLAY_MODE.TREE)
+            if (action.studyDisplayMode === STUDY_DISPLAY_MODE.TREE) {
                 state.reloadMap = false;
+            }
 
             state.studyDisplayMode = action.studyDisplayMode;
         }
@@ -687,8 +688,12 @@ export const reducer = createReducer(initialState, {
                             diagram.state = ViewState.MINIMIZED;
                         }
                     });
-                    // And update the one to open.
-                    diagramStates[diagramToOpenIndex].state = ViewState.OPENED;
+                    const diagramToOpen = diagramStates[diagramToOpenIndex];
+
+                    // We open and push the SLD to the last position in the array, so it is displayed at the right of the others
+                    diagramToOpen.state = ViewState.OPENED;
+                    diagramStates.splice(diagramToOpenIndex, 1);
+                    diagramStates.push(diagramToOpen);
                 } else {
                     console.info(
                         'Diagram already opened : ' +

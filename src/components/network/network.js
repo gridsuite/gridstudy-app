@@ -28,6 +28,7 @@ import {
     fetchVscConverterStations,
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
+import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 
 const elementIdIndexer = (map, element) => {
@@ -367,16 +368,18 @@ export default class Network {
     // TODO investigate turn this into a custom hook ?
     useEquipment(equipment) {
         const fetcher = this.lazyLoaders.get(equipment);
-        if (fetcher) return fetcher.fetch();
-        else {
+        if (fetcher) {
+            return fetcher.fetch();
+        } else {
             console.error('not found ' + equipment);
         }
     }
 
     isResourceFetched(equipement) {
         const fetcher = this.lazyLoaders.get(equipement);
-        if (fetcher) return fetcher.isFetched();
-        else {
+        if (fetcher) {
+            return fetcher.isFetched();
+        } else {
             console.error('not found ' + equipement);
         }
     }
@@ -426,7 +429,7 @@ export default class Network {
         const nodeBeforeFetch = currentNodeRef.current;
         equipments.forEach((equipment) => {
             const fetcher = this.lazyLoaders.get(equipment);
-            if (fetcher)
+            if (fetcher) {
                 fetchers.push(
                     fetcher.fetcher().then((values) => {
                         if (nodeBeforeFetch === currentNodeRef.current) {
@@ -434,6 +437,7 @@ export default class Network {
                         }
                     })
                 );
+            }
         });
 
         Promise.all(fetchers).then((values) => {
@@ -510,10 +514,14 @@ export default class Network {
         substationsIds
     ) {
         if (substationsIds) {
+            const substationsIdsToFetch =
+                substationsIds?.length > MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
+                    ? undefined
+                    : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
                 currentNode?.id,
-                substationsIds
+                substationsIdsToFetch
             );
             updatedEquipments
                 .then((values) => {
@@ -555,7 +563,9 @@ export default class Network {
                 })
                 .catch(function (error) {
                     console.error(error.message);
-                    if (this.errHandler) this.errHandler(error);
+                    if (this.errHandler) {
+                        this.errHandler(error);
+                    }
                 });
         }
     }

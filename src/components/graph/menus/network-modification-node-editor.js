@@ -12,12 +12,10 @@ import {
     deleteModifications,
     fetchNetworkModification,
     fetchNetworkModifications,
-    fetchVoltageLevelsIdAndTopology,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from '../../refactor/dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
@@ -55,11 +53,12 @@ import {
 import { UPDATE_TYPE } from '../../network/constants';
 import LoadScalingDialog from 'components/refactor/dialogs/load-scaling/load-scaling-dialog';
 import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
-import GeneratorCreationDialog from 'components/refactor/dialogs/generator-creation/generator-creation-dialog';
+import GeneratorCreationDialog from 'components/refactor/dialogs/generator/creation/generator-creation-dialog';
 import DeleteVoltageLevelOnLineDialog from 'components/refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
 import DeleteAttachingLineDialog from 'components/refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
 import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 import GeneratorScalingDialog from 'components/refactor/dialogs/generator-scaling/generator-scaling-dialog';
+import GeneratorModificationDialog from 'components/refactor/dialogs/generator/modification/generator-modification-dialog';
 import SubstationCreationDialog from 'components/refactor/dialogs/substation-creation/substation-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -134,7 +133,9 @@ function isChecked(s1) {
 }
 
 function isPartial(s1, s2) {
-    if (s1 === 0) return false;
+    if (s1 === 0) {
+        return false;
+    }
     return s1 !== s2;
 }
 
@@ -143,19 +144,11 @@ export const CopyType = {
     MOVE: 'MOVE',
 };
 
-export function withVLsIdsAndTopology(studyUuid, currentTreeNodeId) {
-    const voltageLevelsIdsAndTopologyPromise = fetchVoltageLevelsIdAndTopology(
-        studyUuid,
-        currentTreeNodeId
-    );
-    return voltageLevelsIdsAndTopologyPromise;
-}
-
 const NetworkModificationNodeEditor = () => {
     const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const { snackInfo, snackError, snackWarning } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -176,22 +169,25 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
 
-    const cleanClipboard = () => {
-        if (copiedModifications.length <= 0) return;
+    const cleanClipboard = useCallback(() => {
+        if (copiedModifications.length <= 0) {
+            return;
+        }
         setCopyInfos(null);
         setCopiedModifications([]);
         snackInfo({
             messageId: 'CopiedModificationInvalidationMessage',
         });
-    };
+    }, [snackInfo, copiedModifications]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
     // a modification on a public study which is in the clipboard.
     // We don't have precision on notifications to do this for now.
     const handleValidatedDialog = () => {
-        if (editData?.uuid && copiedModifications.includes(editData?.uuid))
+        if (editData?.uuid && copiedModifications.includes(editData?.uuid)) {
             cleanClipboard();
+        }
     };
 
     const handleCloseDialog = (e, reason) => {
@@ -218,16 +214,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function withVLsIdsAndTopology(p) {
-        const voltageLevelsIdsAndTopologyPromise =
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id);
-        return {
-            ...p,
-            voltageLevelsIdsAndTopologyPromise:
-                voltageLevelsIdsAndTopologyPromise,
-        };
-    }
-
     const dialogs = {
         LOAD_CREATION: {
             label: 'CreateLoad',
@@ -246,8 +232,7 @@ const NetworkModificationNodeEditor = () => {
         },
         GENERATOR_MODIFICATION: {
             label: 'ModifyGenerator',
-            dialog: () =>
-                adapt(GeneratorModificationDialog, withVLsIdsAndTopology),
+            dialog: () => adapt(GeneratorModificationDialog),
             icon: <AddIcon />,
         },
         SHUNT_COMPENSATOR_CREATION: {
@@ -356,7 +341,9 @@ const NetworkModificationNodeEditor = () => {
 
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') return;
+        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+            return;
+        }
         setLaunchLoader(true);
         fetchNetworkModifications(studyUuid, currentNode.id)
             .then((res) => {
@@ -403,8 +390,9 @@ const NetworkModificationNodeEditor = () => {
             if (
                 currentNodeIdRef.current !==
                 studyUpdatedForce.eventData.headers['parentNode']
-            )
+            ) {
                 return;
+            }
 
             if (
                 UPDATE_TYPE.includes(
@@ -457,19 +445,38 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const doDeleteModification = useCallback(() => {
+        const selectedModificationsUuid = [...selectedItems.values()].map(
+            (item) => item.uuid
+        );
         deleteModifications(
             studyUuid,
             currentNode.id,
-            [...selectedItems.values()].map((item) => item.uuid)
+            selectedModificationsUuid
         )
-            .then()
+            .then(() => {
+                //if one of the deleted element was in the clipboard we invalidate the clipboard
+                if (
+                    copiedModifications.some((aCopiedModification) =>
+                        selectedModificationsUuid.includes(aCopiedModification)
+                    )
+                ) {
+                    cleanClipboard();
+                }
+            })
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errDeleteModificationMsg',
                 });
             });
-    }, [currentNode?.id, selectedItems, snackError, studyUuid]);
+    }, [
+        currentNode?.id,
+        selectedItems,
+        snackError,
+        studyUuid,
+        cleanClipboard,
+        copiedModifications,
+    ]);
 
     const selectedModificationsIds = useCallback(() => {
         const allModificationsIds = modifications.map((m) => m.uuid);
@@ -503,61 +510,30 @@ const NetworkModificationNodeEditor = () => {
                 currentNode.id,
                 copiedModifications,
                 copyInfos
-            )
-                .then((message) => {
-                    let modificationsInFailure = JSON.parse(message);
-                    if (modificationsInFailure.length > 0) {
-                        console.warn(
-                            'Modifications not moved:',
-                            modificationsInFailure
-                        );
-                        snackWarning({
-                            messageTxt: modificationsInFailure.length,
-                            headerId: 'warnCutModificationMsg',
-                        });
-                    }
-                    setCopyInfos(null);
-                    setCopiedModifications([]);
-                })
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'errCutModificationMsg',
-                    });
+            ).catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errCutModificationMsg',
                 });
+            });
         } else {
             copyOrMoveModifications(
                 studyUuid,
                 currentNode.id,
                 copiedModifications,
                 copyInfos
-            )
-                .then((message) => {
-                    let modificationsInFailure = JSON.parse(message);
-                    if (modificationsInFailure.length > 0) {
-                        console.warn(
-                            'Modifications not pasted:',
-                            modificationsInFailure
-                        );
-                        snackWarning({
-                            messageTxt: modificationsInFailure.length,
-                            headerId: 'warnDuplicateModificationMsg',
-                        });
-                    }
-                })
-                .catch((errmsg) => {
-                    snackError({
-                        messageTxt: errmsg,
-                        headerId: 'errDuplicateModificationMsg',
-                    });
+            ).catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errDuplicateModificationMsg',
                 });
+            });
         }
     }, [
         copiedModifications,
         currentNode?.id,
         copyInfos,
         snackError,
-        snackWarning,
         studyUuid,
     ]);
 
@@ -612,8 +588,9 @@ const NetworkModificationNodeEditor = () => {
                 !currentNode?.id ||
                 destination === null ||
                 source.index === destination.index
-            )
+            ) {
                 return;
+            }
             const res = [...modifications];
             const [item] = res.splice(source.index, 1);
             const before = res[destination.index]?.uuid;
@@ -750,8 +727,12 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const renderPaneSubtitle = () => {
-        if (isLoading()) return renderNetworkModificationsListTitleLoading();
-        if (launchLoader) return renderNetworkModificationsListTitleUpdating();
+        if (isLoading()) {
+            return renderNetworkModificationsListTitleLoading();
+        }
+        if (launchLoader) {
+            return renderNetworkModificationsListTitleUpdating();
+        }
         return renderNetworkModificationsListTitle();
     };
 

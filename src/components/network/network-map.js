@@ -108,7 +108,9 @@ const NetworkMap = (props) => {
     const classes = useStyles();
 
     useEffect(() => {
-        if (centerOnSubstation === null) return;
+        if (centerOnSubstation === null) {
+            return;
+        }
         setCentered({
             lastCenteredSubstation: null,
             centeredSubstationId: centerOnSubstation?.to,
@@ -138,7 +140,9 @@ const NetworkMap = (props) => {
                     const geodata = props.geoData.substationPositionsById.get(
                         centered.centeredSubstationId
                     );
-                    if (!geodata) return; // can't center on substation if no coordinate.
+                    if (!geodata) {
+                        return;
+                    } // can't center on substation if no coordinate.
                     const copyViewState =
                         lastViewStateRef.current || deck.viewState;
                     const newViewState = {

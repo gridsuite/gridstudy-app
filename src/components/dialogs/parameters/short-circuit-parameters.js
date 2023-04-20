@@ -44,7 +44,9 @@ export const useGetShortCircuitParameters = () => {
 };
 
 function getValue(param, key) {
-    if (!param || param[key] === undefined) return null;
+    if (!param || param[key] === undefined) {
+        return null;
+    }
     return param[key];
 }
 

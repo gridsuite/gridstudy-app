@@ -1,0 +1,44 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { gridItem } from 'components/dialogs/dialogUtils';
+import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
+import {
+    BUS_BAR_SECTION_ID1,
+    BUS_BAR_SECTION_ID2,
+    COUPLING_OMNIBUS,
+} from 'components/refactor/utils/field-constants';
+
+export const CouplingOmnibusCreation = ({ index, sectionOptions }) => {
+    const busBarSectionId1Field = (
+        <AutocompleteInput
+            allowNewValue
+            forcePopupIcon
+            name={`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID1}`}
+            label="SectionID1"
+            options={sectionOptions ?? []}
+            size={'small'}
+        />
+    );
+    const busBarSectionId2Field = (
+        <AutocompleteInput
+            allowNewValue
+            forcePopupIcon
+            name={`${COUPLING_OMNIBUS}.${index}.${BUS_BAR_SECTION_ID2}`}
+            label="SectionID2"
+            options={sectionOptions ?? []}
+            size={'small'}
+        />
+    );
+
+    return (
+        <>
+            {gridItem(busBarSectionId1Field, 4)}
+            {gridItem(busBarSectionId2Field, 4)}
+        </>
+    );
+};

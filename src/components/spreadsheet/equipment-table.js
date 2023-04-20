@@ -6,30 +6,10 @@
  */
 
 import React, { useMemo, useCallback } from 'react';
-import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { makeStyles, useTheme } from '@mui/styles';
+import { useTheme } from '@mui/styles';
 import LoaderWithOverlay from '../util/loader-with-overlay';
-import { useIntl } from 'react-intl';
-import clsx from 'clsx';
 import { ALLOWED_KEYS } from './utils/config-tables';
-
-const useStyles = makeStyles((theme) => ({
-    grid: {
-        width: 'auto',
-        height: '100%',
-        position: 'relative',
-
-        //overrides the default computed max heigt for ag grid default selector editor to make it more usable
-        //can be removed if a custom selector editor is implemented
-        '& .ag-select-list': {
-            maxHeight: '300px !important',
-        },
-    },
-}));
-
-const GRID_PREFIX = 'grid.';
+import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
 
 export const EquipmentTable = ({
     rowData,
@@ -41,12 +21,11 @@ export const EquipmentTable = ({
     handleRowEditing,
     handleCellEditing,
     handleEditingStopped,
+    handleGridReady,
     fetched,
     network,
 }) => {
-    const classes = useStyles();
     const theme = useTheme();
-    const intl = useIntl();
 
     const getRowStyle = useCallback(
         (params) => {
@@ -71,14 +50,6 @@ export const EquipmentTable = ({
         ]
     );
 
-    const getLocaleText = useCallback(
-        (params) => {
-            const key = GRID_PREFIX + params.key;
-            return intl.messages[key] || params.defaultValue;
-        },
-        [intl]
-    );
-
     const getRowId = useCallback((params) => params.data.id, []);
 
     //we filter enter key event to prevent closing or opening edit mode
@@ -95,6 +66,9 @@ export const EquipmentTable = ({
             wrapHeaderText: true,
             autoHeaderHeight: true,
             suppressKeyboardEvent: (params) => suppressKeyEvent(params),
+            icons: {
+                menu: '<span class="ag-icon ag-icon-filter" />',
+            },
         }),
         []
     );
@@ -110,39 +84,38 @@ export const EquipmentTable = ({
 
     return (
         <>
-            <div className={clsx([theme.aggrid, classes.grid])}>
-                {!fetched ? (
+            {!fetched ? (
+                <div>
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
                         loadingMessageText={'LoadingRemoteData'}
                     />
-                ) : (
-                    <AgGridReact
-                        ref={gridRef}
-                        getRowId={getRowId}
-                        rowData={rowData}
-                        pinnedTopRowData={topPinnedData}
-                        getRowStyle={getRowStyle}
-                        columnDefs={columnData}
-                        defaultColDef={defaultColDef}
-                        enableCellTextSelection={true}
-                        alwaysMultiSort={true}
-                        undoRedoCellEditing={true}
-                        editType={'fullRow'}
-                        onCellValueChanged={handleCellEditing}
-                        onRowValueChanged={handleRowEditing}
-                        onRowEditingStopped={handleEditingStopped}
-                        onColumnMoved={handleColumnDrag}
-                        suppressDragLeaveHidesColumns={true}
-                        suppressPropertyNamesCheck={true}
-                        suppressColumnVirtualisation={true}
-                        suppressClickEdit={true}
-                        getLocaleText={getLocaleText}
-                        context={gridContext}
-                    />
-                )}
-            </div>
+                </div>
+            ) : (
+                <CustomAGGrid
+                    ref={gridRef}
+                    getRowId={getRowId}
+                    rowData={rowData}
+                    pinnedTopRowData={topPinnedData}
+                    getRowStyle={getRowStyle}
+                    columnDefs={columnData}
+                    defaultColDef={defaultColDef}
+                    enableCellTextSelection={true}
+                    undoRedoCellEditing={true}
+                    editType={'fullRow'}
+                    onCellValueChanged={handleCellEditing}
+                    onRowValueChanged={handleRowEditing}
+                    onRowEditingStopped={handleEditingStopped}
+                    onColumnMoved={handleColumnDrag}
+                    suppressDragLeaveHidesColumns={true}
+                    suppressPropertyNamesCheck={true}
+                    suppressColumnVirtualisation={true}
+                    suppressClickEdit={true}
+                    context={gridContext}
+                    onGridReady={handleGridReady}
+                />
+            )}
         </>
     );
 };

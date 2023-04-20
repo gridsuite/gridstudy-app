@@ -95,13 +95,17 @@ const DATA_KEY_TO_SORT_KEY = {
 };
 
 function addIndexerParamsToSelector(indexer, selector) {
-    if (!indexer) return;
+    if (!indexer) {
+        return;
+    }
 
     const sortKeysWithWeightAndDirection = {};
     const sortingAsKeyAndDirSign = indexer.getSortingAsKeyAndCodedRank();
     sortingAsKeyAndDirSign.forEach(([k, v]) => {
         const sortKey = DATA_KEY_TO_SORT_KEY[k];
-        if (sortKey) sortKeysWithWeightAndDirection[sortKey] = v;
+        if (sortKey) {
+            sortKeysWithWeightAndDirection[sortKey] = v;
+        }
     });
     if (Object.keys(sortKeysWithWeightAndDirection).length) {
         selector.sortKeysWithWeightAndDirection =
@@ -110,7 +114,9 @@ function addIndexerParamsToSelector(indexer, selector) {
     const userFiltering = indexer.getUserFiltering();
     Object.entries(userFiltering).forEach(([k, v]) => {
         const filterKey = DATA_KEY_TO_FILTER_KEY[k];
-        if (filterKey) selector[filterKey] = v;
+        if (filterKey) {
+            selector[filterKey] = v;
+        }
     });
 }
 
@@ -136,8 +142,8 @@ function PagedSensitivityResult({
     const [allowsShowingLoader, setAllowsShowingLoader] = useState(false);
     const timerRef = useRef(null);
 
-    const synthRef = useRef();
-    const [next, prev] = [{}, synthRef.current];
+    const prevRenderRef = useRef();
+    const [next, prev] = [{}, prevRenderRef.current];
     next.sensiKindIndex = sensiKindIndex;
     next.nOrNkIndex = nOrNkIndex;
     next.nodeUuid = nodeUuid;
@@ -244,7 +250,9 @@ function PagedSensitivityResult({
             next.page = page;
         } else {
             next.page = 0;
-            if (page > 0) setPage(0);
+            if (page > 0) {
+                setPage(0);
+            }
         }
         next.userRowsPerPage = userRowsPerPage;
         next.version = next.indexer?.version;
@@ -307,7 +315,7 @@ function PagedSensitivityResult({
     next.fetched = fetched;
     next.isLoading = isLoading;
 
-    synthRef.current = next;
+    prevRenderRef.current = next;
 
     const result = (!next.isFetchNeedy && fetched?.sensitivities) || [];
     const showsLoading = isLoading && allowsShowingLoader;

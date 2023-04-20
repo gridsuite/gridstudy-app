@@ -14,13 +14,20 @@ import {
 } from '../../../../../dialogs/dialogUtils';
 import React from 'react';
 
-const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix }) => {
+const ReactiveCapabilityCurveRowForm = ({
+    id,
+    index,
+    labelSuffix,
+    previousValues,
+}) => {
     const pField = (
         <FloatInput
             name={`${id}.${index}.${P}`}
             label={'P'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ActivePowerAdornment}
+            previousValue={previousValues?.p}
+            clearable={true}
         />
     );
 
@@ -30,6 +37,8 @@ const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix }) => {
             label={'QminP'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ReactivePowerAdornment}
+            previousValue={previousValues?.qminP}
+            clearable={true}
         />
     );
 
@@ -39,6 +48,8 @@ const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix }) => {
             label={'QmaxP'}
             labelValues={{ labelSuffix: labelSuffix }}
             adornment={ReactivePowerAdornment}
+            previousValue={previousValues?.qmaxP}
+            clearable={true}
         />
     );
 
