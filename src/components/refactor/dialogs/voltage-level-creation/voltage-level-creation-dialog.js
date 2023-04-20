@@ -42,12 +42,15 @@ import { controlCouplingOmnibusBetweenSections } from './voltage-level-creation-
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
 import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
+import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 
 /**
  * Dialog to create a load in the network
  * @param currentNode The node we are currently working on
  * @param studyUuid the study we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param onCreateVoltageLevel to create voltage level from other forms,
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
@@ -106,6 +109,7 @@ const VoltageLevelCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
     onCreateVoltageLevel = createVoltageLevel,
     ...dialogProps
 }) => {
@@ -214,6 +218,11 @@ const VoltageLevelCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched: !isUpdate || editData,
+        delay: FORM_LOADING_DELAY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -224,6 +233,8 @@ const VoltageLevelCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateVoltageLevel"
                 searchCopy={searchCopy}
+                open={open}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <VoltageLevelCreationForm
@@ -246,6 +257,7 @@ VoltageLevelCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
     onCreateVoltageLevel: PropTypes.func,
 };
 

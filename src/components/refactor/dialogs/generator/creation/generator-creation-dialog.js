@@ -58,6 +58,7 @@ import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulat
 import { createGenerator } from '../../../../../utils/rest-api';
 import { sanitizeString } from '../../../../dialogs/dialogUtils';
 import {
+    FORM_LOADING_DELAY,
     REGULATION_TYPES,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../../../../network/constants';
@@ -69,6 +70,7 @@ import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
 } from '../reactive-limits/reactive-limits-utils';
+import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -132,6 +134,7 @@ const GeneratorCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
@@ -329,6 +332,10 @@ const GeneratorCreationDialog = ({
         [currentNodeUuid, editData, studyUuid, snackError]
     );
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched: !isUpdate || editData,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -339,6 +346,8 @@ const GeneratorCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateGenerator"
                 searchCopy={searchCopy}
+                open={open}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <GeneratorCreationForm

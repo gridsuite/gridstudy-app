@@ -41,6 +41,8 @@ import {
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { buildNewBusbarSections } from 'components/refactor/utils/utils';
+import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -74,12 +76,14 @@ const schema = yup
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LineAttachToVoltageLevelDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -294,6 +298,10 @@ const LineAttachToVoltageLevelDialog = ({
         }
     }, [getValues, newVoltageLevel]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched: !isUpdate || editData,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -303,6 +311,8 @@ const LineAttachToVoltageLevelDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-attach-voltage-level-to-a-line"
                 titleId="LineAttachToVoltageLevel"
+                open={open}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <LineAttachToVoltageLevelForm

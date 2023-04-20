@@ -168,6 +168,7 @@ const NetworkModificationNodeEditor = () => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
+    const [isUpdate, setIsUpdate] = useState(false);
 
     const cleanClipboard = useCallback(() => {
         if (copiedModifications.length <= 0) {
@@ -198,12 +199,12 @@ const NetworkModificationNodeEditor = () => {
     function withDefaultParams(Dialog, props) {
         return (
             <Dialog
-                open={true}
                 onClose={handleCloseDialog}
                 onValidated={handleValidatedDialog}
                 currentNode={currentNode}
                 studyUuid={studyUuid}
                 editData={editData}
+                isUpdate={isUpdate}
                 {...props}
             />
         );
@@ -558,6 +559,7 @@ const NetworkModificationNodeEditor = () => {
     }
 
     const doEditModification = (modificationUuid) => {
+        setIsUpdate(true);
         const modification = fetchNetworkModification(modificationUuid);
         modification
             .then((res) => {
@@ -654,8 +656,9 @@ const NetworkModificationNodeEditor = () => {
                                         isDragging={isDragging}
                                         network={network}
                                         isOneNodeBuilding={isAnyNodeBuilding}
-                                        {...props}
                                         disabled={isLoading()}
+                                        setEditDialogOpen={setEditDialogOpen}
+                                        {...props}
                                     />
                                 )}
                                 toggleSelectAll={toggleSelectAll}
@@ -830,6 +833,7 @@ const NetworkModificationNodeEditor = () => {
                 onClose={closeNetworkModificationConfiguration}
                 currentNodeUuid={currentNode?.id}
                 onOpenDialog={setEditDialogOpen}
+                setIsUpdate={setIsUpdate}
                 dialogs={dialogs}
             />
             {editDialogOpen && renderDialog()}

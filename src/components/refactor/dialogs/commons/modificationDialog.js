@@ -14,6 +14,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    LinearProgress,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../../../dialogs/inputs/input-hooks';
@@ -41,6 +42,7 @@ const ModificationDialog = ({
     searchCopy,
     subtitle,
     onValidated,
+    isDataFetching = false,
     ...dialogProps
 }) => {
     const { handleSubmit } = useFormContext();
@@ -83,6 +85,7 @@ const ModificationDialog = ({
             aria-labelledby={titleId}
             {...dialogProps}
         >
+            {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container justifyContent={'space-between'}>
                     <Grid item xs={11}>

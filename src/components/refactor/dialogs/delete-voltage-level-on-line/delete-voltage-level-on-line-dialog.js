@@ -6,6 +6,8 @@
  */
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
@@ -43,12 +45,14 @@ const schema = yup
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const DeleteVoltageLevelOnLineDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -61,6 +65,11 @@ const DeleteVoltageLevelOnLineDialog = ({
     });
 
     const { reset } = methods;
+
+    const open = useOpenShortWaitFetching({
+        isDataFetched: !isUpdate || editData,
+        delay: FORM_LOADING_DELAY,
+    });
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
@@ -113,6 +122,8 @@ const DeleteVoltageLevelOnLineDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-delete-voltage-level-on-line"
                 titleId="DeleteVoltageLevelOnLine"
+                open={open}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <DeleteVoltageLevelOnLineForm
@@ -128,6 +139,7 @@ DeleteVoltageLevelOnLineDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
 };
 
 export default DeleteVoltageLevelOnLineDialog;

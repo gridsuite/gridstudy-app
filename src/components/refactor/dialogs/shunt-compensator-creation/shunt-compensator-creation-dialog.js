@@ -6,6 +6,7 @@
  */
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -30,7 +31,10 @@ import { createShuntCompensator } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
+import {
+    FORM_LOADING_DELAY,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '../../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
@@ -69,12 +73,14 @@ const schema = yup
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const ShuntCompensatorCreationDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -190,6 +196,10 @@ const ShuntCompensatorCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched: !isUpdate || editData,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -200,6 +210,8 @@ const ShuntCompensatorCreationDialog = ({
                 aria-labelledby="dialog-create-shuntCompensator"
                 titleId="CreateShuntCompensator"
                 searchCopy={searchCopy}
+                open={open}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <ShuntCompensatorCreationForm
@@ -226,6 +238,7 @@ ShuntCompensatorCreationDialog.propTypes = {
     }),
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
 };
 
 export default ShuntCompensatorCreationDialog;

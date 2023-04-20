@@ -7,6 +7,8 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ACTIVE_POWER,
     EQUIPMENT_ID,
@@ -15,7 +17,7 @@ import {
     REACTIVE_POWER,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { modifyLoad } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
@@ -29,6 +31,7 @@ import LoadModificationForm from './load-modification-form';
  * @param defaultIdValue the default load id
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
@@ -48,10 +51,12 @@ const LoadModificationDialog = ({
     defaultIdValue,
     currentNode,
     studyUuid,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [isDataFetched, setIsDataFetched] = useState(false);
 
     const emptyFormData = useMemo(
         () => ({
@@ -119,6 +124,10 @@ const LoadModificationDialog = ({
         reset(emptyFormData);
     }, [reset, emptyFormData]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched: !isUpdate || (editData && isDataFetched),
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider
             validationSchema={schema}
@@ -132,11 +141,15 @@ const LoadModificationDialog = ({
                 aria-labelledby="dialog-modify-load"
                 maxWidth={'md'}
                 titleId="ModifyLoad"
+                open={open}
+                keepMounted={true}
+                isDataFetching={isUpdate && (!editData || !isDataFetched)}
                 {...dialogProps}
             >
                 <LoadModificationForm
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    setIsDataFetched={setIsDataFetched}
                 />
             </ModificationDialog>
         </FormProvider>
@@ -147,6 +160,7 @@ LoadModificationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
 };
 
 export default LoadModificationDialog;

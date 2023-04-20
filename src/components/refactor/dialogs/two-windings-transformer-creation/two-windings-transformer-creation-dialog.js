@@ -65,6 +65,7 @@ import {
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import {
+    FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
     RATIO_REGULATION_MODES,
     REGULATION_TYPES,
@@ -109,12 +110,14 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
 } from '../limits/limits-pane-utils';
+import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
 
 /**
  * Dialog to create a two windings transformer in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
@@ -149,6 +152,7 @@ const TwoWindingsTransformerCreationDialog = ({
     editData,
     studyUuid,
     currentNode,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -777,6 +781,11 @@ const TwoWindingsTransformerCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched: !isUpdate || editData,
+        delay: FORM_LOADING_DELAY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -794,6 +803,8 @@ const TwoWindingsTransformerCreationDialog = ({
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
+                open={open}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <Box
@@ -866,6 +877,7 @@ TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
 };
 
 export default TwoWindingsTransformerCreationDialog;

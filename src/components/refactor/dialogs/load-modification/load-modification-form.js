@@ -32,7 +32,7 @@ import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 
-const LoadModificationForm = ({ currentNode, studyUuid }) => {
+const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [loadInfos, setLoadInfos] = useState(null);
@@ -56,6 +56,7 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
 
     useEffect(() => {
         if (loadId) {
+            setIsDataFetched(false);
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -65,12 +66,13 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
             ).then((value) => {
                 if (value) {
                     setLoadInfos(value);
+                    setIsDataFetched(true);
                 }
             });
         } else {
             setLoadInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, loadId]);
+    }, [studyUuid, currentNodeUuid, loadId, setIsDataFetched]);
 
     const getObjectId = useCallback((object) => {
         if (typeof object === 'string') {

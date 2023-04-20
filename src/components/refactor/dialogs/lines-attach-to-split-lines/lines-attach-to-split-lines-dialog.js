@@ -36,6 +36,8 @@ import {
     getConnectivityWithoutPositionValidationSchema,
     getConnectivityData,
 } from '../connectivity/connectivity-form-utils';
+import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
@@ -67,12 +69,14 @@ const schema = yup
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LinesAttachToSplitLinesDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -134,6 +138,10 @@ const LinesAttachToSplitLinesDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched: !isUpdate || editData,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -143,6 +151,8 @@ const LinesAttachToSplitLinesDialog = ({
                 maxWidth={'md'}
                 titleId="LinesAttachToSplitLines"
                 aria-labelledby="dialog-attach-lines-to-split-lines"
+                open={open}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <LinesAttachToSplitLinesForm
@@ -158,6 +168,7 @@ LinesAttachToSplitLinesDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
 };
 
 export default LinesAttachToSplitLinesDialog;

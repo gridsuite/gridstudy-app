@@ -45,7 +45,10 @@ import {
 import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../network/constants';
+import {
+    FORM_LOADING_DELAY,
+    UNDEFINED_CONNECTION_DIRECTION,
+} from '../../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
@@ -69,6 +72,7 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
 } from '../limits/limits-pane-utils';
+import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -89,6 +93,7 @@ export const LineCreationDialogTab = {
  * @param onCreateLine callback to customize line creation process
  * @param displayConnectivity to display connectivity section or not
  * @param voltageLevelOptionsPromise a promise that will bring available voltage levels
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 const LineCreationDialog = ({
@@ -98,6 +103,7 @@ const LineCreationDialog = ({
     onCreateLine = createLine,
     displayConnectivity = true,
     voltageLevelOptionsPromise,
+    isUpdate,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -365,6 +371,11 @@ const LineCreationDialog = ({
         </Box>
     );
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched: !isUpdate || editData,
+        delay: FORM_LOADING_DELAY,
+    });
+
     return (
         <FormProvider validationSchema={schema} {...methods}>
             <ModificationDialog
@@ -382,6 +393,8 @@ const LineCreationDialog = ({
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
+                open={open}
+                isDataFetching={isUpdate && !editData}
                 {...dialogProps}
             >
                 <Box
@@ -421,6 +434,7 @@ LineCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
 };
 
 export default LineCreationDialog;
