@@ -69,8 +69,12 @@ const ExportDialog = ({
 
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
     const metasAsArray = formatWithParameter?.parameters || [];
-    const [currentParameters, paramsComponent] =
-        useImportExportParams(metasAsArray);
+    const [currentParameters, paramsComponent] = useImportExportParams(
+        metasAsArray,
+        null,
+        null,
+        'standard'
+    );
 
     const handleExportClick = () => {
         if (selectedFormat) {
