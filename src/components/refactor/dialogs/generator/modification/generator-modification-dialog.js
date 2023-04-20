@@ -435,6 +435,7 @@ const GeneratorModificationDialog = ({
                 maxWidth={'md'}
                 titleId="ModifyGenerator"
                 open={open}
+                keepMounted={true}
                 isDataFetching={isUpdate && (!editData || !isDataFetched)}
                 {...dialogProps}
             >
