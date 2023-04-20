@@ -75,12 +75,14 @@ const schema = yup
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param isEditDatafetched check if editData est fetched
  */
 const ShuntCompensatorCreationDialog = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
+    isEditDatafetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -197,7 +199,7 @@ const ShuntCompensatorCreationDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || editData,
+        isDataFetched: !isUpdate || isEditDatafetched,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -211,7 +213,7 @@ const ShuntCompensatorCreationDialog = ({
                 titleId="CreateShuntCompensator"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={isUpdate && !editData}
+                isDataFetching={isUpdate && !isEditDatafetched}
                 {...dialogProps}
             >
                 <ShuntCompensatorCreationForm
@@ -239,6 +241,7 @@ ShuntCompensatorCreationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
+    isEditDatafetched: PropTypes.bool,
 };
 
 export default ShuntCompensatorCreationDialog;

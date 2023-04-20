@@ -135,6 +135,7 @@ const GeneratorCreationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
+    isEditDatafetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
@@ -333,7 +334,7 @@ const GeneratorCreationDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || editData,
+        isDataFetched: !isUpdate || isEditDatafetched,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -347,7 +348,7 @@ const GeneratorCreationDialog = ({
                 titleId="CreateGenerator"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={isUpdate && !editData}
+                isDataFetching={isUpdate && !isEditDatafetched}
                 {...dialogProps}
             >
                 <GeneratorCreationForm

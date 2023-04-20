@@ -39,6 +39,7 @@ const LoadScalingDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
+    isEditDatafetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
@@ -83,7 +84,7 @@ const LoadScalingDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || editData,
+        isDataFetched: !isUpdate || isEditDatafetched,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -96,7 +97,7 @@ const LoadScalingDialog = ({
                 maxWidth={'md'}
                 titleId="LoadScaling"
                 open={open}
-                isDataFetching={isUpdate && !editData}
+                isDataFetching={isUpdate && !isEditDatafetched}
                 {...dialogProps}
             >
                 <LoadScalingForm />

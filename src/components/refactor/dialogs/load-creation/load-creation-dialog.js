@@ -15,7 +15,7 @@ import {
     REACTIVE_POWER,
 } from 'components/refactor/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
@@ -72,10 +72,12 @@ const LoadCreationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
+    isEditDatafetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [isDataFetched, setIsDataFetched] = useState(true);
 
     const equipmentPath = 'loads';
 
@@ -116,6 +118,7 @@ const LoadCreationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
+            setIsDataFetched(false);
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -158,7 +161,8 @@ const LoadCreationDialog = ({
                             connectionPosition: load.connectionPosition,
                         }),
                     });
-                });
+                })
+                .finally(() => setIsDataFetched(true));
         },
         [studyUuid, currentNodeUuid, reset]
     );
@@ -210,7 +214,7 @@ const LoadCreationDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || editData,
+        isDataFetched: !isUpdate || (isEditDatafetched && isDataFetched),
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -224,7 +228,9 @@ const LoadCreationDialog = ({
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={isUpdate && !editData}
+                isDataFetching={
+                    isUpdate && (!isEditDatafetched || !isDataFetched)
+                }
                 {...dialogProps}
             >
                 <LoadCreationForm

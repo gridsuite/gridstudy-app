@@ -75,13 +75,14 @@ const GeneratorModificationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
+    isEditDatafetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
     const shouldEmptyFormOnGeneratorIdChangeRef = useRef(!editData);
-    const [isDataFetched, setIsDataFetched] = useState(false);
+    const [isDataFetched, setIsDataFetched] = useState(true);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const completeReactiveCapabilityCurvePointsData = (
@@ -382,10 +383,14 @@ const GeneratorModificationDialog = ({
                                 reactiveCapabilityCurveTable:
                                     previousReactiveCapabilityCurveTable,
                             });
-                            setIsDataFetched(true);
                         }
                     })
-                    .catch(() => setGeneratorToModify(null));
+                    .catch(() => {
+                        setGeneratorToModify(null);
+                    })
+                    .finally(() => {
+                        setIsDataFetched(true);
+                    });
             } else {
                 setValuesAndEmptyOthers();
                 setGeneratorToModify(null);
@@ -555,7 +560,7 @@ const GeneratorModificationDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || (editData && isDataFetched),
+        isDataFetched: !isUpdate || (isEditDatafetched && isDataFetched),
         delay: FORM_LOADING_DELAY,
     });
 
@@ -574,7 +579,9 @@ const GeneratorModificationDialog = ({
                 titleId="ModifyGenerator"
                 open={open}
                 keepMounted={true}
-                isDataFetching={isUpdate && (!editData || !isDataFetched)}
+                isDataFetching={
+                    isUpdate && (!isEditDatafetched || !isDataFetched)
+                }
                 {...dialogProps}
             >
                 <GeneratorModificationForm

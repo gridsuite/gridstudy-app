@@ -33,6 +33,7 @@ import LoadModificationForm from './load-modification-form';
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param isEditDatafetched check if editData est fetched
  */
 
 const schema = yup
@@ -52,11 +53,12 @@ const LoadModificationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
+    isEditDatafetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const [isDataFetched, setIsDataFetched] = useState(false);
+    const [isDataFetched, setIsDataFetched] = useState(true);
 
     const emptyFormData = useMemo(
         () => ({
@@ -125,7 +127,7 @@ const LoadModificationDialog = ({
     }, [reset, emptyFormData]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || (editData && isDataFetched),
+        isDataFetched: !isUpdate || (isEditDatafetched && isDataFetched),
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -143,7 +145,9 @@ const LoadModificationDialog = ({
                 titleId="ModifyLoad"
                 open={open}
                 keepMounted={true}
-                isDataFetching={isUpdate && (!editData || !isDataFetched)}
+                isDataFetching={
+                    isUpdate && !(isEditDatafetched && isDataFetched)
+                }
                 {...dialogProps}
             >
                 <LoadModificationForm
@@ -161,6 +165,7 @@ LoadModificationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
+    isEditDatafetched: PropTypes.bool,
 };
 
 export default LoadModificationDialog;

@@ -47,12 +47,14 @@ const schema = yup
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param isEditDatafetched check if editData est fetched
  */
 const DeleteVoltageLevelOnLineDialog = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
+    isEditDatafetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -67,7 +69,7 @@ const DeleteVoltageLevelOnLineDialog = ({
     const { reset } = methods;
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || editData,
+        isDataFetched: !isUpdate || isEditDatafetched,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -123,7 +125,7 @@ const DeleteVoltageLevelOnLineDialog = ({
                 aria-labelledby="dialog-delete-voltage-level-on-line"
                 titleId="DeleteVoltageLevelOnLine"
                 open={open}
-                isDataFetching={isUpdate && !editData}
+                isDataFetching={isUpdate && !isEditDatafetched}
                 {...dialogProps}
             >
                 <DeleteVoltageLevelOnLineForm
@@ -140,6 +142,7 @@ DeleteVoltageLevelOnLineDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
+    isEditDatafetched: PropTypes.bool,
 };
 
 export default DeleteVoltageLevelOnLineDialog;

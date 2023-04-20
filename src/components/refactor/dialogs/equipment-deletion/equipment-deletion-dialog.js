@@ -39,12 +39,14 @@ const emptyFormData = {
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param isEditDatafetched check if editData est fetched
  */
 const EquipmentDeletionDialog = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
+    isEditDatafetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -100,7 +102,7 @@ const EquipmentDeletionDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || editData,
+        isDataFetched: !isUpdate || isEditDatafetched,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -113,7 +115,7 @@ const EquipmentDeletionDialog = ({
                 aria-labelledby="dialog-equipment-deletion"
                 titleId="DeleteEquipment"
                 open={open}
-                isDataFetching={isUpdate && !editData}
+                isDataFetching={isUpdate && !isEditDatafetched}
                 {...dialogProps}
             >
                 <DeleteEquipmentForm
@@ -130,6 +132,7 @@ EquipmentDeletionDialog.propTypes = {
     currentNode: PropTypes.object,
     editData: PropTypes.object,
     isUpdate: PropTypes.bool,
+    isEditDatafetched: PropTypes.bool,
 };
 
 export default EquipmentDeletionDialog;

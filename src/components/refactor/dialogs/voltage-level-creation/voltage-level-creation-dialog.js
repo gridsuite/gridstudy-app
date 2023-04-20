@@ -53,6 +53,7 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
  * @param isUpdate check if edition form
  * @param onCreateVoltageLevel to create voltage level from other forms,
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param isEditDatafetched check if editData est fetched
  */
 
 const emptyFormData = {
@@ -110,6 +111,7 @@ const VoltageLevelCreationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
+    isEditDatafetched,
     onCreateVoltageLevel = createVoltageLevel,
     ...dialogProps
 }) => {
@@ -219,7 +221,7 @@ const VoltageLevelCreationDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || editData,
+        isDataFetched: !isUpdate || isEditDatafetched,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -234,7 +236,7 @@ const VoltageLevelCreationDialog = ({
                 titleId="CreateVoltageLevel"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={isUpdate && !editData}
+                isDataFetching={isUpdate && !isEditDatafetched}
                 {...dialogProps}
             >
                 <VoltageLevelCreationForm
@@ -259,6 +261,7 @@ VoltageLevelCreationDialog.propTypes = {
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
     onCreateVoltageLevel: PropTypes.func,
+    isEditDatafetched: PropTypes.bool,
 };
 
 export default VoltageLevelCreationDialog;

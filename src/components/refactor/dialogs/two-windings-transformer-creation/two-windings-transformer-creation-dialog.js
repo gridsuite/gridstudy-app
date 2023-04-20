@@ -119,6 +119,7 @@ import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/ha
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param isEditDatafetched check if editData est fetched
  */
 
 const emptyFormData = {
@@ -153,6 +154,7 @@ const TwoWindingsTransformerCreationDialog = ({
     studyUuid,
     currentNode,
     isUpdate,
+    isEditDatafetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -782,7 +784,7 @@ const TwoWindingsTransformerCreationDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || editData,
+        isDataFetched: !isUpdate || isEditDatafetched,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -804,7 +806,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     },
                 }}
                 open={open}
-                isDataFetching={isUpdate && !editData}
+                isDataFetching={isUpdate && !isEditDatafetched}
                 {...dialogProps}
             >
                 <Box
@@ -878,6 +880,7 @@ TwoWindingsTransformerCreationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
+    isEditDatafetched: PropTypes.bool,
 };
 
 export default TwoWindingsTransformerCreationDialog;

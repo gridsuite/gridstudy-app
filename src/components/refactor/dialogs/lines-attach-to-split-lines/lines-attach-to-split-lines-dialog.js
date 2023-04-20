@@ -71,12 +71,14 @@ const schema = yup
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param isEditDatafetched check if editData est fetched
  */
 const LinesAttachToSplitLinesDialog = ({
     editData,
     currentNode,
     studyUuid,
     isUpdate,
+    isEditDatafetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -139,7 +141,7 @@ const LinesAttachToSplitLinesDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || editData,
+        isDataFetched: !isUpdate || isEditDatafetched,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -152,7 +154,7 @@ const LinesAttachToSplitLinesDialog = ({
                 titleId="LinesAttachToSplitLines"
                 aria-labelledby="dialog-attach-lines-to-split-lines"
                 open={open}
-                isDataFetching={isUpdate && !editData}
+                isDataFetching={isUpdate && !isEditDatafetched}
                 {...dialogProps}
             >
                 <LinesAttachToSplitLinesForm
@@ -169,6 +171,7 @@ LinesAttachToSplitLinesDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
+    isEditDatafetched: PropTypes.bool,
 };
 
 export default LinesAttachToSplitLinesDialog;

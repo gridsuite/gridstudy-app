@@ -164,6 +164,7 @@ const NetworkModificationNodeEditor = () => {
 
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
+    const [isEditDatafetched, setIsEditDatafetched] = useState(false);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
@@ -205,6 +206,7 @@ const NetworkModificationNodeEditor = () => {
                 studyUuid={studyUuid}
                 editData={editData}
                 isUpdate={isUpdate}
+                isEditDatafetched={isEditDatafetched}
                 {...props}
             />
         );
@@ -561,6 +563,7 @@ const NetworkModificationNodeEditor = () => {
     const doEditModification = (modificationUuid, type) => {
         setIsUpdate(true);
         setEditDialogOpen(type);
+        setIsEditDatafetched(false);
         const modification = fetchNetworkModification(modificationUuid);
         modification
             .then((res) => {
@@ -573,12 +576,13 @@ const NetworkModificationNodeEditor = () => {
                 snackError({
                     messageTxt: error.message,
                 });
-            });
+            })
+            .finally(() => setIsEditDatafetched(true));
     };
 
     const onOpenDialog = (id, isUpdate) => {
         setEditDialogOpen(id);
-        setIsUpdate(isUpdate);
+        setIsUpdate(false);
     };
 
     const toggleSelectAllModifications = useCallback(() => {
