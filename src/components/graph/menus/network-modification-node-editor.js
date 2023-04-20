@@ -576,6 +576,11 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
+    const onOpenDialog = (id, isUpdate) => {
+        setEditDialogOpen(id);
+        setIsUpdate(isUpdate);
+    };
+
     const toggleSelectAllModifications = useCallback(() => {
         setToggleSelectAll((oldVal) => !oldVal);
     }, []);
@@ -832,8 +837,7 @@ const NetworkModificationNodeEditor = () => {
                 open={openNetworkModificationsDialog}
                 onClose={closeNetworkModificationConfiguration}
                 currentNodeUuid={currentNode?.id}
-                onOpenDialog={setEditDialogOpen}
-                setIsUpdate={setIsUpdate}
+                onOpenDialog={onOpenDialog}
                 dialogs={dialogs}
             />
             {editDialogOpen && renderDialog()}

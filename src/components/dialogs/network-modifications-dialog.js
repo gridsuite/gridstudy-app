@@ -76,8 +76,7 @@ const NetworkModificationDialog = ({
                                         variant="outlined"
                                         startIcon={values.icon}
                                         onClick={() => {
-                                            setIsUpdate(false);
-                                            onOpenDialog(id);
+                                            onOpenDialog(id, false);
                                         }}
                                     >
                                         <Typography align="left">

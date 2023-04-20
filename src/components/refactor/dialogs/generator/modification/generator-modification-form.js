@@ -14,14 +14,9 @@ import {
     MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    P,
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
-    Q_MAX_P,
-    Q_MIN_P,
     RATED_NOMINAL_POWER,
-    REACTIVE_CAPABILITY_CURVE_CHOICE,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
     STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
@@ -40,10 +35,9 @@ import {
     getEnergySourceLabel,
 } from '../../../../network/constants';
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import FloatInput from '../../../rhf-inputs/float-input';
 import {
-    fetchEquipmentInfos,
     fetchEquipmentsIds,
     fetchVoltageLevelsIdAndTopology,
 } from '../../../../../utils/rest-api';
@@ -51,32 +45,27 @@ import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
-import { useFormContext, useWatch } from 'react-hook-form';
-import {
-    getRowEmptyFormData,
-    REMOVE,
-} from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { useWatch } from 'react-hook-form';
 
 const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
+    onEquipmentIdChange,
     generatorToModify,
-    editData,
-    setValuesAndEmptyOthers,
-    setIsDataFetched,
-    setGeneratorToModify,
+    updatePreviousReactiveCapabilityCurveTable,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-    const shouldEmptyFormOnGeneratorIdChangeRef = useRef(!editData);
 
     const watchEquipmentId = useWatch({
         name: EQUIPMENT_ID,
     });
 
-    const { getValues, setValue } = useFormContext();
+    useEffect(() => {
+        onEquipmentIdChange(watchEquipmentId);
+    }, [watchEquipmentId, onEquipmentIdChange]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -98,146 +87,6 @@ const GeneratorModificationForm = ({
             });
         }
     }, [studyUuid, currentNodeUuid]);
-
-    const emptyFormAndFormatReactiveCapabilityCurveTable = useCallback(
-        (value, equipmentId) => {
-            //creating empty table depending on existing generator
-            const reactiveCapabilityCurvePoints =
-                value?.reactiveCapabilityCurvePoints
-                    ? value?.reactiveCapabilityCurvePoints.map((val) => ({
-                          [P]: null,
-                          [Q_MIN_P]: null,
-                          [Q_MAX_P]: null,
-                      }))
-                    : [getRowEmptyFormData(), getRowEmptyFormData()];
-            // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
-            setValuesAndEmptyOthers(
-                {
-                    [EQUIPMENT_ID]: equipmentId,
-                    [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                        reactiveCapabilityCurvePoints,
-                    [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                        value?.minMaxReactiveLimits != null
-                            ? 'MINMAX'
-                            : 'CURVE',
-                },
-                true
-            );
-        },
-        [setValuesAndEmptyOthers]
-    );
-
-    const insertEmptyRowAtSecondToLastIndex = (table) => {
-        table.splice(table.length - 1, 0, {
-            [P]: null,
-            [Q_MAX_P]: null,
-            [Q_MIN_P]: null,
-        });
-    };
-
-    const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
-        setGeneratorToModify((previousValue) => {
-            const newRccValues = previousValue?.reactiveCapabilityCurvePoints;
-            action === REMOVE
-                ? newRccValues.splice(index, 1)
-                : newRccValues.splice(index, 0, {
-                      [P]: null,
-                      [Q_MIN_P]: null,
-                      [Q_MAX_P]: null,
-                  });
-            return {
-                ...previousValue,
-                reactiveCapabilityCurvePoints: newRccValues,
-            };
-        });
-    };
-
-    const onEquipmentIdChange = useCallback(
-        (equipmentId) => {
-            if (equipmentId) {
-                setIsDataFetched(false);
-                fetchEquipmentInfos(
-                    studyUuid,
-                    currentNodeUuid,
-                    'generators',
-                    equipmentId,
-                    true
-                )
-                    .then((value) => {
-                        if (value) {
-                            // when editing modification form, first render should not trigger this reset
-                            // which would empty the form instead of displaying data of existing form
-                            const previousReactiveCapabilityCurveTable =
-                                value.reactiveCapabilityCurvePoints;
-                            if (
-                                shouldEmptyFormOnGeneratorIdChangeRef?.current
-                            ) {
-                                emptyFormAndFormatReactiveCapabilityCurveTable(
-                                    value,
-                                    equipmentId
-                                );
-                            } else {
-                                // on first render, we need to adjust the UI for the reactive capability curve table
-                                const currentReactiveCapabilityCurveTable =
-                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
-                                const sizeDiff =
-                                    previousReactiveCapabilityCurveTable.length -
-                                    currentReactiveCapabilityCurveTable.length;
-
-                                // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
-                                if (sizeDiff > 0) {
-                                    for (let i = 0; i < sizeDiff; i++) {
-                                        insertEmptyRowAtSecondToLastIndex(
-                                            currentReactiveCapabilityCurveTable
-                                        );
-                                    }
-                                    setValue(
-                                        REACTIVE_CAPABILITY_CURVE_TABLE,
-                                        currentReactiveCapabilityCurveTable
-                                    );
-                                } else if (sizeDiff < 0) {
-                                    // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
-                                    for (let i = 0; i > sizeDiff; i--) {
-                                        insertEmptyRowAtSecondToLastIndex(
-                                            previousReactiveCapabilityCurveTable
-                                        );
-                                    }
-                                }
-                            }
-                            shouldEmptyFormOnGeneratorIdChangeRef.current = true;
-                            setGeneratorToModify({
-                                ...value,
-                                reactiveCapabilityCurveTable:
-                                    previousReactiveCapabilityCurveTable,
-                            });
-                            setIsDataFetched(true);
-                        }
-                    })
-                    .catch(() => setGeneratorToModify(null));
-            } else {
-                setValuesAndEmptyOthers();
-                setGeneratorToModify(null);
-            }
-        },
-        [
-            setIsDataFetched,
-            studyUuid,
-            currentNodeUuid,
-            setGeneratorToModify,
-            emptyFormAndFormatReactiveCapabilityCurveTable,
-            getValues,
-            setValue,
-            setValuesAndEmptyOthers,
-        ]
-    );
-    useEffect(() => {
-        console.log('useEffect editData -------------', editData);
-        console.log(
-            'useEffect watchEquipmentId -------------',
-            watchEquipmentId
-        );
-        onEquipmentIdChange(watchEquipmentId);
-    }, [watchEquipmentId, onEquipmentIdChange, editData]);
 
     const energySourceLabelId = getEnergySourceLabel(
         generatorToModify?.energySource
