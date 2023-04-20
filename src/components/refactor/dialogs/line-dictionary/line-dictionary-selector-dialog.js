@@ -42,12 +42,19 @@ const LineDictionarySelectorDialog = (props) => {
     const methods = useForm({
         defaultValues: emptyFormData,
     });
-    const { setValue } = methods;
+    const { setValue, reset } = methods;
 
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
     const handleSubmit = useCallback(
         (formData) => onSelectLine && onSelectLine(formData[SELECTED]),
         [onSelectLine]
+    );
+    const handleTabChange = useCallback(
+        (newValue) => {
+            reset({ [SELECTED]: null });
+            setTabIndex(newValue);
+        },
+        [reset]
     );
     const onSelectionChanged = useCallback(() => {
         const selectedRow = gridRef.current.api.getSelectedRows();
@@ -152,7 +159,7 @@ const LineDictionarySelectorDialog = (props) => {
                 <Tabs
                     value={tabIndex}
                     variant="scrollable"
-                    onChange={(event, newValue) => setTabIndex(newValue)}
+                    onChange={(event, newValue) => handleTabChange(newValue)}
                 >
                     <Tab label={<FormattedMessage id="dictionary.aerial" />} />
                     <Tab
