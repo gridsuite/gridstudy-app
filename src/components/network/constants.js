@@ -8,6 +8,7 @@
 export const SUBSTATION_RADIUS = 500;
 export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
+export const MAX_NUMBER_OF_IMPACTED_SUBSTATIONS = 500;
 
 // Relevant LoadType Powsybl enum values
 export const LOAD_TYPES = [
