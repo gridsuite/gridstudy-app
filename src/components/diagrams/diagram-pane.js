@@ -1062,10 +1062,10 @@ export function DiagramPane({
                         >
                             {
                                 /*
-                We put a space (a separator) before the first right aligned diagram.
-                This space takes all the remaining space on screen and "pushes" the right aligned
-                diagrams to the right of the screen.
-                */
+                                We put a space (a separator) before the first right aligned diagram.
+                                This space takes all the remaining space on screen and "pushes" the right aligned
+                                diagrams to the right of the screen.
+                                */
                                 array[index]?.align === 'right' &&
                                     (index === 0 ||
                                         array[index - 1]?.align === 'left') && (
