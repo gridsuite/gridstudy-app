@@ -1338,16 +1338,6 @@ export function updateDynamicSimulationProvider(studyUuid, newProvider) {
     });
 }
 
-const CURVES_KEY = 'CURVES_KEY';
-const curvesStorage = {
-    getCurves: function () {
-        return JSON.parse(localStorage.getItem(CURVES_KEY));
-    },
-    updateCurves: function (curves) {
-        localStorage.setItem(CURVES_KEY, JSON.stringify(curves));
-    },
-};
-
 export function fetchDynamicSimulationParameters(studyUuid) {
     console.info(
         `Fetching dynamic simulation parameters on '${studyUuid}' ...`
@@ -1359,27 +1349,17 @@ export function fetchDynamicSimulationParameters(studyUuid) {
 
     const mappingsPromise = getDynamicMappings(studyUuid);
 
-    // fake API get curves
-    //const curvesPromise = Promise.resolve(curvesStorage.getCurves());
-
-    return Promise.all([
-        parametersPromise,
-        mappingsPromise,
-        //curvesPromise,
-    ]).then(([parameters, mappings]) => ({
-        ...parameters,
-        mappings,
-    }));
+    return Promise.all([parametersPromise, mappingsPromise]).then(
+        ([parameters, mappings]) => ({
+            ...parameters,
+            mappings,
+        })
+    );
 }
 export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
-
-    // Fake API post curves
-    //console.log('API curves to post', newParams.curves);
-    //curvesStorage.updateCurves(newParams.curves);
-    //console.log('API curves are added');
 
     return backendFetch(url, {
         method: 'POST',

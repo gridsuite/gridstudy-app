@@ -75,27 +75,24 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
     const theme = useTheme();
     const gridRef = useRef();
 
-    const containerStyle = useMemo(
-        () => ({ width: '100%', height: '100%' }),
-        []
-    );
-    const gridStyle = useMemo(() => ({ height: '300px', width: '100%' }), []);
-    const [columnDefs, setColumnDefs] = useState([
-        {
-            field: 'equipmentName',
-            minWidth: '80',
-            headerName: intl.formatMessage({
-                id: 'DynamicSimulationCurveDynamicModelHeader',
-            }),
-        },
-        {
-            field: 'variableName',
-            minWidth: '80',
-            headerName: intl.formatMessage({
-                id: 'DynamicSimulationCurveVariableHeader',
-            }),
-        },
-    ]);
+    const columnDefs = useMemo(() => {
+        return [
+            {
+                field: 'equipmentName',
+                minWidth: '80',
+                headerName: intl.formatMessage({
+                    id: 'DynamicSimulationCurveDynamicModelHeader',
+                }),
+            },
+            {
+                field: 'variableName',
+                minWidth: '80',
+                headerName: intl.formatMessage({
+                    id: 'DynamicSimulationCurveVariableHeader',
+                }),
+            },
+        ];
+    }, [intl]);
     const defaultColDef = useMemo(() => {
         return {
             flex: 1,

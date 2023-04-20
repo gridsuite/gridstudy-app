@@ -31,15 +31,6 @@ export const EQUIPMENT_TYPES = {
     [ALL_EQUIPMENT_TYPES.LINE.type]: ALL_EQUIPMENT_TYPES.LINE,
 };
 
-const REGIONS = {
-    GERMANY: 'Germany',
-    ENGLAND: 'England',
-    PARIS: 'Paris',
-    NANTES: 'Nantes',
-    LYON: 'Lyon',
-    SUISSE: 'Suisse',
-};
-
 const TENSION_UNIT = 'kV';
 
 const useStyles = makeStyles((theme) => ({
@@ -339,18 +330,20 @@ const EquipmentFilter = forwardRef(
         // grid configuration
         const [equipmentRowData, setEquipmentRowData] = useState([]);
         const [selectedRowsLength, setSelectedRowsLength] = useState(0);
-        const [columnDefs, setColumnDefs] = useState([
-            {
-                field: 'name',
-                checkboxSelection: true,
-                headerCheckboxSelection: true,
-                headerCheckboxSelectionFilteredOnly: true,
-                minWidth: '80',
-                headerName: intl.formatMessage({
-                    id: 'DynamicSimulationCurveDynamicModelHeader',
-                }),
-            },
-        ]);
+        const columnDefs = useMemo(() => {
+            return [
+                {
+                    field: 'name',
+                    checkboxSelection: true,
+                    headerCheckboxSelection: true,
+                    headerCheckboxSelectionFilteredOnly: true,
+                    minWidth: '80',
+                    headerName: intl.formatMessage({
+                        id: 'DynamicSimulationCurveDynamicModelHeader',
+                    }),
+                },
+            ];
+        }, [intl]);
         const defaultColDef = useMemo(() => {
             return {
                 flex: 1,
