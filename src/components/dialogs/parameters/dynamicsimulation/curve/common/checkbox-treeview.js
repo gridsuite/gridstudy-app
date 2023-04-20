@@ -79,7 +79,10 @@ const CheckboxTreeview = forwardRef(
                         (elem) => elem.id === child.parentId
                     );
 
-                    if (!parent) return; // at root item
+                    if (!parent) {
+                        // at root item
+                        return;
+                    }
 
                     const childrenIds = items
                         .filter((elem) => elem.parentId === parent.id)
