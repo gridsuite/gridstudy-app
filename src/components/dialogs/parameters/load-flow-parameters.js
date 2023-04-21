@@ -232,11 +232,11 @@ const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     );
 };
 
-const AdvancedParameterButton = ({ showOpenIcon, label, callback }) => {
+const SubgroupParametersButton = ({ showOpenIcon, label, onClick }) => {
     const classes = useStyles();
     return (
         <>
-            <Grid item xs={12} className={classes.advancedParameterButton}>
+            <Grid item xs={12} className={classes.subgroupParametersButton}>
                 <Button
                     startIcon={<SettingsIcon />}
                     endIcon={
@@ -244,7 +244,7 @@ const AdvancedParameterButton = ({ showOpenIcon, label, callback }) => {
                             <CheckIcon style={{ color: 'green' }} />
                         ) : undefined
                     }
-                    onClick={callback}
+                    onClick={onClick}
                 >
                     <FormattedMessage id={label} />
                 </Button>
@@ -253,12 +253,9 @@ const AdvancedParameterButton = ({ showOpenIcon, label, callback }) => {
     );
 };
 
-const AdvancedLoadFlowParameters = ({
-    lfParams,
-    commitLFParameter,
-    showAdvancedLfParams,
-    setShowAdvancedLfParams,
-}) => {
+const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
+    const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
+
     const defParams = {
         voltageInitMode: {
             type: TYPES.enum,
@@ -301,10 +298,10 @@ const AdvancedLoadFlowParameters = ({
 
     return (
         <>
-            <AdvancedParameterButton
+            <SubgroupParametersButton
                 showOpenIcon={showAdvancedLfParams}
                 label={'showAdvancedParameters'}
-                callback={() => setShowAdvancedLfParams(!showAdvancedLfParams)}
+                onClick={() => setShowAdvancedLfParams(!showAdvancedLfParams)}
             />
             {showAdvancedLfParams &&
                 makeComponentsFor(
@@ -320,13 +317,13 @@ const AdvancedLoadFlowParameters = ({
 const SpecificLoadFlowParameters = ({
     lfParams,
     commitLFParameter,
-    showSpecificLfParams,
-    setShowSpecificLfParams,
     currentProvider,
     specificParamsDescription,
 }) => {
     const classes = useStyles();
     const [currentParameters, setCurrentParameters] = useState(null);
+    const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
+
     const defaultValues = useMemo(() => {
         return extractDefaultMap(specificParamsDescription);
     }, [specificParamsDescription]);
@@ -383,24 +380,17 @@ const SpecificLoadFlowParameters = ({
 
     return (
         <>
-            <AdvancedParameterButton
+            <SubgroupParametersButton
                 showOpenIcon={showSpecificLfParams}
                 label={'showSpecificParameters'}
-                callback={() => setShowSpecificLfParams(!showSpecificLfParams)}
+                onClick={() => setShowSpecificLfParams(!showSpecificLfParams)}
             />
             {showSpecificLfParams && paramsComponent}
         </>
     );
 };
 
-export const LoadFlowParameters = ({
-    hideParameters,
-    parametersBackend,
-    showAdvancedLfParams,
-    showSpecificLfParams,
-    setShowAdvancedLfParams,
-    setShowSpecificLfParams,
-}) => {
+export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
     const classes = useStyles();
 
     const [
@@ -432,20 +422,11 @@ export const LoadFlowParameters = ({
             <SpecificLoadFlowParameters
                 lfParams={params || {}}
                 commitLFParameter={updateParameters}
-                showSpecificLfParams={showSpecificLfParams}
-                setShowSpecificLfParams={setShowSpecificLfParams}
                 currentProvider={provider}
                 specificParamsDescription={specificParamsDescription}
             />
         );
-    }, [
-        showSpecificLfParams,
-        params,
-        provider,
-        specificParamsDescription,
-        updateParameters,
-        setShowSpecificLfParams,
-    ]);
+    }, [params, provider, specificParamsDescription, updateParameters]);
 
     return (
         <>
@@ -471,8 +452,6 @@ export const LoadFlowParameters = ({
                 <AdvancedLoadFlowParameters
                     lfParams={params || {}}
                     commitLFParameter={updateParameters}
-                    showAdvancedLfParams={showAdvancedLfParams}
-                    setShowAdvancedLfParams={setShowAdvancedLfParams}
                 />
                 {specificLoadFlowParameters}
             </Grid>
