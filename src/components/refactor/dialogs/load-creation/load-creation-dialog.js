@@ -72,7 +72,7 @@ const LoadCreationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
-    isEditDatafetched,
+    isEditDataFetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -214,7 +214,7 @@ const LoadCreationDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || (isEditDatafetched && isDataFetched),
+        isDataFetched: !isUpdate || (isEditDataFetched && isDataFetched),
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -229,7 +229,7 @@ const LoadCreationDialog = ({
                 searchCopy={searchCopy}
                 open={open}
                 isDataFetching={
-                    isUpdate && (!isEditDatafetched || !isDataFetched)
+                    isUpdate && (!isEditDataFetched || !isDataFetched)
                 }
                 {...dialogProps}
             >

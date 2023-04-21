@@ -53,7 +53,7 @@ const SubstationCreationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
-    isEditDatafetched,
+    isEditDataFetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -125,7 +125,7 @@ const SubstationCreationDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDatafetched,
+        isDataFetched: !isUpdate || isEditDataFetched,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -140,7 +140,7 @@ const SubstationCreationDialog = ({
                 titleId="CreateSubstation"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={isUpdate && !isEditDatafetched}
+                isDataFetching={isUpdate && !isEditDataFetched}
                 {...dialogProps}
             >
                 <SubstationCreationForm />

@@ -84,7 +84,7 @@ const LineAttachToVoltageLevelDialog = ({
     currentNode,
     editData,
     isUpdate,
-    isEditDatafetched,
+    isEditDataFetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -300,7 +300,7 @@ const LineAttachToVoltageLevelDialog = ({
     }, [getValues, newVoltageLevel]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDatafetched,
+        isDataFetched: !isUpdate || isEditDataFetched,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -313,7 +313,7 @@ const LineAttachToVoltageLevelDialog = ({
                 aria-labelledby="dialog-attach-voltage-level-to-a-line"
                 titleId="LineAttachToVoltageLevel"
                 open={open}
-                isDataFetching={isUpdate && !isEditDatafetched}
+                isDataFetching={isUpdate && !isEditDataFetched}
                 {...dialogProps}
             >
                 <LineAttachToVoltageLevelForm
@@ -334,7 +334,7 @@ LineAttachToVoltageLevelDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
-    isEditDatafetched: PropTypes.bool,
+    isEditDataFetched: PropTypes.bool,
 };
 
 export default LineAttachToVoltageLevelDialog;

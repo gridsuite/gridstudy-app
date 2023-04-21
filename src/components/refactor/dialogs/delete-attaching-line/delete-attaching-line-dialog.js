@@ -50,14 +50,14 @@ const schema = yup
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param isEditDatafetched check if editData est fetched
+ * @param isEditDataFetched check if editData is fetched
  */
 const DeleteAttachingLineDialog = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
-    isEditDatafetched,
+    isEditDataFetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -72,7 +72,7 @@ const DeleteAttachingLineDialog = ({
     const { reset } = methods;
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDatafetched,
+        isDataFetched: !isUpdate || isEditDataFetched,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -130,7 +130,7 @@ const DeleteAttachingLineDialog = ({
                 aria-labelledby="dialog-delete-attaching-line"
                 titleId="DeleteAttachingLine"
                 open={open}
-                isDataFetching={isUpdate && !isEditDatafetched}
+                isDataFetching={isUpdate && !isEditDataFetched}
                 {...dialogProps}
             >
                 <DeleteAttachingLineForm
@@ -147,7 +147,7 @@ DeleteAttachingLineDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
-    isEditDatafetched: PropTypes.bool,
+    isEditDataFetched: PropTypes.bool,
 };
 
 export default DeleteAttachingLineDialog;

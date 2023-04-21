@@ -164,7 +164,7 @@ const NetworkModificationNodeEditor = () => {
 
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
-    const [isEditDatafetched, setIsEditDatafetched] = useState(false);
+    const [isEditDataFetched, setIsEditDataFetched] = useState(false);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
@@ -206,7 +206,7 @@ const NetworkModificationNodeEditor = () => {
                 studyUuid={studyUuid}
                 editData={editData}
                 isUpdate={isUpdate}
-                isEditDatafetched={isEditDatafetched}
+                isEditDataFetched={isEditDataFetched}
                 {...props}
             />
         );
@@ -563,7 +563,7 @@ const NetworkModificationNodeEditor = () => {
     const doEditModification = (modificationUuid, type) => {
         setIsUpdate(true);
         setEditDialogOpen(type);
-        setIsEditDatafetched(false);
+        setIsEditDataFetched(false);
         const modification = fetchNetworkModification(modificationUuid);
         modification
             .then((res) => {
@@ -577,7 +577,7 @@ const NetworkModificationNodeEditor = () => {
                     messageTxt: error.message,
                 });
             })
-            .finally(() => setIsEditDatafetched(true));
+            .finally(() => setIsEditDataFetched(true));
     };
 
     const onOpenDialog = (id) => {

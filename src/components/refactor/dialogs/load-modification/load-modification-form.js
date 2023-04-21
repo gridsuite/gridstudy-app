@@ -63,12 +63,13 @@ const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
                 'loads',
                 loadId,
                 true
-            ).then((value) => {
-                if (value) {
-                    setLoadInfos(value);
-                    setIsDataFetched(true);
-                }
-            });
+            )
+                .then((value) => {
+                    if (value) {
+                        setLoadInfos(value);
+                    }
+                })
+                .finally(() => setIsDataFetched(true));
         } else {
             setLoadInfos(null);
         }

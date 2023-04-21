@@ -69,14 +69,14 @@ const schema = yup
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param isEditDatafetched check if editData est fetched
+ * @param isEditDataFetched check if editData is fetched
  */
 const LineSplitWithVoltageLevelDialog = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
-    isEditDatafetched,
+    isEditDataFetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -225,7 +225,7 @@ const LineSplitWithVoltageLevelDialog = ({
     }, [getValues, newVoltageLevel]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDatafetched,
+        isDataFetched: !isUpdate || isEditDataFetched,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -238,7 +238,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 aria-labelledby="dialog-create-voltage-level-amidst-a-line"
                 titleId="LineSplitWithVoltageLevel"
                 open={open}
-                isDataFetching={isUpdate && !isEditDatafetched}
+                isDataFetching={isUpdate && !isEditDataFetched}
                 {...dialogProps}
             >
                 <LineSplitWithVoltageLevelForm
@@ -258,7 +258,7 @@ LineSplitWithVoltageLevelDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
-    isEditDatafetched: PropTypes.bool,
+    isEditDataFetched: PropTypes.bool,
 };
 
 export default LineSplitWithVoltageLevelDialog;

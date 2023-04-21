@@ -39,7 +39,7 @@ const GeneratorScalingDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
-    isEditDatafetched,
+    isEditDataFetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
@@ -84,7 +84,7 @@ const GeneratorScalingDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDatafetched,
+        isDataFetched: !isUpdate || isEditDataFetched,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -98,7 +98,7 @@ const GeneratorScalingDialog = ({
                 maxWidth={'md'}
                 titleId="GeneratorScaling"
                 open={open}
-                isDataFetching={isUpdate && !isEditDatafetched}
+                isDataFetching={isUpdate && !isEditDataFetched}
                 {...dialogProps}
             >
                 <GeneratorScalingForm />

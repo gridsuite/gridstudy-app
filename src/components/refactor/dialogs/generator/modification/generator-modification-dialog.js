@@ -75,14 +75,14 @@ const GeneratorModificationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
-    isEditDatafetched,
+    isEditDataFetched,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
     const shouldEmptyFormOnGeneratorIdChangeRef = useRef(!editData);
-    const [isDataFetched, setIsDataFetched] = useState(true);
+    const [isDataFetched, setIsDataFetched] = useState(false);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const completeReactiveCapabilityCurvePointsData = (
@@ -261,6 +261,10 @@ const GeneratorModificationDialog = ({
         }
     }, [editData, setValue]);
 
+    useEffect(() => {
+        setIsDataFetched(isEditDataFetched);
+    }, [isEditDataFetched]);
+
     //this method empties the form, and let us pass custom data that we want to set
     const setValuesAndEmptyOthers = useCallback(
         (customData = {}, keepDefaultValues = false) => {
@@ -384,13 +388,12 @@ const GeneratorModificationDialog = ({
                                     previousReactiveCapabilityCurveTable,
                             });
                         }
+                        setIsDataFetched(true);
                     })
                     .catch(() => {
                         setGeneratorToModify(null);
                     })
-                    .finally(() => {
-                        setIsDataFetched(true);
-                    });
+                    .finally(() => {});
             } else {
                 setValuesAndEmptyOthers();
                 setGeneratorToModify(null);
@@ -560,7 +563,7 @@ const GeneratorModificationDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || (isEditDatafetched && isDataFetched),
+        isDataFetched: !isUpdate || (isEditDataFetched && isDataFetched),
         delay: FORM_LOADING_DELAY,
     });
 
@@ -580,7 +583,7 @@ const GeneratorModificationDialog = ({
                 open={open}
                 keepMounted={true}
                 isDataFetching={
-                    isUpdate && (!isEditDatafetched || !isDataFetched)
+                    isUpdate && (!isEditDataFetched || !isDataFetched)
                 }
                 {...dialogProps}
             >
