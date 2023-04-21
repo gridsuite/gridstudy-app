@@ -140,6 +140,13 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         return rows;
     }
 
+    const defaultColDef = useMemo(
+        () => ({
+            suppressMovable: true,
+        }),
+        []
+    );
+
     const renderResult = () => {
         const rows = flattenResult(result);
 
@@ -150,6 +157,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     rowData={rows}
                     columnDefs={columns}
                     getRowStyle={getRowStyle}
+                    defaultColDef={defaultColDef}
                 />
             )
         );
