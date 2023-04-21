@@ -197,9 +197,9 @@ export const ModificationListItem = ({
                             !isDragging &&
                             isEditableModification(modif) && (
                                 <IconButton
-                                    onClick={() => {
-                                        onEdit(modif.uuid, modif?.type);
-                                    }}
+                                    onClick={() =>
+                                        onEdit(modif.uuid, modif?.type)
+                                    }
                                     size={'small'}
                                     className={classes.iconEdit}
                                 >
