@@ -733,7 +733,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const renderPaneSubtitle = () => {
-        if (isLoading()) {
+        if (isLoading() && messageId) {
             return renderNetworkModificationsListTitleLoading();
         }
         if (launchLoader) {
