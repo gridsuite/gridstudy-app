@@ -350,7 +350,6 @@ export function DiagramPane({
     showInSpreadsheet,
     loadFlowStatus,
     currentNode,
-    disabled,
     visible,
 }) {
     const intl = useIntl();
@@ -1033,16 +1032,18 @@ export function DiagramPane({
      * RENDER
      */
 
-    const handleWarningToDisplay = (diagramView) => {
-        // First, we check if the node is built (the highest priority), so when disabled is true
-        if (disabled) {
-            return 'InvalidNode';
-        }
-        if (diagramView?.error) {
-            return diagramView.error;
-        }
-        return undefined;
-    };
+    const handleWarningToDisplay = useCallback(
+        (diagramView) => {
+            if (!isNodeBuilt(currentNode)) {
+                return 'InvalidNode';
+            }
+            if (diagramView?.error) {
+                return diagramView.error;
+            }
+            return undefined;
+        },
+        [currentNode]
+    );
 
     return (
         <AutoSizer>
@@ -1179,6 +1180,5 @@ DiagramPane.propTypes = {
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
     loadFlowStatus: PropTypes.any,
-    disabled: PropTypes.bool,
     visible: PropTypes.bool,
 };

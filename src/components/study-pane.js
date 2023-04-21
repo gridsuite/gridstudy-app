@@ -307,7 +307,6 @@ const StudyPane = ({
                                     loadFlowInfos?.loadFlowStatus
                                 )}
                                 currentNode={currentNode}
-                                disabled={disabled}
                                 visible={
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
