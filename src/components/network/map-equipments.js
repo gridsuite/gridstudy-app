@@ -44,7 +44,9 @@ export default class MapEquipments {
     initEquipments(studyUuid, currentNodeUuid) {
         fetchMapSubstations(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
-                this.dispatch(mapEquipmentsCreated(this, undefined, val));
+                this.dispatch(
+                    mapEquipmentsCreated(this, undefined, val, undefined)
+                );
             })
             .catch((error) => {
                 console.error(error.message);
@@ -58,7 +60,9 @@ export default class MapEquipments {
             });
         fetchMapLines(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
-                this.dispatch(mapEquipmentsCreated(this, val, undefined));
+                this.dispatch(
+                    mapEquipmentsCreated(this, val, undefined, undefined)
+                );
             })
             .catch((error) => {
                 console.error(error.message);
@@ -124,6 +128,11 @@ export default class MapEquipments {
             currentNode?.id,
             substationsIdsToFetch
         );
+        const updatedHvdcLines = fetchMapHvdcLines(
+            studyUuid,
+            currentNode?.id,
+            substationsIdsToFetch
+        );
         updatedSubstations.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
@@ -144,7 +153,17 @@ export default class MapEquipments {
                 );
             }
         });
-        return [updatedSubstations, updatedLines];
+        updatedHvdcLines.catch((error) => {
+            console.error(error.message);
+            if (this.errHandler) {
+                this.errHandler(
+                    this.intlRef.current.formatMessage({
+                        id: 'MapEquipmentsLoadError',
+                    })
+                );
+            }
+        });
+        return [updatedSubstations, updatedLines, updatedHvdcLines];
     }
 
     completeSubstationsInfos(equipementsToIndex) {
@@ -261,10 +280,22 @@ export default class MapEquipments {
         this.completeLinesInfos(fullReload ? [] : lines);
     }
 
+    updateHvdcLines(hvdcLines, fullReload) {
+        if (fullReload) {
+            this.hvdcLines = [];
+        }
+        this.hvdcLines = this.updateEquipments(
+            this.hvdcLines,
+            hvdcLines,
+            equipments.hvdcLines
+        );
+        this.completeHvdcLinesInfos(fullReload ? [] : hvdcLines);
+    }
+
     completeHvdcLinesInfos(equipementsToIndex) {
         if (equipementsToIndex?.length > 0) {
             equipementsToIndex.forEach((hvdcLine) => {
-                this.linesById?.set(hvdcLine.id, hvdcLine);
+                this.hvdcLinesById?.set(hvdcLine.id, hvdcLine);
             });
         } else {
             this.hvdcLinesById = this.hvdcLines.reduce(

@@ -2961,7 +2961,7 @@ export function fetchMapHvdcLines(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'lines',
+        'hvdc-lines',
         'map-hvdc-lines',
         inUpstreamBuiltParentNode
     );

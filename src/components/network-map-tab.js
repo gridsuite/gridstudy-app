@@ -588,7 +588,8 @@ export const NetworkMapTab = ({
             dispatch(resetMapReloaded());
 
             const isFullReload = updatedSubstationsToSend ? false : true;
-            const [updatedSubstations, updatedLines] =
+            const updatedLinesArray = [];
+            const [updatedSubstations, updatedLines, updatedHvdcLines] =
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
                     currentNode,
@@ -617,13 +618,28 @@ export const NetworkMapTab = ({
                         mapEquipments.checkAndGetValues(values),
                         isFullReload
                     );
-                    setUpdatedLines(values);
+                    updatedLinesArray.push(values);
                 }
             });
+            updatedHvdcLines.then((values) => {
+                if (
+                    currentNodeAtReloadCalling?.id ===
+                    currentNodeRef.current?.id
+                ) {
+                    mapEquipments.updateHvdcLines(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                    updatedLinesArray.push(values);
+                }
+            });
+            setUpdatedLines(updatedLinesArray);
 
-            return Promise.all([updatedSubstations, updatedLines]).finally(() =>
-                setWaitingLoadData(false)
-            );
+            return Promise.all([
+                updatedSubstations,
+                updatedLines,
+                updatedHvdcLines,
+            ]).finally(() => setWaitingLoadData(false));
         },
         [
             currentNode,
