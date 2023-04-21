@@ -419,7 +419,7 @@
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
     "buildNode": "Build node",
-    "createNetworkModificationNode": "Create a node in a new branch",
+    "createNetworkModificationNode": "Create a node",
     "removeNode": "Remove node",
     "exportCaseOnNode": "Export case",
     "nodeNameAlreadyUsed": "This name is already used",
@@ -766,7 +766,7 @@
     "cancelCutNetworkModificationNode": "Cancel cut node",
     "pasteNetworkModificationNodeAbove": "Paste node above in the current branch",
     "pasteNetworkModificationNodeBelow": "Paste node below in the current branch",
-    "pasteNetworkModificationNodeOnNewBranch": "Paste node in a new branch",
+    "pasteNetworkModificationNodeOnNewBranch": "Paste node",
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
