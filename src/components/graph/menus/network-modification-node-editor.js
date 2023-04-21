@@ -580,7 +580,7 @@ const NetworkModificationNodeEditor = () => {
             .finally(() => setIsEditDatafetched(true));
     };
 
-    const onOpenDialog = (id, isUpdate) => {
+    const onOpenDialog = (id) => {
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
