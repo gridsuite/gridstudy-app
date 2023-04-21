@@ -68,7 +68,7 @@ const emptyFormData = {
     [SWITCH_KINDS]: [],
 };
 
-const schema = yup.object().shape({
+const formSchema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().required(),
     [EQUIPMENT_NAME]: yup.string().nullable(),
     [SUBSTATION_ID]: yup.string().nullable().required(),
@@ -113,12 +113,12 @@ const VoltageLevelCreationDialog = ({
     const { snackError, snackWarning } = useSnackMessage();
     const equipmentPath = 'voltage-levels';
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
     const intl = useIntl();
 
     const fromExternalDataToFormValues = useCallback(
@@ -215,7 +215,7 @@ const VoltageLevelCreationDialog = ({
     }, [reset]);
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

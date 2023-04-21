@@ -32,7 +32,7 @@ const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [COUNTRY]: null,
 };
-const schema = yup.object().shape({
+const formSchema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().required(),
     [EQUIPMENT_NAME]: yup.string(),
     [COUNTRY]: yup.string().nullable(),
@@ -57,12 +57,12 @@ const SubstationCreationDialog = ({
 
     const equipmentPath = 'substations';
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     const fromSearchCopyToFormValues = (substation) => {
         reset(
@@ -120,7 +120,7 @@ const SubstationCreationDialog = ({
         [currentNodeUuid, editData, snackError, studyUuid]
     );
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

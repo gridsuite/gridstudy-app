@@ -28,7 +28,7 @@ const emptyFormData = {
     [REPLACING_LINE_1_NAME]: '',
 };
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape({
         [LINE_TO_ATTACH_TO_1_ID]: yup.string().nullable().required(),
@@ -55,12 +55,12 @@ const DeleteVoltageLevelOnLineDialog = ({
 
     const { snackError } = useSnackMessage();
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
@@ -105,7 +105,7 @@ const DeleteVoltageLevelOnLineDialog = ({
     }, [reset]);
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

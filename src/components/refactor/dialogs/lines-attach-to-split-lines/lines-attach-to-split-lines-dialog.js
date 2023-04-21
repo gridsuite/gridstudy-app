@@ -48,7 +48,7 @@ const emptyFormData = {
     ...getConnectivityWithoutPositionEmptyFormData(),
 };
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape({
         [LINE_TO_ATTACH_TO_1_ID]: yup.string().nullable().required(),
@@ -78,12 +78,12 @@ const LinesAttachToSplitLinesDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -135,7 +135,7 @@ const LinesAttachToSplitLinesDialog = ({
     }, [reset]);
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

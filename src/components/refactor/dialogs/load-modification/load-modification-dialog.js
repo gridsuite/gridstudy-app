@@ -32,7 +32,7 @@ import LoadModificationForm from './load-modification-form';
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string().nullable().required(),
@@ -64,12 +64,12 @@ const LoadModificationDialog = ({
         [defaultIdValue]
     );
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
@@ -121,9 +121,9 @@ const LoadModificationDialog = ({
 
     return (
         <FormProvider
-            validationSchema={schema}
+            validationSchema={formSchema}
             removeOptional={true}
-            {...methods}
+            {...formMethods}
         >
             <ModificationDialog
                 fullWidth

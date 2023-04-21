@@ -22,7 +22,7 @@ const emptyFormData = {
     [VARIATIONS]: [],
 };
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape({
         [VARIATION_TYPE]: yup.string().required(),
@@ -39,12 +39,12 @@ const LoadScalingDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -78,7 +78,7 @@ const LoadScalingDialog = ({
     );
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
