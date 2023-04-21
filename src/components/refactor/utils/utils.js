@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getIn } from 'yup/lib/util/reach';
+import { getIn } from 'yup';
 import { toNumber } from '../../util/validation-functions';
 
 export const isFieldRequired = (fieldName, schema, values) => {
