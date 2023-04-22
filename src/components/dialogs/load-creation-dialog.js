@@ -80,6 +80,7 @@ const LoadCreationDialog = ({
         equipmentPath,
         toFormValues,
         setFormValues,
+        elementType: EQUIPMENT_TYPES.LOAD.type,
     });
 
     useEffect(() => {

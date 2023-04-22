@@ -151,10 +151,9 @@ const VoltageLevelCreationDialog = ({
                     [SWITCH_KIND]: switchKind,
                 })),
             });
-            if (voltageLevel.isPartiallyCopied) {
+            if (voltageLevel.isRetrievedTopology === false) {
                 snackWarning({
-                    messageTxt:
-                        'Copy was partially made, some fields were not copied',
+                    messageId: 'TopologyNotRetrieved',
                 });
             }
         },
@@ -167,6 +166,7 @@ const VoltageLevelCreationDialog = ({
         equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromExternalDataToFormValues,
+        elementType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
     });
 
     useEffect(() => {

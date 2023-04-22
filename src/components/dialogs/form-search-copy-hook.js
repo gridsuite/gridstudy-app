@@ -7,8 +7,12 @@
 
 import { useIntl } from 'react-intl';
 import { useState } from 'react';
-import { fetchEquipmentInfos } from '../../utils/rest-api';
+import {
+    fetchEquipmentInfos,
+    fetchNetworkElementInfos,
+} from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { EQUIPMENT_INFOS_TYPES } from '../util/equipment-types';
 
 export const useFormSearchCopy = ({
     studyUuid,
@@ -16,6 +20,7 @@ export const useFormSearchCopy = ({
     equipmentPath,
     toFormValues,
     setFormValues,
+    elementType,
 }) => {
     const intl = useIntl();
 
@@ -25,13 +30,24 @@ export const useFormSearchCopy = ({
 
     const handleSelectionChange = (element) => {
         let msg;
-        return fetchEquipmentInfos(
-            studyUuid,
-            currentNodeUuid,
-            equipmentPath,
-            element.id,
-            true
-        )
+        // TODO Remove this test when all network elements types will be migrated (back end) with EQUIPMENT_INFOS_TYPES
+        const fetchElementPromise = elementType
+            ? fetchNetworkElementInfos(
+                  studyUuid,
+                  currentNodeUuid,
+                  elementType,
+                  EQUIPMENT_INFOS_TYPES.FORM.type,
+                  element.id,
+                  true
+              )
+            : fetchEquipmentInfos(
+                  studyUuid,
+                  currentNodeUuid,
+                  equipmentPath,
+                  element.id,
+                  true
+              );
+        return fetchElementPromise
             .then((response) => {
                 const equipmentFormValues = toFormValues(response);
                 setFormValues(equipmentFormValues);

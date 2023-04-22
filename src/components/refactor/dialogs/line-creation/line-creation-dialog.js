@@ -236,6 +236,7 @@ const LineCreationDialog = ({
         equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.LINE.type,
     });
 
     useEffect(() => {

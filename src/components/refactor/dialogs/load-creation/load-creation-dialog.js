@@ -17,7 +17,10 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
+import {
+    createLoad,
+    fetchNetworkElementInfos,
+} from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
@@ -33,7 +36,10 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../../util/equipment-types';
 
 /**
  * Dialog to create a load in the network
@@ -83,10 +89,11 @@ const LoadCreationDialog = ({
     const { reset } = methods;
 
     const fromSearchCopyToFormValues = (load) => {
-        fetchEquipmentInfos(
+        fetchNetworkElementInfos(
             studyUuid,
             currentNodeUuid,
-            'voltage-levels',
+            EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+            EQUIPMENT_INFOS_TYPES.FORM.type,
             load.voltageLevelId,
             true
         ).then((vlResult) => {
@@ -112,10 +119,11 @@ const LoadCreationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
-            fetchEquipmentInfos(
+            fetchNetworkElementInfos(
                 studyUuid,
                 currentNodeUuid,
-                'voltage-levels',
+                EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                EQUIPMENT_INFOS_TYPES.FORM.type,
                 load.voltageLevelId,
                 true
             )
@@ -165,6 +173,7 @@ const LoadCreationDialog = ({
         equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.LOAD.type,
     });
 
     useEffect(() => {

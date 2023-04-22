@@ -610,6 +610,7 @@
     "SameHorizAndVertPos": "Au moins deux SJBs ont les mêmes positions horizontale et verticale",
     "DuplicateId": "Identifiant non unique",
     "CouplingOmnibusBetweenSameBusbar": "Couplage/omnibus interdit entre le même SJB",
+    "TopologyNotRetrieved": "La topologie du poste n'a pas pu être récupérée",
 
     "LineSplitWithVoltageLevel": "Créer une coupure",
     "LineToSplit": "Liaison coupée",

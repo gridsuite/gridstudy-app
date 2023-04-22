@@ -6,7 +6,10 @@
  */
 
 import { mapEquipmentsCreated } from '../../redux/actions';
-import { fetchMapLines, fetchMapSubstations } from '../../utils/rest-api';
+import {
+    fetchLinesMapInfos,
+    fetchSubstationsMapInfos,
+} from '../../utils/rest-api';
 import { equipments } from './network-equipments';
 import { EQUIPMENT_TYPES } from '../util/equipment-types';
 
@@ -33,7 +36,7 @@ export default class MapEquipments {
     intlRef = undefined;
 
     initEquipments(studyUuid, currentNodeUuid) {
-        fetchMapSubstations(studyUuid, currentNodeUuid, undefined, false)
+        fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.dispatch(mapEquipmentsCreated(this, undefined, val));
             })
@@ -47,7 +50,7 @@ export default class MapEquipments {
                     );
                 }
             });
-        fetchMapLines(studyUuid, currentNodeUuid, undefined, false)
+        fetchLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.dispatch(mapEquipmentsCreated(this, val, undefined));
             })
@@ -84,15 +87,17 @@ export default class MapEquipments {
         currentNode,
         substationsIds
     ) {
-        const updatedSubstations = fetchMapSubstations(
+        const updatedSubstations = fetchSubstationsMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIds
+            substationsIds,
+            true
         );
-        const updatedLines = fetchMapLines(
+        const updatedLines = fetchLinesMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIds
+            substationsIds,
+            true
         );
         updatedSubstations.catch((error) => {
             console.error(error.message);

@@ -610,6 +610,7 @@
     "SameHorizAndVertPos": "At least two bus bar sections have same horizontal and vertical position",
     "DuplicateId": "Duplicate id",
     "CouplingOmnibusBetweenSameBusbar": "Forbidden to have a coupling/omnibus between the same bus bar section",
+    "TopologyNotRetrieved": "The voltage level topology could not be retrieved",
 
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",
     "LineToSplit": "Existing line",

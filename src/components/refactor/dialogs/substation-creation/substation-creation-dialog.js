@@ -82,6 +82,7 @@ const SubstationCreationDialog = ({
         equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.SUBSTATION.type,
     });
 
     useEffect(() => {
