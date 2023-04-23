@@ -124,7 +124,6 @@ const CreateNodeMenu = ({
         },
         CREATE_MODIFICATION_NODE: {
             onRoot: true,
-            action: () => createNetworkModificationNode('CHILD'),
             id: 'createNetworkModificationNode',
         },
         COPY_MODIFICATION_NODE: {
@@ -144,7 +143,6 @@ const CreateNodeMenu = ({
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
-            action: () => pasteNetworkModificationNode('CHILD'),
             id: 'pasteNetworkModificationNodeOnNewBranch',
             disabled: !isPastingAllowed(),
         },
@@ -165,6 +163,11 @@ const CreateNodeMenu = ({
     };
 
     const NODE_NESTED_MENU_CREATE = {
+        CREATE_MODIFICATION_NODE: {
+            onRoot: true,
+            action: () => createNetworkModificationNode('CHILD'),
+            id: 'networkModificationNodeInNewBranch',
+        },
         INSERT_MODIFICATION_NODE_BEFORE: {
             onRoot: false,
             action: () => createNetworkModificationNode('BEFORE'),
@@ -178,6 +181,12 @@ const CreateNodeMenu = ({
     };
 
     const NODE_NESTED_MENU_PASTE = {
+        PASTE_MODIFICATION_NODE: {
+            onRoot: true,
+            action: () => pasteNetworkModificationNode('CHILD'),
+            id: 'networkModificationNodeInNewBranch',
+            disabled: !isPastingAllowed(),
+        },
         PASTE_MODIFICATION_NODE_BEFORE: {
             onRoot: false,
             action: () => pasteNetworkModificationNode('BEFORE'),
