@@ -17,6 +17,9 @@ export const MODIFICATION_TYPES = {
     LINE_CREATION: {
         type: 'LINE_CREATION',
     },
+    LINE_MODIFICATION: {
+        type: 'LINE_MODIFICATION',
+    },
     SUBSTATION_CREATION: {
         type: 'SUBSTATION_CREATION',
     },

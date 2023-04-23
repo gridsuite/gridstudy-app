@@ -117,6 +117,8 @@ const DndTable = ({
     disabled = false,
     withLeftButtons = true,
     withAddRowsDialog = true,
+    previousValues,
+    disableTableCell,
 }) => {
     const intl = useIntl();
 
@@ -142,7 +144,16 @@ const DndTable = ({
                 arrayFormName={arrayFormName}
                 rowIndex={rowIndex}
                 column={column}
-                disabled={disabled}
+                disabled={
+                    disableTableCell
+                        ? disableTableCell(
+                              rowIndex,
+                              column,
+                              arrayFormName,
+                              previousValues
+                          )
+                        : disabled
+                }
             />
         );
     }

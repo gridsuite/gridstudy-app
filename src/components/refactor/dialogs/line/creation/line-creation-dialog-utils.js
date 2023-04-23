@@ -10,7 +10,7 @@ import {
     EQUIPMENT_NAME,
     TAB_HEADER,
 } from 'components/refactor/utils/field-constants';
-import yup from '../../utils/yup-config';
+import yup from '../../../utils/yup-config';
 
 const headerValidationSchema = (id) => ({
     [id]: yup.object().shape({

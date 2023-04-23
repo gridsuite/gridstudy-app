@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LimitsPane = ({ id = LIMITS }) => {
+const LimitsPane = ({ id = LIMITS, equipmentToModify, disableTableCell }) => {
     const intl = useIntl();
     const classes = useStyles();
 
@@ -89,6 +89,7 @@ const LimitsPane = ({ id = LIMITS }) => {
             name={`${id}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`}
             label="PermanentCurrentLimitText"
             adornment={AmpereAdornment}
+            previousValue={equipmentToModify?.currentLimits1?.permanentLimit}
         />
     );
 
@@ -97,6 +98,7 @@ const LimitsPane = ({ id = LIMITS }) => {
             name={`${id}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`}
             label="PermanentCurrentLimitText"
             adornment={AmpereAdornment}
+            previousValue={equipmentToModify?.currentLimits2?.permanentLimit}
         />
     );
 
@@ -121,6 +123,10 @@ const LimitsPane = ({ id = LIMITS }) => {
                 tableHeight={270}
                 withLeftButtons={false}
                 withAddRowsDialog={false}
+                previousValues={
+                    equipmentToModify?.currentLimits1?.temporaryLimits
+                }
+                disableTableCell={disableTableCell}
             />
             <GridSection title="Side2" />
             <Grid container spacing={2}>
@@ -136,6 +142,10 @@ const LimitsPane = ({ id = LIMITS }) => {
                     tableHeight={270}
                     withLeftButtons={false}
                     withAddRowsDialog={false}
+                    previousValues={
+                        equipmentToModify?.currentLimits2?.temporaryLimits
+                    }
+                    disableTableCell={disableTableCell}
                 />
             </Grid>
         </>
