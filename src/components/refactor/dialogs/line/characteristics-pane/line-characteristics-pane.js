@@ -44,6 +44,7 @@ const LineCharacteristicsPane = ({
     voltageLevelOptions,
     displayConnectivity,
     lineToModify,
+    clearableFields = false,
 }) => {
     const classes = useStyles();
 
@@ -53,6 +54,7 @@ const LineCharacteristicsPane = ({
             label="SeriesResistanceText"
             adornment={OhmAdornment}
             previousValue={lineToModify?.r}
+            clearable={clearableFields}
         />
     );
 
@@ -62,6 +64,7 @@ const LineCharacteristicsPane = ({
             label="SeriesReactanceText"
             adornment={OhmAdornment}
             previousValue={lineToModify?.x}
+            clearable={clearableFields}
         />
     );
 
@@ -71,6 +74,7 @@ const LineCharacteristicsPane = ({
             label="ShuntConductanceText"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(lineToModify?.g1)}
+            clearable={clearableFields}
         />
     );
 
@@ -80,6 +84,7 @@ const LineCharacteristicsPane = ({
             label="ShuntSusceptanceText"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(lineToModify?.b1)}
+            clearable={clearableFields}
         />
     );
 
@@ -89,6 +94,7 @@ const LineCharacteristicsPane = ({
             label="ShuntConductanceText"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(lineToModify?.g2)}
+            clearable={clearableFields}
         />
     );
 
@@ -98,6 +104,7 @@ const LineCharacteristicsPane = ({
             label="ShuntSusceptanceText"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(lineToModify?.b2)}
+            clearable={clearableFields}
         />
     );
 

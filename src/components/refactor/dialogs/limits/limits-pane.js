@@ -34,7 +34,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LimitsPane = ({ id = LIMITS, equipmentToModify, disableTableCell }) => {
+const LimitsPane = ({
+    id = LIMITS,
+    equipmentToModify,
+    disableTableCell,
+    clearableFields,
+}) => {
     const intl = useIntl();
     const classes = useStyles();
 
@@ -90,6 +95,7 @@ const LimitsPane = ({ id = LIMITS, equipmentToModify, disableTableCell }) => {
             label="PermanentCurrentLimitText"
             adornment={AmpereAdornment}
             previousValue={equipmentToModify?.currentLimits1?.permanentLimit}
+            clearable={clearableFields}
         />
     );
 
@@ -99,6 +105,7 @@ const LimitsPane = ({ id = LIMITS, equipmentToModify, disableTableCell }) => {
             label="PermanentCurrentLimitText"
             adornment={AmpereAdornment}
             previousValue={equipmentToModify?.currentLimits2?.permanentLimit}
+            clearable={clearableFields}
         />
     );
 

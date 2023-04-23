@@ -27,7 +27,7 @@ const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
 
     const getTabIndicatorClass = useCallback(
         (index) =>
-            tabIndexesWithError?.includes(index)
+            tabIndexesWithError.includes(index)
                 ? {
                       indicator: classes.tabWithErrorIndicator,
                   }
@@ -38,7 +38,7 @@ const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
     const getTabClass = useCallback(
         (index) =>
             clsx({
-                [classes.tabWithError]: tabIndexesWithError?.includes(index),
+                [classes.tabWithError]: tabIndexesWithError.includes(index),
             }),
         [tabIndexesWithError, classes]
     );

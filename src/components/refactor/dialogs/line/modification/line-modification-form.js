@@ -120,6 +120,7 @@ const LineModificationForm = ({
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     lineToModify={lineToModify}
+                    clearableFields={true}
                 />
             </Box>
 
@@ -127,6 +128,7 @@ const LineModificationForm = ({
                 <LimitsPane
                     equipmentToModify={lineToModify}
                     disableTableCell={disableTableCell}
+                    clearableFields={true}
                 />
             </Box>
         </>

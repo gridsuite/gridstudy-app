@@ -226,7 +226,7 @@ const LineModificationDialog = ({
                         if (line) {
                             setLineToModify(line);
                             if (
-                                editData.equipmentId !==
+                                editData?.equipmentId !==
                                 getValues(`${EQUIPMENT_ID}`)
                             ) {
                                 reset(
@@ -256,18 +256,13 @@ const LineModificationDialog = ({
             } else {
                 setLineToModify(null);
                 //we set equipmentId to null to force the reset of the form when the user clears the equipmentId field
-                editData.equipmentId = null;
+                if (editData) {
+                    editData.equipmentId = null;
+                }
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            editData.equipmentId,
-            getValues,
-            reset,
-            emptyFormData,
-        ]
+        [studyUuid, currentNodeUuid, editData, getValues, reset, emptyFormData]
     );
 
     const onValidationError = (errors) => {
