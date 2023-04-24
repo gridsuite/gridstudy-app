@@ -168,7 +168,7 @@ export const LabelledButton = ({ callback, label, name }) => {
 };
 
 export const TabPanel = (props) => {
-    const { children, value, index, ...other } = props;
+    const { children, value, index, keepState, ...other } = props;
     return (
         <Typography
             component="div"
@@ -179,7 +179,7 @@ export const TabPanel = (props) => {
             style={{ flexGrow: 1 }}
             {...other}
         >
-            {value === index && <Box p={1}>{children}</Box>}
+            {(value === index || keepState) && <Box p={1}>{children}</Box>}
         </Typography>
     );
 };
@@ -313,7 +313,7 @@ export const useParametersBackend = (
         if (user !== null) {
             backendFetchProviders()
                 .then((providers) => {
-                    // we can consider the provider get from back will be also used as
+                    // we can consider the provider gotten from back will be also used as
                     // a key for translation
                     const providersObj = providers.reduce(function (obj, v, i) {
                         obj[v] = v;
@@ -589,6 +589,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         <TabPanel
                             value={tabValue}
                             index={TAB_VALUES.lfParamsTabValue}
+                            keepState
                         >
                             {studyUuid && (
                                 <LoadFlowParameters
@@ -602,6 +603,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         <TabPanel
                             value={tabValue}
                             index={TAB_VALUES.securityAnalysisParamsTabValue}
+                            keepState
                         >
                             {studyUuid && (
                                 <SecurityAnalysisParameters
@@ -620,6 +622,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     index={
                                         TAB_VALUES.sensitivityAnalysisParamsTabValue
                                     }
+                                    keepState
                                 >
                                     {studyUuid && (
                                         <SensitivityAnalysisParameters
@@ -640,6 +643,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     index={
                                         TAB_VALUES.shortCircuitParamsTabValue
                                     }
+                                    keepState
                                 >
                                     {studyUuid && (
                                         <ShortCircuitParameters

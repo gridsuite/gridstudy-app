@@ -362,22 +362,6 @@ const SpecificLoadFlowParameters = ({
         [commitLFParameter, currentProvider, defaultValues, lfParams]
     );
 
-    const paramsComponent = useMemo(() => {
-        return (
-            <FlatParameters
-                className={classes.parameterName}
-                paramsAsArray={specificParamsDescription}
-                initValues={currentParameters}
-                onChange={onChange}
-            />
-        );
-    }, [
-        specificParamsDescription,
-        currentParameters,
-        onChange,
-        classes.parameterName,
-    ]);
-
     return (
         <>
             <SubgroupParametersButton
@@ -385,7 +369,14 @@ const SpecificLoadFlowParameters = ({
                 label={'showSpecificParameters'}
                 onClick={() => setShowSpecificLfParams(!showSpecificLfParams)}
             />
-            {showSpecificLfParams && paramsComponent}
+            {showSpecificLfParams && (
+                <FlatParameters
+                    className={classes.parameterName}
+                    paramsAsArray={specificParamsDescription}
+                    initValues={currentParameters}
+                    onChange={onChange}
+                />
+            )}
         </>
     );
 };
@@ -416,18 +407,6 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         resetProvider();
     }, [resetParameters, resetProvider]);
 
-    const specificParamsDescription = specificParamsDescriptions[provider];
-    const specificLoadFlowParameters = useMemo(() => {
-        return (
-            <SpecificLoadFlowParameters
-                lfParams={params || {}}
-                commitLFParameter={updateParameters}
-                currentProvider={provider}
-                specificParamsDescription={specificParamsDescription}
-            />
-        );
-    }, [params, provider, specificParamsDescription, updateParameters]);
-
     return (
         <>
             <Grid
@@ -453,7 +432,14 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     lfParams={params || {}}
                     commitLFParameter={updateParameters}
                 />
-                {specificLoadFlowParameters}
+                <SpecificLoadFlowParameters
+                    lfParams={params || {}}
+                    commitLFParameter={updateParameters}
+                    currentProvider={provider}
+                    specificParamsDescription={
+                        specificParamsDescriptions[provider]
+                    }
+                />
             </Grid>
             <Grid
                 container
