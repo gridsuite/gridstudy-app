@@ -2950,3 +2950,35 @@ export function fetchMapLines(
         inUpstreamBuiltParentNode
     );
 }
+
+export function generationDispatch(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lossCoefficient
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
+        lossCoefficient,
+    });
+
+    let generationDispatchUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating generation dispatch ', body);
+        generationDispatchUrl =
+            generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating generation dispatch ', body);
+    }
+
+    return backendFetchText(generationDispatchUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}

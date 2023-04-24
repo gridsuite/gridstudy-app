@@ -108,21 +108,25 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
         <>
             <Grid container spacing={2}>
                 <Grid container spacing={2} item>
-                    <Grid item xs={5} align={'start'}>
-                        <Typography>
-                            <FormattedMessage
-                                id={upperLeftText}
-                            ></FormattedMessage>
-                        </Typography>
-                    </Grid>
+                    {upperLeftText && (
+                        <Grid item xs={5} align={'start'}>
+                            <Typography>
+                                <FormattedMessage
+                                    id={upperLeftText}
+                                ></FormattedMessage>
+                            </Typography>
+                        </Grid>
+                    )}
                     <Grid item xs={2}></Grid>
-                    <Grid item xs={5} align={'end'}>
-                        <Typography align="right">
-                            <FormattedMessage
-                                id={upperRightText}
-                            ></FormattedMessage>
-                        </Typography>
-                    </Grid>
+                    {upperRightText && (
+                        <Grid item xs={5} align={'end'}>
+                            <Typography align="right">
+                                <FormattedMessage
+                                    id={upperRightText}
+                                ></FormattedMessage>
+                            </Typography>
+                        </Grid>
+                    )}
                 </Grid>
                 {slider}
                 <Grid container spacing={2} item>
