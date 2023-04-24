@@ -127,7 +127,7 @@ const SubstationModificationDialog = ({
                 sanitizeString(substation[EQUIPMENT_NAME]),
                 substation[COUNTRY],
                 !!editData,
-                editData ? editData.uuid : undefined,
+                editData?.uuid,
                 substation[ADDITIONAL_PROPERTIES].filter(
                     (p) => p[VALUE] != null || p[DELETION_MARK]
                 )
