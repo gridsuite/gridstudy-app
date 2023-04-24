@@ -24,7 +24,9 @@ const nonEditableModificationTypes = new Set([
 ]);
 
 const isEditableModification = (modif) => {
-    if (!modif) return false;
+    if (!modif) {
+        return false;
+    }
     return !nonEditableModificationTypes.has(modif.type);
 };
 
@@ -106,9 +108,13 @@ export const ModificationListItem = ({
         const network = networkCopy;
         computedValues = useMemo(() => {
             function getVoltageLevelLabel(vlID) {
-                if (!vlID) return '';
+                if (!vlID) {
+                    return '';
+                }
                 const vl = network?.getVoltageLevel(vlID);
-                if (vl) return getNameOrId(vl);
+                if (vl) {
+                    return getNameOrId(vl);
+                }
                 return vlID;
             }
             let res = { computedLabel: <strong>{getComputedLabel()}</strong> };

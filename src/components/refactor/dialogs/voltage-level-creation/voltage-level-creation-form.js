@@ -49,7 +49,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const [substations, setSubstations] = useState([]);
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        if (studyUuid && currentNodeUuid) {
             fetchEquipmentsIds(
                 studyUuid,
                 currentNodeUuid,
@@ -59,6 +59,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             ).then((values) => {
                 setSubstations(values.sort((a, b) => a.localeCompare(b)));
             });
+        }
     }, [studyUuid, currentNodeUuid]);
 
     const voltageLevelIdField = (

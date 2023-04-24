@@ -45,7 +45,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const currentNodeUuid = currentNode?.id;
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        if (studyUuid && currentNodeUuid) {
             fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -53,6 +53,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
                     );
                 }
             );
+        }
     }, [studyUuid, currentNodeUuid]);
 
     const generatorIdField = (

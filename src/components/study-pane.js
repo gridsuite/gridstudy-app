@@ -157,14 +157,18 @@ const StudyPane = ({
 
     const openVoltageLevel = useCallback(
         (vlId) => {
-            if (!network) return;
+            if (!network) {
+                return;
+            }
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         },
         [network, openDiagramView]
     );
 
     useEffect(() => {
-        if (!network) return;
+        if (!network) {
+            return;
+        }
         network.useEquipment(equipments.substations);
         network.useEquipment(equipments.lines);
     }, [network]);

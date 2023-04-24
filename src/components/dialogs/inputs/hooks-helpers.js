@@ -20,11 +20,12 @@ export function genHelperPreviousValue(previousValue, adornment) {
 
 export function genHelperError(...errors) {
     const inError = errors.find((e) => e);
-    if (inError)
+    if (inError) {
         return {
             error: true,
             helperText: <FormattedMessage id={inError} />,
         };
+    }
     return {};
 }
 

@@ -12,6 +12,7 @@ import {
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
 import { EQUIPMENT_TYPES } from '../util/equipment-types';
+import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
@@ -87,16 +88,21 @@ export default class MapEquipments {
         currentNode,
         substationsIds
     ) {
+        const substationsIdsToFetch =
+            substationsIds?.length > MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
+                ? undefined
+                : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
+
         const updatedSubstations = fetchSubstationsMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIds,
+            substationsIdsToFetch,
             true
         );
         const updatedLines = fetchLinesMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIds,
+            substationsIdsToFetch,
             true
         );
         updatedSubstations.catch((error) => {
@@ -170,7 +176,9 @@ export default class MapEquipments {
             (eqpt) =>
                 !currentEquipments.some((otherEqpt) => otherEqpt.id === eqpt.id)
         );
-        if (eqptsToAdd.length === 0) return currentEquipments;
+        if (eqptsToAdd.length === 0) {
+            return currentEquipments;
+        }
         return [...currentEquipments, ...eqptsToAdd];
     }
 

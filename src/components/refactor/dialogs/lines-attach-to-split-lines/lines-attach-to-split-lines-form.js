@@ -13,8 +13,8 @@ import {
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
     REPLACING_LINE_1_ID,
-    REPLACING_LINE_2_ID,
     REPLACING_LINE_1_NAME,
+    REPLACING_LINE_2_ID,
     REPLACING_LINE_2_NAME,
 } from 'components/refactor/utils/field-constants';
 import React, { useEffect, useState } from 'react';
@@ -32,7 +32,7 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
     const [linesIds, setLinesIds] = useState([]);
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        if (studyUuid && currentNodeUuid) {
             fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -40,6 +40,7 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
                     );
                 }
             );
+        }
     }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {

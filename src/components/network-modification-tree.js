@@ -93,8 +93,9 @@ const NetworkModificationTree = ({
             dispatch(
                 setModificationsDrawerOpen(node.type === 'NETWORK_MODIFICATION')
             );
-            if (!isSameNode(currentNode, node))
+            if (!isSameNode(currentNode, node)) {
                 dispatch(setCurrentTreeNode(node));
+            }
         },
         [dispatch, currentNode]
     );

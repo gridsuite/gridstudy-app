@@ -14,7 +14,6 @@ import {
     REACTIVE_POWER,
 } from 'components/refactor/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -27,13 +26,14 @@ import FloatInput from '../../rhf-inputs/float-input';
 import SelectInput from '../../rhf-inputs/select-input';
 import TextInput from '../../rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
+import { fetchVoltageLevelsListInfos } from '../../../../utils/rest-api';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid)
+        if (studyUuid && currentNodeUuid) {
             fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
@@ -41,6 +41,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
                     );
                 }
             );
+        }
     }, [studyUuid, currentNodeUuid]);
 
     const loadIdField = (

@@ -55,11 +55,17 @@ export function sanitizePercentageValue(value) {
 }
 
 export function formatPercentageValue(value) {
-    if (!value || value < 0) return 0;
-    if (value > 100) return 100;
+    if (!value || value < 0) {
+        return 0;
+    }
+    if (value > 100) {
+        return 100;
+    }
     if (typeof value === 'string') {
         const tmp = value?.replace(',', '.');
-        if (tmp.endsWith('.')) return tmp;
+        if (tmp.endsWith('.')) {
+            return tmp;
+        }
         return parseFloat(value);
     }
     return value;
