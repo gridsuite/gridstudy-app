@@ -60,6 +60,7 @@ import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-att
 import GeneratorScalingDialog from 'components/refactor/dialogs/generator-scaling/generator-scaling-dialog';
 import GeneratorModificationDialog from 'components/refactor/dialogs/generator/modification/generator-modification-dialog';
 import SubstationCreationDialog from 'components/refactor/dialogs/substation-creation/substation-creation-dialog';
+import GenerationDispatchDialog from 'components/refactor/dialogs/generation-dispatch/generation-dispatch-dialog';
 import LineModificationDialog from 'components/refactor/dialogs/line/modification/line-modification-dialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -306,6 +307,11 @@ const NetworkModificationNodeEditor = () => {
             label: 'DeleteEquipment',
             dialog: () => adapt(EquipmentDeletionDialog),
             icon: <DeleteIcon />,
+        },
+        GENERATION_DISPATCH: {
+            label: 'GenerationDispatch',
+            dialog: () => adapt(GenerationDispatchDialog),
+            icon: <AddIcon />,
         },
     };
 
