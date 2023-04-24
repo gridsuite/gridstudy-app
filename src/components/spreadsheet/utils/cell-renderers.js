@@ -69,6 +69,7 @@ export const BooleanCellRenderer = (props) => {
         <div>
             {isChecked !== undefined && (
                 <Checkbox
+                    style={{ padding: 0 }}
                     color="default"
                     checked={isChecked}
                     disableRipple={true}
@@ -95,7 +96,7 @@ export const formatCell = (props) => {
     return { value: value, tooltip: tooltipValue };
 };
 
-export const NumericCellRenderer = (props) => {
+export const DefaultCellRenderer = (props) => {
     const classes = useStyles();
     const cellValue = formatCell(props);
     return (
