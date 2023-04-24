@@ -192,3 +192,6 @@ export const VALUE = 'value';
 export const PREVIOUS_VALUE = 'previousValue';
 export const DELETION_MARK = 'deletionMark';
 export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
+
+// generation dispatch
+export const LOSS_COEFFICIENT = 'lossCoefficient';

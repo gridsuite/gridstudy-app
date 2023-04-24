@@ -80,8 +80,9 @@ const ContingenciesFiltersSelector = ({
             values.map((e) => e.id).filter((item) => !toDelete.has(item))
         );
         const newChecked = selectedValues.filter((item) => !toDelete.has(item));
-        if (newChecked.length !== selectedValues.length)
+        if (newChecked.length !== selectedValues.length) {
             setSelectedValues(new Set(newChecked));
+        }
     };
 
     useEffect(() => {

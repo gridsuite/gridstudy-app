@@ -92,7 +92,9 @@ const PositionDiagram = forwardRef((props, ref) => {
     }, [props.svgUrl, snackError, intlRef]);
 
     useLayoutEffect(() => {
-        if (disabled) return;
+        if (disabled) {
+            return;
+        }
 
         if (svg.svg) {
             let viewboxMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;

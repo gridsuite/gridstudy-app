@@ -65,7 +65,9 @@ const OverloadedLinesView = (props) => {
 
     const intl = useIntl();
     useEffect(() => {
-        if (props.disabled) return;
+        if (props.disabled) {
+            return;
+        }
         const makeData = (line) => {
             let limits = [
                 line.currentLimits1?.permanentLimit,

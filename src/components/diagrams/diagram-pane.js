@@ -134,7 +134,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
         (diagramState) => {
             function createSubstationDiagramView(id, state) {
                 const substation = network.getSubstation(id);
-                if (!substation) return;
+                if (!substation) {
+                    return;
+                }
                 let label = getNameOrId(substation);
                 const countryName = substation?.countryName;
                 if (countryName) {
@@ -154,7 +156,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
 
             function createVoltageLevelDiagramView(id, state) {
                 const voltageLevel = network.getVoltageLevel(id);
-                if (!voltageLevel) return;
+                if (!voltageLevel) {
+                    return;
+                }
                 let label = getNameOrId(voltageLevel);
                 const substation = network.getSubstation(
                     voltageLevel.substationId
@@ -185,7 +189,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     );
                 }
 
-                if (displayedVoltageLevels.length === 0) return;
+                if (displayedVoltageLevels.length === 0) {
+                    return;
+                }
                 displayedVoltageLevels.forEach((voltageLevel) => {
                     const name = getNameOrId(voltageLevel);
                     if (name !== null) {
@@ -206,7 +212,9 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 };
             }
 
-            if (!network) return;
+            if (!network) {
+                return;
+            }
             if (diagramState.svgType === DiagramType.VOLTAGE_LEVEL) {
                 return createVoltageLevelDiagramView(
                     diagramState.id,
@@ -287,6 +295,7 @@ export function DiagramPane({
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
     const classes = useStyles();
+    const [warnings, setWarnings] = useState(new Map());
 
     /**
      * BUILDS THE DIAGRAMS LIST
@@ -314,14 +323,28 @@ export function DiagramPane({
             } else {
                 let singleLineDiagramView = createView(diagramState);
                 // if current view cannot be found, it returns undefined
-                // in this case, we remove it from diagram states
+                // in this case, we keep it in the diagram states and show a warning message inside the SLD
                 if (singleLineDiagramView) {
                     diagramViews.push({
                         ...singleLineDiagramView,
                         align: 'left',
                     });
                 } else {
-                    closeDiagramView(diagramState.id, diagramState.svgType);
+                    // because current view cannot be found, the id will be assigned to the name.
+                    const emptyDiagramView = {
+                        ...diagramState,
+                        name: diagramState?.id,
+                        // this variable is used to show a warning message inside the SLD
+                        warningMessage:
+                            DiagramType.VOLTAGE_LEVEL === diagramState.svgType
+                                ? 'VoltageLevelNotFound'
+                                : 'SubstationNotFound',
+                    };
+
+                    diagramViews.push({
+                        ...emptyDiagramView,
+                        align: 'left',
+                    });
                 }
             }
         });
@@ -346,6 +369,7 @@ export function DiagramPane({
             }
         }
         setViews(diagramViews);
+        setWarnings(new Map());
     }, [
         diagramStates,
         visible,
@@ -545,7 +569,9 @@ export function DiagramPane({
     );
 
     const getRatioWidthByHeight = (width, height) => {
-        if (Number(height) > 0) return Number(width) / Number(height);
+        if (Number(height) > 0) {
+            return Number(width) / Number(height);
+        }
         return 1.0;
     };
 
@@ -619,6 +645,26 @@ export function DiagramPane({
             getDiagramOrDefaultHeight,
         ]
     );
+
+    const handleWarning = (id, message) => {
+        // Add the id of the diagramView and the warning to display.
+        setWarnings(
+            (prev) => new Map(prev.set(id, disabled ? 'InvalidNode' : message))
+        );
+    };
+
+    const handleWarningToDisplay = (diagramView) => {
+        // First, check if the node is built(the highest priority) then do the warning checks..
+        if (disabled) {
+            return 'InvalidNode';
+        }
+        if (diagramView?.warningMessage) {
+            return diagramView?.warningMessage;
+        }
+        return warnings.has(diagramView.id)
+            ? warnings.get(diagramView.id)
+            : undefined;
+    };
 
     /*
      * Calculate a diagram's ideal height, based on its natural height, the available space in
@@ -716,7 +762,9 @@ export function DiagramPane({
                                 align={diagramView.align}
                                 diagramId={diagramView.id}
                                 diagramTitle={diagramView.name}
-                                disabled={disabled}
+                                warningToDisplay={handleWarningToDisplay(
+                                    diagramView
+                                )}
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
                                 width={getWidthForPaneDisplay(
@@ -742,6 +790,7 @@ export function DiagramPane({
                                         isComputationRunning={
                                             isComputationRunning
                                         }
+                                        setWarning={handleWarning}
                                         showInSpreadsheet={showInSpreadsheet}
                                         studyUuid={studyUuid}
                                         diagramId={diagramView.id}

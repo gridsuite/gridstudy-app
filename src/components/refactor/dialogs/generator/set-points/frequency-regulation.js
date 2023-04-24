@@ -70,6 +70,7 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
             label={'Droop'}
             adornment={percentageTextField}
             previousValue={previousValues?.droop}
+            clearable={true}
         />
     );
 

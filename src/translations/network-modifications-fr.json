@@ -24,5 +24,6 @@
     "network_modifications/creatingModification": "Création de la modification en cours ...",
     "network_modifications/deletingModification": "Suppression de la modification en cours ...",
     "network_modifications/updatingModification": "Mise à jour de la modification en cours ...",
-    "network_modifications/modifications": "Mise à jour de la liste des modifications en cours ..."
+    "network_modifications/modifications": "Mise à jour de la liste des modifications en cours ...",
+    "network_modifications/GENERATION_DISPATCH": "Démarrage de groupes {computedLabel}"
 }
