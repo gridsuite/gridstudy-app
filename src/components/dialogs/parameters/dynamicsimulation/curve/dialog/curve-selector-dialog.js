@@ -60,9 +60,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
                         ...acc,
                         {
                             equipmentId: equipment.id,
-                            equipmentName: equipment.name,
                             variableId: variable.variableId,
-                            variableName: variable.name,
                         },
                     ],
                     arr

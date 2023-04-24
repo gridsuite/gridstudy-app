@@ -78,14 +78,14 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
     const columnDefs = useMemo(() => {
         return [
             {
-                field: 'equipmentName',
+                field: 'equipmentId',
                 minWidth: '80',
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveDynamicModelHeader',
                 }),
             },
             {
-                field: 'variableName',
+                field: 'variableId',
                 minWidth: '80',
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveVariableHeader',
