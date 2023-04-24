@@ -78,8 +78,7 @@ export const TableNumericalInput = ({
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">
-                        [// we add the clear button only if the previous value
-                        is different from the current value]
+                        {/** we add the clear button only if the previous value is different from the current value **/}
                         {previousValue &&
                             previousValue !== value &&
                             transformedValue !== undefined &&
