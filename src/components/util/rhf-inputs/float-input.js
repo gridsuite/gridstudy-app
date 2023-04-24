@@ -8,7 +8,7 @@
 import React from 'react';
 import TextInput from './text-input';
 import PropTypes from 'prop-types';
-import { isFloatNumber } from '../dialogs/inputs/input-hooks';
+import { isFloatNumber } from '../inputs/input-hooks';
 
 const FloatInput = (props) => {
     const inputTransform = (value) => {

@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
-import { useDoubleValue, useInputForm } from '../inputs/input-hooks';
+import { useDoubleValue, useInputForm } from '../../util/inputs/input-hooks';
 import { filledTextField, gridItem, GridSection } from '../dialogUtils';
 import {
     fetchConfigParameter,

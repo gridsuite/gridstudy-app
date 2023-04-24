@@ -7,7 +7,7 @@
 
 import { IconButton } from '@mui/material';
 import { gridItem } from 'components/dialogs/dialogUtils';
-import TextInput from 'components/rhf-inputs/text-input';
+import TextInput from 'components/util/rhf-inputs/text-input';
 import {
     SECTION_COUNT,
     SWITCHES_BETWEEN_SECTIONS,

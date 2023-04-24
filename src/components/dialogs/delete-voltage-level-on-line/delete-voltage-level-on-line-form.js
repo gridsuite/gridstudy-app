@@ -8,8 +8,8 @@
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
-import TextInput from 'components/rhf-inputs/text-input';
-import AutocompleteInput from 'components/rhf-inputs/autocomplete-input';
+import TextInput from 'components/util/rhf-inputs/text-input';
+import AutocompleteInput from 'components/util/rhf-inputs/autocomplete-input';
 import {
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,

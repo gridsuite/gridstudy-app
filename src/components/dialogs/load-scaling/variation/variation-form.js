@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import DirectoryItemsInput from '../../../rhf-inputs/directory-items-input';
+import DirectoryItemsInput from '../../../util/rhf-inputs/directory-items-input';
 import {
     FILTERS,
     REACTIVE_VARIATION_MODE,
@@ -16,13 +16,13 @@ import {
 import { EQUIPMENT_TYPES } from '../../../util/equipment-types';
 import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
-import SelectInput from '../../../rhf-inputs/select-input';
+import SelectInput from '../../../util/rhf-inputs/select-input';
 import {
     ACTIVE_VARIATION_MODES,
     REACTIVE_VARIATION_MODES,
     VARIATION_TYPES,
 } from '../../../network/constants';
-import FloatInput from '../../../rhf-inputs/float-input';
+import FloatInput from '../../../util/rhf-inputs/float-input';
 import { ActivePowerAdornment, gridItem } from '../../dialogUtils';
 import { elementType } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';

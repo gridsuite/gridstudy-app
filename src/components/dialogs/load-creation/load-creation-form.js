@@ -23,9 +23,9 @@ import {
     ReactivePowerAdornment,
 } from '../dialogUtils';
 import { LOAD_TYPES } from '../../network/constants';
-import FloatInput from '../../rhf-inputs/float-input';
-import SelectInput from '../../rhf-inputs/select-input';
-import TextInput from '../../rhf-inputs/text-input';
+import FloatInput from '../../util/rhf-inputs/float-input';
+import SelectInput from '../../util/rhf-inputs/select-input';
+import TextInput from '../../util/rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {

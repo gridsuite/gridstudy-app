@@ -87,8 +87,8 @@ import {
     getTwoWindingsTransformerValidationSchema,
 } from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
 import { addSelectedFieldToRows } from '../../util/dnd-table/dnd-table';
-import SwitchInput from '../../rhf-inputs/booleans/switch-input';
-import TextInput from '../../rhf-inputs/text-input';
+import SwitchInput from '../../util/rhf-inputs/booleans/switch-input';
+import TextInput from '../../util/rhf-inputs/text-input';
 import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,

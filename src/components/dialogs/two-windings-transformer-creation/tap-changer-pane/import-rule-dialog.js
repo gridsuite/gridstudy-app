@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useCSVPicker } from '../../inputs/input-hooks';
+import { useCSVPicker } from '../../../util/inputs/input-hooks';
 
 import CsvDownloader from 'react-csv-downloader';
 import { PHASE_TAP } from '../two-windings-transformer-creation-dialog';

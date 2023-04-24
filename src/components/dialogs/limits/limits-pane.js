@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import makeStyles from '@mui/styles/makeStyles';
-import FloatInput from 'components/rhf-inputs/float-input';
+import FloatInput from 'components/util/rhf-inputs/float-input';
 import {
     AmpereAdornment,
     gridItem,

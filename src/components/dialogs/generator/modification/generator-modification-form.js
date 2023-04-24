@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from '../../../rhf-inputs/text-input';
+import TextInput from '../../../util/rhf-inputs/text-input';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -29,14 +29,14 @@ import {
     MVAPowerAdornment,
     OhmAdornment,
 } from '../../dialogUtils';
-import SelectInput from '../../../rhf-inputs/select-input';
+import SelectInput from '../../../util/rhf-inputs/select-input';
 import {
     ENERGY_SOURCES,
     getEnergySourceLabel,
 } from '../../../network/constants';
 import Grid from '@mui/material/Grid';
 import React, { useCallback, useEffect, useState } from 'react';
-import FloatInput from '../../../rhf-inputs/float-input';
+import FloatInput from '../../../util/rhf-inputs/float-input';
 import {
     fetchEquipmentsIds,
     fetchVoltageLevelsIdAndTopology,
@@ -44,7 +44,7 @@ import {
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import AutocompleteInput from 'components/rhf-inputs/autocomplete-input';
+import AutocompleteInput from 'components/util/rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
 
 const GeneratorModificationForm = ({

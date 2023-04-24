@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import FloatInput from '../../../../rhf-inputs/float-input';
+import FloatInput from '../../../../util/rhf-inputs/float-input';
 import { P, Q_MAX_P, Q_MIN_P } from '../../../../util/field-constants';
 import {
     ActivePowerAdornment,

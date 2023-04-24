@@ -14,7 +14,7 @@ import React, {
     useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { validateField } from '../../util/validation-functions';
+import { validateField } from '../validation-functions';
 import {
     CircularProgress,
     FormHelperText,
@@ -28,7 +28,7 @@ import {
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import FolderIcon from '@mui/icons-material/Folder';
-import TextFieldWithAdornment from '../../util/text-field-with-adornment';
+import TextFieldWithAdornment from '../text-field-with-adornment';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -37,7 +37,7 @@ import {
     toFloatValue,
     toIntValue,
     useStyles,
-} from '../dialogUtils';
+} from '../../dialogs/dialogUtils';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';

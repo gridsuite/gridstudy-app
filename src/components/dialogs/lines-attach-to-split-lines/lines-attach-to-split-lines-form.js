@@ -7,7 +7,7 @@
 
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
-import AutocompleteInput from 'components/rhf-inputs/autocomplete-input';
+import AutocompleteInput from 'components/util/rhf-inputs/autocomplete-input';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -23,7 +23,7 @@ import {
     fetchVoltageLevelsIdAndTopology,
 } from 'utils/rest-api';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
-import TextInput from 'components/rhf-inputs/text-input';
+import TextInput from 'components/util/rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 
 const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {

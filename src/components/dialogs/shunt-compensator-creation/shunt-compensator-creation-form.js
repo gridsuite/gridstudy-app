@@ -11,7 +11,7 @@ import React, { useEffect, useState } from 'react';
 
 import { filledTextField, gridItem, GridSection } from '../dialogUtils';
 
-import TextInput from '../../rhf-inputs/text-input';
+import TextInput from '../../util/rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import { CharacteristicsForm } from './characteristics-pane/characteristics-form';

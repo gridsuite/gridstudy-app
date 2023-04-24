@@ -13,7 +13,7 @@ import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
-import { useStyles } from '../dialogs/dialogUtils';
+import { useStyles } from '../../dialogs/dialogUtils';
 import ErrorInput from './error-inputs/error-input';
 import MidFormError from './error-inputs/mid-form-error';
 

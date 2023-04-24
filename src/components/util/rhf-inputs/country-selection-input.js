@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useParameterState } from '../dialogs/parameters/parameters';
-import { PARAM_LANGUAGE } from '../../utils/config-params';
+import { useParameterState } from '../../dialogs/parameters/parameters';
+import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import { useMemo } from 'react';
-import { getComputedLanguage } from '../../utils/language';
+import { getComputedLanguage } from '../../../utils/language';
 import AutocompleteInput from './autocomplete-input';
 
 const CountrySelectionInput = ({ name, label, formProps, ...props }) => {

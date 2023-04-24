@@ -15,7 +15,7 @@ import {
     FormHelperText,
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { FieldLabel } from '../dialogs/inputs/hooks-helpers';
+import { FieldLabel } from '../inputs/hooks-helpers';
 import { useController } from 'react-hook-form';
 const EnumInput = ({ options, name, label, size, labelValues }) => {
     const {

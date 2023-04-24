@@ -11,11 +11,11 @@ import {
     FieldLabel,
     genHelperError,
     genHelperPreviousValue,
-} from '../dialogs/inputs/hooks-helpers';
+} from '../inputs/hooks-helpers';
 import PropTypes from 'prop-types';
 import { useController, useFormContext } from 'react-hook-form';
-import { func_identity, useStyles } from '../dialogs/dialogUtils';
-import { isFieldRequired } from '../util/utils';
+import { func_identity, useStyles } from '../../dialogs/dialogUtils';
+import { isFieldRequired } from '../utils';
 
 /**
  * Autocomplete input

@@ -6,7 +6,7 @@
  */
 
 import * as yup from 'yup';
-import RHFIntegerInput from '../../../rhf-inputs/integer-input';
+import RHFIntegerInput from '../../../util/rhf-inputs/integer-input';
 import WrapperInput from './wrapper-input';
 
 const IntegerInput = ({ value, label, callback }) => {

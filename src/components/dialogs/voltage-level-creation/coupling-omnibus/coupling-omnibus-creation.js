@@ -6,7 +6,7 @@
  */
 
 import { gridItem } from 'components/dialogs/dialogUtils';
-import AutocompleteInput from 'components/rhf-inputs/autocomplete-input';
+import AutocompleteInput from 'components/util/rhf-inputs/autocomplete-input';
 import {
     BUS_BAR_SECTION_ID1,
     BUS_BAR_SECTION_ID2,

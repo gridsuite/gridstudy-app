@@ -15,7 +15,7 @@ import {
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import { useValidNodeName } from '../dialogs/inputs/input-hooks';
+import { useValidNodeName } from './inputs/input-hooks';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
 

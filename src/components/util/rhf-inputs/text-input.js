@@ -7,17 +7,17 @@
 
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import React from 'react';
-import { func_identity, useStyles } from '../dialogs/dialogUtils';
+import { func_identity, useStyles } from '../../dialogs/dialogUtils';
 import {
     FieldLabel,
     genHelperError,
     genHelperPreviousValue,
-} from '../dialogs/inputs/hooks-helpers';
-import TextFieldWithAdornment from '../util/text-field-with-adornment';
+} from '../inputs/hooks-helpers';
+import TextFieldWithAdornment from '../text-field-with-adornment';
 import ClearIcon from '@mui/icons-material/Clear';
 import PropTypes from 'prop-types';
 import { useController, useFormContext } from 'react-hook-form';
-import { isFieldRequired } from '../util/utils';
+import { isFieldRequired } from '../utils';
 
 const TextInput = ({
     name,

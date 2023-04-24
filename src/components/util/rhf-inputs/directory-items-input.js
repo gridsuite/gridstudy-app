@@ -8,21 +8,21 @@
 import FormControl from '@mui/material/FormControl';
 import clsx from 'clsx';
 import { Grid } from '@mui/material';
-import { FieldLabel } from '../dialogs/inputs/hooks-helpers';
+import { FieldLabel } from '../inputs/hooks-helpers';
 import Chip from '@mui/material/Chip';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
-import DirectoryItemSelector from '../directory-item-selector';
+import DirectoryItemSelector from '../../directory-item-selector';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useStyles } from '../dialogs/dialogUtils';
+import { useStyles } from '../../dialogs/dialogUtils';
 import { useController, useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import ErrorInput from './error-inputs/error-input';
 import MidFormError from './error-inputs/mid-form-error';
 import { ReadOnlyInput } from './read-only-input';
-import { NAME } from '../util/field-constants';
-import { isFieldRequired } from '../util/utils';
+import { NAME } from '../field-constants';
+import { isFieldRequired } from '../utils';
 
 const DirectoryItemsInput = ({
     label,

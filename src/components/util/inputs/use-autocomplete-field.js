@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { func_identity } from '../dialogUtils';
+import { func_identity } from '../../dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, {
     useCallback,
@@ -14,7 +14,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { validateField } from '../../util/validation-functions';
+import { validateField } from '../validation-functions';
 import { Autocomplete, TextField } from '@mui/material';
 import {
     FieldLabel,

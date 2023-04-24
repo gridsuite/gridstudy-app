@@ -58,7 +58,7 @@ import {
     getHeaderValidationSchema,
 } from './line-creation-dialog-utils';
 import { addSelectedFieldToRows } from '../../util/dnd-table/dnd-table';
-import TextInput from '../../rhf-inputs/text-input';
+import TextInput from '../../util/rhf-inputs/text-input';
 import LimitsPane from '../limits/limits-pane';
 import {
     getLimitsEmptyFormData,

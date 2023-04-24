@@ -15,7 +15,7 @@ import {
     filledTextField,
     gridItem,
 } from 'components/dialogs/dialogUtils';
-import AutocompleteInput from 'components/rhf-inputs/autocomplete-input';
+import AutocompleteInput from 'components/util/rhf-inputs/autocomplete-input';
 import { EQUIPMENT_ID, TYPE } from 'components/util/field-constants';
 import { areIdsEqual, getObjectId } from 'components/util/utils';
 import { EQUIPMENT_TYPES } from '../../util/equipment-types';

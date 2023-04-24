@@ -7,7 +7,7 @@
 
 import { gridItem } from '../../dialogUtils';
 import React, { useEffect, useMemo, useState } from 'react';
-import AutocompleteInput from '../../../rhf-inputs/autocomplete-input';
+import AutocompleteInput from '../../../util/rhf-inputs/autocomplete-input';
 import { NAME, VALUE } from '../../../util/field-constants';
 import { fetchPredefinedProperties } from './property-utils';
 import { useWatch } from 'react-hook-form';

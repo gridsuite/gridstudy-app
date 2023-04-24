@@ -28,8 +28,8 @@ import {
     REGULATION_TYPES,
     SIDE,
 } from '../../../../network/constants';
-import FloatInput from '../../../../rhf-inputs/float-input';
-import SelectInput from '../../../../rhf-inputs/select-input';
+import FloatInput from '../../../../util/rhf-inputs/float-input';
+import SelectInput from '../../../../util/rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';

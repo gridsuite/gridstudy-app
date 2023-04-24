@@ -29,10 +29,10 @@ import {
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS } from '../../network/constants';
-import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
-import IntegerInput from '../../rhf-inputs/integer-input';
-import SelectInput from '../../rhf-inputs/select-input';
-import TextInput from '../../rhf-inputs/text-input';
+import AutocompleteInput from '../../util/rhf-inputs/autocomplete-input';
+import IntegerInput from '../../util/rhf-inputs/integer-input';
+import SelectInput from '../../util/rhf-inputs/select-input';
+import TextInput from '../../util/rhf-inputs/text-input';
 import {
     getConnectivityBusBarSectionData,
     getConnectivityVoltageLevelData,

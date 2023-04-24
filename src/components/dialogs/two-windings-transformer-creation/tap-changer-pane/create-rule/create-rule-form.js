@@ -1,6 +1,6 @@
 import { DialogContent, DialogTitle, Grid } from '@mui/material';
 import { gridItem } from 'components/dialogs/dialogUtils';
-import FloatInput from 'components/rhf-inputs/float-input';
+import FloatInput from 'components/util/rhf-inputs/float-input';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,

@@ -11,7 +11,7 @@ import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import IntegerInput from '../../../rhf-inputs/integer-input';
+import IntegerInput from '../../../util/rhf-inputs/integer-input';
 import DndTable, { MAX_ROWS_NUMBER } from '../../../util/dnd-table/dnd-table';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';

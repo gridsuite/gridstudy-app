@@ -12,7 +12,7 @@ import {
     MicroSusceptanceAdornment,
     OhmAdornment,
 } from '../../dialogUtils';
-import FloatInput from '../../../rhf-inputs/float-input';
+import FloatInput from '../../../util/rhf-inputs/float-input';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import {
     CHARACTERISTICS,

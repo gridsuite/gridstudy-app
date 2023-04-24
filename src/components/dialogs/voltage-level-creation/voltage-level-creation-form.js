@@ -26,12 +26,12 @@ import {
     VoltageAdornment,
     KiloAmpereAdornment,
 } from 'components/dialogs/dialogUtils';
-import FloatInput from 'components/rhf-inputs/float-input';
-import TextInput from 'components/rhf-inputs/text-input';
-import AutocompleteInput from 'components/rhf-inputs/autocomplete-input';
+import FloatInput from 'components/util/rhf-inputs/float-input';
+import TextInput from 'components/util/rhf-inputs/text-input';
+import AutocompleteInput from 'components/util/rhf-inputs/autocomplete-input';
 import { getObjectId } from 'components/util/utils';
 import { Box } from '@mui/material';
-import IntegerInput from 'components/rhf-inputs/integer-input';
+import IntegerInput from 'components/util/rhf-inputs/integer-input';
 
 import { CouplingOmnibusForm } from './coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from './switches-between-sections/switches-between-sections';

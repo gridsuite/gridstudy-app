@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import TextInput from '../../rhf-inputs/text-input';
+import TextInput from '../../util/rhf-inputs/text-input';
 import { LOSS_COEFFICIENT } from '../../util/field-constants';
 import {
     gridItem,

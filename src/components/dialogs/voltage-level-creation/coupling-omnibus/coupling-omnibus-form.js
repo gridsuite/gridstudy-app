@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ExpandableInput from 'components/rhf-inputs/expandable-input';
+import ExpandableInput from 'components/util/rhf-inputs/expandable-input';
 import {
     BUS_BAR_COUNT,
     BUS_BAR_SECTION_ID1,

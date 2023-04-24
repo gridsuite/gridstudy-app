@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { fetchVoltageLevelEquipments } from 'utils/rest-api';
-import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
+import AutocompleteInput from '../../util/rhf-inputs/autocomplete-input';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
