@@ -17,7 +17,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
+import { createLoad } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../../dialogs/dialogUtils';
 import EquipmentSearchDialog from '../../../dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
@@ -83,80 +83,39 @@ const LoadCreationDialog = ({
     const { reset } = methods;
 
     const fromSearchCopyToFormValues = (load) => {
-        fetchEquipmentInfos(
-            studyUuid,
-            currentNodeUuid,
-            'voltage-levels',
-            load.voltageLevelId,
-            true
-        ).then((vlResult) => {
-            reset({
-                [EQUIPMENT_ID]: load.id + '(1)',
-                [EQUIPMENT_NAME]: load.name ?? '',
-                [LOAD_TYPE]: load.type,
-                [ACTIVE_POWER]: load.p0,
-                [REACTIVE_POWER]: load.q0,
-                ...getConnectivityFormData({
-                    voltageLevelId: load.voltageLevelId,
-                    busbarSectionId: load.busOrBusbarSectionId,
-                    voltageLevelTopologyKind: vlResult.topologyKind,
-                    voltageLevelName: vlResult.name,
-                    voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                    voltageLevelSubstationId: vlResult.substationId,
-                    connectionDirection: load.connectionDirection,
-                    connectionName: load.connectionName,
-                }),
-            });
+        reset({
+            [EQUIPMENT_ID]: load.id + '(1)',
+            [EQUIPMENT_NAME]: load.name ?? '',
+            [LOAD_TYPE]: load.type,
+            [ACTIVE_POWER]: load.p0,
+            [REACTIVE_POWER]: load.q0,
+            ...getConnectivityFormData({
+                voltageLevelId: load.voltageLevelId,
+                busbarSectionId: load.busOrBusbarSectionId,
+                connectionDirection: load.connectionDirection,
+                connectionName: load.connectionName,
+            }),
         });
     };
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'voltage-levels',
-                load.voltageLevelId,
-                true
-            )
-                .then((vlResult) => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            voltageLevelTopologyKind: vlResult.topologyKind,
-                            voltageLevelName: vlResult.name,
-                            voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                            voltageLevelSubstationId: vlResult.substationId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                }) // if voltage level can't be found, we fill the form with minimal infos
-                .catch(() => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                });
+            reset({
+                [EQUIPMENT_ID]: load.equipmentId,
+                [EQUIPMENT_NAME]: load.equipmentName ?? '',
+                [LOAD_TYPE]: load.loadType,
+                [ACTIVE_POWER]: load.activePower,
+                [REACTIVE_POWER]: load.reactivePower,
+                ...getConnectivityFormData({
+                    voltageLevelId: load.voltageLevelId,
+                    busbarSectionId: load.busOrBusbarSectionId,
+                    connectionDirection: load.connectionDirection,
+                    connectionName: load.connectionName,
+                    connectionPosition: load.connectionPosition,
+                }),
+            });
         },
-        [studyUuid, currentNodeUuid, reset]
+        [reset]
     );
 
     const searchCopy = useFormSearchCopy({
