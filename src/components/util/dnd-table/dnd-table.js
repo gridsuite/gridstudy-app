@@ -86,12 +86,19 @@ function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
     );
 }
 
-function EditableTableCell({ arrayFormName, rowIndex, column, ...props }) {
+function EditableTableCell({
+    arrayFormName,
+    rowIndex,
+    column,
+    previousValue,
+    ...props
+}) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 0.5 }}>
             {column.numeric && (
                 <TableNumericalInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    previousValue={previousValue}
                     {...props}
                 />
             )}
@@ -119,6 +126,7 @@ const DndTable = ({
     withAddRowsDialog = true,
     previousValues,
     disableTableCell,
+    getPreviousValue,
 }) => {
     const intl = useIntl();
 
@@ -153,6 +161,16 @@ const DndTable = ({
                               previousValues
                           )
                         : disabled
+                }
+                previousValue={
+                    getPreviousValue
+                        ? getPreviousValue(
+                              rowIndex,
+                              column,
+                              arrayFormName,
+                              previousValues
+                          )
+                        : undefined
                 }
             />
         );

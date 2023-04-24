@@ -207,11 +207,6 @@ const LineModificationDialog = ({
 
     const [lineToModify, setLineToModify] = useState(null);
 
-    const data = methods.watch();
-    useEffect(() => {
-        console.log(data);
-    }, [data]);
-
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {

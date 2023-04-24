@@ -5,10 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextField } from '@mui/material';
+import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
+import ClearIcon from '@mui/icons-material/Clear';
 
-export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
+export const TableNumericalInput = ({
+    name,
+    style,
+    inputProps,
+    previousValue,
+    ...props
+}) => {
     const { trigger } = useFormContext();
     const {
         field: { onChange, value, ref },
@@ -23,18 +30,21 @@ export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
     };
 
     const outputTransform = (value) => {
-        if (value === '-') {
-            return value;
-        }
-        if (value === '') {
-            return null;
-        }
+        if (typeof value === 'string') {
+            if (value === '-') {
+                return value;
+            }
+            if (value === '') {
+                return null;
+            }
 
-        const tmp = value?.replace(',', '.') || '';
-        if (tmp.endsWith('.') || tmp.endsWith('0')) {
-            return value;
+            const tmp = value?.replace(',', '.') || '';
+            if (tmp.endsWith('.') || tmp.endsWith('0')) {
+                return value;
+            }
+            return parseFloat(tmp) || null;
         }
-        return parseFloat(tmp) || null;
+        return value === Number.MAX_VALUE ? null : value;
     };
 
     const handleInputChange = (e) => {
@@ -43,6 +53,10 @@ export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
     };
 
     const transformedValue = inputTransform(value);
+
+    const handleClearValue = () => {
+        onChange(outputTransform(previousValue));
+    };
 
     return (
         <TextField
@@ -62,6 +76,20 @@ export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
                 ...inputProps,
             }}
             InputProps={{
+                endAdornment: (
+                    <InputAdornment position="end">
+                        [// we add the clear button only if the previous value
+                        is different from the current value]
+                        {previousValue &&
+                            previousValue !== value &&
+                            transformedValue !== undefined &&
+                            transformedValue !== '' && (
+                                <IconButton onClick={handleClearValue}>
+                                    <ClearIcon />
+                                </IconButton>
+                            )}
+                    </InputAdornment>
+                ),
                 disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
             }}
             {...props}

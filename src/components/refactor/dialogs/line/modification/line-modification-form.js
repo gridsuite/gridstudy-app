@@ -67,6 +67,27 @@ const LineModificationForm = ({
         [getValues]
     );
 
+    const getTemporaryLimitPreviousValue = useCallback(
+        (rowIndex, column, arrayFormName, temporaryLimits) => {
+            if (disableTableCell) {
+                return disableTableCell(
+                    rowIndex,
+                    column,
+                    arrayFormName,
+                    temporaryLimits
+                )
+                    ? undefined
+                    : temporaryLimits?.find(
+                          (e) =>
+                              e.name ===
+                              getValues(arrayFormName)[rowIndex]?.name
+                      )?.value ?? Number.MAX_VALUE;
+            }
+            return undefined;
+        },
+        [disableTableCell, getValues]
+    );
+
     const lineIdField = (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
@@ -129,6 +150,9 @@ const LineModificationForm = ({
                     equipmentToModify={lineToModify}
                     disableTableCell={disableTableCell}
                     clearableFields={true}
+                    getTemporaryLimitPreviousValue={
+                        getTemporaryLimitPreviousValue
+                    }
                 />
             </Box>
         </>
