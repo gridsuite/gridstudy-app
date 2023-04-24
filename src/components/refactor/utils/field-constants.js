@@ -190,3 +190,6 @@ export const REPLACING_LINE_2_NAME = 'replacingLine2Name';
 export const COUNTRY = 'country';
 export const VALUE = 'value';
 export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
+
+// generation dispatch
+export const LOSS_COEFFICIENT = 'lossCoefficient';

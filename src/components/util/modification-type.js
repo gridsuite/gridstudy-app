@@ -59,4 +59,7 @@ export const MODIFICATION_TYPES = {
     GENERATOR_SCALING: {
         type: 'GENERATOR_SCALING',
     },
+    GENERATION_DISPATCH: {
+        type: 'GENERATION_DISPATCH',
+    },
 };
