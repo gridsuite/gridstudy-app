@@ -50,8 +50,8 @@ import { useTheme } from '@mui/material/styles';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-import GeneratorModificationDialog from 'components/refactor/dialogs/generator/modification/generator-modification-dialog';
-import LoadModificationDialog from '../../refactor/dialogs/load-modification/load-modification-dialog';
+import GeneratorModificationDialog from 'components/dialogs/generator/modification/generator-modification-dialog';
+import LoadModificationDialog from '../../dialogs/load-modification/load-modification-dialog';
 
 const SingleLineDiagramContent = forwardRef((props, ref) => {
     const { studyUuid, setWarning } = props;

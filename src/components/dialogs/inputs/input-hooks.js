@@ -18,16 +18,12 @@ import { validateField } from '../../util/validation-functions';
 import {
     CircularProgress,
     FormHelperText,
-    FormLabel,
     InputLabel,
     MenuItem,
-    Radio,
-    RadioGroup,
     Select,
     TextField,
     Tooltip,
     Button,
-    FormControlLabel,
     Grid,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
@@ -42,25 +38,16 @@ import {
     toIntValue,
     useStyles,
 } from '../dialogUtils';
-import { getComputedLanguage } from '../../../utils/language';
-import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
-import {
-    fetchVoltageLevelEquipments,
-    isNodeExists,
-} from '../../../utils/rest-api';
+import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
-import { useParameterState } from '../parameters/parameters';
 import {
     FieldLabel,
     genHelperError,
     genHelperPreviousValue,
 } from './hooks-helpers';
 import { useAutocompleteField } from './use-autocomplete-field';
-import RegulatingTerminalEdition, {
-    makeRefreshRegulatingTerminalSectionsCallback,
-} from '../regulating-terminal-edition';
 import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
@@ -316,70 +303,6 @@ export const useOptionalEnumValue = (props) => {
     });
 };
 
-export const useCountryValue = (props) => {
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    const [code, setCode] = useState(props.defaultCodeValue);
-
-    // supposed cached by node.js
-    const englishCountriesModule = require('localized-countries')(
-        require('localized-countries/data/en')
-    );
-    const localizedCountriesModule = useMemo(() => {
-        try {
-            return require('localized-countries')(
-                require('localized-countries/data/' +
-                    getComputedLanguage(languageLocal).substr(0, 2))
-            );
-        } catch (error) {
-            // fallback to english if no localised list found
-            return englishCountriesModule;
-        }
-    }, [languageLocal, englishCountriesModule]);
-
-    useEffect(() => {
-        //We only need to search for the code if we only have the label
-        if (props.defaultLabelValue && !props.defaultCodeValue) {
-            // code -> name is currently done in NetworkMapService::toDataMap and gives english
-            let res = englishCountriesModule
-                .array()
-                .filter(
-                    (obj) =>
-                        obj.label.toLowerCase() ===
-                        props.defaultLabelValue.toLowerCase()
-                )[0];
-            setCode(res.code);
-        } else if (props.defaultCodeValue !== null) {
-            setCode(props.defaultCodeValue);
-        } else {
-            setCode(null);
-        }
-    }, [
-        englishCountriesModule,
-        props.defaultLabelValue,
-        props.defaultCodeValue,
-    ]);
-
-    const values = useMemo(
-        () =>
-            localizedCountriesModule
-                ? Object.keys(localizedCountriesModule.object())
-                : [],
-        [localizedCountriesModule]
-    );
-    const getOptionLabel = useCallback(
-        (code) => localizedCountriesModule.get(code),
-        [localizedCountriesModule]
-    );
-
-    return useAutocompleteField({
-        values,
-        getLabel: getOptionLabel,
-        selectedValue: code,
-        defaultValue: code,
-        ...props,
-    });
-};
-
 const getObjectId = (e) => e.id;
 const getLabel = (e) => e.label;
 
@@ -404,6 +327,7 @@ export const useEnumValue = ({
             setError(res?.errorMsgId);
             return !res.error;
         }
+
         inputForm.addValidation(label, validate);
     }, [label, validation, inputForm, value]);
 
@@ -487,149 +411,6 @@ export const useEnumValue = ({
 
     return [value, field];
 };
-export const useRegulatingTerminalValue = ({
-    validation = {
-        isFieldRequired: false,
-    },
-    disabled = false,
-    inputForm,
-    direction = 'row',
-    voltageLevelIdDefaultValue,
-    equipmentSectionTypeDefaultValue,
-    equipmentSectionIdDefaultValue,
-    previousRegulatingTerminalValue,
-    previousEquipmentSectionTypeValue,
-    studyUuid,
-    currentNodeUuid,
-    voltageLevelsIdsAndTopologyPromise,
-}) => {
-    const [regulatingTerminal, setRegulatingTerminal] = useState({
-        voltageLevel: voltageLevelIdDefaultValue,
-        equipmentSection: {
-            id: equipmentSectionIdDefaultValue,
-            type: equipmentSectionTypeDefaultValue,
-        },
-    });
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [voltageLevelEquipments, setVoltageLevelEquipments] = useState([]);
-
-    useEffect(() => {
-        setRegulatingTerminal({
-            voltageLevel: null,
-            equipmentSection: null,
-        });
-    }, [inputForm.toggleClear]);
-
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            voltageLevelsIdsAndTopologyPromise.then((values) => {
-                setVoltageLevelOptions(
-                    values.sort((a, b) => a.id.localeCompare(b.id))
-                );
-            });
-        }
-    }, [studyUuid, currentNodeUuid, voltageLevelsIdsAndTopologyPromise]);
-
-    useEffect(() => {
-        if (regulatingTerminal?.voltageLevel?.id) {
-            fetchVoltageLevelEquipments(
-                studyUuid,
-                currentNodeUuid,
-                undefined,
-                regulatingTerminal?.voltageLevel?.id,
-                true
-            ).then((values) => {
-                setVoltageLevelEquipments(values);
-            });
-        } else {
-            setVoltageLevelEquipments([]);
-        }
-    }, [regulatingTerminal, studyUuid, currentNodeUuid]);
-
-    useEffect(() => {
-        if (!voltageLevelOptions) {
-            return;
-        }
-        setRegulatingTerminal({
-            voltageLevel: voltageLevelIdDefaultValue
-                ? {
-                      id: voltageLevelIdDefaultValue,
-                      topologyKind: voltageLevelOptions.find(
-                          (vl) => vl.id === voltageLevelIdDefaultValue
-                      )?.topologyKind,
-                  }
-                : null,
-            equipmentSection:
-                equipmentSectionIdDefaultValue &&
-                equipmentSectionTypeDefaultValue
-                    ? {
-                          id: equipmentSectionIdDefaultValue,
-                          type: equipmentSectionTypeDefaultValue,
-                      }
-                    : null,
-        });
-    }, [
-        voltageLevelOptions,
-        equipmentSectionIdDefaultValue,
-        equipmentSectionTypeDefaultValue,
-        voltageLevelIdDefaultValue,
-    ]);
-
-    const setVoltageLevel = useCallback((newVal) => {
-        setRegulatingTerminal((oldVal) => {
-            return { ...oldVal, voltageLevel: newVal };
-        });
-    }, []);
-
-    const setEquipmentSection = useCallback((newVal) => {
-        setRegulatingTerminal((oldVal) => {
-            return { ...oldVal, equipmentSection: newVal };
-        });
-    }, []);
-
-    const render = useMemo(() => {
-        return (
-            <RegulatingTerminalEdition
-                validation={validation}
-                inputForm={inputForm}
-                disabled={disabled}
-                voltageLevelOptions={voltageLevelOptions}
-                regulatingTerminalValue={regulatingTerminal}
-                voltageLevelEquipments={voltageLevelEquipments}
-                onChangeVoltageLevel={(value) => setVoltageLevel(value)}
-                onChangeEquipmentSection={(equipmentSection) =>
-                    setEquipmentSection(equipmentSection)
-                }
-                direction={direction}
-                voltageLevelEquipmentsCallback={makeRefreshRegulatingTerminalSectionsCallback()}
-                equipmentSectionTypeDefaultValue={
-                    equipmentSectionTypeDefaultValue
-                }
-                previousRegulatingTerminalValue={
-                    previousRegulatingTerminalValue
-                }
-                previousEquipmentSectionTypeValue={
-                    previousEquipmentSectionTypeValue
-                }
-            />
-        );
-    }, [
-        validation,
-        inputForm,
-        disabled,
-        voltageLevelOptions,
-        regulatingTerminal,
-        voltageLevelEquipments,
-        direction,
-        equipmentSectionTypeDefaultValue,
-        previousRegulatingTerminalValue,
-        previousEquipmentSectionTypeValue,
-        setVoltageLevel,
-        setEquipmentSection,
-    ]);
-    return [regulatingTerminal, render];
-};
-
 export const useSimpleTextValue = ({
     defaultValue,
     adornment,
@@ -967,77 +748,4 @@ export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber }) => {
     }, [header, intl, label, maxTapNumber]);
 
     return [_acceptedFile, field, fileError];
-};
-
-export const useRadioValue = ({
-    label,
-    possibleValues = [],
-    defaultValue,
-    id,
-    inputForm,
-    doTranslation = true,
-}) => {
-    const [value, setValue] = useState(defaultValue);
-    const intl = useIntl();
-
-    useEffect(() => {
-        // Updates the component when the correct default value is given by the parent component.
-        if (defaultValue?.length > 0) {
-            setValue(defaultValue);
-        }
-    }, [defaultValue]);
-
-    const handleChangeValue = useCallback(
-        (event) => {
-            setValue(event.target.value);
-            inputForm.setHasChanged(true);
-        },
-        [inputForm]
-    );
-
-    const field = useMemo(() => {
-        return (
-            <FormControl
-                style={{
-                    marginTop: '-12px',
-                }}
-            >
-                {label && (
-                    <FormLabel id={id ? id : label}>
-                        <FormattedMessage id={label} />
-                    </FormLabel>
-                )}
-                <RadioGroup
-                    row
-                    aria-labelledby={id ? id : label}
-                    value={value ?? defaultValue}
-                    onChange={handleChangeValue}
-                >
-                    {possibleValues.map((value) => (
-                        <FormControlLabel
-                            key={value.id}
-                            value={value.id}
-                            control={<Radio />}
-                            label={
-                                doTranslation
-                                    ? intl.formatMessage({ id: value.label })
-                                    : value.label
-                            }
-                        />
-                    ))}
-                </RadioGroup>
-            </FormControl>
-        );
-    }, [
-        intl,
-        label,
-        id,
-        defaultValue,
-        doTranslation,
-        possibleValues,
-        value,
-        handleChangeValue,
-    ]);
-
-    return [value, field];
 };

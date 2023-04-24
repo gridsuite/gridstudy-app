@@ -16,7 +16,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { SELECTED } from '../../refactor/utils/field-constants';
+import { SELECTED } from '../field-constants';
 
 const DndTableBottomRightButtons = ({
     arrayFormName,

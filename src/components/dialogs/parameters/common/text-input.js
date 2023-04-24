@@ -6,7 +6,7 @@
  */
 
 import * as yup from 'yup';
-import RHFTextInput from '../../../refactor/rhf-inputs/text-input';
+import RHFTextInput from '../../../rhf-inputs/text-input';
 import WrapperInput from './wrapper-input';
 
 const TextInput = ({ value, label, callback }) => {
