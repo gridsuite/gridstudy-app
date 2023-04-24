@@ -24,6 +24,7 @@ import {
     SHUNT_COMPENSATOR_TYPE,
 } from 'components/refactor/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import { RunningStatus } from 'components/util/running-status';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -75,14 +76,14 @@ const schema = yup
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param isEditDataFetched check if editData is fetched
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const ShuntCompensatorCreationDialog = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -199,7 +200,8 @@ const ShuntCompensatorCreationDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDataFetched,
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === RunningStatus.SUCCEED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -213,7 +215,9 @@ const ShuntCompensatorCreationDialog = ({
                 titleId="CreateShuntCompensator"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={isUpdate && !isEditDataFetched}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <ShuntCompensatorCreationForm
@@ -241,7 +245,7 @@ ShuntCompensatorCreationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
-    isEditDataFetched: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default ShuntCompensatorCreationDialog;

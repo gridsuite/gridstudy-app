@@ -44,6 +44,7 @@ import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { RunningStatus } from 'components/util/running-status';
 
 /**
  * Dialog to create a load in the network
@@ -53,7 +54,7 @@ import { FORM_LOADING_DELAY } from 'components/network/constants';
  * @param isUpdate check if edition form
  * @param onCreateVoltageLevel to create voltage level from other forms,
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param isEditDataFetched check if editData is fetched
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 
 const emptyFormData = {
@@ -111,7 +112,7 @@ const VoltageLevelCreationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     onCreateVoltageLevel = createVoltageLevel,
     ...dialogProps
 }) => {
@@ -221,7 +222,8 @@ const VoltageLevelCreationDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDataFetched,
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === RunningStatus.SUCCEED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -236,7 +238,9 @@ const VoltageLevelCreationDialog = ({
                 titleId="CreateVoltageLevel"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={isUpdate && !isEditDataFetched}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <VoltageLevelCreationForm
@@ -261,7 +265,7 @@ VoltageLevelCreationDialog.propTypes = {
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
     onCreateVoltageLevel: PropTypes.func,
-    isEditDataFetched: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default VoltageLevelCreationDialog;

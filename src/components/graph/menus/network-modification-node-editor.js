@@ -61,6 +61,7 @@ import GeneratorScalingDialog from 'components/refactor/dialogs/generator-scalin
 import GeneratorModificationDialog from 'components/refactor/dialogs/generator/modification/generator-modification-dialog';
 import SubstationCreationDialog from 'components/refactor/dialogs/substation-creation/substation-creation-dialog';
 import GenerationDispatchDialog from 'components/refactor/dialogs/generation-dispatch/generation-dispatch-dialog';
+import { RunningStatus } from 'components/util/running-status';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -165,7 +166,9 @@ const NetworkModificationNodeEditor = () => {
 
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
-    const [isEditDataFetched, setIsEditDataFetched] = useState(false);
+    const [editDataFetchStatus, setEditDataFetchStatus] = useState(
+        RunningStatus.IDLE
+    );
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
@@ -207,7 +210,7 @@ const NetworkModificationNodeEditor = () => {
                 studyUuid={studyUuid}
                 editData={editData}
                 isUpdate={isUpdate}
-                isEditDataFetched={isEditDataFetched}
+                editDataFetchStatus={editDataFetchStatus}
                 {...props}
             />
         );
@@ -569,7 +572,7 @@ const NetworkModificationNodeEditor = () => {
     const doEditModification = (modificationUuid, type) => {
         setIsUpdate(true);
         setEditDialogOpen(type);
-        setIsEditDataFetched(false);
+        setEditDataFetchStatus(RunningStatus.RUNNING);
         const modification = fetchNetworkModification(modificationUuid);
         modification
             .then((res) => {
@@ -577,13 +580,14 @@ const NetworkModificationNodeEditor = () => {
                     //remove all null values to avoid showing a "null" in the forms
                     setEditData(removeNullFields(data));
                 });
+                setEditDataFetchStatus(RunningStatus.SUCCEED);
             })
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
                 });
-            })
-            .finally(() => setIsEditDataFetched(true));
+                setEditDataFetchStatus(RunningStatus.FAILED);
+            });
     };
 
     const onOpenDialog = (id) => {

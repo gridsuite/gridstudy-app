@@ -24,6 +24,7 @@ import { sanitizeString } from '../../../dialogs/dialogUtils';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
+import { RunningStatus } from 'components/util/running-status';
 
 /**
  * Dialog to create a load in the network
@@ -33,7 +34,7 @@ import LoadModificationForm from './load-modification-form';
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param isEditDataFetched check if editData is fetched
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 
 const schema = yup
@@ -53,12 +54,12 @@ const LoadModificationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const [isDataFetched, setIsDataFetched] = useState(isEditDataFetched);
+    const [isDataFetched, setIsDataFetched] = useState(RunningStatus.IDLE);
 
     const emptyFormData = useMemo(
         () => ({
@@ -97,10 +98,6 @@ const LoadModificationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    useEffect(() => {
-        setIsDataFetched(isEditDataFetched);
-    }, [isEditDataFetched]);
-
     const onSubmit = useCallback(
         (load) => {
             console.log(load);
@@ -131,7 +128,10 @@ const LoadModificationDialog = ({
     }, [reset, emptyFormData]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || (isEditDataFetched && isDataFetched),
+        isDataFetched:
+            !isUpdate ||
+            (editDataFetchStatus === RunningStatus.SUCCEED &&
+                isDataFetched === RunningStatus.SUCCEED),
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -150,7 +150,9 @@ const LoadModificationDialog = ({
                 open={open}
                 keepMounted={true}
                 isDataFetching={
-                    isUpdate && !(isEditDataFetched && isDataFetched)
+                    isUpdate &&
+                    (editDataFetchStatus === RunningStatus.RUNNING ||
+                        isDataFetched === RunningStatus.RUNNING)
                 }
                 {...dialogProps}
             >
@@ -169,7 +171,7 @@ LoadModificationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
-    isEditDataFetched: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default LoadModificationDialog;

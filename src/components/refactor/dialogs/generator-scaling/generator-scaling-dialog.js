@@ -20,6 +20,7 @@ import {
     VARIATION_TYPES,
 } from '../../../network/constants';
 import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
+import { RunningStatus } from 'components/util/running-status';
 
 const emptyFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
@@ -39,7 +40,7 @@ const GeneratorScalingDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
@@ -84,7 +85,8 @@ const GeneratorScalingDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDataFetched,
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === RunningStatus.SUCCEED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -98,7 +100,9 @@ const GeneratorScalingDialog = ({
                 maxWidth={'md'}
                 titleId="GeneratorScaling"
                 open={open}
-                isDataFetching={isUpdate && !isEditDataFetched}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <GeneratorScalingForm />

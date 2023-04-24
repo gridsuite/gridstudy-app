@@ -71,6 +71,7 @@ import {
     getReactiveLimitsSchema,
 } from '../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
+import { RunningStatus } from 'components/util/running-status';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -135,7 +136,7 @@ const GeneratorCreationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
@@ -334,7 +335,8 @@ const GeneratorCreationDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDataFetched,
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === RunningStatus.SUCCEED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -348,7 +350,9 @@ const GeneratorCreationDialog = ({
                 titleId="CreateGenerator"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={isUpdate && !isEditDataFetched}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <GeneratorCreationForm

@@ -40,6 +40,7 @@ import { MODIFICATION_TYPES } from 'components/util/modification-type';
 import { buildNewBusbarSections } from 'components/refactor/utils/utils';
 import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { RunningStatus } from 'components/util/running-status';
 
 const emptyFormData = {
     [LINE1_ID]: '',
@@ -69,14 +70,14 @@ const schema = yup
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param isEditDataFetched check if editData is fetched
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const LineSplitWithVoltageLevelDialog = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -225,7 +226,8 @@ const LineSplitWithVoltageLevelDialog = ({
     }, [getValues, newVoltageLevel]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDataFetched,
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === RunningStatus.SUCCEED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -238,7 +240,9 @@ const LineSplitWithVoltageLevelDialog = ({
                 aria-labelledby="dialog-create-voltage-level-amidst-a-line"
                 titleId="LineSplitWithVoltageLevel"
                 open={open}
-                isDataFetching={isUpdate && !isEditDataFetched}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <LineSplitWithVoltageLevelForm
@@ -258,7 +262,7 @@ LineSplitWithVoltageLevelDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
-    isEditDataFetched: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default LineSplitWithVoltageLevelDialog;

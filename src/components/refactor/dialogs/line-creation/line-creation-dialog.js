@@ -73,6 +73,7 @@ import {
     getLimitsValidationSchema,
 } from '../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
+import { RunningStatus } from 'components/util/running-status';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -95,7 +96,7 @@ export const LineCreationDialogTab = {
  * @param voltageLevelOptionsPromise a promise that will bring available voltage levels
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param isEditDataFetched check if editData is fetched
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const LineCreationDialog = ({
     editData,
@@ -105,7 +106,7 @@ const LineCreationDialog = ({
     displayConnectivity = true,
     voltageLevelOptionsPromise,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -374,7 +375,8 @@ const LineCreationDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDataFetched,
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === RunningStatus.SUCCEED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -396,7 +398,9 @@ const LineCreationDialog = ({
                     },
                 }}
                 open={open}
-                isDataFetching={isUpdate && !isEditDataFetched}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <Box
@@ -437,7 +441,7 @@ LineCreationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
-    isEditDataFetched: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default LineCreationDialog;

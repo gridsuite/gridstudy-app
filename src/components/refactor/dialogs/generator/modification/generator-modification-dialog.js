@@ -68,6 +68,7 @@ import {
     REMOVE,
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
+import { RunningStatus } from 'components/util/running-status';
 
 const GeneratorModificationDialog = ({
     editData,
@@ -75,14 +76,14 @@ const GeneratorModificationDialog = ({
     currentNode,
     studyUuid,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
     const shouldEmptyFormOnGeneratorIdChangeRef = useRef(!editData);
-    const [isDataFetched, setIsDataFetched] = useState(false);
+    const [isDataFetched, setIsDataFetched] = useState(RunningStatus.IDLE);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const completeReactiveCapabilityCurvePointsData = (
@@ -261,10 +262,6 @@ const GeneratorModificationDialog = ({
         }
     }, [editData, setValue]);
 
-    useEffect(() => {
-        setIsDataFetched(isEditDataFetched);
-    }, [isEditDataFetched]);
-
     //this method empties the form, and let us pass custom data that we want to set
     const setValuesAndEmptyOthers = useCallback(
         (customData = {}, keepDefaultValues = false) => {
@@ -332,7 +329,7 @@ const GeneratorModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
-                setIsDataFetched(false);
+                setIsDataFetched(RunningStatus.RUNNING);
                 fetchEquipmentInfos(
                     studyUuid,
                     currentNodeUuid,
@@ -388,12 +385,12 @@ const GeneratorModificationDialog = ({
                                     previousReactiveCapabilityCurveTable,
                             });
                         }
-                        setIsDataFetched(true);
+                        setIsDataFetched(RunningStatus.SUCCEED);
                     })
                     .catch(() => {
                         setGeneratorToModify(null);
-                    })
-                    .finally(() => {});
+                        setIsDataFetched(RunningStatus.FAILED);
+                    });
             } else {
                 setValuesAndEmptyOthers();
                 setGeneratorToModify(null);
@@ -563,7 +560,10 @@ const GeneratorModificationDialog = ({
     );
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || (isEditDataFetched && isDataFetched),
+        isDataFetched:
+            !isUpdate ||
+            (editDataFetchStatus === RunningStatus.SUCCEED &&
+                isDataFetched === RunningStatus.SUCCEED),
         delay: FORM_LOADING_DELAY,
     });
 
@@ -583,7 +583,9 @@ const GeneratorModificationDialog = ({
                 open={open}
                 keepMounted={true}
                 isDataFetching={
-                    isUpdate && (!isEditDataFetched || !isDataFetched)
+                    isUpdate &&
+                    (editDataFetchStatus === RunningStatus.RUNNING ||
+                        isDataFetched === RunningStatus.RUNNING)
                 }
                 {...dialogProps}
             >

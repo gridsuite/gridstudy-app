@@ -23,6 +23,7 @@ import { sanitizeString } from '../../../dialogs/dialogUtils';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
+import { RunningStatus } from 'components/util/running-status';
 
 const emptyFormData = {
     [ATTACHED_LINE_ID]: null,
@@ -50,14 +51,14 @@ const schema = yup
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param isEditDataFetched check if editData is fetched
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const DeleteAttachingLineDialog = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -72,7 +73,8 @@ const DeleteAttachingLineDialog = ({
     const { reset } = methods;
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDataFetched,
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === RunningStatus.SUCCEED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -130,7 +132,9 @@ const DeleteAttachingLineDialog = ({
                 aria-labelledby="dialog-delete-attaching-line"
                 titleId="DeleteAttachingLine"
                 open={open}
-                isDataFetching={isUpdate && !isEditDataFetched}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <DeleteAttachingLineForm
@@ -147,7 +151,7 @@ DeleteAttachingLineDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
-    isEditDataFetched: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default DeleteAttachingLineDialog;

@@ -31,6 +31,7 @@ import {
 import AutocompleteInput from '../../rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
+import { RunningStatus } from 'components/util/running-status';
 
 const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
     const currentNodeUuid = currentNode?.id;
@@ -56,7 +57,7 @@ const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
 
     useEffect(() => {
         if (loadId) {
-            setIsDataFetched(false);
+            setIsDataFetched(RunningStatus.RUNNING);
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -67,9 +68,12 @@ const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
                 .then((value) => {
                     if (value) {
                         setLoadInfos(value);
+                        setIsDataFetched(RunningStatus.SUCCEED);
                     }
                 })
-                .finally(() => setIsDataFetched(true));
+                .catch(() => {
+                    setIsDataFetched(RunningStatus.FAILED);
+                });
         } else {
             setLoadInfos(null);
         }

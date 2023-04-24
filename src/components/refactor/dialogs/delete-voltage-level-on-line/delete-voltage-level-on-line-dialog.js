@@ -22,6 +22,7 @@ import { sanitizeString } from '../../../dialogs/dialogUtils';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
+import { RunningStatus } from 'components/util/running-status';
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
@@ -47,14 +48,14 @@ const schema = yup
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param isEditDataFetched check if editData is fetched
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const DeleteVoltageLevelOnLineDialog = ({
     studyUuid,
     currentNode,
     editData,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -69,7 +70,8 @@ const DeleteVoltageLevelOnLineDialog = ({
     const { reset } = methods;
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDataFetched,
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === RunningStatus.SUCCEED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -125,7 +127,9 @@ const DeleteVoltageLevelOnLineDialog = ({
                 aria-labelledby="dialog-delete-voltage-level-on-line"
                 titleId="DeleteVoltageLevelOnLine"
                 open={open}
-                isDataFetching={isUpdate && !isEditDataFetched}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <DeleteVoltageLevelOnLineForm
@@ -142,7 +146,7 @@ DeleteVoltageLevelOnLineDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
-    isEditDataFetched: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default DeleteVoltageLevelOnLineDialog;

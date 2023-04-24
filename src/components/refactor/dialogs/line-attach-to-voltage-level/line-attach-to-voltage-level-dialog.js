@@ -43,6 +43,7 @@ import {
 import { buildNewBusbarSections } from 'components/refactor/utils/utils';
 import { useOpenShortWaitFetching } from 'components/refactor/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { RunningStatus } from 'components/util/running-status';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -84,7 +85,7 @@ const LineAttachToVoltageLevelDialog = ({
     currentNode,
     editData,
     isUpdate,
-    isEditDataFetched,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -300,7 +301,8 @@ const LineAttachToVoltageLevelDialog = ({
     }, [getValues, newVoltageLevel]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched: !isUpdate || isEditDataFetched,
+        isDataFetched:
+            !isUpdate || editDataFetchStatus === RunningStatus.SUCCEED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -313,7 +315,9 @@ const LineAttachToVoltageLevelDialog = ({
                 aria-labelledby="dialog-attach-voltage-level-to-a-line"
                 titleId="LineAttachToVoltageLevel"
                 open={open}
-                isDataFetching={isUpdate && !isEditDataFetched}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <LineAttachToVoltageLevelForm
@@ -334,7 +338,7 @@ LineAttachToVoltageLevelDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
-    isEditDataFetched: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default LineAttachToVoltageLevelDialog;
