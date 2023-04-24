@@ -646,6 +646,7 @@
     "LoadScalingError": "Erreur lors de la création de la variation du plan de consommation",
     "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
     "DeleteAttachingLineError": "Erreur lors de la suppression d'un piquage",
+    "GenerationDispatchError": "Erreur lors de la création du démarrage de groupes",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
@@ -849,6 +850,8 @@
     "LoadScaling": "Variation plan de consommation",
     "DeleteVoltageLevelOnLine": "Supprimer une coupure",
     "DeleteAttachingLine": "Supprimer un piquage",
+    "GenerationDispatch": "Démarrage de groupes",
+    "LossCoefficient": "Coefficient de pertes",
     "ReplacingLine": "Liaison de remplacement",
     "ConnectionPosition": "Position départ",
     "DisplayTakenPositions": "Afficher les positions prises",
