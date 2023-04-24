@@ -23,7 +23,7 @@ const emptyFormData = getCreateRuteEmptyFormData();
 const schema = getCreateRuleValidationSchema();
 
 export const CreateRuleDialog = (props) => {
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
@@ -34,7 +34,7 @@ export const CreateRuleDialog = (props) => {
         setOpenCreateRuleDialog,
     } = props;
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     const handleCloseDialog = () => {
         reset(emptyFormData);
@@ -48,7 +48,7 @@ export const CreateRuleDialog = (props) => {
 
     return (
         <Dialog open={props.openCreateRuleDialog} fullWidth={true}>
-            <FormProvider validationSchema={schema} {...methods}>
+            <FormProvider validationSchema={schema} {...formMethods}>
                 <CreateRuleForm {...props} />
                 <DialogActions>
                     <Button onClick={handleCloseDialog}>

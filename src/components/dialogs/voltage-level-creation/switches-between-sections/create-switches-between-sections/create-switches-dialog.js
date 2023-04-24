@@ -19,16 +19,16 @@ import { SWITCH_KINDS } from 'components/util/field-constants';
 import yup from 'components/util/yup-config';
 import { useEffect } from 'react';
 
-const schema = yup.object().shape({
+const formSchema = yup.object().shape({
     ...getCreateSwitchesValidationSchema(),
 });
 
 export const CreateSwitchesDialog = (props) => {
     const sectionCount = props.sectionCount;
     const emptyFormData = getCreateSwitchesEmptyFormData(sectionCount);
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
     const {
         handleCreateSwitchesDialog,
@@ -37,7 +37,7 @@ export const CreateSwitchesDialog = (props) => {
         switchKinds,
     } = props;
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     useEffect(() => {
         if (switchKinds?.length > 0) {
@@ -59,7 +59,7 @@ export const CreateSwitchesDialog = (props) => {
 
     return (
         <Dialog open={openCreateSwitchesDialog} fullWidth={true}>
-            <FormProvider validationSchema={schema} {...methods}>
+            <FormProvider validationSchema={formSchema} {...formMethods}>
                 <CreateSwitchesForm id={SWITCH_KINDS} />
                 <DialogActions>
                     <Button onClick={handleCloseDialog}>

@@ -89,7 +89,7 @@ const emptyFormData = {
     ...getConnectivityWithPositionEmptyFormData(),
 };
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape(
         {
@@ -139,12 +139,12 @@ const GeneratorCreationDialog = ({
 
     const equipmentPath = 'generators';
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
     const fromSearchCopyToFormValues = (generator) => {
         reset({
             [EQUIPMENT_ID]: generator.id + '(1)',
@@ -330,7 +330,7 @@ const GeneratorCreationDialog = ({
     );
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

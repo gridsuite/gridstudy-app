@@ -107,7 +107,7 @@ const LineCreationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
-    const schema = yup
+    const formSchema = yup
         .object()
         .shape({
             ...getHeaderValidationSchema(),
@@ -119,12 +119,12 @@ const LineCreationDialog = ({
         })
         .required();
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     const fromSearchCopyToFormValues = (line) => {
         reset(
@@ -362,7 +362,7 @@ const LineCreationDialog = ({
     );
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

@@ -118,7 +118,7 @@ const emptyFormData = {
     ...getPhaseTapChangerEmptyFormData(),
 };
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape({
         ...getTwoWindingsTransformerValidationSchema(),
@@ -149,12 +149,12 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const equipmentPath = '2-windings-transformers';
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     const [tabIndex, setTabIndex] = useState(
         TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
@@ -771,7 +771,7 @@ const TwoWindingsTransformerCreationDialog = ({
     }, [reset]);
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

@@ -20,7 +20,7 @@ const emptyFormData = {
     [LOSS_COEFFICIENT]: 0,
 };
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape({
         [LOSS_COEFFICIENT]: yup.number().nullable().min(0).max(100).required(),
@@ -36,12 +36,12 @@ const GenerationDispatchDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (generation) => {
@@ -81,9 +81,9 @@ const GenerationDispatchDialog = ({
 
     return (
         <FormProvider
-            validationSchema={schema}
+            validationSchema={formSchema}
             removeOptional={true}
-            {...methods}
+            {...formMethods}
         >
             <ModificationDialog
                 fullWidth

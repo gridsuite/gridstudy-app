@@ -48,7 +48,7 @@ const emptyFormData = {
     ...getConnectivityWithoutPositionEmptyFormData(),
 };
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape({
         [LINE1_ID]: yup.string().required(),
@@ -79,12 +79,12 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const { snackError } = useSnackMessage();
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues, setValue } = methods;
+    const { reset, getValues, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (lineSplit) => {
@@ -219,7 +219,7 @@ const LineSplitWithVoltageLevelDialog = ({
     }, [getValues, newVoltageLevel]);
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

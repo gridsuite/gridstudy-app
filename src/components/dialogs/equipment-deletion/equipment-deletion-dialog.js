@@ -17,7 +17,7 @@ import { EQUIPMENT_TYPES } from '../../util/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape({
         [TYPE]: yup.object().nullable().required(),
@@ -47,12 +47,12 @@ const EquipmentDeletionDialog = ({
 
     const { snackError } = useSnackMessage();
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
@@ -96,7 +96,7 @@ const EquipmentDeletionDialog = ({
     }, [reset]);
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"

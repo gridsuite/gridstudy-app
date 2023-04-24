@@ -52,7 +52,7 @@ const emptyFormData = {
     ...getConnectivityWithPositionEmptyFormData(),
 };
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
@@ -75,12 +75,12 @@ const LoadCreationDialog = ({
 
     const equipmentPath = 'loads';
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     const fromSearchCopyToFormValues = (load) => {
         fetchEquipmentInfos(
@@ -206,7 +206,7 @@ const LoadCreationDialog = ({
     }, [reset]);
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

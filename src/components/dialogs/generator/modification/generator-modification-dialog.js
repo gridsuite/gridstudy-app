@@ -241,12 +241,12 @@ const GeneratorModificationDialog = ({
         []
     );
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: defaultFormData,
         resolver: yupResolver(schema),
     });
 
-    const { reset, getValues, setValue } = methods;
+    const { reset, getValues, setValue } = formMethods;
 
     //this method empties the form, and let us pass custom data that we want to set
     const setValuesAndEmptyOthers = useCallback(
@@ -544,7 +544,7 @@ const GeneratorModificationDialog = ({
         <FormProvider
             validationSchema={schema}
             removeOptional={true}
-            {...methods}
+            {...formMethods}
         >
             <ModificationDialog
                 fullWidth

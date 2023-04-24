@@ -53,7 +53,7 @@ const emptyFormData = {
     ...getCharacteristicsEmptyFormData(),
 };
 
-const schema = yup
+const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
@@ -81,12 +81,12 @@ const ShuntCompensatorCreationDialog = ({
 
     const { snackError } = useSnackMessage();
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset } = methods;
+    const { reset } = formMethods;
 
     const fromSearchCopyToFormValues = useCallback(
         (shuntCompensator) => {
@@ -191,7 +191,7 @@ const ShuntCompensatorCreationDialog = ({
     }, [reset]);
 
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
