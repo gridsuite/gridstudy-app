@@ -633,13 +633,14 @@ export const NetworkMapTab = ({
                     updatedLinesArray.push(values);
                 }
             });
-            setUpdatedLines(updatedLinesArray);
 
             return Promise.all([
                 updatedSubstations,
                 updatedLines,
                 updatedHvdcLines,
-            ]).finally(() => setWaitingLoadData(false));
+            ])
+                .then(() => setUpdatedLines(updatedLinesArray))
+                .finally(() => setWaitingLoadData(false));
         },
         [
             currentNode,
@@ -869,17 +870,15 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            {displayOverloadTable &&
-                isLoadFlowValid() &&
-                linesNearOverload() && (
-                    <div className={classes.divOverloadedLineView}>
-                        <OverloadedLinesView
-                            lineFlowAlertThreshold={lineFlowAlertThreshold}
-                            mapEquipments={mapEquipments}
-                            disabled={disabled}
-                        />
-                    </div>
-                )}
+            {displayOverloadTable && isLoadFlowValid() && linesNearOverload() && (
+                <div className={classes.divOverloadedLineView}>
+                    <OverloadedLinesView
+                        lineFlowAlertThreshold={lineFlowAlertThreshold}
+                        mapEquipments={mapEquipments}
+                        disabled={disabled}
+                    />
+                </div>
+            )}
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}

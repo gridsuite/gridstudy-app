@@ -70,7 +70,9 @@ const withBranchMenu =
         const [branch, setBranch] = useState(null);
 
         const getTranslationKey = (key) => {
-            return key.concat(getEquipmentPath(equipmentType));
+            return key.concat(
+                equipmentType === equipments.lines ? 'Line' : '2WTransformer'
+            );
         };
 
         const getEquipmentPath = useCallback((equipmentType) => {
