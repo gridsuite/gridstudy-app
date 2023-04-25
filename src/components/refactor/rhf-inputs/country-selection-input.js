@@ -5,47 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useParameterState } from '../../dialogs/parameters/parameters';
-import { PARAM_LANGUAGE } from '../../../utils/config-params';
-import { useMemo } from 'react';
-import { getComputedLanguage } from '../../../utils/language';
 import AutocompleteInput from './autocomplete-input';
+import { LocalizedCountries } from '../../util/localized-countries';
 
 const CountrySelectionInput = ({ name, label, formProps, ...props }) => {
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-
-    // supposed cached by node.js
-    const englishCountriesModule = require('localized-countries')(
-        require('localized-countries/data/en')
-    );
-
-    const localizedCountriesModule = useMemo(() => {
-        try {
-            return require('localized-countries')(
-                require('localized-countries/data/' +
-                    getComputedLanguage(languageLocal).substr(0, 2))
-            );
-        } catch (error) {
-            // fallback to english if no localised list found
-            return englishCountriesModule;
-        }
-    }, [languageLocal, englishCountriesModule]);
-
-    const options = useMemo(
-        () =>
-            localizedCountriesModule
-                ? Object.keys(localizedCountriesModule.object())
-                : [],
-        [localizedCountriesModule]
-    );
+    const { translate, countryCodes } = LocalizedCountries();
 
     return (
         <AutocompleteInput
             name={name}
-            options={options}
+            options={countryCodes}
             label={label}
             formProps={formProps}
-            getOptionLabel={(value) => localizedCountriesModule.get(value)}
+            getOptionLabel={(countryCode) => translate(countryCode)}
             {...props}
         />
     );
