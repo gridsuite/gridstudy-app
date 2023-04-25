@@ -10,7 +10,7 @@ import {
     gridItem,
     percentageTextField,
     standardTextField,
-} from '../dialogUtils';
+} from '../../dialogs/dialogUtils';
 import Grid from '@mui/material/Grid';
 import {
     formatPercentageValue,
@@ -44,7 +44,7 @@ const GenerationDispatchForm = ({ currentNode, studyUuid }) => {
     return (
         <>
             <Grid container spacing={2} alignItems="center">
-                {gridItem(lossCoefficientField, 3)}
+                {gridItem(lossCoefficientField, 4)}
             </Grid>
         </>
     );
