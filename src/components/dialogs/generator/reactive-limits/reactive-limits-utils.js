@@ -32,14 +32,16 @@ export const getReactiveLimitsSchema = (isGeneratorModification = false) => ({
         .number()
         .nullable()
         .when([MAXIMUM_REACTIVE_POWER], {
-            is: (maximumReactivePower) => !isGeneratorModification && maximumReactivePower != null,
+            is: (maximumReactivePower) =>
+                !isGeneratorModification && maximumReactivePower != null,
             then: (schema) => schema.required(),
         }),
     [MAXIMUM_REACTIVE_POWER]: yup
         .number()
         .nullable()
         .when([MINIMUM_REACTIVE_POWER], {
-            is: (minimumReactivePower) => !isGeneratorModification && minimumReactivePower != null,
+            is: (minimumReactivePower) =>
+                !isGeneratorModification && minimumReactivePower != null,
             then: (schema) => schema.required(),
         }),
     ...getReactiveCapabilityCurveValidationSchema(
