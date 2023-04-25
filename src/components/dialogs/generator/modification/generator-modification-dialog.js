@@ -326,8 +326,6 @@ const GeneratorModificationDialog = ({
                             // which would empty the form instead of displaying data of existing form
                             const previousReactiveCapabilityCurveTable =
                                 value.reactiveCapabilityCurvePoints;
-                            const currentReactiveCapabilityCurveTable =
-                                getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
                             if (
                                 shouldEmptyFormOnGeneratorIdChangeRef?.current
                             ) {
@@ -338,6 +336,11 @@ const GeneratorModificationDialog = ({
                             } else {
                                 // on first render, we need to adjust the UI for the reactive capability curve table
                                 if (previousReactiveCapabilityCurveTable) {
+                                    const currentReactiveCapabilityCurveTable =
+                                        getValues(
+                                            REACTIVE_CAPABILITY_CURVE_TABLE
+                                        );
+
                                     const sizeDiff =
                                         previousReactiveCapabilityCurveTable.length -
                                         currentReactiveCapabilityCurveTable.length;
@@ -367,8 +370,7 @@ const GeneratorModificationDialog = ({
                             setGeneratorToModify({
                                 ...value,
                                 reactiveCapabilityCurveTable:
-                                    previousReactiveCapabilityCurveTable ??
-                                    currentReactiveCapabilityCurveTable,
+                                    previousReactiveCapabilityCurveTable,
                             });
                         }
                     })
