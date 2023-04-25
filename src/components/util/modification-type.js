@@ -20,6 +20,9 @@ export const MODIFICATION_TYPES = {
     SUBSTATION_CREATION: {
         type: 'SUBSTATION_CREATION',
     },
+    SUBSTATION_MODIFICATION: {
+        type: 'SUBSTATION_MODIFICATION',
+    },
     VOLTAGE_LEVEL_CREATION: {
         type: 'VOLTAGE_LEVEL_CREATION',
     },
@@ -58,5 +61,8 @@ export const MODIFICATION_TYPES = {
     },
     GENERATOR_SCALING: {
         type: 'GENERATOR_SCALING',
+    },
+    GENERATION_DISPATCH: {
+        type: 'GENERATION_DISPATCH',
     },
 };

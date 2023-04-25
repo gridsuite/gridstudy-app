@@ -584,6 +584,8 @@
     "PropertyName": "Property name",
     "PropertyValue": "Property value",
     "DuplicatedProps": "Duplicated properties: each property must be unique",
+    "ModifySubstation": "Modify substation",
+    "SubstationModificationError": "Error while modifying substation",
 
     "CreateVoltageLevel": "Create a voltage level",
     "Substation": "Substation",
@@ -643,6 +645,7 @@
     "LoadScalingError": "Error while creating a load scaling",
     "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
     "DeleteAttachingLineError": "Error while deleting an attaching line",
+    "GenerationDispatchError": "Error while creating a generation dispatch",
 
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
@@ -844,6 +847,8 @@
     "LoadScaling": "Load scaling",
     "DeleteVoltageLevelOnLine": "Delete a voltage level on a line",
     "DeleteAttachingLine": "Delete attaching line",
+    "GenerationDispatch": "Generation dispatch",
+    "LossCoefficient": "Loss coefficient",
     "ReplacingLine": "Replacing line",
     "ConnectionPosition": "Connection position",
     "DisplayTakenPositions": "Display taken positions",

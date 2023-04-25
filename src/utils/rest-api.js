@@ -2355,6 +2355,43 @@ export function createSubstation(
     });
 }
 
+export function modifySubstation(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    substationCountry,
+    isUpdate = false,
+    modificationUuid,
+    properties
+) {
+    let modifyUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating substation modification');
+    } else {
+        console.info('Creating substation modification');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
+            equipmentId: id,
+            equipmentName: toModificationOperation(name),
+            substationCountry: toModificationOperation(substationCountry),
+            properties: properties,
+        }),
+    });
+}
+
 export function createVoltageLevel({
     studyUuid,
     currentNodeUuid,
@@ -2948,6 +2985,38 @@ export function fetchMapLines(
         'map-lines',
         inUpstreamBuiltParentNode
     );
+}
+
+export function generationDispatch(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lossCoefficient
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
+        lossCoefficient,
+    });
+
+    let generationDispatchUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating generation dispatch ', body);
+        generationDispatchUrl =
+            generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating generation dispatch ', body);
+    }
+
+    return backendFetchText(generationDispatchUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
 }
 
 export function getLineDictionary() {
