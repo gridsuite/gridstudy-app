@@ -38,8 +38,6 @@ import {
     toIntValue,
     useStyles,
 } from '../../dialogs/dialogUtils';
-import { getComputedLanguage } from '../../../utils/language';
-import { PARAM_LANGUAGE } from '../../../utils/config-params';
 import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
