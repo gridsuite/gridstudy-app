@@ -160,11 +160,9 @@ const GeneratorModificationDialog = ({
                           editData?.maximumReactivePower?.value ?? null,
                       [Q_PERCENT]: editData?.qPercent?.value ?? null,
                       [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                          !editData?.reactiveCapabilityCurve?.value &&
-                          (editData?.minimumReactivePower ||
-                              editData?.maximumReactivePower)
-                              ? 'MINMAX'
-                              : 'CURVE',
+                          editData?.reactiveCapabilityCurve?.value
+                              ? 'CURVE'
+                              : 'MINMAX',
                       [REACTIVE_CAPABILITY_CURVE_TABLE]:
                           editData?.reactiveCapabilityCurvePoints.length > 0
                               ? completeReactiveCapabilityCurvePointsData(
@@ -328,6 +326,8 @@ const GeneratorModificationDialog = ({
                             // which would empty the form instead of displaying data of existing form
                             const previousReactiveCapabilityCurveTable =
                                 value.reactiveCapabilityCurvePoints;
+                            const currentReactiveCapabilityCurveTable =
+                                getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
                             if (
                                 shouldEmptyFormOnGeneratorIdChangeRef?.current
                             ) {
@@ -337,29 +337,29 @@ const GeneratorModificationDialog = ({
                                 );
                             } else {
                                 // on first render, we need to adjust the UI for the reactive capability curve table
-                                const currentReactiveCapabilityCurveTable =
-                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
-                                const sizeDiff =
-                                    previousReactiveCapabilityCurveTable.length -
-                                    currentReactiveCapabilityCurveTable.length;
+                                if (previousReactiveCapabilityCurveTable) {
+                                    const sizeDiff =
+                                        previousReactiveCapabilityCurveTable.length -
+                                        currentReactiveCapabilityCurveTable.length;
 
-                                // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
-                                if (sizeDiff > 0) {
-                                    for (let i = 0; i < sizeDiff; i++) {
-                                        insertEmptyRowAtSecondToLastIndex(
+                                    // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
+                                    if (sizeDiff > 0) {
+                                        for (let i = 0; i < sizeDiff; i++) {
+                                            insertEmptyRowAtSecondToLastIndex(
+                                                currentReactiveCapabilityCurveTable
+                                            );
+                                        }
+                                        setValue(
+                                            REACTIVE_CAPABILITY_CURVE_TABLE,
                                             currentReactiveCapabilityCurveTable
                                         );
-                                    }
-                                    setValue(
-                                        REACTIVE_CAPABILITY_CURVE_TABLE,
-                                        currentReactiveCapabilityCurveTable
-                                    );
-                                } else if (sizeDiff < 0) {
-                                    // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
-                                    for (let i = 0; i > sizeDiff; i--) {
-                                        insertEmptyRowAtSecondToLastIndex(
-                                            previousReactiveCapabilityCurveTable
-                                        );
+                                    } else if (sizeDiff < 0) {
+                                        // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
+                                        for (let i = 0; i > sizeDiff; i--) {
+                                            insertEmptyRowAtSecondToLastIndex(
+                                                previousReactiveCapabilityCurveTable
+                                            );
+                                        }
                                     }
                                 }
                             }
@@ -367,7 +367,7 @@ const GeneratorModificationDialog = ({
                             setGeneratorToModify({
                                 ...value,
                                 reactiveCapabilityCurveTable:
-                                    previousReactiveCapabilityCurveTable,
+                                    previousReactiveCapabilityCurveTable ?? currentReactiveCapabilityCurveTable,
                             });
                         }
                     })
