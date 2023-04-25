@@ -2413,6 +2413,43 @@ export function createSubstation(
     });
 }
 
+export function modifySubstation(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    substationCountry,
+    isUpdate = false,
+    modificationUuid,
+    properties
+) {
+    let modifyUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating substation modification');
+    } else {
+        console.info('Creating substation modification');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
+            equipmentId: id,
+            equipmentName: toModificationOperation(name),
+            substationCountry: toModificationOperation(substationCountry),
+            properties: properties,
+        }),
+    });
+}
+
 export function createVoltageLevel({
     studyUuid,
     currentNodeUuid,

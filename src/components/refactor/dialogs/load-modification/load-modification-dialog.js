@@ -92,7 +92,6 @@ const LoadModificationDialog = ({
 
     const onSubmit = useCallback(
         (load) => {
-            console.log(load);
             modifyLoad(
                 studyUuid,
                 currentNodeUuid,

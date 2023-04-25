@@ -2,6 +2,7 @@
     "network_modification/modificationsCount": "{hide, select, false {{count, plural, =0 {no modification} =1 {{count} modification} other {{count} modifications}}} other {...}}",
     "network_modifications/EQUIPMENT_DELETION": "Deletion of {computedLabel}",
     "network_modifications/SUBSTATION_CREATION": "Creating substation {computedLabel}",
+    "network_modifications/SUBSTATION_MODIFICATION": "Modifying substation {computedLabel}",
     "network_modifications/VOLTAGE_LEVEL_CREATION": "Creating voltage level {computedLabel}",
     "network_modifications/LINE_SPLIT_WITH_VOLTAGE_LEVEL": "Splitting a line {computedLabel}",
     "network_modifications/LINE_ATTACH_TO_VOLTAGE_LEVEL": "Attaching line {computedLabel}",
