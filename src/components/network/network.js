@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RemoteResourceHandler } from '../util/remote-resource-handler';
+import { RemoteResourceHandler } from '../utils/remote-resource-handler';
 import {
     networkCreated,
     networkEquipmentLoaded,
@@ -29,7 +29,7 @@ import {
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);

@@ -6,7 +6,7 @@
  */
 
 import * as yup from 'yup';
-import RHFFloatInput from '../../../refactor/rhf-inputs/float-input';
+import RHFFloatInput from '../../../utils/rhf-inputs/float-input';
 import WrapperInput from './wrapper-input';
 
 const FloatInput = ({ value, label, callback }) => {
