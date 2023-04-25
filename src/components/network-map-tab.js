@@ -35,7 +35,7 @@ import {
     isNodeReadOnly,
     isNodeRenamed,
 } from './graph/util/model-functions';
-import { RunningStatus } from './util/running-status';
+import { RunningStatus } from './utils/running-status';
 import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';

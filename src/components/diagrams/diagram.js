@@ -28,7 +28,7 @@ import {
 import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
-import AlertCustomMessageNode from '../util/alert-custom-message-node';
+import AlertCustomMessageNode from '../utils/alert-custom-message-node';
 
 const Diagram = (props) => {
     const dispatch = useDispatch();
