@@ -8,6 +8,8 @@
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import ClearIcon from '@mui/icons-material/Clear';
+import { useMemo } from 'react';
+import { validateValueIsANumber } from 'components/utils/validation-functions';
 
 export const TableNumericalInput = ({
     name,
@@ -28,6 +30,16 @@ export const TableNumericalInput = ({
         }
         return value === null || isNaN(value) ? '' : value.toString();
     };
+
+    const clearable = useMemo(() => {
+        return (
+            (previousValue &&
+                previousValue !== value &&
+                previousValue !== Number.MAX_VALUE) ||
+            (previousValue === Number.MAX_VALUE &&
+                validateValueIsANumber(value))
+        );
+    }, [previousValue, value]);
 
     const outputTransform = (value) => {
         if (typeof value === 'string') {
@@ -83,14 +95,11 @@ export const TableNumericalInput = ({
                 endAdornment: (
                     <InputAdornment position="end">
                         {/** we add the clear button only if the previous value is different from the current value **/}
-                        {previousValue &&
-                            previousValue !== value &&
-                            transformedValue !== undefined &&
-                            transformedValue !== '' && (
-                                <IconButton onClick={handleClearValue}>
-                                    <ClearIcon />
-                                </IconButton>
-                            )}
+                        {clearable && (
+                            <IconButton onClick={handleClearValue}>
+                                <ClearIcon />
+                            </IconButton>
+                        )}
                     </InputAdornment>
                 ),
                 disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
