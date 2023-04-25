@@ -31,15 +31,13 @@ export const TableNumericalInput = ({
         return value === null || isNaN(value) ? '' : value.toString();
     };
 
-    const clearable = useMemo(() => {
-        return (
-            (previousValue &&
-                previousValue !== value &&
-                previousValue !== Number.MAX_VALUE) ||
-            (previousValue === Number.MAX_VALUE &&
-                validateValueIsANumber(value))
-        );
-    }, [previousValue, value]);
+    const clearable = useMemo(
+        () =>
+            previousValue === Number.MAX_VALUE
+                ? validateValueIsANumber(value)
+                : previousValue && previousValue !== value,
+        [previousValue, value]
+    );
 
     const outputTransform = (value) => {
         if (typeof value === 'string') {
