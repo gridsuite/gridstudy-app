@@ -17,7 +17,7 @@ import ModificationDialog from '../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 
 const emptyFormData = {
-    [LOSS_COEFFICIENT]: 0,
+    [LOSS_COEFFICIENT]: null,
 };
 
 const formSchema = yup
