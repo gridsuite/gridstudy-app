@@ -5,7 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect, useState } from 'react';
-import { useDirectoryElements, useEnumValue } from '../inputs/input-hooks';
+import {
+    useDirectoryElements,
+    useEnumValue,
+} from '../../utils/inputs/input-hooks';
 import { elementType } from '@gridsuite/commons-ui';
 import { filledTextField, gridItem } from '../dialogUtils';
 import {

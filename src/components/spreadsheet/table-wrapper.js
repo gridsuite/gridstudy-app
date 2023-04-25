@@ -35,7 +35,7 @@ import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
-import { RunningStatus } from '../util/running-status';
+import { RunningStatus } from '../utils/running-status';
 import {
     EditableCellRenderer,
     EditingCellRenderer,
@@ -43,7 +43,7 @@ import {
     ReferenceLineCellRenderer,
 } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';

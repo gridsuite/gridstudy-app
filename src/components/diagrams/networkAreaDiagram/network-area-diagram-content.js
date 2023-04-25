@@ -17,7 +17,7 @@ import { setNetworkAreaDiagramNbVoltageLevels } from '../../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { RunningStatus } from '../../util/running-status';
+import { RunningStatus } from '../../utils/running-status';
 import {
     MIN_HEIGHT,
     MIN_WIDTH,
