@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect, useState } from 'react';
-import { useDirectoryElements } from '../inputs/input-hooks';
+import { useDirectoryElements } from '../../utils/inputs/input-hooks';
 import { elementType } from '@gridsuite/commons-ui';
 import { gridItem } from '../dialogUtils';
 import {
