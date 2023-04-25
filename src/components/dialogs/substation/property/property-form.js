@@ -5,16 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { gridItem } from '../../dialogUtils';
+import { gridItem, italicFontTextField } from '../../dialogUtils';
 import React, { useEffect, useMemo, useState } from 'react';
 import AutocompleteInput from '../../../util/rhf-inputs/autocomplete-input';
-import { NAME, VALUE } from '../../../util/field-constants';
+import {
+    NAME,
+    VALUE,
+    PREVIOUS_VALUE,
+    DELETION_MARK,
+} from '../../../util/field-constants';
 import { fetchPredefinedProperties } from './property-utils';
 import { useWatch } from 'react-hook-form';
+import TextInput from '../../../util/rhf-inputs/text-input';
 
 const PropertyForm = ({ name, index }) => {
     const [predefinedProperties, setPredefinedProperties] = useState();
     const watchPropertyName = useWatch({ name: `${name}.${index}.${NAME}` });
+    const watchPropertyPreviousValue = useWatch({
+        name: `${name}.${index}.${PREVIOUS_VALUE}`,
+    });
+    const watchPropertyDeletionMark = useWatch({
+        name: `${name}.${index}.${DELETION_MARK}`,
+    });
 
     const predefinedNames = useMemo(() => {
         return Object.keys(predefinedProperties ?? {}).sort();
@@ -42,6 +54,14 @@ const PropertyForm = ({ name, index }) => {
         />
     );
 
+    const nameReadOnlyField = (
+        <TextInput
+            name={`${name}.${index}.${NAME}`}
+            label={'PropertyName'}
+            formProps={{ disabled: true, ...italicFontTextField }}
+        />
+    );
+
     const valueField = (
         <AutocompleteInput
             name={`${name}.${index}.${VALUE}`}
@@ -49,15 +69,33 @@ const PropertyForm = ({ name, index }) => {
             label={'PropertyValue'}
             size={'small'}
             allowNewValue
+            previousValue={watchPropertyPreviousValue}
         />
     );
 
-    return (
-        <>
-            {gridItem(nameField, 5)}
-            {gridItem(valueField, 5)}
-        </>
+    const valueReadOnlyField = (
+        <TextInput
+            name={`${name}.${index}.${VALUE}`}
+            label={'PropertyValue'}
+            previousValue={watchPropertyPreviousValue}
+            formProps={{ disabled: true, ...italicFontTextField }}
+        />
     );
+
+    function renderPropertyLine() {
+        return (
+            <>
+                {watchPropertyPreviousValue || watchPropertyDeletionMark
+                    ? gridItem(nameReadOnlyField, 5)
+                    : gridItem(nameField, 5)}
+                {watchPropertyDeletionMark
+                    ? gridItem(valueReadOnlyField, 5)
+                    : gridItem(valueField, 5)}
+            </>
+        );
+    }
+
+    return renderPropertyLine();
 };
 
 export default PropertyForm;

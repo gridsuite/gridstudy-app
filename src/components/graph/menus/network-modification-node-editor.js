@@ -59,7 +59,8 @@ import DeleteAttachingLineDialog from 'components/dialogs/delete-attaching-line/
 import LinesAttachToSplitLinesDialog from 'components/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 import GeneratorScalingDialog from 'components/dialogs/generator-scaling/generator-scaling-dialog';
 import GeneratorModificationDialog from 'components/dialogs/generator/modification/generator-modification-dialog';
-import SubstationCreationDialog from 'components/dialogs/substation-creation/substation-creation-dialog';
+import SubstationCreationDialog from 'components/dialogs/substation/creation/substation-creation-dialog';
+import SubstationModificationDialog from 'components/dialogs/substation/modification/substation-modification-dialog';
 import GenerationDispatchDialog from 'components/dialogs/generation-dispatch/generation-dispatch-dialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -255,6 +256,11 @@ const NetworkModificationNodeEditor = () => {
         SUBSTATION_CREATION: {
             label: 'CreateSubstation',
             dialog: () => adapt(SubstationCreationDialog),
+            icon: <AddIcon />,
+        },
+        SUBSTATION_MODIFICATION: {
+            label: 'ModifySubstation',
+            dialog: () => adapt(SubstationModificationDialog),
             icon: <AddIcon />,
         },
         VOLTAGE_LEVEL_CREATION: {

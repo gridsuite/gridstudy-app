@@ -9,14 +9,16 @@ import { fetchAppsAndUrls } from '../../../../utils/rest-api';
 import yup from '../../../util/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
+    DELETION_MARK,
     NAME,
+    PREVIOUS_VALUE,
     VALUE,
 } from '../../../util/field-constants';
 
-function checkUniqueProperties(properties) {
+export const checkUniqueProperties = (properties) => {
     const validValues = properties.filter((v) => v?.name && v?.value);
     return validValues.length === new Set(validValues.map((v) => v.name)).size;
-}
+};
 
 export const fetchPredefinedProperties = () => {
     return fetchAppsAndUrls().then((res) => {
@@ -35,6 +37,8 @@ export const getPropertyInitialValues = () => {
     return {
         [NAME]: null,
         [VALUE]: null,
+        [PREVIOUS_VALUE]: null,
+        [DELETION_MARK]: false,
     };
 };
 export const getPropertiesSchema = (id = ADDITIONAL_PROPERTIES) => ({
@@ -44,6 +48,8 @@ export const getPropertiesSchema = (id = ADDITIONAL_PROPERTIES) => ({
             yup.object().shape({
                 [NAME]: yup.string().nullable().required(),
                 [VALUE]: yup.string().nullable().required(),
+                [PREVIOUS_VALUE]: yup.string().nullable(),
+                [DELETION_MARK]: yup.boolean(),
             })
         )
         .test('checkUniqueProperties', 'DuplicatedProps', (values) =>

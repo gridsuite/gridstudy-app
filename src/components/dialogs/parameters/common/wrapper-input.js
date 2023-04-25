@@ -20,7 +20,7 @@ const WrapperInput = ({ value, label, callback, validator, children }) => {
         value: validator,
     });
 
-    const formMethod = useForm({
+    const formMethods = useForm({
         defaultValues: {
             value: value,
         },

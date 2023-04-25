@@ -584,6 +584,8 @@
     "PropertyName": "Property name",
     "PropertyValue": "Property value",
     "DuplicatedProps": "Duplicated properties: each property must be unique",
+    "ModifySubstation": "Modify substation",
+    "SubstationModificationError": "Error while modifying substation",
 
     "CreateVoltageLevel": "Create a voltage level",
     "Substation": "Substation",
