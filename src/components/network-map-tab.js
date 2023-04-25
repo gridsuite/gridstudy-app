@@ -171,6 +171,7 @@ export const NetworkMapTab = ({
     const currentNodeRef = useRef(null);
 
     const [updatedLines, setUpdatedLines] = useState([]);
+    const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
 
     function withEquipment(Menu, props) {
         return (
@@ -586,9 +587,7 @@ export const NetworkMapTab = ({
             }
 
             dispatch(resetMapReloaded());
-
             const isFullReload = updatedSubstationsToSend ? false : true;
-            const updatedLinesArray = [];
             const [updatedSubstations, updatedLines, updatedHvdcLines] =
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
@@ -618,7 +617,7 @@ export const NetworkMapTab = ({
                         mapEquipments.checkAndGetValues(values),
                         isFullReload
                     );
-                    updatedLinesArray.push(values);
+                    setUpdatedLines(values);
                 }
             });
             updatedHvdcLines.then((values) => {
@@ -630,17 +629,16 @@ export const NetworkMapTab = ({
                         mapEquipments.checkAndGetValues(values),
                         isFullReload
                     );
-                    updatedLinesArray.push(values);
+                    setUpdatedHvdcLines(values);
                 }
             });
-
             return Promise.all([
                 updatedSubstations,
                 updatedLines,
                 updatedHvdcLines,
-            ])
-                .then(() => setUpdatedLines(updatedLinesArray))
-                .finally(() => setWaitingLoadData(false));
+            ]).finally(() => {
+                setWaitingLoadData(false);
+            });
         },
         [
             currentNode,
@@ -817,7 +815,10 @@ export const NetworkMapTab = ({
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
-            updatedLines={updatedLines}
+            updatedLines={[
+                ...(updatedLines ?? []),
+                ...(updatedHvdcLines ?? []),
+            ]}
             geoData={geoData}
             displayOverlayLoader={!basicDataReady && waitingLoadData}
             filteredNominalVoltages={filteredNominalVoltages}

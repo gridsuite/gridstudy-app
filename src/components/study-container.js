@@ -635,11 +635,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     displayNetworkLoadingFailMessage,
                     dispatch,
                     {
-                        equipments: [
-                            equipments.lines,
-                            equipments.substations,
-                            equipments.hvdcLines,
-                        ],
+                        equipments: [equipments.lines, equipments.substations],
                     }
                 );
             } else {
