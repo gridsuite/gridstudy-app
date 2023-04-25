@@ -768,6 +768,12 @@
     "pasteNetworkModificationNodeBelow": "Paste node below in the current branch",
     "pasteNetworkModificationNodeOnNewBranch": "Paste node in a new branch",
 
+    "copyNetworkModificationSubtree": "Copy subtree",
+    "pasteNetworkModificationSubtree": "Paste subtree",
+    "cutNetworkModificationSubtree": "Cut subtree",
+    "cancelCutNetworkModificationSubtree": "Cancel cut subtree",
+    "removeNetworkModificationSubtree": "Remove subtree",
+
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
 

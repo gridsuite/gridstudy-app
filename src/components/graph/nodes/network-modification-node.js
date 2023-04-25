@@ -106,6 +106,9 @@ const NetworkModificationNode = (props) => {
     const selectedNodeForCopy = useSelector(
         (state) => state.selectedNodeForCopy
     );
+    const selectedNodeForSubtreeCopy = useSelector(
+        (state) => state.selectedNodeForSubtreeCopy
+    );
 
     const isSelectedNode = () => {
         // TODO This is a hack, when ReactFlow v10 is available, we should remove this.
@@ -114,8 +117,11 @@ const NetworkModificationNode = (props) => {
 
     const isSelectedForCut = () => {
         return (
-            props.id === selectedNodeForCopy?.nodeId &&
-            selectedNodeForCopy?.copyType === CopyType.CUT
+            (props.id === selectedNodeForCopy?.nodeId &&
+                selectedNodeForCopy?.copyType === CopyType.CUT) ||
+            (props.id === selectedNodeForSubtreeCopy?.nodeId &&
+                selectedNodeForSubtreeCopy?.copyType === CopyType.CUT) ||
+            selectedNodeForSubtreeCopy.allChildrenIds?.includes(props.id)
         );
     };
 

@@ -86,6 +86,8 @@ import {
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     STOP_DIAGRAM_BLINK,
     NETWORK_EQUIPMENT_FETCHED,
+    SELECTED_TREE_NODE_FOR_SUBTREE_COPY,
+    NETWORK_MODIFICATION_HANDLE_SUBTREE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -119,6 +121,8 @@ import NetworkModificationTreeModel from '../components/graph/network-modificati
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadDiagramStateFromSessionStorage } from './session-storage';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
+import { getAllChildren } from 'components/graph/util/model-functions';
+import { CopyType } from 'components/network-modification-tree-pane';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -145,6 +149,12 @@ const initialState = {
     studyUuid: null,
     currentTreeNode: null,
     selectedNodeForCopy: { sourceStudyId: null, nodeId: null, copyType: null },
+    selectedNodeForSubtreeCopy: {
+        sourceStudyId: null,
+        nodeId: null,
+        copyType: null,
+        allChildrenIds: null,
+    },
     network: null,
     mapEquipments: null,
     geoData: null,
@@ -290,6 +300,21 @@ export const reducer = createReducer(initialState, {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
+        }
+    },
+
+    [NETWORK_MODIFICATION_HANDLE_SUBTREE]: (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel =
+                state.networkModificationTreeModel.newSharedForUpdate();
+            unravelSubTree(
+                newModel,
+                action.parentNodeId,
+                action.networkModificationTreeNodes
+            );
+
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
         }
     },
 
@@ -557,6 +582,16 @@ export const reducer = createReducer(initialState, {
     },
     [SELECTED_TREE_NODE_FOR_COPY]: (state, action) => {
         state.selectedNodeForCopy = action.selectedNodeForCopy;
+    },
+    [SELECTED_TREE_NODE_FOR_SUBTREE_COPY]: (state, action) => {
+        const selectedNodeForCopy = action.selectedNodeForSubtreeCopy;
+        if (action.selectedNodeForSubtreeCopy.copyType === CopyType.CUT) {
+            selectedNodeForCopy.allChildrenIds = getAllChildren(
+                state.networkModificationTreeModel,
+                selectedNodeForCopy.nodeId
+            ).map((child) => child.id);
+        }
+        state.selectedNodeForSubtreeCopy = selectedNodeForCopy;
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
@@ -861,4 +896,19 @@ function synchCurrentTreeNode(state, nextCurrentNodeUuid) {
     );
     //  we need to overwrite state.currentTreeNode to consider label change for example.
     state.currentTreeNode = { ...nextCurrentNode };
+}
+
+function unravelSubTree(treeModel, subtreeParentId, node) {
+    if (node) {
+        if (treeModel.treeNodes.find((el) => el.id === node.id)) {
+            treeModel.removeNodes([node.id]);
+        }
+        treeModel.addChild(node, subtreeParentId, 'AFTER');
+
+        if (node.children.length > 0) {
+            node.children.forEach((child) => {
+                unravelSubTree(treeModel, node.id, child);
+            });
+        }
+    }
 }

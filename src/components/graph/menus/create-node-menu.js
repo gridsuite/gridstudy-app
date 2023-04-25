@@ -39,9 +39,14 @@ const CreateNodeMenu = ({
     handleExportCaseOnNode,
     activeNode,
     selectedNodeForCopy,
+    selectedNodeForSubtreeCopy,
     handleCopyNode,
     handleCutNode,
     handlePasteNode,
+    handleSubtreeRemoval,
+    handleSubtreeCut,
+    handleSubtreeCopy,
+    handleSubtreePaste,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -90,7 +95,32 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
-    function isPastingAllowed() {
+    function copySubtree() {
+        handleSubtreeCopy(activeNode.id);
+        handleClose();
+    }
+
+    function pasteSubtree() {
+        handleSubtreePaste(activeNode.id);
+        handleClose();
+    }
+
+    function cutSubtree() {
+        handleSubtreeCut(activeNode.id);
+        handleClose();
+    }
+
+    function cancelCutSubtree() {
+        handleSubtreeCut(null);
+        handleClose();
+    }
+
+    function removeSubtree() {
+        handleSubtreeRemoval(activeNode);
+        handleClose();
+    }
+
+    function isNodePastingAllowed() {
         return (
             selectedNodeForCopy &&
             selectedNodeForCopy.nodeId !== null &&
@@ -99,10 +129,26 @@ const CreateNodeMenu = ({
         );
     }
 
-    function isAlreadySelectedForCut() {
+    function isSubtreePastingAllowed() {
+        return (
+            selectedNodeForSubtreeCopy &&
+            selectedNodeForSubtreeCopy.nodeId !== null &&
+            (selectedNodeForSubtreeCopy.nodeId !== activeNode.id ||
+                selectedNodeForSubtreeCopy.copyType !== CopyType.CUT)
+        );
+    }
+
+    function isNodeAlreadySelectedForCut() {
         return (
             selectedNodeForCopy?.nodeId === activeNode.id &&
             selectedNodeForCopy?.copyType === CopyType.CUT
+        );
+    }
+
+    function isSubtreeAlreadySelectedForCut() {
+        return (
+            selectedNodeForSubtreeCopy?.nodeId === activeNode.id &&
+            selectedNodeForSubtreeCopy?.copyType === CopyType.CUT
         );
     }
 
@@ -139,10 +185,10 @@ const CreateNodeMenu = ({
         CUT_MODIFICATION_NODE: {
             onRoot: false,
             action: () =>
-                isAlreadySelectedForCut()
+                isNodeAlreadySelectedForCut()
                     ? cancelCutNetworkModificationNode()
                     : cutNetworkModificationNode(),
-            id: isAlreadySelectedForCut()
+            id: isNodeAlreadySelectedForCut()
                 ? 'cancelCutNetworkModificationNode'
                 : 'cutNetworkModificationNode',
         },
@@ -150,24 +196,55 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => pasteNetworkModificationNode('CHILD'),
             id: 'pasteNetworkModificationNodeOnNewBranch',
-            disabled: !isPastingAllowed(),
+            disabled: !isNodePastingAllowed(),
         },
         PASTE_MODIFICATION_NODE_BEFORE: {
             onRoot: false,
             action: () => pasteNetworkModificationNode('BEFORE'),
             id: 'pasteNetworkModificationNodeAbove',
-            disabled: !isPastingAllowed(),
+            disabled: !isNodePastingAllowed(),
         },
         PASTE_MODIFICATION_NODE_AFTER: {
             onRoot: true,
             action: () => pasteNetworkModificationNode('AFTER'),
             id: 'pasteNetworkModificationNodeBelow',
-            disabled: !isPastingAllowed(),
+            disabled: !isNodePastingAllowed(),
         },
         REMOVE_NODE: {
             onRoot: false,
             action: () => removeNode(),
             id: 'removeNode',
+            disabled: isAnyNodeBuilding,
+            sectionEnd: true,
+        },
+        COPY_SUBTREE: {
+            onRoot: false,
+            action: () => copySubtree(),
+            id: 'copyNetworkModificationSubtree',
+            disabled: isAnyNodeBuilding,
+        },
+        CUT_SUBTREE: {
+            onRoot: false,
+            action: () =>
+                isSubtreeAlreadySelectedForCut()
+                    ? cancelCutSubtree()
+                    : cutSubtree(),
+            id: isSubtreeAlreadySelectedForCut()
+                ? 'cancelCutNetworkModificationSubtree'
+                : 'cutNetworkModificationSubtree',
+            disabled: isAnyNodeBuilding,
+            sectionEnd: true,
+        },
+        PASTE_SUBTREE: {
+            onRoot: false,
+            action: () => pasteSubtree(),
+            id: 'pasteNetworkModificationSubtree',
+            disabled: !isSubtreePastingAllowed(),
+        },
+        REMOVE_SUBTREE: {
+            onRoot: false,
+            action: () => removeSubtree(),
+            id: 'removeNetworkModificationSubtree',
             disabled: isAnyNodeBuilding,
         },
         EXPORT_NETWORK_ON_NODE: {

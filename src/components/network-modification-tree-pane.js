@@ -14,6 +14,10 @@ import {
     buildNode,
     copyTreeNode,
     cutTreeNode,
+    deleteSubtree,
+    fetchNetworkModificationSubtree,
+    cutSubtree,
+    copySubtree,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -21,8 +25,10 @@ import {
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
     removeNotificationByNode,
+    setSelectedNodeForSubtreeCopy,
     setSelectedNodeForCopy,
     STUDY_DISPLAY_MODE,
+    networkModificationHandleSubtree,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -108,6 +114,19 @@ export const NetworkModificationTreePane = ({
         [dispatch]
     );
 
+    const dispatchSelectedNodeForSubtreeCopy = useCallback(
+        (sourceStudyId, nodeId, copyType) => {
+            dispatch(
+                setSelectedNodeForSubtreeCopy({
+                    sourceStudyId: sourceStudyId,
+                    nodeId: nodeId,
+                    copyType: copyType,
+                })
+            );
+        },
+        [dispatch]
+    );
+
     const [broadcastChannel] = useState(() => {
         const broadcast = new BroadcastChannel('nodeCopyChannel');
         broadcast.onmessage = (event) => {
@@ -155,6 +174,12 @@ export const NetworkModificationTreePane = ({
     const selectedNodeForCopyRef = useRef();
     selectedNodeForCopyRef.current = selectedNodeForCopy;
 
+    const selectedNodeForSubtreeCopy = useSelector(
+        (state) => state.selectedNodeForSubtreeCopy
+    );
+    const selectedNodeForSubtreeCopyRef = useRef();
+    selectedNodeForSubtreeCopyRef.current = selectedNodeForSubtreeCopy;
+
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
     );
@@ -196,6 +221,21 @@ export const NetworkModificationTreePane = ({
                 });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
+                'subtreeCreated'
+            ) {
+                fetchNetworkModificationSubtree(
+                    studyUuid,
+                    studyUpdatedForce.eventData.headers['newNode']
+                ).then((nodes) => {
+                    dispatch(
+                        networkModificationHandleSubtree(
+                            nodes,
+                            studyUpdatedForce.eventData.headers['parentNode']
+                        )
+                    );
+                });
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeMoved'
             ) {
                 fetchNetworkModificationTreeNode(
@@ -207,6 +247,21 @@ export const NetworkModificationTreePane = ({
                             node,
                             studyUpdatedForce.eventData.headers['parentNode'],
                             studyUpdatedForce.eventData.headers['insertMode']
+                        )
+                    );
+                });
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'subtreeMoved'
+            ) {
+                fetchNetworkModificationSubtree(
+                    studyUuid,
+                    studyUpdatedForce.eventData.headers['movedNode']
+                ).then((nodes) => {
+                    dispatch(
+                        networkModificationHandleSubtree(
+                            nodes,
+                            studyUpdatedForce.eventData.headers['parentNode']
                         )
                     );
                 });
@@ -427,6 +482,73 @@ export const NetworkModificationTreePane = ({
         });
     }, []);
 
+    const handleSubtreeRemoval = useCallback(
+        (element) => {
+            deleteSubtree(studyUuid, element.id).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'NodeDeleteError',
+                });
+            });
+        },
+        [snackError, studyUuid]
+    );
+
+    const handleSubtreeCopy = (nodeId) => {
+        console.info(
+            'node with id ' +
+                nodeId +
+                ' from study ' +
+                studyUuid +
+                ' selected for copy'
+        );
+        dispatchSelectedNodeForSubtreeCopy(studyUuid, nodeId, CopyType.COPY);
+    };
+
+    const handleSubtreeCut = (nodeId) => {
+        nodeId
+            ? dispatchSelectedNodeForSubtreeCopy(
+                  studyUuid,
+                  nodeId,
+                  CopyType.CUT
+              )
+            : dispatch(setSelectedNodeForSubtreeCopy(noSelectionForCopy));
+    };
+
+    const handleSubtreePaste = useCallback(
+        (referenceNodeId) => {
+            if (
+                CopyType.CUT === selectedNodeForSubtreeCopyRef.current.copyType
+            ) {
+                cutSubtree(
+                    studyUuid,
+                    selectedNodeForSubtreeCopyRef.current.nodeId,
+                    referenceNodeId
+                ).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'NodeCreateError',
+                    });
+                });
+                //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
+                dispatch(setSelectedNodeForSubtreeCopy(noSelectionForCopy));
+            } else {
+                copySubtree(
+                    studyUuid,
+                    selectedNodeForSubtreeCopyRef.current.nodeId,
+                    referenceNodeId
+                ).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'NodeCreateError',
+                    });
+                });
+                //In copy/paste, we can still paste the same node later
+            }
+        },
+        [studyUuid, dispatch, snackError]
+    );
+
     return (
         <>
             <Box
@@ -465,9 +587,16 @@ export const NetworkModificationTreePane = ({
                     handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
                     selectedNodeForCopy={selectedNodeForCopyRef.current}
+                    selectedNodeForSubtreeCopy={
+                        selectedNodeForSubtreeCopyRef.current
+                    }
                     handleCopyNode={handleCopyNode}
                     handleCutNode={handleCutNode}
                     handlePasteNode={handlePasteNode}
+                    handleSubtreeRemoval={handleSubtreeRemoval}
+                    handleSubtreeCut={handleSubtreeCut}
+                    handleSubtreeCopy={handleSubtreeCopy}
+                    handleSubtreePaste={handleSubtreePaste}
                 />
             )}
             {openExportDialog && (

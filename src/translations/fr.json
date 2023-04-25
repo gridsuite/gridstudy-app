@@ -769,6 +769,12 @@
     "pasteNetworkModificationNodeBelow": "Coller le nœud en dessous dans la branche courante",
     "pasteNetworkModificationNodeOnNewBranch": "Coller le nœud dans une nouvelle branche",
 
+    "copyNetworkModificationSubtree": "Copier la branche",
+    "pasteNetworkModificationSubtree": "Coller la branche",
+    "cutNetworkModificationSubtree": "Couper la branche",
+    "cancelCutNetworkModificationSubtree": "Annuler couper la branche",
+    "removeNetworkModificationSubtree": "Supprimer la branche",
+
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
 
