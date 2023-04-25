@@ -23,7 +23,7 @@ import {
     LIMITS,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { fetchEquipmentInfos, modifyLine } from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
@@ -68,6 +68,21 @@ const LineModificationDialog = ({
     const { snackError } = useSnackMessage();
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
+    const sanitizeLimitNames = (temporaryLimitList) =>
+        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
+            ...temporaryLimit,
+            name: sanitizeString(name),
+        }));
+
+    const formatTemporaryLimits = (temporaryLimits) =>
+        temporaryLimits?.map((limit) => {
+            return {
+                name: limit?.name,
+                value: limit?.value,
+                acceptableDuration: limit?.acceptableDuration,
+            };
+        });
+
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_ID]: '',
@@ -95,73 +110,65 @@ const LineModificationDialog = ({
         })
         .required();
 
+    const formDataFromEditData = useMemo(
+        () =>
+            editData
+                ? {
+                      [EQUIPMENT_ID]: editData.equipmentId,
+                      [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
+                      ...getCharacteristicsWithOutConnectivityFormData({
+                          seriesResistance:
+                              editData.seriesResistance?.value ?? null,
+                          seriesReactance:
+                              editData.seriesReactance?.value ?? null,
+                          shuntConductance1: unitToMicroUnit(
+                              editData.shuntConductance1?.value ?? null
+                          ),
+                          shuntSusceptance1: unitToMicroUnit(
+                              editData.shuntSusceptance1?.value ?? null
+                          ),
+                          shuntConductance2: unitToMicroUnit(
+                              editData.shuntConductance2?.value ?? null
+                          ),
+                          shuntSusceptance2: unitToMicroUnit(
+                              editData.shuntSusceptance2?.value ?? null
+                          ),
+                      }),
+                      ...getLimitsFormData({
+                          permanentLimit1:
+                              editData.currentLimits1?.permanentLimit,
+                          permanentLimit2:
+                              editData.currentLimits2?.permanentLimit,
+                          temporaryLimits1: addSelectedFieldToRows(
+                              formatTemporaryLimits(
+                                  editData.currentLimits1?.temporaryLimits
+                              )
+                          ),
+                          temporaryLimits2: addSelectedFieldToRows(
+                              formatTemporaryLimits(
+                                  editData.currentLimits2?.temporaryLimits
+                              )
+                          ),
+                      }),
+                  }
+                : null,
+        [editData]
+    );
+
+    const defaultFormData = useMemo(() => {
+        if (!editData) {
+            return emptyFormData;
+        } else {
+            return formDataFromEditData;
+        }
+    }, [editData, emptyFormData, formDataFromEditData]);
+
     const methods = useForm({
-        defaultValues: emptyFormData,
+        defaultValues: defaultFormData,
         resolver: yupResolver(schema),
     });
 
     const { reset, getValues } = methods;
-
-    const fromEditDataToFormValues = useCallback(
-        (line) => {
-            reset({
-                [EQUIPMENT_ID]: line.equipmentId,
-                [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
-                ...getCharacteristicsWithOutConnectivityFormData({
-                    seriesResistance: line.seriesResistance?.value ?? null,
-                    seriesReactance: line.seriesReactance?.value ?? null,
-                    shuntConductance1: unitToMicroUnit(
-                        line.shuntConductance1?.value ?? null
-                    ),
-                    shuntSusceptance1: unitToMicroUnit(
-                        line.shuntSusceptance1?.value ?? null
-                    ),
-                    shuntConductance2: unitToMicroUnit(
-                        line.shuntConductance2?.value ?? null
-                    ),
-                    shuntSusceptance2: unitToMicroUnit(
-                        line.shuntSusceptance2?.value ?? null
-                    ),
-                }),
-                ...getLimitsFormData({
-                    permanentLimit1: line.currentLimits1?.permanentLimit,
-                    permanentLimit2: line.currentLimits2?.permanentLimit,
-                    temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits1?.temporaryLimits
-                        )
-                    ),
-                    temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits2?.temporaryLimits
-                        )
-                    ),
-                }),
-            });
-        },
-        [reset]
-    );
-
-    useEffect(() => {
-        if (editData) {
-            fromEditDataToFormValues(editData);
-        }
-    }, [fromEditDataToFormValues, editData]);
-
-    const sanitizeLimitNames = (temporaryLimitList) =>
-        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
-            ...temporaryLimit,
-            name: sanitizeString(name),
-        }));
-
-    const formatTemporaryLimits = (temporaryLimits) =>
-        temporaryLimits?.map((limit) => {
-            return {
-                name: limit?.name,
-                value: limit?.value,
-                acceptableDuration: limit?.acceptableDuration,
-            };
-        });
 
     const onSubmit = useCallback(
         (line) => {
