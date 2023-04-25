@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import VirtualizedTable from '../../util/virtualized-table';
+import VirtualizedTable from '../../utils/virtualized-table';
 import { useIntl } from 'react-intl';
 import { Paper, TableCell } from '@mui/material';
 import Grid from '@mui/material/Grid';

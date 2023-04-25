@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
-import AskTextDialog from '../../util/ask-text-dialog';
+import AskTextDialog from '../../utils/ask-text-dialog';
 import { lighten, darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
