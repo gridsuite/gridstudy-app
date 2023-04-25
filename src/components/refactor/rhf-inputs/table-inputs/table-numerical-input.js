@@ -69,6 +69,10 @@ export const TableNumericalInput = ({
             inputProps={{
                 style: {
                     fontSize: 'small',
+                    color:
+                        previousValue && previousValue === value
+                            ? 'grey'
+                            : null, // grey out the value if it is the same as the previous one
                 },
                 inputMode: 'numeric',
                 pattern: '[0-9]*',
