@@ -159,10 +159,10 @@ const GeneratorModificationDialog = ({
                       [MAXIMUM_REACTIVE_POWER]:
                           editData?.maximumReactivePower?.value ?? null,
                       [Q_PERCENT]: editData?.qPercent?.value ?? null,
-                      [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                          editData?.reactiveCapabilityCurve?.value
-                              ? 'CURVE'
-                              : 'MINMAX',
+                      [REACTIVE_CAPABILITY_CURVE_CHOICE]: editData
+                          ?.reactiveCapabilityCurve?.value
+                          ? 'CURVE'
+                          : 'MINMAX',
                       [REACTIVE_CAPABILITY_CURVE_TABLE]:
                           editData?.reactiveCapabilityCurvePoints.length > 0
                               ? completeReactiveCapabilityCurvePointsData(
@@ -367,7 +367,8 @@ const GeneratorModificationDialog = ({
                             setGeneratorToModify({
                                 ...value,
                                 reactiveCapabilityCurveTable:
-                                    previousReactiveCapabilityCurveTable ?? currentReactiveCapabilityCurveTable,
+                                    previousReactiveCapabilityCurveTable ??
+                                    currentReactiveCapabilityCurveTable,
                             });
                         }
                     })
