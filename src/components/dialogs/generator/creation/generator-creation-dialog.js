@@ -12,7 +12,7 @@ import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../form-search-copy-hook';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../../util/yup-config';
+import yup from '../../../utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
     BUS_OR_BUSBAR_SECTION,
@@ -47,7 +47,7 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-} from '../../../util/field-constants';
+} from '../../../utils/field-constants';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,

@@ -16,7 +16,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
-import { useDoubleValue, useInputForm } from '../../util/inputs/input-hooks';
+import { useDoubleValue, useInputForm } from '../../utils/inputs/input-hooks';
 import { filledTextField, gridItem, GridSection } from '../dialogUtils';
 import {
     fetchConfigParameter,
@@ -32,7 +32,7 @@ import { SensiInjections } from './sensi-injections';
 import { SensiHVDCs } from './sensi-hvdcs';
 import { SensiPSTs } from './sensi-psts';
 import { SensiNodes } from './sensi-nodes';
-import { EQUIPMENT_TYPES } from '../../util/equipment-types';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 export const INJECTION_DISTRIBUTION_TYPES = [
     { id: 'PROPORTIONAL', label: 'Proportional' },

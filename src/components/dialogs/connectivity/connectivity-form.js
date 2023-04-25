@@ -17,8 +17,8 @@ import {
     CONNECTIVITY,
     ID,
     VOLTAGE_LEVEL,
-} from 'components/util/field-constants';
-import { areIdsEqual, getObjectId } from 'components/util/utils';
+} from 'components/utils/field-constants';
+import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
@@ -29,10 +29,10 @@ import {
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS } from '../../network/constants';
-import AutocompleteInput from '../../util/rhf-inputs/autocomplete-input';
-import IntegerInput from '../../util/rhf-inputs/integer-input';
-import SelectInput from '../../util/rhf-inputs/select-input';
-import TextInput from '../../util/rhf-inputs/text-input';
+import AutocompleteInput from '../../utils/rhf-inputs/autocomplete-input';
+import IntegerInput from '../../utils/rhf-inputs/integer-input';
+import SelectInput from '../../utils/rhf-inputs/select-input';
+import TextInput from '../../utils/rhf-inputs/text-input';
 import {
     getConnectivityBusBarSectionData,
     getConnectivityVoltageLevelData,

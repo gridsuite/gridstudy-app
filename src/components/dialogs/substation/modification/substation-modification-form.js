@@ -7,9 +7,9 @@
 
 import Grid from '@mui/material/Grid';
 import { filledTextField, gridItem, GridSection } from '../../dialogUtils';
-import { getObjectId } from 'components/util/utils';
+import { getObjectId } from 'components/utils/utils';
 import React, { useCallback, useEffect, useState } from 'react';
-import TextInput from '../../../util/rhf-inputs/text-input';
+import TextInput from '../../../utils/rhf-inputs/text-input';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
@@ -19,9 +19,9 @@ import {
     NAME,
     PREVIOUS_VALUE,
     VALUE,
-} from '../../../util/field-constants';
-import CountrySelectionInput from '../../../util/rhf-inputs/country-selection-input';
-import ExpandableInput from '../../../util/rhf-inputs/expandable-input';
+} from '../../../utils/field-constants';
+import CountrySelectionInput from '../../../utils/rhf-inputs/country-selection-input';
+import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
 import PropertyForm from '../property/property-form';
 import { getPropertyInitialValues } from '../property/property-utils';
 import {
@@ -29,8 +29,8 @@ import {
     fetchEquipmentsIds,
 } from '../../../../utils/rest-api';
 import { useFormContext, useWatch } from 'react-hook-form';
-import AutocompleteInput from '../../../util/rhf-inputs/autocomplete-input';
-import { LocalizedCountries } from '../../../util/localized-countries';
+import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
+import { LocalizedCountries } from '../../../utils/localized-countries';
 
 const SubstationModificationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

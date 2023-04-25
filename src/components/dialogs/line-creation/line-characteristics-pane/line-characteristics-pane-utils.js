@@ -15,8 +15,8 @@ import {
     SHUNT_CONDUCTANCE_2,
     SHUNT_SUSCEPTANCE_1,
     SHUNT_SUSCEPTANCE_2,
-} from 'components/util/field-constants';
-import yup from '../../../util/yup-config';
+} from 'components/utils/field-constants';
+import yup from '../../../utils/yup-config';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,

@@ -12,8 +12,8 @@ import {
     SUSCEPTANCE_PER_SECTION,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
-} from 'components/util/field-constants';
-import yup from '../../../util/yup-config';
+} from 'components/utils/field-constants';
+import yup from '../../../utils/yup-config';
 
 const characteristicsValidationSchema = () => ({
     [CHARACTERISTICS_CHOICE]: yup.string().required(),

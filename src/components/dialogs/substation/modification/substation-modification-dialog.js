@@ -10,7 +10,7 @@ import ModificationDialog from '../../commons/modificationDialog';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../../util/yup-config';
+import yup from '../../../utils/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
@@ -20,7 +20,7 @@ import {
     NAME,
     PREVIOUS_VALUE,
     VALUE,
-} from '../../../util/field-constants';
+} from '../../../utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
 import { modifySubstation } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';

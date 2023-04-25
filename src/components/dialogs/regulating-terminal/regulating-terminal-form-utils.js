@@ -14,8 +14,8 @@ import {
     TOPOLOGY_KIND,
     TYPE,
     VOLTAGE_LEVEL,
-} from 'components/util/field-constants';
-import yup from '../../util/yup-config';
+} from 'components/utils/field-constants';
+import yup from '../../utils/yup-config';
 
 const regulatingTerminalValidationSchema = () => ({
     [VOLTAGE_LEVEL]: yup

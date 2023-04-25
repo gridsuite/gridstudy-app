@@ -29,8 +29,8 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import LoadCreationDialog from '../../dialogs/load-creation/load-creation-dialog';
-import LoadModificationDialog from '../../dialogs/load-modification/load-modification-dialog';
+import LoadCreationDialog from '../../dialogs/load/creation/load-creation-dialog';
+import LoadModificationDialog from '../../dialogs/load/modification/load-modification-dialog';
 import LineCreationDialog from 'components/dialogs/line-creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
@@ -41,10 +41,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import CheckboxList from '../../util/checkbox-list';
+import CheckboxList from '../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
+import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import {
     addNotification,
     removeNotificationByNode,

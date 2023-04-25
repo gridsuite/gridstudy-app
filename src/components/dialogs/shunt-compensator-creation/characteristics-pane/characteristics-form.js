@@ -13,12 +13,12 @@ import {
     SUSCEPTANCE_PER_SECTION,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import { Box } from '@mui/material';
 import { useWatch } from 'react-hook-form';
-import FloatInput from 'components/util/rhf-inputs/float-input';
-import EnumInput from 'components/util/rhf-inputs/enum-input';
-import RadioInput from 'components/util/rhf-inputs/radio-input';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
+import EnumInput from 'components/utils/rhf-inputs/enum-input';
+import RadioInput from 'components/utils/rhf-inputs/radio-input';
 import {
     SusceptanceAdornment,
     ReactivePowerAdornment,

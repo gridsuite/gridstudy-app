@@ -7,12 +7,12 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LOSS_COEFFICIENT } from 'components/util/field-constants';
+import { LOSS_COEFFICIENT } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { generationDispatch } from '../../../utils/rest-api';
-import yup from '../../util/yup-config';
+import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 

@@ -10,12 +10,12 @@ import {
     MINIMUM_REACTIVE_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
-} from '../../../util/field-constants';
+} from '../../../utils/field-constants';
 import {
     getReactiveCapabilityCurveEmptyFormData,
     getReactiveCapabilityCurveValidationSchema,
 } from './reactive-capability-curve/reactive-capability-utils';
-import yup from '../../../util/yup-config';
+import yup from '../../../utils/yup-config';
 
 export const getReactiveLimitsEmptyFormData = (
     isGeneratorModification = false

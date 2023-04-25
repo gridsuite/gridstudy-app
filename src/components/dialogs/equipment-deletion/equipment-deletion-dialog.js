@@ -6,14 +6,14 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../util/yup-config';
-import { TYPE, EQUIPMENT_ID } from '../../util/field-constants';
+import yup from '../../utils/yup-config';
+import { TYPE, EQUIPMENT_ID } from '../../utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
 import React, { useCallback, useEffect } from 'react';
 import { deleteEquipment } from '../../../utils/rest-api';
 import ModificationDialog from '../commons/modificationDialog';
-import { EQUIPMENT_TYPES } from '../../util/equipment-types';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';
 

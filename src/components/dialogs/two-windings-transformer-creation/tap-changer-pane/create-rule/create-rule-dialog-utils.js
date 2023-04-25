@@ -1,8 +1,8 @@
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
-} from 'components/util/field-constants';
-import yup from 'components/util/yup-config';
+} from 'components/utils/field-constants';
+import yup from 'components/utils/yup-config';
 
 const createRuleValidationSchema = () =>
     yup.object().shape({

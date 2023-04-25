@@ -22,8 +22,8 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-} from '../../../util/field-constants';
-import yup from '../../../util/yup-config';
+} from '../../../utils/field-constants';
+import yup from '../../../utils/yup-config';
 import { REGULATION_TYPES } from '../../../network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../../regulating-terminal/regulating-terminal-form-utils';
 

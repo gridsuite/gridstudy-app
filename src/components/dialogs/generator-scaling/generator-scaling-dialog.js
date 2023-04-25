@@ -7,12 +7,12 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import yup from '../../util/yup-config';
+import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import GeneratorScalingForm from './generator-scaling-form';
 import { useCallback, useEffect } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { VARIATION_TYPE, VARIATIONS } from '../../util/field-constants';
+import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
 import { generatorScaling } from '../../../utils/rest-api';
 import { VARIATION_TYPES } from '../../network/constants';

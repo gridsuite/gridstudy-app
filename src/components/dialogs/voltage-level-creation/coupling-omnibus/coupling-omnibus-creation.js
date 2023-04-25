@@ -6,12 +6,12 @@
  */
 
 import { gridItem } from 'components/dialogs/dialogUtils';
-import AutocompleteInput from 'components/util/rhf-inputs/autocomplete-input';
+import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import {
     BUS_BAR_SECTION_ID1,
     BUS_BAR_SECTION_ID2,
     COUPLING_OMNIBUS,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 
 export const CouplingOmnibusCreation = ({ index, sectionOptions }) => {
     const busBarSectionId1Field = (

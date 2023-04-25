@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from '../../../util/rhf-inputs/text-input';
+import TextInput from '../../../utils/rhf-inputs/text-input';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -20,7 +20,7 @@ import {
     STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
-} from '../../../util/field-constants';
+} from '../../../utils/field-constants';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -30,12 +30,12 @@ import {
     MVAPowerAdornment,
     OhmAdornment,
 } from '../../dialogUtils';
-import SelectInput from '../../../util/rhf-inputs/select-input';
+import SelectInput from '../../../utils/rhf-inputs/select-input';
 import { ENERGY_SOURCES } from '../../../network/constants';
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
-import FloatInput from '../../../util/rhf-inputs/float-input';
+import FloatInput from '../../../utils/rhf-inputs/float-input';
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { fetchVoltageLevelsIdAndTopology } from '../../../../utils/rest-api';

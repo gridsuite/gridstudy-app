@@ -31,8 +31,8 @@ import {
     LIMITS,
     TEMPORARY_LIMITS,
     TAB_HEADER,
-} from 'components/util/field-constants';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+} from 'components/utils/field-constants';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -42,7 +42,7 @@ import { microUnitToUnit, unitToMicroUnit } from '../../../utils/rounding';
 import EquipmentSearchDialog from '../equipment-search-dialog';
 import { useFormSearchCopy } from '../form-search-copy-hook';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../network/constants';
-import yup from '../../util/yup-config';
+import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
 import LineCreationDialogTabs from './line-creation-dialog-tabs';
@@ -57,8 +57,8 @@ import {
     getHeaderFormData,
     getHeaderValidationSchema,
 } from './line-creation-dialog-utils';
-import { addSelectedFieldToRows } from '../../util/dnd-table/dnd-table';
-import TextInput from '../../util/rhf-inputs/text-input';
+import { addSelectedFieldToRows } from '../../utils/dnd-table/dnd-table';
+import TextInput from '../../utils/rhf-inputs/text-input';
 import LimitsPane from '../limits/limits-pane';
 import {
     getLimitsEmptyFormData,

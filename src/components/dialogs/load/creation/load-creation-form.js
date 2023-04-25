@@ -12,7 +12,7 @@ import {
     EQUIPMENT_NAME,
     LOAD_TYPE,
     REACTIVE_POWER,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import {
@@ -21,12 +21,12 @@ import {
     gridItem,
     GridSection,
     ReactivePowerAdornment,
-} from '../dialogUtils';
-import { LOAD_TYPES } from '../../network/constants';
-import FloatInput from '../../util/rhf-inputs/float-input';
-import SelectInput from '../../util/rhf-inputs/select-input';
-import TextInput from '../../util/rhf-inputs/text-input';
-import { ConnectivityForm } from '../connectivity/connectivity-form';
+} from '../../dialogUtils';
+import { LOAD_TYPES } from '../../../network/constants';
+import FloatInput from '../../../utils/rhf-inputs/float-input';
+import SelectInput from '../../../utils/rhf-inputs/select-input';
+import TextInput from '../../../utils/rhf-inputs/text-input';
+import { ConnectivityForm } from '../../connectivity/connectivity-form';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

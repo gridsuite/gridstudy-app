@@ -14,7 +14,7 @@ import {
     STEPS_RESISTANCE,
     STEPS_SUSCEPTANCE,
     STEPS_TAP,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';

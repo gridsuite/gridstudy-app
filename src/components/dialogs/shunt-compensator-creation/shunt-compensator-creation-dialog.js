@@ -21,8 +21,8 @@ import {
     CHARACTERISTICS_CHOICES,
     Q_AT_NOMINAL_V,
     SHUNT_COMPENSATOR_TYPE,
-} from 'components/util/field-constants';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+} from 'components/utils/field-constants';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -31,7 +31,7 @@ import { sanitizeString } from '../dialogUtils';
 import EquipmentSearchDialog from '../equipment-search-dialog';
 import { useFormSearchCopy } from '../form-search-copy-hook';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../network/constants';
-import yup from '../../util/yup-config';
+import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
     getConnectivityWithPositionEmptyFormData,

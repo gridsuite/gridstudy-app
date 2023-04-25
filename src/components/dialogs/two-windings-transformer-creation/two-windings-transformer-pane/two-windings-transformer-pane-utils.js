@@ -18,8 +18,8 @@ import {
     RATED_VOLTAGE_2,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
-} from 'components/util/field-constants';
-import yup from '../../../util/yup-config';
+} from 'components/utils/field-constants';
+import yup from '../../../utils/yup-config';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,

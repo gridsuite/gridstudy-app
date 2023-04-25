@@ -11,8 +11,8 @@ import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import IntegerInput from '../../../util/rhf-inputs/integer-input';
-import DndTable, { MAX_ROWS_NUMBER } from '../../../util/dnd-table/dnd-table';
+import IntegerInput from '../../../utils/rhf-inputs/integer-input';
+import DndTable, { MAX_ROWS_NUMBER } from '../../../utils/dnd-table/dnd-table';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -22,7 +22,7 @@ import {
     STEPS,
     STEPS_TAP,
     TAP_POSITION,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 
 const TapChangerSteps = ({

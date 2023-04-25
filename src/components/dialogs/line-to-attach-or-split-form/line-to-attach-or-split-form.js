@@ -8,13 +8,13 @@
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../dialogUtils';
-import AutocompleteInput from 'components/util/rhf-inputs/autocomplete-input';
-import { areIdsEqual, getObjectId } from 'components/util/utils';
+import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { useEffect, useState } from 'react';
 import { PercentageArea } from '../percentage-area/percentage-area';
 import { useWatch } from 'react-hook-form';
 import { fetchLines } from 'utils/rest-api';
-import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/util/field-constants';
+import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
 
 export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
     const [line1Substation, setLine1Substation] = useState('');

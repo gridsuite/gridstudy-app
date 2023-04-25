@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import {
     useDirectoryElements,
     useEnumValue,
-} from '../../util/inputs/input-hooks';
+} from '../../utils/inputs/input-hooks';
 import { elementType } from '@gridsuite/commons-ui';
 import { filledTextField, gridItem } from '../dialogUtils';
 import {

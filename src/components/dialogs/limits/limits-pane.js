@@ -15,18 +15,18 @@ import {
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import makeStyles from '@mui/styles/makeStyles';
-import FloatInput from 'components/util/rhf-inputs/float-input';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
 import {
     AmpereAdornment,
     gridItem,
     GridSection,
 } from 'components/dialogs/dialogUtils';
-import DndTable from 'components/util/dnd-table/dnd-table';
+import DndTable from 'components/utils/dnd-table/dnd-table';
 
 const useStyles = makeStyles((theme) => ({
     h3: {

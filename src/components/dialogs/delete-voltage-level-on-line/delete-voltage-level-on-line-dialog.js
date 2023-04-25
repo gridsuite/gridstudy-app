@@ -11,13 +11,13 @@ import {
     LINE_TO_ATTACH_TO_2_ID,
     REPLACING_LINE_1_ID,
     REPLACING_LINE_1_NAME,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { deleteVoltageLevelOnLine } from '../../../utils/rest-api';
 import { sanitizeString } from '../dialogUtils';
-import yup from '../../util/yup-config';
+import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
 

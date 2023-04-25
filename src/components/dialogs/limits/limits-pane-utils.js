@@ -15,9 +15,9 @@ import {
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_VALUE,
-} from 'components/util/field-constants';
-import { areArrayElementsUnique } from 'components/util/utils';
-import yup from 'components/util/yup-config';
+} from 'components/utils/field-constants';
+import { areArrayElementsUnique } from 'components/utils/utils';
+import yup from 'components/utils/yup-config';
 
 const temporaryLimitsTableValidationSchema = () => ({
     [PERMANENT_LIMIT]: yup

@@ -6,12 +6,12 @@
  */
 
 import Grid from '@mui/material/Grid';
-import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/util/field-constants';
+import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 
 import { filledTextField, gridItem, GridSection } from '../dialogUtils';
 
-import TextInput from '../../util/rhf-inputs/text-input';
+import TextInput from '../../utils/rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import { CharacteristicsForm } from './characteristics-pane/characteristics-form';

@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import SelectInput from '../../../util/rhf-inputs/select-input';
+import SelectInput from '../../../utils/rhf-inputs/select-input';
 import { REGULATION_TYPES } from '../../../network/constants';
 import {
     Q_PERCENT,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-} from '../../../util/field-constants';
+} from '../../../utils/field-constants';
 import React, { useCallback, useMemo } from 'react';
-import FloatInput from '../../../util/rhf-inputs/float-input';
+import FloatInput from '../../../utils/rhf-inputs/float-input';
 import {
     gridItem,
     percentageTextField,

@@ -9,8 +9,8 @@ import {
     LEFT_SIDE_PERCENTAGE,
     RIGHT_SIDE_PERCENTAGE,
     SLIDER_PERCENTAGE,
-} from 'components/util/field-constants';
-import yup from '../../util/yup-config';
+} from 'components/utils/field-constants';
+import yup from '../../utils/yup-config';
 
 const percentageAreaValidationSchema = () => ({
     [SLIDER_PERCENTAGE]: yup.number(),

@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/util/field-constants';
-import yup from '../../util/yup-config';
+import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
+import yup from '../../utils/yup-config';
 import {
     getPercentageAreaData,
     getPercentageAreaEmptyFormData,

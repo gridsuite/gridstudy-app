@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SWITCH_KINDS, SWITCH_KIND } from 'components/util/field-constants';
-import yup from 'components/util/yup-config';
+import { SWITCH_KINDS, SWITCH_KIND } from 'components/utils/field-constants';
+import yup from 'components/utils/yup-config';
 
 export const getCreateSwitchesValidationSchema = (id = SWITCH_KINDS) => {
     return {

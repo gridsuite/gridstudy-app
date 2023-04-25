@@ -16,7 +16,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import CreateRuleDialogSubmitButton from './create-rule-dialog-submit-button';
 
 const emptyFormData = getCreateRuteEmptyFormData();

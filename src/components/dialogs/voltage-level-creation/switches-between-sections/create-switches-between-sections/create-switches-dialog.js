@@ -15,8 +15,8 @@ import {
     getCreateSwitchesEmptyFormData,
     getCreateSwitchesValidationSchema,
 } from './create-switches-dialog-utils';
-import { SWITCH_KINDS } from 'components/util/field-constants';
-import yup from 'components/util/yup-config';
+import { SWITCH_KINDS } from 'components/utils/field-constants';
+import yup from 'components/utils/yup-config';
 import { useEffect } from 'react';
 
 const formSchema = yup.object().shape({

@@ -11,13 +11,13 @@ import {
     percentageTextField,
 } from '../../dialogUtils';
 import { useWatch } from 'react-hook-form';
-import { DROOP, FREQUENCY_REGULATION } from '../../../util/field-constants';
+import { DROOP, FREQUENCY_REGULATION } from '../../../utils/field-constants';
 import React, { useMemo } from 'react';
-import FloatInput from '../../../util/rhf-inputs/float-input';
-import SwitchInput from '../../../util/rhf-inputs/booleans/switch-input';
+import FloatInput from '../../../utils/rhf-inputs/float-input';
+import SwitchInput from '../../../utils/rhf-inputs/booleans/switch-input';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import CheckboxNullableInput from 'components/util/rhf-inputs/boolean-nullable-input';
+import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
 
 const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {

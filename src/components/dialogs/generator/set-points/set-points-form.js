@@ -15,18 +15,18 @@ import {
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
 import React from 'react';
-import FloatInput from '../../../util/rhf-inputs/float-input';
+import FloatInput from '../../../utils/rhf-inputs/float-input';
 import {
     ACTIVE_POWER_SET_POINT,
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_REGULATION,
-} from '../../../util/field-constants';
+} from '../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import FrequencyRegulation from './frequency-regulation';
 import VoltageRegulation from './voltage-regulation';
-import SwitchInput from '../../../util/rhf-inputs/booleans/switch-input';
+import SwitchInput from '../../../utils/rhf-inputs/booleans/switch-input';
 import { FormattedMessage, useIntl } from 'react-intl';
-import CheckboxNullableInput from 'components/util/rhf-inputs/boolean-nullable-input';
+import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 
 const SetPointsForm = ({
     studyUuid,

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ExpandableInput from 'components/util/rhf-inputs/expandable-input';
+import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
 import {
     BUS_BAR_COUNT,
     BUS_BAR_SECTION_ID1,
@@ -13,11 +13,11 @@ import {
     COUPLING_OMNIBUS,
     EQUIPMENT_ID,
     SECTION_COUNT,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import { CouplingOmnibusCreation } from './coupling-omnibus-creation';
 import { useEffect, useMemo, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { buildNewBusbarSections } from 'components/util/utils';
+import { buildNewBusbarSections } from 'components/utils/utils';
 
 export const CouplingOmnibusForm = () => {
     const { setValue } = useFormContext();

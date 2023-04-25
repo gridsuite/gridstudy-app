@@ -17,13 +17,13 @@ import {
     BUS_OR_BUSBAR_SECTION,
     SLIDER_PERCENTAGE,
     LINE_TO_ATTACH_OR_SPLIT_ID,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { divideLine } from '../../../utils/rest-api';
 import { sanitizeString } from '../dialogUtils';
-import yup from '../../util/yup-config';
+import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
     getConnectivityData,
@@ -36,8 +36,8 @@ import {
     getLineToAttachOrSplitFormData,
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
-import { MODIFICATION_TYPES } from 'components/util/modification-type';
-import { buildNewBusbarSections } from 'components/util/utils';
+import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import { buildNewBusbarSections } from 'components/utils/utils';
 
 const emptyFormData = {
     [LINE1_ID]: '',

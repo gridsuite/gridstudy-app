@@ -6,14 +6,14 @@
  */
 
 import { fetchAppsAndUrls } from '../../../../utils/rest-api';
-import yup from '../../../util/yup-config';
+import yup from '../../../utils/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
     DELETION_MARK,
     NAME,
     PREVIOUS_VALUE,
     VALUE,
-} from '../../../util/field-constants';
+} from '../../../utils/field-constants';
 
 export const checkUniqueProperties = (properties) => {
     const validValues = properties.filter((v) => v?.name && v?.value);

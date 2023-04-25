@@ -8,15 +8,15 @@
 import {
     toNumber,
     validateValueIsANumber,
-} from '../../../../util/validation-functions';
-import yup from '../../../../util/yup-config';
+} from '../../../../utils/validation-functions';
+import yup from '../../../../utils/yup-config';
 import {
     P,
     Q_MAX_P,
     Q_MIN_P,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
-} from '../../../../util/field-constants';
+} from '../../../../utils/field-constants';
 
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';

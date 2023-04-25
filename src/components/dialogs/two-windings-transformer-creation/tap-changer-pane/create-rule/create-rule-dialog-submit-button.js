@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import { useCallback } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';

@@ -13,27 +13,27 @@ import {
     EQUIPMENT_NAME,
     LOAD_TYPE,
     REACTIVE_POWER,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad, fetchEquipmentInfos } from '../../../utils/rest-api';
-import { sanitizeString } from '../dialogUtils';
-import EquipmentSearchDialog from '../equipment-search-dialog';
-import { useFormSearchCopy } from '../form-search-copy-hook';
+import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
+import { sanitizeString } from '../../dialogUtils';
+import EquipmentSearchDialog from '../../equipment-search-dialog';
+import { useFormSearchCopy } from '../../form-search-copy-hook';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
     UNDEFINED_LOAD_TYPE,
-} from '../../network/constants';
-import yup from '../../util/yup-config';
-import ModificationDialog from '../commons/modificationDialog';
+} from '../../../network/constants';
+import yup from '../../../utils/yup-config';
+import ModificationDialog from '../../commons/modificationDialog';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../connectivity/connectivity-form-utils';
+} from '../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 /**
  * Dialog to create a load in the network

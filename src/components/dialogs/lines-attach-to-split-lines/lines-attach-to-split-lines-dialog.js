@@ -23,8 +23,8 @@ import {
     VOLTAGE_LEVEL,
     ID,
     BUS_OR_BUSBAR_SECTION,
-} from 'components/util/field-constants';
-import yup from 'components/util/yup-config';
+} from 'components/utils/field-constants';
+import yup from 'components/utils/yup-config';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { linesAttachToSplitLines } from 'utils/rest-api';

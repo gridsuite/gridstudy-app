@@ -17,10 +17,10 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { useInputForm } from '../../util/inputs/input-hooks';
+import { useInputForm } from '../../utils/inputs/input-hooks';
 import { getIdOrSelf, gridItem } from '../dialogUtils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { useAutocompleteField } from '../../util/inputs/use-autocomplete-field';
+import { useAutocompleteField } from '../../utils/inputs/use-autocomplete-field';
 import {
     fetchDynamicSimulationParameters,
     updateDynamicSimulationParameters,

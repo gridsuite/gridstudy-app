@@ -15,7 +15,7 @@ import {
     REGULATION_SIDE,
     REGULATION_TYPE,
     TARGET_DEADBAND,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import {
@@ -28,11 +28,11 @@ import {
     REGULATION_TYPES,
     SIDE,
 } from '../../../../network/constants';
-import FloatInput from '../../../../util/rhf-inputs/float-input';
-import SelectInput from '../../../../util/rhf-inputs/select-input';
+import FloatInput from '../../../../utils/rhf-inputs/float-input';
+import SelectInput from '../../../../utils/rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,

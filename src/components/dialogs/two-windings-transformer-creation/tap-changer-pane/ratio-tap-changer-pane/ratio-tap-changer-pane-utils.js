@@ -32,12 +32,12 @@ import {
     TOPOLOGY_KIND,
     TYPE,
     VOLTAGE_LEVEL,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import {
     areNumbersOrdered,
     areArrayElementsUnique,
-} from '../../../../util/utils';
-import yup from '../../../../util/yup-config';
+} from '../../../../utils/utils';
+import yup from '../../../../utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,

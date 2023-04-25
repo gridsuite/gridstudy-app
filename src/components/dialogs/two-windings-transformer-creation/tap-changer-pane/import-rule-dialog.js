@@ -15,11 +15,11 @@ import {
 } from '@mui/material';
 import { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useCSVPicker } from '../../../util/inputs/input-hooks';
+import { useCSVPicker } from '../../../utils/inputs/input-hooks';
 
 import CsvDownloader from 'react-csv-downloader';
 import { PHASE_TAP } from '../two-windings-transformer-creation-dialog';
-import { MAX_ROWS_NUMBER } from '../../../util/dnd-table/dnd-table';
+import { MAX_ROWS_NUMBER } from '../../../utils/dnd-table/dnd-table';
 
 export const ImportRuleDialog = (props) => {
     const handleCloseDialog = () => {

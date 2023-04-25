@@ -14,11 +14,11 @@ import {
     LINE1_NAME,
     LINE2_ID,
     LINE2_NAME,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import React, { useEffect, useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../dialogUtils';
 
-import TextInput from '../../util/rhf-inputs/text-input';
+import TextInput from '../../utils/rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 import { Box, Button, Typography } from '@mui/material';

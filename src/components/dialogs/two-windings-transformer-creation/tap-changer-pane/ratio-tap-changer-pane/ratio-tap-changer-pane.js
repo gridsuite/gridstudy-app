@@ -15,13 +15,13 @@ import {
     REGULATION_TYPE,
     TARGET_DEADBAND,
     TARGET_V,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { gridItem, VoltageAdornment } from '../../../dialogUtils';
-import SwitchInput from '../../../../util/rhf-inputs/booleans/switch-input';
-import FloatInput from '../../../../util/rhf-inputs/float-input';
+import SwitchInput from '../../../../utils/rhf-inputs/booleans/switch-input';
+import FloatInput from '../../../../utils/rhf-inputs/float-input';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import {
@@ -29,8 +29,8 @@ import {
     REGULATION_TYPES,
     SIDE,
 } from '../../../../network/constants';
-import SelectInput from '../../../../util/rhf-inputs/select-input';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import SelectInput from '../../../../utils/rhf-inputs/select-input';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,

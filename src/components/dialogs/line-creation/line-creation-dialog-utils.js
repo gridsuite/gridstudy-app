@@ -9,8 +9,8 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     TAB_HEADER,
-} from 'components/util/field-constants';
-import yup from '../../util/yup-config';
+} from 'components/utils/field-constants';
+import yup from '../../utils/yup-config';
 
 const headerValidationSchema = (id) => ({
     [id]: yup.object().shape({

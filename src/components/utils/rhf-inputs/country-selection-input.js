@@ -6,7 +6,7 @@
  */
 
 import AutocompleteInput from './autocomplete-input';
-import { LocalizedCountries } from '../../util/localized-countries';
+import { LocalizedCountries } from '../localized-countries';
 
 const CountrySelectionInput = ({ name, label, formProps, ...props }) => {
     const { translate, countryCodes } = LocalizedCountries();

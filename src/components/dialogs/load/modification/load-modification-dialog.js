@@ -13,14 +13,14 @@ import {
     EQUIPMENT_NAME,
     LOAD_TYPE,
     REACTIVE_POWER,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { modifyLoad } from '../../../utils/rest-api';
-import { sanitizeString } from '../dialogUtils';
-import yup from '../../util/yup-config';
-import ModificationDialog from '../commons/modificationDialog';
+import { modifyLoad } from '../../../../utils/rest-api';
+import { sanitizeString } from '../../dialogUtils';
+import yup from '../../../utils/yup-config';
+import ModificationDialog from '../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 
 /**

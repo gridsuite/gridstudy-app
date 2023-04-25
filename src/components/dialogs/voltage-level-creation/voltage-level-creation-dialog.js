@@ -29,8 +29,8 @@ import {
     SWITCHES_BETWEEN_SECTIONS,
     SWITCH_KIND,
     SWITCH_KINDS,
-} from 'components/util/field-constants';
-import yup from 'components/util/yup-config';
+} from 'components/utils/field-constants';
+import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -39,7 +39,7 @@ import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
 import { controlCouplingOmnibusBetweenSections } from './voltage-level-creation-utils';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 

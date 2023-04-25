@@ -4,31 +4,31 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import TextInput from '../../util/rhf-inputs/text-input';
+import TextInput from '../../../utils/rhf-inputs/text-input';
 import {
     ACTIVE_POWER,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
     REACTIVE_POWER,
-} from '../../util/field-constants';
+} from '../../../utils/field-constants';
 import {
     ActivePowerAdornment,
     filledTextField,
     gridItem,
     GridSection,
     ReactivePowerAdornment,
-} from '../dialogUtils';
-import SelectInput from '../../util/rhf-inputs/select-input';
-import { getLoadTypeLabel, LOAD_TYPES } from '../../network/constants';
-import FloatInput from '../../util/rhf-inputs/float-input';
+} from '../../dialogUtils';
+import SelectInput from '../../../utils/rhf-inputs/select-input';
+import { getLoadTypeLabel, LOAD_TYPES } from '../../../network/constants';
+import FloatInput from '../../../utils/rhf-inputs/float-input';
 import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useState } from 'react';
 import {
     fetchEquipmentInfos,
     fetchEquipmentsIds,
-} from '../../../utils/rest-api';
-import AutocompleteInput from '../../util/rhf-inputs/autocomplete-input';
+} from '../../../../utils/rest-api';
+import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 

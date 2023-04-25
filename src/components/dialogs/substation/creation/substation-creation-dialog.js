@@ -8,11 +8,11 @@
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../equipment-search-dialog';
-import { EQUIPMENT_TYPES } from '../../../util/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import React, { useCallback, useEffect } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../../util/yup-config';
+import yup from '../../../utils/yup-config';
 import { useFormSearchCopy } from '../../../dialogs/form-search-copy-hook';
 import {
     ADDITIONAL_PROPERTIES,
@@ -21,7 +21,7 @@ import {
     EQUIPMENT_NAME,
     NAME,
     VALUE,
-} from '../../../util/field-constants';
+} from '../../../utils/field-constants';
 import { getPropertiesSchema } from '../property/property-utils';
 import SubstationCreationForm from './substation-creation-form';
 import { createSubstation } from '../../../../utils/rest-api';

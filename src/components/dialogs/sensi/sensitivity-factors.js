@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useInputForm } from '../../util/inputs/input-hooks';
+import { useInputForm } from '../../utils/inputs/input-hooks';
 import { useExpandableSensitivityFactors } from './expandable-sensitivity-factors';
 import React, { useMemo } from 'react';
 import Grid from '@mui/material/Grid';

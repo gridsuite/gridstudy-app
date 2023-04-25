@@ -7,13 +7,13 @@
 
 import { IconButton } from '@mui/material';
 import { gridItem } from 'components/dialogs/dialogUtils';
-import TextInput from 'components/util/rhf-inputs/text-input';
+import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
     SECTION_COUNT,
     SWITCHES_BETWEEN_SECTIONS,
     SWITCH_KINDS,
     SWITCH_KIND,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';

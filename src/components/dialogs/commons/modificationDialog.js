@@ -16,7 +16,7 @@ import {
     DialogActions,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useButtonWithTooltip } from '../../util/inputs/input-hooks';
+import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import { useFormContext } from 'react-hook-form';
 import SubmitButton from './submitButton';
 

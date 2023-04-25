@@ -16,7 +16,7 @@ import React, {
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { RunningStatus } from '../../util/running-status';
+import { RunningStatus } from '../../utils/running-status';
 import { equipments } from '../../network/network-equipments';
 import {
     getEquipmentTypeFromFeederType,
@@ -39,7 +39,7 @@ import {
     isNodeInNotificationList,
     isNodeReadOnly,
 } from '../../graph/util/model-functions';
-import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
+import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import {
     deleteEquipment,
     fetchSvg,
@@ -51,7 +51,7 @@ import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/generator/modification/generator-modification-dialog';
-import LoadModificationDialog from '../../dialogs/load-modification/load-modification-dialog';
+import LoadModificationDialog from '../../dialogs/load/modification/load-modification-dialog';
 
 const SingleLineDiagramContent = forwardRef((props, ref) => {
     const { studyUuid, setWarning } = props;

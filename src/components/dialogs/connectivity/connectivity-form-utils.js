@@ -17,8 +17,8 @@ import {
     SUBSTATION_ID,
     TOPOLOGY_KIND,
     VOLTAGE_LEVEL,
-} from 'components/util/field-constants';
-import yup from '../../util/yup-config';
+} from 'components/utils/field-constants';
+import yup from '../../utils/yup-config';
 
 export const getConnectivityPropertiesValidationSchema = () => {
     return {

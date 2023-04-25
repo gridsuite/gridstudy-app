@@ -7,8 +7,8 @@
 
 import { DialogContent, DialogTitle, Grid } from '@mui/material';
 import { SWITCH_TYPE } from 'components/network/constants';
-import EnumInput from 'components/util/rhf-inputs/enum-input';
-import { SWITCH_KIND } from 'components/util/field-constants';
+import EnumInput from 'components/utils/rhf-inputs/enum-input';
+import { SWITCH_KIND } from 'components/utils/field-constants';
 import { useFieldArray } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 

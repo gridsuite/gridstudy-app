@@ -15,10 +15,10 @@ import {
     filledTextField,
     gridItem,
 } from 'components/dialogs/dialogUtils';
-import AutocompleteInput from 'components/util/rhf-inputs/autocomplete-input';
-import { EQUIPMENT_ID, TYPE } from 'components/util/field-constants';
-import { areIdsEqual, getObjectId } from 'components/util/utils';
-import { EQUIPMENT_TYPES } from '../../util/equipment-types';
+import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
+import { areIdsEqual, getObjectId } from 'components/utils/utils';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 const richTypeEquals = (a, b) => a.type === b.type;
 

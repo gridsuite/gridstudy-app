@@ -44,8 +44,8 @@ import {
     TARGET_DEADBAND,
     TARGET_V,
     VOLTAGE_LEVEL,
-} from 'components/util/field-constants';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+} from 'components/utils/field-constants';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -64,7 +64,7 @@ import {
     SIDE,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../../network/constants';
-import yup from '../../util/yup-config';
+import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
 import PhaseTapChangerPane from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
@@ -86,16 +86,16 @@ import {
     getTwoWindingsTransformerFormData,
     getTwoWindingsTransformerValidationSchema,
 } from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
-import { addSelectedFieldToRows } from '../../util/dnd-table/dnd-table';
-import SwitchInput from '../../util/rhf-inputs/booleans/switch-input';
-import TextInput from '../../util/rhf-inputs/text-input';
+import { addSelectedFieldToRows } from '../../utils/dnd-table/dnd-table';
+import SwitchInput from '../../utils/rhf-inputs/booleans/switch-input';
+import TextInput from '../../utils/rhf-inputs/text-input';
 import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     LIMITS,
     PERMANENT_LIMIT,
     TEMPORARY_LIMITS,
-} from '../../util/field-constants.js';
+} from '../../utils/field-constants.js';
 import LimitsPane from '../limits/limits-pane';
 import {
     getLimitsEmptyFormData,

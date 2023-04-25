@@ -15,7 +15,7 @@ import {
     OhmAdornment,
     VoltageAdornment,
 } from '../../dialogUtils';
-import FloatInput from '../../../util/rhf-inputs/float-input';
+import FloatInput from '../../../utils/rhf-inputs/float-input';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import {
     CHARACTERISTICS,
@@ -28,7 +28,7 @@ import {
     RATED_VOLTAGE_2,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 
 const useStyles = makeStyles((theme) => ({
     h3: {

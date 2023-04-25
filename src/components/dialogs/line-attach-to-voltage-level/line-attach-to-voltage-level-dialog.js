@@ -20,13 +20,13 @@ import {
     ATTACHMENT_POINT_ID,
     ATTACHMENT_POINT_NAME,
     LINE_TO_ATTACH_OR_SPLIT_ID,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { attachLine } from '../../../utils/rest-api';
 import { sanitizeString } from '../dialogUtils';
-import yup from '../../util/yup-config';
+import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
     getConnectivityWithoutPositionEmptyFormData,
@@ -34,13 +34,13 @@ import {
     getConnectivityWithoutPositionValidationSchema,
 } from '../connectivity/connectivity-form-utils';
 import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
-import { MODIFICATION_TYPES } from 'components/util/modification-type';
+import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import {
     getLineToAttachOrSplitEmptyFormData,
     getLineToAttachOrSplitFormData,
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
-import { buildNewBusbarSections } from 'components/util/utils';
+import { buildNewBusbarSections } from 'components/utils/utils';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',

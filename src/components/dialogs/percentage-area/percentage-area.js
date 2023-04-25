@@ -8,12 +8,12 @@
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { percentageTextField, standardTextField } from '../dialogUtils';
-import SliderInput from 'components/util/rhf-inputs/slider-input';
+import SliderInput from 'components/utils/rhf-inputs/slider-input';
 import {
     LEFT_SIDE_PERCENTAGE,
     RIGHT_SIDE_PERCENTAGE,
     SLIDER_PERCENTAGE,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import { useFormContext } from 'react-hook-form';
 import {
     formatPercentageValue,
@@ -21,7 +21,7 @@ import {
     sanitizePercentageValue,
 } from './percentage-area-utils';
 import { FormattedMessage } from 'react-intl';
-import TextInput from 'components/util/rhf-inputs/text-input';
+import TextInput from 'components/utils/rhf-inputs/text-input';
 
 /**
  * Component to handle a 'percentage area' (slider , left and right percentage fields)

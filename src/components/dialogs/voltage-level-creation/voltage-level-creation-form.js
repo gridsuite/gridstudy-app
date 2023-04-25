@@ -17,7 +17,7 @@ import {
     NOMINAL_VOLTAGE,
     SECTION_COUNT,
     SUBSTATION_ID,
-} from 'components/util/field-constants';
+} from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from 'utils/rest-api';
 import {
@@ -26,12 +26,12 @@ import {
     VoltageAdornment,
     KiloAmpereAdornment,
 } from 'components/dialogs/dialogUtils';
-import FloatInput from 'components/util/rhf-inputs/float-input';
-import TextInput from 'components/util/rhf-inputs/text-input';
-import AutocompleteInput from 'components/util/rhf-inputs/autocomplete-input';
-import { getObjectId } from 'components/util/utils';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
+import TextInput from 'components/utils/rhf-inputs/text-input';
+import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { getObjectId } from 'components/utils/utils';
 import { Box } from '@mui/material';
-import IntegerInput from 'components/util/rhf-inputs/integer-input';
+import IntegerInput from 'components/utils/rhf-inputs/integer-input';
 
 import { CouplingOmnibusForm } from './coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from './switches-between-sections/switches-between-sections';

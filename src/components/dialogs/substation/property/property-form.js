@@ -7,16 +7,16 @@
 
 import { gridItem, italicFontTextField } from '../../dialogUtils';
 import React, { useEffect, useMemo, useState } from 'react';
-import AutocompleteInput from '../../../util/rhf-inputs/autocomplete-input';
+import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
 import {
     NAME,
     VALUE,
     PREVIOUS_VALUE,
     DELETION_MARK,
-} from '../../../util/field-constants';
+} from '../../../utils/field-constants';
 import { fetchPredefinedProperties } from './property-utils';
 import { useWatch } from 'react-hook-form';
-import TextInput from '../../../util/rhf-inputs/text-input';
+import TextInput from '../../../utils/rhf-inputs/text-input';
 
 const PropertyForm = ({ name, index }) => {
     const [predefinedProperties, setPredefinedProperties] = useState();
