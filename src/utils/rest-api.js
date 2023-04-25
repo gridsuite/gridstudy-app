@@ -11,8 +11,8 @@ import {
     BRANCH_STATUS_ACTION,
     BRANCH_SIDE,
 } from '../components/network/constants';
-import { MODIFICATION_TYPES } from '../components/util/modification-type';
-import { EQUIPMENT_TYPES } from '../components/util/equipment-types';
+import { MODIFICATION_TYPES } from '../components/utils/modification-type';
+import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';

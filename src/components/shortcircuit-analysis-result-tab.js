@@ -7,7 +7,7 @@
 
 import { useNodeData } from './study-container';
 import { fetchShortCircuitAnalysisResult } from '../utils/rest-api';
-import WaitingLoader from './util/waiting-loader';
+import WaitingLoader from './utils/waiting-loader';
 import ShortCircuitAnalysisResult from './shortcircuit-analysis-result';
 
 const shortCircuitAnalysisResultInvalidations = ['shortCircuitAnalysisResult'];

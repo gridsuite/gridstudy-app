@@ -12,7 +12,7 @@ import {
     fetchMapSubstations,
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
-import { EQUIPMENT_TYPES } from '../util/equipment-types';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
 const elementIdIndexer = (map, element) => {

@@ -20,7 +20,7 @@ import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useIntl } from 'react-intl';
-import { useNameOrId } from '../util/equipmentInfosHandler';
+import { useNameOrId } from '../utils/equipmentInfosHandler';
 import {
     energiseBranchEnd,
     fetchEquipmentInfos,
@@ -32,7 +32,7 @@ import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
-import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
+import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
 

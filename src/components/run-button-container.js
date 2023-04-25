@@ -20,7 +20,7 @@ import {
     stopShortCircuitAnalysis,
     stopDynamicSimulation,
 } from '../utils/rest-api';
-import { RunningStatus } from './util/running-status';
+import { RunningStatus } from './utils/running-status';
 
 import ContingencyListSelector from './dialogs/contingency-list-selector';
 import {

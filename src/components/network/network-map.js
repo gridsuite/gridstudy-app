@@ -18,13 +18,13 @@ import DeckGL from '@deck.gl/react';
 
 import { makeStyles, useTheme } from '@mui/styles';
 import { decomposeColor } from '@mui/material/styles';
-import LoaderWithOverlay from '../util/loader-with-overlay';
+import LoaderWithOverlay from '../utils/loader-with-overlay';
 
 import GeoData from './geo-data';
 import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
-import { RunningStatus } from '../util/running-status';
+import { RunningStatus } from '../utils/running-status';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -32,7 +32,7 @@ import { Button } from '@mui/material';
 import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
-import { useNameOrId } from '../util/equipmentInfosHandler';
+import { useNameOrId } from '../utils/equipmentInfosHandler';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {

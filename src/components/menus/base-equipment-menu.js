@@ -19,7 +19,7 @@ import { NestedMenuItem } from 'mui-nested-menu';
 import { useIntl } from 'react-intl';
 import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
-import { useNameOrId } from '../util/equipmentInfosHandler';
+import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
 import EditIcon from '@mui/icons-material/Edit';
 import { isNodeReadOnly } from '../graph/util/model-functions';
