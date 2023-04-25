@@ -8,7 +8,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import VirtualizedTable from './util/virtualized-table';
+import VirtualizedTable from './utils/virtualized-table';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
 import makeStyles from '@mui/styles/makeStyles';

@@ -7,7 +7,7 @@
 
 import { useNodeData } from './study-container';
 import { fetchSecurityAnalysisResult } from '../utils/rest-api';
-import WaitingLoader from './util/waiting-loader';
+import WaitingLoader from './utils/waiting-loader';
 import SecurityAnalysisResult from './security-analysis-result';
 
 const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
