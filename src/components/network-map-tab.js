@@ -833,6 +833,7 @@ export const NetworkMapTab = ({
         return (
             <div className={classes.divNominalVoltageFilter}>
                 <NominalVoltageFilter
+                    nominalVoltages={mapEquipments.getNominalVoltages()}
                     filteredNominalVoltages={filteredNominalVoltages}
                     onChange={setFilteredNominalVoltages}
                 />

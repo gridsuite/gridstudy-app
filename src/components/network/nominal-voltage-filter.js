@@ -16,7 +16,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
-import { useNominalVoltages } from '../../hooks/useNominalVoltages';
 
 const useStyles = makeStyles((theme) => ({
     nominalVoltageZone: {
@@ -46,9 +45,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const NominalVoltageFilter = ({ filteredNominalVoltages, onChange }) => {
-    const nominalVoltages = useNominalVoltages();
-
+const NominalVoltageFilter = ({
+    nominalVoltages,
+    filteredNominalVoltages,
+    onChange,
+}) => {
     const classes = useStyles();
 
     const handleToggle = (vnoms, isToggle) => () => {
