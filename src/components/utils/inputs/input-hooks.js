@@ -177,11 +177,13 @@ export const useTextValue = ({
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position="end">
-                            {clearable && value !== undefined && value !== '' && (
-                                <IconButton onClick={handleClearValue}>
-                                    <ClearIcon />
-                                </IconButton>
-                            )}
+                            {clearable &&
+                                value !== undefined &&
+                                value !== '' && (
+                                    <IconButton onClick={handleClearValue}>
+                                        <ClearIcon />
+                                    </IconButton>
+                                )}
                             {customAdornment && { ...customAdornment }}
                         </InputAdornment>
                     ),
