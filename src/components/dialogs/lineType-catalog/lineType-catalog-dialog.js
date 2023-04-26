@@ -12,28 +12,38 @@ import ModificationDialog from '../commons/modificationDialog';
 import LineTypeCatalogForm from './lineType-catalog-form';
 import LineTypeCatalogSelectorDialog from './lineType-catalog-selector-dialog';
 import { getLineTypeCatalog } from '../../../utils/rest-api';
-import { SEGMENTS, SEGMENT_DISTANCE_VALUE } from '../../utils/field-constants';
+import {
+    SEGMENTS,
+    SEGMENT_DISTANCE_VALUE,
+    TOTAL_RESISTANCE,
+    TOTAL_REACTANCE,
+    TOTAL_SUSCEPTANCE,
+} from '../../utils/field-constants';
 
-const schema = yup
-    .array()
-    .of(
-        yup.object().shape({
-            [SEGMENT_DISTANCE_VALUE]: yup.object().nullable().required(),
-            // [SEGMENT_LINE_TYPE]: yup.object().shape({
-            //     [LINE_TYPE_KIND]: yup.string(),
-            // }),
-            // [SEGMENT_RESISTANCE]: yup.number().required(),
-            // [SEGMENT_REACTANCE]: yup.number().required(),
-            // [SEGMENT_SUSCEPTANCE]: yup.number().required(),
-        })
-    )
-    .required();
+// const schema = yup.object().shape({
+//     [SEGMENTS]: yup.array().of(
+const schema = yup.object().shape({
+    [SEGMENT_DISTANCE_VALUE]: yup.number(),
+    // [SEGMENT_LINE_TYPE]: yup.object().shape({
+    //     [LINE_TYPE_KIND]: yup.string(),
+    // }),
+    // [SEGMENT_RESISTANCE]: yup.number().required(),
+    // [SEGMENT_REACTANCE]: yup.number().required(),
+    // [SEGMENT_SUSCEPTANCE]: yup.number().required(),
+    [TOTAL_RESISTANCE]: yup.number().required(),
+    [TOTAL_REACTANCE]: yup.number().required(),
+    [TOTAL_SUSCEPTANCE]: yup.number().required(),
 
-/*const lineSegmentValidationSchema = () => ({
-    [SEGMENTS]: 
-*/
+    // [SEGMENT_REACTANCE]: yup.number().required(),
+    // [SEGMENT_SUSCEPTANCE]: yup.number().required(),
+});
+
 const emptyFormData = {
-    // [TYPE]: EQUIPMENT_TYPES.LINE,
+    [SEGMENTS]: null,
+    [SEGMENT_DISTANCE_VALUE]: 0,
+    [TOTAL_RESISTANCE]: 0.206,
+    [TOTAL_REACTANCE]: 0.706,
+    [TOTAL_SUSCEPTANCE]: 6.472,
     // [EQUIPMENT_ID]: null,
 };
 
@@ -44,8 +54,7 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
     });
 
     const [lineTypeCatalog, setLineTypeCatalog] = useState([]);
-    const [openCatalogDialogIndex, setOpenCatalogDialogIndex] =
-        useState(null);
+    const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
     const [lineValues, setLineValues] = useState(new Map());
 
     const onCatalogDialogClose = () => {
@@ -74,7 +83,6 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
         });
     }, []);
 
-    const onSubmit = useCallback((formData) => {}, []);
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
@@ -85,7 +93,6 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                 fullWidth
                 maxWidth="md"
                 onClear={clear}
-                onSave={onSubmit}
                 aria-labelledby="dialog-lineType-catalog"
                 titleId="LineTypeCatalogDialogTitle"
                 {...dialogProps}

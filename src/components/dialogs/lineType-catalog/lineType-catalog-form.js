@@ -12,7 +12,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import { FormattedMessage } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import FloatInput from '../../utils/rhf-inputs/float-input';
-import { SEGMENT_DISTANCE_VALUE } from '../../utils/field-constants';
+import {
+    SEGMENT_DISTANCE_VALUE,
+    TOTAL_RESISTANCE,
+    TOTAL_REACTANCE,
+    TOTAL_SUSCEPTANCE,
+} from '../../utils/field-constants';
+import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only-input';
+import { useFormContext } from 'react-hook-form';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -67,6 +74,8 @@ function toSusceptance(lineSegment) {
 const LineTypeCatalogForm = (props) => {
     const classes = useStyles();
 
+    const { setValue } = useFormContext();
+
     const segmentDistanceField = (
         <FloatInput
             name={SEGMENT_DISTANCE_VALUE}
@@ -74,10 +83,6 @@ const LineTypeCatalogForm = (props) => {
             // adornment={meterAdornment}
         />
     );
-
-    const [totalResistance, setTotalResistance] = useState(0);
-    const [totalReactance, setTotalReactance] = useState(0);
-    const [totalSusceptance, setTotalSusceptance] = useState(0);
 
     const computeTotals = (array) => {
         const totalResistance = array.reduce(
@@ -92,6 +97,9 @@ const LineTypeCatalogForm = (props) => {
             (accum, item) => accum + item.susceptance,
             0
         );
+        setValue(`${TOTAL_RESISTANCE}`, totalResistance);
+        setValue(`${TOTAL_REACTANCE}`, totalReactance);
+        setValue(`${TOTAL_SUSCEPTANCE}`, totalSusceptance);
     };
 
     const { onEditButtonClick } = props;
@@ -107,42 +115,24 @@ const LineTypeCatalogForm = (props) => {
                 {gridItem(<FormattedMessage id={'Reactor'} />, 2)}
                 {gridItem(<FormattedMessage id={'R'} />, 2)}
             </Grid>
-            {[0, 1, 2, 3].map((line, index) => (
-                <Grid container spacing={2} key={index}>
-                    {gridItem(segmentDistanceField, 3)}
-                    {gridItem(
-                        <div>VALUE : {JSON.stringify(props.value)}</div>,
-                        2
-                    )}
-                    {gridItem(
-                        <Button
-                            onClick={handleEditButtonClick}
-                            startIcon={<EditIcon />}
-                        />,
-                        1
-                    )}
-                </Grid>
-            ))}
+            {/* {[0, 1, 2, 3].map((line, index) => ( */}
+            <Grid container spacing={2} key={'index'}>
+                {gridItem(segmentDistanceField, 3)}
+                {gridItem(<div>VALUE : {JSON.stringify(props.value)}</div>, 2)}
+                {gridItem(
+                    <Button
+                        onClick={handleEditButtonClick}
+                        startIcon={<EditIcon />}
+                    />,
+                    1
+                )}
+            </Grid>
+            {/* ))} */}
 
             <Grid container direction="row-reverse" spacing={2}>
-                {gridItem(
-                    <Typography classeName={classes.label}>
-                        {totalSusceptance}
-                    </Typography>,
-                    2
-                )}
-                {gridItem(
-                    <Typography classeName={classes.label}>
-                        {totalReactance}
-                    </Typography>,
-                    2
-                )}
-                {gridItem(
-                    <Typography classeName={classes.label}>
-                        {totalResistance}
-                    </Typography>,
-                    2
-                )}
+                {gridItem(<ReadOnlyInput name={`${TOTAL_SUSCEPTANCE}`} />, 2)}
+                {gridItem(<ReadOnlyInput name={`${TOTAL_REACTANCE}`} />, 2)}
+                {gridItem(<ReadOnlyInput name={`${TOTAL_RESISTANCE}`} />, 2)}
             </Grid>
         </>
     );

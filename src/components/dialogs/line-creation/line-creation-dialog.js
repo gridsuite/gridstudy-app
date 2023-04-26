@@ -31,6 +31,9 @@ import {
     LIMITS,
     TEMPORARY_LIMITS,
     TAB_HEADER,
+    TOTAL_RESISTANCE,
+    TOTAL_REACTANCE,
+    TOTAL_SUSCEPTANCE,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
@@ -132,7 +135,7 @@ const LineCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, setValue } = formMethods;
 
     const fromSearchCopyToFormValues = (line) => {
         reset(
@@ -265,6 +268,26 @@ const LineCreationDialog = ({
             ...temporaryLimit,
             name: sanitizeString(name),
         }));
+
+    const handleLineSegmentsBuildSubmit = (data) => {
+        console.log('SBO data =', data);
+        setValue(
+            `${CHARACTERISTICS}.${SERIES_RESISTANCE}`,
+            data[TOTAL_RESISTANCE]
+        );
+        setValue(
+            `${CHARACTERISTICS}.${SERIES_REACTANCE}`,
+            data[TOTAL_REACTANCE]
+        );
+        setValue(
+            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_1}`,
+            data[TOTAL_SUSCEPTANCE] / 2
+        );
+        setValue(
+            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_2}`,
+            data[TOTAL_SUSCEPTANCE] / 2
+        );
+    };
 
     const onSubmit = useCallback(
         (line) => {
@@ -422,6 +445,7 @@ const LineCreationDialog = ({
                 <LineTypeCatalogDialog
                     open={isOpenLineTypeCatalogDialog}
                     onClose={handleCloseLineTypeCatalogDialog}
+                    onSave={handleLineSegmentsBuildSubmit}
                 />
             </ModificationDialog>
         </FormProvider>
