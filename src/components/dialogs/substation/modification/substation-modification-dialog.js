@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -22,7 +22,10 @@ import {
     VALUE,
 } from '../../../utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
-import { modifySubstation } from '../../../../utils/rest-api';
+import {
+    fetchEquipmentInfos,
+    modifySubstation,
+} from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 
 const checkUniquePropertiesNames = (properties) => {
@@ -56,7 +59,7 @@ const formSchema = yup.object().shape({
         ),
 });
 
-const getProperties = (properties) => {
+const getPropertiesFromModification = (properties) => {
     return properties
         ? properties.map((p) => {
               return {
@@ -86,6 +89,7 @@ const SubstationModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [substationToModify, setSubstationToModify] = useState(null);
 
     const emptyFormData = useMemo(
         () => ({
@@ -101,7 +105,7 @@ const SubstationModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset } = formMethods;
+    const { reset, getValues } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -109,7 +113,9 @@ const SubstationModificationDialog = ({
                 [EQUIPMENT_ID]: editData.equipmentId,
                 [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
                 [COUNTRY]: editData.substationCountry?.value ?? null,
-                [ADDITIONAL_PROPERTIES]: getProperties(editData.properties),
+                [ADDITIONAL_PROPERTIES]: getPropertiesFromModification(
+                    editData.properties
+                ),
             });
         }
     }, [reset, editData]);
@@ -117,6 +123,147 @@ const SubstationModificationDialog = ({
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [reset, emptyFormData]);
+
+    const createPropertyValuesFromExistingEquipement = (propKey, propValue) => {
+        return {
+            [NAME]: propKey,
+            [VALUE]: null,
+            [PREVIOUS_VALUE]: propValue,
+            [DELETION_MARK]: false,
+        };
+    };
+
+    const getAdditionalProperties = useCallback(
+        (equipmentInfos) => {
+            let newModificationProperties = [];
+
+            // comes from existing eqpt in network, ex: Object { p1: "v1", p2: "v2" }
+            const equipmentProperties = equipmentInfos?.properties;
+            // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, deletionMark: false } }, {...} ]
+            const modificationProperties = getValues(
+                `${ADDITIONAL_PROPERTIES}`
+            );
+            if (modificationProperties) {
+                // update array field with previous value / real equipment value
+                modificationProperties.forEach(function (property) {
+                    newModificationProperties.push({
+                        ...property,
+                        [PREVIOUS_VALUE]:
+                            equipmentProperties &&
+                            property[NAME] in equipmentProperties
+                                ? equipmentProperties[property[NAME]]
+                                : null,
+                    });
+                });
+
+                if (equipmentProperties) {
+                    // add any property defined for this equipment, but missing in modification
+                    const modificationPropertiesNames =
+                        modificationProperties.map((obj) => obj[NAME]);
+                    for (const [propKey, propValue] of Object.entries(
+                        equipmentProperties
+                    )) {
+                        if (!modificationPropertiesNames.includes(propKey)) {
+                            newModificationProperties.push(
+                                createPropertyValuesFromExistingEquipement(
+                                    propKey,
+                                    propValue
+                                )
+                            );
+                        }
+                    }
+                }
+            } else {
+                for (const [propKey, propValue] of Object.entries(
+                    equipmentProperties
+                )) {
+                    newModificationProperties.push(
+                        createPropertyValuesFromExistingEquipement(
+                            propKey,
+                            propValue
+                        )
+                    );
+                }
+            }
+
+            return newModificationProperties;
+        },
+        [getValues]
+    );
+
+    const getModificationProperties = useCallback(() => {
+        let newModificationProperties = [];
+
+        // ex: Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, deletionMark: false } }, {...} ]
+        const modificationProperties = getValues(`${ADDITIONAL_PROPERTIES}`);
+
+        // no previous value => prop added during this edition
+        if (modificationProperties) {
+            // update array field with previous value / real equipment value
+            modificationProperties.forEach(function (property) {
+                if (!property[PREVIOUS_VALUE]) {
+                    newModificationProperties.push({
+                        ...property,
+                    });
+                }
+            });
+        }
+        return newModificationProperties;
+    }, [getValues]);
+
+    const onEquipmentIdChange = useCallback(
+        (equipmentId) => {
+            if (equipmentId) {
+                fetchEquipmentInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    'substations',
+                    equipmentId,
+                    true
+                )
+                    .then((substation) => {
+                        if (substation) {
+                            setSubstationToModify(substation);
+                            reset(
+                                (formValues) => ({
+                                    ...formValues,
+                                    [ADDITIONAL_PROPERTIES]:
+                                        getAdditionalProperties(substation),
+                                }),
+                                { keepDefaultValues: true }
+                            );
+                        }
+                    })
+                    .catch(() => {
+                        setSubstationToModify(null);
+                        reset(
+                            (formValues) => ({
+                                ...formValues,
+                                [ADDITIONAL_PROPERTIES]:
+                                    getModificationProperties(),
+                            }),
+                            { keepDefaultValues: true }
+                        );
+                    });
+            } else {
+                setSubstationToModify(null);
+                reset(
+                    (formValues) => ({
+                        ...formValues,
+                        [ADDITIONAL_PROPERTIES]: getModificationProperties(),
+                    }),
+                    { keepDefaultValues: true }
+                );
+            }
+        },
+        [
+            studyUuid,
+            currentNodeUuid,
+            reset,
+            getAdditionalProperties,
+            getModificationProperties,
+        ]
+    );
 
     const onSubmit = useCallback(
         (substation) => {
@@ -158,6 +305,8 @@ const SubstationModificationDialog = ({
                 <SubstationModificationForm
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    substationToModify={substationToModify}
+                    onEquipmentIdChange={onEquipmentIdChange}
                 />
             </ModificationDialog>
         </FormProvider>
