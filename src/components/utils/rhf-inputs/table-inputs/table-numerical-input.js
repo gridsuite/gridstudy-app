@@ -5,10 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextField } from '@mui/material';
+import { IconButton, InputAdornment, TextField } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
+import ClearIcon from '@mui/icons-material/Clear';
+import { useMemo } from 'react';
+import { validateValueIsANumber } from 'components/utils/validation-functions';
 
-export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
+export const TableNumericalInput = ({
+    name,
+    style,
+    inputProps,
+    previousValue,
+    ...props
+}) => {
     const { trigger } = useFormContext();
     const {
         field: { onChange, value, ref },
@@ -22,19 +31,30 @@ export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
         return value === null || isNaN(value) ? '' : value.toString();
     };
 
-    const outputTransform = (value) => {
-        if (value === '-') {
-            return value;
-        }
-        if (value === '') {
-            return null;
-        }
+    const clearable = useMemo(
+        () =>
+            previousValue === Number.MAX_VALUE
+                ? validateValueIsANumber(value)
+                : previousValue && previousValue !== value,
+        [previousValue, value]
+    );
 
-        const tmp = value?.replace(',', '.') || '';
-        if (tmp.endsWith('.') || tmp.endsWith('0')) {
-            return value;
+    const outputTransform = (value) => {
+        if (typeof value === 'string') {
+            if (value === '-') {
+                return value;
+            }
+            if (value === '') {
+                return null;
+            }
+
+            const tmp = value?.replace(',', '.') || '';
+            if (tmp.endsWith('.') || tmp.endsWith('0')) {
+                return value;
+            }
+            return parseFloat(tmp) || null;
         }
-        return parseFloat(tmp) || null;
+        return value === Number.MAX_VALUE ? null : value;
     };
 
     const handleInputChange = (e) => {
@@ -43,6 +63,10 @@ export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
     };
 
     const transformedValue = inputTransform(value);
+
+    const handleClearValue = () => {
+        onChange(outputTransform(previousValue));
+    };
 
     return (
         <TextField
@@ -55,6 +79,10 @@ export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
             inputProps={{
                 style: {
                     fontSize: 'small',
+                    color:
+                        previousValue && previousValue === value
+                            ? 'grey'
+                            : null, // grey out the value if it is the same as the previous one
                 },
                 inputMode: 'numeric',
                 pattern: '[0-9]*',
@@ -62,6 +90,16 @@ export const TableNumericalInput = ({ name, style, inputProps, ...props }) => {
                 ...inputProps,
             }}
             InputProps={{
+                endAdornment: (
+                    <InputAdornment position="end">
+                        {/** we add the clear button only if the previous value is different from the current value **/}
+                        {clearable && (
+                            <IconButton onClick={handleClearValue}>
+                                <ClearIcon />
+                            </IconButton>
+                        )}
+                    </InputAdornment>
+                ),
                 disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
             }}
             {...props}
