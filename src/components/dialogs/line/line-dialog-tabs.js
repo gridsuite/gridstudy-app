@@ -10,7 +10,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { LineCreationDialogTab } from './line-creation-dialog';
+import { LineCreationDialogTab } from './creation/line-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     tabWithError: {
@@ -22,11 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LineCreationDialogTabs = ({
-    tabIndex,
-    tabIndexesWithError,
-    setTabIndex,
-}) => {
+const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
     const classes = useStyles();
 
     const getTabIndicatorClass = useCallback(
@@ -70,4 +66,4 @@ const LineCreationDialogTabs = ({
     );
 };
 
-export default LineCreationDialogTabs;
+export default LineDialogTabs;
