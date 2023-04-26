@@ -11,7 +11,7 @@ import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import LineTypeCatalogForm from './lineType-catalog-form';
 import LineTypeCatalogSelectorDialog from './lineType-catalog-selector-dialog';
-import { getLineDictionary } from '../../../utils/rest-api';
+import { getLineTypeCatalog } from '../../../utils/rest-api';
 
 const schema = yup
     .object()
@@ -32,7 +32,7 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
         resolver: yupResolver(schema),
     });
 
-    const [lineDictionary, setLineDictionary] = useState([]);
+    const [lineTypeCatalog, setLineTypeCatalog] = useState([]);
     const [openDictionaryDialogIndex, setOpenDictionaryDialogIndex] =
         useState(null);
     const [lineValues, setLineValues] = useState(new Map());
@@ -58,8 +58,8 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
     const { reset } = methods;
 
     useEffect(() => {
-        getLineDictionary().then((values) => {
-            setLineDictionary(values);
+        getLineTypeCatalog().then((values) => {
+            setLineTypeCatalog(values);
         });
     }, []);
 
@@ -82,7 +82,7 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                 {/* TODO temporary proof of concept for multiple editable lines */}
                 {[0, 1, 2, 3].map((line, index) => (
                     <LineTypeCatalogForm
-                        key={'lineDictionary' + index}
+                        key={'lineTypeCatalog' + index}
                         onEditButtonClick={() => openDictionaryDialog(index)}
                         value={
                             lineValues.has(index) ? lineValues.get(index) : []
@@ -93,7 +93,7 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                     <LineTypeCatalogSelectorDialog
                         open={true}
                         onClose={onDictionaryDialogClose}
-                        rowData={lineDictionary}
+                        rowData={lineTypeCatalog}
                         onSelectLine={onSelectDictionaryLine}
                         titleId={'SelectType'}
                     />

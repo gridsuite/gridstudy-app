@@ -3019,8 +3019,8 @@ export function generationDispatch(
     });
 }
 
-export function getLineDictionary() {
-    console.info(`get line dictionary`);
+export function getLineTypeCatalog() {
+    console.info(`get lineType catalog`);
     const url =
         PREFIX_NETWORK_MODIFICATION_QUERIES +
         '/v1/network-modifications/line/catalog';
