@@ -476,6 +476,7 @@
     "LoadCreationError": "Error while creating load",
     "LoadModificationError": "Error while modifying load",
     "LineCreationError": "Error while creating line",
+    "LineModificationError" : "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
 
     "CreateGenerator": "Create generator",
@@ -546,6 +547,7 @@
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Each active power value must be within the min P and max P values.",
     "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Each minimum reactive power value must be inferior or equal to the corresponding maximum reactive power value.",
 
+    "ModifyLine": "Modify line",
     "CreateLine": "Create line",
     "Characteristics": "Characteristics",
     "Side1": "Side 1",

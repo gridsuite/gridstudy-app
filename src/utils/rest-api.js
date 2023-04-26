@@ -2245,6 +2245,63 @@ export function createLine(
     });
 }
 
+export function modifyLine(
+    studyUuid,
+    currentNodeUuid,
+    lineId,
+    lineName,
+    seriesResistance,
+    seriesReactance,
+    shuntConductance1,
+    shuntSusceptance1,
+    shuntConductance2,
+    shuntSusceptance2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2,
+    temporaryCurrentLimits1,
+    temporaryCurrentLimits2,
+    isUpdate,
+    modificationUuid
+) {
+    let modifyLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyLineUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating line modification');
+    } else {
+        console.info('Creating line modification');
+    }
+
+    return backendFetchText(modifyLineUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
+            equipmentId: lineId,
+            equipmentName: toModificationOperation(lineName),
+            seriesResistance: toModificationOperation(seriesResistance),
+            seriesReactance: toModificationOperation(seriesReactance),
+            shuntConductance1: toModificationOperation(shuntConductance1),
+            shuntSusceptance1: toModificationOperation(shuntSusceptance1),
+            shuntConductance2: toModificationOperation(shuntConductance2),
+            shuntSusceptance2: toModificationOperation(shuntSusceptance2),
+            currentLimits1: {
+                permanentLimit: permanentCurrentLimit1,
+                temporaryLimits: temporaryCurrentLimits1,
+            },
+            currentLimits2: {
+                permanentLimit: permanentCurrentLimit2,
+                temporaryLimits: temporaryCurrentLimits2,
+            },
+        }),
+    });
+}
+
 export function createTwoWindingsTransformer(
     studyUuid,
     currentNodeUuid,

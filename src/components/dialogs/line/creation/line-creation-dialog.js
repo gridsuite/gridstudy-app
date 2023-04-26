@@ -37,34 +37,39 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { createLine, fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
-import { filledTextField, gridItem, sanitizeString } from '../dialogUtils';
-import { microUnitToUnit, unitToMicroUnit } from '../../../utils/rounding';
-import EquipmentSearchDialog from '../equipment-search-dialog';
-import { useFormSearchCopy } from '../form-search-copy-hook';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../network/constants';
-import yup from '../../utils/yup-config';
-import ModificationDialog from '../commons/modificationDialog';
-import { getConnectivityFormData } from '../connectivity/connectivity-form-utils';
-import LineCreationDialogTabs from './line-creation-dialog-tabs';
-import LineCharacteristicsPane from './line-characteristics-pane/line-characteristics-pane';
+
+import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
+import { UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import yup from '../../../utils/yup-config';
+import ModificationDialog from '../../commons/modificationDialog';
+import { getConnectivityFormData } from '../../connectivity/connectivity-form-utils';
+import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
-} from './line-characteristics-pane/line-characteristics-pane-utils';
+} from '../characteristics-pane/line-characteristics-pane-utils';
 import {
     getHeaderEmptyFormData,
     getHeaderFormData,
     getHeaderValidationSchema,
 } from './line-creation-dialog-utils';
-import { addSelectedFieldToRows } from '../../utils/dnd-table/dnd-table';
-import TextInput from '../../utils/rhf-inputs/text-input';
-import LimitsPane from '../limits/limits-pane';
+import LimitsPane from '../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
     getLimitsFormData,
     getLimitsValidationSchema,
-} from '../limits/limits-pane-utils';
+} from '../../limits/limits-pane-utils';
+import LineDialogTabs from '../line-dialog-tabs';
+import {
+    filledTextField,
+    gridItem,
+    sanitizeString,
+} from 'components/dialogs/dialogUtils';
+import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
+import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
+import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
+import TextInput from 'components/utils/rhf-inputs/text-input';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -353,7 +358,7 @@ const LineCreationDialog = ({
                 {gridItem(lineIdField, 4)}
                 {gridItem(lineNameField, 4)}
             </Grid>
-            <LineCreationDialogTabs
+            <LineDialogTabs
                 tabIndex={tabIndex}
                 tabIndexesWithError={tabIndexesWithError}
                 setTabIndex={setTabIndex}
