@@ -768,7 +768,7 @@
     "cancelCutNetworkModificationNode": "Annuler couper le nœud",
     "pasteNetworkModificationNodeAbove": "au dessus dans la branche courante",
     "pasteNetworkModificationNodeBelow": "en dessous dans la branche courante",
-    "pasteNetworkModificationNodeOnNewBranch": "Coller le nœud",
+    "pasteNetworkModificationNode": "Coller le nœud",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",

@@ -767,7 +767,7 @@
     "cancelCutNetworkModificationNode": "Cancel cut node",
     "pasteNetworkModificationNodeAbove": "above in the current branch",
     "pasteNetworkModificationNodeBelow": "below in the current branch",
-    "pasteNetworkModificationNodeOnNewBranch": "Paste node",
+    "pasteNetworkModificationNode": "Paste node",
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",

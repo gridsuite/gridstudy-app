@@ -20,11 +20,6 @@ import { CopyType } from '../../network-modification-tree-pane';
 import { NestedMenuItem } from 'mui-nested-menu';
 
 const useStyles = makeStyles((theme) => ({
-    menu: {
-        minWidth: 300,
-        maxHeight: 800,
-        overflowY: 'visible',
-    },
     menuItem: {
         padding: '0px',
         margin: '7px',
@@ -125,6 +120,23 @@ const CreateNodeMenu = ({
         CREATE_MODIFICATION_NODE: {
             onRoot: true,
             id: 'createNetworkModificationNode',
+            subMenuItems: {
+                CREATE_MODIFICATION_NODE: {
+                    onRoot: true,
+                    action: () => createNetworkModificationNode('CHILD'),
+                    id: 'networkModificationNodeInNewBranch',
+                },
+                INSERT_MODIFICATION_NODE_BEFORE: {
+                    onRoot: false,
+                    action: () => createNetworkModificationNode('BEFORE'),
+                    id: 'insertNetworkModificationNodeAbove',
+                },
+                INSERT_MODIFICATION_NODE_AFTER: {
+                    onRoot: true,
+                    action: () => createNetworkModificationNode('AFTER'),
+                    id: 'insertNetworkModificationNodeBelow',
+                },
+            },
         },
         COPY_MODIFICATION_NODE: {
             onRoot: false,
@@ -143,8 +155,28 @@ const CreateNodeMenu = ({
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
-            id: 'pasteNetworkModificationNodeOnNewBranch',
+            id: 'pasteNetworkModificationNode',
             disabled: !isPastingAllowed(),
+            subMenuItems: {
+                PASTE_MODIFICATION_NODE: {
+                    onRoot: true,
+                    action: () => pasteNetworkModificationNode('CHILD'),
+                    id: 'networkModificationNodeInNewBranch',
+                    disabled: !isPastingAllowed(),
+                },
+                PASTE_MODIFICATION_NODE_BEFORE: {
+                    onRoot: false,
+                    action: () => pasteNetworkModificationNode('BEFORE'),
+                    id: 'pasteNetworkModificationNodeAbove',
+                    disabled: !isPastingAllowed(),
+                },
+                PASTE_MODIFICATION_NODE_AFTER: {
+                    onRoot: true,
+                    action: () => pasteNetworkModificationNode('AFTER'),
+                    id: 'pasteNetworkModificationNodeBelow',
+                    disabled: !isPastingAllowed(),
+                },
+            },
         },
         REMOVE_NODE: {
             onRoot: false,
@@ -162,48 +194,35 @@ const CreateNodeMenu = ({
         },
     };
 
-    const NODE_NESTED_MENU_CREATE = {
-        CREATE_MODIFICATION_NODE: {
-            onRoot: true,
-            action: () => createNetworkModificationNode('CHILD'),
-            id: 'networkModificationNodeInNewBranch',
-        },
-        INSERT_MODIFICATION_NODE_BEFORE: {
-            onRoot: false,
-            action: () => createNetworkModificationNode('BEFORE'),
-            id: 'insertNetworkModificationNodeAbove',
-        },
-        INSERT_MODIFICATION_NODE_AFTER: {
-            onRoot: true,
-            action: () => createNetworkModificationNode('AFTER'),
-            id: 'insertNetworkModificationNodeBelow',
-        },
-    };
-
-    const NODE_NESTED_MENU_PASTE = {
-        PASTE_MODIFICATION_NODE: {
-            onRoot: true,
-            action: () => pasteNetworkModificationNode('CHILD'),
-            id: 'networkModificationNodeInNewBranch',
-            disabled: !isPastingAllowed(),
-        },
-        PASTE_MODIFICATION_NODE_BEFORE: {
-            onRoot: false,
-            action: () => pasteNetworkModificationNode('BEFORE'),
-            id: 'pasteNetworkModificationNodeAbove',
-            disabled: !isPastingAllowed(),
-        },
-        PASTE_MODIFICATION_NODE_AFTER: {
-            onRoot: true,
-            action: () => pasteNetworkModificationNode('AFTER'),
-            id: 'pasteNetworkModificationNodeBelow',
-            disabled: !isPastingAllowed(),
-        },
+    const SubMenuItem = ({ item }) => {
+        return (
+            <>
+                {item && (
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={item.action}
+                        key={item.id}
+                        disabled={item.disabled}
+                    >
+                        <ListItemText
+                            key={item.id}
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({
+                                        id: item.id,
+                                    })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                )}
+            </>
+        );
     };
 
     return (
         <Menu
-            className={classes.menu}
             anchorReference="anchorPosition"
             anchorPosition={{
                 position: 'absolute',
@@ -215,107 +234,22 @@ const CreateNodeMenu = ({
             onClose={handleClose}
         >
             {Object.values(NODE_MENU_ITEMS).map((item) => {
-                const isCreate = item.id === 'createNetworkModificationNode';
-                const isPaste =
-                    item.id === 'pasteNetworkModificationNodeOnNewBranch';
-                const isNormalItem = !isCreate && !isPaste;
+                const hasSubMenuItem = item.subMenuItems !== undefined;
                 return (
                     (activeNode?.type !== 'ROOT' || item.onRoot) && (
                         <>
-                            {isNormalItem && (
-                                <MenuItem
-                                    className={classes.menuItem}
-                                    onClick={item.action}
-                                    key={item.id}
-                                    disabled={item.disabled}
-                                >
-                                    <ListItemText
-                                        key={item.id}
-                                        className={classes.listItemText}
-                                        primary={
-                                            <Typography noWrap>
-                                                {intl.formatMessage({
-                                                    id: item.id,
-                                                })}
-                                            </Typography>
-                                        }
-                                    />
-                                </MenuItem>
-                            )}
+                            {!hasSubMenuItem && <SubMenuItem item={item} />}
 
-                            {isCreate && (
+                            {hasSubMenuItem && (
                                 <NestedMenuItem
                                     label={intl.formatMessage({
                                         id: item.id,
                                     })}
                                     parentMenuOpen={true}
                                 >
-                                    {Object.values(NODE_NESTED_MENU_CREATE).map(
+                                    {Object.values(item.subMenuItems).map(
                                         (item) => {
-                                            return (
-                                                <MenuItem
-                                                    className={classes.menuItem}
-                                                    onClick={item.action}
-                                                    key={item.id}
-                                                    disabled={item.disabled}
-                                                    selected={false}
-                                                >
-                                                    <ListItemText
-                                                        key={item.id}
-                                                        className={
-                                                            classes.listItemText
-                                                        }
-                                                        primary={
-                                                            <Typography noWrap>
-                                                                {intl.formatMessage(
-                                                                    {
-                                                                        id: item.id,
-                                                                    }
-                                                                )}
-                                                            </Typography>
-                                                        }
-                                                    />
-                                                </MenuItem>
-                                            );
-                                        }
-                                    )}
-                                </NestedMenuItem>
-                            )}
-
-                            {isPaste && (
-                                <NestedMenuItem
-                                    label={intl.formatMessage({
-                                        id: item.id,
-                                    })}
-                                    parentMenuOpen={true}
-                                >
-                                    {Object.values(NODE_NESTED_MENU_PASTE).map(
-                                        (item) => {
-                                            return (
-                                                <MenuItem
-                                                    className={classes.menuItem}
-                                                    onClick={item.action}
-                                                    key={item.id}
-                                                    disabled={item.disabled}
-                                                    selected={false}
-                                                >
-                                                    <ListItemText
-                                                        key={item.id}
-                                                        className={
-                                                            classes.listItemText
-                                                        }
-                                                        primary={
-                                                            <Typography noWrap>
-                                                                {intl.formatMessage(
-                                                                    {
-                                                                        id: item.id,
-                                                                    }
-                                                                )}
-                                                            </Typography>
-                                                        }
-                                                    />
-                                                </MenuItem>
-                                            );
+                                            return <SubMenuItem item={item} />;
                                         }
                                     )}
                                 </NestedMenuItem>
