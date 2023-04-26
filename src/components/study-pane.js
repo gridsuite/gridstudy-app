@@ -23,7 +23,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
-import { getLoadFlowRunningStatus } from './util/running-status';
+import { getLoadFlowRunningStatus } from './utils/running-status';
 import NetworkMapTab from './network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
@@ -283,7 +283,6 @@ const StudyPane = ({
                                     loadFlowInfos?.loadFlowStatus
                                 )}
                                 currentNode={currentNode}
-                                disabled={disabled}
                                 visible={
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE

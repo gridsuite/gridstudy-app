@@ -43,7 +43,7 @@ import {
     isNetworkEquipmentsFetched,
 } from '../redux/actions';
 import Network from './network/network';
-import WaitingLoader from './util/waiting-loader';
+import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import {
@@ -58,7 +58,7 @@ import {
     getShortCircuitRunningStatus,
     getDynamicSimulationRunningStatus,
     RunningStatus,
-} from './util/running-status';
+} from './utils/running-status';
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';

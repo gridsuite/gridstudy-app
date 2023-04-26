@@ -588,6 +588,8 @@
     "PropertyName": "Nom de la propriété",
     "PropertyValue": "Valeur de la propriété",
     "DuplicatedProps": "Propriétés dupliquées : chaque propriété doit être unique",
+    "ModifySubstation": "Modifier un site",
+    "SubstationModificationError": "Erreur lors de la modification d'un site",
 
     "CreateVoltageLevel": "Créer un poste",
     "Substation": "Site",
@@ -647,6 +649,7 @@
     "LoadScalingError": "Erreur lors de la création de la variation du plan de consommation",
     "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
     "DeleteAttachingLineError": "Erreur lors de la suppression d'un piquage",
+    "GenerationDispatchError": "Erreur lors de la création du démarrage de groupes",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
@@ -850,6 +853,8 @@
     "LoadScaling": "Variation plan de consommation",
     "DeleteVoltageLevelOnLine": "Supprimer une coupure",
     "DeleteAttachingLine": "Supprimer un piquage",
+    "GenerationDispatch": "Démarrage de groupes",
+    "LossCoefficient": "Coefficient de pertes",
     "ReplacingLine": "Liaison de remplacement",
     "ConnectionPosition": "Position départ",
     "DisplayTakenPositions": "Afficher les positions prises",

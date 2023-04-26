@@ -47,9 +47,9 @@ import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
 import clsx from 'clsx';
-import { useNameOrId } from '../util/equipmentInfosHandler';
+import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
-import { sortByAlign } from '../util/sort-functions';
+import { sortByAlign } from '../utils/sort-functions';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -349,7 +349,6 @@ export function DiagramPane({
     showInSpreadsheet,
     loadFlowStatus,
     currentNode,
-    disabled,
     visible,
 }) {
     const intl = useIntl();
@@ -1032,16 +1031,18 @@ export function DiagramPane({
      * RENDER
      */
 
-    const handleWarningToDisplay = (diagramView) => {
-        // First, we check if the node is built (the highest priority), so when disabled is true
-        if (disabled) {
-            return 'InvalidNode';
-        }
-        if (diagramView?.error) {
-            return diagramView.error;
-        }
-        return undefined;
-    };
+    const handleWarningToDisplay = useCallback(
+        (diagramView) => {
+            if (!isNodeBuilt(currentNode)) {
+                return 'InvalidNode';
+            }
+            if (diagramView?.error) {
+                return diagramView.error;
+            }
+            return undefined;
+        },
+        [currentNode]
+    );
 
     return (
         <AutoSizer>
@@ -1061,10 +1062,10 @@ export function DiagramPane({
                         >
                             {
                                 /*
-                We put a space (a separator) before the first right aligned diagram.
-                This space takes all the remaining space on screen and "pushes" the right aligned
-                diagrams to the right of the screen.
-                */
+                                We put a space (a separator) before the first right aligned diagram.
+                                This space takes all the remaining space on screen and "pushes" the right aligned
+                                diagrams to the right of the screen.
+                                */
                                 array[index]?.align === 'right' &&
                                     (index === 0 ||
                                         array[index - 1]?.align === 'left') && (
@@ -1177,6 +1178,5 @@ DiagramPane.propTypes = {
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
     loadFlowStatus: PropTypes.any,
-    disabled: PropTypes.bool,
     visible: PropTypes.bool,
 };

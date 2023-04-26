@@ -60,9 +60,9 @@ import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
-import { useSearchMatchingEquipments } from './util/search-matching-equipments';
+import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagrams/diagram-common';
-import { EQUIPMENT_TYPES } from './util/equipment-types';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {

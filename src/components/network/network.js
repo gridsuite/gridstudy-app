@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RemoteResourceHandler } from '../util/remote-resource-handler';
+import { RemoteResourceHandler } from '../utils/remote-resource-handler';
 import {
     networkCreated,
     networkEquipmentLoaded,
@@ -28,7 +28,8 @@ import {
     fetchVscConverterStations,
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
-import { EQUIPMENT_TYPES } from 'components/util/equipment-types';
+import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
@@ -509,10 +510,14 @@ export default class Network {
         substationsIds
     ) {
         if (substationsIds) {
+            const substationsIdsToFetch =
+                substationsIds?.length > MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
+                    ? undefined
+                    : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
                 currentNode?.id,
-                substationsIds
+                substationsIdsToFetch
             );
             updatedEquipments
                 .then((values) => {

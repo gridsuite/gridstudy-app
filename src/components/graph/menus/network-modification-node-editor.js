@@ -15,7 +15,7 @@ import {
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import LineAttachToVoltageLevelDialog from '../../refactor/dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
+import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
@@ -29,37 +29,39 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import LoadCreationDialog from '../../refactor/dialogs/load-creation/load-creation-dialog';
-import LoadModificationDialog from '../../refactor/dialogs/load-modification/load-modification-dialog';
-import LineCreationDialog from 'components/refactor/dialogs/line-creation/line-creation-dialog';
-import TwoWindingsTransformerCreationDialog from '../../refactor/dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
-import ShuntCompensatorCreationDialog from '../../refactor/dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
-import LineSplitWithVoltageLevelDialog from '../../refactor/dialogs/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
-import EquipmentDeletionDialog from '../../refactor/dialogs/equipment-deletion/equipment-deletion-dialog.js';
+import LoadCreationDialog from '../../dialogs/load/creation/load-creation-dialog';
+import LoadModificationDialog from '../../dialogs/load/modification/load-modification-dialog';
+import LineCreationDialog from 'components/dialogs/line-creation/line-creation-dialog';
+import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
+import ShuntCompensatorCreationDialog from '../../dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
+import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
+import EquipmentDeletionDialog from '../../dialogs/equipment-deletion/equipment-deletion-dialog.js';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import CheckboxList from '../../util/checkbox-list';
+import CheckboxList from '../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
+import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import {
     addNotification,
     removeNotificationByNode,
     setModificationsInProgress,
 } from '../../../redux/actions';
 import { UPDATE_TYPE } from '../../network/constants';
-import LoadScalingDialog from 'components/refactor/dialogs/load-scaling/load-scaling-dialog';
-import VoltageLevelCreationDialog from 'components/refactor/dialogs/voltage-level-creation/voltage-level-creation-dialog';
-import GeneratorCreationDialog from 'components/refactor/dialogs/generator/creation/generator-creation-dialog';
-import DeleteVoltageLevelOnLineDialog from 'components/refactor/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
-import DeleteAttachingLineDialog from 'components/refactor/dialogs/delete-attaching-line/delete-attaching-line-dialog';
-import LinesAttachToSplitLinesDialog from 'components/refactor/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
-import GeneratorScalingDialog from 'components/refactor/dialogs/generator-scaling/generator-scaling-dialog';
-import GeneratorModificationDialog from 'components/refactor/dialogs/generator/modification/generator-modification-dialog';
-import SubstationCreationDialog from 'components/refactor/dialogs/substation-creation/substation-creation-dialog';
+import LoadScalingDialog from 'components/dialogs/load-scaling/load-scaling-dialog';
+import VoltageLevelCreationDialog from 'components/dialogs/voltage-level-creation/voltage-level-creation-dialog';
+import GeneratorCreationDialog from 'components/dialogs/generator/creation/generator-creation-dialog';
+import DeleteVoltageLevelOnLineDialog from 'components/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
+import DeleteAttachingLineDialog from 'components/dialogs/delete-attaching-line/delete-attaching-line-dialog';
+import LinesAttachToSplitLinesDialog from 'components/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
+import GeneratorScalingDialog from 'components/dialogs/generator-scaling/generator-scaling-dialog';
+import GeneratorModificationDialog from 'components/dialogs/generator/modification/generator-modification-dialog';
+import SubstationCreationDialog from 'components/dialogs/substation/creation/substation-creation-dialog';
+import SubstationModificationDialog from 'components/dialogs/substation/modification/substation-modification-dialog';
+import GenerationDispatchDialog from 'components/dialogs/generation-dispatch/generation-dispatch-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -255,6 +257,11 @@ const NetworkModificationNodeEditor = () => {
             dialog: () => adapt(SubstationCreationDialog),
             icon: <AddIcon />,
         },
+        SUBSTATION_MODIFICATION: {
+            label: 'ModifySubstation',
+            dialog: () => adapt(SubstationModificationDialog),
+            icon: <AddIcon />,
+        },
         VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
             dialog: () => adapt(VoltageLevelCreationDialog),
@@ -299,6 +306,11 @@ const NetworkModificationNodeEditor = () => {
             label: 'DeleteEquipment',
             dialog: () => adapt(EquipmentDeletionDialog),
             icon: <DeleteIcon />,
+        },
+        GENERATION_DISPATCH: {
+            label: 'GenerationDispatch',
+            dialog: () => adapt(GenerationDispatchDialog),
+            icon: <AddIcon />,
         },
     };
 
@@ -725,7 +737,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const renderPaneSubtitle = () => {
-        if (isLoading()) {
+        if (isLoading() && messageId) {
             return renderNetworkModificationsListTitleLoading();
         }
         if (launchLoader) {
