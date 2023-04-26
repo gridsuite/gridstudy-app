@@ -17,89 +17,68 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { useInputForm, useIntegerValue } from '../inputs/input-hooks';
-import { filledTextField, getIdOrSelf, gridItem } from '../dialogUtils';
+import { useInputForm } from '../../utils/inputs/input-hooks';
+import { getIdOrSelf, gridItem } from '../dialogUtils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { useAutocompleteField } from '../inputs/use-autocomplete-field';
-import { getDynamicMappings } from '../../../utils/rest-api';
+import { useAutocompleteField } from '../../utils/inputs/use-autocomplete-field';
+import {
+    fetchDynamicSimulationParameters,
+    updateDynamicSimulationParameters,
+} from '../../../utils/rest-api';
 
-function makeButton(onClick, message, disabled) {
-    return (
-        <Grid item>
-            <Button onClick={onClick} variant="contained" disabled={disabled}>
-                <FormattedMessage id={message} />
-            </Button>
-        </Grid>
-    );
-}
+export const checkDynamicSimulationParameters = (studyUuid) => {
+    return fetchDynamicSimulationParameters(studyUuid).then((params) => {
+        // check mapping configuration
+        const mappings = params.mappings.map((elem) => elem.name);
+        const mapping = params.mapping;
+        const isMappingValid = mappings.includes(mapping);
+        return isMappingValid;
+    });
+};
 
 const MAPPING_SELECTION_LABEL = 'DynamicSimulationMappingSelection';
-const PARAMETER_START_TIME_LABEL = 'DynamicSimulationStartTime';
-const PARAMETER_START_TIME_ERROR_MSG =
-    'DynamicSimulationStartTimeGreaterThanOrEqualDefaultValue';
-const PARAMETER_STOP_TIME_LABEL = 'DynamicSimulationStopTime';
-const PARAMETER_STOP_TIME_ERROR_MSG =
-    'DynamicSimulationStopTimeLessThanOrEqualDefaultValue';
 
 const DynamicSimulationParametersSelector = (props) => {
-    const { open, onClose, onStart, studyUuid, currentNodeUuid } = props;
+    const { open, onClose, onStart, studyUuid } = props;
 
     const [mappingNames, setMappingNames] = useState([]);
+    const [dynamicSimulationParams, setDynamicSimulationParams] =
+        useState(null);
 
     const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
-    const [mappingName, mappingNameField] = useAutocompleteField({
-        label: MAPPING_SELECTION_LABEL,
-        inputForm: inputForm,
-        values: mappingNames,
-        defaultValue: '',
-        validation: {
-            isFieldRequired: true,
-        },
-        getLabel: getIdOrSelf,
-    });
-
-    const [startTime, startTimeField] = useIntegerValue({
-        label: PARAMETER_START_TIME_LABEL,
-        validation: {
-            isFieldRequired: true,
-            isFieldNumeric: true,
-            valueGreaterThanOrEqualTo: 0,
-            errorMsgId: PARAMETER_START_TIME_ERROR_MSG,
-        },
-        inputForm: inputForm,
-        defaultValue: 0,
-        formProps: filledTextField,
-    });
-
-    const [stopTime, stopTimeField] = useIntegerValue({
-        label: PARAMETER_STOP_TIME_LABEL,
-        validation: {
-            isFieldRequired: true,
-            isFieldNumeric: true,
-            valueLessThanOrEqualTo: 10000,
-            errorMsgId: PARAMETER_STOP_TIME_ERROR_MSG,
-        },
-        inputForm: inputForm,
-        defaultValue: 500,
-        formProps: filledTextField,
-    });
+    const [mappingName, mappingNameField, setMappingName] =
+        useAutocompleteField({
+            label: MAPPING_SELECTION_LABEL,
+            inputForm: inputForm,
+            values: mappingNames,
+            defaultValue: '',
+            validation: {
+                isFieldRequired: true,
+            },
+            getLabel: getIdOrSelf,
+        });
 
     useEffect(() => {
-        // get all mapping names
-        getDynamicMappings(studyUuid, currentNodeUuid)
-            .then((mappings) =>
-                setMappingNames(mappings.map((mapping) => mapping.name))
-            )
+        fetchDynamicSimulationParameters(studyUuid)
+            .then((params) => {
+                // save all params to state
+                setDynamicSimulationParams(params);
+                // extract mapping configuration
+                const mappings = params.mappings.map((elem) => elem.name);
+                const mapping = params.mapping;
+                setMappingNames(mappings);
+                setMappingName(mapping);
+            })
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'DynamicSimulationGetMappingError',
                 });
             });
-    }, [studyUuid, currentNodeUuid, snackError]);
+    }, [snackError, studyUuid, setMappingName]);
 
     const handleClose = () => {
         onClose();
@@ -107,32 +86,41 @@ const DynamicSimulationParametersSelector = (props) => {
 
     const handleStart = () => {
         if (inputForm.validate()) {
-            onStart({
-                mappingName: mappingName,
-                dynamicSimulationConfiguration: {
-                    startTime: startTime,
-                    stopTime: stopTime,
-                },
-            });
+            // save parameters before start computation
+            const newDynamicSimulationParams = {
+                ...dynamicSimulationParams,
+                mapping: mappingName,
+            };
+            updateDynamicSimulationParameters(
+                studyUuid,
+                newDynamicSimulationParams
+            )
+                .then(() => {
+                    // start computation
+                    onStart();
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'DynamicSimulationParametersChangeError',
+                    });
+                });
         }
     };
 
-    function renderInputs() {
+    const makeButton = (onClick, message, disabled) => {
         return (
-            <Grid
-                container
-                spacing={2}
-                direction="column"
-                item
-                xs={12}
-                justifyContent={'center'}
-            >
-                <Grid item>{gridItem(mappingNameField, 6)}</Grid>
-                <Grid item>{gridItem(startTimeField, 3)}</Grid>
-                <Grid item>{gridItem(stopTimeField, 3)}</Grid>
+            <Grid item>
+                <Button
+                    onClick={onClick}
+                    variant="contained"
+                    disabled={disabled}
+                >
+                    <FormattedMessage id={message} />
+                </Button>
             </Grid>
         );
-    }
+    };
 
     const renderButtons = () => {
         return (
@@ -156,7 +144,19 @@ const DynamicSimulationParametersSelector = (props) => {
                         <FormattedMessage id="DynamicSimulationParametersSelection" />
                     </Typography>
                 </DialogTitle>
-                <DialogContent>{renderInputs()}</DialogContent>
+                <DialogContent>
+                    <Grid
+                        container
+                        spacing={2}
+                        direction="column"
+                        item
+                        xs={12}
+                        justifyContent={'center'}
+                        padding={1}
+                    >
+                        <Grid item>{gridItem(mappingNameField, 6)}</Grid>
+                    </Grid>
+                </DialogContent>
                 <DialogActions>{renderButtons()}</DialogActions>
             </Dialog>
         </>

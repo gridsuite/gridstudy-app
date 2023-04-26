@@ -15,7 +15,7 @@ import {
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSearchMatchingEquipments } from '../util/search-matching-equipments';
+import { useSearchMatchingEquipments } from '../utils/search-matching-equipments';
 
 const useEquipmentStyles = makeStyles(equipmentStyles);
 

@@ -19,9 +19,10 @@ import { NestedMenuItem } from 'mui-nested-menu';
 import { useIntl } from 'react-intl';
 import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
-import { useNameOrId } from '../util/equipmentInfosHandler';
+import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
 import EditIcon from '@mui/icons-material/Edit';
+import { isNodeReadOnly } from '../graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -67,6 +68,7 @@ const DeleteEquipmentItem = ({
     itemText,
     handleDeleteEquipment,
 }) => {
+    const currentNode = useSelector((state) => state.currentTreeNode);
     const classes = useStyles();
 
     return (
@@ -79,6 +81,7 @@ const DeleteEquipmentItem = ({
                 )
             }
             selected={false}
+            disabled={isNodeReadOnly(currentNode)}
         >
             <ListItemIcon>
                 <DeleteIcon />
@@ -98,6 +101,7 @@ const ItemViewInForm = ({
     itemText,
     handleOpenModificationDialog,
 }) => {
+    const currentNode = useSelector((state) => state.currentTreeNode);
     const classes = useStyles();
     return (
         <MenuItem
@@ -105,6 +109,7 @@ const ItemViewInForm = ({
             onClick={() =>
                 handleOpenModificationDialog(equipmentId, equipmentType)
             }
+            disabled={isNodeReadOnly(currentNode)}
         >
             <ListItemIcon>
                 <EditIcon></EditIcon>

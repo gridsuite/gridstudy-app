@@ -35,7 +35,7 @@ import {
     isNodeReadOnly,
     isNodeRenamed,
 } from './graph/util/model-functions';
-import { RunningStatus } from './util/running-status';
+import { RunningStatus } from './utils/running-status';
 import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -688,12 +688,20 @@ export const NetworkMapTab = ({
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         // if only renaming, do not reload geo data
-        if (isNodeRenamed(previousCurrentNode, currentNode)) return;
-        if (disabled) return;
-        if (refIsMapManualRefreshEnabled.current && isInitialized) return;
+        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+            return;
+        }
+        if (disabled) {
+            return;
+        }
+        if (refIsMapManualRefreshEnabled.current && isInitialized) {
+            return;
+        }
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
-        if (!reloadMapNeeded) return;
+        if (!reloadMapNeeded) {
+            return;
+        }
         if (!isInitialized) {
             loadMapEquipments();
             loadAllGeoData();
@@ -751,8 +759,9 @@ export const NetworkMapTab = ({
             disabled ||
             equipmentMenu.equipment === null ||
             !equipmentMenu.display
-        )
+        ) {
             return <></>;
+        }
         return (
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
@@ -850,15 +859,17 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            {displayOverloadTable && isLoadFlowValid() && linesNearOverload() && (
-                <div className={classes.divOverloadedLineView}>
-                    <OverloadedLinesView
-                        lineFlowAlertThreshold={lineFlowAlertThreshold}
-                        mapEquipments={mapEquipments}
-                        disabled={disabled}
-                    />
-                </div>
-            )}
+            {displayOverloadTable &&
+                isLoadFlowValid() &&
+                linesNearOverload() && (
+                    <div className={classes.divOverloadedLineView}>
+                        <OverloadedLinesView
+                            lineFlowAlertThreshold={lineFlowAlertThreshold}
+                            mapEquipments={mapEquipments}
+                            disabled={disabled}
+                        />
+                    </div>
+                )}
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}

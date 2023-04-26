@@ -26,7 +26,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
-import { getLoadFlowRunningStatus } from './util/running-status';
+import { getLoadFlowRunningStatus } from './utils/running-status';
 import NetworkMapTab from './network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
@@ -157,14 +157,18 @@ const StudyPane = ({
 
     const openVoltageLevel = useCallback(
         (vlId) => {
-            if (!network) return;
+            if (!network) {
+                return;
+            }
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         },
         [network, openDiagramView]
     );
 
     useEffect(() => {
-        if (!network) return;
+        if (!network) {
+            return;
+        }
         network.useEquipment(equipments.substations);
         network.useEquipment(equipments.lines);
     }, [network]);

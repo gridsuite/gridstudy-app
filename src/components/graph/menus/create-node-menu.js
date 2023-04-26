@@ -14,7 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
+import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
 
@@ -112,7 +112,7 @@ const CreateNodeMenu = ({
             action: () => buildNode(),
             id: 'buildNode',
             disabled:
-                activeNode?.data?.buildStatus === 'BUILT' ||
+                activeNode?.data?.buildStatus?.startsWith('BUILT') ||
                 activeNode?.data?.buildStatus === 'BUILDING' ||
                 isModificationsInProgress,
         },
@@ -176,7 +176,7 @@ const CreateNodeMenu = ({
             id: 'exportCaseOnNode',
             disabled:
                 activeNode?.type !== 'ROOT' &&
-                activeNode?.data?.buildStatus !== 'BUILT',
+                !activeNode?.data?.buildStatus?.startsWith('BUILT'),
         },
     };
 

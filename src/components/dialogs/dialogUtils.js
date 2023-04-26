@@ -87,6 +87,12 @@ export const AmpereAdornment = {
     position: 'end',
     text: 'A',
 };
+
+export const KiloAmpereAdornment = {
+    position: 'end',
+    text: 'kA',
+};
+
 export const ActivePowerAdornment = {
     position: 'end',
     text: 'MW',
@@ -122,7 +128,9 @@ export const percentageTextField = {
 export const func_identity = (e) => e;
 
 export function toIntValue(val) {
-    if (val === '-') return val;
+    if (val === '-') {
+        return val;
+    }
     return parseInt(val) || 0;
 }
 
@@ -132,8 +140,12 @@ export function toPositiveIntValue(val) {
 }
 
 export function toIntOrEmptyValue(val) {
-    if (val === '-') return val;
-    if (val === '0') return 0;
+    if (val === '-') {
+        return val;
+    }
+    if (val === '0') {
+        return 0;
+    }
     return parseInt(val) || '';
 }
 
@@ -148,12 +160,18 @@ export function sanitizeString(val) {
 }
 
 export const toFloatValue = (val) => {
-    if (val === '-') return val;
-    if (val === '') return '';
+    if (val === '-') {
+        return val;
+    }
+    if (val === '') {
+        return '';
+    }
     // TODO: remove replace when parsing behaviour will be made according to locale
     // Replace ',' by '.' to ensure double values can be parsed correctly
     const tmp = val?.replace(',', '.') || '';
-    if (tmp.endsWith('.') || tmp.endsWith('0')) return val;
+    if (tmp.endsWith('.') || tmp.endsWith('0')) {
+        return val;
+    }
     return parseFloat(tmp) || 0;
 };
 

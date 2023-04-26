@@ -6,7 +6,9 @@
  */
 
 export function convertNodetoReactFlowModelNode(node, parentNodeUuid) {
-    if (!node) return undefined;
+    if (!node) {
+        return undefined;
+    }
     // This is the ReactFlow format (Cf documentation)
     // {
     //  id: '1',
@@ -29,12 +31,12 @@ export function convertNodetoReactFlowModelNode(node, parentNodeUuid) {
 
 // Return the first node of type nodeType and specific buildStatus
 // in the tree model
-export function getFirstNodeOfType(elements, nodeType, buildStatus) {
+export function getFirstNodeOfType(elements, nodeType, buildStatusList) {
     return recursiveSearchFirstNodeOfType(
         elements,
         undefined, // first is Root node without parent node
         nodeType,
-        buildStatus
+        buildStatusList
     );
 }
 
@@ -43,11 +45,12 @@ export function recursiveSearchFirstNodeOfType(
     elements,
     parentNodeUuid,
     nodeType,
-    buildStatus
+    buildStatusList
 ) {
     if (
         elements.type === nodeType &&
-        (buildStatus === undefined || elements.buildStatus === buildStatus)
+        (buildStatusList === undefined ||
+            buildStatusList.includes(elements.buildStatus))
     ) {
         return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
     }
@@ -57,7 +60,7 @@ export function recursiveSearchFirstNodeOfType(
             child,
             elements.id,
             nodeType,
-            buildStatus
+            buildStatusList
         );
         if (found) {
             return found;
@@ -66,14 +69,20 @@ export function recursiveSearchFirstNodeOfType(
 }
 
 export function isNodeReadOnly(node) {
-    if (node?.type === 'ROOT') return true;
+    if (node?.type === 'ROOT') {
+        return true;
+    }
     return node?.data?.readOnly ? true : false; // ternary operator because of potential undefined
 }
 
 export function isNodeBuilt(node) {
-    if (!node) return false;
-    if (node.type === 'ROOT') return true;
-    return node.data?.buildStatus === 'BUILT';
+    if (!node) {
+        return false;
+    }
+    if (node.type === 'ROOT') {
+        return true;
+    }
+    return node.data?.buildStatus?.startsWith('BUILT');
 }
 
 export function isSameNode(node1, node2) {
@@ -81,13 +90,17 @@ export function isSameNode(node1, node2) {
 }
 
 export function isNodeRenamed(node1, node2) {
-    if (!node1 || !node2) return false;
+    if (!node1 || !node2) {
+        return false;
+    }
     return (
         isSameNode(node1, node2) && node1?.data?.label !== node2?.data?.label
     );
 }
 
 export function isNodeInNotificationList(node, notificationIdList) {
-    if (!node || !notificationIdList) return false;
+    if (!node || !notificationIdList) {
+        return false;
+    }
     return notificationIdList.includes(node.id);
 }
