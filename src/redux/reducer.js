@@ -122,7 +122,6 @@ import { FluxConventions } from '../components/dialogs/parameters/network-parame
 import { loadDiagramStateFromSessionStorage } from './session-storage';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
-import { CopyType } from 'components/network-modification-tree-pane';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -585,7 +584,7 @@ export const reducer = createReducer(initialState, {
     },
     [SELECTED_TREE_NODE_FOR_SUBTREE_COPY]: (state, action) => {
         const selectedNodeForCopy = action.selectedNodeForSubtreeCopy;
-        if (action.selectedNodeForSubtreeCopy.copyType === CopyType.CUT) {
+        if (selectedNodeForCopy.nodeId) {
             selectedNodeForCopy.allChildrenIds = getAllChildren(
                 state.networkModificationTreeModel,
                 selectedNodeForCopy.nodeId

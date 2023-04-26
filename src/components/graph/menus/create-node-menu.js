@@ -43,10 +43,10 @@ const CreateNodeMenu = ({
     handleCopyNode,
     handleCutNode,
     handlePasteNode,
-    handleSubtreeRemoval,
-    handleSubtreeCut,
-    handleSubtreeCopy,
-    handleSubtreePaste,
+    handleRemovalSubtree,
+    handleCutSubtree,
+    handleCopySubtree,
+    handlePasteSubtree,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -96,27 +96,27 @@ const CreateNodeMenu = ({
     }
 
     function copySubtree() {
-        handleSubtreeCopy(activeNode.id);
+        handleCopySubtree(activeNode.id);
         handleClose();
     }
 
     function pasteSubtree() {
-        handleSubtreePaste(activeNode.id);
+        handlePasteSubtree(activeNode.id);
         handleClose();
     }
 
     function cutSubtree() {
-        handleSubtreeCut(activeNode.id);
+        handleCutSubtree(activeNode.id);
         handleClose();
     }
 
     function cancelCutSubtree() {
-        handleSubtreeCut(null);
+        handleCutSubtree(null);
         handleClose();
     }
 
     function removeSubtree() {
-        handleSubtreeRemoval(activeNode);
+        handleRemovalSubtree(activeNode);
         handleClose();
     }
 
@@ -133,7 +133,10 @@ const CreateNodeMenu = ({
         return (
             selectedNodeForSubtreeCopy &&
             selectedNodeForSubtreeCopy.nodeId !== null &&
-            (selectedNodeForSubtreeCopy.nodeId !== activeNode.id ||
+            ((selectedNodeForSubtreeCopy.nodeId !== activeNode.id &&
+                !selectedNodeForSubtreeCopy.allChildrenIds?.includes(
+                    activeNode.id
+                )) ||
                 selectedNodeForSubtreeCopy.copyType !== CopyType.CUT)
         );
     }
@@ -236,7 +239,7 @@ const CreateNodeMenu = ({
             sectionEnd: true,
         },
         PASTE_SUBTREE: {
-            onRoot: false,
+            onRoot: true,
             action: () => pasteSubtree(),
             id: 'pasteNetworkModificationSubtree',
             disabled: !isSubtreePastingAllowed(),

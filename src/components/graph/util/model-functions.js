@@ -107,11 +107,9 @@ export function isNodeInNotificationList(node, notificationIdList) {
 
 export function getAllChildren(elements, nodeId) {
     const selectedNode = elements.treeNodes.find((node) => node.id === nodeId);
-    const nextParentId = selectedNode.id;
     const directChildren = elements.treeNodes.filter(
-        (node) => node.data.parentNodeUuid === nextParentId
+        (node) => node.data.parentNodeUuid === selectedNode.id
     );
-
     let allChildren = [...directChildren];
     directChildren.forEach((child) => {
         allChildren = allChildren.concat(getAllChildren(elements, child.id));

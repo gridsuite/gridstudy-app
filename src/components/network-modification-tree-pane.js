@@ -84,10 +84,15 @@ export const CopyType = {
     CUT: 'CUT',
 };
 
-const noSelectionForCopy = {
+const noSelectionForNodeCopy = {
     sourceStudyId: null,
     nodeId: null,
     copyType: null,
+};
+
+const noSelectionForSubtreeCopy = {
+    ...noSelectionForNodeCopy,
+    allChilddrenIds: null,
 };
 
 export const NetworkModificationTreePane = ({
@@ -134,10 +139,10 @@ export const NetworkModificationTreePane = ({
             console.info(event.data);
             isInitiatingCopyTab.current = false;
             if (
-                JSON.stringify(noSelectionForCopy) ===
+                JSON.stringify(noSelectionForNodeCopy) ===
                 JSON.stringify(event.data)
             ) {
-                dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+                dispatch(setSelectedNodeForCopy(noSelectionForNodeCopy));
                 snackInfo({
                     messageId: 'CopiedNodeInvalidationMessage',
                 });
@@ -156,7 +161,7 @@ export const NetworkModificationTreePane = ({
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', (event) => {
             if (true === isInitiatingCopyTab.current) {
-                broadcastChannel.postMessage(noSelectionForCopy);
+                broadcastChannel.postMessage(noSelectionForNodeCopy);
             }
         });
         //broadcastChannel doesn't change
@@ -277,11 +282,27 @@ export const NetworkModificationTreePane = ({
                             nodeId === selectedNodeForCopyRef.current.nodeId
                     )
                 ) {
-                    dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+                    dispatch(setSelectedNodeForCopy(noSelectionForNodeCopy));
                     snackInfo({
                         messageId: 'CopiedNodeInvalidationMessage',
                     });
-                    broadcastChannel.postMessage(noSelectionForCopy);
+                    broadcastChannel.postMessage(noSelectionForNodeCopy);
+                } else if (
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) =>
+                            nodeId ===
+                                selectedNodeForSubtreeCopyRef.current.nodeId ||
+                            selectedNodeForSubtreeCopyRef.current.allChildrenIds?.includes(
+                                nodeId
+                            )
+                    )
+                ) {
+                    dispatch(
+                        setSelectedNodeForSubtreeCopy(noSelectionForSubtreeCopy)
+                    );
+                    snackInfo({
+                        messageId: 'CopiedNodeInvalidationMessage',
+                    });
                 }
                 dispatch(
                     networkModificationTreeNodesRemoved(
@@ -310,11 +331,27 @@ export const NetworkModificationTreePane = ({
                     )
                 ) {
                     //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
-                    dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+                    dispatch(setSelectedNodeForCopy(noSelectionForNodeCopy));
                     snackInfo({
                         messageId: 'CopiedNodeInvalidationMessage',
                     });
-                    broadcastChannel.postMessage(noSelectionForCopy);
+                    broadcastChannel.postMessage(noSelectionForNodeCopy);
+                } else if (
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) =>
+                            nodeId ===
+                                selectedNodeForSubtreeCopyRef.current.nodeId ||
+                            selectedNodeForSubtreeCopyRef.current.allChildrenIds?.includes(
+                                nodeId
+                            )
+                    )
+                ) {
+                    dispatch(
+                        setSelectedNodeForSubtreeCopy(noSelectionForSubtreeCopy)
+                    );
+                    snackInfo({
+                        messageId: 'CopiedNodeInvalidationMessage',
+                    });
                 }
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
@@ -390,7 +427,7 @@ export const NetworkModificationTreePane = ({
     const handleCutNode = (nodeId) => {
         nodeId
             ? dispatchSelectedNodeForCopy(studyUuid, nodeId, CopyType.CUT)
-            : dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+            : dispatch(setSelectedNodeForCopy(noSelectionForNodeCopy));
     };
 
     const handlePasteNode = useCallback(
@@ -408,7 +445,7 @@ export const NetworkModificationTreePane = ({
                     });
                 });
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
-                dispatch(setSelectedNodeForCopy(noSelectionForCopy));
+                dispatch(setSelectedNodeForCopy(noSelectionForNodeCopy));
             } else {
                 copyTreeNode(
                     selectedNodeForCopyRef.current.sourceStudyId,
@@ -482,7 +519,7 @@ export const NetworkModificationTreePane = ({
         });
     }, []);
 
-    const handleSubtreeRemoval = useCallback(
+    const handleRemoveSubtree = useCallback(
         (element) => {
             deleteSubtree(studyUuid, element.id).catch((error) => {
                 snackError({
@@ -494,7 +531,7 @@ export const NetworkModificationTreePane = ({
         [snackError, studyUuid]
     );
 
-    const handleSubtreeCopy = (nodeId) => {
+    const handleCopySubtree = (nodeId) => {
         console.info(
             'node with id ' +
                 nodeId +
@@ -505,17 +542,19 @@ export const NetworkModificationTreePane = ({
         dispatchSelectedNodeForSubtreeCopy(studyUuid, nodeId, CopyType.COPY);
     };
 
-    const handleSubtreeCut = (nodeId) => {
+    const handleCutSubtree = (nodeId) => {
         nodeId
             ? dispatchSelectedNodeForSubtreeCopy(
                   studyUuid,
                   nodeId,
                   CopyType.CUT
               )
-            : dispatch(setSelectedNodeForSubtreeCopy(noSelectionForCopy));
+            : dispatch(
+                  setSelectedNodeForSubtreeCopy(noSelectionForSubtreeCopy)
+              );
     };
 
-    const handleSubtreePaste = useCallback(
+    const handlePasteSubtree = useCallback(
         (referenceNodeId) => {
             if (
                 CopyType.CUT === selectedNodeForSubtreeCopyRef.current.copyType
@@ -531,7 +570,9 @@ export const NetworkModificationTreePane = ({
                     });
                 });
                 //Do not wait for the response, after the first CUT / PASTE operation, we can't paste anymore
-                dispatch(setSelectedNodeForSubtreeCopy(noSelectionForCopy));
+                dispatch(
+                    setSelectedNodeForSubtreeCopy(noSelectionForSubtreeCopy)
+                );
             } else {
                 copySubtree(
                     studyUuid,
@@ -593,10 +634,10 @@ export const NetworkModificationTreePane = ({
                     handleCopyNode={handleCopyNode}
                     handleCutNode={handleCutNode}
                     handlePasteNode={handlePasteNode}
-                    handleSubtreeRemoval={handleSubtreeRemoval}
-                    handleSubtreeCut={handleSubtreeCut}
-                    handleSubtreeCopy={handleSubtreeCopy}
-                    handleSubtreePaste={handleSubtreePaste}
+                    handleRemovalSubtree={handleRemoveSubtree}
+                    handleCutSubtree={handleCutSubtree}
+                    handleCopySubtree={handleCopySubtree}
+                    handlePasteSubtree={handlePasteSubtree}
                 />
             )}
             {openExportDialog && (

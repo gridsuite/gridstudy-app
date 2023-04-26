@@ -119,9 +119,11 @@ const NetworkModificationNode = (props) => {
         return (
             (props.id === selectedNodeForCopy?.nodeId &&
                 selectedNodeForCopy?.copyType === CopyType.CUT) ||
-            (props.id === selectedNodeForSubtreeCopy?.nodeId &&
-                selectedNodeForSubtreeCopy?.copyType === CopyType.CUT) ||
-            selectedNodeForSubtreeCopy.allChildrenIds?.includes(props.id)
+            ((props.id === selectedNodeForSubtreeCopy?.nodeId ||
+                selectedNodeForSubtreeCopy.allChildrenIds?.includes(
+                    props.id
+                )) &&
+                selectedNodeForSubtreeCopy?.copyType === CopyType.CUT)
         );
     };
 
