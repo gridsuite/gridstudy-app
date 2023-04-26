@@ -33,6 +33,7 @@ import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
+import { fetchMapBoxToken } from 'utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -49,8 +50,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const MAPBOX_TOKEN =
-    'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
+let MAPBOX_TOKEN;
+fetchMapBoxToken().then(
+    (token) =>
+        (MAPBOX_TOKEN = token
+            ? token
+            : 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug')
+);
 
 const SUBSTATION_LAYER_PREFIX = 'substationLayer';
 const LINE_LAYER_PREFIX = 'lineLayer';
@@ -442,13 +448,15 @@ const NetworkMap = (props) => {
                         </div>
                     )}
 
-                <StaticMap
-                    mapStyle={theme.mapboxStyle}
-                    preventStyleDiffing={true}
-                    mapboxApiAccessToken={MAPBOX_TOKEN}
-                >
-                    {renderTooltip()}
-                </StaticMap>
+                {MAPBOX_TOKEN && (
+                    <StaticMap
+                        mapStyle={theme.mapboxStyle}
+                        preventStyleDiffing={true}
+                        mapboxApiAccessToken={MAPBOX_TOKEN}
+                    >
+                        {renderTooltip()}
+                    </StaticMap>
+                )}
                 <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
             </DeckGL>
         </>
