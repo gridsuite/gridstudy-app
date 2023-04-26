@@ -884,9 +884,10 @@
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
 
-    "DictionaryButtonTooltip": "Ouvrir le catalogue",
+    "CatalogButtonTooltip": "Ouvrir le catalogue",
     "LineTypeCatalogDialogTitle": "Définir les segments de ligne",
     "SelectType": "Sélection type",
+    "SegmentDistance": "Longueur",
     "lineType.type": "Type",
     "lineType.voltage": "Tension de construction",
     "lineType.conductorType": "Type conducteur",

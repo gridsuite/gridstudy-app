@@ -380,7 +380,7 @@ const LineCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
-                onOpenDictionaryDialog={() =>
+                onOpenCatalogDialog={() =>
                     setOpenLineTypeCatalogDialog(true)
                 }
                 searchCopy={searchCopy}

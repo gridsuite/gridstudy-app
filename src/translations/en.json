@@ -862,9 +862,10 @@
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
 
-    "DictionaryButtonTooltip": "Open catalog",
+    "CatalogButtonTooltip": "Open catalog",
     "LineTypeCatalogDialogTitle": "Define line segments",
     "SelectType": "Type selection",
+    "SegmentDistance": "Length",
     "lineType.type": "Type",
     "lineType.voltage": "Voltage",
     "lineType.conductorType": "Type of conductor",

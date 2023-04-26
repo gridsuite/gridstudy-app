@@ -44,22 +44,22 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
     });
 
     const [lineTypeCatalog, setLineTypeCatalog] = useState([]);
-    const [openDictionaryDialogIndex, setOpenDictionaryDialogIndex] =
+    const [openCatalogDialogIndex, setOpenCatalogDialogIndex] =
         useState(null);
     const [lineValues, setLineValues] = useState(new Map());
 
-    const onDictionaryDialogClose = () => {
-        setOpenDictionaryDialogIndex(null);
+    const onCatalogDialogClose = () => {
+        setOpenCatalogDialogIndex(null);
     };
 
-    const openDictionaryDialog = (index) => {
-        setOpenDictionaryDialogIndex(index);
+    const openCatalogDialog = (index) => {
+        setOpenCatalogDialogIndex(index);
     };
 
-    const onSelectDictionaryLine = (selectedLine) => {
+    const onSelectCatalogLine = (selectedLine) => {
         setLineValues((prevLineValues) => {
             const nextLineValues = prevLineValues.set(
-                openDictionaryDialogIndex,
+                openCatalogDialogIndex,
                 selectedLine
             );
             return nextLineValues;
@@ -86,21 +86,21 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                 maxWidth="md"
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-line-dictionary"
+                aria-labelledby="dialog-lineType-catalog"
                 titleId="LineTypeCatalogDialogTitle"
                 {...dialogProps}
             >
                 <LineTypeCatalogForm
-                    key={'lineDictionary'}
-                    onEditButtonClick={(index) => openDictionaryDialog(index)}
+                    key={'lineDictionary'} // TODO This will be updated soon
+                    onEditButtonClick={(index) => openCatalogDialog(index)}
                     value={lineValues}
                 />
-                {openDictionaryDialogIndex !== null && (
+                {openCatalogDialogIndex !== null && (
                     <LineTypeCatalogSelectorDialog
                         open={true}
-                        onClose={onDictionaryDialogClose}
+                        onClose={onCatalogDialogClose}
                         rowData={lineTypeCatalog}
-                        onSelectLine={onSelectDictionaryLine}
+                        onSelectLine={onSelectCatalogLine}
                         titleId={'SelectType'}
                     />
                 )}

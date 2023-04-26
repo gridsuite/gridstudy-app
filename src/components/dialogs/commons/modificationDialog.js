@@ -29,7 +29,7 @@ import SubmitButton from './submitButton';
  * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
  * @param {CallbackEvent} onSave callback when saving the modification
  * @param {Boolean} disabledSave to control disabled prop of the validate button
- * @param {Object} onOpenDictionaryDialog Object managing dictionary
+ * @param {Object} onOpenCatalogDialog Object managing catalog
  * @param {Object} searchCopy Object managing search equipments for copy
  * @param {ReactElement} subtitle subtitle component to put inside DialogTitle
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
@@ -41,7 +41,7 @@ const ModificationDialog = ({
     onSave,
     onValidationError,
     disabledSave = false,
-    onOpenDictionaryDialog,
+    onOpenCatalogDialog,
     searchCopy,
     subtitle,
     onValidated,
@@ -49,9 +49,9 @@ const ModificationDialog = ({
 }) => {
     const { handleSubmit } = useFormContext();
 
-    const dictionaryButton = useButtonWithTooltip({
-        label: 'DictionaryButtonTooltip',
-        handleClick: onOpenDictionaryDialog,
+    const catalogButton = useButtonWithTooltip({
+        label: 'CatalogButtonTooltip',
+        handleClick: onOpenCatalogDialog,
         icon: <AutoStoriesOutlinedIcon />,
     });
 
@@ -99,8 +99,8 @@ const ModificationDialog = ({
                     <Grid item xs={11}>
                         <FormattedMessage id={titleId} />
                     </Grid>
-                    {onOpenDictionaryDialog && (
-                        <Grid item> {dictionaryButton} </Grid>
+                    {onOpenCatalogDialog && (
+                        <Grid item> {catalogButton} </Grid>
                     )}
                     {searchCopy && <Grid item> {copyEquipmentButton} </Grid>}
                 </Grid>

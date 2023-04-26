@@ -211,7 +211,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
                 maxHeight="md"
                 onClear={handleClear}
                 onSave={handleSubmit}
-                aria-labelledby="dialog-lineType-catalog"
+                aria-labelledby="dialog-lineType-catalog-selector"
                 titleId={props.titleId}
                 subtitle={headerAndTabs}
                 PaperProps={{
