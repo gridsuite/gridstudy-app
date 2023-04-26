@@ -14,7 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { getNominalVoltageColor } from '../utils/colors';
-import { useNameOrId } from './util/equipmentInfosHandler';
+import { useNameOrId } from './utils/equipmentInfosHandler';
 
 const useStyles = makeStyles((theme) => ({
     menu: {
