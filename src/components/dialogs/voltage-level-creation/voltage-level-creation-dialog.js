@@ -76,7 +76,14 @@ const formSchema = yup.object().shape({
     [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
     [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.number().nullable(),
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.number().nullable(),
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+        .number()
+        .nullable()
+        .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
+            is: (lowShortCircuitCurrentLimit) =>
+                lowShortCircuitCurrentLimit != null,
+            then: (schema) => schema.required(),
+        }),
     [BUS_BAR_COUNT]: yup.number().min(1).nullable().required(),
     [SECTION_COUNT]: yup.number().min(1).nullable().required(),
     [SWITCHES_BETWEEN_SECTIONS]: yup
