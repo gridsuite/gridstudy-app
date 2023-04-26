@@ -52,37 +52,42 @@ const LineModificationForm = ({
         });
     }, [studyUuid, currentNode?.id]);
 
-    const disableTableCell = useCallback(
-        (rowIndex, column, arrayFormName, temporaryLimits) => {
-            return (
-                temporaryLimits
-                    ?.map(({ name }) => name)
-                    .includes(getValues(arrayFormName)[rowIndex]?.name) &&
-                column.dataKey !== 'value'
-            );
+    const temporaryLimitHasPreviousValue = useCallback(
+        (rowIndex, arrayFormName, temporaryLimits) => {
+            return temporaryLimits
+                ?.map(({ name }) => name)
+                .includes(getValues(arrayFormName)[rowIndex]?.name);
         },
         [getValues]
     );
 
-    const getTemporaryLimitPreviousValue = useCallback(
+    const disableTableCell = useCallback(
         (rowIndex, column, arrayFormName, temporaryLimits) => {
-            if (disableTableCell) {
-                return disableTableCell(
+            return (
+                temporaryLimitHasPreviousValue(
                     rowIndex,
-                    column,
                     arrayFormName,
                     temporaryLimits
-                )
-                    ? undefined
-                    : temporaryLimits?.find(
-                          (e) =>
-                              e.name ===
-                              getValues(arrayFormName)[rowIndex]?.name
-                      )?.value ?? Number.MAX_VALUE;
-            }
-            return undefined;
+                ) && column.dataKey !== 'value'
+            );
         },
-        [disableTableCell, getValues]
+        [temporaryLimitHasPreviousValue]
+    );
+
+    const getTemporaryLimitPreviousValue = useCallback(
+        (rowIndex, column, arrayFormName, temporaryLimits) => {
+            // we return the previous value only for the value column
+            return temporaryLimitHasPreviousValue(
+                rowIndex,
+                arrayFormName,
+                temporaryLimits
+            ) && column.dataKey === 'value'
+                ? temporaryLimits?.find(
+                      (e) => e.name === getValues(arrayFormName)[rowIndex]?.name
+                  )?.value ?? Number.MAX_VALUE
+                : undefined;
+        },
+        [getValues, temporaryLimitHasPreviousValue]
     );
 
     const lineIdField = (
