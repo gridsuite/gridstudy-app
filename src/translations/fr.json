@@ -473,6 +473,7 @@
     "LoadCreationError": "Erreur lors de la création d'une consommation",
     "LoadModificationError": "Erreur lors de la modification d'une consommation",
     "LineCreationError": "Erreur lors de la création d'une ligne",
+    "LineModificationError": "Erreur lors de la modification d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
 
     "CreateGenerator": "Créer un groupe",
@@ -543,6 +544,7 @@
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Chaque valeur de puissance active doit être comprise entre les valeurs P min et P max.",
     "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Chaque valeur de puissance réactive minimale doit être inférieur ou égale à la puissance réactive maximale correspondante.",
 
+    "ModifyLine": "Modifier une ligne",
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
     "Side1": "Côté origine",

@@ -31,7 +31,7 @@ import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../dialogs/load/creation/load-creation-dialog';
 import LoadModificationDialog from '../../dialogs/load/modification/load-modification-dialog';
-import LineCreationDialog from 'components/dialogs/line-creation/line-creation-dialog';
+import LineCreationDialog from 'components/dialogs/line/creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from '../../dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
 import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
@@ -62,6 +62,7 @@ import GeneratorModificationDialog from 'components/dialogs/generator/modificati
 import SubstationCreationDialog from 'components/dialogs/substation/creation/substation-creation-dialog';
 import SubstationModificationDialog from 'components/dialogs/substation/modification/substation-modification-dialog';
 import GenerationDispatchDialog from 'components/dialogs/generation-dispatch/generation-dispatch-dialog';
+import LineModificationDialog from 'components/dialogs/line/modification/line-modification-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -245,6 +246,11 @@ const NetworkModificationNodeEditor = () => {
         LINE_CREATION: {
             label: 'CreateLine',
             dialog: () => adapt(LineCreationDialog),
+            icon: <AddIcon />,
+        },
+        LINE_MODIFICATION: {
+            label: 'ModifyLine',
+            dialog: () => adapt(LineModificationDialog),
             icon: <AddIcon />,
         },
         TWO_WINDINGS_TRANSFORMER_CREATION: {
