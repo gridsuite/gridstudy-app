@@ -124,6 +124,8 @@ export const TEMPORARY_LIMITS = 'temporaryLimits';
 export const TEMPORARY_LIMIT_NAME = 'name';
 export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
 export const TEMPORARY_LIMIT_VALUE = 'value';
+export const SEGMENTS = 'segments';
+export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';

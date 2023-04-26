@@ -12,15 +12,26 @@ import ModificationDialog from '../commons/modificationDialog';
 import LineTypeCatalogForm from './lineType-catalog-form';
 import LineTypeCatalogSelectorDialog from './lineType-catalog-selector-dialog';
 import { getLineTypeCatalog } from '../../../utils/rest-api';
+import { SEGMENTS, SEGMENT_DISTANCE_VALUE } from '../../utils/field-constants';
 
 const schema = yup
-    .object()
-    .shape({
-        // [TYPE]: yup.object().nullable().required(),
-        // [EQUIPMENT_ID]: yup.string().nullable().required(),
-    })
+    .array()
+    .of(
+        yup.object().shape({
+            [SEGMENT_DISTANCE_VALUE]: yup.object().nullable().required(),
+            // [SEGMENT_LINE_TYPE]: yup.object().shape({
+            //     [LINE_TYPE_KIND]: yup.string(),
+            // }),
+            // [SEGMENT_RESISTANCE]: yup.number().required(),
+            // [SEGMENT_REACTANCE]: yup.number().required(),
+            // [SEGMENT_SUSCEPTANCE]: yup.number().required(),
+        })
+    )
     .required();
 
+/*const lineSegmentValidationSchema = () => ({
+    [SEGMENTS]: 
+*/
 const emptyFormData = {
     // [TYPE]: EQUIPMENT_TYPES.LINE,
     // [EQUIPMENT_ID]: null,
@@ -79,16 +90,11 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                 titleId="LineTypeCatalogDialogTitle"
                 {...dialogProps}
             >
-                {/* TODO temporary proof of concept for multiple editable lines */}
-                {[0, 1, 2, 3].map((line, index) => (
-                    <LineTypeCatalogForm
-                        key={'lineTypeCatalog' + index}
-                        onEditButtonClick={() => openDictionaryDialog(index)}
-                        value={
-                            lineValues.has(index) ? lineValues.get(index) : []
-                        }
-                    />
-                ))}
+                <LineTypeCatalogForm
+                    key={'lineDictionary'}
+                    onEditButtonClick={(index) => openDictionaryDialog(index)}
+                    value={lineValues}
+                />
                 {openDictionaryDialogIndex !== null && (
                     <LineTypeCatalogSelectorDialog
                         open={true}

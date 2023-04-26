@@ -15,9 +15,17 @@ import { CustomAGGrid } from '../custom-aggrid';
 import ModificationDialog from '../commons/modificationDialog';
 import { SELECTED } from '../../utils/field-constants';
 import { FormProvider, useForm } from 'react-hook-form';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
-import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+
+export const ALLOWED_KEYS = [
+    'Escape',
+    'ArrowDown',
+    'ArrowUp',
+    'ArrowLeft',
+    'ArrowRight',
+];
 
 const emptyFormData = {
     [SELECTED]: null,
@@ -77,6 +85,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
             {
                 headerName: intl.formatMessage({ id: 'lineType.type' }),
                 field: 'type',
+                pinned: 'left',
             },
             {
                 headerName: intl.formatMessage({ id: 'lineType.voltage' }),
@@ -174,15 +183,35 @@ const LineTypeCatalogSelectorDialog = (props) => {
         </Box>
     );
 
+    const suppressKeyEvent = (params) => {
+        return !ALLOWED_KEYS.includes(params.event.key);
+    };
+
+    const defaultColDef = useMemo(
+        () => ({
+            filter: true,
+            sortable: true,
+            resizable: false,
+            lockPinned: true,
+            wrapHeaderText: true,
+            autoHeaderHeight: true,
+            suppressKeyboardEvent: (params) => suppressKeyEvent(params),
+            // icons: {
+            //     menu: '<span class="ag-icon ag-icon-filter" />',
+            // },
+        }),
+        []
+    );
+
     return (
         <FormProvider {...methods}>
             <ModificationDialog
                 fullWidth
-                maxWidth="lg"
+                maxWidth="xl"
                 maxHeight="md"
                 onClear={handleClear}
                 onSave={handleSubmit}
-                aria-labelledby="dialog-line-dictionary"
+                aria-labelledby="dialog-lineType-catalog"
                 titleId={props.titleId}
                 subtitle={headerAndTabs}
                 PaperProps={{
@@ -201,6 +230,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
                                 ? rowDataAerialTab
                                 : rowDataUndergroundTab
                         }
+                        defaultColDef={defaultColDef}
                         columnDefs={columns}
                         rowSelection="single"
                         onSelectionChanged={onSelectionChanged}
