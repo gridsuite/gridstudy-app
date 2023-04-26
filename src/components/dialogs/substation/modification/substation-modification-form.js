@@ -30,7 +30,7 @@ import {
 } from '../../../../utils/rest-api';
 import { useFormContext, useWatch } from 'react-hook-form';
 import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
-import { LocalizedCountries } from '../../../utils/localized-countries';
+import { LocalizedCountries } from '../../../utils/localized-countries-hook';
 
 const SubstationModificationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
