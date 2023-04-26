@@ -23,18 +23,18 @@ const emptyFormData = {
     [SELECTED]: null,
 };
 
-export const LineDictionarySelectorDialogTabs = {
+export const LineTypeCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
     UNDERGROUND_TAB: 1,
 };
 
-const LineDictionarySelectorDialog = (props) => {
+const LineTypeCatalogSelectorDialog = (props) => {
     const intl = useIntl();
     const { onClose, onSelectLine } = props;
     const gridRef = useRef(); // Necessary to call getSelectedRows on aggrid component
 
     const [tabIndex, setTabIndex] = useState(
-        LineDictionarySelectorDialogTabs.AERIAL_TAB
+        LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
     );
     const [rowDataAerialTab, setRowDataAerialTab] = useState([]);
     const [rowDataUndergroundTab, setRowDataUndergroundTab] = useState([]);
@@ -75,30 +75,30 @@ const LineDictionarySelectorDialog = (props) => {
     const columns = useMemo(() => {
         return [
             {
-                headerName: intl.formatMessage({ id: 'dictionary.type' }),
+                headerName: intl.formatMessage({ id: 'lineType.type' }),
                 field: 'type',
             },
             {
-                headerName: intl.formatMessage({ id: 'dictionary.voltage' }),
+                headerName: intl.formatMessage({ id: 'lineType.voltage' }),
                 field: 'voltage',
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'dictionary.conductorType',
+                    id: 'lineType.conductorType',
                 }),
                 field: 'conductorType',
             },
             {
-                headerName: intl.formatMessage({ id: 'dictionary.section' }),
+                headerName: intl.formatMessage({ id: 'lineType.section' }),
                 field: 'section',
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'dictionary.conductorsNumber',
+                    id: 'lineType.conductorsNumber',
                 }),
                 field: 'conductorsNumber',
                 cellRenderer: DefaultCellRenderer,
@@ -106,7 +106,7 @@ const LineDictionarySelectorDialog = (props) => {
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'dictionary.circuitsNumber',
+                    id: 'lineType.circuitsNumber',
                 }),
                 field: 'circuitsNumber',
                 cellRenderer: DefaultCellRenderer,
@@ -114,7 +114,7 @@ const LineDictionarySelectorDialog = (props) => {
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'dictionary.groundWiresNumber',
+                    id: 'lineType.groundWiresNumber',
                 }),
                 field: 'groundWiresNumber',
                 cellRenderer: DefaultCellRenderer,
@@ -122,7 +122,7 @@ const LineDictionarySelectorDialog = (props) => {
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'dictionary.linearResistance',
+                    id: 'lineType.linearResistance',
                 }),
                 field: 'linearResistance',
                 cellRenderer: DefaultCellRenderer,
@@ -130,7 +130,7 @@ const LineDictionarySelectorDialog = (props) => {
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'dictionary.linearReactance',
+                    id: 'lineType.linearReactance',
                 }),
                 field: 'linearReactance',
                 cellRenderer: DefaultCellRenderer,
@@ -138,7 +138,7 @@ const LineDictionarySelectorDialog = (props) => {
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'dictionary.linearCapacity',
+                    id: 'lineType.linearCapacity',
                 }),
                 field: 'linearCapacity',
                 cellRenderer: DefaultCellRenderer,
@@ -161,9 +161,13 @@ const LineDictionarySelectorDialog = (props) => {
                     variant="scrollable"
                     onChange={(event, newValue) => handleTabChange(newValue)}
                 >
-                    <Tab label={<FormattedMessage id="dictionary.aerial" />} />
                     <Tab
-                        label={<FormattedMessage id="dictionary.underground" />}
+                        label={<FormattedMessage id="lineType.kind.aerial" />}
+                    />
+                    <Tab
+                        label={
+                            <FormattedMessage id="lineType.kind.underground" />
+                        }
                     />
                 </Tabs>
             </Grid>
@@ -193,7 +197,7 @@ const LineDictionarySelectorDialog = (props) => {
                         ref={gridRef}
                         rowData={
                             tabIndex ===
-                            LineDictionarySelectorDialogTabs.AERIAL_TAB
+                            LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
                                 ? rowDataAerialTab
                                 : rowDataUndergroundTab
                         }
@@ -207,6 +211,6 @@ const LineDictionarySelectorDialog = (props) => {
     );
 };
 
-LineDictionarySelectorDialog.propTypes = {};
+LineTypeCatalogSelectorDialog.propTypes = {};
 
-export default LineDictionarySelectorDialog;
+export default LineTypeCatalogSelectorDialog;

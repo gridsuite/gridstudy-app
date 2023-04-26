@@ -9,8 +9,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
-import LineDictionaryForm from './line-dictionary-form';
-import LineDictionarySelectorDialog from './line-dictionary-selector-dialog';
+import LineTypeCatalogForm from './lineType-catalog-form';
+import LineTypeCatalogSelectorDialog from './lineType-catalog-selector-dialog';
 import { getLineDictionary } from '../../../utils/rest-api';
 
 const schema = yup
@@ -26,7 +26,7 @@ const emptyFormData = {
     // [EQUIPMENT_ID]: null,
 };
 
-const LineDictionaryDialog = ({ ...dialogProps }) => {
+const LineTypeCatalogDialog = ({ ...dialogProps }) => {
     const methods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(schema),
@@ -76,12 +76,12 @@ const LineDictionaryDialog = ({ ...dialogProps }) => {
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-line-dictionary"
-                titleId="LineDictionaryDialogTitle"
+                titleId="LineTypeCatalogDialogTitle"
                 {...dialogProps}
             >
                 {/* TODO temporary proof of concept for multiple editable lines */}
                 {[0, 1, 2, 3].map((line, index) => (
-                    <LineDictionaryForm
+                    <LineTypeCatalogForm
                         key={'lineDictionary' + index}
                         onEditButtonClick={() => openDictionaryDialog(index)}
                         value={
@@ -90,7 +90,7 @@ const LineDictionaryDialog = ({ ...dialogProps }) => {
                     />
                 ))}
                 {openDictionaryDialogIndex !== null && (
-                    <LineDictionarySelectorDialog
+                    <LineTypeCatalogSelectorDialog
                         open={true}
                         onClose={onDictionaryDialogClose}
                         rowData={lineDictionary}
@@ -103,6 +103,6 @@ const LineDictionaryDialog = ({ ...dialogProps }) => {
     );
 };
 
-LineDictionaryDialog.propTypes = {};
+LineTypeCatalogDialog.propTypes = {};
 
-export default LineDictionaryDialog;
+export default LineTypeCatalogDialog;

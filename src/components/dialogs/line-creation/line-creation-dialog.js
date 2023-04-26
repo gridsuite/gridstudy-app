@@ -41,7 +41,7 @@ import { filledTextField, gridItem, sanitizeString } from '../dialogUtils';
 import { microUnitToUnit, unitToMicroUnit } from '../../../utils/rounding';
 import EquipmentSearchDialog from '../equipment-search-dialog';
 import { useFormSearchCopy } from '../form-search-copy-hook';
-import LineDictionaryDialog from '../line-dictionary/line-dictionary-dialog';
+import LineTypeCatalogDialog from '../lineType-catalog/lineType-catalog-dialog';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
@@ -108,11 +108,11 @@ const LineCreationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
-    const [isOpenLineDictionaryDialog, setOpenLineDictionaryDialog] =
+    const [isOpenLineTypeCatalogDialog, setOpenLineTypeCatalogDialog] =
         useState(false);
 
-    const handleCloseLineDictionaryDialog = () => {
-        setOpenLineDictionaryDialog(false);
+    const handleCloseLineTypeCatalogDialog = () => {
+        setOpenLineTypeCatalogDialog(false);
     };
 
     const formSchema = yup
@@ -380,7 +380,9 @@ const LineCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
-                onOpenDictionaryDialog={() => setOpenLineDictionaryDialog(true)}
+                onOpenDictionaryDialog={() =>
+                    setOpenLineTypeCatalogDialog(true)
+                }
                 searchCopy={searchCopy}
                 PaperProps={{
                     sx: {
@@ -417,9 +419,9 @@ const LineCreationDialog = ({
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />
-                <LineDictionaryDialog
-                    open={isOpenLineDictionaryDialog}
-                    onClose={handleCloseLineDictionaryDialog}
+                <LineTypeCatalogDialog
+                    open={isOpenLineTypeCatalogDialog}
+                    onClose={handleCloseLineTypeCatalogDialog}
                 />
             </ModificationDialog>
         </FormProvider>

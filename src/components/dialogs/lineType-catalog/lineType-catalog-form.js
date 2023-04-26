@@ -10,7 +10,7 @@ import { Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { gridItem } from '../dialogUtils';
 
-const LineDictionaryForm = (props) => {
+const LineTypeCatalogForm = (props) => {
     const { onEditButtonClick } = props;
     const handleEditButtonClick = useCallback(
         () => onEditButtonClick && onEditButtonClick(),
@@ -33,6 +33,6 @@ const LineDictionaryForm = (props) => {
     );
 };
 
-LineDictionaryForm.propTypes = {};
+LineTypeCatalogForm.propTypes = {};
 
-export default LineDictionaryForm;
+export default LineTypeCatalogForm;
