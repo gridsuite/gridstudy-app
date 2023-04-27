@@ -754,6 +754,50 @@ export function fetchEquipmentsIds(
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
+export function fetchSubstation(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'substations',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchLine(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'lines',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'voltage-levels',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchLineOrTransformer(
+    studyUuid,
+    currentNodeUuid,
+    equipmentId
+) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'branch-or-3wt',
+        equipmentId,
+        true
+    );
+}
+
 export function fetchEquipmentInfos(
     studyUuid,
     currentNodeUuid,
@@ -762,7 +806,7 @@ export function fetchEquipmentInfos(
     inUpstreamBuiltParentNode
 ) {
     console.info(
-        `Fetching specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching specific equipment '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
 
     let urlSearchParams = new URLSearchParams();
@@ -1299,12 +1343,14 @@ export function fetchDynamicSimulationProviders() {
     console.debug(url);
     return backendFetchJson(url);
 }
+
 export function fetchDynamicSimulationProvider(studyUuid) {
     console.info('fetch dynamic simulation provider');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
     console.debug(url);
     return backendFetchText(url);
 }
+
 export function fetchDefaultDynamicSimulationProvider() {
     console.info('fetch default dynamic simulation provider');
     const url =
@@ -1312,6 +1358,7 @@ export function fetchDefaultDynamicSimulationProvider() {
     console.debug(url);
     return backendFetchText(url);
 }
+
 export function updateDynamicSimulationProvider(studyUuid, newProvider) {
     console.info('update dynamic simulation provider');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
@@ -1341,6 +1388,7 @@ export function fetchDynamicSimulationParameters(studyUuid) {
         ([parameters, mappings]) => ({ ...parameters, mappings })
     );
 }
+
 export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
@@ -1354,6 +1402,7 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
 // -- Parameters API - END
 // --- Dynamic simulation API - END
 
