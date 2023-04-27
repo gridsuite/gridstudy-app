@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import makeStyles from '@mui/styles/makeStyles';
@@ -61,6 +61,9 @@ import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+
+// delay to wait between user interaction before sending the save params request
+const saveParamsDelay = 1000;
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -207,6 +210,8 @@ export const useParametersBackend = (
 
     const [provider, setProvider] = useState(null);
 
+    const timer = useRef();
+
     const [params, setParams] = useState(null);
 
     useEffect(() => {
@@ -272,16 +277,21 @@ export const useParametersBackend = (
 
     const updateParameter = useCallback(
         (newParams) => {
+            clearTimeout(timer.current);
             if (backendUpdateParameters) {
                 let oldParams = { ...params };
                 setParams(newParams);
-                backendUpdateParameters(studyUuid, newParams).catch((error) => {
-                    setParams(oldParams);
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'update' + type + 'ParametersError',
-                    });
-                });
+                timer.current = setTimeout(() => {
+                    backendUpdateParameters(studyUuid, newParams).catch(
+                        (error) => {
+                            setParams(oldParams);
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'update' + type + 'ParametersError',
+                            });
+                        }
+                    );
+                }, saveParamsDelay);
             }
         },
         [
