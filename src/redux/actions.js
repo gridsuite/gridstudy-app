@@ -447,22 +447,12 @@ export function setCurrentTreeNode(currentTreeNode) {
     };
 }
 
-export const SELECTED_TREE_NODE_FOR_COPY = 'SELECTED_NODE_FOR_COPY';
+export const SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
 
-export function setSelectedNodeForCopy(nodeForCopy) {
+export function setSelectionForCopy(selectionForCopy) {
     return {
-        type: SELECTED_TREE_NODE_FOR_COPY,
-        selectedNodeForCopy: nodeForCopy,
-    };
-}
-
-export const SELECTED_TREE_NODE_FOR_SUBTREE_COPY =
-    'SELECTED_TREE_NODE_FOR_SUBTREE_COPY';
-
-export function setSelectedNodeForSubtreeCopy(nodeForSubtreeCopy) {
-    return {
-        type: SELECTED_TREE_NODE_FOR_SUBTREE_COPY,
-        selectedNodeForSubtreeCopy: nodeForSubtreeCopy,
+        type: SELECTION_FOR_COPY,
+        selectionForCopy: selectionForCopy,
     };
 }
 

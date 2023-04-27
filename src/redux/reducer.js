@@ -60,7 +60,6 @@ import {
     ADD_NOTIFICATION,
     REMOVE_NOTIFICATION_BY_NODE,
     CURRENT_TREE_NODE,
-    SELECTED_TREE_NODE_FOR_COPY,
     SET_MODIFICATIONS_IN_PROGRESS,
     STUDY_DISPLAY_MODE,
     SET_STUDY_DISPLAY_MODE,
@@ -86,8 +85,8 @@ import {
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     STOP_DIAGRAM_BLINK,
     NETWORK_EQUIPMENT_FETCHED,
-    SELECTED_TREE_NODE_FOR_SUBTREE_COPY,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
+    SELECTION_FOR_COPY,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -122,6 +121,7 @@ import { FluxConventions } from '../components/dialogs/parameters/network-parame
 import { loadDiagramStateFromSessionStorage } from './session-storage';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
+import { CopyType } from 'components/network-modification-tree-pane';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -147,8 +147,7 @@ const paramsInitialState = {
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
-    selectedNodeForCopy: { sourceStudyId: null, nodeId: null, copyType: null },
-    selectedNodeForSubtreeCopy: {
+    selectionForCopy: {
         sourceStudyId: null,
         nodeId: null,
         copyType: null,
@@ -579,18 +578,19 @@ export const reducer = createReducer(initialState, {
         state.deletedEquipments = [];
         state.reloadMap = true;
     },
-    [SELECTED_TREE_NODE_FOR_COPY]: (state, action) => {
-        state.selectedNodeForCopy = action.selectedNodeForCopy;
-    },
-    [SELECTED_TREE_NODE_FOR_SUBTREE_COPY]: (state, action) => {
-        const selectedNodeForCopy = action.selectedNodeForSubtreeCopy;
-        if (selectedNodeForCopy.nodeId) {
-            selectedNodeForCopy.allChildrenIds = getAllChildren(
+    [SELECTION_FOR_COPY]: (state, action) => {
+        const selectionForCopy = action.selectionForCopy;
+        if (
+            selectionForCopy.nodeId &&
+            (selectionForCopy.copyType === CopyType.SUBTREE_COPY ||
+                selectionForCopy.copyType === CopyType.SUBTREE_CUT)
+        ) {
+            selectionForCopy.allChildrenIds = getAllChildren(
                 state.networkModificationTreeModel,
-                selectedNodeForCopy.nodeId
+                selectionForCopy.nodeId
             ).map((child) => child.id);
         }
-        state.selectedNodeForSubtreeCopy = selectedNodeForCopy;
+        state.selectionForCopy = selectionForCopy;
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;

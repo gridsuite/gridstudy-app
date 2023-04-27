@@ -38,8 +38,7 @@ const CreateNodeMenu = ({
     handleNodeRemoval,
     handleExportCaseOnNode,
     activeNode,
-    selectedNodeForCopy,
-    selectedNodeForSubtreeCopy,
+    selectionForCopy,
     handleCopyNode,
     handleCutNode,
     handlePasteNode,
@@ -122,36 +121,32 @@ const CreateNodeMenu = ({
 
     function isNodePastingAllowed() {
         return (
-            selectedNodeForCopy &&
-            selectedNodeForCopy.nodeId !== null &&
-            (selectedNodeForCopy.nodeId !== activeNode.id ||
-                selectedNodeForCopy.copyType !== CopyType.CUT)
+            (selectionForCopy.nodeId !== activeNode.id &&
+                selectionForCopy.copyType === CopyType.NODE_CUT) ||
+            selectionForCopy.copyType === CopyType.NODE_COPY
         );
     }
 
     function isSubtreePastingAllowed() {
         return (
-            selectedNodeForSubtreeCopy &&
-            selectedNodeForSubtreeCopy.nodeId !== null &&
-            ((selectedNodeForSubtreeCopy.nodeId !== activeNode.id &&
-                !selectedNodeForSubtreeCopy.allChildrenIds?.includes(
-                    activeNode.id
-                )) ||
-                selectedNodeForSubtreeCopy.copyType !== CopyType.CUT)
+            (selectionForCopy.nodeId !== activeNode.id &&
+                !selectionForCopy.allChildrenIds?.includes(activeNode.id) &&
+                selectionForCopy.copyType === CopyType.SUBTREE_CUT) ||
+            selectionForCopy.copyType === CopyType.SUBTREE_COPY
         );
     }
 
     function isNodeAlreadySelectedForCut() {
         return (
-            selectedNodeForCopy?.nodeId === activeNode.id &&
-            selectedNodeForCopy?.copyType === CopyType.CUT
+            selectionForCopy?.nodeId === activeNode.id &&
+            selectionForCopy?.copyType === CopyType.NODE_CUT
         );
     }
 
     function isSubtreeAlreadySelectedForCut() {
         return (
-            selectedNodeForSubtreeCopy?.nodeId === activeNode.id &&
-            selectedNodeForSubtreeCopy?.copyType === CopyType.CUT
+            selectionForCopy?.nodeId === activeNode.id &&
+            selectionForCopy?.copyType === CopyType.SUBTREE_CUT
         );
     }
 
