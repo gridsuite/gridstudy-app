@@ -139,7 +139,9 @@ const BaseEquipmentMenu = ({
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    // returns a promise
+    // Returns a promise
+    //TODO ideally we should have the equipment data from the props instead of doing a fetch,
+    // we can have it from mapEquipments in the map and metadata in the SVG
     const getEquipment = useCallback(
         (equipmentType, equipmentId) => {
             if (!studyUuid || !currentNode) {
