@@ -3094,6 +3094,21 @@ export function fetchMapLines(
     );
 }
 
+export function fetchMapHvdcLines(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchMapEquipment(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'hvdc-lines',
+        'map-hvdc-lines',
+        inUpstreamBuiltParentNode
+    );
+}
 export function generationDispatch(
     studyUuid,
     currentNodeUuid,

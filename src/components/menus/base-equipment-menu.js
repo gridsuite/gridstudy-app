@@ -168,6 +168,7 @@ const BaseEquipmentMenu = ({
     const equipmentsNotDeletable = [
         equipments.lccConverterStations,
         equipments.vscConverterStations,
+        equipments.hvdcLines,
     ];
 
     useEffect(() => {

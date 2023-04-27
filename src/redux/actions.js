@@ -43,12 +43,18 @@ export function networkCreated(network) {
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
-export function mapEquipmentsCreated(mapEquipments, newLines, newSubstations) {
+export function mapEquipmentsCreated(
+    mapEquipments,
+    newLines,
+    newSubstations,
+    newHvdcLines
+) {
     return {
         type: MAP_EQUIPMENTS_CREATED,
         mapEquipments: mapEquipments,
         newLines: newLines,
         newSubstations: newSubstations,
+        newHvdcLines: newHvdcLines,
     };
 }
 

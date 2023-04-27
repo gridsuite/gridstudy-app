@@ -224,6 +224,10 @@ export const reducer = createReducer(initialState, {
             newMapEquipments.substations = action.newSubstations;
             newMapEquipments.completeSubstationsInfos();
         }
+        if (action.newHvdcLines) {
+            newMapEquipments.hvdcLines = action.newHvdcLines;
+            newMapEquipments.completeHvdcLinesInfos();
+        }
         state.mapEquipments = newMapEquipments;
     },
 
