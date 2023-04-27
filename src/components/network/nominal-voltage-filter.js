@@ -55,7 +55,7 @@ const NominalVoltageFilter = ({
         if (nominalVoltages && !filteredNominalVoltages) {
             onChange(nominalVoltages);
         }
-    }, [nominalVoltages, filteredNominalVoltages, filteredNominalVoltages]);
+    }, [nominalVoltages, filteredNominalVoltages, onChange]);
 
     const handleToggle = (vnoms, isToggle) => () => {
         // filter on nominal voltage
