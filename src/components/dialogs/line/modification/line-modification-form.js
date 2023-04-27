@@ -7,7 +7,11 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { LineCreationDialogTab } from './line-modification-dialog';
-import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
+import {
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
+} from 'components/utils/field-constants';
 import { Box, Grid } from '@mui/material';
 import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
 import LimitsPane from '../../limits/limits-pane';
@@ -106,8 +110,10 @@ const LineModificationForm = ({
 
     const isTemporaryLimitModified = useCallback((rowIndex, modifiedValues) => {
         return (
-            modifiedValues?.[rowIndex]?.modificationType === 'MODIFIED' ||
-            modifiedValues?.[rowIndex]?.modificationType === 'ADDED'
+            modifiedValues?.[rowIndex]?.modificationType ===
+                TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED ||
+            modifiedValues?.[rowIndex]?.modificationType ===
+                TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
         );
     }, []);
 

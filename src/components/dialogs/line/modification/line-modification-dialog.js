@@ -22,6 +22,7 @@ import {
     CHARACTERISTICS,
     LIMITS,
     TEMPORARY_LIMITS,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
 import React, {
     useCallback,
@@ -94,36 +95,29 @@ const LineModificationDialog = ({
         temporaryLimits,
         temporaryLimitsToModify
     ) =>
-        temporaryLimits?.map((limit) => {
-            if (
-                temporaryLimitsToModify?.find(
-                    (limitToModify) =>
-                        limitToModify.name === limit.name &&
-                        limitToModify.value !== limit.value
-                )
-            ) {
-                return {
-                    ...limit,
-                    modificationType: 'MODIFIED',
-                };
-            } else if (
-                temporaryLimitsToModify?.find(
-                    (limitToModify) =>
-                        limitToModify.name === limit.name &&
-                        limitToModify.value === limit.value
-                )
-            ) {
-                return {
-                    ...limit,
-                    modificationType: null,
-                };
+        temporaryLimits.map((limit) => {
+            const limitWithSameName = temporaryLimitsToModify.find(
+                (limitToModify) => limitToModify.name === limit.name
+            );
+            if (limitWithSameName) {
+                return limitWithSameName.value === limit.value
+                    ? {
+                          ...limit,
+                          modificationType: null,
+                      }
+                    : {
+                          ...limit,
+                          modificationType:
+                              TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED,
+                      };
             } else {
                 return {
                     ...limit,
-                    modificationType: 'ADDED',
+                    modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED,
                 };
             }
         });
+
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_ID]: '',
