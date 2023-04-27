@@ -34,6 +34,7 @@ import {
     isNodeBuilt,
     isNodeReadOnly,
     isNodeRenamed,
+    isSameNodeAndBuilt,
 } from './graph/util/model-functions';
 import { RunningStatus } from './util/running-status';
 import { resetMapReloaded } from '../redux/actions';
@@ -422,46 +423,59 @@ export const NetworkMapTab = ({
                 fetchLinePositions
             );
 
+            const nodeBeforeFetch = currentNodeRef.current;
             Promise.all([missingSubstationPositions, missingLinesPositions])
                 .then((positions) => {
-                    const [fetchedSubstationPositions, fetchedLinePositions] =
-                        positions;
-                    const substationsDataChanged =
-                        updateSubstationsTemporaryGeoData(
-                            notFoundSubstationIds,
-                            fetchedSubstationPositions
-                        );
-                    const linesDataChanged = updateLinesTemporaryGeoData(
-                        notFoundLineIds,
-                        fetchedLinePositions
-                    );
-
-                    // If no geo data has changed, we avoid to trigger a new render.
-                    if (substationsDataChanged || linesDataChanged) {
-                        // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
-                        // Same for line positions.
-                        const newGeoData = new GeoData(
-                            substationsDataChanged
-                                ? new Map(
-                                      geoDataRef.current.substationPositionsById
-                                  )
-                                : geoDataRef.current.substationPositionsById,
-                            // If lineFullPath is off, we need to render the lines layer when there are some substation positions changed
-                            linesDataChanged ||
-                            (!lineFullPath && substationsDataChanged)
-                                ? new Map(geoDataRef.current.linePositionsById)
-                                : geoDataRef.current.linePositionsById
-                        );
-                        newGeoData.updateSubstationPositions(
-                            notFoundSubstationIds,
-                            fetchedSubstationPositions
-                        );
-                        newGeoData.updateLinePositions(
+                    if (
+                        isSameNodeAndBuilt(
+                            currentNodeRef.current,
+                            nodeBeforeFetch
+                        )
+                    ) {
+                        const [
+                            fetchedSubstationPositions,
+                            fetchedLinePositions,
+                        ] = positions;
+                        const substationsDataChanged =
+                            updateSubstationsTemporaryGeoData(
+                                notFoundSubstationIds,
+                                fetchedSubstationPositions
+                            );
+                        const linesDataChanged = updateLinesTemporaryGeoData(
                             notFoundLineIds,
                             fetchedLinePositions
                         );
-                        setGeoData(newGeoData);
-                        geoDataRef.current = newGeoData;
+
+                        // If no geo data has changed, we avoid to trigger a new render.
+                        if (substationsDataChanged || linesDataChanged) {
+                            // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
+                            // Same for line positions.
+                            const newGeoData = new GeoData(
+                                substationsDataChanged
+                                    ? new Map(
+                                          geoDataRef.current.substationPositionsById
+                                      )
+                                    : geoDataRef.current
+                                          .substationPositionsById,
+                                // If lineFullPath is off, we need to render the lines layer when there are some substation positions changed
+                                linesDataChanged ||
+                                (!lineFullPath && substationsDataChanged)
+                                    ? new Map(
+                                          geoDataRef.current.linePositionsById
+                                      )
+                                    : geoDataRef.current.linePositionsById
+                            );
+                            newGeoData.updateSubstationPositions(
+                                notFoundSubstationIds,
+                                fetchedSubstationPositions
+                            );
+                            newGeoData.updateLinePositions(
+                                notFoundLineIds,
+                                fetchedLinePositions
+                            );
+                            setGeoData(newGeoData);
+                            geoDataRef.current = newGeoData;
+                        }
                     }
                 })
                 .catch(function (error) {
@@ -647,8 +661,10 @@ export const NetworkMapTab = ({
         const currentNodeAtReloadCalling = currentNodeRef.current;
         updateMapEquipments(currentNodeAtReloadCalling).then(() => {
             if (
-                currentNodeAtReloadCalling === currentNodeRef.current &&
-                isNodeBuilt(currentNodeRef.current)
+                isSameNodeAndBuilt(
+                    currentNodeRef.current,
+                    currentNodeAtReloadCalling
+                )
             ) {
                 loadGeoData();
             }
@@ -850,15 +866,17 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            {displayOverloadTable && isLoadFlowValid() && linesNearOverload() && (
-                <div className={classes.divOverloadedLineView}>
-                    <OverloadedLinesView
-                        lineFlowAlertThreshold={lineFlowAlertThreshold}
-                        mapEquipments={mapEquipments}
-                        disabled={disabled}
-                    />
-                </div>
-            )}
+            {displayOverloadTable &&
+                isLoadFlowValid() &&
+                linesNearOverload() && (
+                    <div className={classes.divOverloadedLineView}>
+                        <OverloadedLinesView
+                            lineFlowAlertThreshold={lineFlowAlertThreshold}
+                            mapEquipments={mapEquipments}
+                            disabled={disabled}
+                        />
+                    </div>
+                )}
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
