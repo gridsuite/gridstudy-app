@@ -112,7 +112,7 @@ export const NetworkMapTab = ({
 
     const { snackError } = useSnackMessage();
 
-    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState();
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
 

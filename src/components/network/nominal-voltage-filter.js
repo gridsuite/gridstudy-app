@@ -5,10 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
-
+import React, { useEffect } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
-
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Checkbox from '@mui/material/Checkbox';
@@ -51,6 +49,13 @@ const NominalVoltageFilter = ({
     onChange,
 }) => {
     const classes = useStyles();
+
+    // Set up filteredNominalVoltages
+    useEffect(() => {
+        if (nominalVoltages && !filteredNominalVoltages) {
+            onChange(nominalVoltages);
+        }
+    }, [nominalVoltages, filteredNominalVoltages, filteredNominalVoltages]);
 
     const handleToggle = (vnoms, isToggle) => () => {
         // filter on nominal voltage
