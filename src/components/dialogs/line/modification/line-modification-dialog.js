@@ -23,7 +23,13 @@ import {
     LIMITS,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { fetchEquipmentInfos, modifyLine } from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
@@ -145,58 +151,74 @@ const LineModificationDialog = ({
         })
         .required();
 
+    const editDataRef = useRef(editData);
+    useEffect(() => {
+        editDataRef.current = editData;
+    }, [editData]);
+
     const formDataFromEditData = useMemo(
         () =>
-            editData
+            editDataRef.current
                 ? {
-                      [EQUIPMENT_ID]: editData.equipmentId,
-                      [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
+                      [EQUIPMENT_ID]: editDataRef.current.equipmentId,
+                      [EQUIPMENT_NAME]:
+                          editDataRef.current.equipmentName?.value ?? '',
                       ...getCharacteristicsWithOutConnectivityFormData({
                           seriesResistance:
-                              editData.seriesResistance?.value ?? null,
+                              editDataRef.current.seriesResistance?.value ??
+                              null,
                           seriesReactance:
-                              editData.seriesReactance?.value ?? null,
+                              editDataRef.current.seriesReactance?.value ??
+                              null,
                           shuntConductance1: unitToMicroUnit(
-                              editData.shuntConductance1?.value ?? null
+                              editDataRef.current.shuntConductance1?.value ??
+                                  null
                           ),
                           shuntSusceptance1: unitToMicroUnit(
-                              editData.shuntSusceptance1?.value ?? null
+                              editDataRef.current.shuntSusceptance1?.value ??
+                                  null
                           ),
                           shuntConductance2: unitToMicroUnit(
-                              editData.shuntConductance2?.value ?? null
+                              editDataRef.current.shuntConductance2?.value ??
+                                  null
                           ),
                           shuntSusceptance2: unitToMicroUnit(
-                              editData.shuntSusceptance2?.value ?? null
+                              editDataRef.current.shuntSusceptance2?.value ??
+                                  null
                           ),
                       }),
                       ...getLimitsFormData({
                           permanentLimit1:
-                              editData.currentLimits1?.permanentLimit,
+                              editDataRef.current.currentLimits1
+                                  ?.permanentLimit,
                           permanentLimit2:
-                              editData.currentLimits2?.permanentLimit,
+                              editDataRef.current.currentLimits2
+                                  ?.permanentLimit,
                           temporaryLimits1: addSelectedFieldToRows(
                               formatTemporaryLimits(
-                                  editData.currentLimits1?.temporaryLimits
+                                  editDataRef.current.currentLimits1
+                                      ?.temporaryLimits
                               )
                           ),
                           temporaryLimits2: addSelectedFieldToRows(
                               formatTemporaryLimits(
-                                  editData.currentLimits2?.temporaryLimits
+                                  editDataRef.current.currentLimits2
+                                      ?.temporaryLimits
                               )
                           ),
                       }),
                   }
                 : null,
-        [editData]
+        []
     );
 
     const defaultFormData = useMemo(() => {
-        if (!editData) {
+        if (!editDataRef.current) {
             return emptyFormData;
         } else {
             return formDataFromEditData;
         }
-    }, [editData, emptyFormData, formDataFromEditData]);
+    }, [emptyFormData, formDataFromEditData]);
 
     const methods = useForm({
         defaultValues: defaultFormData,
@@ -234,8 +256,8 @@ const LineModificationDialog = ({
                     ),
                     lineToModify?.currentLimits2?.temporaryLimits
                 ),
-                !!editData,
-                editData?.uuid
+                !!editDataRef.current,
+                editDataRef.current?.uuid
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -243,7 +265,7 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [studyUuid, currentNodeUuid, lineToModify, editData, snackError]
+        [studyUuid, currentNodeUuid, lineToModify, snackError]
     );
 
     const clear = useCallback(() => {
@@ -264,7 +286,7 @@ const LineModificationDialog = ({
                         if (line) {
                             setLineToModify(line);
                             if (
-                                editData?.equipmentId !==
+                                editDataRef.current?.equipmentId !==
                                 getValues(`${EQUIPMENT_ID}`)
                             ) {
                                 reset(
@@ -293,14 +315,12 @@ const LineModificationDialog = ({
                     });
             } else {
                 setLineToModify(null);
-                //we set equipmentId to null to force the reset of the form when the user clears the equipmentId field
-                if (editData) {
-                    editData.equipmentId = null;
-                }
+                //we set the editDataRef to null to avoid to have the old editData when we clear the form
+                editDataRef.current = null;
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, editData, getValues, reset, emptyFormData]
+        [studyUuid, currentNodeUuid, getValues, reset, emptyFormData]
     );
 
     const onValidationError = (errors) => {
@@ -340,7 +360,7 @@ const LineModificationDialog = ({
                     currentNode={currentNode}
                     onEquipmentIdChange={onEquipmentIdChange}
                     lineToModify={lineToModify}
-                    modifiedLine={editData}
+                    modifiedLine={editDataRef.current}
                     tabIndexesWithError={tabIndexesWithError}
                 />
             </ModificationDialog>
