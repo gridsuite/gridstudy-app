@@ -83,8 +83,11 @@ const LineModificationForm = ({
                 modifiedTemporaryLimits[rowIndex]?.modificationType ===
                     TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
                 ? false
-                : temporaryLimitHasPreviousValue &&
-                      column.dataKey !== TEMPORARY_LIMIT_VALUE;
+                : temporaryLimitHasPreviousValue(
+                      rowIndex,
+                      arrayFormName,
+                      temporaryLimits
+                  ) && column.dataKey !== TEMPORARY_LIMIT_VALUE;
         },
         [temporaryLimitHasPreviousValue]
     );
@@ -92,7 +95,11 @@ const LineModificationForm = ({
     const shouldReturnPreviousValue = useCallback(
         (rowIndex, column, arrayFormName, temporaryLimits, modifiedValues) => {
             return (
-                temporaryLimitHasPreviousValue &&
+                temporaryLimitHasPreviousValue(
+                    rowIndex,
+                    arrayFormName,
+                    temporaryLimits
+                ) &&
                 (column.dataKey === 'value' ||
                     modifiedValues?.[rowIndex]?.modificationType ===
                         TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED)
@@ -103,7 +110,15 @@ const LineModificationForm = ({
 
     const getTemporaryLimitPreviousValue = useCallback(
         (rowIndex, column, arrayFormName, temporaryLimits, modifiedValues) => {
-            if (shouldReturnPreviousValue) {
+            if (
+                shouldReturnPreviousValue(
+                    rowIndex,
+                    column,
+                    arrayFormName,
+                    temporaryLimits,
+                    modifiedValues
+                )
+            ) {
                 const temporaryLimit = temporaryLimits?.find(
                     (e) => e.name === getValues(arrayFormName)[rowIndex]?.name
                 );
