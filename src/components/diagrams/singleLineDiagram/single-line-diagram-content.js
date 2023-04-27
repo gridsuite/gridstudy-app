@@ -4,15 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, {
-    forwardRef,
-    useImperativeHandle,
-    useCallback,
-    useState,
-    useLayoutEffect,
-    useRef,
-    useEffect,
-} from 'react';
+import React, { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -26,7 +18,6 @@ import {
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_SUBSTATION,
     MAX_WIDTH_VOLTAGE_LEVEL,
-    NoSvg,
     DiagramType,
     useDiagram,
     useDiagramStyles,
@@ -35,63 +26,33 @@ import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
 import withBranchMenu from '../../menus/branch-menu';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
-import {
-    isNodeInNotificationList,
-    isNodeReadOnly,
-} from '../../graph/util/model-functions';
+import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
-import {
-    deleteEquipment,
-    fetchSvg,
-    updateSwitchState,
-} from '../../../utils/rest-api';
+import { deleteEquipment, updateSwitchState } from '../../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from '../../dialogs/load/modification/load-modification-dialog';
 
-const SingleLineDiagramContent = forwardRef((props, ref) => {
-    const { studyUuid, setWarning } = props;
-    const [svg, setSvg] = useState(NoSvg);
+function SingleLineDiagramContent(props) {
+    const { studyUuid } = props;
     const classes = useDiagramStyles();
     const { diagramSizeSetter } = props;
     const theme = useTheme();
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
-    const network = useSelector((state) => state.network);
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const { snackError } = useSnackMessage();
-    const intlRef = useIntlRef();
-    const [forceState, updateState] = useState(false);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
-    const [loadingState, setLoadingState] = useState(false);
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState();
     const [errorMessage, setErrorMessage] = useState('');
-    const notificationIdList = useSelector((state) => state.notificationIdList);
     const { openDiagramView } = useDiagram();
     const [equipmentToModify, setEquipmentToModify] = useState();
-
-    /**
-     * MANUAL UPDATE SYSTEM
-     */
-
-    const forceUpdate = useCallback(() => {
-        updateState((s) => !s);
-    }, []);
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            reloadSvg: forceUpdate,
-        }),
-        // Note: forceUpdate doesn't change
-        [forceUpdate]
-    );
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -110,7 +71,6 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         (breakerId, newSwitchState, switchElement) => {
             if (!modificationInProgress) {
                 setModificationInProgress(true);
-                setLoadingState(true);
                 setLocallySwitchedBreaker(switchElement);
 
                 updateSwitchState(
@@ -131,12 +91,12 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         (id) => {
             // This function is called by powsybl-diagram-viewer when clicking on a navigation arrow in a single line diagram.
             // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
-            if (!network) {
+            if (!studyUuid || !currentNode) {
                 return;
             }
             openDiagramView(id, DiagramType.VOLTAGE_LEVEL);
         },
-        [network, openDiagramView]
+        [studyUuid, currentNode, openDiagramView]
     );
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -264,23 +224,18 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
      * DIAGRAM CONTENT BUILDING
      */
 
-    const isNodeinNotifs = isNodeInNotificationList(
-        currentNode,
-        notificationIdList
-    );
-
     useLayoutEffect(() => {
-        if (svg.svg) {
+        if (props.svg) {
             const isReadyForInteraction =
                 !props.isComputationRunning &&
                 !isAnyNodeBuilding &&
                 !modificationInProgress &&
-                !loadingState;
+                !props.loadingState;
 
             const diagramViewer = new SingleLineDiagramViewer(
                 svgRef.current, //container
-                svg.svg, //svgContent
-                svg.metadata, //svg metadata
+                props.svg, //svgContent
+                props.svgMetadata, //svg metadata
                 props.svgType, //svg type
                 MIN_WIDTH, // minWidth
                 MIN_HEIGHT, // minHeight
@@ -353,9 +308,9 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
-        network,
         props.svgUrl,
-        svg,
+        props.svg,
+        props.svgMetadata,
         currentNode,
         props.isComputationRunning,
         isAnyNodeBuilding,
@@ -364,75 +319,24 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
         props.diagramId,
         props.svgType,
         theme,
-        ref,
         modificationInProgress,
-        loadingState,
+        props.loadingState,
         locallySwitchedBreaker,
         handleBreakerClick,
         handleNextVoltageLevelClick,
         diagramSizeSetter,
     ]);
 
-    const handleMissingEquipment = useCallback(() => {
-        const isVoltageLevel = DiagramType.VOLTAGE_LEVEL === props.svgType;
-        const message = isVoltageLevel
-            ? 'VoltageLevelNotFound'
-            : 'SubstationNotFound';
-        setWarning(props.diagramId, message);
-    }, [setWarning, props.svgType, props.diagramId]);
-
-    useEffect(() => {
-        if (props.svgUrl) {
-            if (!isNodeinNotifs) {
-                setLoadingState(true);
-                fetchSvg(props.svgUrl)
-                    .then((data) => {
-                        if (data !== null) {
-                            setSvg({
-                                svg: data.svg,
-                                metadata: data.metadata,
-                                error: null,
-                                svgUrl: props.svgUrl,
-                            });
-                        } else {
-                            setSvg(NoSvg);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error(error.message);
-                        setSvg({
-                            svg: null,
-                            metadata: null,
-                            error: error.message,
-                            svgUrl: props.svgUrl,
-                        });
-                        // if svg is not found, an empty SLD with a warning message is now displayed. No need to show snackError.
-                        if (error.status !== 404) {
-                            snackError({
-                                messageTxt: error.message,
-                            });
-                        } else {
-                            handleMissingEquipment();
-                        }
-                    })
-                    .finally(() => {
-                        setLoadingState(false);
-                        setModificationInProgress(false);
-                        setLocallySwitchedBreaker(null);
-                    });
-            }
-        } else {
-            setSvg(NoSvg);
+    // When the loading is finished, we always reset these two states
+    useLayoutEffect(() => {
+        if (!props.loadingState) {
+            setModificationInProgress(false);
+            setLocallySwitchedBreaker(null);
         }
     }, [
-        props.svgUrl,
-        forceState,
-        snackError,
-        intlRef,
-        props.svgType,
-        isNodeinNotifs,
-        handleMissingEquipment,
-        props.diagramId,
+        props.loadingState, // the only one changing
+        setModificationInProgress,
+        setLocallySwitchedBreaker,
     ]);
 
     /**
@@ -442,7 +346,9 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
     return (
         <>
             <Box height={2}>
-                {(loadingState || modificationInProgress) && <LinearProgress />}
+                {(props.loadingState || modificationInProgress) && (
+                    <LinearProgress />
+                )}
             </Box>
             {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <div
@@ -487,7 +393,7 @@ const SingleLineDiagramContent = forwardRef((props, ref) => {
                 displayModificationDialog(equipmentToModify.equipmentType)}
         </>
     );
-});
+}
 
 SingleLineDiagramContent.propTypes = {
     loadFlowStatus: PropTypes.any,
@@ -495,10 +401,11 @@ SingleLineDiagramContent.propTypes = {
     showInSpreadsheet: PropTypes.func,
     studyUuid: PropTypes.string,
     svgType: PropTypes.string,
-    svgUrl: PropTypes.string,
+    svg: PropTypes.string,
+    svgMetadata: PropTypes.object,
+    loadingState: PropTypes.bool,
     diagramSizeSetter: PropTypes.func,
     diagramId: PropTypes.string,
-    setWarning: PropTypes.func,
 };
 
 export default SingleLineDiagramContent;

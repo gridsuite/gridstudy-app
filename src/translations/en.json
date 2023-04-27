@@ -47,6 +47,7 @@
 
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
+    "svgLoadingFail": "The diagram couldn't be loaded",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
     "geoDataLoadingFail": "Geographical data of study with id \"{studyUuid}\" couldn't be loaded",
 
@@ -62,6 +63,7 @@
     "loadingGeoData": "Loading geographic data in progress...",
     "LoadingRemoteData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",
+    "LoadingOf": "Loading of {value}...",
 
     "centerOnMap": "Center on the map",
     "openVoltageLevel": "Open the voltage level",
