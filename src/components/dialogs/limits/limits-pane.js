@@ -37,9 +37,11 @@ const useStyles = makeStyles((theme) => ({
 const LimitsPane = ({
     id = LIMITS,
     equipmentToModify,
+    modifiedEquipment,
     disableTableCell,
     clearableFields,
     getTemporaryLimitPreviousValue,
+    isTemporaryLimitModified,
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -134,8 +136,12 @@ const LimitsPane = ({
                 previousValues={
                     equipmentToModify?.currentLimits1?.temporaryLimits
                 }
+                modifiedValues={
+                    modifiedEquipment?.currentLimits1?.temporaryLimits
+                }
                 disableTableCell={disableTableCell}
                 getPreviousValue={getTemporaryLimitPreviousValue}
+                isValueModified={isTemporaryLimitModified}
             />
             <GridSection title="Side2" />
             <Grid container spacing={2}>
@@ -154,8 +160,12 @@ const LimitsPane = ({
                     previousValues={
                         equipmentToModify?.currentLimits2?.temporaryLimits
                     }
+                    modifiedValues={
+                        modifiedEquipment?.currentLimits2?.temporaryLimits
+                    }
                     disableTableCell={disableTableCell}
                     getPreviousValue={getTemporaryLimitPreviousValue}
+                    isValueModified={isTemporaryLimitModified}
                 />
             </Grid>
         </>

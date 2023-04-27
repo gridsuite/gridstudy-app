@@ -91,6 +91,7 @@ function EditableTableCell({
     rowIndex,
     column,
     previousValue,
+    valueModified,
     ...props
 }) {
     return (
@@ -99,6 +100,7 @@ function EditableTableCell({
                 <TableNumericalInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     previousValue={previousValue}
+                    valueModified={valueModified}
                     {...props}
                 />
             )}
@@ -125,8 +127,10 @@ const DndTable = ({
     withLeftButtons = true,
     withAddRowsDialog = true,
     previousValues,
+    modifiedValues,
     disableTableCell,
     getPreviousValue,
+    isValueModified,
 }) => {
     const intl = useIntl();
 
@@ -158,7 +162,8 @@ const DndTable = ({
                               rowIndex,
                               column,
                               arrayFormName,
-                              previousValues
+                              previousValues,
+                              modifiedValues
                           )
                         : disabled
                 }
@@ -171,6 +176,11 @@ const DndTable = ({
                               previousValues
                           )
                         : undefined
+                }
+                valueModified={
+                    isValueModified
+                        ? isValueModified(rowIndex, modifiedValues)
+                        : false
                 }
             />
         );

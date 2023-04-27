@@ -67,6 +67,7 @@ const LineModificationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const [lineToModify, setLineToModify] = useState(null);
 
     const sanitizeLimitNames = (temporaryLimitList) =>
         temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
@@ -83,6 +84,40 @@ const LineModificationDialog = ({
             };
         });
 
+    const addModificationTypeToTemporaryLimits = (
+        temporaryLimits,
+        temporaryLimitsToModify
+    ) =>
+        temporaryLimits?.map((limit) => {
+            if (
+                temporaryLimitsToModify?.find(
+                    (limitToModify) =>
+                        limitToModify.name === limit.name &&
+                        limitToModify.value !== limit.value
+                )
+            ) {
+                return {
+                    ...limit,
+                    modificationType: 'MODIFIED',
+                };
+            } else if (
+                temporaryLimitsToModify?.find(
+                    (limitToModify) =>
+                        limitToModify.name === limit.name &&
+                        limitToModify.value === limit.value
+                )
+            ) {
+                return {
+                    ...limit,
+                    modificationType: null,
+                };
+            } else {
+                return {
+                    ...limit,
+                    modificationType: 'ADDED',
+                };
+            }
+        });
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_ID]: '',
@@ -187,14 +222,20 @@ const LineModificationDialog = ({
                 microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_2]),
                 limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
                 limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
+                addModificationTypeToTemporaryLimits(
+                    sanitizeLimitNames(
+                        limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
+                    ),
+                    lineToModify?.currentLimits1?.temporaryLimits
                 ),
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
+                addModificationTypeToTemporaryLimits(
+                    sanitizeLimitNames(
+                        limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
+                    ),
+                    lineToModify?.currentLimits2?.temporaryLimits
                 ),
-                editData ? true : false,
-                editData ? editData.uuid : undefined
+                !!editData,
+                editData?.uuid
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -202,14 +243,12 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [studyUuid, currentNodeUuid, lineToModify, editData, snackError]
     );
 
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [emptyFormData, reset]);
-
-    const [lineToModify, setLineToModify] = useState(null);
 
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
@@ -301,6 +340,7 @@ const LineModificationDialog = ({
                     currentNode={currentNode}
                     onEquipmentIdChange={onEquipmentIdChange}
                     lineToModify={lineToModify}
+                    modifiedLine={editData}
                     tabIndexesWithError={tabIndexesWithError}
                 />
             </ModificationDialog>

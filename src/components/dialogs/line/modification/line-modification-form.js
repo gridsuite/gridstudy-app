@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { LineCreationDialogTab } from './line-modification-dialog';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { Box, Grid } from '@mui/material';
-import { gridItem } from 'components/dialogs/dialogUtils';
+import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
 import LimitsPane from '../../limits/limits-pane';
 import { fetchEquipmentsIds } from 'utils/rest-api';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -24,6 +24,7 @@ const LineModificationForm = ({
     currentNode,
     onEquipmentIdChange,
     lineToModify,
+    modifiedLine,
     tabIndexesWithError,
 }) => {
     const [tabIndex, setTabIndex] = useState(
@@ -62,14 +63,27 @@ const LineModificationForm = ({
     );
 
     const disableTableCell = useCallback(
-        (rowIndex, column, arrayFormName, temporaryLimits) => {
-            return (
-                temporaryLimitHasPreviousValue(
-                    rowIndex,
-                    arrayFormName,
-                    temporaryLimits
-                ) && column.dataKey !== 'value'
-            );
+        (
+            rowIndex,
+            column,
+            arrayFormName,
+            temporaryLimits,
+            modifiedTemporaryLimits
+        ) => {
+            if (
+                modifiedTemporaryLimits &&
+                modifiedTemporaryLimits[rowIndex]?.modificationType === 'ADDED'
+            ) {
+                return false;
+            } else {
+                return (
+                    temporaryLimitHasPreviousValue(
+                        rowIndex,
+                        arrayFormName,
+                        temporaryLimits
+                    ) && column.dataKey !== 'value'
+                );
+            }
         },
         [temporaryLimitHasPreviousValue]
     );
@@ -90,6 +104,13 @@ const LineModificationForm = ({
         [getValues, temporaryLimitHasPreviousValue]
     );
 
+    const isTemporaryLimitModified = useCallback((rowIndex, modifiedValues) => {
+        return (
+            modifiedValues?.[rowIndex]?.modificationType === 'MODIFIED' ||
+            modifiedValues?.[rowIndex]?.modificationType === 'ADDED'
+        );
+    }, []);
+
     const lineIdField = (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
@@ -101,7 +122,7 @@ const LineModificationForm = ({
             getOptionLabel={getObjectId}
             outputTransform={getObjectId}
             size={'small'}
-            formProps={{ autoFocus: true, margin: 'normal' }}
+            formProps={{ autoFocus: true, ...filledTextField }}
         />
     );
 
@@ -109,9 +130,9 @@ const LineModificationForm = ({
         <TextInput
             name={EQUIPMENT_NAME}
             label={'Name'}
+            formProps={filledTextField}
             previousValue={lineToModify?.name}
             clearable
-            formProps={{ margin: 'normal' }}
         />
     );
 
@@ -150,11 +171,13 @@ const LineModificationForm = ({
             <Box hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB} p={1}>
                 <LimitsPane
                     equipmentToModify={lineToModify}
+                    modifiedEquipment={modifiedLine}
                     disableTableCell={disableTableCell}
                     clearableFields={true}
                     getTemporaryLimitPreviousValue={
                         getTemporaryLimitPreviousValue
                     }
+                    isTemporaryLimitModified={isTemporaryLimitModified}
                 />
             </Box>
         </>
