@@ -356,16 +356,6 @@ export function resetDynamicSimulationNotif() {
 }
 // --- Dynamic simulation ACTION - END
 
-export const FILTERED_NOMINAL_VOLTAGES_UPDATED =
-    'FILTERED_NOMINAL_VOLTAGES_UPDATED';
-
-export function filteredNominalVoltagesUpdated(filteredNV) {
-    return {
-        type: FILTERED_NOMINAL_VOLTAGES_UPDATED,
-        filteredNominalVoltages: filteredNV,
-    };
-}
-
 export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
 
 export function selectSubstationLayout(substationLayout) {
