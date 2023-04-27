@@ -278,19 +278,23 @@ const LineCreationDialog = ({
         console.log('SBO data =', data);
         setValue(
             `${CHARACTERISTICS}.${SERIES_RESISTANCE}`,
-            data[TOTAL_RESISTANCE]
+            data[TOTAL_RESISTANCE],
+            { shouldDirty: true }
         );
         setValue(
             `${CHARACTERISTICS}.${SERIES_REACTANCE}`,
-            data[TOTAL_REACTANCE]
+            data[TOTAL_REACTANCE],
+            { shouldDirty: true }
         );
         setValue(
             `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_1}`,
-            data[TOTAL_SUSCEPTANCE] / 2
+            data[TOTAL_SUSCEPTANCE] / 2,
+            { shouldDirty: true }
         );
         setValue(
             `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_2}`,
-            data[TOTAL_SUSCEPTANCE] / 2
+            data[TOTAL_SUSCEPTANCE] / 2,
+            { shouldDirty: true }
         );
     };
 
