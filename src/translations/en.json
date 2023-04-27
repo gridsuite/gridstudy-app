@@ -394,8 +394,6 @@
     "updateDynamicSimulationParametersError": "An error occurred while updating the dynamic simulation parameters",
     "fetchDynamicSimulationParametersError": "An error occured when fetching the dynamic simulation parameters",
 
-    "fetchNominalVoltagesError": "An error occurred while fetching the nominal voltages",
-
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
     "HybridDisplay": "Hybrid display",

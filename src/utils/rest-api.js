@@ -784,34 +784,6 @@ export function fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId) {
     );
 }
 
-export function fetchTwoWindingsTransformer(
-    studyUuid,
-    currentNodeUuid,
-    equipmentId
-) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        '2-windings-transformers',
-        equipmentId,
-        true
-    );
-}
-
-export function fetchThreeWindingsTransformer(
-    studyUuid,
-    currentNodeUuid,
-    equipmentId
-) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        '3-windings-transformers',
-        equipmentId,
-        true
-    );
-}
-
 export function fetchLineOrTransformer(
     studyUuid,
     currentNodeUuid,
@@ -855,19 +827,6 @@ export function fetchEquipmentInfos(
         urlSearchParams.toString();
     console.debug(fetchEquipmentInfosUrl);
     return backendFetchJson(fetchEquipmentInfosUrl);
-}
-
-export function fetchNominalVoltages(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching nominal voltages of study '${studyUuid}' and node '${currentNodeUuid}'...`
-    );
-
-    const fetchNominalVoltagesUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network/nominal-voltages';
-    console.debug(fetchNominalVoltagesUrl);
-
-    return backendFetchJson(fetchNominalVoltagesUrl);
 }
 
 export function fetchBusesForVoltageLevel(

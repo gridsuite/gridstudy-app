@@ -394,8 +394,6 @@
     "updateDynamicSimulationParametersError": "Une erreur est survenue lors de la mise a jour des paramètres de la simulation dynamique",
     "fetchDynamicSimulationParametersError": "Une erreur est survenue lors de la récupération des paramètres de la simulation dynamique",
 
-    "fetchNominalVoltagesError": "Une erreur est survenue lors de la récupération des tensions nominales",
-
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre décisionnel",
     "HybridDisplay": "Affichage hybride",
