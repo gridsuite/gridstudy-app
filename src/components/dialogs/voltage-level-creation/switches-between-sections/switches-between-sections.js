@@ -66,12 +66,24 @@ export const SwitchesBetweenSections = () => {
             sectionCountRef.current !== watchSectionCount &&
             switchesBetweenSectionsRef.current === watchSwitchesBetweenSections
         ) {
-            setValue(SWITCH_KINDS, []);
-            setValue(SWITCHES_BETWEEN_SECTIONS, '');
+            const initialKindDisconnector = { switchKind: 'DISCONNECTOR' };
+            let list = [];
+            if (watchSectionCount) {
+                for (let i = 0; i < watchSectionCount - 1; i++) {
+                    list.push(initialKindDisconnector);
+                }
+            }
+            let data = {};
+            data[SWITCH_KINDS] = list;
+            const map = data[SWITCH_KINDS].map((switchData) => {
+                return intl.formatMessage({ id: switchData[SWITCH_KIND] });
+            });
+            setValue(SWITCHES_BETWEEN_SECTIONS, map.join(' / '));
+            setValue(SWITCH_KINDS, data[SWITCH_KINDS]);
         }
         sectionCountRef.current = watchSectionCount;
         switchesBetweenSectionsRef.current = watchSwitchesBetweenSections;
-    }, [watchSectionCount, setValue, watchSwitchesBetweenSections]);
+    }, [watchSectionCount, setValue, watchSwitchesBetweenSections, intl]);
 
     const switchesBetweenSectionsField = (
         <TextInput
