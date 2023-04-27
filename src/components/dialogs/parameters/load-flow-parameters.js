@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, Autocomplete, TextField, Chip, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -328,12 +334,17 @@ const SpecificLoadFlowParameters = ({
         return extractDefaultMap(specificParamsDescription);
     }, [specificParamsDescription]);
 
+    const lfParamsRef = useRef();
+    lfParamsRef.current =
+        lfParams?.specificParametersPerProvider?.[currentProvider];
+
+    // When provider changes or defaultValues then we must reset currentParameters state
     useEffect(() => {
         setCurrentParameters({
             ...defaultValues,
-            ...lfParams?.specificParametersPerProvider?.[currentProvider],
+            ...lfParamsRef.current,
         });
-    }, [lfParams, currentProvider, defaultValues]);
+    }, [currentProvider, defaultValues]);
 
     const onChange = useCallback(
         (paramName, value, isEdit) => {
