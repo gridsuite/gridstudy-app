@@ -107,6 +107,7 @@ function EditableTableCell({
             {!column.numeric && (
                 <TableTextInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    previousValue={previousValue}
                     {...props}
                 />
             )}
@@ -173,7 +174,8 @@ const DndTable = ({
                               rowIndex,
                               column,
                               arrayFormName,
-                              previousValues
+                              previousValues,
+                              modifiedValues
                           )
                         : undefined
                 }
