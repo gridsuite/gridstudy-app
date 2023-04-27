@@ -344,7 +344,7 @@ const SpecificLoadFlowParameters = ({
             ...defaultValues,
             ...lfParamsRef.current,
         });
-    }, [currentProvider, defaultValues]);
+    }, [defaultValues]);
 
     const onChange = useCallback(
         (paramName, value, isEdit) => {
