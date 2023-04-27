@@ -33,7 +33,11 @@ import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { RunningStatus } from 'components/util/running-status';
 
-const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
+const LoadModificationForm = ({
+    currentNode,
+    studyUuid,
+    setDataFetchStatus,
+}) => {
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [loadInfos, setLoadInfos] = useState(null);
@@ -57,7 +61,7 @@ const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
 
     useEffect(() => {
         if (loadId) {
-            setIsDataFetched(RunningStatus.RUNNING);
+            setDataFetchStatus(RunningStatus.RUNNING);
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -68,16 +72,16 @@ const LoadModificationForm = ({ currentNode, studyUuid, setIsDataFetched }) => {
                 .then((value) => {
                     if (value) {
                         setLoadInfos(value);
-                        setIsDataFetched(RunningStatus.SUCCEED);
+                        setDataFetchStatus(RunningStatus.SUCCEED);
                     }
                 })
                 .catch(() => {
-                    setIsDataFetched(RunningStatus.FAILED);
+                    setDataFetchStatus(RunningStatus.FAILED);
                 });
         } else {
             setLoadInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, loadId, setIsDataFetched]);
+    }, [studyUuid, currentNodeUuid, loadId, setDataFetchStatus]);
 
     const getObjectId = useCallback((object) => {
         if (typeof object === 'string') {

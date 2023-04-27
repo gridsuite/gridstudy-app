@@ -786,7 +786,9 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate || editDataFetchStatus === RunningStatus.SUCCEED,
+            !isUpdate ||
+            editDataFetchStatus === RunningStatus.SUCCEED ||
+            editDataFetchStatus === RunningStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 

@@ -59,7 +59,7 @@ const LoadModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const [isDataFetched, setIsDataFetched] = useState(RunningStatus.IDLE);
+    const [dataFetchStatus, setDataFetchStatus] = useState(RunningStatus.IDLE);
 
     const emptyFormData = useMemo(
         () => ({
@@ -130,8 +130,8 @@ const LoadModificationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            (editDataFetchStatus === RunningStatus.SUCCEED &&
-                isDataFetched === RunningStatus.SUCCEED),
+            editDataFetchStatus === RunningStatus.SUCCEED ||
+            editDataFetchStatus === RunningStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -152,14 +152,14 @@ const LoadModificationDialog = ({
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === RunningStatus.RUNNING ||
-                        isDataFetched === RunningStatus.RUNNING)
+                        dataFetchStatus === RunningStatus.RUNNING)
                 }
                 {...dialogProps}
             >
                 <LoadModificationForm
                     currentNode={currentNode}
                     studyUuid={studyUuid}
-                    setIsDataFetched={setIsDataFetched}
+                    setDataFetchStatus={setDataFetchStatus}
                 />
             </ModificationDialog>
         </FormProvider>

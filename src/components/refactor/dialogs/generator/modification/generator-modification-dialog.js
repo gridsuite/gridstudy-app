@@ -83,7 +83,7 @@ const GeneratorModificationDialog = ({
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
     const shouldEmptyFormOnGeneratorIdChangeRef = useRef(!editData);
-    const [isDataFetched, setIsDataFetched] = useState(RunningStatus.IDLE);
+    const [dataFetchStatus, setDataFetchStatus] = useState(RunningStatus.IDLE);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const completeReactiveCapabilityCurvePointsData = (
@@ -329,7 +329,7 @@ const GeneratorModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
-                setIsDataFetched(RunningStatus.RUNNING);
+                setDataFetchStatus(RunningStatus.RUNNING);
                 fetchEquipmentInfos(
                     studyUuid,
                     currentNodeUuid,
@@ -385,11 +385,11 @@ const GeneratorModificationDialog = ({
                                     previousReactiveCapabilityCurveTable,
                             });
                         }
-                        setIsDataFetched(RunningStatus.SUCCEED);
+                        setDataFetchStatus(RunningStatus.SUCCEED);
                     })
                     .catch(() => {
                         setGeneratorToModify(null);
-                        setIsDataFetched(RunningStatus.FAILED);
+                        setDataFetchStatus(RunningStatus.FAILED);
                     });
             } else {
                 setValuesAndEmptyOthers();
@@ -562,8 +562,10 @@ const GeneratorModificationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            (editDataFetchStatus === RunningStatus.SUCCEED &&
-                isDataFetched === RunningStatus.SUCCEED),
+            ((editDataFetchStatus === RunningStatus.SUCCEED ||
+                editDataFetchStatus === RunningStatus.FAILED) &&
+                (dataFetchStatus === RunningStatus.SUCCEED ||
+                    dataFetchStatus === RunningStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
 
@@ -585,7 +587,7 @@ const GeneratorModificationDialog = ({
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === RunningStatus.RUNNING ||
-                        isDataFetched === RunningStatus.RUNNING)
+                        dataFetchStatus === RunningStatus.RUNNING)
                 }
                 {...dialogProps}
             >

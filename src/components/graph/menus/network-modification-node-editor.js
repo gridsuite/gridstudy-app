@@ -454,6 +454,7 @@ const NetworkModificationNodeEditor = () => {
     const closeNetworkModificationConfiguration = () => {
         setOpenNetworkModificationsDialog(false);
         setEditData(undefined);
+        setEditDataFetchStatus(RunningStatus.IDLE);
     };
 
     const doDeleteModification = useCallback(() => {
