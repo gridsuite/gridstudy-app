@@ -38,7 +38,7 @@ import { createVoltageLevel } from 'utils/rest-api';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
-import { controlCouplingOmnibusBetweenSections } from './voltage-level-creation-utils';
+import { controlCouplingOmnibusBetweenSections } from '../voltage-level-creation-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';

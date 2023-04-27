@@ -590,6 +590,7 @@
     "SubstationModificationError": "Erreur lors de la modification d'un site",
 
     "CreateVoltageLevel": "Créer un poste",
+    "ModifyVoltageLevel": "Modifier un poste",
     "Substation": "Site",
     "BusBarSections": "Sections de jeu de barre",
     "BusBarCount": "Nb de barres",

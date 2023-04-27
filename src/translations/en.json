@@ -590,6 +590,7 @@
     "SubstationModificationError": "Error while modifying substation",
 
     "CreateVoltageLevel": "Create a voltage level",
+    "ModifyVoltageLevel": "Modify a voltage level",
     "Substation": "Substation",
     "BusBarSections": "Bus bar sections",
     "BusBarCount": "Busbar Count",
