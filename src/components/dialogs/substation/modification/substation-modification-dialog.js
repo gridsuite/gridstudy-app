@@ -20,6 +20,7 @@ import {
     NAME,
     PREVIOUS_VALUE,
     VALUE,
+    ADDED,
 } from '../../../utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
 import {
@@ -52,6 +53,7 @@ const formSchema = yup.object().shape({
                     }),
                 [PREVIOUS_VALUE]: yup.string().nullable(),
                 [DELETION_MARK]: yup.boolean(),
+                [ADDED]: yup.boolean(),
             })
         )
         .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
@@ -66,6 +68,7 @@ const getPropertiesFromModification = (properties) => {
                   [NAME]: p[NAME],
                   [VALUE]: p[VALUE],
                   [PREVIOUS_VALUE]: null,
+                  [ADDED]: true,
                   [DELETION_MARK]: p[DELETION_MARK],
               };
           })
@@ -130,6 +133,7 @@ const SubstationModificationDialog = ({
             [VALUE]: null,
             [PREVIOUS_VALUE]: propValue,
             [DELETION_MARK]: false,
+            [ADDED]: false,
         };
     };
 
@@ -139,53 +143,54 @@ const SubstationModificationDialog = ({
 
             // comes from existing eqpt in network, ex: Object { p1: "v1", p2: "v2" }
             const equipmentProperties = equipmentInfos?.properties;
-            // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, deletionMark: false } }, {...} ]
+            // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
             const modificationProperties = getValues(
                 `${ADDITIONAL_PROPERTIES}`
             );
+
+            // Get every prop stored in the modification. if also present in the network, add its previous value.
+            // Then add every prop found in the network (but not already in the modification)
+
+            let equipmentPropertiesNames = [];
+            let modificationPropertiesNames = [];
+            if (equipmentProperties) {
+                equipmentPropertiesNames = Object.keys(equipmentProperties);
+            }
             if (modificationProperties) {
-                // update array field with previous value / real equipment value
+                modificationPropertiesNames = modificationProperties.map(
+                    (obj) => obj[NAME]
+                );
+
                 modificationProperties.forEach(function (property) {
+                    const previousValue = equipmentPropertiesNames.includes(
+                        property[NAME]
+                    )
+                        ? equipmentProperties[property[NAME]]
+                        : null;
                     newModificationProperties.push({
                         ...property,
-                        [PREVIOUS_VALUE]:
-                            equipmentProperties &&
-                            property[NAME] in equipmentProperties
-                                ? equipmentProperties[property[NAME]]
-                                : null,
+                        [ADDED]: true,
+                        [PREVIOUS_VALUE]: previousValue,
                     });
                 });
+            }
 
-                if (equipmentProperties) {
-                    // add any property defined for this equipment, but missing in modification
-                    const modificationPropertiesNames =
-                        modificationProperties.map((obj) => obj[NAME]);
-                    for (const [propKey, propValue] of Object.entries(
-                        equipmentProperties
-                    )) {
-                        if (!modificationPropertiesNames.includes(propKey)) {
-                            newModificationProperties.push(
-                                createPropertyValuesFromExistingEquipement(
-                                    propKey,
-                                    propValue
-                                )
-                            );
-                        }
-                    }
-                }
-            } else {
+            if (equipmentProperties) {
                 for (const [propKey, propValue] of Object.entries(
                     equipmentProperties
                 )) {
-                    newModificationProperties.push(
-                        createPropertyValuesFromExistingEquipement(
-                            propKey,
-                            propValue
-                        )
-                    );
+                    if (
+                        modificationPropertiesNames.includes(propKey) === false
+                    ) {
+                        newModificationProperties.push(
+                            createPropertyValuesFromExistingEquipement(
+                                propKey,
+                                propValue
+                            )
+                        );
+                    }
                 }
             }
-
             return newModificationProperties;
         },
         [getValues]
@@ -193,15 +198,11 @@ const SubstationModificationDialog = ({
 
     const getModificationProperties = useCallback(() => {
         let newModificationProperties = [];
-
-        // ex: Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, deletionMark: false } }, {...} ]
+        // ex: Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
         const modificationProperties = getValues(`${ADDITIONAL_PROPERTIES}`);
-
-        // no previous value => prop added during this edition
         if (modificationProperties) {
-            // update array field with previous value / real equipment value
             modificationProperties.forEach(function (property) {
-                if (!property[PREVIOUS_VALUE]) {
+                if (property[ADDED]) {
                     newModificationProperties.push({
                         ...property,
                     });

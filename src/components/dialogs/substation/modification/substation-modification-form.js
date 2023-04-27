@@ -38,6 +38,9 @@ const SubstationModificationForm = ({
     const equipmentId = useWatch({
         name: EQUIPMENT_ID,
     });
+    const watchProps = useWatch({
+        name: ADDITIONAL_PROPERTIES,
+    });
     const { getValues, setValue } = useFormContext();
     const { translate } = LocalizedCountries();
 
@@ -45,35 +48,42 @@ const SubstationModificationForm = ({
         (idx) => {
             const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
             if (properties && typeof properties[idx] !== 'undefined') {
-                return properties[idx][DELETION_MARK];
+                return watchProps && properties[idx][DELETION_MARK];
             }
             return false;
         },
-        [getValues]
+        [getValues, watchProps]
     );
 
     const deleteCallback = useCallback(
         (idx) => {
-            let canRemoveLine = true;
-            let newModificationProperties = [];
-
+            let marked = false;
             const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
-            properties.forEach(function (property, forEachIdx) {
-                if (forEachIdx !== idx || property[PREVIOUS_VALUE] === null) {
-                    newModificationProperties.push({ ...property });
-                } else {
-                    // line is not deleted, and property is marked or unmarked for deletion
-                    let currentDeletionMark = property[DELETION_MARK];
-                    newModificationProperties.push({
-                        ...property,
-                        [DELETION_MARK]: !currentDeletionMark,
-                    });
+            if (properties && typeof properties[idx] !== 'undefined') {
+                marked = properties[idx][DELETION_MARK];
+            } else {
+                return false;
+            }
+
+            let canRemoveLine = true;
+            if (marked) {
+                // just unmark
+                setValue(
+                    `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
+                    false
+                );
+                canRemoveLine = false;
+            } else {
+                // we can mark as deleted only real prop (having a previous value)
+                if (properties[idx][PREVIOUS_VALUE]) {
+                    setValue(
+                        `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
+                        true
+                    );
                     canRemoveLine = false;
                 }
-            });
-            if (canRemoveLine === false) {
-                setValue(`${ADDITIONAL_PROPERTIES}`, newModificationProperties);
             }
+            // otherwise just delete the line
             return canRemoveLine;
         },
         [getValues, setValue]

@@ -13,6 +13,7 @@ import {
     VALUE,
     PREVIOUS_VALUE,
     DELETION_MARK,
+    ADDED,
 } from '../../../utils/field-constants';
 import { fetchPredefinedProperties } from './property-utils';
 import { useWatch } from 'react-hook-form';
@@ -26,6 +27,9 @@ const PropertyForm = ({ name, index }) => {
     });
     const watchPropertyDeletionMark = useWatch({
         name: `${name}.${index}.${DELETION_MARK}`,
+    });
+    const watchPropertyAdded = useWatch({
+        name: `${name}.${index}.${ADDED}`,
     });
 
     const predefinedNames = useMemo(() => {
@@ -85,7 +89,7 @@ const PropertyForm = ({ name, index }) => {
     function renderPropertyLine() {
         return (
             <>
-                {watchPropertyPreviousValue || watchPropertyDeletionMark
+                {watchPropertyDeletionMark || !watchPropertyAdded
                     ? gridItem(nameReadOnlyField, 5)
                     : gridItem(nameField, 5)}
                 {watchPropertyDeletionMark
