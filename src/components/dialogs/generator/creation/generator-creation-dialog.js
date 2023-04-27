@@ -144,6 +144,10 @@ const GeneratorCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
+    useEffect(() => {
+        console.log(editData, editData);
+    }, [editData]);
+
     const { reset } = formMethods;
     const fromSearchCopyToFormValues = (generator) => {
         reset({
@@ -240,12 +244,11 @@ const GeneratorCreationDialog = ({
                 [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower,
                 [Q_PERCENT]: editData.qPercent,
                 [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                    editData?.minimumReactivePower ||
-                    editData?.maximumReactivePower
-                        ? 'MINMAX'
-                        : 'CURVE',
+                    editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
                 [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                    editData?.reactiveCapabilityCurvePoints ?? [{}, {}],
+                    editData?.reactiveCapabilityCurve
+                        ? editData?.reactiveCapabilityCurvePoints
+                        : [{}, {}],
                 ...getRegulatingTerminalFormData({
                     equipmentId: editData.regulatingTerminalId,
                     equipmentType: editData.regulatingTerminalType,

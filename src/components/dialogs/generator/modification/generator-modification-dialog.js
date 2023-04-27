@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -116,6 +116,10 @@ const GeneratorModificationDialog = ({
         [defaultIdValue]
     );
 
+    useEffect(() => {
+        console.log(editData, editData);
+    }, [editData]);
+
     const formDataFromEditData = useMemo(
         () =>
             editData
@@ -159,12 +163,10 @@ const GeneratorModificationDialog = ({
                       [MAXIMUM_REACTIVE_POWER]:
                           editData?.maximumReactivePower?.value ?? null,
                       [Q_PERCENT]: editData?.qPercent?.value ?? null,
-                      [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                          !editData?.reactiveCapabilityCurve?.value &&
-                          (editData?.minimumReactivePower ||
-                              editData?.maximumReactivePower)
-                              ? 'MINMAX'
-                              : 'CURVE',
+                      [REACTIVE_CAPABILITY_CURVE_CHOICE]: editData
+                          ?.reactiveCapabilityCurve?.value
+                          ? 'CURVE'
+                          : 'MINMAX',
                       [REACTIVE_CAPABILITY_CURVE_TABLE]:
                           editData?.reactiveCapabilityCurvePoints.length > 0
                               ? completeReactiveCapabilityCurvePointsData(
