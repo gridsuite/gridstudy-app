@@ -70,10 +70,21 @@ const withBranchMenu =
         const [branch, setBranch] = useState(null);
 
         const getTranslationKey = (key) => {
-            return key.concat(
-                equipmentType === equipments.lines ? 'Line' : '2WTransformer'
-            );
+            return key.concat(getEquipmentTranslation(equipmentType));
         };
+
+        const getEquipmentTranslation = useCallback((equipmentType) => {
+            switch (equipmentType) {
+                case equipments.lines:
+                    return 'Line';
+                case equipments.hvdcLines:
+                    return 'HvdcLine';
+                case equipments.twoWindingsTransformers:
+                    return '2WTransformer';
+                default:
+                    break;
+            }
+        }, []);
 
         const getEquipmentPath = useCallback((equipmentType) => {
             switch (equipmentType) {

@@ -505,6 +505,7 @@ NetworkMap.propTypes = {
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
     onLineMenuClick: PropTypes.func,
+    onHvdcLineMenuClick: PropTypes.func,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     onVoltageLevelMenuClick: PropTypes.func,
