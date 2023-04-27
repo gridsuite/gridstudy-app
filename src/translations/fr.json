@@ -888,6 +888,7 @@
     "LineTypeCatalogDialogTitle": "Définir les segments de ligne",
     "SelectType": "Sélection type",
     "SegmentDistance": "Longueur",
+    "SegmentDistanceGreaterThanZero": "La longueur doit être supérieure à zéro",
     "lineType.type": "Type",
     "lineType.voltage": "Tension de construction",
     "lineType.conductorType": "Type conducteur",

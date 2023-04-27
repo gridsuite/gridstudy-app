@@ -28,7 +28,7 @@ export const ALLOWED_KEYS = [
 ];
 
 const emptyFormData = {
-    [SELECTED]: null,
+    [SELECTED]: null, // This is a hidden field, and there is no validation schema
 };
 
 export const LineTypeCatalogSelectorDialogTabs = {
@@ -65,6 +65,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
         [reset]
     );
     const onSelectionChanged = useCallback(() => {
+        // We extract the selected row from AGGrid to put it in the hidden SELECTED field.
         const selectedRow = gridRef.current.api.getSelectedRows();
         setValue(SELECTED, selectedRow, { shouldDirty: true });
     }, [setValue]);
@@ -80,6 +81,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
         }
     }, [props.rowData]);
 
+    // TODO Fix the multiple warnings in the console "AG Grid: invalid colDef property (...)"
     const columns = useMemo(() => {
         return [
             {
@@ -196,9 +198,6 @@ const LineTypeCatalogSelectorDialog = (props) => {
             wrapHeaderText: true,
             autoHeaderHeight: true,
             suppressKeyboardEvent: (params) => suppressKeyEvent(params),
-            // icons: {
-            //     menu: '<span class="ag-icon ag-icon-filter" />',
-            // },
         }),
         []
     );
@@ -241,6 +240,6 @@ const LineTypeCatalogSelectorDialog = (props) => {
     );
 };
 
-LineTypeCatalogSelectorDialog.propTypes = {};
+LineTypeCatalogSelectorDialog.propTypes = {}; // TODO CHARLY
 
 export default LineTypeCatalogSelectorDialog;

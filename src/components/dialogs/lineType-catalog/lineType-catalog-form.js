@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import yup from '../../utils/yup-config';
@@ -14,14 +14,7 @@ import { Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FloatInput from '../../utils/rhf-inputs/float-input';
-import {
-    SEGMENT_DISTANCE_VALUE,
-    SEGMENT_RESISTANCE,
-    SEGMENT_REACTANCE,
-    SEGMENT_SUSCEPTANCE,
-} from '../../utils/field-constants';
-import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only-input';
-import { roundToDefaultPrecision } from '../../../utils/rounding';
+import { SEGMENT_DISTANCE_VALUE } from '../../utils/field-constants';
 
 /**
  * lineSegment definition :
@@ -47,65 +40,16 @@ import { roundToDefaultPrecision } from '../../../utils/rounding';
  *
  */
 
-function toResistance(distance, linearResistance) {
-    if (
-        distance === undefined ||
-        isNaN(distance) ||
-        linearResistance === undefined ||
-        isNaN(linearResistance)
-    ) {
-        return 0;
-    }
-    return Number(distance) * Number(linearResistance);
-}
-
-function toReactance(distance, linearReactance) {
-    if (
-        distance === undefined ||
-        isNaN(distance) ||
-        linearReactance === undefined ||
-        isNaN(linearReactance)
-    ) {
-        return 0;
-    }
-    return Number(distance) * Number(linearReactance);
-}
-
-function toSusceptance(distance, linearCapacity) {
-    if (
-        distance === undefined ||
-        isNaN(distance) ||
-        linearCapacity === undefined ||
-        isNaN(linearCapacity)
-    ) {
-        return 0;
-    }
-    return (
-        Number(distance) *
-        Number(linearCapacity) *
-        2 *
-        Math.PI *
-        50 *
-        Math.pow(10, 6)
-    );
-}
-
 const formSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup
         .number()
         .nullable()
-        .required()
-        .min(0, 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'), // TODO CHARLY Check if needed and update the error message if needed.
-    [SEGMENT_RESISTANCE]: yup.number().required(),
-    [SEGMENT_REACTANCE]: yup.number().required(),
-    [SEGMENT_SUSCEPTANCE]: yup.number().required(),
+        //.required()
+        .moreThan(0, 'SegmentDistanceGreaterThanZero'),
 });
 
 const emptyFormData = {
     [SEGMENT_DISTANCE_VALUE]: null,
-    [SEGMENT_RESISTANCE]: 0,
-    [SEGMENT_REACTANCE]: 0,
-    [SEGMENT_SUSCEPTANCE]: 0,
 };
 
 const LineTypeCatalogForm = (props) => {
@@ -114,48 +58,17 @@ const LineTypeCatalogForm = (props) => {
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, watch, setValue } = formMethods;
+    const { reset, watch, trigger } = formMethods;
+    const [innerSegmentDistanceValue, setInnerSegmentDistanceValue] =
+        useState(0); // TODO FIX THIS ? It's part of a hack to prevent an infinite loop
     const segmentDistanceValue = watch(SEGMENT_DISTANCE_VALUE, 0);
 
     const segmentDistanceField = (
-        <FloatInput
-            name={SEGMENT_DISTANCE_VALUE}
-            label={'SegmentDistance'}
-            // adornment={meterAdornment}
-        />
+        <FloatInput name={SEGMENT_DISTANCE_VALUE} label={'SegmentDistance'} />
     );
 
-    useEffect(() => {
-        setValue(
-            SEGMENT_RESISTANCE,
-            roundToDefaultPrecision(
-                toResistance(
-                    segmentDistanceValue,
-                    props?.value?.linearResistance
-                )
-            ),
-            { shouldTouch: true }
-        );
-        setValue(
-            SEGMENT_REACTANCE,
-            roundToDefaultPrecision(
-                toReactance(segmentDistanceValue, props?.value?.linearReactance)
-            ),
-            { shouldTouch: true }
-        );
-        setValue(
-            SEGMENT_SUSCEPTANCE,
-            roundToDefaultPrecision(
-                toSusceptance(
-                    segmentDistanceValue,
-                    props?.value?.linearCapacity
-                )
-            ),
-            { shouldTouch: true }
-        );
-    }, [setValue, segmentDistanceValue, props.value]);
-
-    const { onEditButtonClick, onDeleteButtonClick } = props;
+    const { onEditButtonClick, onDeleteButtonClick, onSegmentDistanceChange } =
+        props;
     const handleEditButtonClick = useCallback(
         () => onEditButtonClick && onEditButtonClick(),
         [onEditButtonClick]
@@ -165,11 +78,25 @@ const LineTypeCatalogForm = (props) => {
         onDeleteButtonClick && onDeleteButtonClick();
     }, [reset, onDeleteButtonClick]);
 
+    useEffect(() => {
+        // TODO FIX THIS TEST WITH A COPY IN A STATE ? It's a hack to prevent an infinite loop
+        if (innerSegmentDistanceValue !== segmentDistanceValue) {
+            setInnerSegmentDistanceValue(segmentDistanceValue);
+            onSegmentDistanceChange(segmentDistanceValue);
+            trigger(SEGMENT_DISTANCE_VALUE);
+        }
+    }, [
+        trigger,
+        onSegmentDistanceChange,
+        segmentDistanceValue,
+        innerSegmentDistanceValue,
+    ]);
+
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <Grid container spacing={2} key={'index'}>
                 {gridItem(segmentDistanceField, 2)}
-                {gridItem(<div>{props?.value?.type}</div>, 2)}
+                {gridItem(<div>{props.segment?.lineType?.type ?? ''}</div>, 2)}
                 {gridItem(
                     <Button
                         onClick={handleEditButtonClick}
@@ -184,14 +111,14 @@ const LineTypeCatalogForm = (props) => {
                     />,
                     1
                 )}
-                {gridItem(<ReadOnlyInput name={`${SEGMENT_RESISTANCE}`} />, 2)}
-                {gridItem(<ReadOnlyInput name={`${SEGMENT_REACTANCE}`} />, 2)}
-                {gridItem(<ReadOnlyInput name={`${SEGMENT_SUSCEPTANCE}`} />, 2)}
+                {gridItem(<div>{props.segment?.resistance ?? 0}</div>, 2)}
+                {gridItem(<div>{props.segment?.reactance ?? 0}</div>, 2)}
+                {gridItem(<div>{props.segment?.susceptance ?? 0}</div>, 2)}
             </Grid>
         </FormProvider>
     );
 };
 
-LineTypeCatalogForm.propTypes = {};
+LineTypeCatalogForm.propTypes = {}; // TODO CHARLY
 
 export default LineTypeCatalogForm;

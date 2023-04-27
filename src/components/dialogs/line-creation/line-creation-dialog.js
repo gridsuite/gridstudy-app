@@ -403,9 +403,7 @@ const LineCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
-                onOpenCatalogDialog={() =>
-                    setOpenLineTypeCatalogDialog(true)
-                }
+                onOpenCatalogDialog={() => setOpenLineTypeCatalogDialog(true)}
                 searchCopy={searchCopy}
                 PaperProps={{
                     sx: {

@@ -866,6 +866,7 @@
     "LineTypeCatalogDialogTitle": "Define line segments",
     "SelectType": "Type selection",
     "SegmentDistance": "Length",
+    "SegmentDistanceGreaterThanZero": "The length must be greater than zero",
     "lineType.type": "Type",
     "lineType.voltage": "Voltage",
     "lineType.conductorType": "Type of conductor",

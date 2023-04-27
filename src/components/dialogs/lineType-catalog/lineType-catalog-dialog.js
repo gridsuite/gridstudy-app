@@ -13,8 +13,6 @@ import LineTypeCatalogForm from './lineType-catalog-form';
 import LineTypeCatalogSelectorDialog from './lineType-catalog-selector-dialog';
 import { getLineTypeCatalog } from '../../../utils/rest-api';
 import {
-    SEGMENTS,
-    SEGMENT_DISTANCE_VALUE,
     TOTAL_RESISTANCE,
     TOTAL_REACTANCE,
     TOTAL_SUSCEPTANCE,
@@ -23,6 +21,52 @@ import { gridItem } from '../dialogUtils';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only-input';
+import { roundToDefaultPrecision } from '../../../utils/rounding';
+
+// TODO FUNCTIONS TO MOVE ELSEWHERE
+function toResistance(distance, linearResistance) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearResistance === undefined ||
+        isNaN(linearResistance)
+    ) {
+        return 0;
+    }
+    return Number(distance) * Number(linearResistance);
+}
+
+function toReactance(distance, linearReactance) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearReactance === undefined ||
+        isNaN(linearReactance)
+    ) {
+        return 0;
+    }
+    return Number(distance) * Number(linearReactance);
+}
+
+function toSusceptance(distance, linearCapacity) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearCapacity === undefined ||
+        isNaN(linearCapacity)
+    ) {
+        return 0;
+    }
+    return (
+        Number(distance) *
+        Number(linearCapacity) *
+        2 *
+        Math.PI *
+        50 *
+        Math.pow(10, 6)
+    );
+}
+// TODO END OF FUNCTIONS TO MOVE ELSEWHERE
 
 const emptyLineSegment = {
     distance: null,
@@ -33,15 +77,12 @@ const emptyLineSegment = {
 };
 
 const formSchema = yup.object().shape({
-    [SEGMENT_DISTANCE_VALUE]: yup.number(),
     [TOTAL_RESISTANCE]: yup.number().required(),
     [TOTAL_REACTANCE]: yup.number().required(),
     [TOTAL_SUSCEPTANCE]: yup.number().required(),
 });
 
 const emptyFormData = {
-    [SEGMENTS]: null,
-    [SEGMENT_DISTANCE_VALUE]: 0,
     [TOTAL_RESISTANCE]: 0,
     [TOTAL_REACTANCE]: 0,
     [TOTAL_SUSCEPTANCE]: 0,
@@ -55,8 +96,13 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
 
     const [lineTypeCatalog, setLineTypeCatalog] = useState([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
-    const [lineValues, setLineValues] = useState(new Map());
-    // const [lineSegments, setLineSegments] = useState(new Map()); // TODO WIP : will replace lineValues soon
+
+    // TODO Use an <ExpandableInput> instead of this static list of 3 (example for inspiration : search of COUPLING_OMNIBUS)
+    const [lineSegments, setLineSegments] = useState([
+        { ...emptyLineSegment },
+        { ...emptyLineSegment },
+        { ...emptyLineSegment },
+    ]);
 
     const onCatalogDialogClose = () => {
         setOpenCatalogDialogIndex(null);
@@ -66,61 +112,127 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
         setOpenCatalogDialogIndex(index);
     };
 
-    const onSelectCatalogLine = (selectedLine) => {
-        setLineValues((prevLineValues) => {
-            const nextLineValues = prevLineValues.set(
-                openCatalogDialogIndex,
-                selectedLine
-            );
-            return nextLineValues;
-        });
+    const onSelectCatalogLine = useCallback(
+        (selectedLine) => {
+            setLineSegments((oldLineSegments) => {
+                let currentSegment = oldLineSegments[
+                    openCatalogDialogIndex
+                ] ?? { ...emptyLineSegment };
 
-        // setLineSegments((prevLineSegments) => { // TODO WIP : will replace lineValues soon
-        //     const prevLineSegment = prevLineSegments.has(openCatalogDialogIndex)
-        //         ? prevLineSegments.get(openCatalogDialogIndex)
-        //         : emptyLineSegment;
-        //
-        //     const nextLineSegments = prevLineSegments.set(
-        //         openCatalogDialogIndex,
-        //         { ...prevLineSegment, lineType: selectedLine }
-        //     );
-        //     return nextLineSegments;
-        // });
-    };
+                currentSegment['lineType'] = selectedLine[0];
+                currentSegment['resistance'] = roundToDefaultPrecision(
+                    toResistance(
+                        currentSegment['distance'],
+                        selectedLine[0].linearResistance
+                    )
+                );
+                currentSegment['reactance'] = roundToDefaultPrecision(
+                    toReactance(
+                        currentSegment['distance'],
+                        selectedLine[0].linearReactance
+                    )
+                );
+                currentSegment['susceptance'] = roundToDefaultPrecision(
+                    toSusceptance(
+                        currentSegment['distance'],
+                        selectedLine[0].linearCapacity
+                    )
+                );
+
+                let newLineSegments = [...oldLineSegments];
+                newLineSegments[openCatalogDialogIndex] = currentSegment;
+                return newLineSegments;
+            });
+        },
+        [openCatalogDialogIndex]
+    );
 
     const { reset, setValue } = formMethods;
 
+    // Fetchs the lineType catalog on startup
     useEffect(() => {
         getLineTypeCatalog().then((values) => {
             setLineTypeCatalog(values);
         });
     }, []);
 
-    const clear = useCallback(() => {
+    const handleClear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
 
-    /**
-     * VALUES COMPUTATION
-     */
+    // TODO FIX BUG : When deleting a row (bug triggers if we delete the second one), there is a discrepency between the segment's lenght and its values. This is because we use an index as a key in the .map loop of the render.
+    const handleDelete = useCallback(
+        (index) => {
+            let arr = [...lineSegments];
+            arr.splice(index, 1);
+            // inputForm?.setHasChanged(arr.length > 0); // TODO CHARLY si pb d'update, voir si besoin de ça ?
+            setLineSegments(arr);
+        },
+        [lineSegments]
+    );
 
-    const computeTotals = (array) => {
-        const totalResistance = array.reduce(
+    // Updates the total values of Resistance, Reactance and Susceptance when the array's values are updated.
+    useEffect(() => {
+        const totalResistance = lineSegments.reduce(
             (accum, item) => accum + item.resistance,
             0
         );
-        const totalReactance = array.reduce(
+        const totalReactance = lineSegments.reduce(
             (accum, item) => accum + item.reactance,
             0
         );
-        const totalSusceptance = array.reduce(
+        const totalSusceptance = lineSegments.reduce(
             (accum, item) => accum + item.susceptance,
             0
         );
-        setValue(`${TOTAL_RESISTANCE}`, totalResistance);
-        setValue(`${TOTAL_REACTANCE}`, totalReactance);
-        setValue(`${TOTAL_SUSCEPTANCE}`, totalSusceptance);
-    };
+        setValue(
+            `${TOTAL_RESISTANCE}`,
+            roundToDefaultPrecision(totalResistance),
+            { shouldDirty: true }
+        );
+        setValue(
+            `${TOTAL_REACTANCE}`,
+            roundToDefaultPrecision(totalReactance),
+            { shouldDirty: true }
+        );
+        setValue(
+            `${TOTAL_SUSCEPTANCE}`,
+            roundToDefaultPrecision(totalSusceptance),
+            { shouldDirty: true }
+        );
+    }, [setValue, lineSegments]);
+
+    const handleSegmentDistantChange = useCallback((index, newDistance) => {
+        setLineSegments((oldLineSegments) => {
+            let currentSegment = oldLineSegments[index] ?? {
+                ...emptyLineSegment,
+            };
+
+            currentSegment['distance'] = newDistance;
+            currentSegment['resistance'] = roundToDefaultPrecision(
+                toResistance(
+                    newDistance,
+                    currentSegment.lineType?.linearResistance
+                )
+            );
+            currentSegment['reactance'] = roundToDefaultPrecision(
+                toReactance(
+                    newDistance,
+                    currentSegment.lineType?.linearReactance
+                )
+            );
+            currentSegment['susceptance'] = roundToDefaultPrecision(
+                toSusceptance(
+                    newDistance,
+                    currentSegment.lineType?.linearCapacity
+                )
+            );
+
+            let newLineSegments = [...oldLineSegments];
+            newLineSegments[index] = currentSegment;
+            return newLineSegments;
+        });
+    }, []);
 
     /**
      * RENDER
@@ -130,7 +242,7 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
-                onClear={clear}
+                onClear={handleClear}
                 aria-labelledby="dialog-lineType-catalog"
                 titleId="LineTypeCatalogDialogTitle"
                 {...dialogProps}
@@ -140,23 +252,15 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                     {gridItem(<FormattedMessage id={'Reactor'} />, 2)}
                     {gridItem(<FormattedMessage id={'R'} />, 2)}
                 </Grid>
-                {[0, 1, 2, 3].map((line, index) => (
+                {lineSegments.map((segment, index) => (
                     <LineTypeCatalogForm
-                        key={'lineTypeCatalog' + index}
+                        key={'lineTypeSegments' + index}
                         onEditButtonClick={() => openCatalogDialog(index)}
-                        onDeleteButtonClick={() =>
-                            alert('delete line ' + index)
+                        onDeleteButtonClick={() => handleDelete(index)}
+                        onSegmentDistanceChange={(newDistance) =>
+                            handleSegmentDistantChange(index, newDistance)
                         }
-                        value={
-                            lineValues.has(index)
-                                ? lineValues.get(index)[0]
-                                : emptyLineSegment
-                        }
-                        // segment={ // TODO WIP : will replace lineValues soon
-                        //     lineSegments.has(index)
-                        //         ? lineSegments.get(index)[0]
-                        //         : emptyLineSegment
-                        // }
+                        segment={segment}
                     />
                 ))}
                 <hr />
@@ -186,6 +290,6 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
     );
 };
 
-LineTypeCatalogDialog.propTypes = {};
+LineTypeCatalogDialog.propTypes = {}; // TODO CHARLY
 
 export default LineTypeCatalogDialog;
