@@ -17,7 +17,7 @@ import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { SensitivityAnalysisResultTab } from './sensitivity-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-tab';
-import AlertInvalidNode from './util/alert-invalid-node';
+import AlertInvalidNode from './utils/alert-invalid-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';

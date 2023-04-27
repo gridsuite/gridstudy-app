@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useDoubleValue } from './inputs/input-hooks';
+import { useDoubleValue } from '../utils/inputs/input-hooks';
 import {
     ActivePowerAdornment,
     gridItem,

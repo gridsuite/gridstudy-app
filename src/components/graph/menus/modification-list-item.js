@@ -15,7 +15,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { useNameOrId } from '../../util/equipmentInfosHandler';
+import { useNameOrId } from '../../utils/equipmentInfosHandler';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',

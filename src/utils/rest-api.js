@@ -11,8 +11,8 @@ import {
     BRANCH_STATUS_ACTION,
     BRANCH_SIDE,
 } from '../components/network/constants';
-import { MODIFICATION_TYPES } from '../components/util/modification-type';
-import { EQUIPMENT_TYPES } from '../components/util/equipment-types';
+import { MODIFICATION_TYPES } from '../components/utils/modification-type';
+import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -2237,6 +2237,63 @@ export function createLine(
     });
 }
 
+export function modifyLine(
+    studyUuid,
+    currentNodeUuid,
+    lineId,
+    lineName,
+    seriesResistance,
+    seriesReactance,
+    shuntConductance1,
+    shuntSusceptance1,
+    shuntConductance2,
+    shuntSusceptance2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2,
+    temporaryCurrentLimits1,
+    temporaryCurrentLimits2,
+    isUpdate,
+    modificationUuid
+) {
+    let modifyLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyLineUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating line modification');
+    } else {
+        console.info('Creating line modification');
+    }
+
+    return backendFetchText(modifyLineUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
+            equipmentId: lineId,
+            equipmentName: toModificationOperation(lineName),
+            seriesResistance: toModificationOperation(seriesResistance),
+            seriesReactance: toModificationOperation(seriesReactance),
+            shuntConductance1: toModificationOperation(shuntConductance1),
+            shuntSusceptance1: toModificationOperation(shuntSusceptance1),
+            shuntConductance2: toModificationOperation(shuntConductance2),
+            shuntSusceptance2: toModificationOperation(shuntSusceptance2),
+            currentLimits1: {
+                permanentLimit: permanentCurrentLimit1,
+                temporaryLimits: temporaryCurrentLimits1,
+            },
+            currentLimits2: {
+                permanentLimit: permanentCurrentLimit2,
+                temporaryLimits: temporaryCurrentLimits2,
+            },
+        }),
+    });
+}
+
 export function createTwoWindingsTransformer(
     studyUuid,
     currentNodeUuid,
@@ -2353,6 +2410,43 @@ export function createSubstation(
             'Content-Type': 'application/json',
         },
         body: body,
+    });
+}
+
+export function modifySubstation(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    substationCountry,
+    isUpdate = false,
+    modificationUuid,
+    properties
+) {
+    let modifyUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating substation modification');
+    } else {
+        console.info('Creating substation modification');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
+            equipmentId: id,
+            equipmentName: toModificationOperation(name),
+            substationCountry: toModificationOperation(substationCountry),
+            properties: properties,
+        }),
     });
 }
 
