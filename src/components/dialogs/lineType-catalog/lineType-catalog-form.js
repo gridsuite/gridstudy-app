@@ -4,28 +4,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { FormProvider, useForm } from 'react-hook-form';
+import yup from '../../utils/yup-config';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../dialogUtils';
-import { Button, Typography } from '@mui/material';
+import { Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { FormattedMessage } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
+import DeleteIcon from '@mui/icons-material/Delete';
 import FloatInput from '../../utils/rhf-inputs/float-input';
 import {
     SEGMENT_DISTANCE_VALUE,
-    TOTAL_RESISTANCE,
-    TOTAL_REACTANCE,
-    TOTAL_SUSCEPTANCE,
+    SEGMENT_RESISTANCE,
+    SEGMENT_REACTANCE,
+    SEGMENT_SUSCEPTANCE,
 } from '../../utils/field-constants';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only-input';
-import { useFormContext } from 'react-hook-form';
-
-const useStyles = makeStyles((theme) => ({
-    label: {
-        fontWeight: 'bold',
-    },
-}));
+import { roundToDefaultPrecision } from '../../../utils/rounding';
 
 /**
  * lineSegment definition :
@@ -51,30 +47,75 @@ const useStyles = makeStyles((theme) => ({
  *
  */
 
-function toResistance(lineSegment) {
-    return lineSegment.distance * lineSegment.lineType.linearResistance;
+function toResistance(distance, linearResistance) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearResistance === undefined ||
+        isNaN(linearResistance)
+    ) {
+        return 0;
+    }
+    return Number(distance) * Number(linearResistance);
 }
 
-function toReactance(lineSegment) {
-    return lineSegment.distance * lineSegment.lineType.linearReactance;
+function toReactance(distance, linearReactance) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearReactance === undefined ||
+        isNaN(linearReactance)
+    ) {
+        return 0;
+    }
+    return Number(distance) * Number(linearReactance);
 }
 
-function toSusceptance(lineSegment) {
+function toSusceptance(distance, linearCapacity) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearCapacity === undefined ||
+        isNaN(linearCapacity)
+    ) {
+        return 0;
+    }
     return (
-        (lineSegment.distance *
-            lineSegment.lineType.linearCapacity *
-            2 *
-            Math.PI *
-            50 *
-            10) ^
-        6
+        Number(distance) *
+        Number(linearCapacity) *
+        2 *
+        Math.PI *
+        50 *
+        Math.pow(10, 6)
     );
 }
 
-const LineTypeCatalogForm = (props) => {
-    const classes = useStyles();
+const formSchema = yup.object().shape({
+    [SEGMENT_DISTANCE_VALUE]: yup
+        .number()
+        .nullable()
+        .required()
+        .min(0, 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'), // TODO CHARLY Check if needed and update the error message if needed.
+    [SEGMENT_RESISTANCE]: yup.number().required(),
+    [SEGMENT_REACTANCE]: yup.number().required(),
+    [SEGMENT_SUSCEPTANCE]: yup.number().required(),
+});
 
-    const { setValue } = useFormContext();
+const emptyFormData = {
+    [SEGMENT_DISTANCE_VALUE]: null,
+    [SEGMENT_RESISTANCE]: 0,
+    [SEGMENT_REACTANCE]: 0,
+    [SEGMENT_SUSCEPTANCE]: 0,
+};
+
+const LineTypeCatalogForm = (props) => {
+    const formMethods = useForm({
+        defaultValues: emptyFormData,
+        resolver: yupResolver(formSchema),
+    });
+
+    const { reset, watch, setValue } = formMethods;
+    const segmentDistanceValue = watch(SEGMENT_DISTANCE_VALUE, 0);
 
     const segmentDistanceField = (
         <FloatInput
@@ -84,41 +125,51 @@ const LineTypeCatalogForm = (props) => {
         />
     );
 
-    const computeTotals = (array) => {
-        const totalResistance = array.reduce(
-            (accum, item) => accum + item.resistance,
-            0
+    useEffect(() => {
+        setValue(
+            SEGMENT_RESISTANCE,
+            roundToDefaultPrecision(
+                toResistance(
+                    segmentDistanceValue,
+                    props?.value?.linearResistance
+                )
+            ),
+            { shouldTouch: true }
         );
-        const totalReactance = array.reduce(
-            (accum, item) => accum + item.reactance,
-            0
+        setValue(
+            SEGMENT_REACTANCE,
+            roundToDefaultPrecision(
+                toReactance(segmentDistanceValue, props?.value?.linearReactance)
+            ),
+            { shouldTouch: true }
         );
-        const totalSusceptance = array.reduce(
-            (accum, item) => accum + item.susceptance,
-            0
+        setValue(
+            SEGMENT_SUSCEPTANCE,
+            roundToDefaultPrecision(
+                toSusceptance(
+                    segmentDistanceValue,
+                    props?.value?.linearCapacity
+                )
+            ),
+            { shouldTouch: true }
         );
-        setValue(`${TOTAL_RESISTANCE}`, totalResistance);
-        setValue(`${TOTAL_REACTANCE}`, totalReactance);
-        setValue(`${TOTAL_SUSCEPTANCE}`, totalSusceptance);
-    };
+    }, [setValue, segmentDistanceValue, props.value]);
 
-    const { onEditButtonClick } = props;
+    const { onEditButtonClick, onDeleteButtonClick } = props;
     const handleEditButtonClick = useCallback(
         () => onEditButtonClick && onEditButtonClick(),
         [onEditButtonClick]
     );
+    const handleDeleteButtonClick = useCallback(() => {
+        reset(emptyFormData);
+        onDeleteButtonClick && onDeleteButtonClick();
+    }, [reset, onDeleteButtonClick]);
 
     return (
-        <>
-            <Grid container direction="row-reverse" spacing={2}>
-                {gridItem(<FormattedMessage id={'SusceptanceLabel'} />, 2)}
-                {gridItem(<FormattedMessage id={'Reactor'} />, 2)}
-                {gridItem(<FormattedMessage id={'R'} />, 2)}
-            </Grid>
-            {/* {[0, 1, 2, 3].map((line, index) => ( */}
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <Grid container spacing={2} key={'index'}>
-                {gridItem(segmentDistanceField, 3)}
-                {gridItem(<div>VALUE : {JSON.stringify(props.value)}</div>, 2)}
+                {gridItem(segmentDistanceField, 2)}
+                {gridItem(<div>{props?.value?.type}</div>, 2)}
                 {gridItem(
                     <Button
                         onClick={handleEditButtonClick}
@@ -126,15 +177,18 @@ const LineTypeCatalogForm = (props) => {
                     />,
                     1
                 )}
+                {gridItem(
+                    <Button
+                        onClick={handleDeleteButtonClick}
+                        startIcon={<DeleteIcon />}
+                    />,
+                    1
+                )}
+                {gridItem(<ReadOnlyInput name={`${SEGMENT_RESISTANCE}`} />, 2)}
+                {gridItem(<ReadOnlyInput name={`${SEGMENT_REACTANCE}`} />, 2)}
+                {gridItem(<ReadOnlyInput name={`${SEGMENT_SUSCEPTANCE}`} />, 2)}
             </Grid>
-            {/* ))} */}
-
-            <Grid container direction="row-reverse" spacing={2}>
-                {gridItem(<ReadOnlyInput name={`${TOTAL_SUSCEPTANCE}`} />, 2)}
-                {gridItem(<ReadOnlyInput name={`${TOTAL_REACTANCE}`} />, 2)}
-                {gridItem(<ReadOnlyInput name={`${TOTAL_RESISTANCE}`} />, 2)}
-            </Grid>
-        </>
+        </FormProvider>
     );
 };
 

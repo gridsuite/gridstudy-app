@@ -99,9 +99,7 @@ const ModificationDialog = ({
                     <Grid item xs={11}>
                         <FormattedMessage id={titleId} />
                     </Grid>
-                    {onOpenCatalogDialog && (
-                        <Grid item> {catalogButton} </Grid>
-                    )}
+                    {onOpenCatalogDialog && <Grid item> {catalogButton} </Grid>}
                     {searchCopy && <Grid item> {copyEquipmentButton} </Grid>}
                 </Grid>
                 {subtitle}

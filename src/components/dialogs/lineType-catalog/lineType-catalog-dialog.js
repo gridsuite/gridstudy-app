@@ -19,43 +19,44 @@ import {
     TOTAL_REACTANCE,
     TOTAL_SUSCEPTANCE,
 } from '../../utils/field-constants';
+import { gridItem } from '../dialogUtils';
+import { FormattedMessage } from 'react-intl';
+import Grid from '@mui/material/Grid';
+import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only-input';
 
-// const schema = yup.object().shape({
-//     [SEGMENTS]: yup.array().of(
-const schema = yup.object().shape({
+const emptyLineSegment = {
+    distance: null,
+    lineType: null,
+    resistance: null,
+    reactance: null,
+    susceptance: null,
+};
+
+const formSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup.number(),
-    // [SEGMENT_LINE_TYPE]: yup.object().shape({
-    //     [LINE_TYPE_KIND]: yup.string(),
-    // }),
-    // [SEGMENT_RESISTANCE]: yup.number().required(),
-    // [SEGMENT_REACTANCE]: yup.number().required(),
-    // [SEGMENT_SUSCEPTANCE]: yup.number().required(),
     [TOTAL_RESISTANCE]: yup.number().required(),
     [TOTAL_REACTANCE]: yup.number().required(),
     [TOTAL_SUSCEPTANCE]: yup.number().required(),
-
-    // [SEGMENT_REACTANCE]: yup.number().required(),
-    // [SEGMENT_SUSCEPTANCE]: yup.number().required(),
 });
 
 const emptyFormData = {
     [SEGMENTS]: null,
     [SEGMENT_DISTANCE_VALUE]: 0,
-    [TOTAL_RESISTANCE]: 0.206,
-    [TOTAL_REACTANCE]: 0.706,
-    [TOTAL_SUSCEPTANCE]: 6.472,
-    // [EQUIPMENT_ID]: null,
+    [TOTAL_RESISTANCE]: 0,
+    [TOTAL_REACTANCE]: 0,
+    [TOTAL_SUSCEPTANCE]: 0,
 };
 
 const LineTypeCatalogDialog = ({ ...dialogProps }) => {
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
     const [lineTypeCatalog, setLineTypeCatalog] = useState([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
     const [lineValues, setLineValues] = useState(new Map());
+    // const [lineSegments, setLineSegments] = useState(new Map()); // TODO WIP : will replace lineValues soon
 
     const onCatalogDialogClose = () => {
         setOpenCatalogDialogIndex(null);
@@ -73,9 +74,21 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
             );
             return nextLineValues;
         });
+
+        // setLineSegments((prevLineSegments) => { // TODO WIP : will replace lineValues soon
+        //     const prevLineSegment = prevLineSegments.has(openCatalogDialogIndex)
+        //         ? prevLineSegments.get(openCatalogDialogIndex)
+        //         : emptyLineSegment;
+        //
+        //     const nextLineSegments = prevLineSegments.set(
+        //         openCatalogDialogIndex,
+        //         { ...prevLineSegment, lineType: selectedLine }
+        //     );
+        //     return nextLineSegments;
+        // });
     };
 
-    const { reset } = methods;
+    const { reset, setValue } = formMethods;
 
     useEffect(() => {
         getLineTypeCatalog().then((values) => {
@@ -87,8 +100,33 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
         reset(emptyFormData);
     }, [reset]);
 
+    /**
+     * VALUES COMPUTATION
+     */
+
+    const computeTotals = (array) => {
+        const totalResistance = array.reduce(
+            (accum, item) => accum + item.resistance,
+            0
+        );
+        const totalReactance = array.reduce(
+            (accum, item) => accum + item.reactance,
+            0
+        );
+        const totalSusceptance = array.reduce(
+            (accum, item) => accum + item.susceptance,
+            0
+        );
+        setValue(`${TOTAL_RESISTANCE}`, totalResistance);
+        setValue(`${TOTAL_REACTANCE}`, totalReactance);
+        setValue(`${TOTAL_SUSCEPTANCE}`, totalSusceptance);
+    };
+
+    /**
+     * RENDER
+     */
     return (
-        <FormProvider validationSchema={schema} {...methods}>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -97,11 +135,43 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                 titleId="LineTypeCatalogDialogTitle"
                 {...dialogProps}
             >
-                <LineTypeCatalogForm
-                    key={'lineDictionary'} // TODO This will be updated soon
-                    onEditButtonClick={(index) => openCatalogDialog(index)}
-                    value={lineValues}
-                />
+                <Grid container direction="row-reverse" spacing={2}>
+                    {gridItem(<FormattedMessage id={'SusceptanceLabel'} />, 2)}
+                    {gridItem(<FormattedMessage id={'Reactor'} />, 2)}
+                    {gridItem(<FormattedMessage id={'R'} />, 2)}
+                </Grid>
+                {[0, 1, 2, 3].map((line, index) => (
+                    <LineTypeCatalogForm
+                        key={'lineTypeCatalog' + index}
+                        onEditButtonClick={() => openCatalogDialog(index)}
+                        onDeleteButtonClick={() =>
+                            alert('delete line ' + index)
+                        }
+                        value={
+                            lineValues.has(index)
+                                ? lineValues.get(index)[0]
+                                : emptyLineSegment
+                        }
+                        // segment={ // TODO WIP : will replace lineValues soon
+                        //     lineSegments.has(index)
+                        //         ? lineSegments.get(index)[0]
+                        //         : emptyLineSegment
+                        // }
+                    />
+                ))}
+                <hr />
+                <Grid container direction="row-reverse" spacing={2}>
+                    {gridItem(
+                        <ReadOnlyInput name={`${TOTAL_SUSCEPTANCE}`} />,
+                        2
+                    )}
+                    {gridItem(<ReadOnlyInput name={`${TOTAL_REACTANCE}`} />, 2)}
+                    {gridItem(
+                        <ReadOnlyInput name={`${TOTAL_RESISTANCE}`} />,
+                        2
+                    )}
+                </Grid>
+
                 {openCatalogDialogIndex !== null && (
                     <LineTypeCatalogSelectorDialog
                         open={true}

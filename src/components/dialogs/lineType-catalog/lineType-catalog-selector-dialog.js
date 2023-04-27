@@ -47,10 +47,10 @@ const LineTypeCatalogSelectorDialog = (props) => {
     const [rowDataAerialTab, setRowDataAerialTab] = useState([]);
     const [rowDataUndergroundTab, setRowDataUndergroundTab] = useState([]);
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
     });
-    const { setValue, reset } = methods;
+    const { setValue, reset } = formMethods;
 
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
     const handleSubmit = useCallback(
@@ -204,7 +204,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
     );
 
     return (
-        <FormProvider {...methods}>
+        <FormProvider {...formMethods}>
             <ModificationDialog
                 fullWidth
                 maxWidth="xl"
