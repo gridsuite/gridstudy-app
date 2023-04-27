@@ -49,10 +49,7 @@ import {
     modifyGenerator,
 } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
-import {
-    REGULATION_TYPES,
-    FORM_LOADING_DELAY,
-} from '../../../network/constants';
+import { REGULATION_TYPES } from '../../../network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import {
     getSetPointsEmptyFormData,
@@ -68,7 +65,7 @@ import {
     REMOVE,
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import { RunningStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'components/utils/running-status';
 
 const GeneratorModificationDialog = ({
     editData,
@@ -83,7 +80,7 @@ const GeneratorModificationDialog = ({
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
     const shouldEmptyFormOnGeneratorIdChangeRef = useRef(!editData);
-    const [dataFetchStatus, setDataFetchStatus] = useState(RunningStatus.IDLE);
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const completeReactiveCapabilityCurvePointsData = (
@@ -329,7 +326,7 @@ const GeneratorModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
-                setDataFetchStatus(RunningStatus.RUNNING);
+                setDataFetchStatus(FetchStatus.RUNNING);
                 fetchEquipmentInfos(
                     studyUuid,
                     currentNodeUuid,
@@ -385,11 +382,11 @@ const GeneratorModificationDialog = ({
                                     previousReactiveCapabilityCurveTable,
                             });
                         }
-                        setDataFetchStatus(RunningStatus.SUCCEED);
+                        setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
                         setGeneratorToModify(null);
-                        setDataFetchStatus(RunningStatus.FAILED);
+                        setDataFetchStatus(FetchStatus.FAILED);
                     });
             } else {
                 setValuesAndEmptyOthers();
@@ -562,11 +559,11 @@ const GeneratorModificationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            ((editDataFetchStatus === RunningStatus.SUCCEED ||
-                editDataFetchStatus === RunningStatus.FAILED) &&
-                (dataFetchStatus === RunningStatus.SUCCEED ||
-                    dataFetchStatus === RunningStatus.FAILED)),
-        delay: FORM_LOADING_DELAY,
+            ((editDataFetchStatus === FetchStatus.SUCCEED ||
+                editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED ||
+                    dataFetchStatus === FetchStatus.FAILED)),
+        delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in GeneratorModificationForm and right after receiving the editData without waiting
     });
 
     return (
@@ -586,8 +583,8 @@ const GeneratorModificationDialog = ({
                 keepMounted={true}
                 isDataFetching={
                     isUpdate &&
-                    (editDataFetchStatus === RunningStatus.RUNNING ||
-                        dataFetchStatus === RunningStatus.RUNNING)
+                    (editDataFetchStatus === FetchStatus.RUNNING ||
+                        dataFetchStatus === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >

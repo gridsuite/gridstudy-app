@@ -18,7 +18,7 @@ import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { RunningStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'components/utils/running-status';
 
 const formSchema = yup
     .object()
@@ -105,8 +105,8 @@ const EquipmentDeletionDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === RunningStatus.SUCCEED ||
-            editDataFetchStatus === RunningStatus.FAILED,
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -120,7 +120,7 @@ const EquipmentDeletionDialog = ({
                 titleId="DeleteEquipment"
                 open={open}
                 isDataFetching={
-                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >

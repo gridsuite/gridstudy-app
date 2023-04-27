@@ -104,7 +104,7 @@ import {
     getLimitsValidationSchema,
 } from '../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { RunningStatus } from 'components/utils/running-status.js';
+import { FetchStatus } from 'components/utils/running-status.js';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -780,8 +780,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === RunningStatus.SUCCEED ||
-            editDataFetchStatus === RunningStatus.FAILED,
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -804,7 +804,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 }}
                 open={open}
                 isDataFetching={
-                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >

@@ -42,8 +42,8 @@ import {
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { buildNewBusbarSections } from 'components/utils/utils';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { RunningStatus } from 'components/utils/running-status';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
+import { FetchStatus } from 'components/utils/running-status';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -303,8 +303,8 @@ const LineAttachToVoltageLevelDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === RunningStatus.SUCCEED ||
-            editDataFetchStatus === RunningStatus.FAILED,
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -318,7 +318,7 @@ const LineAttachToVoltageLevelDialog = ({
                 titleId="LineAttachToVoltageLevel"
                 open={open}
                 isDataFetching={
-                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >

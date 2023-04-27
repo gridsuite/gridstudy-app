@@ -24,7 +24,7 @@ import { sanitizeString } from '../../dialogUtils';
 import yup from '../../../utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
-import { RunningStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'components/utils/running-status';
 
 /**
  * Dialog to create a load in the network
@@ -59,7 +59,7 @@ const LoadModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const [dataFetchStatus, setDataFetchStatus] = useState(RunningStatus.IDLE);
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     const emptyFormData = useMemo(
         () => ({
@@ -129,8 +129,10 @@ const LoadModificationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === RunningStatus.SUCCEED ||
-            editDataFetchStatus === RunningStatus.FAILED,
+            ((editDataFetchStatus === FetchStatus.SUCCEED ||
+                editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED ||
+                    dataFetchStatus === FetchStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -150,8 +152,8 @@ const LoadModificationDialog = ({
                 keepMounted={true}
                 isDataFetching={
                     isUpdate &&
-                    (editDataFetchStatus === RunningStatus.RUNNING ||
-                        dataFetchStatus === RunningStatus.RUNNING)
+                    (editDataFetchStatus === FetchStatus.RUNNING ||
+                        dataFetchStatus === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >

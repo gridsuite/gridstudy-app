@@ -28,7 +28,7 @@ import { createSubstation } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { RunningStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'components/utils/running-status';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -128,8 +128,8 @@ const SubstationCreationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === RunningStatus.SUCCEED ||
-            editDataFetchStatus === RunningStatus.FAILED,
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -145,7 +145,7 @@ const SubstationCreationDialog = ({
                 searchCopy={searchCopy}
                 open={open}
                 isDataFetching={
-                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >

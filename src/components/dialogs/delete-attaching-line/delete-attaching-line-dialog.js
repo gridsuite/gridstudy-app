@@ -23,7 +23,7 @@ import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
-import { RunningStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'components/utils/running-status';
 
 const emptyFormData = {
     [ATTACHED_LINE_ID]: null,
@@ -75,8 +75,8 @@ const DeleteAttachingLineDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === RunningStatus.SUCCEED ||
-            editDataFetchStatus === RunningStatus.FAILED,
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -135,7 +135,7 @@ const DeleteAttachingLineDialog = ({
                 titleId="DeleteAttachingLine"
                 open={open}
                 isDataFetching={
-                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >

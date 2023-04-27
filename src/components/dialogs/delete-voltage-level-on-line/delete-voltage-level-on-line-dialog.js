@@ -22,7 +22,7 @@ import { sanitizeString } from '../dialogUtils';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
-import { RunningStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'components/utils/running-status';
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
@@ -72,8 +72,8 @@ const DeleteVoltageLevelOnLineDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === RunningStatus.SUCCEED ||
-            editDataFetchStatus === RunningStatus.FAILED,
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -130,7 +130,7 @@ const DeleteVoltageLevelOnLineDialog = ({
                 titleId="DeleteVoltageLevelOnLine"
                 open={open}
                 isDataFetching={
-                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >

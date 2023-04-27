@@ -43,8 +43,8 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { RunningStatus } from 'components/utils/running-status';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
+import { FetchStatus } from 'components/utils/running-status';
 
 /**
  * Dialog to create a load in the network
@@ -224,8 +224,8 @@ const VoltageLevelCreationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === RunningStatus.SUCCEED ||
-            editDataFetchStatus === RunningStatus.FAILED,
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -241,7 +241,7 @@ const VoltageLevelCreationDialog = ({
                 searchCopy={searchCopy}
                 open={open}
                 isDataFetching={
-                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >

@@ -16,8 +16,8 @@ import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
 import { generatorScaling } from '../../../utils/rest-api';
 import { VARIATION_TYPES, FORM_LOADING_DELAY } from '../../network/constants';
-import { RunningStatus } from 'components/utils/running-status';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
+import { FetchStatus } from 'components/utils/running-status';
 
 const emptyFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
@@ -84,8 +84,8 @@ const GeneratorScalingDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === RunningStatus.SUCCEED ||
-            editDataFetchStatus === RunningStatus.FAILED,
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -100,7 +100,7 @@ const GeneratorScalingDialog = ({
                 titleId="GeneratorScaling"
                 open={open}
                 isDataFetching={
-                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >

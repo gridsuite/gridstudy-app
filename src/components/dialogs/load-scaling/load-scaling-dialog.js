@@ -17,7 +17,7 @@ import { getVariationsSchema } from './variation/variation-utils';
 import { loadScaling } from '../../../utils/rest-api';
 import { FORM_LOADING_DELAY, VARIATION_TYPES } from '../../network/constants';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { RunningStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'components/utils/running-status';
 
 const emptyFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
@@ -84,8 +84,8 @@ const LoadScalingDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === RunningStatus.SUCCEED ||
-            editDataFetchStatus === RunningStatus.FAILED,
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -99,7 +99,7 @@ const LoadScalingDialog = ({
                 titleId="LoadScaling"
                 open={open}
                 isDataFetching={
-                    isUpdate && editDataFetchStatus === RunningStatus.RUNNING
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >

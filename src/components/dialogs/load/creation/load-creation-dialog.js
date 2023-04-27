@@ -36,7 +36,7 @@ import {
 import LoadCreationForm from './load-creation-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { RunningStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'components/utils/running-status';
 
 /**
  * Dialog to create a load in the network
@@ -78,7 +78,7 @@ const LoadCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const [isDataFetched, setIsDataFetched] = useState(RunningStatus.IDLE);
+    const [isDataFetched, setIsDataFetched] = useState(FetchStatus.IDLE);
 
     const equipmentPath = 'loads';
 
@@ -119,7 +119,7 @@ const LoadCreationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
-            setIsDataFetched(RunningStatus.RUNNING);
+            setIsDataFetched(FetchStatus.RUNNING);
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -146,7 +146,7 @@ const LoadCreationDialog = ({
                             connectionPosition: load.connectionPosition,
                         }),
                     });
-                    setIsDataFetched(RunningStatus.SUCCEED);
+                    setIsDataFetched(FetchStatus.SUCCEED);
                 }) // if voltage level can't be found, we fill the form with minimal infos
                 .catch(() => {
                     reset({
@@ -163,7 +163,7 @@ const LoadCreationDialog = ({
                             connectionPosition: load.connectionPosition,
                         }),
                     });
-                    setIsDataFetched(RunningStatus.FAILED);
+                    setIsDataFetched(FetchStatus.FAILED);
                 });
         },
         [studyUuid, currentNodeUuid, reset]
@@ -218,8 +218,8 @@ const LoadCreationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            (editDataFetchStatus === RunningStatus.SUCCEED &&
-                isDataFetched === RunningStatus.SUCCEED),
+            (editDataFetchStatus === FetchStatus.SUCCEED &&
+                isDataFetched === FetchStatus.SUCCEED),
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -235,8 +235,8 @@ const LoadCreationDialog = ({
                 open={open}
                 isDataFetching={
                     isUpdate &&
-                    (editDataFetchStatus === RunningStatus.RUNNING ||
-                        isDataFetched === RunningStatus.RUNNING)
+                    (editDataFetchStatus === FetchStatus.RUNNING ||
+                        isDataFetched === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >
