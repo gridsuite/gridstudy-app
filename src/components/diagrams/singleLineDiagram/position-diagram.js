@@ -43,8 +43,6 @@ const PositionDiagram = forwardRef((props, ref) => {
     const svgRef = useRef();
     const { svgType, disabled } = props;
 
-    const network = useSelector((state) => state.network);
-
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [loadingState, updateLoadingState] = useState(false);
@@ -122,16 +120,7 @@ const PositionDiagram = forwardRef((props, ref) => {
             svgUrl.current = svg.svgUrl;
             svgDraw.current = sldViewer;
         }
-    }, [
-        network,
-        svg,
-        currentNode,
-        svgType,
-        theme,
-        ref,
-        disabled,
-        loadingState,
-    ]);
+    }, [svg, currentNode, svgType, theme, ref, disabled, loadingState]);
 
     useLayoutEffect(() => {
         if (serverWidth && serverHeight) {
@@ -144,16 +133,7 @@ const PositionDiagram = forwardRef((props, ref) => {
                 }
             }
         }
-    }, [
-        svg,
-        svgType,
-        theme,
-        loadingState,
-        network,
-        ref,
-        serverWidth,
-        serverHeight,
-    ]);
+    }, [svg, svgType, theme, loadingState, ref, serverWidth, serverHeight]);
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
