@@ -116,10 +116,6 @@ const GeneratorModificationDialog = ({
         [defaultIdValue]
     );
 
-    useEffect(() => {
-        console.log(editData, editData);
-    }, [editData]);
-
     const formDataFromEditData = useMemo(
         () =>
             editData

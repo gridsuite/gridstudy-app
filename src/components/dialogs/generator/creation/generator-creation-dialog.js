@@ -144,10 +144,6 @@ const GeneratorCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    useEffect(() => {
-        console.log(editData, editData);
-    }, [editData]);
-
     const { reset } = formMethods;
     const fromSearchCopyToFormValues = (generator) => {
         reset({
