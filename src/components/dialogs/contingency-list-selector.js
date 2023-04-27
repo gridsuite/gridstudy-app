@@ -14,7 +14,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
-import CheckboxList from '../util/checkbox-list';
+import CheckboxList from '../utils/checkbox-list';
 import {
     fetchContingencyCount,
     fetchContingencyAndFiltersLists,
@@ -28,7 +28,7 @@ import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { elementType } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import ListItemWithDeleteButton from '../util/list-item-with-delete-button';
+import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -160,8 +160,9 @@ const ContingencyListSelector = (props) => {
         const newChecked = checkedContingencyListUuids.filter(
             (item) => !toDelete.has(item)
         );
-        if (newChecked.length !== checkedContingencyListUuids.length)
+        if (newChecked.length !== checkedContingencyListUuids.length) {
             setCheckedContingencyListUuids(new Set(newChecked));
+        }
     };
 
     const addFavorites = (favorites) => {

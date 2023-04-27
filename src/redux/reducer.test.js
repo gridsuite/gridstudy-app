@@ -162,14 +162,14 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const expectedState3 = {
         diagramStates: [
             {
-                id: 34,
-                svgType: DiagramType.SUBSTATION,
-                state: ViewState.OPENED,
-            },
-            {
                 id: 35,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
+            },
+            {
+                id: 34,
+                svgType: DiagramType.SUBSTATION,
+                state: ViewState.OPENED,
             },
         ],
     };

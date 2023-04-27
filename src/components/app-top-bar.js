@@ -59,9 +59,9 @@ import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
-import { useSearchMatchingEquipments } from './util/search-matching-equipments';
+import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagrams/diagram-common';
-import { EQUIPMENT_TYPES } from './util/equipment-types';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -119,7 +119,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
     if (
         element.type === EQUIPMENT_TYPES.SUBSTATION.type ||
         element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
-    )
+    ) {
         return (
             <>
                 {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type && (
@@ -147,6 +147,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 </IconButton>
             </>
         );
+    }
 
     return (
         <TagRenderer
@@ -352,15 +353,17 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     }
 
     function getDisableReason() {
-        if (studyDisplayMode === STUDY_DISPLAY_MODE.TREE)
+        if (studyDisplayMode === STUDY_DISPLAY_MODE.TREE) {
             return intl.formatMessage({
                 id: 'UnsupportedView',
             });
+        }
 
-        if (!isNodeBuilt(currentNode))
+        if (!isNodeBuilt(currentNode)) {
             return intl.formatMessage({
                 id: 'InvalidNode',
             });
+        }
         return '';
     }
 

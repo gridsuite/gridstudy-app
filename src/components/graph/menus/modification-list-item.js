@@ -15,7 +15,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { useNameOrId } from '../../util/equipmentInfosHandler';
+import { useNameOrId } from '../../utils/equipmentInfosHandler';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -24,7 +24,9 @@ const nonEditableModificationTypes = new Set([
 ]);
 
 const isEditableModification = (modif) => {
-    if (!modif) return false;
+    if (!modif) {
+        return false;
+    }
     return !nonEditableModificationTypes.has(modif.type);
 };
 
@@ -106,9 +108,13 @@ export const ModificationListItem = ({
         const network = networkCopy;
         computedValues = useMemo(() => {
             function getVoltageLevelLabel(vlID) {
-                if (!vlID) return '';
+                if (!vlID) {
+                    return '';
+                }
                 const vl = network?.getVoltageLevel(vlID);
-                if (vl) return getNameOrId(vl);
+                if (vl) {
+                    return getNameOrId(vl);
+                }
                 return vlID;
             }
             let res = { computedLabel: <strong>{getComputedLabel()}</strong> };

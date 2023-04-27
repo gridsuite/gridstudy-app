@@ -29,6 +29,7 @@ import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
+import { BUILD_STATUS } from './network/constants';
 
 // snapGrid value set to [15, 15] which is the default value for ReactFlow
 // it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
@@ -75,10 +76,12 @@ const NetworkModificationTree = ({
             switch (
                 node.data.buildStatus // TODO replace the switch with a simpler if/else ?
             ) {
-                case 'BUILT':
+                case BUILD_STATUS.BUILT:
                     return '#70d136';
-                case 'NOT_BUILT':
-                    return '#9196a1';
+                case BUILD_STATUS.BUILT_WITH_WARNING:
+                    return '#FFA500';
+                case BUILD_STATUS.BUILT_WITH_ERROR:
+                    return '#DC143C';
                 default:
                     return '#9196a1';
             }
@@ -90,8 +93,9 @@ const NetworkModificationTree = ({
             dispatch(
                 setModificationsDrawerOpen(node.type === 'NETWORK_MODIFICATION')
             );
-            if (!isSameNode(currentNode, node))
+            if (!isSameNode(currentNode, node)) {
                 dispatch(setCurrentTreeNode(node));
+            }
         },
         [dispatch, currentNode]
     );

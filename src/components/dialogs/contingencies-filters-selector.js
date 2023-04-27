@@ -18,8 +18,8 @@ import {
     updateConfigParameter,
 } from '../../utils/rest-api';
 import DirectoryItemSelector from '../directory-item-selector';
-import CheckboxList from '../util/checkbox-list';
-import ListItemWithDeleteButton from '../util/list-item-with-delete-button';
+import CheckboxList from '../utils/checkbox-list';
+import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
 
 const ContingenciesFiltersSelector = ({
     title,
@@ -80,8 +80,9 @@ const ContingenciesFiltersSelector = ({
             values.map((e) => e.id).filter((item) => !toDelete.has(item))
         );
         const newChecked = selectedValues.filter((item) => !toDelete.has(item));
-        if (newChecked.length !== selectedValues.length)
+        if (newChecked.length !== selectedValues.length) {
             setSelectedValues(new Set(newChecked));
+        }
     };
 
     useEffect(() => {
