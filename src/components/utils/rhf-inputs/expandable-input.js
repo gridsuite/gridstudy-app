@@ -75,7 +75,7 @@ const ExpandableInput = ({
             <span>
                 <Button
                     fullWidth
-                    className={classes.button}
+                    className={classes.button + ' ' + classes.paddingButton}
                     startIcon={<AddIcon />}
                     onClick={() => append(initialValue)}
                 >
