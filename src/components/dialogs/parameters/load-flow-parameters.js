@@ -10,8 +10,13 @@ import { FormattedMessage } from 'react-intl';
 import { Grid, Autocomplete, TextField, Chip, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
-import { CloseButton, LabelledButton, useStyles } from './parameters';
-import { DropDown, SwitchWithLabel } from './parameters';
+import {
+    CloseButton,
+    DropDown,
+    LabelledButton,
+    SwitchWithLabel,
+    useStyles,
+} from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import {
     FlatParameters,
