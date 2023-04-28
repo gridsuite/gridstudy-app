@@ -16,18 +16,18 @@ import { FormattedMessage } from 'react-intl';
 const WrapperInput = ({ value, label, callback, validator, children }) => {
     const classes = useStyles();
 
-    const schema = yup.object().shape({
+    const formSchema = yup.object().shape({
         value: validator,
     });
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: {
             value: value,
         },
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { handleSubmit, watch } = methods;
+    const { handleSubmit, watch } = formMethods;
 
     // to commit by onChange rather than onSubmit
     useEffect(() => {
@@ -44,7 +44,7 @@ const WrapperInput = ({ value, label, callback, validator, children }) => {
                     </Box>
                 </Typography>
             </Grid>
-            <FormProvider validationSchema={schema} {...methods}>
+            <FormProvider validationSchema={formSchema} {...formMethods}>
                 <Grid item container xs={4} className={classes.controlItem}>
                     {children}
                 </Grid>

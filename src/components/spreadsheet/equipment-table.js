@@ -7,7 +7,7 @@
 
 import React, { useMemo, useCallback } from 'react';
 import { useTheme } from '@mui/styles';
-import LoaderWithOverlay from '../util/loader-with-overlay';
+import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
 
