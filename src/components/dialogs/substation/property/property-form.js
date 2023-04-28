@@ -89,7 +89,7 @@ const PropertyForm = ({ name, index }) => {
     function renderPropertyLine() {
         return (
             <>
-                {watchPropertyDeletionMark || !watchPropertyAdded
+                {watchPropertyDeletionMark || watchPropertyAdded === false
                     ? gridItem(nameReadOnlyField, 5)
                     : gridItem(nameField, 5)}
                 {watchPropertyDeletionMark
