@@ -34,6 +34,7 @@ import {
     fetchSensitivityAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
+    fetchVoltageLevel,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
@@ -86,7 +87,8 @@ const useEquipmentStyles = makeStyles(equipmentStyles);
 const CustomSuffixRenderer = ({ props, element }) => {
     const dispatch = useDispatch();
     const equipmentClasses = useEquipmentStyles();
-    const network = useSelector((state) => state.network);
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
     const networkAreaDiagramNbVoltageLevels = useSelector(
         (state) => state.networkAreaDiagramNbVoltageLevels
     );
@@ -96,15 +98,27 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const centerOnSubstationCB = useCallback(
         (e, element) => {
-            const substationId =
-                element.type === EQUIPMENT_TYPES.SUBSTATION.type
-                    ? element.id
-                    : network.getVoltageLevel(element.id).substationId;
-            dispatch(centerOnSubstation(substationId));
-            props.onClose && props.onClose();
-            e.stopPropagation();
+            if (!studyUuid || !currentNode) {
+                return;
+            }
+            let substationIdPromise;
+            if (element.type === EQUIPMENT_TYPES.SUBSTATION.type) {
+                substationIdPromise = Promise.resolve(element.id);
+            } else {
+                substationIdPromise = fetchVoltageLevel(
+                    studyUuid,
+                    currentNode.id,
+                    element.id
+                ).then((vl) => vl.substationId);
+            }
+
+            substationIdPromise.then((substationId) => {
+                dispatch(centerOnSubstation(substationId));
+                props.onClose && props.onClose();
+                e.stopPropagation();
+            });
         },
-        [dispatch, props, network]
+        [dispatch, props, studyUuid, currentNode]
     );
 
     const openNetworkAreaDiagramCB = useCallback(
@@ -137,7 +151,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 )}
                 <IconButton
                     disabled={
-                        !network &&
+                        (!studyUuid || !currentNode) &&
                         element.type !== EQUIPMENT_TYPES.SUBSTATION.type
                     }
                     onClick={(e) => centerOnSubstationCB(e, element)}

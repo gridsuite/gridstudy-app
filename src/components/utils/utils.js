@@ -11,11 +11,7 @@ import { toNumber } from './validation-functions';
 export const isFieldRequired = (fieldName, schema, values) => {
     const { schema: fieldSchema, parent: parentValues } =
         getIn(schema, fieldName, values) || {};
-
-    return (
-        fieldSchema.resolve({ parent: parentValues })?.exclusiveTests
-            ?.required === true
-    );
+    return fieldSchema.describe({ parent: parentValues })?.optional === false;
 
     //static way, not working when using "when" in schema, but does not need form values
     //return yup.reach(schema, fieldName)?.exclusiveTests?.required === true;
