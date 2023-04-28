@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
     Grid,
@@ -18,27 +18,19 @@ import {
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
-import { CloseButton, LabelledButton, useStyles } from './parameters';
-import { DropDown, SwitchWithLabel } from './parameters';
+import {
+    CloseButton,
+    DropDown,
+    LabelledButton,
+    SwitchWithLabel,
+    useStyles,
+} from './parameters';
 import { LineSeparator } from '../dialogUtils';
+import { LocalizedCountries } from '../../utils/localized-countries-hook';
 
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
-    const countriesList = useMemo(() => {
-        let countriesList;
-        try {
-            countriesList = require('localized-countries')(
-                require('localized-countries/data/' +
-                    navigator.language.substr(0, 2))
-            );
-        } catch (error) {
-            // fallback to english if no localised list found
-            countriesList = require('localized-countries')(
-                require('localized-countries/data/en')
-            );
-        }
-        return countriesList;
-    }, []);
+    const { translate, countryCodes } = LocalizedCountries();
 
     return (
         <>
@@ -55,8 +47,8 @@ const CountrySelector = ({ value, label, callback }) => {
                     value={value}
                     multiple={true}
                     onChange={(event, newValues) => callback(newValues)}
-                    options={Object.keys(countriesList.object())}
-                    getOptionLabel={(code) => countriesList.get(code)}
+                    options={countryCodes}
+                    getOptionLabel={(countryCode) => translate(countryCode)}
                     renderInput={(props) => (
                         <TextField
                             label={
@@ -77,7 +69,7 @@ const CountrySelector = ({ value, label, callback }) => {
                             <Chip
                                 id={'chip_' + code}
                                 size={'small'}
-                                label={countriesList.get(code)}
+                                label={translate(code)}
                                 {...getTagsProps({ index })}
                             />
                         ))
