@@ -221,10 +221,6 @@ const LineModificationDialog = ({
 
     const { reset, getValues } = methods;
 
-    const data = methods.watch();
-    useEffect(() => {
-        console.log('data', data);
-    }, [data]);
     const onSubmit = useCallback(
         (line) => {
             const characteristics = line[CHARACTERISTICS];
