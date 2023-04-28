@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, Autocomplete, TextField, Chip, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -327,48 +321,33 @@ const SpecificLoadFlowParameters = ({
     specificParamsDescription,
 }) => {
     const classes = useStyles();
-    const [currentParameters, setCurrentParameters] = useState(null);
     const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
 
     const defaultValues = useMemo(() => {
         return extractDefaultMap(specificParamsDescription);
     }, [specificParamsDescription]);
 
-    const lfParamsRef = useRef();
-    lfParamsRef.current =
-        lfParams?.specificParametersPerProvider?.[currentProvider];
-
-    // When provider changes or defaultValues then we must reset currentParameters state
-    useEffect(() => {
-        setCurrentParameters({
-            ...defaultValues,
-            ...lfParamsRef.current,
-        });
-    }, [defaultValues]);
-
     const onChange = useCallback(
         (paramName, value, isEdit) => {
             if (isEdit) {
                 return;
             }
-            setCurrentParameters((prevCurrentParameters) => {
-                const nextCurrentParameters = {
-                    ...prevCurrentParameters,
-                    ...{ [paramName]: value },
-                };
-                const deltaMap = makeDeltaMap(
-                    defaultValues,
-                    nextCurrentParameters
-                );
-                const toSend = { ...lfParams };
-                const oldSpecifics = toSend['specificParametersPerProvider'];
-                toSend['specificParametersPerProvider'] = {
-                    ...oldSpecifics,
-                    [currentProvider]: deltaMap ?? {},
-                };
-                commitLFParameter(toSend);
-                return nextCurrentParameters;
-            });
+            const prevCurrentParameters = {
+                ...defaultValues,
+                ...lfParams?.specificParametersPerProvider?.[currentProvider],
+            };
+            const nextCurrentParameters = {
+                ...prevCurrentParameters,
+                ...{ [paramName]: value },
+            };
+            const deltaMap = makeDeltaMap(defaultValues, nextCurrentParameters);
+            const toSend = { ...lfParams };
+            const oldSpecifics = toSend['specificParametersPerProvider'];
+            toSend['specificParametersPerProvider'] = {
+                ...oldSpecifics,
+                [currentProvider]: deltaMap ?? {},
+            };
+            commitLFParameter(toSend);
         },
         [commitLFParameter, currentProvider, defaultValues, lfParams]
     );
@@ -384,7 +363,12 @@ const SpecificLoadFlowParameters = ({
                 <FlatParameters
                     className={classes.parameterName}
                     paramsAsArray={specificParamsDescription}
-                    initValues={currentParameters}
+                    initValues={{
+                        ...defaultValues,
+                        ...lfParams?.specificParametersPerProvider?.[
+                            currentProvider
+                        ],
+                    }}
                     onChange={onChange}
                 />
             )}
