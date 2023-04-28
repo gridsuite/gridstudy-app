@@ -426,68 +426,77 @@ export const NetworkMapTab = ({
             const nodeBeforeFetch = currentNodeRef.current;
             Promise.all([missingSubstationPositions, missingLinesPositions])
                 .then((positions) => {
+                    // If the node changed or if it is not built anymore, we ignore the results returned by the fetch
                     if (
-                        isSameNodeAndBuilt(
+                        !isSameNodeAndBuilt(
                             currentNodeRef.current,
                             nodeBeforeFetch
                         )
                     ) {
-                        const [
-                            fetchedSubstationPositions,
-                            fetchedLinePositions,
-                        ] = positions;
-                        const substationsDataChanged =
-                            updateSubstationsTemporaryGeoData(
-                                notFoundSubstationIds,
-                                fetchedSubstationPositions
-                            );
-                        const linesDataChanged = updateLinesTemporaryGeoData(
+                        console.debug(
+                            'expired fetch caused by change of the node or its state. results are not considered'
+                        );
+                        return Promise(true); // break
+                    }
+                    const [fetchedSubstationPositions, fetchedLinePositions] =
+                        positions;
+                    const substationsDataChanged =
+                        updateSubstationsTemporaryGeoData(
+                            notFoundSubstationIds,
+                            fetchedSubstationPositions
+                        );
+                    const linesDataChanged = updateLinesTemporaryGeoData(
+                        notFoundLineIds,
+                        fetchedLinePositions
+                    );
+
+                    // If no geo data has changed, we avoid to trigger a new render.
+                    if (substationsDataChanged || linesDataChanged) {
+                        // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
+                        // Same for line positions.
+                        const newGeoData = new GeoData(
+                            substationsDataChanged
+                                ? new Map(
+                                      geoDataRef.current.substationPositionsById
+                                  )
+                                : geoDataRef.current.substationPositionsById,
+                            // If lineFullPath is off, we need to render the lines layer when there are some substation positions changed
+                            linesDataChanged ||
+                            (!lineFullPath && substationsDataChanged)
+                                ? new Map(geoDataRef.current.linePositionsById)
+                                : geoDataRef.current.linePositionsById
+                        );
+                        newGeoData.updateSubstationPositions(
+                            notFoundSubstationIds,
+                            fetchedSubstationPositions
+                        );
+                        newGeoData.updateLinePositions(
                             notFoundLineIds,
                             fetchedLinePositions
                         );
-
-                        // If no geo data has changed, we avoid to trigger a new render.
-                        if (substationsDataChanged || linesDataChanged) {
-                            // If there is new substation positions and that their values are different from the ones that are stored, we instantiate a new Map so that the substations layer rendering is triggered.
-                            // Same for line positions.
-                            const newGeoData = new GeoData(
-                                substationsDataChanged
-                                    ? new Map(
-                                          geoDataRef.current.substationPositionsById
-                                      )
-                                    : geoDataRef.current
-                                          .substationPositionsById,
-                                // If lineFullPath is off, we need to render the lines layer when there are some substation positions changed
-                                linesDataChanged ||
-                                (!lineFullPath && substationsDataChanged)
-                                    ? new Map(
-                                          geoDataRef.current.linePositionsById
-                                      )
-                                    : geoDataRef.current.linePositionsById
-                            );
-                            newGeoData.updateSubstationPositions(
-                                notFoundSubstationIds,
-                                fetchedSubstationPositions
-                            );
-                            newGeoData.updateLinePositions(
-                                notFoundLineIds,
-                                fetchedLinePositions
-                            );
-                            setGeoData(newGeoData);
-                            geoDataRef.current = newGeoData;
-                        }
+                        setGeoData(newGeoData);
+                        geoDataRef.current = newGeoData;
                     }
                 })
                 .catch(function (error) {
                     console.error(error.message);
 
                     // we display the error to the user only if the node is built
-                    if (isNodeBuilt(currentNodeRef.current)) {
+                    if (
+                        isSameNodeAndBuilt(
+                            currentNodeRef.current,
+                            nodeBeforeFetch
+                        )
+                    ) {
                         setErrorMessage(
                             intlRef.current.formatMessage(
                                 { id: 'geoDataLoadingFail' },
                                 { studyUuid: studyUuid }
                             )
+                        );
+                    } else {
+                        console.debug(
+                            'expired fetch caused by change of the node or its state. results are not considered'
                         );
                     }
                 })
@@ -540,6 +549,7 @@ export const NetworkMapTab = ({
                   }
               );
 
+        const nodeBeforeFetch = currentNodeRef.current;
         Promise.all([substationPositionsDone, linePositionsDone])
             .then(() => {
                 temporaryGeoDataIdsRef.current = new Set();
@@ -548,12 +558,18 @@ export const NetworkMapTab = ({
                 console.error(error.message);
 
                 // we display the error to the user only if the node is built
-                if (isNodeBuilt(currentNodeRef.current)) {
+                if (
+                    isSameNodeAndBuilt(currentNodeRef.current, nodeBeforeFetch)
+                ) {
                     setErrorMessage(
                         intlRef.current.formatMessage(
                             { id: 'geoDataLoadingFail' },
                             { studyUuid: studyUuid }
                         )
+                    );
+                } else {
+                    console.debug(
+                        'expired fetch caused by change of the node or its state. results are not considered'
                     );
                 }
             })
