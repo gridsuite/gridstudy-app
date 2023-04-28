@@ -96,7 +96,7 @@ const LineModificationDialog = ({
         temporaryLimitsToModify
     ) =>
         temporaryLimits.map((limit) => {
-            const limitWithSameName = temporaryLimitsToModify.find(
+            const limitWithSameName = temporaryLimitsToModify?.find(
                 (limitToModify) => limitToModify.name === limit.name
             );
             if (limitWithSameName) {
@@ -221,6 +221,10 @@ const LineModificationDialog = ({
 
     const { reset, getValues } = methods;
 
+    const data = methods.watch();
+    useEffect(() => {
+        console.log('data', data);
+    }, [data]);
     const onSubmit = useCallback(
         (line) => {
             const characteristics = line[CHARACTERISTICS];
