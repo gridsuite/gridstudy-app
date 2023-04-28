@@ -181,7 +181,11 @@ const DndTable = ({
                 }
                 valueModified={
                     isValueModified
-                        ? isValueModified(rowIndex, modifiedValues)
+                        ? isValueModified(
+                              rowIndex,
+                              arrayFormName,
+                              modifiedValues
+                          )
                         : false
                 }
             />

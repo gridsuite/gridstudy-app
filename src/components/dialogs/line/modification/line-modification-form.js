@@ -12,7 +12,6 @@ import {
     EQUIPMENT_NAME,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
-    TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
 } from 'components/utils/field-constants';
 import { Box, Grid } from '@mui/material';
@@ -69,6 +68,15 @@ const LineModificationForm = ({
         [getValues]
     );
 
+    const findTemporaryLimit = useCallback(
+        (rowIndex, arrayFormName, temporaryLimits) => {
+            return temporaryLimits?.find(
+                (e) => e.name === getValues(arrayFormName)[rowIndex]?.name
+            );
+        },
+        [getValues]
+    );
+
     const disableTableCell = useCallback(
         (
             rowIndex,
@@ -80,8 +88,11 @@ const LineModificationForm = ({
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
             return modifiedTemporaryLimits &&
-                modifiedTemporaryLimits[rowIndex]?.modificationType ===
-                    TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+                findTemporaryLimit(
+                    rowIndex,
+                    arrayFormName,
+                    modifiedTemporaryLimits
+                )?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
                 ? false
                 : temporaryLimitHasPreviousValue(
                       rowIndex,
@@ -89,23 +100,24 @@ const LineModificationForm = ({
                       temporaryLimits
                   ) && column.dataKey !== TEMPORARY_LIMIT_VALUE;
         },
-        [temporaryLimitHasPreviousValue]
+        [findTemporaryLimit, temporaryLimitHasPreviousValue]
     );
 
     const shouldReturnPreviousValue = useCallback(
         (rowIndex, column, arrayFormName, temporaryLimits, modifiedValues) => {
             return (
-                temporaryLimitHasPreviousValue(
+                (temporaryLimitHasPreviousValue(
                     rowIndex,
                     arrayFormName,
                     temporaryLimits
                 ) &&
-                (column.dataKey === 'value' ||
-                    modifiedValues?.[rowIndex]?.modificationType ===
-                        TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED)
+                    column.dataKey === TEMPORARY_LIMIT_VALUE) ||
+                findTemporaryLimit(rowIndex, arrayFormName, modifiedValues)
+                    ?.modificationType ===
+                    TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
             );
         },
-        [temporaryLimitHasPreviousValue]
+        [findTemporaryLimit, temporaryLimitHasPreviousValue]
     );
 
     const getTemporaryLimitPreviousValue = useCallback(
@@ -119,13 +131,13 @@ const LineModificationForm = ({
                     modifiedValues
                 )
             ) {
-                const temporaryLimit = temporaryLimits?.find(
-                    (e) => e.name === getValues(arrayFormName)[rowIndex]?.name
+                const temporaryLimit = findTemporaryLimit(
+                    rowIndex,
+                    arrayFormName,
+                    temporaryLimits
                 );
                 if (column.dataKey === TEMPORARY_LIMIT_VALUE) {
                     return temporaryLimit?.value ?? Number.MAX_VALUE;
-                } else if (column.dataKey === TEMPORARY_LIMIT_NAME) {
-                    return temporaryLimit?.name ?? '';
                 } else if (column.dataKey === TEMPORARY_LIMIT_DURATION) {
                     return (
                         temporaryLimit?.acceptableDuration ?? Number.MAX_VALUE
@@ -135,12 +147,18 @@ const LineModificationForm = ({
                 return undefined;
             }
         },
-        [getValues, shouldReturnPreviousValue]
+        [findTemporaryLimit, shouldReturnPreviousValue]
     );
 
-    const isTemporaryLimitModified = useCallback((rowIndex, modifiedValues) => {
-        return modifiedValues?.[rowIndex]?.modificationType !== undefined;
-    }, []);
+    const isTemporaryLimitModified = useCallback(
+        (rowIndex, arrayFormName, modifiedValues) => {
+            return (
+                findTemporaryLimit(rowIndex, arrayFormName, modifiedValues)
+                    ?.modificationType !== undefined
+            );
+        },
+        [findTemporaryLimit]
+    );
 
     const lineIdField = (
         <AutocompleteInput
