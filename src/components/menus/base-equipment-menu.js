@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
+import EditIcon from '@mui/icons-material/Edit';
 
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -19,9 +20,9 @@ import { NestedMenuItem } from 'mui-nested-menu';
 import { useIntl } from 'react-intl';
 import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
-import { useNameOrId } from '../util/equipmentInfosHandler';
+import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
-import EditIcon from '@mui/icons-material/Edit';
+import { fetchSubstation, fetchVoltageLevel } from '../../utils/rest-api';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
@@ -130,21 +131,36 @@ const BaseEquipmentMenu = ({
     handleOpenModificationDialog,
 }) => {
     const intl = useIntl();
-    const network = useSelector((state) => state.network);
-
-    function getEquipment(equipmentType, equipmentId) {
-        if (!network) {
-            return null;
-        } else if (equipmentType === equipments.substations) {
-            return network.getSubstation(equipmentId);
-        } else if (equipmentType === equipments.voltageLevels) {
-            return network.getVoltageLevel(equipmentId);
-        } else {
-            return null;
-        }
-    }
-    const equipment = getEquipment(equipmentType, equipmentId);
     const { getNameOrId } = useNameOrId();
+    const [equipment, setEquipment] = useState();
+    const [equipmentSubstationNameOrId, setEquipmentSubstationNameOrId] =
+        useState();
+
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+
+    // Returns a promise
+    //TODO ideally we should have the equipment data from the props instead of doing a fetch,
+    // we can have it from mapEquipments in the map and metadata in the SVG
+    const getEquipment = useCallback(
+        (equipmentType, equipmentId) => {
+            if (!studyUuid || !currentNode) {
+                return Promise.reject('no study or node selected');
+            } else if (equipmentType === equipments.substations) {
+                return fetchSubstation(studyUuid, currentNode.id, equipmentId);
+            } else if (equipmentType === equipments.voltageLevels) {
+                return fetchVoltageLevel(
+                    studyUuid,
+                    currentNode.id,
+                    equipmentId
+                );
+            } else {
+                return Promise.reject('not a substation or a voltage level');
+            }
+        },
+        [studyUuid, currentNode]
+    );
+
     const equipmentsWithBranch = [
         equipments.lines,
         equipments.twoWindingsTransformers,
@@ -152,7 +168,27 @@ const BaseEquipmentMenu = ({
     const equipmentsNotDeletable = [
         equipments.lccConverterStations,
         equipments.vscConverterStations,
+        equipments.hvdcLines,
     ];
+
+    useEffect(() => {
+        getEquipment(equipmentType, equipmentId)
+            .then((equipment) => {
+                setEquipment(equipment);
+                if (equipmentType === equipments.voltageLevels) {
+                    setEquipmentSubstationNameOrId(
+                        equipment.substationName ?? equipment.substationId
+                    );
+                }
+            })
+            .catch((reason) =>
+                console.log(
+                    'We did not fetch the equipment of contextual menu because ' +
+                        reason
+                )
+            );
+    }, [getEquipment, equipmentType, equipmentId]);
+
     return (
         <>
             {/* menus for equipment other than substation and voltage level */}
@@ -269,9 +305,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.substationId}
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
-                            itemText={getNameOrId(
-                                network.getSubstation(equipment.substationId)
-                            )}
+                            itemText={equipmentSubstationNameOrId}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {/* menus for the voltage level */}
@@ -292,9 +326,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.substationId}
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
-                            itemText={getNameOrId(
-                                network.getSubstation(equipment.substationId)
-                            )}
+                            itemText={equipmentSubstationNameOrId}
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
                         {/* menus for the voltage level */}

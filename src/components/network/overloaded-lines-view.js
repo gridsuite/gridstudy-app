@@ -10,13 +10,13 @@ import PropTypes from 'prop-types';
 
 import { useIntl } from 'react-intl';
 import { getNominalVoltageColor } from '../../utils/colors';
-import VirtualizedTable from '../util/virtualized-table';
+import VirtualizedTable from '../utils/virtualized-table';
 import TableCell from '@mui/material/TableCell';
 
 import 'react-virtualized/styles.css';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import AlertInvalidNode from '../util/alert-invalid-node';
+import AlertInvalidNode from '../utils/alert-invalid-node';
 import Box from '@mui/material/Box';
 
 export const ROW_HEIGHT = 30;

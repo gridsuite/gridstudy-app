@@ -11,11 +11,11 @@ import {
     BRANCH_STATUS_ACTION,
     BRANCH_SIDE,
 } from '../components/network/constants';
-import { MODIFICATION_TYPES } from '../components/util/modification-type';
+import { MODIFICATION_TYPES } from '../components/utils/modification-type';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
-} from '../components/util/equipment-types';
+} from '../components/utils/equipment-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -796,6 +796,50 @@ export function fetchEquipmentsIds(
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
+export function fetchSubstation(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'substations',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchLine(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'lines',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'voltage-levels',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchLineOrTransformer(
+    studyUuid,
+    currentNodeUuid,
+    equipmentId
+) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'branch-or-3wt',
+        equipmentId,
+        true
+    );
+}
+
 export function fetchEquipmentInfos(
     studyUuid,
     currentNodeUuid,
@@ -804,7 +848,7 @@ export function fetchEquipmentInfos(
     inUpstreamBuiltParentNode
 ) {
     console.info(
-        `Fetching specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching specific equipment '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
 
     let urlSearchParams = new URLSearchParams();
@@ -1373,12 +1417,14 @@ export function fetchDynamicSimulationProviders() {
     console.debug(url);
     return backendFetchJson(url);
 }
+
 export function fetchDynamicSimulationProvider(studyUuid) {
     console.info('fetch dynamic simulation provider');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
     console.debug(url);
     return backendFetchText(url);
 }
+
 export function fetchDefaultDynamicSimulationProvider() {
     console.info('fetch default dynamic simulation provider');
     const url =
@@ -1386,6 +1432,7 @@ export function fetchDefaultDynamicSimulationProvider() {
     console.debug(url);
     return backendFetchText(url);
 }
+
 export function updateDynamicSimulationProvider(studyUuid, newProvider) {
     console.info('update dynamic simulation provider');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
@@ -1415,6 +1462,7 @@ export function fetchDynamicSimulationParameters(studyUuid) {
         ([parameters, mappings]) => ({ ...parameters, mappings })
     );
 }
+
 export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
@@ -1428,6 +1476,7 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
 // -- Parameters API - END
 // --- Dynamic simulation API - END
 
@@ -2311,6 +2360,63 @@ export function createLine(
     });
 }
 
+export function modifyLine(
+    studyUuid,
+    currentNodeUuid,
+    lineId,
+    lineName,
+    seriesResistance,
+    seriesReactance,
+    shuntConductance1,
+    shuntSusceptance1,
+    shuntConductance2,
+    shuntSusceptance2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2,
+    temporaryCurrentLimits1,
+    temporaryCurrentLimits2,
+    isUpdate,
+    modificationUuid
+) {
+    let modifyLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyLineUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating line modification');
+    } else {
+        console.info('Creating line modification');
+    }
+
+    return backendFetchText(modifyLineUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
+            equipmentId: lineId,
+            equipmentName: toModificationOperation(lineName),
+            seriesResistance: toModificationOperation(seriesResistance),
+            seriesReactance: toModificationOperation(seriesReactance),
+            shuntConductance1: toModificationOperation(shuntConductance1),
+            shuntSusceptance1: toModificationOperation(shuntSusceptance1),
+            shuntConductance2: toModificationOperation(shuntConductance2),
+            shuntSusceptance2: toModificationOperation(shuntSusceptance2),
+            currentLimits1: {
+                permanentLimit: permanentCurrentLimit1,
+                temporaryLimits: temporaryCurrentLimits1,
+            },
+            currentLimits2: {
+                permanentLimit: permanentCurrentLimit2,
+                temporaryLimits: temporaryCurrentLimits2,
+            },
+        }),
+    });
+}
+
 export function createTwoWindingsTransformer(
     studyUuid,
     currentNodeUuid,
@@ -2427,6 +2533,43 @@ export function createSubstation(
             'Content-Type': 'application/json',
         },
         body: body,
+    });
+}
+
+export function modifySubstation(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    substationCountry,
+    isUpdate = false,
+    modificationUuid,
+    properties
+) {
+    let modifyUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating substation modification');
+    } else {
+        console.info('Creating substation modification');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
+            equipmentId: id,
+            equipmentName: toModificationOperation(name),
+            substationCountry: toModificationOperation(substationCountry),
+            properties: properties,
+        }),
     });
 }
 
@@ -2981,6 +3124,22 @@ export function fetchLinesMapInfos(
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.LINE.type,
+        EQUIPMENT_INFOS_TYPES.MAP.type,
+        inUpstreamBuiltParentNode
+    );
+}
+
+export function fetchHvdcLinesMapInfos(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.HVDC_LINE.type,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );

@@ -10,7 +10,6 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
-import { NumericCellRenderer } from './spreadsheet/utils/cell-renderers';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
@@ -35,34 +34,28 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'IscKA' }),
                 field: 'current',
-                cellRenderer: NumericCellRenderer,
                 fractionDigits: 1,
                 numeric: true,
             },
-
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
             },
-
             {
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
-                cellRenderer: NumericCellRenderer,
                 fractionDigits: 1,
                 numeric: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
-                cellRenderer: NumericCellRenderer,
                 fractionDigits: 1,
                 numeric: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
-                cellRenderer: NumericCellRenderer,
                 fractionDigits: 1,
                 numeric: true,
             },
@@ -140,6 +133,13 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         return rows;
     }
 
+    const defaultColDef = useMemo(
+        () => ({
+            suppressMovable: true,
+        }),
+        []
+    );
+
     const renderResult = () => {
         const rows = flattenResult(result);
 
@@ -150,6 +150,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     rowData={rows}
                     columnDefs={columns}
                     getRowStyle={getRowStyle}
+                    defaultColDef={defaultColDef}
                 />
             )
         );

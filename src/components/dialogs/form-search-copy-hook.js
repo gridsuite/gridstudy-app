@@ -12,7 +12,7 @@ import {
     fetchNetworkElementInfos,
 } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_INFOS_TYPES } from '../util/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 
 export const useFormSearchCopy = ({
     studyUuid,
