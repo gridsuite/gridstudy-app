@@ -18,24 +18,11 @@ import {
     extractDefaultMap,
     makeDeltaMap,
 } from '@gridsuite/commons-ui';
+import { LocalizedCountries } from '../../utils/localized-countries-hook';
 
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
-    const countriesList = useMemo(() => {
-        let countriesList;
-        try {
-            countriesList = require('localized-countries')(
-                require('localized-countries/data/' +
-                    navigator.language.substr(0, 2))
-            );
-        } catch (error) {
-            // fallback to english if no localised list found
-            countriesList = require('localized-countries')(
-                require('localized-countries/data/en')
-            );
-        }
-        return countriesList;
-    }, []);
+    const { translate, countryCodes } = LocalizedCountries();
 
     return (
         <>
@@ -48,8 +35,8 @@ const CountrySelector = ({ value, label, callback }) => {
                     value={value}
                     multiple={true}
                     onChange={(event, newValues) => callback(newValues)}
-                    options={Object.keys(countriesList.object())}
-                    getOptionLabel={(code) => countriesList.get(code)}
+                    options={countryCodes}
+                    getOptionLabel={(countryCode) => translate(countryCode)}
                     renderInput={(props) => (
                         <TextField
                             label={
@@ -70,7 +57,7 @@ const CountrySelector = ({ value, label, callback }) => {
                             <Chip
                                 id={'chip_' + code}
                                 size={'small'}
-                                label={countriesList.get(code)}
+                                label={translate(code)}
                                 {...getTagsProps({ index })}
                             />
                         ))

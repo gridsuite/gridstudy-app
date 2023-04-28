@@ -7,14 +7,11 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import {
-    filteredNominalVoltagesUpdated,
-    STUDY_DISPLAY_MODE,
-} from '../redux/actions';
+import { STUDY_DISPLAY_MODE } from '../redux/actions';
 import Paper from '@mui/material/Paper';
 import { equipments } from './network/network-equipments';
 import PropTypes from 'prop-types';
@@ -115,10 +112,6 @@ const StudyPane = ({
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const filteredNominalVoltages = useSelector(
-        (state) => state.filteredNominalVoltages
-    );
-
     const [isComputationRunning, setIsComputationRunning] = useState(false);
 
     const [tableEquipment, setTableEquipment] = useState({
@@ -127,25 +120,11 @@ const StudyPane = ({
         changed: false,
     });
 
-    const dispatch = useDispatch();
-
     const classes = useStyles();
 
     const { openDiagramView } = useDiagram();
 
     const disabled = !isNodeBuilt(currentNode);
-
-    useEffect(() => {
-        if (
-            network &&
-            network.substations.length > 0 &&
-            !filteredNominalVoltages
-        ) {
-            dispatch(
-                filteredNominalVoltagesUpdated(network.getNominalVoltages())
-            );
-        }
-    }, [network, filteredNominalVoltages, dispatch]);
 
     function openVoltageLevelDiagram(vlId) {
         // TODO code factorization for displaying a VL via a hook
@@ -271,9 +250,6 @@ const StudyPane = ({
                                     lineFlowAlertThreshold={
                                         lineFlowAlertThreshold
                                     }
-                                    filteredNominalVoltages={
-                                        filteredNominalVoltages
-                                    }
                                     openVoltageLevel={openVoltageLevel}
                                     /* TODO verif tableEquipment*/
                                     currentNode={currentNode}
@@ -369,7 +345,6 @@ const StudyPane = ({
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     loadFlowInfos={loadFlowInfos}
-                    network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
                 />
