@@ -43,7 +43,6 @@ function SingleLineDiagramContent(props) {
     const { diagramSizeSetter } = props;
     const theme = useTheme();
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
-    const network = useSelector((state) => state.network);
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const { snackError } = useSnackMessage();
@@ -92,12 +91,12 @@ function SingleLineDiagramContent(props) {
         (id) => {
             // This function is called by powsybl-diagram-viewer when clicking on a navigation arrow in a single line diagram.
             // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
-            if (!network) {
+            if (!studyUuid || !currentNode) {
                 return;
             }
             openDiagramView(id, DiagramType.VOLTAGE_LEVEL);
         },
-        [network, openDiagramView]
+        [studyUuid, currentNode, openDiagramView]
     );
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -309,7 +308,6 @@ function SingleLineDiagramContent(props) {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
-        network,
         props.svgUrl,
         props.svg,
         props.svgMetadata,

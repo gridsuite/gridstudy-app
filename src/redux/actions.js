@@ -43,12 +43,18 @@ export function networkCreated(network) {
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
-export function mapEquipmentsCreated(mapEquipments, newLines, newSubstations) {
+export function mapEquipmentsCreated(
+    mapEquipments,
+    newLines,
+    newSubstations,
+    newHvdcLines
+) {
     return {
         type: MAP_EQUIPMENTS_CREATED,
         mapEquipments: mapEquipments,
         newLines: newLines,
         newSubstations: newSubstations,
+        newHvdcLines: newHvdcLines,
     };
 }
 
@@ -363,16 +369,6 @@ export function resetDynamicSimulationNotif() {
     return { type: RESET_DYNAMIC_SIMULATION_NOTIF };
 }
 // --- Dynamic simulation ACTION - END
-
-export const FILTERED_NOMINAL_VOLTAGES_UPDATED =
-    'FILTERED_NOMINAL_VOLTAGES_UPDATED';
-
-export function filteredNominalVoltagesUpdated(filteredNV) {
-    return {
-        type: FILTERED_NOMINAL_VOLTAGES_UPDATED,
-        filteredNominalVoltages: filteredNV,
-    };
-}
 
 export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
 

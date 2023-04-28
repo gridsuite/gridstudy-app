@@ -37,7 +37,6 @@ import {
     STUDY_UPDATED,
     DISPLAY_OVERLOAD_TABLE,
     MAP_MANUAL_REFRESH,
-    FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
@@ -168,7 +167,6 @@ const initialState = {
     sensiNotif: false,
     shortCircuitNotif: false,
     dynamicSimulationNotif: false,
-    filteredNominalVoltages: null,
     fullScreenDiagram: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
@@ -233,6 +231,10 @@ export const reducer = createReducer(initialState, {
         if (action.newSubstations) {
             newMapEquipments.substations = action.newSubstations;
             newMapEquipments.completeSubstationsInfos();
+        }
+        if (action.newHvdcLines) {
+            newMapEquipments.hvdcLines = action.newHvdcLines;
+            newMapEquipments.completeHvdcLinesInfos();
         }
         state.mapEquipments = newMapEquipments;
     },
@@ -519,10 +521,6 @@ export const reducer = createReducer(initialState, {
 
     [RESET_DYNAMIC_SIMULATION_NOTIF]: (state) => {
         state.dynamicSimulationNotif = false;
-    },
-
-    [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {
-        state.filteredNominalVoltages = action.filteredNominalVoltages;
     },
 
     [SUBSTATION_LAYOUT]: (state, action) => {
