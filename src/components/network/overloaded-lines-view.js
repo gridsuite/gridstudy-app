@@ -10,13 +10,13 @@ import PropTypes from 'prop-types';
 
 import { useIntl } from 'react-intl';
 import { getNominalVoltageColor } from '../../utils/colors';
-import VirtualizedTable from '../util/virtualized-table';
+import VirtualizedTable from '../utils/virtualized-table';
 import TableCell from '@mui/material/TableCell';
 
 import 'react-virtualized/styles.css';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
-import AlertInvalidNode from '../util/alert-invalid-node';
+import AlertInvalidNode from '../utils/alert-invalid-node';
 import Box from '@mui/material/Box';
 import { fetchOverloadedLines } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -70,7 +70,9 @@ const OverloadedLinesView = (props) => {
     useEffect(() => {
         const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
         const PERMANENT_LIMIT_NAME = 'permanent';
-        if (props.disabled) return;
+        if (props.disabled) {
+            return;
+        }
         const convertDuration = (acceptableDuration) => {
             if (acceptableDuration === UNDEFINED_ACCEPTABLE_DURATION) {
                 return undefined;

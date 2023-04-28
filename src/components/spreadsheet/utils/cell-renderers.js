@@ -15,6 +15,8 @@ import { useCallback, useEffect, useMemo } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { useSelector } from 'react-redux';
+import { isNodeReadOnly } from '../../graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     editCell: {
@@ -67,6 +69,7 @@ export const BooleanCellRenderer = (props) => {
         <div>
             {isChecked !== undefined && (
                 <Checkbox
+                    style={{ padding: 0 }}
                     color="default"
                     checked={isChecked}
                     disableRipple={true}
@@ -85,11 +88,7 @@ export const formatCell = (props) => {
     if (props.colDef.normed) {
         value = props.colDef.normed(props.fluxConvention, value);
     }
-    if (
-        value !== undefined &&
-        props.colDef.numeric &&
-        props.colDef.fractionDigits
-    ) {
+    if (value != null && props.colDef.numeric && props.colDef.fractionDigits) {
         // only numeric rounded cells have a tooltip (their raw numeric value)
         tooltipValue = value;
         value = parseFloat(value).toFixed(props.colDef.fractionDigits);
@@ -97,7 +96,7 @@ export const formatCell = (props) => {
     return { value: value, tooltip: tooltipValue };
 };
 
-export const NumericCellRenderer = (props) => {
+export const DefaultCellRenderer = (props) => {
     const classes = useStyles();
     const cellValue = formatCell(props);
     return (
@@ -132,6 +131,12 @@ export const NumericCellRenderer = (props) => {
 export const EditableCellRenderer = (props) => {
     const classes = useStyles();
 
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const isRootNode = useMemo(
+        () => isNodeReadOnly(currentNode),
+        [currentNode]
+    );
+
     const handleStartEditing = useCallback(() => {
         props.setEditingData({
             ...props.data,
@@ -146,7 +151,7 @@ export const EditableCellRenderer = (props) => {
             <IconButton
                 size={'small'}
                 onClick={handleStartEditing}
-                disabled={props.context.isEditing}
+                disabled={isRootNode || props.context.isEditing}
             >
                 <EditIcon />
             </IconButton>

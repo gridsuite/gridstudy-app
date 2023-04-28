@@ -11,8 +11,8 @@ import {
     BRANCH_STATUS_ACTION,
     BRANCH_SIDE,
 } from '../components/network/constants';
-import { MODIFICATION_TYPES } from '../components/util/modification-type';
-import { EQUIPMENT_TYPES } from '../components/util/equipment-types';
+import { MODIFICATION_TYPES } from '../components/utils/modification-type';
+import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -36,6 +36,8 @@ const PREFIX_LOADFLOW_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/loadflow';
 const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/security-analysis';
+const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/dynamic-simulation';
 
 function getToken() {
     const state = store.getState();
@@ -123,12 +125,13 @@ export function backendFetchJson(url, init, token) {
 
 export function fetchValidateUser(user) {
     const sub = user?.profile?.sub;
-    if (!sub)
+    if (!sub) {
         return Promise.reject(
             new Error(
                 'Error : Fetching access for missing user.profile.sub : ' + user
             )
         );
+    }
 
     console.info(`Fetching access for user...`);
     const CheckAccessUrl =
@@ -147,8 +150,11 @@ export function fetchValidateUser(user) {
             return response.status === 200;
         })
         .catch((error) => {
-            if (error.status === 403) return false;
-            else throw error;
+            if (error.status === 403) {
+                return false;
+            } else {
+                throw error;
+            }
         });
 }
 
@@ -748,6 +754,50 @@ export function fetchEquipmentsIds(
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
+export function fetchSubstation(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'substations',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchLine(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'lines',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'voltage-levels',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchLineOrTransformer(
+    studyUuid,
+    currentNodeUuid,
+    equipmentId
+) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'branch-or-3wt',
+        equipmentId,
+        true
+    );
+}
+
 export function fetchEquipmentInfos(
     studyUuid,
     currentNodeUuid,
@@ -756,7 +806,7 @@ export function fetchEquipmentInfos(
     inUpstreamBuiltParentNode
 ) {
     console.info(
-        `Fetching specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching specific equipment '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
 
     let urlSearchParams = new URLSearchParams();
@@ -1171,13 +1221,9 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
 }
 
 // --- Dynamic simulation API - BEGIN
-export function getDynamicMappings(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching dynamic mappings on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/dynamic-simulation/mappings';
+export function getDynamicMappings(studyUuid) {
+    console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/mappings';
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -1185,7 +1231,6 @@ export function getDynamicMappings(studyUuid, currentNodeUuid) {
 export function startDynamicSimulation(
     studyUuid,
     currentNodeUuid,
-    mappingName,
     dynamicSimulationConfiguration
 ) {
     console.info(
@@ -1195,11 +1240,6 @@ export function startDynamicSimulation(
     let startDynamicSimulationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/dynamic-simulation/run?';
-
-    // add request params
-    if (mappingName) {
-        startDynamicSimulationUrl += `mappingName=${mappingName}`;
-    }
 
     // add body
     const body = JSON.stringify(dynamicSimulationConfiguration ?? {});
@@ -1269,7 +1309,7 @@ export function fetchDynamicSimulationResultTimeSeries(
         timeSeriesNames.length > 0 &&
         '?' + getQueryParamsList(timeSeriesNames, 'timeSeriesNames');
 
-    url += paramsList && '';
+    url += paramsList || '';
 
     console.debug(url);
     return backendFetchJson(url);
@@ -1307,6 +1347,78 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
     );
 }
 
+// -- Parameters API - BEGIN
+function getDynamicSimulationUrl() {
+    return PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES + '/v1/';
+}
+
+export function fetchDynamicSimulationProviders() {
+    console.info('fetch dynamic simulation providers');
+    const url = getDynamicSimulationUrl() + 'providers';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchDynamicSimulationProvider(studyUuid) {
+    console.info('fetch dynamic simulation provider');
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchDefaultDynamicSimulationProvider() {
+    console.info('fetch default dynamic simulation provider');
+    const url =
+        PREFIX_STUDY_QUERIES + '/v1/dynamic-simulation-default-provider';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function updateDynamicSimulationProvider(studyUuid, newProvider) {
+    console.info('update dynamic simulation provider');
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: newProvider,
+    });
+}
+
+export function fetchDynamicSimulationParameters(studyUuid) {
+    console.info(
+        `Fetching dynamic simulation parameters on '${studyUuid}' ...`
+    );
+    let url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
+
+    console.debug(url);
+    const parametersPromise = backendFetchJson(url);
+
+    const mappingsPromise = getDynamicMappings(studyUuid);
+
+    return Promise.all([parametersPromise, mappingsPromise]).then(
+        ([parameters, mappings]) => ({ ...parameters, mappings })
+    );
+}
+
+export function updateDynamicSimulationParameters(studyUuid, newParams) {
+    console.info('set dynamic simulation parameters');
+    const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
+}
+
+// -- Parameters API - END
 // --- Dynamic simulation API - END
 
 export function fetchContingencyAndFiltersLists(listIds) {
@@ -1479,7 +1591,7 @@ export function copyOrMoveModifications(
             originNodeUuid: copyInfos.originNodeUuid ?? '',
         });
 
-    return backendFetchText(copyOrMoveModificationUrl, {
+    return backendFetch(copyOrMoveModificationUrl, {
         method: 'PUT',
         headers: {
             Accept: 'application/json',
@@ -2189,6 +2301,63 @@ export function createLine(
     });
 }
 
+export function modifyLine(
+    studyUuid,
+    currentNodeUuid,
+    lineId,
+    lineName,
+    seriesResistance,
+    seriesReactance,
+    shuntConductance1,
+    shuntSusceptance1,
+    shuntConductance2,
+    shuntSusceptance2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2,
+    temporaryCurrentLimits1,
+    temporaryCurrentLimits2,
+    isUpdate,
+    modificationUuid
+) {
+    let modifyLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyLineUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating line modification');
+    } else {
+        console.info('Creating line modification');
+    }
+
+    return backendFetchText(modifyLineUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
+            equipmentId: lineId,
+            equipmentName: toModificationOperation(lineName),
+            seriesResistance: toModificationOperation(seriesResistance),
+            seriesReactance: toModificationOperation(seriesReactance),
+            shuntConductance1: toModificationOperation(shuntConductance1),
+            shuntSusceptance1: toModificationOperation(shuntSusceptance1),
+            shuntConductance2: toModificationOperation(shuntConductance2),
+            shuntSusceptance2: toModificationOperation(shuntSusceptance2),
+            currentLimits1: {
+                permanentLimit: permanentCurrentLimit1,
+                temporaryLimits: temporaryCurrentLimits1,
+            },
+            currentLimits2: {
+                permanentLimit: permanentCurrentLimit2,
+                temporaryLimits: temporaryCurrentLimits2,
+            },
+        }),
+    });
+}
+
 export function createTwoWindingsTransformer(
     studyUuid,
     currentNodeUuid,
@@ -2201,8 +2370,8 @@ export function createTwoWindingsTransformer(
     ratedS,
     ratedVoltage1,
     ratedVoltage2,
-    permanentCurrentLimit1,
-    permanentCurrentLimit2,
+    currentLimit1,
+    currentLimit2,
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
@@ -2247,8 +2416,8 @@ export function createTwoWindingsTransformer(
             ratedS: ratedS,
             ratedVoltage1: ratedVoltage1,
             ratedVoltage2: ratedVoltage2,
-            currentLimits1: permanentCurrentLimit1,
-            currentLimits2: permanentCurrentLimit2,
+            currentLimits1: currentLimit1,
+            currentLimits2: currentLimit2,
             voltageLevelId1: voltageLevelId1,
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
@@ -2308,15 +2477,58 @@ export function createSubstation(
     });
 }
 
+export function modifySubstation(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    substationCountry,
+    isUpdate = false,
+    modificationUuid,
+    properties
+) {
+    let modifyUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating substation modification');
+    } else {
+        console.info('Creating substation modification');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
+            equipmentId: id,
+            equipmentName: toModificationOperation(name),
+            substationCountry: toModificationOperation(substationCountry),
+            properties: properties,
+        }),
+    });
+}
+
 export function createVoltageLevel({
     studyUuid,
     currentNodeUuid,
     voltageLevelId,
     voltageLevelName,
-    nominalVoltage,
     substationId,
-    busbarSections,
-    busbarConnections,
+    nominalVoltage,
+    lowVoltageLimit,
+    highVoltageLimit,
+    ipMin,
+    ipMax,
+    busbarCount,
+    sectionCount,
+    switchKinds,
+    couplingDevices,
     isUpdate,
     modificationUuid,
 }) {
@@ -2335,10 +2547,16 @@ export function createVoltageLevel({
         type: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
         equipmentId: voltageLevelId,
         equipmentName: voltageLevelName,
-        nominalVoltage: nominalVoltage,
         substationId: substationId,
-        busbarSections: busbarSections,
-        busbarConnections: busbarConnections,
+        nominalVoltage: nominalVoltage,
+        lowVoltageLimit: lowVoltageLimit,
+        highVoltageLimit: highVoltageLimit,
+        ipMin: ipMin,
+        ipMax: ipMax,
+        busbarCount: busbarCount,
+        sectionCount: sectionCount,
+        switchKinds: switchKinds,
+        couplingDevices: couplingDevices,
     });
 
     return backendFetchText(createVoltageLevelUrl, {
@@ -2889,4 +3107,51 @@ export function fetchMapLines(
         'map-lines',
         inUpstreamBuiltParentNode
     );
+}
+
+export function fetchMapHvdcLines(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchMapEquipment(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'hvdc-lines',
+        'map-hvdc-lines',
+        inUpstreamBuiltParentNode
+    );
+}
+export function generationDispatch(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lossCoefficient
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
+        lossCoefficient,
+    });
+
+    let generationDispatchUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating generation dispatch ', body);
+        generationDispatchUrl =
+            generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating generation dispatch ', body);
+    }
+
+    return backendFetchText(generationDispatchUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
 }

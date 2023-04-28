@@ -34,7 +34,7 @@ import {
     isNodeReadOnly,
     isNodeRenamed,
 } from './graph/util/model-functions';
-import { RunningStatus } from './util/running-status';
+import { RunningStatus } from './utils/running-status';
 import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -98,7 +98,6 @@ export const NetworkMapTab = ({
     /* callbacks */
     openVoltageLevel,
     setIsComputationRunning,
-    filteredNominalVoltages,
     showInSpreadsheet,
     setErrorMessage,
 }) => {
@@ -112,6 +111,7 @@ export const NetworkMapTab = ({
 
     const { snackError } = useSnackMessage();
 
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState();
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
 
@@ -171,6 +171,7 @@ export const NetworkMapTab = ({
     const currentNodeRef = useRef(null);
 
     const [updatedLines, setUpdatedLines] = useState([]);
+    const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
 
     function withEquipment(Menu, props) {
         return (
@@ -586,9 +587,8 @@ export const NetworkMapTab = ({
             }
 
             dispatch(resetMapReloaded());
-
             const isFullReload = updatedSubstationsToSend ? false : true;
-            const [updatedSubstations, updatedLines] =
+            const [updatedSubstations, updatedLines, updatedHvdcLines] =
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
                     currentNode,
@@ -620,10 +620,25 @@ export const NetworkMapTab = ({
                     setUpdatedLines(values);
                 }
             });
-
-            return Promise.all([updatedSubstations, updatedLines]).finally(() =>
-                setWaitingLoadData(false)
-            );
+            updatedHvdcLines.then((values) => {
+                if (
+                    currentNodeAtReloadCalling?.id ===
+                    currentNodeRef.current?.id
+                ) {
+                    mapEquipments.updateHvdcLines(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                    setUpdatedHvdcLines(values);
+                }
+            });
+            return Promise.all([
+                updatedSubstations,
+                updatedLines,
+                updatedHvdcLines,
+            ]).finally(() => {
+                setWaitingLoadData(false);
+            });
         },
         [
             currentNode,
@@ -677,12 +692,20 @@ export const NetworkMapTab = ({
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         // if only renaming, do not reload geo data
-        if (isNodeRenamed(previousCurrentNode, currentNode)) return;
-        if (disabled) return;
-        if (refIsMapManualRefreshEnabled.current && isInitialized) return;
+        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+            return;
+        }
+        if (disabled) {
+            return;
+        }
+        if (refIsMapManualRefreshEnabled.current && isInitialized) {
+            return;
+        }
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
-        if (!reloadMapNeeded) return;
+        if (!reloadMapNeeded) {
+            return;
+        }
         if (!isInitialized) {
             loadMapEquipments();
             loadAllGeoData();
@@ -740,16 +763,19 @@ export const NetworkMapTab = ({
             disabled ||
             equipmentMenu.equipment === null ||
             !equipmentMenu.display
-        )
+        ) {
             return <></>;
+        }
         return (
             <>
-                {equipmentMenu.equipmentType === equipments.lines &&
+                {(equipmentMenu.equipmentType === equipments.lines ||
+                    equipmentMenu.equipmentType === equipments.hvdcLines) &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
+
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
                 {equipmentMenu.equipmentType === equipments.voltageLevels &&
@@ -776,7 +802,10 @@ export const NetworkMapTab = ({
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
-            updatedLines={updatedLines}
+            updatedLines={[
+                ...(updatedLines ?? []),
+                ...(updatedHvdcLines ?? []),
+            ]}
             geoData={geoData}
             displayOverlayLoader={!basicDataReady && waitingLoadData}
             filteredNominalVoltages={filteredNominalVoltages}
@@ -794,6 +823,9 @@ export const NetworkMapTab = ({
             onLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(equipment, x, y, equipments.lines)
             }
+            onHvdcLineMenuClick={(equipment, x, y) =>
+                showEquipmentMenu(equipment, x, y, equipments.hvdcLines)
+            }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
@@ -810,7 +842,11 @@ export const NetworkMapTab = ({
     function renderNominalVoltageFilter() {
         return (
             <div className={classes.divNominalVoltageFilter}>
-                <NominalVoltageFilter />
+                <NominalVoltageFilter
+                    nominalVoltages={mapEquipments.getNominalVoltages()}
+                    filteredNominalVoltages={filteredNominalVoltages}
+                    onChange={setFilteredNominalVoltages}
+                />
             </div>
         );
     }
@@ -857,7 +893,6 @@ export const NetworkMapTab = ({
 
 NetworkMapTab.propTypes = {
     updatedLines: PropTypes.arrayOf(PropTypes.any),
-    filteredNominalVoltages: PropTypes.any,
     lineFullPath: PropTypes.any,
     lineParallelPath: PropTypes.any,
     lineFlowMode: PropTypes.any,

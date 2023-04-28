@@ -7,8 +7,8 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import SplitButton from './util/split-button';
-import { RunningStatus } from './util/running-status';
+import SplitButton from './utils/split-button';
+import { RunningStatus } from './utils/running-status';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 
@@ -103,7 +103,6 @@ RunButton.propTypes = {
     runnables: PropTypes.array.isRequired,
     getStatus: PropTypes.func.isRequired,
     getText: PropTypes.func.isRequired,
-    getStartIcon: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
     actionOnRunnable: PropTypes.object.isRequired,
     computationStopped: PropTypes.bool.isRequired,
