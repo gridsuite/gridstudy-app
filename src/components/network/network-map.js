@@ -94,9 +94,16 @@ const NetworkMap = (props) => {
 
     const readyToDisplayLines =
         readyToDisplay &&
-        props.mapEquipments.lines &&
+        (props.mapEquipments?.lines || props.mapEquipments?.hvdcLines) &&
         props.mapEquipments.voltageLevels &&
         props.geoData.substationPositionsById.size > 0;
+
+    const mapEquipmentsLines = useMemo(() => {
+        return [
+            ...(props.mapEquipments?.lines ?? []),
+            ...(props.mapEquipments?.hvdcLines ?? []),
+        ];
+    }, [props.mapEquipments?.hvdcLines, props.mapEquipments?.lines]);
 
     const classes = useStyles();
 
@@ -316,7 +323,18 @@ const NetworkMap = (props) => {
             // picked line properties are retrieved from network data and not from pickable object infos,
             // because pickable object infos might not be up to date
             let line = network.getLine(info.object.id);
-            props.onLineMenuClick(line, event.center.x, event.center.y);
+            if (line) {
+                props.onLineMenuClick(line, event.center.x, event.center.y);
+            } else {
+                let hvdcLine = network.getHvdcLine(info.object.id);
+                if (hvdcLine) {
+                    props.onHvdcLineMenuClick(
+                        hvdcLine,
+                        event.center.x,
+                        event.center.y
+                    );
+                }
+            }
         }
     }
 
@@ -351,7 +369,7 @@ const NetworkMap = (props) => {
         layers.push(
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
-                data: props.mapEquipments?.lines,
+                data: mapEquipmentsLines,
                 network: props.mapEquipments,
                 updatedLines: props.updatedLines,
                 geoData: props.geoData,
@@ -487,6 +505,7 @@ NetworkMap.propTypes = {
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
     onLineMenuClick: PropTypes.func,
+    onHvdcLineMenuClick: PropTypes.func,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     onVoltageLevelMenuClick: PropTypes.func,
