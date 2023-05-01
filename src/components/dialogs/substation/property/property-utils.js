@@ -13,6 +13,7 @@ import {
     NAME,
     PREVIOUS_VALUE,
     VALUE,
+    ADDED,
 } from '../../../utils/field-constants';
 
 export const checkUniqueProperties = (properties) => {
@@ -39,6 +40,7 @@ export const getPropertyInitialValues = () => {
         [VALUE]: null,
         [PREVIOUS_VALUE]: null,
         [DELETION_MARK]: false,
+        [ADDED]: true,
     };
 };
 export const getPropertiesSchema = (id = ADDITIONAL_PROPERTIES) => ({
@@ -50,6 +52,7 @@ export const getPropertiesSchema = (id = ADDITIONAL_PROPERTIES) => ({
                 [VALUE]: yup.string().nullable().required(),
                 [PREVIOUS_VALUE]: yup.string().nullable(),
                 [DELETION_MARK]: yup.boolean(),
+                [ADDED]: yup.boolean(),
             })
         )
         .test('checkUniqueProperties', 'DuplicatedProps', (values) =>

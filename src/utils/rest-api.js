@@ -1817,6 +1817,14 @@ export function getLoadFlowParameters(studyUuid) {
     return backendFetchJson(getLfParams);
 }
 
+export function getLoadFlowSpecificParametersDescription() {
+    console.info('get load flow specific parameters description');
+    const getLoadFlowSpecificParameterssUrl =
+        getLoadFlowUrl() + 'specific-parameters';
+    console.debug(getLoadFlowSpecificParameterssUrl);
+    return backendFetchJson(getLoadFlowSpecificParameterssUrl);
+}
+
 export function setShortCircuitParameters(studyUuid, newParams) {
     console.info('set short-circuit parameters');
     const setShortCircuitParametersUrl =
