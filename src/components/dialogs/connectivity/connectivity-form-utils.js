@@ -13,9 +13,6 @@ import {
     CONNECTIVITY,
     ID,
     NAME,
-    NOMINAL_VOLTAGE,
-    SUBSTATION_ID,
-    TOPOLOGY_KIND,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
@@ -28,10 +25,6 @@ export const getConnectivityPropertiesValidationSchema = () => {
             .required()
             .shape({
                 [ID]: yup.string(),
-                [NAME]: yup.string(),
-                [SUBSTATION_ID]: yup.string(),
-                [NOMINAL_VOLTAGE]: yup.string(),
-                [TOPOLOGY_KIND]: yup.string().nullable(),
             }),
         [BUS_OR_BUSBAR_SECTION]: yup
             .object()
@@ -87,23 +80,13 @@ export const getConnectivityWithoutPositionEmptyFormData = (
     [id]: getConnectivityPropertiesEmptyFormData(),
 });
 
-export const getConnectivityVoltageLevelData = ({
-    voltageLevelId,
-    voltageLevelName = '',
-    voltageLevelSubstationId = '',
-    voltageLevelNominalVoltage = '',
-    voltageLevelTopologyKind = '',
-}) => {
+export const getConnectivityVoltageLevelData = ({ voltageLevelId }) => {
     if (!voltageLevelId) {
         return null;
     }
 
     return {
         [ID]: voltageLevelId,
-        [NAME]: voltageLevelName,
-        [SUBSTATION_ID]: voltageLevelSubstationId,
-        [NOMINAL_VOLTAGE]: voltageLevelNominalVoltage,
-        [TOPOLOGY_KIND]: voltageLevelTopologyKind,
     };
 };
 
@@ -123,20 +106,12 @@ export const getConnectivityBusBarSectionData = ({
 
 export const getConnectivityPropertiesData = ({
     voltageLevelId,
-    voltageLevelName,
-    voltageLevelSubstationId,
-    voltageLevelNominalVoltage,
-    voltageLevelTopologyKind,
     busbarSectionId,
     busbarSectionName,
 }) => {
     return {
         [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
             voltageLevelId,
-            voltageLevelName,
-            voltageLevelSubstationId,
-            voltageLevelNominalVoltage,
-            voltageLevelTopologyKind,
         }),
         [BUS_OR_BUSBAR_SECTION]: getConnectivityBusBarSectionData({
             busbarSectionId,
@@ -146,24 +121,12 @@ export const getConnectivityPropertiesData = ({
 };
 
 export const getConnectivityData = (
-    {
-        voltageLevelId,
-        voltageLevelName,
-        voltageLevelSubstationId,
-        voltageLevelNominalVoltage,
-        voltageLevelTopologyKind,
-        busbarSectionId,
-        busbarSectionName,
-    },
+    { voltageLevelId, busbarSectionId, busbarSectionName },
     id = CONNECTIVITY
 ) => {
     return {
         [id]: getConnectivityPropertiesData({
             voltageLevelId,
-            voltageLevelName,
-            voltageLevelSubstationId,
-            voltageLevelNominalVoltage,
-            voltageLevelTopologyKind,
             busbarSectionId,
             busbarSectionName,
         }),
@@ -173,10 +136,6 @@ export const getConnectivityData = (
 export const getConnectivityFormData = (
     {
         voltageLevelId,
-        voltageLevelName,
-        voltageLevelSubstationId,
-        voltageLevelNominalVoltage,
-        voltageLevelTopologyKind,
         busbarSectionId,
         busbarSectionName,
         connectionDirection = null,
@@ -189,10 +148,6 @@ export const getConnectivityFormData = (
         [id]: {
             ...getConnectivityPropertiesData({
                 voltageLevelId,
-                voltageLevelName,
-                voltageLevelSubstationId,
-                voltageLevelNominalVoltage,
-                voltageLevelTopologyKind,
                 busbarSectionId,
                 busbarSectionName,
             }),
