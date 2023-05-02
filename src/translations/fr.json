@@ -256,6 +256,7 @@
     "descLfDcValues": "DC",
     "resetToDefault": "Valeurs par défaut",
     "showAdvancedParameters": "Paramètres avancés",
+    "showSpecificParameters": "Paramètres spécifiques",
 
     "descLfReadSlackBus": "Utiliser le nœud bilan défini dans le réseau\u00a0:",
     "descLfWriteSlackBus": "Ecrire le nœud bilan calculé automatiquement dans le réseau\u00a0:",
@@ -365,6 +366,7 @@
     "Default": "Défaut",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
+    "DynaFlow": "Dyna Flow",
 
     "fetchLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de calcul de répartition",
     "fetchLoadFlowProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs de calcul de répartition",
@@ -372,6 +374,7 @@
     "updateLoadFlowProviderError": "Une erreur est survenue lors de la mise à jour du fournisseur courant de calcul de répartition",
     "updateLoadFlowParametersError": "Une erreur est survenue lors de la mise à jour des paramètres de calcul de répartition",
     "fetchLoadFlowParametersError": "Une erreur est survenue lors de la récupération des paramètres de calcul de répartition",
+    "fetchLoadFlowSpecificParametersError": "Une erreur est survenue lors de la récupération des paramètres spécifiques de calcul de répartition",
 
     "fetchSecurityAnalysisProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs d'analyse de sécurité",
     "fetchSecurityAnalysisProviderError": "Une erreur est survenue lors de la récupération du fournisseur courant d'analyse de sécurité",
