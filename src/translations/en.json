@@ -262,6 +262,7 @@
     "descLfDcValues": "DC Values",
     "resetToDefault": "default values",
     "showAdvancedParameters": "Advanced settings",
+    "showSpecificParameters": "Specific settings",
 
     "descLfReadSlackBus": "Read slack bus in the network: ",
     "descLfWriteSlackBus": "Write slack bus in the network: ",
@@ -371,6 +372,7 @@
     "Default": "Default",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
+    "DynaFlow": "Dyna Flow",
 
     "fetchLoadFlowProvidersError": "An error occurred while fetching the load flow providers",
     "fetchLoadFlowProviderError": "An error occured when fetching the load flow provider",
@@ -378,6 +380,7 @@
     "updateLoadFlowProviderError": "An error occurred while updating the load flow provider",
     "updateLoadFlowParametersError": "An error occurred while updating the load flow parameters",
     "fetchLoadFlowParametersError": "An error occured when fetching the load flow parameters",
+    "fetchLoadFlowSpecificParametersError": "An error occured when fetching the load flow specific parameters",
 
     "fetchSecurityAnalysisProvidersError": "An error occured when fetching security analysis provider list",
     "fetchSecurityAnalysisProviderError": "An error occured when fetching security analysis provider",
