@@ -288,6 +288,9 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                         rowData={lineTypeCatalog}
                         onSelectLine={onSelectCatalogLine}
                         titleId={'SelectType'}
+                        preselectedRow={
+                            lineSegments[openCatalogDialogIndex]?.lineType
+                        }
                     />
                 )}
             </ModificationDialog>

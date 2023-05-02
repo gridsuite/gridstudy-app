@@ -30,6 +30,7 @@ export const ALLOWED_KEYS = [
 
 const emptyFormData = {
     [SELECTED]: null, // This is a hidden field, and there is no validation schema
+    // TODO This seems less and less useful. Maybe totally remove this field ?
 };
 
 export const LineTypeCatalogSelectorDialogTabs = {
@@ -43,34 +44,37 @@ const LineTypeCatalogSelectorDialog = (props) => {
     const gridRef = useRef(); // Necessary to call getSelectedRows on aggrid component
 
     const [tabIndex, setTabIndex] = useState(
-        LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
+        props.preselectedRow?.kind === 'UNDERGROUND'
+            ? LineTypeCatalogSelectorDialogTabs.UNDERGROUND_TAB
+            : LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
     );
     const [rowDataAerialTab, setRowDataAerialTab] = useState([]);
     const [rowDataUndergroundTab, setRowDataUndergroundTab] = useState([]);
+    const [selectedRow, setSelectedRow] = useState(null);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
     });
-    const { setValue, reset } = formMethods;
+    const { setValue } = formMethods;
 
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
     const handleSubmit = useCallback(
         (formData) => onSelectLine && onSelectLine(formData[SELECTED]),
         [onSelectLine]
     );
-    const handleTabChange = useCallback(
-        (newValue) => {
-            reset({ [SELECTED]: null });
-            setTabIndex(newValue);
-        },
-        [reset]
-    );
+    const handleTabChange = useCallback((newValue) => {
+        setTabIndex(newValue);
+    }, []);
     const onSelectionChanged = useCallback(() => {
         // We extract the selected row from AGGrid to put it in the hidden SELECTED field.
-        const selectedRow = gridRef.current.api.getSelectedRows();
-        setValue(SELECTED, selectedRow, { shouldDirty: true });
+        const selectedRow = gridRef.current?.api?.getSelectedRows();
+        if (selectedRow) {
+            setValue(SELECTED, selectedRow, { shouldDirty: true });
+            setSelectedRow(selectedRow[0]);
+        }
     }, [setValue]);
 
+    // Filters the data to show only the current tab's line types.
     useEffect(() => {
         if (props?.rowData) {
             setRowDataAerialTab(
@@ -159,6 +163,35 @@ const LineTypeCatalogSelectorDialog = (props) => {
         ];
     }, [intl]);
 
+    // Tries to find in the current tab the preselected row to highlight it
+    const highlightSelectedRow = useCallback(() => {
+        const rowToHightlight = selectedRow ?? props?.preselectedRow;
+        if (rowToHightlight && props?.rowData) {
+            const currentTabKind =
+                tabIndex === LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
+                    ? 'AERIAL'
+                    : 'UNDERGROUND';
+            if (rowToHightlight.kind === currentTabKind) {
+                gridRef.current?.api?.forEachNode(function (node) {
+                    node.setSelected(
+                        node.data?.kind === currentTabKind &&
+                            node.data?.type === rowToHightlight.type
+                    );
+                });
+            }
+        }
+    }, [selectedRow, tabIndex, props.preselectedRow, props.rowData]);
+
+    useEffect(() => {
+        highlightSelectedRow();
+    }, [
+        highlightSelectedRow,
+        selectedRow,
+        tabIndex,
+        props.preselectedRow,
+        props.rowData,
+    ]);
+
     const headerAndTabs = (
         <Box
             sx={{
@@ -234,6 +267,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
                         columnDefs={columns}
                         rowSelection="single"
                         onSelectionChanged={onSelectionChanged}
+                        onGridReady={highlightSelectedRow}
                     />
                 </div>
             </ModificationDialog>
