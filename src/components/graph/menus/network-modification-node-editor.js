@@ -148,7 +148,6 @@ export const CopyType = {
 };
 
 const NetworkModificationNodeEditor = () => {
-    const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
@@ -644,7 +643,7 @@ const NetworkModificationNodeEditor = () => {
         );
     };
 
-    const renderNetworkModificationsList = (network) => {
+    const renderNetworkModificationsList = () => {
         return (
             <DragDropContext
                 onDragEnd={commit}
@@ -670,7 +669,6 @@ const NetworkModificationNodeEditor = () => {
                                         key={props.item.uuid}
                                         onEdit={doEditModification}
                                         isDragging={isDragging}
-                                        network={network}
                                         isOneNodeBuilding={isAnyNodeBuilding}
                                         {...props}
                                         disabled={isLoading()}
@@ -832,7 +830,7 @@ const NetworkModificationNodeEditor = () => {
             </Toolbar>
             {renderPaneSubtitle()}
 
-            {renderNetworkModificationsList(network)}
+            {renderNetworkModificationsList()}
             <Fab
                 className={classes.addButton}
                 color="primary"
