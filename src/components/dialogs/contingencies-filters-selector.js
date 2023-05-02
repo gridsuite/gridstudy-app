@@ -18,8 +18,8 @@ import {
     updateConfigParameter,
 } from '../../utils/rest-api';
 import DirectoryItemSelector from '../directory-item-selector';
-import CheckboxList from '../util/checkbox-list';
-import ListItemWithDeleteButton from '../util/list-item-with-delete-button';
+import CheckboxList from '../utils/checkbox-list';
+import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
 
 const ContingenciesFiltersSelector = ({
     title,

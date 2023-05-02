@@ -17,7 +17,7 @@ import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { SensitivityAnalysisResultTab } from './sensitivity-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-tab';
-import AlertInvalidNode from './util/alert-invalid-node';
+import AlertInvalidNode from './utils/alert-invalid-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
  * @param studyUuid : string uuid of study
  * @param currentNode : object current node
  * @param loadFlowInfos : object result of load flow
- * @param network : object network
  * @param openVoltageLevelDiagram : function
  * @returns {JSX.Element}
  * @constructor
@@ -57,7 +56,6 @@ export const ResultViewTab = ({
     studyUuid,
     currentNode,
     loadFlowInfos,
-    network,
     openVoltageLevelDiagram,
     disabled,
 }) => {
@@ -83,7 +81,6 @@ export const ResultViewTab = ({
                 <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
-                    network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
@@ -213,7 +210,6 @@ export const ResultViewTab = ({
 
 ResultViewTab.propTypes = {
     loadFlowInfos: PropTypes.object,
-    network: PropTypes.object,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,

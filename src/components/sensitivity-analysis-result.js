@@ -6,7 +6,7 @@
  */
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import VirtualizedTable from './util/virtualized-table';
+import VirtualizedTable from './utils/virtualized-table';
 import { useMemo } from 'react';
 
 function makeColumn(isNum, labelId, key, intl) {
