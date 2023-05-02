@@ -241,9 +241,18 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                 {...dialogProps}
             >
                 <Grid container direction="row-reverse" spacing={2}>
-                    {gridItem(<FormattedMessage id={'SusceptanceLabel'} />, 3)}
-                    {gridItem(<FormattedMessage id={'Reactor'} />, 2)}
-                    {gridItem(<FormattedMessage id={'R'} />, 2)}
+                    {gridItem(
+                        <FormattedMessage id={'lineType.susceptanceLabel'} />,
+                        3
+                    )}
+                    {gridItem(
+                        <FormattedMessage id={'lineType.reactanceLabel'} />,
+                        2
+                    )}
+                    {gridItem(
+                        <FormattedMessage id={'lineType.resistanceLabel'} />,
+                        2
+                    )}
                     {gridItem(<FormattedMessage id={'lineType.type'} />, 3)}
                 </Grid>
                 <ExpandableInput
