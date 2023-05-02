@@ -8,13 +8,12 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import yup from '../../utils/yup-config';
-import Grid from '@mui/material/Grid';
-import { gridItem } from '../dialogUtils';
+import { gridItem, KilometerAdornment } from '../dialogUtils';
 import { Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import FloatInput from '../../utils/rhf-inputs/float-input';
 import { SEGMENT_DISTANCE_VALUE } from '../../utils/field-constants';
+import PropTypes from 'prop-types';
 
 /**
  * lineSegment definition :
@@ -44,7 +43,6 @@ const formSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup
         .number()
         .nullable()
-        //.required()
         .moreThan(0, 'SegmentDistanceGreaterThanZero'),
 });
 
@@ -58,34 +56,39 @@ const LineTypeCatalogForm = (props) => {
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, watch, trigger } = formMethods;
+    const { watch, trigger } = formMethods;
+    const { onEditButtonClick, onSegmentDistanceChange } = props;
+
     const [innerSegmentDistanceValue, setInnerSegmentDistanceValue] =
         useState(0); // TODO FIX THIS ? It's part of a hack to prevent an infinite loop
     const segmentDistanceValue = watch(SEGMENT_DISTANCE_VALUE, 0);
+    const lineType = props.lineSegments[props.index]?.lineType?.type ?? '';
+    const resistance = props.lineSegments[props.index]?.resistance ?? 0.0;
+    const reactance = props.lineSegments[props.index]?.reactance ?? 0.0;
+    const susceptance = props.lineSegments[props.index]?.susceptance ?? 0.0;
 
     const segmentDistanceField = (
-        <FloatInput name={SEGMENT_DISTANCE_VALUE} label={'SegmentDistance'} />
+        <FloatInput
+            name={SEGMENT_DISTANCE_VALUE}
+            label={'SegmentDistance'}
+            adornment={KilometerAdornment}
+        />
     );
 
-    const { onEditButtonClick, onDeleteButtonClick, onSegmentDistanceChange } =
-        props;
     const handleEditButtonClick = useCallback(
-        () => onEditButtonClick && onEditButtonClick(),
-        [onEditButtonClick]
+        () => onEditButtonClick && onEditButtonClick(props.index),
+        [props.index, onEditButtonClick]
     );
-    const handleDeleteButtonClick = useCallback(() => {
-        reset(emptyFormData);
-        onDeleteButtonClick && onDeleteButtonClick();
-    }, [reset, onDeleteButtonClick]);
 
     useEffect(() => {
-        // TODO FIX THIS TEST WITH A COPY IN A STATE ? It's a hack to prevent an infinite loop
+        // TODO FIX THIS TEST THAT USES A COPY IN A STATE ? It's a hack to prevent an infinite loop
         if (innerSegmentDistanceValue !== segmentDistanceValue) {
             setInnerSegmentDistanceValue(segmentDistanceValue);
-            onSegmentDistanceChange(segmentDistanceValue);
+            onSegmentDistanceChange(props.index, segmentDistanceValue);
             trigger(SEGMENT_DISTANCE_VALUE);
         }
     }, [
+        props.index,
         trigger,
         onSegmentDistanceChange,
         segmentDistanceValue,
@@ -93,32 +96,32 @@ const LineTypeCatalogForm = (props) => {
     ]);
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid container spacing={2} key={'index'}>
-                {gridItem(segmentDistanceField, 2)}
-                {gridItem(<div>{props.segment?.lineType?.type ?? ''}</div>, 2)}
-                {gridItem(
-                    <Button
-                        onClick={handleEditButtonClick}
-                        startIcon={<EditIcon />}
-                    />,
-                    1
-                )}
-                {gridItem(
-                    <Button
-                        onClick={handleDeleteButtonClick}
-                        startIcon={<DeleteIcon />}
-                    />,
-                    1
-                )}
-                {gridItem(<div>{props.segment?.resistance ?? 0}</div>, 2)}
-                {gridItem(<div>{props.segment?.reactance ?? 0}</div>, 2)}
-                {gridItem(<div>{props.segment?.susceptance ?? 0}</div>, 2)}
-            </Grid>
+        <FormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+        >
+            {gridItem(segmentDistanceField, 2)}
+            {gridItem(<div>{lineType}</div>, 2)}
+            {gridItem(
+                <Button
+                    onClick={handleEditButtonClick}
+                    startIcon={<EditIcon />}
+                />,
+                1
+            )}
+            {gridItem(<div>{resistance}</div>, 2)}
+            {gridItem(<div>{reactance}</div>, 2)}
+            {gridItem(<div>{susceptance}</div>, 2)}
         </FormProvider>
     );
 };
 
-LineTypeCatalogForm.propTypes = {}; // TODO CHARLY
+LineTypeCatalogForm.propTypes = {
+    index: PropTypes.number.isRequired,
+    lineSegments: PropTypes.array,
+    onEditButtonClick: PropTypes.func,
+    onSegmentDistanceChange: PropTypes.func,
+};
 
 export default LineTypeCatalogForm;

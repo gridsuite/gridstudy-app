@@ -22,8 +22,8 @@ import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only-input';
 import { roundToDefaultPrecision } from '../../../utils/rounding';
+import ExpandableInput from '../../utils/rhf-inputs/expandable-input';
 
-// TODO FUNCTIONS TO MOVE ELSEWHERE
 function toResistance(distance, linearResistance) {
     if (
         distance === undefined ||
@@ -66,7 +66,6 @@ function toSusceptance(distance, linearCapacity) {
         Math.pow(10, 6)
     );
 }
-// TODO END OF FUNCTIONS TO MOVE ELSEWHERE
 
 const emptyLineSegment = {
     distance: null,
@@ -96,13 +95,7 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
 
     const [lineTypeCatalog, setLineTypeCatalog] = useState([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
-
-    // TODO Use an <ExpandableInput> instead of this static list of 3 (example for inspiration : search of COUPLING_OMNIBUS)
-    const [lineSegments, setLineSegments] = useState([
-        { ...emptyLineSegment },
-        { ...emptyLineSegment },
-        { ...emptyLineSegment },
-    ]);
+    const [lineSegments, setLineSegments] = useState([]);
 
     const onCatalogDialogClose = () => {
         setOpenCatalogDialogIndex(null);
@@ -158,15 +151,15 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
 
     const handleClear = useCallback(() => {
         reset(emptyFormData);
+        setLineSegments([]);
     }, [reset]);
 
-    // TODO FIX BUG : When deleting a row (bug triggers if we delete the second one), there is a discrepency between the segment's lenght and its values. This is because we use an index as a key in the .map loop of the render.
     const handleDelete = useCallback(
         (index) => {
             let arr = [...lineSegments];
             arr.splice(index, 1);
-            // inputForm?.setHasChanged(arr.length > 0); // TODO CHARLY si pb d'update, voir si besoin de ça ?
             setLineSegments(arr);
+            return true; // Needed to remove the line in ExpandableInput
         },
         [lineSegments]
     );
@@ -174,15 +167,15 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
     // Updates the total values of Resistance, Reactance and Susceptance when the array's values are updated.
     useEffect(() => {
         const totalResistance = lineSegments.reduce(
-            (accum, item) => accum + item.resistance,
+            (accum, item) => accum + item?.resistance ?? 0,
             0
         );
         const totalReactance = lineSegments.reduce(
-            (accum, item) => accum + item.reactance,
+            (accum, item) => accum + item?.reactance ?? 0,
             0
         );
         const totalSusceptance = lineSegments.reduce(
-            (accum, item) => accum + item.susceptance,
+            (accum, item) => accum + item?.susceptance ?? 0,
             0
         );
         setValue(
@@ -248,26 +241,29 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                 {...dialogProps}
             >
                 <Grid container direction="row-reverse" spacing={2}>
-                    {gridItem(<FormattedMessage id={'SusceptanceLabel'} />, 2)}
+                    {gridItem(<FormattedMessage id={'SusceptanceLabel'} />, 3)}
                     {gridItem(<FormattedMessage id={'Reactor'} />, 2)}
                     {gridItem(<FormattedMessage id={'R'} />, 2)}
+                    {gridItem(<FormattedMessage id={'lineType.type'} />, 3)}
                 </Grid>
-                {lineSegments.map((segment, index) => (
-                    <LineTypeCatalogForm
-                        key={'lineTypeSegments' + index}
-                        onEditButtonClick={() => openCatalogDialog(index)}
-                        onDeleteButtonClick={() => handleDelete(index)}
-                        onSegmentDistanceChange={(newDistance) =>
-                            handleSegmentDistantChange(index, newDistance)
-                        }
-                        segment={segment}
-                    />
-                ))}
+                <ExpandableInput
+                    name={'lineTypeSegments'}
+                    Field={LineTypeCatalogForm}
+                    addButtonLabel={'AddSegment'}
+                    initialValue={{ ...emptyLineSegment }}
+                    fieldProps={{
+                        onSegmentDistanceChange: (index, newDistance) =>
+                            handleSegmentDistantChange(index, newDistance),
+                        onEditButtonClick: (index) => openCatalogDialog(index),
+                        lineSegments: lineSegments,
+                    }}
+                    deleteCallback={handleDelete}
+                />
                 <hr />
                 <Grid container direction="row-reverse" spacing={2}>
                     {gridItem(
                         <ReadOnlyInput name={`${TOTAL_SUSCEPTANCE}`} />,
-                        2
+                        3
                     )}
                     {gridItem(<ReadOnlyInput name={`${TOTAL_REACTANCE}`} />, 2)}
                     {gridItem(
@@ -290,6 +286,6 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
     );
 };
 
-LineTypeCatalogDialog.propTypes = {}; // TODO CHARLY
+LineTypeCatalogDialog.propTypes = {};
 
 export default LineTypeCatalogDialog;

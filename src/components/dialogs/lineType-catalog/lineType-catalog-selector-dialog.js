@@ -18,6 +18,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
+import PropTypes from 'prop-types';
 
 export const ALLOWED_KEYS = [
     'Escape',
@@ -240,6 +241,11 @@ const LineTypeCatalogSelectorDialog = (props) => {
     );
 };
 
-LineTypeCatalogSelectorDialog.propTypes = {}; // TODO CHARLY
+LineTypeCatalogSelectorDialog.propTypes = {
+    onClose: PropTypes.func,
+    rowData: PropTypes.array,
+    onSelectLine: PropTypes.func,
+    titleId: PropTypes.string,
+};
 
 export default LineTypeCatalogSelectorDialog;
