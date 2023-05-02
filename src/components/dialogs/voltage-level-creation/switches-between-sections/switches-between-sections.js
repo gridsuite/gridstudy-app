@@ -45,7 +45,7 @@ export const SwitchesBetweenSections = () => {
     }, [watchSectionCount]);
 
     const intl = useIntl();
-    const handleCreateSwitchesDialog = useCallback(
+    const setSwitchesKinds = useCallback(
         (data) => {
             const map = data[SWITCH_KINDS].map((switchData) => {
                 return intl.formatMessage({ id: switchData[SWITCH_KIND] });
@@ -58,6 +58,14 @@ export const SwitchesBetweenSections = () => {
         },
         [intl, setValue]
     );
+
+    const handleCreateSwitchesDialog = useCallback(
+        (data) => {
+            setSwitchesKinds(data);
+        },
+        [setSwitchesKinds]
+    );
+
     const sectionCountRef = useRef(watchSectionCount);
     const switchesBetweenSectionsRef = useRef(watchSwitchesBetweenSections);
     useEffect(() => {
@@ -69,21 +77,16 @@ export const SwitchesBetweenSections = () => {
             const initialKindDisconnector = { switchKind: 'DISCONNECTOR' };
             let list = [];
             if (watchSectionCount) {
-                for (let i = 0; i < watchSectionCount - 1; i++) {
-                    list.push(initialKindDisconnector);
-                }
+                list = Array(watchSectionCount - 1).fill(
+                    initialKindDisconnector
+                );
             }
-            let data = {};
-            data[SWITCH_KINDS] = list;
-            const map = data[SWITCH_KINDS].map((switchData) => {
-                return intl.formatMessage({ id: switchData[SWITCH_KIND] });
-            });
-            setValue(SWITCHES_BETWEEN_SECTIONS, map.join(' / '));
-            setValue(SWITCH_KINDS, data[SWITCH_KINDS]);
+            const data = { switchKinds: list };
+            setSwitchesKinds(data);
         }
         sectionCountRef.current = watchSectionCount;
         switchesBetweenSectionsRef.current = watchSwitchesBetweenSections;
-    }, [watchSectionCount, setValue, watchSwitchesBetweenSections, intl]);
+    }, [watchSectionCount, watchSwitchesBetweenSections, setSwitchesKinds]);
 
     const switchesBetweenSectionsField = (
         <TextInput
