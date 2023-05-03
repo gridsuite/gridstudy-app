@@ -33,8 +33,12 @@ import {
 } from '../../dialogUtils';
 import Grid from '@mui/material/Grid';
 
-const VoltageLevelModificationForm = ({ studyUuid, currentNodeUuid }) => {
-    const [voltageLevelInfos, setVoltageLevelInfos] = useState();
+const VoltageLevelModificationForm = ({
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelInfos,
+    onEquipmentIdChange,
+}) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [substations, setSubstations] = useState([]);
 
@@ -43,23 +47,8 @@ const VoltageLevelModificationForm = ({ studyUuid, currentNodeUuid }) => {
     });
 
     useEffect(() => {
-        if (watchVoltageLevelId) {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'voltage-levels',
-                watchVoltageLevelId,
-                true
-            ).then((voltageLevel) => {
-                console.log('voltageLevel : ', voltageLevel);
-                if (voltageLevel) {
-                    setVoltageLevelInfos(voltageLevel);
-                }
-            });
-        } else {
-            setVoltageLevelInfos(null);
-        }
-    }, [watchVoltageLevelId, currentNodeUuid, studyUuid]);
+        onEquipmentIdChange(watchVoltageLevelId);
+    }, [watchVoltageLevelId]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -126,7 +115,6 @@ const VoltageLevelModificationForm = ({ studyUuid, currentNodeUuid }) => {
             outputTransform={(value) => value}
             size={'small'}
             formProps={{ margin: 'normal' }}
-            clearable
             previousValue={voltageLevelInfos?.substationId}
         />
     );

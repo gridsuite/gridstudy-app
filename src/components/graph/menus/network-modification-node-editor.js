@@ -371,6 +371,7 @@ const NetworkModificationNodeEditor = () => {
         setLaunchLoader(true);
         fetchNetworkModifications(studyUuid, currentNode.id)
             .then((res) => {
+                console.log('res : ', res)
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
@@ -671,17 +672,20 @@ const NetworkModificationNodeEditor = () => {
                                 onChecked={setSelectedItems}
                                 values={modifications}
                                 itemComparator={(a, b) => a.uuid === b.uuid}
-                                itemRenderer={(props) => (
-                                    <ModificationListItem
-                                        key={props.item.uuid}
-                                        onEdit={doEditModification}
-                                        isDragging={isDragging}
-                                        network={network}
-                                        isOneNodeBuilding={isAnyNodeBuilding}
-                                        {...props}
-                                        disabled={isLoading()}
-                                    />
-                                )}
+                                itemRenderer={(props) => {
+                                    console.log('props : ', props);
+                                    return (
+                                        <ModificationListItem
+                                            key={props.item.uuid}
+                                            onEdit={doEditModification}
+                                            isDragging={isDragging}
+                                            network={network}
+                                            isOneNodeBuilding={isAnyNodeBuilding}
+                                            {...props}
+                                            disabled={isLoading()}
+                                        />
+                                    )
+                                }}
                                 toggleSelectAll={toggleSelectAll}
                             />
                             {provided.placeholder}

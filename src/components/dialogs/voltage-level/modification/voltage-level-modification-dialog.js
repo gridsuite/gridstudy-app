@@ -7,9 +7,8 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
-import { useCallback } from 'react';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -23,6 +22,10 @@ import {
 import yup from '../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    fetchEquipmentInfos,
+    modifyVoltageLevel,
+} from '../../../../utils/rest-api';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -54,6 +57,7 @@ const VoltageLevelModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [voltageLevelInfos, setVoltageLevelInfos] = useState(null);
     const formDataFromEditData = useMemo(
         () =>
             editData
@@ -81,11 +85,61 @@ const VoltageLevelModificationDialog = ({
         resolver: yupResolver(schema),
     });
 
+    const onEquipmentIdChange = useCallback((equipmentId) => {
+        if (equipmentId) {
+            fetchEquipmentInfos(
+                studyUuid,
+                currentNodeUuid,
+                'voltage-levels',
+                equipmentId,
+                true
+            )
+                .then((voltageLevel) => {
+                    console.log('voltageLevel : ', voltageLevel);
+                    if (voltageLevel) {
+                        setVoltageLevelInfos(voltageLevel);
+                    }
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'VoltageLevelModificationError',
+                    });
+                });
+        } else {
+            setVoltageLevelInfos(null);
+            reset(emptyFormData, { keepDefaultValues: false });
+        }
+    });
+
     const { reset } = methods;
 
-    const onSubmit = useCallback((voltageLevel) => {
-        console.log('voltage Level on submit', voltageLevel);
-    }, []);
+    const onSubmit = useCallback(
+        (voltageLevel) => {
+            console.log('voltage Level on submit', voltageLevel);
+
+            modifyVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                voltageLevel[EQUIPMENT_ID],
+                voltageLevel[EQUIPMENT_NAME],
+                voltageLevel[SUBSTATION_ID],
+                voltageLevel[NOMINAL_VOLTAGE],
+                voltageLevel[LOW_VOLTAGE_LIMIT],
+                voltageLevel[HIGH_VOLTAGE_LIMIT],
+                voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT],
+                voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT],
+                !!editData,
+                editData?.uuid
+            ).catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'VoltageLevelModificationError',
+                });
+            });
+        },
+        [editData, studyUuid, currentNodeUuid, snackError]
+    );
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -109,6 +163,8 @@ const VoltageLevelModificationDialog = ({
                 <VoltageLevelModificationForm
                     studyUuid={studyUuid}
                     currentNodeUuid={currentNodeUuid}
+                    voltageLevelInfos={voltageLevelInfos}
+                    onEquipmentIdChange={onEquipmentIdChange}
                 />
             </ModificationDialog>
         </FormProvider>

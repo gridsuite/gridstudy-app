@@ -6,7 +6,7 @@
  */
 import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
 import Divider from '@mui/material/Divider';
 import PropTypes from 'prop-types';
@@ -67,6 +67,9 @@ export const ModificationListItem = ({
     const classes = useStyles();
     const { getNameOrId } = useNameOrId();
 
+    useEffect(() => {
+        console.log('modif : ', modif)
+    }, [modif])
     /*
         this version is more optimized because it uses a switch statement instead of a series of if-else statements.
         this makes the code more readable and easier to maintain.
