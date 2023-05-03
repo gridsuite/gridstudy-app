@@ -26,8 +26,6 @@ const CountrySelect = ({ value, options, onChange }) => {
         return countriesList;
     }, []);
 
-    console.log('country list', countriesList);
-
     return (
         <CheckboxSelect
             options={options}

@@ -8,6 +8,7 @@
 import { Checkbox, MenuItem, Select } from '@mui/material';
 import ListItemText from '@mui/material/ListItemText';
 import { useCallback, useState } from 'react';
+import { useIntl } from 'react-intl';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -21,8 +22,8 @@ const MenuProps = {
     },
 };
 
-const CHECK_ALL = { label: 'Select all', value: 'check_all' };
-const UNCHECK_ALL = { label: 'Unselect all', value: 'uncheck_all' };
+const CHECK_ALL = { label: 'SelectAll', value: 'check_all' };
+const UNCHECK_ALL = { label: 'UnselectAll', value: 'uncheck_all' };
 
 const CheckboxSelect = ({
     options,
@@ -30,6 +31,7 @@ const CheckboxSelect = ({
     onChange,
     value: initialSelectedOptions,
 }) => {
+    const intl = useIntl();
     const [selectedOptions, setSelectedOptions] = useState(
         initialSelectedOptions ?? []
     );
@@ -98,14 +100,18 @@ const CheckboxSelect = ({
                 key={CHECK_ALL.value}
                 value={CHECK_ALL.value}
             >
-                <ListItemText primary={CHECK_ALL.label} />
+                <ListItemText
+                    primary={intl.formatMessage({ id: CHECK_ALL.label })}
+                />
             </MenuItem>
             <MenuItem
                 size={'small'}
                 key={UNCHECK_ALL.value}
                 value={UNCHECK_ALL.value}
             >
-                <ListItemText primary={UNCHECK_ALL.label} />
+                <ListItemText
+                    primary={intl.formatMessage({ id: UNCHECK_ALL.label })}
+                />
             </MenuItem>
             {options.map((option) => (
                 <MenuItem size={'small'} key={option} value={option}>

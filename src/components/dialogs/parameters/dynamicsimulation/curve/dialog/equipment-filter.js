@@ -103,7 +103,6 @@ const EquipmentFilter = forwardRef(
                 )
             )
                 .then((vals) => {
-                    console.log('vals', vals);
                     // convert array to voltageLevels object
                     const voltageLevelsObj = vals
                         .flat()
@@ -140,20 +139,14 @@ const EquipmentFilter = forwardRef(
                 });
         }, [currentNode.id, studyUuid, snackError]);
 
-        // --- country (countryCode metadata), region (geographicalTags meatdata) => lookup in substation --- //
+        // --- country (countryCode metadata) => lookup in substation --- //
         const [selectedCountries, setSelectedCountries] = useState([]);
         const [countries, setCountries] = useState([]);
         const handleCountryChange = useCallback((selectedCountries) => {
             setSelectedCountries(selectedCountries);
         }, []);
 
-        //const [selectedRegions, setSelectedRegions] = useState([]);
-        //const [regions, setRegions] = useState([]);
-        /*const handleRegionChange = useCallback((selectedRegions) => {
-            setSelectedRegions(selectedRegions);
-        }, []);*/
-
-        // load substation from backend to infer countries and (regions from geographicalTags ?? TO CONFIRM)
+        // load substation from backend to infer countries
         useEffect(() => {
             Promise.all(
                 ALL_EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
@@ -170,27 +163,9 @@ const EquipmentFilter = forwardRef(
                         }, new Set()),
                     ];
 
-                    // get regions codes
-                    /*let regions = [
-                        ...vals.flat().reduce((set, substation) => {
-                            substation.geographicalTags &&
-                                set.add(substation.geographicalTags);
-                            return set;
-                        }, new Set()),
-                    ];
-
-                    // TODO : mock regions in case any regions found
-                    if (!regions.length) {
-                        regions = Object.keys(REGIONS);
-                    }*/
-
                     // update countries states
                     setSelectedCountries(countries);
                     setCountries(countries);
-
-                    // update regions states
-                    /*setSelectedRegions(regions);
-                    setRegions(regions);*/
 
                     // update loading state
                     setVoltageLevelsFiltersReady(true);
@@ -220,7 +195,6 @@ const EquipmentFilter = forwardRef(
                                 : arr,
                         []
                     );
-                    console.log('all substations', substations);
 
                     // filtering substations by country and region
                     const filteredSubstationIds = substations
@@ -247,10 +221,6 @@ const EquipmentFilter = forwardRef(
                     )
                         .then((vals) => {
                             const equipments = vals.flat();
-                            console.log(
-                                'equipments of type ' + equipmentType.type,
-                                equipments
-                            );
 
                             // filter equipment by voltageLevel ids and tension
                             const filteredEquipments = equipments.filter(
@@ -278,11 +248,6 @@ const EquipmentFilter = forwardRef(
                                     return matched;
                                 }
                             );
-                            console.log(
-                                'filteredEquipments of type ' +
-                                    equipmentType.type,
-                                filteredEquipments
-                            );
                             return filteredEquipments;
                         })
                         .catch((error) => {
@@ -306,7 +271,6 @@ const EquipmentFilter = forwardRef(
             selectedTensionIds,
             selectedVoltageLevelIds,
             equipmentType.fetchers,
-            equipmentType.type,
             snackError,
         ]);
 
@@ -364,10 +328,9 @@ const EquipmentFilter = forwardRef(
         const handleEquipmentSelectionChanged = useCallback(() => {
             const selectedRows = equipmentsRef.current.api.getSelectedRows();
             setSelectedRowsLength(selectedRows.length);
-            console.log('Number of selected row', selectedRows.length);
         }, []);
 
-        // expose some interfaces for the component by using ref
+        // expose some api for the component by using ref
         useImperativeHandle(
             ref,
             () => ({
@@ -444,24 +407,6 @@ const EquipmentFilter = forwardRef(
                         />
                     </Grid>
                 </Grid>
-                {/* Region */}
-                {/*<Grid item container sx={{ width: '100%' }}>
-                    <Grid item xs={6}>
-                        <Typography>
-                            <FormattedMessage
-                                id={'DynamicSimulationCurveRegion'}
-                            ></FormattedMessage>
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <CheckboxSelect
-                            value={selectedRegions}
-                            options={regions}
-                            getOptionLabel={(value) => REGIONS[value]}
-                            onChange={handleRegionChange}
-                        />
-                    </Grid>
-                </Grid>*/}
                 {/* Tension */}
                 <Grid item container sx={{ width: '100%' }}>
                     <Grid item xs={6}>

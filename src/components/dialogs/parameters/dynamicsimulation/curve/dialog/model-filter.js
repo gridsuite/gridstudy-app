@@ -135,7 +135,6 @@ const ModelFilter = forwardRef(
             [associatedModels]
         );
 
-        // const [variablesRevision, setVariablesRevision] = useState(0);
         const [selectedModels, setSelectedModels] = useState([]);
         const handleModelChange = useCallback((selectedModels) => {
             setSelectedModels(selectedModels);
@@ -151,10 +150,6 @@ const ModelFilter = forwardRef(
             [allVariables]
         );
 
-        // TODO remove
-        console.log('variables', variables);
-
-        console.log('models', selectedModels);
         const filteredVariables = useMemo(
             () =>
                 variables.filter((elem) =>
@@ -164,7 +159,6 @@ const ModelFilter = forwardRef(
                 ),
             [variables, selectedModels, associatedModels]
         );
-        console.log('filteredVariables', filteredVariables);
 
         // fetch all associated models and variables for current node and study
         useEffect(() => {
@@ -180,15 +174,12 @@ const ModelFilter = forwardRef(
 
                     // transform models to variables representation
                     const variables = transformModelsToVariables(models);
-                    console.log('transformed variables', variables);
                     setAllVariables(variables);
-                    // to force remount component since it has internal state needed to clear
-                    // setVariablesRevision((prev) => ++prev);
                 }
             );
         }, [studyUuid, currentNode.id]);
 
-        // expose some interfaces for the component by using ref
+        // expose some api for the component by using ref
         useImperativeHandle(
             ref,
             () => ({

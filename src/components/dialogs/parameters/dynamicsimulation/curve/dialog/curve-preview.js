@@ -23,12 +23,6 @@ const useStyles = makeStyles((theme) => ({
     grid: {
         width: 'auto',
         height: '100%',
-
-        //overrides the default computed max height for ag grid default selector editor to make it more usable
-        //can be removed if a custom selector editor is implemented
-        // '& .ag-select-list': {
-        //     maxHeight: '300px !important',
-        // },
     },
 }));
 
@@ -71,20 +65,12 @@ const CurvePreview = forwardRef((props, ref) => {
         };
     }, []);
 
-    const onGridReady = useCallback((params) => {
-        /*fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
-            .then((resp) => resp.json())
-            .then((data) => setRowData(data));*/
-        // setRowData(curves);
-    }, []);
-
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current.api.getSelectedRows();
         setSelectedRowsLength(selectedRows.length);
-        console.log('Number of selected row', selectedRows.length);
     }, []);
 
-    // expose some interfaces for the component by using ref
+    // expose some api for the component by using ref
     useImperativeHandle(
         ref,
         () => ({
@@ -146,7 +132,6 @@ const CurvePreview = forwardRef((props, ref) => {
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
                     rowSelection={'multiple'}
-                    onGridReady={onGridReady}
                     onSelectionChanged={onSelectionChanged}
                 ></AgGridReact>
             </div>

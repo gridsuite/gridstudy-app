@@ -50,7 +50,6 @@ const BorderedTreeItem = styled(TreeItem)(({ theme, root }) => {
 
 const CheckboxTreeview = forwardRef(
     ({ data: items, checkAll, onSelectionChanged, ...rest }, ref) => {
-        console.log('CheckboxTreeview re-render');
         const initialItemStates = useMemo(() => {
             return items.map((elem) => ({
                 id: elem.id,
@@ -73,6 +72,7 @@ const CheckboxTreeview = forwardRef(
                     return itemStates.find((elem) => elem.id === id);
                 };
 
+                // recursive algo
                 const updateStateParent = (itemStates, items, childId) => {
                     const child = items.find((elem) => elem.id === childId);
                     const parent = items.find(
@@ -119,6 +119,7 @@ const CheckboxTreeview = forwardRef(
                     updateStateParent(itemStates, items, parent.id);
                 };
 
+                // recursive algo
                 const setState = (itemStates, items, id, newState) => {
                     itemStates.find((elem) => elem.id === id).state = newState;
                     // set all children the same state of current element
@@ -181,7 +182,7 @@ const CheckboxTreeview = forwardRef(
             [itemStates]
         );
 
-        // expose some interfaces for the component by using ref
+        // expose some api for the component by using ref
         useImperativeHandle(
             ref,
             () => ({

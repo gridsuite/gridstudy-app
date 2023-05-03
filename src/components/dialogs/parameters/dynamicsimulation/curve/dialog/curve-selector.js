@@ -32,7 +32,7 @@ const CurveSelector = forwardRef((props, ref) => {
         setEquipmentType(newEquipmentType);
     }, []);
 
-    // expose some interfaces for the component by using ref
+    // expose some api for the component by using ref
     useImperativeHandle(
         ref,
         () => ({

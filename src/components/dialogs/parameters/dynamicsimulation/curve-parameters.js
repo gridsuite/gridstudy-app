@@ -6,19 +6,17 @@
  */
 
 import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import 'ag-grid-community/styles/ag-theme-material.css';
 
 import { Grid, Typography } from '@mui/material';
 import { makeStyles, useTheme } from '@mui/styles';
-import GridQuickFilter from './curve/grid-quick-filter';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
 import { AgGridReact } from 'ag-grid-react';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
+import { GlobalFilter } from '../../../spreadsheet/global-filter';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -155,7 +153,7 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
             <>
                 <Grid container item sx={{ marginBottom: theme.spacing(1) }}>
                     <Grid container item xs={'auto'}>
-                        <GridQuickFilter
+                        <GlobalFilter
                             key={'curve-quick-filter'}
                             ref={quickFilterRef}
                             gridRef={gridRef}

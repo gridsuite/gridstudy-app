@@ -142,6 +142,9 @@
     "Network": "Réseau",
     "SecurityAnalysis": "Analyse de sécurité",
 
+    "SelectAll": "Tout selectionner",
+    "UnselectAll": "Tout déselectionner",
+
     "DynamicSimulation": "Simulation dynamique",
     "DynamicSimulationGetMappingError": "Mappings dynamiques",
     "DynamicSimulationParameters": "Paramètres de la simulation dynamique",

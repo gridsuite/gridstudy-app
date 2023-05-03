@@ -31,26 +31,21 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
     const previewRef = useRef();
 
     const handleClose = useCallback(() => {
-        console.log('handleClose is called');
         onClose();
     }, [onClose]);
 
     const handleAdd = useCallback(() => {
-        console.log('hanldeAdd is called', previewRef.current.api.getCurves());
         onSave(previewRef.current.api.getCurves());
     }, [onSave]);
 
     const intl = useIntl();
 
     const handleAddButton = useCallback(() => {
-        console.log('handleAddButton called');
         const selectedEquipments =
             selectorRef.current.api.getSelectedEquipments();
-        console.log('selectedEquipments retrieved', selectedEquipments);
 
         const selectedVariables =
             selectorRef.current.api.getSelectedVariables();
-        console.log('selectedVariables retrieved', selectedVariables);
 
         // combine between equipments and variables
         const curves = selectedEquipments.reduce(
@@ -70,7 +65,6 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
         previewRef.current.api.addCurves(curves);
     }, []);
     const handleDeleteButton = useCallback(() => {
-        console.log('handleDeleteButton called');
         previewRef.current.api.removeCurves();
     }, []);
 
