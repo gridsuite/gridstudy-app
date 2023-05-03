@@ -58,7 +58,12 @@ export const CustomAGGrid = React.forwardRef((props, ref) => {
 
     return (
         <div className={clsx([theme.aggrid, classes.grid])}>
-            <AgGridReact ref={ref} getLocaleText={getLocaleText} {...props} />
+            <AgGridReact
+                ref={ref}
+                getLocaleText={getLocaleText}
+                suppressPropertyNamesCheck={true}
+                {...props}
+            />
         </div>
     );
 });
