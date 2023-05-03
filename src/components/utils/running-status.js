@@ -83,11 +83,11 @@ export function getDynamicSimulationRunningStatus(dynamicSimulationStatus) {
     }
 }
 
-export function getVoltageInitRunningStatus(dynamicSimulationStatus) {
-    switch (dynamicSimulationStatus) {
-        case 'COMPLETED':
+export function getVoltageInitRunningStatus(voltageInitStatus) {
+    switch (voltageInitStatus) {
+        case 'OK':
             return RunningStatus.SUCCEED;
-        case 'FAILED':
+        case 'NOT_OK':
             return RunningStatus.FAILED;
         case 'RUNNING':
             return RunningStatus.RUNNING;

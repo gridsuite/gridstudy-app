@@ -58,8 +58,8 @@ import {
     getSensiRunningStatus,
     getShortCircuitRunningStatus,
     getDynamicSimulationRunningStatus,
-    RunningStatus,
     getVoltageInitRunningStatus,
+    RunningStatus,
 } from './utils/running-status';
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
