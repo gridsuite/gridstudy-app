@@ -1237,7 +1237,7 @@ export function fetchVoltageInitStatus(studyUuid, currentNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/voltage-init/status';
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchText(url);
 }
 
 export function fetchVoltageInitResult(studyUuid, currentNodeUuid) {
