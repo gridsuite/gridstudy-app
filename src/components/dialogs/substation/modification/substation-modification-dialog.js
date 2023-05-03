@@ -24,10 +24,14 @@ import {
 } from '../../../utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
 import {
-    fetchEquipmentInfos,
+    fetchNetworkElementInfos,
     modifySubstation,
 } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../../utils/equipment-types';
 
 const checkUniquePropertiesNames = (properties) => {
     const validValues = properties.filter((v) => v?.name);
@@ -215,10 +219,11 @@ const SubstationModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
-                fetchEquipmentInfos(
+                fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    'substations',
+                    EQUIPMENT_TYPES.SUBSTATION.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )

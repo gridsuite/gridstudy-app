@@ -796,36 +796,6 @@ export function fetchEquipmentsIds(
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
-export function fetchSubstation(studyUuid, currentNodeUuid, equipmentId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        'substations',
-        equipmentId,
-        true
-    );
-}
-
-export function fetchLine(studyUuid, currentNodeUuid, equipmentId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        'lines',
-        equipmentId,
-        true
-    );
-}
-
-export function fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        'voltage-levels',
-        equipmentId,
-        true
-    );
-}
-
 export function fetchLineOrTransformer(
     studyUuid,
     currentNodeUuid,

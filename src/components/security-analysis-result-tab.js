@@ -8,11 +8,16 @@
 import { useNodeData } from './study-container';
 import {
     fetchLineOrTransformer,
+    fetchNetworkElementInfos,
     fetchSecurityAnalysisResult,
-    fetchVoltageLevel,
 } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import SecurityAnalysisResult from './security-analysis-result';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from './utils/equipment-types';
 
 const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
 
@@ -21,6 +26,7 @@ export const SecurityAnalysisResultTab = ({
     nodeUuid,
     openVoltageLevelDiagram,
 }) => {
+    const { snackError } = useSnackMessage();
     const [securityAnalysisResult, isWaiting] = useNodeData(
         studyUuid,
         nodeUuid,
@@ -36,43 +42,41 @@ export const SecurityAnalysisResultTab = ({
                 // TODO ideally we would have the type of the equipment but we don't, that's why we do these calls
                 fetchLineOrTransformer(studyUuid, nodeUuid, row.subjectId)
                     .then((equipment) => {
-                        if (row.side) {
+                        if (!equipment) {
+                            // if we didnt find a line or transformer, it's a voltage level
+                            return fetchNetworkElementInfos(
+                                studyUuid,
+                                nodeUuid,
+                                EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                                EQUIPMENT_INFOS_TYPES.LIST.type,
+                                row.subjectId,
+                                true
+                            ).then((vl) => {
+                                vlId = vl.id;
+                                substationId = vl.substationId;
+                            });
+                        } else if (row.side) {
                             if (row.side === 'ONE') {
-                                vlId = equipment.voltageLevel1.id;
-                                substationId =
-                                    equipment.voltageLevel1.substationId;
+                                vlId = equipment.voltageLevelId1;
+                                substationId = equipment.substationId1;
                             } else if (row.side === 'TWO') {
-                                vlId = equipment.voltageLevel2.id;
-                                substationId =
-                                    equipment.voltageLevel2.substationId;
+                                vlId = equipment.voltageLevelId2;
+                                substationId = equipment.substationId2;
                             } else {
-                                vlId = equipment.voltageLevel3.id;
-                                substationId =
-                                    equipment.voltageLevel3.substationId;
+                                vlId = equipment.voltageLevelId3;
+                                substationId = equipment.substationId3;
                             }
                         } else {
-                            vlId = equipment.voltageLevel1.id;
-                            substationId = equipment.voltageLevel1.substationId;
+                            vlId = equipment.voltageLevelId1;
+                            substationId = equipment.substationId1;
                         }
-                    })
-                    // if we didnt find a line or transformer, it's a voltage level
-                    .catch(() => {
-                        return fetchVoltageLevel(
-                            studyUuid,
-                            nodeUuid,
-                            row.subjectId
-                        ).then((vl) => {
-                            vlId = vl.id;
-                            substationId = vl.substationId;
-                        });
                     })
                     .finally(() => {
                         if (!vlId) {
-                            console.error(
-                                "Impossible to open the SLD for equipment ID '" +
-                                    row.subjectId +
-                                    "'"
-                            );
+                            snackError({
+                                messageId: 'NetworkElementNotFound',
+                                messageValues: { elementId: row.subjectId },
+                            });
                         } else {
                             openVoltageLevelDiagram(vlId, substationId);
                         }

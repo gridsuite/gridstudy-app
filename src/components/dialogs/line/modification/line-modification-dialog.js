@@ -25,7 +25,7 @@ import {
 } from 'components/utils/field-constants';
 import React, { useCallback, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { fetchEquipmentInfos, modifyLine } from 'utils/rest-api';
+import { fetchNetworkElementInfos, modifyLine } from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
 import yup from '../../../utils/yup-config';
@@ -43,6 +43,10 @@ import {
     getCharacteristicsValidationSchema,
     getCharacteristicsWithOutConnectivityFormData,
 } from '../characteristics-pane/line-characteristics-pane-utils';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../../utils/equipment-types';
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -214,10 +218,11 @@ const LineModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
-                fetchEquipmentInfos(
+                fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    'lines',
+                    EQUIPMENT_TYPES.LINE.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )
