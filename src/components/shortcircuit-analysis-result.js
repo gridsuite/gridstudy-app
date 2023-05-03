@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -12,118 +12,47 @@ import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
 import { FilterPanel } from './spreadsheet/filter-panel/filter-panel';
 import { Box } from '@mui/system';
+import {
+    FILTER_TARGET,
+    FILTER_TYPE,
+    useGroupFilter,
+} from './spreadsheet/filter-panel/use-group-filter';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
     const theme = useTheme();
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
-    const [filters, setFilters] = useState({
-        childrenFilters: [],
-        parentFilters: [],
-    });
 
     const filtersDef = [
         {
             field: 'limitType',
-            type: 'select',
+            type: FILTER_TYPE.SELECT,
             options: ['Isc max', 'Isc min'],
-            target: 'parent',
+            target: FILTER_TARGET.PARENT,
         },
         {
             field: 'faultType',
-            type: 'select',
+            type: FILTER_TYPE.SELECT,
             options: ['Three-phase'],
-            target: 'parent',
+            target: FILTER_TARGET.PARENT,
         },
         {
             field: 'elementId',
-            type: 'text',
-            target: 'parent',
+            type: FILTER_TYPE.TEXT,
+            target: FILTER_TARGET.PARENT,
         },
         {
             field: 'connectableId',
-            type: 'text',
-            target: 'children',
+            type: FILTER_TYPE.TEXT,
+            target: FILTER_TARGET.CHILD,
         },
     ];
 
-    const groupBy = (array, key) => {
-        return array.reduce(function (result, object) {
-            result[object[key]] = result[object[key]] || [];
-            result[object[key]].push(object);
-            return result;
-        }, Object.create(null));
-    };
-
-    console.log('FILTERS', filters);
-
-    const updateFilter = (field, value) => {
-        const isParentFilter =
-            filtersDef.find((filter) => field === filter.field).target ===
-            'parent';
-
-        console.log('ISPARENT', isParentFilter);
-        if (value && value.length > 0) {
-            setFilters((oldFilters) => {
-                if (isParentFilter) {
-                    const parentFilters = oldFilters.parentFilters;
-                    const filterIndex = parentFilters.findIndex(
-                        (f) => f.field === field
-                    );
-                    if (filterIndex === -1) {
-                        parentFilters.push({
-                            field: field,
-                            value: value,
-                        });
-                    } else {
-                        parentFilters[filterIndex].value = value;
-                    }
-                    return { ...oldFilters, parentFilters: [...parentFilters] };
-                } else {
-                    const childrenFilters = oldFilters.childrenFilters;
-                    const filterIndex = childrenFilters.findIndex(
-                        (f) => f.field === field
-                    );
-                    if (filterIndex === -1) {
-                        childrenFilters.push({
-                            field: field,
-                            value: value,
-                        });
-                    } else {
-                        childrenFilters[filterIndex].value = value;
-                    }
-                    return {
-                        ...oldFilters,
-                        childrenFilters: [...childrenFilters],
-                    };
-                }
-            });
-        } else {
-            setFilters((oldFilters) => {
-                if (isParentFilter) {
-                    const parentFilters = oldFilters.parentFilters;
-
-                    const filterIndex = parentFilters.findIndex(
-                        (f) => f.field === field
-                    );
-                    parentFilters.splice(filterIndex, 1);
-                    return { ...oldFilters, parentFilters: [...parentFilters] };
-                } else {
-                    const childrenFilters = oldFilters.childrenFilters;
-
-                    const filterIndex = childrenFilters.findIndex(
-                        (f) => f.field === field
-                    );
-                    childrenFilters.splice(filterIndex, 1);
-                    return {
-                        ...oldFilters,
-                        childrenFilters: [...childrenFilters],
-                    };
-                }
-            });
-        }
-    };
+    const { filterResult, updateFilter } = useGroupFilter(
+        filtersDef,
+        'parentElementId'
+    );
 
     const columns = useMemo(() => {
         return [
@@ -180,52 +109,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         },
         [theme.selectedRow.background]
     );
-
-    const filterResult = (shortcutAnalysisResult) => {
-        if (shortcutAnalysisResult == null || filters == undefined) {
-            return shortcutAnalysisResult;
-        }
-
-        const childrenRows = shortcutAnalysisResult.filter(
-            (sc) => sc?.parentElementId != undefined
-        );
-
-        const filteredChidrenRows = filters.childrenFilters.reduce(
-            (childrenRowsResult, filter) => {
-                return childrenRowsResult.filter((sc) =>
-                    sc?.[filter.field]?.includes(filter?.value)
-                );
-            },
-            childrenRows
-        );
-
-        const childrenRowsGroupedByParent = groupBy(
-            filteredChidrenRows,
-            'parentElementId'
-        );
-
-        const parentRows = shortcutAnalysisResult.filter(
-            (sc) => sc?.parentElementId == undefined
-        );
-        const filteredParentRows = filters.parentFilters.reduce(
-            (parentRowsResult, filter) => {
-                return parentRowsResult.filter((sc) =>
-                    sc?.[filter.field]?.includes(filter?.value)
-                );
-            },
-            parentRows
-        );
-
-        return filteredParentRows.reduce((result, currentParent) => {
-            const childrenOfCurrentParent =
-                childrenRowsGroupedByParent[currentParent.elementId];
-            if (childrenOfCurrentParent != undefined) {
-                result.push(currentParent);
-                return result.concat(childrenOfCurrentParent);
-            }
-            return result;
-        }, []);
-    };
 
     function flattenResult(shortcutAnalysisResult) {
         const rows = [];
@@ -296,7 +179,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     );
 
     const renderResult = () => {
-        console.log('BEFORE', result);
         const rows = filterResult(flattenResult(result));
 
         return (
