@@ -89,6 +89,7 @@ export const NetworkMapTab = ({
     sensiStatus,
     shortCircuitStatus,
     dynamicSimulationStatus,
+    voltageInitStatus,
     /* visual*/
     visible,
     lineFullPath,
@@ -895,6 +896,7 @@ export const NetworkMapTab = ({
                     sensiStatus={sensiStatus}
                     shortCircuitStatus={shortCircuitStatus}
                     dynamicSimulationStatus={dynamicSimulationStatus}
+                    voltageInitStatus={voltageInitStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
                     disabled={disabled || isNodeReadOnly(currentNode)}

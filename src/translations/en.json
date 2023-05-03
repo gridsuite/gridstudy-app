@@ -141,6 +141,8 @@
     "LoadFlow": "LoadFlow",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
+    "VoltageInit": "Voltage profile initialization",
+    "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
 
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",

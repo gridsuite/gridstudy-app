@@ -19,6 +19,8 @@ import {
     stopSensitivityAnalysis,
     stopShortCircuitAnalysis,
     stopDynamicSimulation,
+    startVoltageInit,
+    stopVoltageInit,
 } from '../utils/rest-api';
 import { RunningStatus } from './utils/running-status';
 
@@ -47,6 +49,7 @@ export function RunButtonContainer({
     sensiStatus,
     shortCircuitStatus,
     dynamicSimulationStatus,
+    voltageInitStatus,
     setIsComputationRunning,
     runnable,
     disabled,
@@ -60,6 +63,8 @@ export function RunButtonContainer({
         useState(shortCircuitStatus);
     const [dynamicSimulationStatusState, setDynamicSimulationStatusState] =
         useState(dynamicSimulationStatus);
+    const [voltageInitStatusState, setVoltageInitStatusState] =
+        useState(voltageInitStatus);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -150,11 +155,13 @@ export function RunButtonContainer({
         setSensiStatusState(sensiStatus);
         setShortCircuitStatusState(shortCircuitStatus);
         setDynamicSimulationStatusState(dynamicSimulationStatus);
+        setVoltageInitStatusState(voltageInitStatus);
     }, [
         loadFlowStatus,
         sensiStatus,
         shortCircuitStatus,
         dynamicSimulationStatus,
+        voltageInitStatus,
         securityAnalysisStatus,
         currentNode,
     ]);
@@ -177,6 +184,10 @@ export function RunButtonContainer({
             } else if (action === runnable.DYNAMIC_SIMULATION) {
                 setDynamicSimulationStatusState(RunningStatus.IDLE);
                 stopDynamicSimulation(studyUuid, currentNode?.id);
+                setComputationStopped(!computationStopped);
+            } else if (action === runnable.VOLTAGE_INIT) {
+                setVoltageInitStatusState(RunningStatus.IDLE);
+                stopVoltageInit(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -261,6 +272,15 @@ export function RunButtonContainer({
                         headerId: 'startShortCircuitError',
                     });
                 });
+        } else if (action === runnable.VOLTAGE_INIT) {
+            setVoltageInitStatusState(RunningStatus.RUNNING);
+            startVoltageInit(studyUuid, currentNode?.id).catch((error) => {
+                setVoltageInitStatusState(RunningStatus.FAILED);
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'startVoltageInitError',
+                });
+            });
         } else if (action === runnable.DYNAMIC_SIMULATION) {
             checkDynamicSimulationParameters(studyUuid)
                 .then((isValid) => {
@@ -302,6 +322,8 @@ export function RunButtonContainer({
                 return shortCircuitStatusState;
             } else if (runnableType === runnable.DYNAMIC_SIMULATION) {
                 return dynamicSimulationStatusState;
+            } else if (runnableType === runnable.VOLTAGE_INIT) {
+                return voltageInitStatusState;
             }
         },
         [
@@ -310,11 +332,13 @@ export function RunButtonContainer({
             runnable.SENSITIVITY_ANALYSIS,
             runnable.SHORT_CIRCUIT_ANALYSIS,
             runnable.DYNAMIC_SIMULATION,
+            runnable.VOLTAGE_INIT,
             loadFlowStatusState,
             securityAnalysisStatusState,
             sensiStatusState,
             shortCircuitStatusState,
             dynamicSimulationStatusState,
+            voltageInitStatusState,
         ]
     );
 
@@ -331,6 +355,8 @@ export function RunButtonContainer({
             runnables.push(runnable.SENSITIVITY_ANALYSIS);
             // DYNAMICSIMULATION is currently a dev feature
             runnables.push(runnable.DYNAMIC_SIMULATION);
+            // VOLTAGEINIT is currently a dev feature
+            runnables.push(runnable.VOLTAGE_INIT);
         }
         return runnables;
     }, [runnable, enableDeveloperMode]);
