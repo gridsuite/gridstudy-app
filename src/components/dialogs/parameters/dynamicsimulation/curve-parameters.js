@@ -23,17 +23,10 @@ const useStyles = makeStyles((theme) => ({
         width: 'auto',
         height: '400px',
         position: 'relative',
-
-        //overrides the default computed max height for ag grid default selector editor to make it more usable
-        //can be removed if a custom selector editor is implemented
-        '& .ag-select-list': {
-            maxHeight: '300px !important',
-        },
     },
 }));
 
 const CurveParameters = ({ curves = [], onUpdateCurve }) => {
-    console.log('CurveParameters re-render', curves);
     const intl = useIntl();
     const [rowData, setRowData] = useState([]);
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
@@ -46,10 +39,6 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
     const handleSave = useCallback(
         (newCurves) => {
             // do save here
-            console.log(
-                'handleSave of CurveParameters is called with newCurves',
-                newCurves
-            );
             const notYetAddedCurves = newCurves.filter(
                 (curve) =>
                     !curves.find(
@@ -106,9 +95,6 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
 
     const onGridReady = useCallback(
         (params) => {
-            /*fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
-            .then((resp) => resp.json())
-            .then((data) => setRowData(data));*/
             setRowData(curves);
         },
         [curves]
@@ -117,16 +103,13 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
     const onSelectionChanged = useCallback(() => {
         const selectedRows = gridRef.current.api.getSelectedRows();
         setSelectedRowsLength(selectedRows.length);
-        console.log('Number of selected row', selectedRows.length);
     }, []);
 
     const handleAdd = useCallback(() => {
-        console.log('handleAdd is called');
         setOpen((prevState) => !prevState);
     }, []);
 
     const handleDelete = useCallback(() => {
-        console.log('handleDelete is called');
         const selectedRows = gridRef.current.api.getSelectedRows();
         setRowData((prev) => {
             const remainingRows = prev.filter(
@@ -170,10 +153,7 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
                             paddingLeft: theme.spacing(1),
                         }}
                     >
-                        <Typography
-                            //sx={{ marginBottom: theme.spacing(1) }}
-                            variant="subtitle1"
-                        >
+                        <Typography variant="subtitle1">
                             {`(${selectedRowsLength} / ${rowData.length})`}
                         </Typography>
                     </Grid>
