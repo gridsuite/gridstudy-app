@@ -17,13 +17,12 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { deleteAttachingLine } from '../../../utils/rest-api';
+import { deleteAttachingLine, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../dialogUtils';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
-import { FetchStatus } from 'components/utils/running-status';
 
 const emptyFormData = {
     [ATTACHED_LINE_ID]: null,

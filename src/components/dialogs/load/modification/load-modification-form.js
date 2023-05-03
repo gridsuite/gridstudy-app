@@ -31,7 +31,7 @@ import {
 import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const LoadModificationForm = ({
     currentNode,
@@ -73,6 +73,8 @@ const LoadModificationForm = ({
                     if (value) {
                         setLoadInfos(value);
                         setDataFetchStatus(FetchStatus.SUCCEED);
+                    } else {
+                        setDataFetchStatus(FetchStatus.FAILED);
                     }
                 })
                 .catch(() => {

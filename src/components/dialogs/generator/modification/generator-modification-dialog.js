@@ -65,7 +65,7 @@ import {
     REMOVE,
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const GeneratorModificationDialog = ({
     editData,

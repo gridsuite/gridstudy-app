@@ -36,7 +36,7 @@ import {
 import LoadCreationForm from './load-creation-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a load in the network

@@ -22,7 +22,7 @@ import { sanitizeString } from '../dialogUtils';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,

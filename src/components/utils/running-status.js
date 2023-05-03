@@ -12,13 +12,6 @@ export const RunningStatus = {
     RUNNING: 'RUNNING',
 };
 
-export const FetchStatus = {
-    SUCCEED: 'SUCCEED',
-    FAILED: 'FAILED',
-    IDLE: 'IDLE',
-    RUNNING: 'RUNNING',
-};
-
 export function getLoadFlowRunningStatus(status) {
     switch (status) {
         case 'CONVERGED':

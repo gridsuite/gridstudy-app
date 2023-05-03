@@ -44,7 +44,7 @@ import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a load in the network

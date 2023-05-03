@@ -17,7 +17,7 @@ import { getVariationsSchema } from './variation/variation-utils';
 import { generatorScaling } from '../../../utils/rest-api';
 import { VARIATION_TYPES, FORM_LOADING_DELAY } from '../../network/constants';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,

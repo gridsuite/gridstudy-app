@@ -71,7 +71,7 @@ import {
     getReactiveLimitsSchema,
 } from '../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

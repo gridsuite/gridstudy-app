@@ -43,7 +43,7 @@ import {
 import { buildNewBusbarSections } from 'components/utils/utils';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',

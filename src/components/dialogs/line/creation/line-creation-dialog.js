@@ -74,7 +74,7 @@ import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),

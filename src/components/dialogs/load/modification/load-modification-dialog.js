@@ -24,7 +24,7 @@ import { sanitizeString } from '../../dialogUtils';
 import yup from '../../../utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a load in the network

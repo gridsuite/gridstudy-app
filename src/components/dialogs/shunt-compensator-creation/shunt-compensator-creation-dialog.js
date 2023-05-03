@@ -49,7 +49,7 @@ import {
     getCharacteristicsFormValidationSchema,
 } from './characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

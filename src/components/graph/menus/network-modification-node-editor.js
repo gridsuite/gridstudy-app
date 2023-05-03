@@ -63,7 +63,7 @@ import SubstationModificationDialog from 'components/dialogs/substation/modifica
 import GenerationDispatchDialog from 'components/dialogs/generation-dispatch/generation-dispatch-dialog';
 import LineModificationDialog from 'components/dialogs/line/modification/line-modification-dialog';
 import { UPDATE_TYPE } from 'components/network/constants';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {

@@ -104,7 +104,7 @@ import {
     getLimitsValidationSchema,
 } from '../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'components/utils/running-status.js';
+import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a two windings transformer in the network

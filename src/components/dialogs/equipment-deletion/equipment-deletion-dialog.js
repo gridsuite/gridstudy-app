@@ -18,7 +18,7 @@ import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const formSchema = yup
     .object()

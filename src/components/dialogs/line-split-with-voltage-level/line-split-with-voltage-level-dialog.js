@@ -40,7 +40,7 @@ import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import { buildNewBusbarSections } from 'components/utils/utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [LINE1_ID]: '',

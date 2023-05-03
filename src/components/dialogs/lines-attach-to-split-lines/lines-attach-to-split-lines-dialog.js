@@ -38,7 +38,7 @@ import {
 } from '../connectivity/connectivity-form-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { FetchStatus } from 'components/utils/running-status';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,
