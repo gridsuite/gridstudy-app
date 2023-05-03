@@ -202,7 +202,7 @@ const ModelFilter = forwardRef(
 
         return (
             <>
-                {/* Associated models */}
+                {/* Models used in a mapping */}
                 <Grid item container sx={{ width: '100%' }}>
                     <Grid item xs={6}>
                         <Typography>
@@ -220,7 +220,7 @@ const ModelFilter = forwardRef(
                         />
                     </Grid>
                 </Grid>
-                {/* Variables (also called parameters in dynamic mapping) */}
+                {/* Variables which found in models used in a mapping */}
                 <Grid item sx={{ width: '100%' }}>
                     <Typography
                         sx={{ marginBottom: theme.spacing(1) }}
