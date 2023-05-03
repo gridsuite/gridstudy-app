@@ -60,18 +60,21 @@ const VoltageLevelModificationDialog = ({
     const [voltageLevelInfos, setVoltageLevelInfos] = useState(null);
     const formDataFromEditData = useMemo(
         () =>
-            editData
+        {
+            console.log('editData : ', editData);
+            return editData
                 ? {
-                      [EQUIPMENT_ID]: editData.equipmentId,
-                      [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
-                      [SUBSTATION_ID]: editData?.substationId,
-                      [NOMINAL_VOLTAGE]: editData.nominalVoltage,
-                      [LOW_VOLTAGE_LIMIT]: editData.lowVoltageLimit,
-                      [HIGH_VOLTAGE_LIMIT]: editData.highVoltageLimit,
-                      [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: editData.ipMin,
-                      [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: editData.ipMax,
-                  }
-                : null,
+                    [EQUIPMENT_ID]: editData.equipmentId,
+                    [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
+                    [SUBSTATION_ID]: editData?.substationId?.value,
+                    [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value,
+                    [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value,
+                    [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value,
+                    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: editData?.lowShortCircuitCurrentLimit?.value,
+                    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: editData?.highShortCircuitCurrentLimit?.value,
+                }
+                : null;
+        },
         [editData]
     );
 
