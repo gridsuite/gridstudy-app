@@ -516,12 +516,13 @@ export function fetchThreeWindingsTransformers(
 }
 
 export function fetchGenerators(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Generators',
-        'generators'
+        EQUIPMENT_TYPES.GENERATOR.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 
@@ -547,12 +548,13 @@ export function fetchDanglingLines(studyUuid, currentNodeUuid, substationsIds) {
 }
 
 export function fetchBatteries(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Batteries',
-        'batteries'
+        EQUIPMENT_TYPES.BATTERY.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 

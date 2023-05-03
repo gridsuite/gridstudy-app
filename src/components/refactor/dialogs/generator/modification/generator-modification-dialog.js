@@ -45,7 +45,7 @@ import {
 } from '../../../utils/field-constants';
 
 import {
-    fetchEquipmentInfos,
+    fetchNetworkElementInfos,
     modifyGenerator,
 } from '../../../../../utils/rest-api';
 import { sanitizeString } from '../../../../dialogs/dialogUtils';
@@ -64,6 +64,10 @@ import {
     getRowEmptyFormData,
     REMOVE,
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../../../util/equipment-types';
 
 const GeneratorModificationDialog = ({
     editData,
@@ -315,10 +319,11 @@ const GeneratorModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
-                fetchEquipmentInfos(
+                fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    'generators',
+                    EQUIPMENT_TYPES.GENERATOR.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )

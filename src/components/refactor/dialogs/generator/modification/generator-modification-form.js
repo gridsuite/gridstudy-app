@@ -46,6 +46,7 @@ import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AutocompleteInput from 'components/refactor/rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
+import { EQUIPMENT_TYPES } from '../../../../util/equipment-types';
 
 const GeneratorModificationForm = ({
     studyUuid,
@@ -80,7 +81,7 @@ const GeneratorModificationForm = ({
                 studyUuid,
                 currentNodeUuid,
                 undefined,
-                'GENERATOR',
+                EQUIPMENT_TYPES.GENERATOR.type,
                 true
             ).then((values) => {
                 setEquipmentOptions(values.sort());
