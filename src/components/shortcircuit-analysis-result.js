@@ -11,7 +11,6 @@ import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
 import { FilterPanel } from './spreadsheet/filter-panel/filter-panel';
-import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
@@ -19,53 +18,109 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     const theme = useTheme();
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
-
-    const [filters, setFilters] = useState([]);
+    const [filters, setFilters] = useState({
+        childrenFilters: [],
+        parentFilters: [],
+    });
 
     const filtersDef = [
         {
             field: 'limitType',
             type: 'select',
             options: ['Isc max', 'Isc min'],
+            target: 'parent',
         },
         {
             field: 'faultType',
             type: 'select',
             options: ['Three-phase'],
+            target: 'parent',
         },
         {
             field: 'elementId',
             type: 'text',
+            target: 'parent',
         },
         {
             field: 'connectableId',
             type: 'text',
+            target: 'children',
         },
     ];
 
+    const groupBy = (array, key) => {
+        return array.reduce(function (result, object) {
+            result[object[key]] = result[object[key]] || [];
+            result[object[key]].push(object);
+            return result;
+        }, Object.create(null));
+    };
+
+    console.log('FILTERS', filters);
+
     const updateFilter = (field, value) => {
+        const isParentFilter =
+            filtersDef.find((filter) => field === filter.field).target ===
+            'parent';
+
+        console.log('ISPARENT', isParentFilter);
         if (value && value.length > 0) {
             setFilters((oldFilters) => {
-                const filterIndex = oldFilters.findIndex(
-                    (f) => f.field === field
-                );
-                if (filterIndex === -1) {
-                    oldFilters.push({
-                        field: field,
-                        value: value,
-                    });
+                if (isParentFilter) {
+                    const parentFilters = oldFilters.parentFilters;
+                    const filterIndex = parentFilters.findIndex(
+                        (f) => f.field === field
+                    );
+                    if (filterIndex === -1) {
+                        parentFilters.push({
+                            field: field,
+                            value: value,
+                        });
+                    } else {
+                        parentFilters[filterIndex].value = value;
+                    }
+                    return { ...oldFilters, parentFilters: [...parentFilters] };
                 } else {
-                    oldFilters[filterIndex].value = value;
+                    const childrenFilters = oldFilters.childrenFilters;
+                    const filterIndex = childrenFilters.findIndex(
+                        (f) => f.field === field
+                    );
+                    if (filterIndex === -1) {
+                        childrenFilters.push({
+                            field: field,
+                            value: value,
+                        });
+                    } else {
+                        childrenFilters[filterIndex].value = value;
+                    }
+                    return {
+                        ...oldFilters,
+                        childrenFilters: [...childrenFilters],
+                    };
                 }
-                return [...oldFilters];
             });
         } else {
             setFilters((oldFilters) => {
-                const filterIndex = oldFilters.findIndex(
-                    (f) => f.field === field
-                );
-                oldFilters.splice(filterIndex, 1);
-                return [...oldFilters];
+                if (isParentFilter) {
+                    const parentFilters = oldFilters.parentFilters;
+
+                    const filterIndex = parentFilters.findIndex(
+                        (f) => f.field === field
+                    );
+                    parentFilters.splice(filterIndex, 1);
+                    return { ...oldFilters, parentFilters: [...parentFilters] };
+                } else {
+                    const childrenFilters = oldFilters.childrenFilters;
+
+                    const filterIndex = childrenFilters.findIndex(
+                        (f) => f.field === field
+                    );
+                    childrenFilters.splice(filterIndex, 1);
+                    return {
+                        ...oldFilters,
+                        childrenFilters: [...childrenFilters],
+                    };
+                }
             });
         }
     };
@@ -127,23 +182,49 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     );
 
     const filterResult = (shortcutAnalysisResult) => {
-        console.log('RESULT', shortcutAnalysisResult);
         if (shortcutAnalysisResult == null || filters == undefined) {
             return shortcutAnalysisResult;
         }
 
-        return filters.reduce(
-            (currentFilteredShortcutAnalysisResult, filter) => {
-                return currentFilteredShortcutAnalysisResult.filter((sc) =>
+        const childrenRows = shortcutAnalysisResult.filter(
+            (sc) => sc?.parentElementId != undefined
+        );
+
+        const filteredChidrenRows = filters.childrenFilters.reduce(
+            (childrenRowsResult, filter) => {
+                return childrenRowsResult.filter((sc) =>
                     sc?.[filter.field]?.includes(filter?.value)
                 );
             },
-            shortcutAnalysisResult
+            childrenRows
         );
 
-        // return shortcutAnalysisResult.filter((sc) =>
-        //     sc?.[filters.field]?.includes(filters.value)
-        // );
+        const childrenRowsGroupedByParent = groupBy(
+            filteredChidrenRows,
+            'parentElementId'
+        );
+
+        const parentRows = shortcutAnalysisResult.filter(
+            (sc) => sc?.parentElementId == undefined
+        );
+        const filteredParentRows = filters.parentFilters.reduce(
+            (parentRowsResult, filter) => {
+                return parentRowsResult.filter((sc) =>
+                    sc?.[filter.field]?.includes(filter?.value)
+                );
+            },
+            parentRows
+        );
+
+        return filteredParentRows.reduce((result, currentParent) => {
+            const childrenOfCurrentParent =
+                childrenRowsGroupedByParent[currentParent.elementId];
+            if (childrenOfCurrentParent != undefined) {
+                result.push(currentParent);
+                return result.concat(childrenOfCurrentParent);
+            }
+            return result;
+        }, []);
     };
 
     function flattenResult(shortcutAnalysisResult) {
@@ -200,6 +281,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 rows.push({
                     connectableId: fr.connectableId,
                     current: fr.current,
+                    parentElementId: fault.elementId,
                 });
             });
         });
@@ -214,6 +296,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     );
 
     const renderResult = () => {
+        console.log('BEFORE', result);
         const rows = filterResult(flattenResult(result));
 
         return (
