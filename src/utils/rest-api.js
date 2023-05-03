@@ -1194,7 +1194,6 @@ export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-// --- Voltage init API - BEGIN
 export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     console.info(
         `Fetching short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
@@ -1206,6 +1205,7 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
+// --- Voltage init API - BEGIN
 export function startVoltageInit(studyUuid, currentNodeUuid) {
     console.info(
         `Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
