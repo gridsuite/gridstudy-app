@@ -86,7 +86,6 @@ const LineTypeCatalogSelectorDialog = (props) => {
         }
     }, [props.rowData]);
 
-    // TODO Fix the multiple warnings in the console "AG Grid: invalid colDef property (...)"
     const columns = useMemo(() => {
         return [
             {

@@ -267,6 +267,7 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                         lineSegments: lineSegments,
                     }}
                     deleteCallback={handleDelete}
+                    numberOfInitialInputs={1}
                 />
                 <hr />
                 <Grid container direction="row-reverse" spacing={2}>

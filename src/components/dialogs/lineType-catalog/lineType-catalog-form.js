@@ -9,11 +9,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import yup from '../../utils/yup-config';
 import { gridItem, KilometerAdornment } from '../dialogUtils';
-import { Button } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import FloatInput from '../../utils/rhf-inputs/float-input';
 import { SEGMENT_DISTANCE_VALUE } from '../../utils/field-constants';
 import PropTypes from 'prop-types';
+import makeStyles from '@mui/styles/makeStyles';
+import IconButton from '@mui/material/IconButton';
+import Grid from '@mui/material/Grid';
 
 /**
  * lineSegment definition :
@@ -39,6 +41,12 @@ import PropTypes from 'prop-types';
  *
  */
 
+const useStyles = makeStyles((theme) => ({
+    simpleLabel: {
+        paddingTop: theme.spacing(1),
+    },
+}));
+
 const formSchema = yup.object().shape({
     [SEGMENT_DISTANCE_VALUE]: yup
         .number()
@@ -51,6 +59,8 @@ const emptyFormData = {
 };
 
 const LineTypeCatalogForm = (props) => {
+    const classes = useStyles();
+
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -102,17 +112,27 @@ const LineTypeCatalogForm = (props) => {
             {...formMethods}
         >
             {gridItem(segmentDistanceField, 2)}
-            {gridItem(<div>{lineType}</div>, 2)}
-            {gridItem(
-                <Button
+            {gridItem(<div className={classes.simpleLabel}>{lineType}</div>, 2)}
+            <Grid item xs={1}>
+                <IconButton
+                    className={classes.icon}
                     onClick={handleEditButtonClick}
-                    startIcon={<EditIcon />}
-                />,
-                1
+                >
+                    <EditIcon />
+                </IconButton>
+            </Grid>
+            {gridItem(
+                <div className={classes.simpleLabel}>{resistance}</div>,
+                2
             )}
-            {gridItem(<div>{resistance}</div>, 2)}
-            {gridItem(<div>{reactance}</div>, 2)}
-            {gridItem(<div>{susceptance}</div>, 2)}
+            {gridItem(
+                <div className={classes.simpleLabel}>{reactance}</div>,
+                2
+            )}
+            {gridItem(
+                <div className={classes.simpleLabel}>{susceptance}</div>,
+                2
+            )}
         </FormProvider>
     );
 };
