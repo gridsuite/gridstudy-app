@@ -35,16 +35,8 @@ import IntegerInput from 'components/utils/rhf-inputs/integer-input';
 
 import { CouplingOmnibusForm } from './coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from './switches-between-sections/switches-between-sections';
-import { makeStyles } from '@mui/styles';
-
-export const useStyles = makeStyles((theme) => ({
-    padding: {
-        paddingLeft: theme.spacing(2),
-    },
-}));
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
-    const classes = useStyles();
     const currentNodeUuid = currentNode?.id;
     const [substations, setSubstations] = useState([]);
 
@@ -171,9 +163,7 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
                 <SwitchesBetweenSections />
             </Grid>
             <GridSection title={'Coupling_Omnibus'} />
-            <Grid container className={classes.padding}>
-                {gridItem(couplingOmnibusForm, 12)}
-            </Grid>
+            <Grid container>{gridItem(couplingOmnibusForm, 12)}</Grid>
         </>
     );
 };

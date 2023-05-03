@@ -15,9 +15,9 @@ import {
     REACTIVE_POWER,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
+import { createLoad } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import EquipmentSearchDialog from '../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../form-search-copy-hook';
@@ -78,7 +78,6 @@ const LoadCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const [isDataFetched, setIsDataFetched] = useState(FetchStatus.IDLE);
 
     const equipmentPath = 'loads';
 
@@ -90,83 +89,39 @@ const LoadCreationDialog = ({
     const { reset } = formMethods;
 
     const fromSearchCopyToFormValues = (load) => {
-        fetchEquipmentInfos(
-            studyUuid,
-            currentNodeUuid,
-            'voltage-levels',
-            load.voltageLevelId,
-            true
-        ).then((vlResult) => {
-            reset({
-                [EQUIPMENT_ID]: load.id + '(1)',
-                [EQUIPMENT_NAME]: load.name ?? '',
-                [LOAD_TYPE]: load.type,
-                [ACTIVE_POWER]: load.p0,
-                [REACTIVE_POWER]: load.q0,
-                ...getConnectivityFormData({
-                    voltageLevelId: load.voltageLevelId,
-                    busbarSectionId: load.busOrBusbarSectionId,
-                    voltageLevelTopologyKind: vlResult.topologyKind,
-                    voltageLevelName: vlResult.name,
-                    voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                    voltageLevelSubstationId: vlResult.substationId,
-                    connectionDirection: load.connectionDirection,
-                    connectionName: load.connectionName,
-                }),
-            });
+        reset({
+            [EQUIPMENT_ID]: load.id + '(1)',
+            [EQUIPMENT_NAME]: load.name ?? '',
+            [LOAD_TYPE]: load.type,
+            [ACTIVE_POWER]: load.p0,
+            [REACTIVE_POWER]: load.q0,
+            ...getConnectivityFormData({
+                voltageLevelId: load.voltageLevelId,
+                busbarSectionId: load.busOrBusbarSectionId,
+                connectionDirection: load.connectionDirection,
+                connectionName: load.connectionName,
+            }),
         });
     };
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
-            setIsDataFetched(FetchStatus.RUNNING);
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'voltage-levels',
-                load.voltageLevelId,
-                true
-            )
-                .then((vlResult) => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            voltageLevelTopologyKind: vlResult.topologyKind,
-                            voltageLevelName: vlResult.name,
-                            voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                            voltageLevelSubstationId: vlResult.substationId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                    setIsDataFetched(FetchStatus.SUCCEED);
-                }) // if voltage level can't be found, we fill the form with minimal infos
-                .catch(() => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                    setIsDataFetched(FetchStatus.FAILED);
-                });
+            reset({
+                [EQUIPMENT_ID]: load.equipmentId,
+                [EQUIPMENT_NAME]: load.equipmentName ?? '',
+                [LOAD_TYPE]: load.loadType,
+                [ACTIVE_POWER]: load.activePower,
+                [REACTIVE_POWER]: load.reactivePower,
+                ...getConnectivityFormData({
+                    voltageLevelId: load.voltageLevelId,
+                    busbarSectionId: load.busOrBusbarSectionId,
+                    connectionDirection: load.connectionDirection,
+                    connectionName: load.connectionName,
+                    connectionPosition: load.connectionPosition,
+                }),
+            });
         },
-        [studyUuid, currentNodeUuid, reset]
+        [reset]
     );
 
     const searchCopy = useFormSearchCopy({
@@ -216,10 +171,7 @@ const LoadCreationDialog = ({
     }, [reset]);
 
     const open = useOpenShortWaitFetching({
-        isDataFetched:
-            !isUpdate ||
-            (editDataFetchStatus === FetchStatus.SUCCEED &&
-                isDataFetched === FetchStatus.SUCCEED),
+        isDataFetched: !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -234,9 +186,7 @@ const LoadCreationDialog = ({
                 searchCopy={searchCopy}
                 open={open}
                 isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        isDataFetched === FetchStatus.RUNNING)
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
                 }
                 {...dialogProps}
             >
