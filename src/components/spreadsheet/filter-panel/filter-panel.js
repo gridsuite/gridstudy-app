@@ -1,49 +1,45 @@
-import { Grid, IconButton, Select } from '@mui/material';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import { FormattedMessage } from 'react-intl';
-import clsx from 'clsx';
-import { makeStyles } from '@mui/styles';
-import { useState } from 'react';
-import { FilterPanelDialog } from './filter-panel-dialog';
+import { Autocomplete, Grid, TextField } from '@mui/material';
 
-const useStyles = makeStyles((theme) => ({
-    filterData: {
-        marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(6),
-    },
-}));
+export const FilterPanel = (props) => {
+    const { filtersDef, updateFilter } = props;
 
-export const FilterPanel = () => {
-    const classes = useStyles();
-    const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+    const createSelectFilter = (field, options) => {
+        return (
+            <Autocomplete
+                options={options}
+                onChange={(_, data) => updateFilter(field, data)}
+                renderInput={({ inputProps, ...rest }) => (
+                    <TextField
+                        fullWidth
+                        label={field}
+                        inputProps={{ ...inputProps }}
+                        {...rest}
+                    />
+                )}
+            />
+        );
+    };
 
-    const handleCloseFilterPanel = () => {
-        setIsFilterPanelOpen(false);
+    const createTextFilter = (field) => {
+        return (
+            <TextField
+                fullWidth
+                label={field}
+                onChange={(e) => updateFilter(field, e.target.value)}
+            />
+        );
     };
 
     return (
-        <Grid item className={classes.filterData}>
-            <span
-                className={clsx({
-                    // [classes.disabledLabel]: disabled,
-                })}
-            >
-                <FormattedMessage id="FilterData" />
-            </span>
-            <IconButton
-                // disabled={disabled}
-                // className={clsx({
-                //     [classes.blink]: selectedColumnsNames.size === 0,
-                // })}
-                aria-label="dialog"
-                onClick={() => setIsFilterPanelOpen(true)}
-            >
-                <FilterAltIcon />
-            </IconButton>
-            <FilterPanelDialog
-                open={isFilterPanelOpen}
-                onClose={handleCloseFilterPanel}
-            />
+        <Grid container xs={12}>
+            {filtersDef.map((filterDef) => (
+                <Grid p={1} item xs={4} lg={2} key={filterDef.field}>
+                    {filterDef.type === 'select' &&
+                        createSelectFilter(filterDef.field, filterDef.options)}
+                    {filterDef.type === 'text' &&
+                        createTextFilter(filterDef.field)}
+                </Grid>
+            ))}
         </Grid>
     );
 };

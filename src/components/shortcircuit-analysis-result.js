@@ -4,18 +4,71 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
+import { FilterPanel } from './spreadsheet/filter-panel/filter-panel';
+import { Button } from '@mui/material';
+import { Box } from '@mui/system';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
     const theme = useTheme();
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+
+    const [filters, setFilters] = useState([]);
+
+    const filtersDef = [
+        {
+            field: 'limitType',
+            type: 'select',
+            options: ['Isc max', 'Isc min'],
+        },
+        {
+            field: 'faultType',
+            type: 'select',
+            options: ['Three-phase'],
+        },
+        {
+            field: 'elementId',
+            type: 'text',
+        },
+        {
+            field: 'connectableId',
+            type: 'text',
+        },
+    ];
+
+    const updateFilter = (field, value) => {
+        if (value && value.length > 0) {
+            setFilters((oldFilters) => {
+                const filterIndex = oldFilters.findIndex(
+                    (f) => f.field === field
+                );
+                if (filterIndex === -1) {
+                    oldFilters.push({
+                        field: field,
+                        value: value,
+                    });
+                } else {
+                    oldFilters[filterIndex].value = value;
+                }
+                return [...oldFilters];
+            });
+        } else {
+            setFilters((oldFilters) => {
+                const filterIndex = oldFilters.findIndex(
+                    (f) => f.field === field
+                );
+                oldFilters.splice(filterIndex, 1);
+                return [...oldFilters];
+            });
+        }
+    };
 
     const columns = useMemo(() => {
         return [
@@ -72,6 +125,26 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         },
         [theme.selectedRow.background]
     );
+
+    const filterResult = (shortcutAnalysisResult) => {
+        console.log('RESULT', shortcutAnalysisResult);
+        if (shortcutAnalysisResult == null || filters == undefined) {
+            return shortcutAnalysisResult;
+        }
+
+        return filters.reduce(
+            (currentFilteredShortcutAnalysisResult, filter) => {
+                return currentFilteredShortcutAnalysisResult.filter((sc) =>
+                    sc?.[filter.field]?.includes(filter?.value)
+                );
+            },
+            shortcutAnalysisResult
+        );
+
+        // return shortcutAnalysisResult.filter((sc) =>
+        //     sc?.[filters.field]?.includes(filters.value)
+        // );
+    };
 
     function flattenResult(shortcutAnalysisResult) {
         const rows = [];
@@ -141,7 +214,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     );
 
     const renderResult = () => {
-        const rows = flattenResult(result);
+        const rows = filterResult(flattenResult(result));
 
         return (
             result &&
@@ -156,7 +229,18 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         );
     };
 
-    return renderResult();
+    return (
+        <>
+            <Box m={2}>
+                Filters
+                <FilterPanel
+                    updateFilter={updateFilter}
+                    filtersDef={filtersDef}
+                />
+            </Box>
+            {renderResult()}
+        </>
+    );
 };
 
 ShortCircuitAnalysisResult.defaultProps = {
