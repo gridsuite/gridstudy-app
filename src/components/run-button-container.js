@@ -431,4 +431,5 @@ RunButtonContainer.propTypes = {
     computationStopped: PropTypes.bool,
     disabled: PropTypes.bool,
     dynamicSimulationStatus: PropTypes.string,
+    voltageInitStatus: PropTypes.string,
 };
