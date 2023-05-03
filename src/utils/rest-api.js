@@ -602,12 +602,13 @@ export function fetchShuntCompensators(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Shunt compensators',
-        'shunt-compensators'
+        EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 
