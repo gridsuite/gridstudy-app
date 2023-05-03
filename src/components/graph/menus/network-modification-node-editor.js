@@ -149,7 +149,6 @@ export const CopyType = {
 };
 
 const NetworkModificationNodeEditor = () => {
-    const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
@@ -651,7 +650,7 @@ const NetworkModificationNodeEditor = () => {
         );
     };
 
-    const renderNetworkModificationsList = (network) => {
+    const renderNetworkModificationsList = () => {
         return (
             <DragDropContext
                 onDragEnd={commit}
@@ -672,20 +671,16 @@ const NetworkModificationNodeEditor = () => {
                                 onChecked={setSelectedItems}
                                 values={modifications}
                                 itemComparator={(a, b) => a.uuid === b.uuid}
-                                itemRenderer={(props) => {
-                                    console.log('props : ', props);
-                                    return (
-                                        <ModificationListItem
-                                            key={props.item.uuid}
-                                            onEdit={doEditModification}
-                                            isDragging={isDragging}
-                                            network={network}
-                                            isOneNodeBuilding={isAnyNodeBuilding}
-                                            {...props}
-                                            disabled={isLoading()}
-                                        />
-                                    )
-                                }}
+                                itemRenderer={(props) => (
+                                    <ModificationListItem
+                                        key={props.item.uuid}
+                                        onEdit={doEditModification}
+                                        isDragging={isDragging}
+                                        isOneNodeBuilding={isAnyNodeBuilding}
+                                        {...props}
+                                        disabled={isLoading()}
+                                    />
+                                )}
                                 toggleSelectAll={toggleSelectAll}
                             />
                             {provided.placeholder}
@@ -842,7 +837,7 @@ const NetworkModificationNodeEditor = () => {
             </Toolbar>
             {renderPaneSubtitle()}
 
-            {renderNetworkModificationsList(network)}
+            {renderNetworkModificationsList()}
             <Fab
                 className={classes.addButton}
                 color="primary"

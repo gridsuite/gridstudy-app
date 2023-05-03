@@ -47,6 +47,7 @@
 
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
+    "svgLoadingFail": "The diagram couldn't be loaded",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
     "geoDataLoadingFail": "Geographical data of study with id \"{studyUuid}\" couldn't be loaded",
 
@@ -62,6 +63,7 @@
     "loadingGeoData": "Loading geographic data in progress...",
     "LoadingRemoteData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",
+    "LoadingOf": "Loading of {value}...",
 
     "centerOnMap": "Center on the map",
     "openVoltageLevel": "Open the voltage level",
@@ -254,6 +256,7 @@
     "descLfDcValues": "DC Values",
     "resetToDefault": "default values",
     "showAdvancedParameters": "Advanced settings",
+    "showSpecificParameters": "Specific settings",
 
     "descLfReadSlackBus": "Read slack bus in the network: ",
     "descLfWriteSlackBus": "Write slack bus in the network: ",
@@ -363,6 +366,7 @@
     "Default": "Default",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
+    "DynaFlow": "Dyna Flow",
 
     "fetchLoadFlowProvidersError": "An error occurred while fetching the load flow providers",
     "fetchLoadFlowProviderError": "An error occured when fetching the load flow provider",
@@ -370,6 +374,7 @@
     "updateLoadFlowProviderError": "An error occurred while updating the load flow provider",
     "updateLoadFlowParametersError": "An error occurred while updating the load flow parameters",
     "fetchLoadFlowParametersError": "An error occured when fetching the load flow parameters",
+    "fetchLoadFlowSpecificParametersError": "An error occured when fetching the load flow specific parameters",
 
     "fetchSecurityAnalysisProvidersError": "An error occured when fetching security analysis provider list",
     "fetchSecurityAnalysisProviderError": "An error occured when fetching security analysis provider",
