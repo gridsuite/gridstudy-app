@@ -326,15 +326,13 @@ const StudyPane = ({
             >
                 {renderMapView()}
             </div>
-            <div
+            <TabPanelLazy
+                key={`spreadsheet-${currentNode?.id}`}
                 className="singlestretch-child"
-                style={{
-                    display:
-                        props.view === StudyView.SPREADSHEET ? null : 'none',
-                }}
+                selected={props.view === StudyView.SPREADSHEET}
             >
                 {renderTableView()}
-            </div>
+            </TabPanelLazy>
             {/* using a key in this tappanellazy because we can change the nodeuuid in this component */}
             <TabPanelLazy
                 key={`results-${currentNode?.id}`}
