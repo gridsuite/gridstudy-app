@@ -381,6 +381,30 @@ const TableWrapper = (props) => {
         return definition ? definition.index : 0;
     }
 
+    const scrollToEquipmentIndex = useCallback(() => {
+        if (
+            props.equipmentId !== null &&
+            props.equipmentType !== null &&
+            !manualTabSwitch
+        ) {
+            //calculate row index to scroll to
+            //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
+            const selectedRow = gridRef.current?.api?.getRowNode(
+                props.equipmentId
+            );
+            if (selectedRow) {
+                setScrollToIndex(selectedRow.rowIndex);
+                gridRef.current.api?.redrawRows(selectedRow);
+                gridRef.current.api?.ensureIndexVisible(scrollToIndex, 'top');
+            }
+        }
+    }, [
+        manualTabSwitch,
+        props.equipmentId,
+        props.equipmentType,
+        scrollToIndex,
+    ]);
+
     useEffect(() => {
         if (
             props.equipmentId !== null &&
@@ -391,18 +415,10 @@ const TableWrapper = (props) => {
                 props.equipmentType
             );
             setTabIndex(newTabIndex); // select the right table type
-
-            //calculate row index to scroll to
-            //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
-            const newRowIndex = gridRef.current?.api?.getRowNode(
-                props.equipmentId
-            )?.rowIndex;
-            setScrollToIndex(newRowIndex);
         } else if (manualTabSwitch) {
             setScrollToIndex();
         }
     }, [
-        props.network,
         props.equipmentId,
         props.equipmentType,
         props.equipmentChanged,
@@ -415,13 +431,12 @@ const TableWrapper = (props) => {
                 globalFilterRef.current.getFilterValue()
             );
         }
-    }, []);
+        scrollToEquipmentIndex();
+    }, [scrollToEquipmentIndex]);
 
-    useEffect(() => {
-        if (scrollToIndex) {
-            gridRef.current.api?.ensureIndexVisible(scrollToIndex, 'top');
-        }
-    }, [gridRef, scrollToIndex]);
+    const handleRowDataUpdated = useCallback(() => {
+        scrollToEquipmentIndex();
+    }, [scrollToEquipmentIndex]);
 
     useEffect(() => {
         const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
@@ -705,6 +720,7 @@ const TableWrapper = (props) => {
                         handleCellEditing={handleCellEditing}
                         handleEditingStopped={handleEditingStopped}
                         handleGridReady={handleGridReady}
+                        handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
