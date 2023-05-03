@@ -33,10 +33,7 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 /**
  * Dialog to create a load in the network
