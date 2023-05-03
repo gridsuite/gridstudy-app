@@ -23,7 +23,7 @@ import CountrySelect from '../country-select';
 import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES as ALL_EQUIPMENT_TYPES } from '../../../../../util/equipment-types';
+import { EQUIPMENT_TYPES as ALL_EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 
 export const EQUIPMENT_TYPES = {
     [ALL_EQUIPMENT_TYPES.GENERATOR.type]: ALL_EQUIPMENT_TYPES.GENERATOR,
