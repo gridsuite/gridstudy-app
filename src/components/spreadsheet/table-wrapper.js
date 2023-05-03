@@ -394,16 +394,14 @@ const TableWrapper = (props) => {
             );
             if (selectedRow) {
                 setScrollToIndex(selectedRow.rowIndex);
+                gridRef.current.api?.ensureIndexVisible(
+                    selectedRow.rowIndex,
+                    'top'
+                );
                 gridRef.current.api?.redrawRows(selectedRow);
-                gridRef.current.api?.ensureIndexVisible(scrollToIndex, 'top');
             }
         }
-    }, [
-        manualTabSwitch,
-        props.equipmentId,
-        props.equipmentType,
-        scrollToIndex,
-    ]);
+    }, [manualTabSwitch, props.equipmentId, props.equipmentType]);
 
     useEffect(() => {
         if (
