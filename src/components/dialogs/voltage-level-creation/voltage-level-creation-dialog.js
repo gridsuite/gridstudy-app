@@ -147,9 +147,12 @@ const VoltageLevelCreationDialog = ({
                     })
                     .join(' / '),
                 [COUPLING_OMNIBUS]: voltageLevel.couplingDevices,
-                [SWITCH_KINDS]: voltageLevel.switchKinds?.map((switchKind) => ({
-                    [SWITCH_KIND]: switchKind,
-                })),
+                [SWITCH_KINDS]:
+                    voltageLevel.switchKinds != null
+                        ? voltageLevel.switchKinds?.map((switchKind) => ({
+                              [SWITCH_KIND]: switchKind,
+                          }))
+                        : [],
             });
             if (voltageLevel.isRetrievedTopology === false) {
                 snackWarning({

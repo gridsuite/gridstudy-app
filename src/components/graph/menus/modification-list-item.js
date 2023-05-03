@@ -71,7 +71,7 @@ export const ModificationListItem = ({
     const classes = useStyles();
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const [computedValues, setComputedValues] = useState({});
+    const [computedValues, setComputedValues] = useState();
 
     /*
         this version is more optimized because it uses a switch statement instead of a series of if-else statements.
