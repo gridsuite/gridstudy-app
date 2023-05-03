@@ -25,7 +25,7 @@ import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 import { fetchDynamicSimulationModels } from '../../../../../../utils/rest-api';
 
-const transformModelsToVariables = (models) => {
+const modelsToVariablesTree = (models) => {
     return models.reduce(
         (obj, model) => ({
             ...obj,
@@ -57,9 +57,9 @@ const transformModelsToVariables = (models) => {
     );
 };
 
-const flatteningObject = (variables, parentId) => {
+const variablesTreeToVariablesArray = (variablesTree, parentId) => {
     let result = [];
-    Object.entries(variables).map(([key, value]) => {
+    Object.entries(variablesTree).map(([key, value]) => {
         const id = parentId ? `${parentId}/${key}` : key;
         if (typeof value === 'object') {
             // make container element
@@ -72,7 +72,7 @@ const flatteningObject = (variables, parentId) => {
                 },
             ];
             // make contained elements
-            result = [...result, ...flatteningObject(value, id)];
+            result = [...result, ...variablesTreeToVariablesArray(value, id)];
         }
         if (typeof value === 'string') {
             result = [
@@ -110,7 +110,7 @@ const ModelFilter = forwardRef(
         const theme = useTheme();
 
         const [allModels, setAllModels] = useState([]);
-        const [allVariables, setAllVariables] = useState({});
+        const [allVariables, setAllVariables] = useState({}); // a variables tree
 
         const variablesRef = useRef();
 
@@ -144,9 +144,9 @@ const ModelFilter = forwardRef(
             setSelectedModels(initialSelectedModels);
         }, [initialSelectedModels]);
 
-        // --- variables CheckboxTreeview --- //
+        // --- variables array CheckboxTreeview --- //
         const variables = useMemo(
-            () => flatteningObject(allVariables),
+            () => variablesTreeToVariablesArray(allVariables),
             [allVariables]
         );
 
@@ -164,7 +164,6 @@ const ModelFilter = forwardRef(
         useEffect(() => {
             fetchDynamicSimulationModels(studyUuid, currentNode.id).then(
                 (models) => {
-                    console.log('Models from dynamic mapping', models);
                     setAllModels(
                         models.map((model) => ({
                             name: model.modelName,
@@ -172,9 +171,9 @@ const ModelFilter = forwardRef(
                         }))
                     );
 
-                    // transform models to variables representation
-                    const variables = transformModelsToVariables(models);
-                    setAllVariables(variables);
+                    // transform models to variables tree representation
+                    const variablesTree = modelsToVariablesTree(models);
+                    setAllVariables(variablesTree);
                 }
             );
         }, [studyUuid, currentNode.id]);
