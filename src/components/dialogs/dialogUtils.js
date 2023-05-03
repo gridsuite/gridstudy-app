@@ -34,6 +34,9 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 'small',
         marginTop: theme.spacing(1),
     },
+    paddingButton: {
+        paddingLeft: theme.spacing(2),
+    },
     emptyListError: {
         color: theme.palette.error.main,
         fontSize: 'small',
