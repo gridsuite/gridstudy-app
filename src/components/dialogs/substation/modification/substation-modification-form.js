@@ -16,120 +16,74 @@ import {
     DELETION_MARK,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    NAME,
     PREVIOUS_VALUE,
-    VALUE,
 } from '../../../utils/field-constants';
 import CountrySelectionInput from '../../../utils/rhf-inputs/country-selection-input';
 import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
 import PropertyForm from '../property/property-form';
 import { getPropertyInitialValues } from '../property/property-utils';
-import {
-    fetchEquipmentInfos,
-    fetchEquipmentsIds,
-} from '../../../../utils/rest-api';
+import { fetchEquipmentsIds } from '../../../../utils/rest-api';
 import { useFormContext, useWatch } from 'react-hook-form';
 import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
-import { LocalizedCountries } from '../../../utils/localized-countries';
+import { LocalizedCountries } from '../../../utils/localized-countries-hook';
 
-const SubstationModificationForm = ({ currentNode, studyUuid }) => {
+const SubstationModificationForm = ({
+    currentNode,
+    studyUuid,
+    substationToModify,
+    onEquipmentIdChange,
+}) => {
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
-    const [equipmentInfos, setEquipmentInfos] = useState(null);
     const equipmentId = useWatch({
-        name: `${EQUIPMENT_ID}`,
+        name: EQUIPMENT_ID,
+    });
+    const watchProps = useWatch({
+        name: ADDITIONAL_PROPERTIES,
     });
     const { getValues, setValue } = useFormContext();
     const { translate } = LocalizedCountries();
-
-    const createPropertyValuesFromExistingEquipement = (propKey, propValue) => {
-        return {
-            [NAME]: propKey,
-            [VALUE]: null,
-            [PREVIOUS_VALUE]: propValue,
-            [DELETION_MARK]: false,
-        };
-    };
-
-    const updateWithEquipmentInfos = useCallback(
-        (equipmentInfos) => {
-            setEquipmentInfos(equipmentInfos);
-            // comes from existing eqpt in network, ex: Object { p1: "v1", p2: "v2" }
-            const equipmentProperties = equipmentInfos?.properties;
-            // comes from modification in db,
-            // ex: Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, deletionMark: false } }, {...} ]
-            const modificationProperties = getValues(
-                `${ADDITIONAL_PROPERTIES}`
-            );
-
-            let newModificationProperties = [];
-            // update array field with previous value / real equipment value
-            modificationProperties.forEach(function (property) {
-                newModificationProperties.push({
-                    ...property,
-                    [PREVIOUS_VALUE]:
-                        equipmentProperties &&
-                        property[NAME] in equipmentProperties
-                            ? equipmentProperties[property[NAME]]
-                            : null,
-                });
-            });
-            if (equipmentProperties) {
-                // add any property defined for this equipment, but missing in modification
-                const modificationPropertiesNames = modificationProperties.map(
-                    (obj) => obj[NAME]
-                );
-                for (const [propKey, propValue] of Object.entries(
-                    equipmentProperties
-                )) {
-                    if (!modificationPropertiesNames.includes(propKey)) {
-                        newModificationProperties.push(
-                            createPropertyValuesFromExistingEquipement(
-                                propKey,
-                                propValue
-                            )
-                        );
-                    }
-                }
-            }
-            setValue(`${ADDITIONAL_PROPERTIES}`, newModificationProperties);
-        },
-        [getValues, setValue]
-    );
 
     const getDeletionMark = useCallback(
         (idx) => {
             const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
             if (properties && typeof properties[idx] !== 'undefined') {
-                return properties[idx][DELETION_MARK];
+                return watchProps && properties[idx][DELETION_MARK];
             }
             return false;
         },
-        [getValues]
+        [getValues, watchProps]
     );
 
     const deleteCallback = useCallback(
         (idx) => {
-            let canRemoveLine = true;
-            let newModificationProperties = [];
-
+            let marked = false;
             const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
-            properties.forEach(function (property, forEachIdx) {
-                if (forEachIdx !== idx || property[PREVIOUS_VALUE] === null) {
-                    newModificationProperties.push({ ...property });
-                } else {
-                    // line is not deleted, and property is marked or unmarked for deletion
-                    let currentDeletionMark = property[DELETION_MARK];
-                    newModificationProperties.push({
-                        ...property,
-                        [DELETION_MARK]: !currentDeletionMark,
-                    });
+            if (properties && typeof properties[idx] !== 'undefined') {
+                marked = properties[idx][DELETION_MARK];
+            } else {
+                return false;
+            }
+
+            let canRemoveLine = true;
+            if (marked) {
+                // just unmark
+                setValue(
+                    `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
+                    false
+                );
+                canRemoveLine = false;
+            } else {
+                // we can mark as deleted only real prop (having a previous value)
+                if (properties[idx][PREVIOUS_VALUE]) {
+                    setValue(
+                        `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
+                        true
+                    );
                     canRemoveLine = false;
                 }
-            });
-            if (canRemoveLine === false) {
-                setValue(`${ADDITIONAL_PROPERTIES}`, newModificationProperties);
             }
+            // otherwise just delete the line
             return canRemoveLine;
         },
         [getValues, setValue]
@@ -148,24 +102,8 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
     }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {
-        if (equipmentId) {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'substations',
-                equipmentId,
-                true
-            )
-                .then((value) => {
-                    updateWithEquipmentInfos(value);
-                })
-                .catch(() => {
-                    updateWithEquipmentInfos(null);
-                });
-        } else {
-            updateWithEquipmentInfos(null);
-        }
-    }, [studyUuid, currentNodeUuid, equipmentId, updateWithEquipmentInfos]);
+        onEquipmentIdChange(equipmentId);
+    }, [equipmentId, onEquipmentIdChange]);
 
     const substationIdField = (
         <AutocompleteInput
@@ -185,7 +123,7 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-            previousValue={equipmentInfos?.name}
+            previousValue={substationToModify?.name}
             clearable
         />
     );
@@ -196,7 +134,7 @@ const SubstationModificationForm = ({ currentNode, studyUuid }) => {
             label={'Country'}
             formProps={filledTextField}
             size={'small'}
-            previousValue={translate(equipmentInfos?.countryCode)}
+            previousValue={translate(substationToModify?.countryCode)}
         />
     );
 
