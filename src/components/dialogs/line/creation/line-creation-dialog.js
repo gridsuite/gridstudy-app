@@ -76,7 +76,7 @@ import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import TextInput from 'components/utils/rhf-inputs/text-input';
-import LineTypeCatalogDialog from '../../lineType-catalog/lineType-catalog-dialog';
+import LineTypeCatalogSegmentDialog from '../../lineType-catalog/lineType-catalog-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 
@@ -469,7 +469,7 @@ const LineCreationDialog = ({
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />
-                <LineTypeCatalogDialog
+                <LineTypeCatalogSegmentDialog
                     open={isOpenLineTypeCatalogDialog}
                     onClose={handleCloseLineTypeCatalogDialog}
                     onSave={handleLineSegmentsBuildSubmit}

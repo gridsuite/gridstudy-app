@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useEffect } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -14,6 +13,7 @@ import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
+import React from 'react';
 import { useStyles } from '../../dialogs/dialogUtils';
 import ErrorInput from './error-inputs/error-input';
 import MidFormError from './error-inputs/mid-form-error';
@@ -31,7 +31,6 @@ const ExpandableInput = ({
     initialValue, // Initial value to display when we add a new entry to array
     getDeletionMark = null,
     deleteCallback = null,
-    numberOfInitialInputs = 0,
 }) => {
     const classes = useStyles();
     const {
@@ -41,18 +40,6 @@ const ExpandableInput = ({
     } = useFieldArray({
         name: name,
     });
-
-    const [isInitialInputsDone, setInitialInputsDone] = useState(false);
-
-    // Adds a number of default inputs in the first renders
-    useEffect(() => {
-        if (!isInitialInputsDone) {
-            setInitialInputsDone(true);
-            for (let i = 0; i < numberOfInitialInputs; i++) {
-                append(initialValue);
-            }
-        }
-    }, [append, initialValue, numberOfInitialInputs, isInitialInputsDone]);
 
     return (
         <Grid item container spacing={2}>
