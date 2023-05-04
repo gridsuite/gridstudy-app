@@ -139,17 +139,20 @@ const VoltageLevelCreationDialog = ({
                 [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
                     voltageLevel.ipMax
                 ),
-                [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT],
-                [SECTION_COUNT]: voltageLevel[SECTION_COUNT],
+                [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
+                [SECTION_COUNT]: voltageLevel[SECTION_COUNT] ?? 1,
                 [SWITCHES_BETWEEN_SECTIONS]: voltageLevel.switchKinds
                     ?.map((switchKind) => {
                         return intl.formatMessage({ id: switchKind });
                     })
                     .join(' / '),
                 [COUPLING_OMNIBUS]: voltageLevel.couplingDevices,
-                [SWITCH_KINDS]: voltageLevel.switchKinds?.map((switchKind) => ({
-                    [SWITCH_KIND]: switchKind,
-                })),
+                [SWITCH_KINDS]:
+                    voltageLevel.switchKinds != null
+                        ? voltageLevel.switchKinds?.map((switchKind) => ({
+                              [SWITCH_KIND]: switchKind,
+                          }))
+                        : [],
             });
             if (voltageLevel.isPartiallyCopied) {
                 snackWarning({

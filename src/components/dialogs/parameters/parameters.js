@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import makeStyles from '@mui/styles/makeStyles';
@@ -41,6 +41,7 @@ import {
     getDefaultLoadFlowProvider,
     setLoadFlowProvider,
     setLoadFlowParameters,
+    getLoadFlowSpecificParametersDescription,
 } from '../../../utils/rest-api';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -74,12 +75,8 @@ export const SwitchWithLabel = ({ value, label, callback }) => {
     const classes = useStyles();
     return (
         <>
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
+            <Grid item xs={8} className={classes.parameterName}>
+                <FormattedMessage id={label} />
             </Grid>
             <Grid item container xs={4} className={classes.controlItem}>
                 <Switch
@@ -97,12 +94,8 @@ export const DropDown = ({ value, label, values, callback }) => {
     const classes = useStyles();
     return (
         <>
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
+            <Grid item xs={8} className={classes.parameterName}>
+                <FormattedMessage id={label} />
             </Grid>
             <Grid item container xs={4} className={classes.controlItem}>
                 <Select
@@ -129,6 +122,10 @@ export const useStyles = makeStyles((theme) => ({
     minWidthMedium: {
         minWidth: theme.spacing(20),
     },
+    parameterName: {
+        fontWeight: 'bold',
+        marginTop: theme.spacing(1),
+    },
     controlItem: {
         justifyContent: 'flex-end',
         flexGrow: 1,
@@ -137,7 +134,7 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(1),
     },
-    advancedParameterButton: {
+    subgroupParametersButton: {
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(1),
     },
@@ -171,7 +168,7 @@ export const LabelledButton = ({ callback, label, name }) => {
 };
 
 export const TabPanel = (props) => {
-    const { children, value, index, ...other } = props;
+    const { children, value, index, keepState, ...other } = props;
     return (
         <Typography
             component="div"
@@ -182,7 +179,7 @@ export const TabPanel = (props) => {
             style={{ flexGrow: 1 }}
             {...other}
         >
-            {value === index && <Box p={1}>{children}</Box>}
+            {(value === index || keepState) && <Box p={1}>{children}</Box>}
         </Typography>
     );
 };
@@ -197,38 +194,25 @@ export const useParametersBackend = (
     backendFetchDefaultProvider,
     backendUpdateProvider,
     backendFetchParameters,
-    backendUpdateParameters
+    backendUpdateParameters,
+    backendFetchSpecificParameters
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const { snackError } = useSnackMessage();
 
     const [providers, setProviders] = useState(INITIAL_PROVIDERS);
+    const providersRef = useRef();
+    providersRef.current = providers;
 
     const [provider, setProvider] = useState(null);
+    const providerRef = useRef();
+    providerRef.current = provider;
 
     const [params, setParams] = useState(null);
 
-    useEffect(() => {
-        if (user !== null) {
-            backendFetchProviders()
-                .then((providers) => {
-                    // we can consider the provider get from back will be also used as
-                    // a key for translation
-                    const providersObj = providers.reduce(function (obj, v, i) {
-                        obj[v] = v;
-                        return obj;
-                    }, {});
-                    setProviders(providersObj);
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'fetch' + type + 'ProvidersError',
-                    });
-                });
-        }
-    }, [user, backendFetchProviders, type, snackError]);
+    const [specificParamsDescription, setSpecificParamsDescription] =
+        useState(null);
 
     const updateProvider = useCallback(
         (newProvider) => {
@@ -247,13 +231,15 @@ export const useParametersBackend = (
     const resetProvider = useCallback(() => {
         backendFetchDefaultProvider()
             .then((defaultProvider) => {
-                const providerNames = Object.keys(providers);
+                const providerNames = Object.keys(providersRef.current);
                 if (providerNames.length > 0) {
                     const newProvider =
-                        defaultProvider in providers
+                        defaultProvider in providersRef.current
                             ? defaultProvider
                             : providerNames[0];
-                    updateProvider(newProvider);
+                    if (newProvider !== providerRef.current) {
+                        updateProvider(newProvider);
+                    }
                 }
             })
             .catch((error) => {
@@ -262,13 +248,7 @@ export const useParametersBackend = (
                     headerId: 'fetchDefault' + type + 'ProviderError',
                 });
             });
-    }, [
-        type,
-        backendFetchDefaultProvider,
-        providers,
-        updateProvider,
-        snackError,
-    ]);
+    }, [type, backendFetchDefaultProvider, updateProvider, snackError]);
 
     const updateParameter = useCallback(
         (newParams) => {
@@ -330,10 +310,33 @@ export const useParametersBackend = (
     );
 
     useEffect(() => {
+        if (user !== null) {
+            backendFetchProviders()
+                .then((providers) => {
+                    // we can consider the provider gotten from back will be also used as
+                    // a key for translation
+                    const providersObj = providers.reduce(function (obj, v, i) {
+                        obj[v] = v;
+                        return obj;
+                    }, {});
+                    setProviders(providersObj);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'fetch' + type + 'ProvidersError',
+                    });
+                });
+        }
+    }, [user, backendFetchProviders, type, snackError]);
+
+    useEffect(() => {
         if (studyUuid) {
             if (backendFetchParameters) {
                 backendFetchParameters(studyUuid)
-                    .then((params) => setParams(params))
+                    .then((params) => {
+                        setParams(params);
+                    })
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
@@ -344,7 +347,7 @@ export const useParametersBackend = (
             backendFetchProvider(studyUuid)
                 .then((provider) => {
                     // if provider is not defined or not among allowed values, it's set to default value
-                    if (provider in providers) {
+                    if (provider in providersRef.current) {
                         setProvider(provider);
                     } else {
                         resetProvider();
@@ -356,14 +359,27 @@ export const useParametersBackend = (
                         headerId: 'fetch' + type + 'ProviderError',
                     });
                 });
+            if (backendFetchSpecificParameters) {
+                backendFetchSpecificParameters()
+                    .then((specificParams) => {
+                        setSpecificParamsDescription(specificParams);
+                    })
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId:
+                                'fetch' + type + 'SpecificParametersError',
+                        });
+                    });
+            }
         }
     }, [
         type,
         backendFetchParameters,
+        backendFetchSpecificParameters,
         backendFetchProvider,
         studyUuid,
         snackError,
-        providers,
         resetProvider,
         setParams,
     ]);
@@ -376,6 +392,7 @@ export const useParametersBackend = (
         params,
         updateParameter,
         resetParameters,
+        specificParamsDescription,
     ];
 };
 
@@ -435,7 +452,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         getDefaultLoadFlowProvider,
         setLoadFlowProvider,
         getLoadFlowParameters,
-        setLoadFlowParameters
+        setLoadFlowParameters,
+        getLoadFlowSpecificParametersDescription
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
@@ -459,8 +477,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
     const componentLibraries = useGetAvailableComponentLibraries(user);
-
-    const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
     useEffect(() => {
         setTabValue((oldValue) => {
@@ -573,6 +589,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         <TabPanel
                             value={tabValue}
                             index={TAB_VALUES.lfParamsTabValue}
+                            keepState
                         >
                             {studyUuid && (
                                 <LoadFlowParameters
@@ -580,16 +597,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     parametersBackend={
                                         loadFlowParametersBackend
                                     }
-                                    showAdvancedLfParams={showAdvancedLfParams}
-                                    setShowAdvancedLfParams={
-                                        setShowAdvancedLfParams
-                                    }
                                 />
                             )}
                         </TabPanel>
                         <TabPanel
                             value={tabValue}
                             index={TAB_VALUES.securityAnalysisParamsTabValue}
+                            keepState
                         >
                             {studyUuid && (
                                 <SecurityAnalysisParameters
@@ -608,6 +622,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     index={
                                         TAB_VALUES.sensitivityAnalysisParamsTabValue
                                     }
+                                    keepState
                                 >
                                     {studyUuid && (
                                         <SensitivityAnalysisParameters
@@ -628,6 +643,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     index={
                                         TAB_VALUES.shortCircuitParamsTabValue
                                     }
+                                    keepState
                                 >
                                     {studyUuid && (
                                         <ShortCircuitParameters
