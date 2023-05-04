@@ -507,12 +507,13 @@ export function fetchThreeWindingsTransformers(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Three windings transformers',
-        '3-windings-transformers'
+        EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 
