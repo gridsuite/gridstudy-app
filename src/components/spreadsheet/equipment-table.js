@@ -116,7 +116,6 @@ export const EquipmentTable = ({
                     onRowEditingStopped={handleEditingStopped}
                     onColumnMoved={handleColumnDrag}
                     suppressDragLeaveHidesColumns={true}
-                    suppressPropertyNamesCheck={true}
                     suppressColumnVirtualisation={true}
                     suppressClickEdit={true}
                     context={gridContext}
