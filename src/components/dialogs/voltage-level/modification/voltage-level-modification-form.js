@@ -26,6 +26,7 @@ import TextInput from '../../../utils/rhf-inputs/text-input';
 import { useWatch } from 'react-hook-form';
 import FloatInput from '../../../utils/rhf-inputs/float-input';
 import {
+    filledTextField,
     gridItem,
     GridSection,
     KiloAmpereAdornment,
@@ -87,7 +88,7 @@ const VoltageLevelModificationForm = ({
             getOptionLabel={getObjectId}
             outputTransform={getObjectId}
             size={'small'}
-            formProps={{ autoFocus: true, margin: 'normal' }}
+            formProps={{ autoFocus: true, ...filledTextField }}
         />
     );
 
@@ -95,7 +96,7 @@ const VoltageLevelModificationForm = ({
         <TextInput
             name={EQUIPMENT_NAME}
             label={'Name'}
-            formProps={{ margin: 'normal' }}
+            formProps={filledTextField}
             clearable
             previousValue={voltageLevelInfos?.name}
         />
@@ -114,7 +115,7 @@ const VoltageLevelModificationForm = ({
             inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) => value}
             size={'small'}
-            formProps={{ margin: 'normal' }}
+            formProps={filledTextField}
             previousValue={voltageLevelInfos?.substationId}
         />
     );

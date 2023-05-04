@@ -23,7 +23,7 @@ import yup from '../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
-    fetchEquipmentInfos,
+    fetchEquipmentInfos, fetchVoltageLevel,
     modifyVoltageLevel,
 } from '../../../../utils/rest-api';
 
@@ -90,24 +90,16 @@ const VoltageLevelModificationDialog = ({
 
     const onEquipmentIdChange = useCallback((equipmentId) => {
         if (equipmentId) {
-            fetchEquipmentInfos(
+            fetchVoltageLevel(
                 studyUuid,
                 currentNodeUuid,
-                'voltage-levels',
                 equipmentId,
-                true
             )
                 .then((voltageLevel) => {
                     console.log('voltageLevel : ', voltageLevel);
                     if (voltageLevel) {
                         setVoltageLevelInfos(voltageLevel);
                     }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'VoltageLevelModificationError',
-                    });
                 });
         } else {
             setVoltageLevelInfos(null);
