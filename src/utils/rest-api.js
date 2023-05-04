@@ -2567,14 +2567,13 @@ export function modifyVoltageLevel(
     currentNodeUuid,
     voltageLevelId,
     voltageLevelName,
-    substationId,
     nominalVoltage,
     lowVoltageLimit,
     highVoltageLimit,
     lowShortCircuitCurrentLimit,
     highShortCircuitCurrentLimit,
     isUpdate,
-    modificationUuid,
+    modificationUuid
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -2587,26 +2586,22 @@ export function modifyVoltageLevel(
         console.info('Creating voltage level modification');
     }
 
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
-        equipmentId: voltageLevelId,
-        equipmentName: toModificationOperation(voltageLevelName),
-        substationId: toModificationOperation(substationId),
-        nominalVoltage: toModificationOperation(nominalVoltage),
-        lowVoltageLimit: toModificationOperation(lowVoltageLimit),
-        highVoltageLimit: toModificationOperation(highVoltageLimit),
-        lowShortCircuitCurrentLimit: toModificationOperation(lowShortCircuitCurrentLimit),
-        highShortCircuitCurrentLimit: toModificationOperation(highShortCircuitCurrentLimit),
-    });
-
-    console.log('body : ', body)
     return backendFetchText(modificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: body,
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+            equipmentId: voltageLevelId,
+            equipmentName: toModificationOperation(voltageLevelName),
+            nominalVoltage: toModificationOperation(nominalVoltage),
+            lowVoltageLimit: toModificationOperation(lowVoltageLimit),
+            highVoltageLimit: toModificationOperation(highVoltageLimit),
+            ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
+            ipMax: toModificationOperation(highShortCircuitCurrentLimit),
+        }),
     });
 }
 

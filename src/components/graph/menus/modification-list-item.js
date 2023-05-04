@@ -69,9 +69,6 @@ export const ModificationListItem = ({
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [computedValues, setComputedValues] = useState({});
 
-    useEffect(() => {
-        console.log('modif : ', modif)
-    }, [modif])
     /*
         this version is more optimized because it uses a switch statement instead of a series of if-else statements.
         this makes the code more readable and easier to maintain.

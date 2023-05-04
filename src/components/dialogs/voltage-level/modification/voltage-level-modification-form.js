@@ -6,10 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import {
-    fetchEquipmentInfos,
-    fetchEquipmentsIds,
-} from '../../../../utils/rest-api';
+import { fetchEquipmentsIds } from '../../../../utils/rest-api';
 import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
 import { areIdsEqual, getObjectId } from '../../../utils/utils';
 import {
@@ -20,7 +17,6 @@ import {
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
     NOMINAL_VOLTAGE,
-    SUBSTATION_ID,
 } from '../../../utils/field-constants';
 import TextInput from '../../../utils/rhf-inputs/text-input';
 import { useWatch } from 'react-hook-form';
@@ -41,7 +37,7 @@ const VoltageLevelModificationForm = ({
     onEquipmentIdChange,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [substations, setSubstations] = useState([]);
+    //const [substations, setSubstations] = useState([]);
 
     const watchVoltageLevelId = useWatch({
         name: `${EQUIPMENT_ID}`,
@@ -49,11 +45,11 @@ const VoltageLevelModificationForm = ({
 
     useEffect(() => {
         onEquipmentIdChange(watchVoltageLevelId);
-    }, [watchVoltageLevelId]);
+    }, [watchVoltageLevelId, onEquipmentIdChange]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchEquipmentsIds(
+            /*fetchEquipmentsIds(
                 studyUuid,
                 currentNodeUuid,
                 undefined,
@@ -61,7 +57,7 @@ const VoltageLevelModificationForm = ({
                 true
             ).then((values) => {
                 setSubstations(values.sort((a, b) => a.localeCompare(b)));
-            });
+            });*/
 
             fetchEquipmentsIds(
                 studyUuid,
@@ -102,7 +98,7 @@ const VoltageLevelModificationForm = ({
         />
     );
 
-    const substationField = (
+    /* const substationField = (
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
@@ -118,7 +114,7 @@ const VoltageLevelModificationForm = ({
             formProps={filledTextField}
             previousValue={voltageLevelInfos?.substationId}
         />
-    );
+    ); */
 
     const nominalVoltageField = (
         <FloatInput
@@ -175,7 +171,6 @@ const VoltageLevelModificationForm = ({
             <Grid container spacing={2}>
                 {gridItem(voltageLevelIdField, 4)}
                 {gridItem(voltageLevelNameField, 4)}
-                {gridItem(substationField, 4)}
             </Grid>
             <GridSection title={'VoltageText'} />
             <Grid container spacing={2}>

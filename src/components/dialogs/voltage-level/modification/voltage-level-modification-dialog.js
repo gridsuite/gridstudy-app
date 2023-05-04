@@ -23,7 +23,7 @@ import yup from '../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
-    fetchEquipmentInfos, fetchVoltageLevel,
+    fetchVoltageLevel,
     modifyVoltageLevel,
 } from '../../../../utils/rest-api';
 
@@ -60,21 +60,20 @@ const VoltageLevelModificationDialog = ({
     const [voltageLevelInfos, setVoltageLevelInfos] = useState(null);
     const formDataFromEditData = useMemo(
         () =>
-        {
-            console.log('editData : ', editData);
-            return editData
+            editData
                 ? {
-                    [EQUIPMENT_ID]: editData.equipmentId,
-                    [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
-                    [SUBSTATION_ID]: editData?.substationId?.value,
-                    [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value,
-                    [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value,
-                    [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value,
-                    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: editData?.lowShortCircuitCurrentLimit?.value,
-                    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: editData?.highShortCircuitCurrentLimit?.value,
-                }
-                : null;
-        },
+                      [EQUIPMENT_ID]: editData.equipmentId,
+                      [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
+                      [SUBSTATION_ID]: editData?.substationId?.value,
+                      [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value,
+                      [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value,
+                      [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value,
+                      [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
+                          editData?.lowShortCircuitCurrentLimit?.value,
+                      [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
+                          editData?.highShortCircuitCurrentLimit?.value,
+                  }
+                : null,
         [editData]
     );
 
@@ -88,37 +87,33 @@ const VoltageLevelModificationDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const onEquipmentIdChange = useCallback((equipmentId) => {
-        if (equipmentId) {
-            fetchVoltageLevel(
-                studyUuid,
-                currentNodeUuid,
-                equipmentId,
-            )
-                .then((voltageLevel) => {
-                    console.log('voltageLevel : ', voltageLevel);
-                    if (voltageLevel) {
-                        setVoltageLevelInfos(voltageLevel);
-                    }
-                });
-        } else {
-            setVoltageLevelInfos(null);
-            reset(emptyFormData, { keepDefaultValues: false });
-        }
-    });
-
     const { reset } = methods;
+
+    const onEquipmentIdChange = useCallback(
+        (equipmentId) => {
+            if (equipmentId) {
+                fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId).then(
+                    (voltageLevel) => {
+                        if (voltageLevel) {
+                            setVoltageLevelInfos(voltageLevel);
+                        }
+                    }
+                );
+            } else {
+                setVoltageLevelInfos(null);
+                reset(emptyFormData, { keepDefaultValues: false });
+            }
+        },
+        [studyUuid, currentNodeUuid, reset]
+    );
 
     const onSubmit = useCallback(
         (voltageLevel) => {
-            console.log('voltage Level on submit', voltageLevel);
-
             modifyVoltageLevel(
                 studyUuid,
                 currentNodeUuid,
                 voltageLevel[EQUIPMENT_ID],
                 voltageLevel[EQUIPMENT_NAME],
-                voltageLevel[SUBSTATION_ID],
                 voltageLevel[NOMINAL_VOLTAGE],
                 voltageLevel[LOW_VOLTAGE_LIMIT],
                 voltageLevel[HIGH_VOLTAGE_LIMIT],
