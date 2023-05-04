@@ -43,7 +43,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
+import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 
 /**
