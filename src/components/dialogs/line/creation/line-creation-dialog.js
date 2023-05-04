@@ -39,7 +39,10 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { createLine, fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
 
 import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
-import { UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import {
+    UNDEFINED_CONNECTION_DIRECTION,
+    FORM_LOADING_DELAY,
+} from 'components/network/constants';
 import yup from '../../../utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../connectivity/connectivity-form-utils';
@@ -70,6 +73,8 @@ import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import TextInput from 'components/utils/rhf-inputs/text-input';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -90,7 +95,9 @@ export const LineCreationDialogTab = {
  * @param onCreateLine callback to customize line creation process
  * @param displayConnectivity to display connectivity section or not
  * @param voltageLevelOptionsPromise a promise that will bring available voltage levels
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const LineCreationDialog = ({
     editData,
@@ -99,6 +106,8 @@ const LineCreationDialog = ({
     onCreateLine = createLine,
     displayConnectivity = true,
     voltageLevelOptionsPromise,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -366,6 +375,14 @@ const LineCreationDialog = ({
         </Box>
     );
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
+
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -383,6 +400,10 @@ const LineCreationDialog = ({
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <Box
@@ -422,6 +443,8 @@ LineCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default LineCreationDialog;
