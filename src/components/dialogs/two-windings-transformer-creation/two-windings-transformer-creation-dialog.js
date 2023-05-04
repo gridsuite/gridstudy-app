@@ -470,6 +470,7 @@ const TwoWindingsTransformerCreationDialog = ({
         equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
     });
 
     useEffect(() => {
