@@ -665,7 +665,7 @@ export const NetworkMapTab = ({
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'loadflow'
             ) {
-                updateMapEquipments();
+                updateMapEquipments(currentNodeRef.current);
             }
         }
     }, [isInitialized, studyUpdatedForce, updateMapEquipments]);
