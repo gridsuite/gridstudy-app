@@ -592,12 +592,13 @@ export function fetchVscConverterStations(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'VSC converter stations',
-        'vsc-converter-stations'
+        EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 
