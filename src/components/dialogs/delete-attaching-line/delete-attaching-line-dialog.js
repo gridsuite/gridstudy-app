@@ -6,6 +6,7 @@
  */
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -16,11 +17,12 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { deleteAttachingLine } from '../../../utils/rest-api';
+import { deleteAttachingLine, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../dialogUtils';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 
 const emptyFormData = {
     [ATTACHED_LINE_ID]: null,
@@ -46,12 +48,16 @@ const formSchema = yup
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const DeleteAttachingLineDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -64,6 +70,14 @@ const DeleteAttachingLineDialog = ({
     });
 
     const { reset } = formMethods;
+
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
@@ -118,6 +132,10 @@ const DeleteAttachingLineDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-delete-attaching-line"
                 titleId="DeleteAttachingLine"
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <DeleteAttachingLineForm
@@ -133,6 +151,8 @@ DeleteAttachingLineDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default DeleteAttachingLineDialog;

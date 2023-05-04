@@ -7,6 +7,8 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ACTIVE_POWER,
     EQUIPMENT_ID,
@@ -15,13 +17,14 @@ import {
     REACTIVE_POWER,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { modifyLoad } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import yup from '../../../utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a load in the network
@@ -29,7 +32,9 @@ import LoadModificationForm from './load-modification-form';
  * @param defaultIdValue the default load id
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 
 const formSchema = yup
@@ -48,10 +53,13 @@ const LoadModificationDialog = ({
     defaultIdValue,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     const emptyFormData = useMemo(
         () => ({
@@ -118,6 +126,15 @@ const LoadModificationDialog = ({
         reset(emptyFormData);
     }, [reset, emptyFormData]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            ((editDataFetchStatus === FetchStatus.SUCCEED ||
+                editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED ||
+                    dataFetchStatus === FetchStatus.FAILED)),
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider
             validationSchema={formSchema}
@@ -131,11 +148,19 @@ const LoadModificationDialog = ({
                 aria-labelledby="dialog-modify-load"
                 maxWidth={'md'}
                 titleId="ModifyLoad"
+                open={open}
+                keepMounted={true}
+                isDataFetching={
+                    isUpdate &&
+                    (editDataFetchStatus === FetchStatus.RUNNING ||
+                        dataFetchStatus === FetchStatus.RUNNING)
+                }
                 {...dialogProps}
             >
                 <LoadModificationForm
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    setDataFetchStatus={setDataFetchStatus}
                 />
             </ModificationDialog>
         </FormProvider>
@@ -146,6 +171,8 @@ LoadModificationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default LoadModificationDialog;
