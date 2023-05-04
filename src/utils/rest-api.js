@@ -540,12 +540,13 @@ export function fetchLoads(studyUuid, currentNodeUuid, substationsIds) {
 }
 
 export function fetchDanglingLines(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Dangling lines',
-        'dangling-lines'
+        EQUIPMENT_TYPES.DANGLING_LINE.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 
