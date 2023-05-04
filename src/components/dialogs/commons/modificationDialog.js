@@ -31,6 +31,7 @@ import SubmitButton from './submitButton';
  * @param {Object} searchCopy Object managing search equipments for copy
  * @param {ReactElement} subtitle subtitle component to put inside DialogTitle
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
+ * @param {Boolean} isDataFetching props to display loading
  */
 const ModificationDialog = ({
     titleId,
@@ -122,6 +123,7 @@ ModificationDialog.propTypes = {
     disabledSave: PropTypes.bool,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
+    isDataFetching: PropTypes.bool,
 };
 
 export default ModificationDialog;

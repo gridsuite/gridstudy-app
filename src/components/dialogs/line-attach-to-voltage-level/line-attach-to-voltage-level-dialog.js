@@ -79,6 +79,7 @@ const formSchema = yup
  * @param editData the data to edit
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const LineAttachToVoltageLevelDialog = ({
     studyUuid,
@@ -341,6 +342,7 @@ LineAttachToVoltageLevelDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     editDataFetchStatus: PropTypes.string,
+    isUpdate: PropTypes.bool,
 };
 
 export default LineAttachToVoltageLevelDialog;
