@@ -492,12 +492,13 @@ export function fetchTwoWindingsTransformers(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Two windings transformers',
-        '2-windings-transformers'
+        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 
