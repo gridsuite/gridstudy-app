@@ -14,6 +14,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    LinearProgress,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
@@ -30,6 +31,7 @@ import SubmitButton from './submitButton';
  * @param {Object} searchCopy Object managing search equipments for copy
  * @param {ReactElement} subtitle subtitle component to put inside DialogTitle
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
+ * @param {Boolean} isDataFetching props to display loading
  */
 const ModificationDialog = ({
     titleId,
@@ -41,6 +43,7 @@ const ModificationDialog = ({
     searchCopy,
     subtitle,
     onValidated,
+    isDataFetching = false,
     ...dialogProps
 }) => {
     const { handleSubmit } = useFormContext();
@@ -83,6 +86,7 @@ const ModificationDialog = ({
             aria-labelledby={titleId}
             {...dialogProps}
         >
+            {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container justifyContent={'space-between'}>
                     <Grid item xs={11}>
@@ -119,6 +123,7 @@ ModificationDialog.propTypes = {
     disabledSave: PropTypes.bool,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
+    isDataFetching: PropTypes.bool,
 };
 
 export default ModificationDialog;

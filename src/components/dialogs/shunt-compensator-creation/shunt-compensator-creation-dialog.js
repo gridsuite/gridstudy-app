@@ -6,6 +6,7 @@
  */
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -30,7 +31,10 @@ import { createShuntCompensator } from '../../../utils/rest-api';
 import { sanitizeString } from '../dialogUtils';
 import EquipmentSearchDialog from '../equipment-search-dialog';
 import { useFormSearchCopy } from '../form-search-copy-hook';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../network/constants';
+import {
+    UNDEFINED_CONNECTION_DIRECTION,
+    FORM_LOADING_DELAY,
+} from '../../network/constants';
 import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import {
@@ -45,6 +49,7 @@ import {
     getCharacteristicsFormValidationSchema,
 } from './characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -69,12 +74,16 @@ const formSchema = yup
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const ShuntCompensatorCreationDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -190,6 +199,13 @@ const ShuntCompensatorCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -200,6 +216,10 @@ const ShuntCompensatorCreationDialog = ({
                 aria-labelledby="dialog-create-shuntCompensator"
                 titleId="CreateShuntCompensator"
                 searchCopy={searchCopy}
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <ShuntCompensatorCreationForm
@@ -226,6 +246,8 @@ ShuntCompensatorCreationDialog.propTypes = {
     }),
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default ShuntCompensatorCreationDialog;
