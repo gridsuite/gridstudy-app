@@ -335,6 +335,7 @@ const GeneratorModificationDialog = ({
                                 );
                             } else {
                                 // on first render, we need to adjust the UI for the reactive capability curve table
+                                // we need to check if the generator we fetch has reactive capability curve table
                                 if (previousReactiveCapabilityCurveTable) {
                                     const currentReactiveCapabilityCurveTable =
                                         getValues(
