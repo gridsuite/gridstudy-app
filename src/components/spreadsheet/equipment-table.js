@@ -26,6 +26,7 @@ export const EquipmentTable = ({
     handleEditingStopped,
     handleGridReady,
     handleRowDataUpdated,
+    handleBodyScroll,
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
@@ -122,6 +123,7 @@ export const EquipmentTable = ({
                     suppressClickEdit={true}
                     context={gridContext}
                     onGridReady={handleGridReady}
+                    onBodyScroll={handleBodyScroll}
                     shouldHidePinnedHeaderRightBorder={
                         shouldHidePinnedHeaderRightBorder
                     }

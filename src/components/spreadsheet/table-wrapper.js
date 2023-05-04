@@ -330,6 +330,7 @@ const TableWrapper = (props) => {
     const handleSwitchTab = useCallback(
         (value) => {
             setManualTabSwitch(true);
+            setScrollToIndex();
             setTabIndex(value);
             cleanTableState();
         },
@@ -435,6 +436,13 @@ const TableWrapper = (props) => {
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
     }, [scrollToEquipmentIndex]);
+
+    const handleBodyScroll = useCallback(() => {
+        if (scrollToIndex) {
+            setScrollToIndex();
+            setManualTabSwitch(true);
+        }
+    }, [scrollToIndex]);
 
     useEffect(() => {
         const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
@@ -719,6 +727,7 @@ const TableWrapper = (props) => {
                         handleEditingStopped={handleEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
+                        handleBodyScroll={handleBodyScroll}
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
