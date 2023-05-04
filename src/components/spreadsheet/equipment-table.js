@@ -10,6 +10,9 @@ import { useTheme } from '@mui/styles';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
+import { FILTER_TYPE, useRowFilter } from './filter-panel/use-row-filter';
+import { useIntl } from 'react-intl';
+import { FilterPanel } from './filter-panel/filter-panel';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -30,6 +33,20 @@ export const EquipmentTable = ({
     shouldHidePinnedHeaderRightBorder,
 }) => {
     const theme = useTheme();
+    const intl = useIntl();
+
+    const filtersDef = useMemo(
+        () => [
+            {
+                field: 'id',
+                label: intl.formatMessage({ id: 'IDNode' }),
+                type: FILTER_TYPE.TEXT,
+            },
+        ],
+        [intl]
+    );
+
+    const { filterResult, updateFilter } = useRowFilter(filtersDef);
 
     const getRowStyle = useCallback(
         (params) => {
@@ -100,32 +117,38 @@ export const EquipmentTable = ({
                     />
                 </div>
             ) : (
-                <CustomAGGrid
-                    ref={gridRef}
-                    getRowId={getRowId}
-                    rowData={rowData}
-                    pinnedTopRowData={topPinnedData}
-                    getRowStyle={getRowStyle}
-                    columnDefs={columnData}
-                    defaultColDef={defaultColDef}
-                    enableCellTextSelection={true}
-                    undoRedoCellEditing={true}
-                    editType={'fullRow'}
-                    onCellValueChanged={handleCellEditing}
-                    onRowValueChanged={handleRowEditing}
-                    onRowEditingStopped={handleEditingStopped}
-                    onColumnMoved={handleColumnDrag}
-                    suppressDragLeaveHidesColumns={true}
-                    suppressPropertyNamesCheck={true}
-                    suppressColumnVirtualisation={true}
-                    suppressClickEdit={true}
-                    context={gridContext}
-                    onGridReady={handleGridReady}
-                    shouldHidePinnedHeaderRightBorder={
-                        shouldHidePinnedHeaderRightBorder
-                    }
-                    getRowHeight={getRowHeight}
-                />
+                <>
+                    <FilterPanel
+                        filtersDef={filtersDef}
+                        updateFilter={updateFilter}
+                    />
+                    <CustomAGGrid
+                        ref={gridRef}
+                        getRowId={getRowId}
+                        rowData={filterResult(rowData)}
+                        pinnedTopRowData={topPinnedData}
+                        getRowStyle={getRowStyle}
+                        columnDefs={columnData}
+                        defaultColDef={defaultColDef}
+                        enableCellTextSelection={true}
+                        undoRedoCellEditing={true}
+                        editType={'fullRow'}
+                        onCellValueChanged={handleCellEditing}
+                        onRowValueChanged={handleRowEditing}
+                        onRowEditingStopped={handleEditingStopped}
+                        onColumnMoved={handleColumnDrag}
+                        suppressDragLeaveHidesColumns={true}
+                        suppressPropertyNamesCheck={true}
+                        suppressColumnVirtualisation={true}
+                        suppressClickEdit={true}
+                        context={gridContext}
+                        onGridReady={handleGridReady}
+                        shouldHidePinnedHeaderRightBorder={
+                            shouldHidePinnedHeaderRightBorder
+                        }
+                        getRowHeight={getRowHeight}
+                    />
+                </>
             )}
         </>
     );

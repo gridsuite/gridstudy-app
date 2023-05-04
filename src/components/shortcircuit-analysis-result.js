@@ -24,33 +24,44 @@ const ShortCircuitAnalysisResult = ({ result }) => {
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
 
-    const filtersDef = [
-        {
-            field: 'limitType',
-            type: FILTER_TYPE.SELECT,
-            options: ['Isc max', 'Isc min'],
-            target: FILTER_TARGET.PARENT,
-        },
-        {
-            field: 'faultType',
-            type: FILTER_TYPE.SELECT,
-            options: ['Three-phase'],
-            target: FILTER_TARGET.PARENT,
-        },
-        {
-            field: 'elementId',
-            type: FILTER_TYPE.TEXT,
-            target: FILTER_TARGET.PARENT,
-        },
-        {
-            field: 'connectableId',
-            type: FILTER_TYPE.TEXT,
-            target: FILTER_TARGET.CHILD,
-        },
-    ];
+    const filtersDef = useMemo(
+        () => [
+            {
+                field: 'elementId',
+                label: intl.formatMessage({ id: 'IDNode' }),
+                type: FILTER_TYPE.TEXT,
+                target: FILTER_TARGET.PARENT,
+            },
+            {
+                field: 'faultType',
+                label: intl.formatMessage({ id: 'Type' }),
+                type: FILTER_TYPE.SELECT,
+                options: [intl.formatMessage({ id: 'THREE_PHASE' })],
+                target: FILTER_TARGET.PARENT,
+            },
+            {
+                field: 'connectableId',
+                label: intl.formatMessage({ id: 'Feeders' }),
+                type: FILTER_TYPE.TEXT,
+                target: FILTER_TARGET.CHILD,
+            },
+            {
+                field: 'limitType',
+                label: intl.formatMessage({ id: 'LimitType' }),
+                type: FILTER_TYPE.SELECT,
+                options: [
+                    intl.formatMessage({ id: 'LOW_SHORT_CIRCUIT_CURRENT' }),
+                    intl.formatMessage({ id: 'HIGH_SHORT_CIRCUIT_CURRENT' }),
+                ],
+                target: FILTER_TARGET.PARENT,
+            },
+        ],
+        [intl]
+    );
 
     const { filterResult, updateFilter } = useGroupFilter(
         filtersDef,
+        'elementId',
         'parentElementId'
     );
 
@@ -111,6 +122,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     );
 
     function flattenResult(shortcutAnalysisResult) {
+        console.log('RESULTS', shortcutAnalysisResult);
         const rows = [];
         shortcutAnalysisResult?.faults?.forEach((f) => {
             const fault = f.fault;
@@ -196,8 +208,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
 
     return (
         <>
-            <Box m={2}>
-                Filters
+            <Box m={1}>
                 <FilterPanel
                     updateFilter={updateFilter}
                     filtersDef={filtersDef}

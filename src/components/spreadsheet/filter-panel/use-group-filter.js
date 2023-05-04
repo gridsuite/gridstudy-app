@@ -60,7 +60,7 @@ export const FILTER_TYPE = {
     TEXT: 'text',
 };
 
-export const useGroupFilter = (filtersDef, linkKey) => {
+export const useGroupFilter = (filtersDef, parentKey, linkToParentKey) => {
     const [childrenFilters, setChildrenFilters] = useState([]);
     const [parentFilters, setParentFilters] = useState([]);
 
@@ -134,25 +134,29 @@ export const useGroupFilter = (filtersDef, linkKey) => {
                 return result;
             }
 
-            const childrenRows = result.filter((row) => row?.[linkKey] != null);
+            const childrenRows = result.filter(
+                (row) => row?.[linkToParentKey] != null
+            );
 
             const filteredChidrenRows = applyFilters(
                 childrenRows,
                 childrenFilters
             );
 
-            const childrenRowsGroupedByParent = groupBy(
-                filteredChidrenRows,
-                linkKey
+            const parentRows = result.filter(
+                (row) => row?.[linkToParentKey] == null
             );
-
-            const parentRows = result.filter((row) => row?.[linkKey] == null);
 
             const filteredParentRows = applyFilters(parentRows, parentFilters);
 
+            const childrenRowsGroupedByParent = groupBy(
+                filteredChidrenRows,
+                linkToParentKey
+            );
+
             return filteredParentRows.reduce((result, currentParent) => {
                 const childrenOfCurrentParent =
-                    childrenRowsGroupedByParent[currentParent.elementId];
+                    childrenRowsGroupedByParent[currentParent[parentKey]];
                 if (childrenOfCurrentParent != null) {
                     result.push(currentParent);
                     return result.concat(childrenOfCurrentParent);
@@ -160,7 +164,7 @@ export const useGroupFilter = (filtersDef, linkKey) => {
                 return result;
             }, []);
         },
-        [parentFilters, childrenFilters, linkKey, applyFilters]
+        [parentFilters, childrenFilters, linkToParentKey, applyFilters]
     );
 
     return { filterResult, updateFilter };
