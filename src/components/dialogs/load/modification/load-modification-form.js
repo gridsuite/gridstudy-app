@@ -31,8 +31,13 @@ import {
 import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
+import { FetchStatus } from 'utils/rest-api';
 
-const LoadModificationForm = ({ currentNode, studyUuid }) => {
+const LoadModificationForm = ({
+    currentNode,
+    studyUuid,
+    setDataFetchStatus,
+}) => {
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [loadInfos, setLoadInfos] = useState(null);
@@ -56,21 +61,29 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
 
     useEffect(() => {
         if (loadId) {
+            setDataFetchStatus(FetchStatus.RUNNING);
             fetchEquipmentInfos(
                 studyUuid,
                 currentNodeUuid,
                 'loads',
                 loadId,
                 true
-            ).then((value) => {
-                if (value) {
-                    setLoadInfos(value);
-                }
-            });
+            )
+                .then((value) => {
+                    if (value) {
+                        setLoadInfos(value);
+                        setDataFetchStatus(FetchStatus.SUCCEED);
+                    } else {
+                        setDataFetchStatus(FetchStatus.FAILED);
+                    }
+                })
+                .catch(() => {
+                    setDataFetchStatus(FetchStatus.FAILED);
+                });
         } else {
             setLoadInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, loadId]);
+    }, [studyUuid, currentNodeUuid, loadId, setDataFetchStatus]);
 
     const getObjectId = useCallback((object) => {
         if (typeof object === 'string') {
