@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -20,10 +20,10 @@ import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useIntl } from 'react-intl';
-import { useNameOrId } from '../util/equipmentInfosHandler';
+import { useNameOrId } from '../utils/equipmentInfosHandler';
 import {
     energiseBranchEnd,
-    fetchEquipmentInfos,
+    fetchNetworkElementInfos,
     lockoutBranch,
     switchOnBranch,
     tripBranch,
@@ -32,9 +32,13 @@ import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
-import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
+import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -70,18 +74,40 @@ const withBranchMenu =
         const [branch, setBranch] = useState(null);
 
         const getTranslationKey = (key) => {
-            return key.concat(
-                equipmentType === equipments.lines ? 'Line' : '2WTransformer'
-            );
+            return key.concat(getEquipmentTranslation(equipmentType));
         };
 
+        const getEquipmentTranslation = useCallback((equipmentType) => {
+            switch (equipmentType) {
+                case equipments.lines:
+                    return 'Line';
+                case equipments.hvdcLines:
+                    return 'HvdcLine';
+                case equipments.twoWindingsTransformers:
+                    return '2WTransformer';
+                default:
+                    break;
+            }
+        }, []);
+
+        const getRealEquipmentType = useCallback((equipmentType) => {
+            switch (equipmentType) {
+                case equipments.lines:
+                    return EQUIPMENT_TYPES.LINE.type;
+                case equipments.hvdcLines:
+                    return EQUIPMENT_TYPES.HVDC_LINE.type;
+                case equipments.twoWindingsTransformers:
+                    return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
+                default:
+                    break;
+            }
+        }, []);
         useEffect(() => {
-            fetchEquipmentInfos(
+            fetchNetworkElementInfos(
                 studyUuid,
                 currentNode?.id,
-                equipmentType === equipments.lines
-                    ? 'lines'
-                    : '2-windings-transformers',
+                getRealEquipmentType(equipmentType),
+                EQUIPMENT_INFOS_TYPES.LIST.type,
                 id,
                 false
             ).then((value) => {
@@ -89,7 +115,13 @@ const withBranchMenu =
                     setBranch(value);
                 }
             });
-        }, [studyUuid, currentNode?.id, equipmentType, id]);
+        }, [
+            studyUuid,
+            currentNode?.id,
+            equipmentType,
+            id,
+            getRealEquipmentType,
+        ]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -202,29 +234,31 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleTrip()}
-                    disabled={
-                        !isNodeEditable ||
-                        branch.branchStatus === 'FORCED_OUTAGE'
-                    }
-                >
-                    <ListItemIcon>
-                        <OfflineBoltOutlinedIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({
-                                    id: getTranslationKey('Trip'),
-                                })}
-                            </Typography>
+                {equipmentType !== equipments.hvdcLines && (
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() => handleTrip()}
+                        disabled={
+                            !isNodeEditable ||
+                            branch.branchStatus === 'FORCED_OUTAGE'
                         }
-                    />
-                </MenuItem>
+                    >
+                        <ListItemIcon>
+                            <OfflineBoltOutlinedIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({
+                                        id: getTranslationKey('Trip'),
+                                    })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                )}
                 {equipmentType === equipments.lines && (
                     <MenuItem
                         className={classes.menuItem}
@@ -323,31 +357,33 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() =>
-                        handleDeleteEquipment(
-                            getFeederTypeFromEquipmentType(equipmentType),
-                            id
-                        )
-                    }
-                    disabled={!isNodeEditable}
-                >
-                    <ListItemIcon>
-                        <DeleteIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({
-                                    id: 'DeleteFromMenu',
-                                })}
-                            </Typography>
+                {equipmentType !== equipments.hvdcLines && (
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() =>
+                            handleDeleteEquipment(
+                                getFeederTypeFromEquipmentType(equipmentType),
+                                id
+                            )
                         }
-                    />
-                </MenuItem>
+                        disabled={!isNodeEditable}
+                    >
+                        <ListItemIcon>
+                            <DeleteIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            className={classes.listItemText}
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({
+                                        id: 'DeleteFromMenu',
+                                    })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                )}
             </Menu>
         );
     };

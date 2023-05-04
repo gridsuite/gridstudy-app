@@ -9,7 +9,7 @@ import {
     fetchDynamicSimulationResult,
     fetchDynamicSimulationResultTimeSeries,
 } from '../../../utils/rest-api';
-import WaitingLoader from '../../util/waiting-loader';
+import WaitingLoader from '../../utils/waiting-loader';
 import DynamicSimulationResult from './dynamic-simulation-result';
 import { useCallback } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';

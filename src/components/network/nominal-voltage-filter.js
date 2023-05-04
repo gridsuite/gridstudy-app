@@ -5,10 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
-
+import React, { useEffect } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
-
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Checkbox from '@mui/material/Checkbox';
@@ -16,8 +14,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
-import { useDispatch, useSelector } from 'react-redux';
-import { filteredNominalVoltagesUpdated } from '../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     nominalVoltageZone: {
@@ -47,16 +43,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const NominalVoltageFilter = (props) => {
-    const network = useSelector((state) => state.network);
-
-    const filteredNominalVoltages = useSelector(
-        (state) => state.filteredNominalVoltages
-    );
-
-    const dispatch = useDispatch();
-
+const NominalVoltageFilter = ({
+    nominalVoltages,
+    filteredNominalVoltages,
+    onChange,
+}) => {
     const classes = useStyles();
+
+    // Set up filteredNominalVoltages
+    useEffect(() => {
+        if (nominalVoltages && !filteredNominalVoltages) {
+            onChange(nominalVoltages);
+        }
+    }, [nominalVoltages, filteredNominalVoltages, onChange]);
 
     const handleToggle = (vnoms, isToggle) => () => {
         // filter on nominal voltage
@@ -73,10 +72,10 @@ const NominalVoltageFilter = (props) => {
         } else {
             newFiltered = [...vnoms];
         }
-        dispatch(filteredNominalVoltagesUpdated(newFiltered));
+        onChange(newFiltered);
     };
 
-    if (!network?.getNominalVoltages()?.length > 0) {
+    if (!nominalVoltages?.length > 0) {
         return false;
     }
     return (
@@ -86,10 +85,7 @@ const NominalVoltageFilter = (props) => {
                     <Button
                         size={'small'}
                         className={classes.nominalVoltageSelectionControl}
-                        onClick={handleToggle(
-                            network.getNominalVoltages(),
-                            false
-                        )}
+                        onClick={handleToggle(nominalVoltages, false)}
                     >
                         <FormattedMessage id="CBAll" />
                     </Button>
@@ -105,7 +101,7 @@ const NominalVoltageFilter = (props) => {
                         <FormattedMessage id="CBNone" />
                     </Button>
                 </ListItem>
-                {network.getNominalVoltages().map((value) => {
+                {nominalVoltages.map((value) => {
                     return (
                         <ListItem
                             className={classes.nominalVoltageItem}

@@ -8,7 +8,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@mui/material/Paper';
-import VirtualizedTable from './util/virtualized-table';
+import VirtualizedTable from './utils/virtualized-table';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import { TableCell } from '@mui/material';

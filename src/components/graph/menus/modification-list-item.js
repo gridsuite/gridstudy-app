@@ -6,7 +6,7 @@
  */
 import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
 import Divider from '@mui/material/Divider';
 import PropTypes from 'prop-types';
@@ -15,7 +15,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { useNameOrId } from '../../util/equipmentInfosHandler';
+import { fetchNetworkElementInfos } from '../../../utils/rest-api';
+import { useSelector } from 'react-redux';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../utils/equipment-types';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -60,12 +65,13 @@ export const ModificationListItem = ({
     handleToggle,
     isDragging,
     isOneNodeBuilding,
-    network,
     ...props
 }) => {
     const intl = useIntl();
     const classes = useStyles();
-    const { getNameOrId } = useNameOrId();
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const [computedValues, setComputedValues] = useState();
 
     /*
         this version is more optimized because it uses a switch statement instead of a series of if-else statements.
@@ -101,49 +107,66 @@ export const ModificationListItem = ({
         [modif, handleToggle]
     );
 
-    // hack to avoid the capture of network by closures, which leads to memory leaks
-    let computedValues;
-    const networkCopy = network;
-    {
-        const network = networkCopy;
-        computedValues = useMemo(() => {
-            function getVoltageLevelLabel(vlID) {
-                if (!vlID) {
-                    return '';
-                }
-                const vl = network?.getVoltageLevel(vlID);
-                if (vl) {
-                    return getNameOrId(vl);
-                }
-                return vlID;
+    useEffect(() => {
+        if (!studyUuid || !currentNode || !modif) {
+            return;
+        }
+        let energizeEndPromise;
+        if (
+            modif.type === 'BRANCH_STATUS_MODIFICATION' &&
+            (modif.action === 'ENERGISE_END_ONE' ||
+                modif.action === 'ENERGISE_END_TWO')
+        ) {
+            let voltageLevelId;
+            let voltageLevelName;
+            if (modif.action === 'ENERGISE_END_ONE') {
+                voltageLevelId = 'voltageLevelId1';
+                voltageLevelName = 'voltageLevelName1';
+            } else if (modif.action === 'ENERGISE_END_TWO') {
+                voltageLevelId = 'voltageLevelId2';
+                voltageLevelName = 'voltageLevelName2';
             }
-            let res = { computedLabel: <strong>{getComputedLabel()}</strong> };
-            if (modif.type === 'BRANCH_STATUS_MODIFICATION') {
-                if (modif.action === 'ENERGISE_END_ONE') {
-                    res.energizedEnd = getVoltageLevelLabel(
-                        network?.getLine(modif.equipmentId)?.voltageLevelId1
+            //TODO supposed to be temporary, we shouldn't fetch back-end to create a label
+            energizeEndPromise = fetchNetworkElementInfos(
+                studyUuid,
+                currentNode.id,
+                EQUIPMENT_TYPES.LINE.type,
+                EQUIPMENT_INFOS_TYPES.LIST.type,
+                modif.equipmentId,
+                false
+            )
+                .then((line) => {
+                    return line[voltageLevelName] ?? line[voltageLevelId];
+                })
+                .catch(() => {
+                    console.error(
+                        'Could not fetch line with ID ' + modif.equipmentId
                     );
-                } else if (modif.action === 'ENERGISE_END_TWO') {
-                    res.energizedEnd = getVoltageLevelLabel(
-                        network?.getLine(modif.equipmentId)?.voltageLevelId2
-                    );
-                }
-            }
-            return res;
-        }, [modif, network, getComputedLabel, getNameOrId]);
-    }
+                    return null;
+                });
+        } else {
+            energizeEndPromise = Promise.resolve(null);
+        }
+        energizeEndPromise.then((energizedEnd) => {
+            setComputedValues({
+                energizedEnd: energizedEnd,
+                computedLabel: <strong>{getComputedLabel()}</strong>,
+            });
+        });
+    }, [modif, studyUuid, currentNode, getComputedLabel]);
 
-    const getLabel = useCallback(
-        () =>
-            intl.formatMessage(
-                { id: 'network_modifications/' + modif.type },
-                {
-                    ...modif,
-                    ...computedValues,
-                }
-            ),
-        [modif, intl, computedValues]
-    );
+    const getLabel = useCallback(() => {
+        if (!modif || !computedValues) {
+            return null;
+        }
+        return intl.formatMessage(
+            { id: 'network_modifications/' + modif.type },
+            {
+                ...modif,
+                ...computedValues,
+            }
+        );
+    }, [modif, intl, computedValues]);
 
     const [hover, setHover] = useState(false);
 

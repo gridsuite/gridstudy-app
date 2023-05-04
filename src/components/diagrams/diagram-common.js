@@ -19,7 +19,7 @@ import {
     NAD_INVALID_LOADFLOW_OPACITY,
 } from '../../utils/colors';
 import { equipments } from '../network/network-equipments';
-import { FEEDER_TYPES } from 'components/util/feederType';
+import { FEEDER_TYPES } from 'components/utils/feederType';
 import makeStyles from '@mui/styles/makeStyles';
 
 export const LOADING_WIDTH = 300;
@@ -264,4 +264,9 @@ export const useDiagram = () => {
     };
 };
 
-export const NoSvg = { svg: null, metadata: null, error: null, svgUrl: null };
+export const NoSvg = {
+    svg: null,
+    metadata: null,
+    additionalMetadata: null,
+    error: null,
+};

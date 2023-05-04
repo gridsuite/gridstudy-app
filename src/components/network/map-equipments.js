@@ -7,11 +7,12 @@
 
 import { mapEquipmentsCreated } from '../../redux/actions';
 import {
+    fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
-import { EQUIPMENT_TYPES } from '../util/equipment-types';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
 const elementIdIndexer = (map, element) => {
@@ -28,6 +29,10 @@ export default class MapEquipments {
 
     linesById = new Map();
 
+    hvdcLines = [];
+
+    hvdcLinesById = new Map();
+
     voltageLevels = [];
 
     voltageLevelsById = new Map();
@@ -39,7 +44,9 @@ export default class MapEquipments {
     initEquipments(studyUuid, currentNodeUuid) {
         fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
-                this.dispatch(mapEquipmentsCreated(this, undefined, val));
+                this.dispatch(
+                    mapEquipmentsCreated(this, undefined, val, undefined)
+                );
             })
             .catch((error) => {
                 console.error(error.message);
@@ -53,7 +60,25 @@ export default class MapEquipments {
             });
         fetchLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
-                this.dispatch(mapEquipmentsCreated(this, val, undefined));
+                this.dispatch(
+                    mapEquipmentsCreated(this, val, undefined, undefined)
+                );
+            })
+            .catch((error) => {
+                console.error(error.message);
+                if (this.errHandler) {
+                    this.errHandler(
+                        this.intlRef.current.formatMessage({
+                            id: 'MapEquipmentsLoadError',
+                        })
+                    );
+                }
+            });
+        fetchHvdcLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
+            .then((val) => {
+                this.dispatch(
+                    mapEquipmentsCreated(this, undefined, undefined, val)
+                );
             })
             .catch((error) => {
                 console.error(error.message);
@@ -105,6 +130,12 @@ export default class MapEquipments {
             substationsIdsToFetch,
             true
         );
+        const updatedHvdcLines = fetchHvdcLinesMapInfos(
+            studyUuid,
+            currentNode?.id,
+            substationsIdsToFetch,
+            true
+        );
         updatedSubstations.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
@@ -125,7 +156,17 @@ export default class MapEquipments {
                 );
             }
         });
-        return [updatedSubstations, updatedLines];
+        updatedHvdcLines.catch((error) => {
+            console.error(error.message);
+            if (this.errHandler) {
+                this.errHandler(
+                    this.intlRef.current.formatMessage({
+                        id: 'MapEquipmentsLoadError',
+                    })
+                );
+            }
+        });
+        return [updatedSubstations, updatedLines, updatedHvdcLines];
     }
 
     completeSubstationsInfos(equipementsToIndex) {
@@ -242,6 +283,31 @@ export default class MapEquipments {
         this.completeLinesInfos(fullReload ? [] : lines);
     }
 
+    updateHvdcLines(hvdcLines, fullReload) {
+        if (fullReload) {
+            this.hvdcLines = [];
+        }
+        this.hvdcLines = this.updateEquipments(
+            this.hvdcLines,
+            hvdcLines,
+            equipments.hvdcLines
+        );
+        this.completeHvdcLinesInfos(fullReload ? [] : hvdcLines);
+    }
+
+    completeHvdcLinesInfos(equipementsToIndex) {
+        if (equipementsToIndex?.length > 0) {
+            equipementsToIndex.forEach((hvdcLine) => {
+                this.hvdcLinesById?.set(hvdcLine.id, hvdcLine);
+            });
+        } else {
+            this.hvdcLinesById = this.hvdcLines.reduce(
+                elementIdIndexer,
+                new Map()
+            );
+        }
+    }
+
     removeBranchesOfVoltageLevel(branchesList, voltageLevelId) {
         const remainingLines = branchesList.filter(
             (l) =>
@@ -320,5 +386,13 @@ export default class MapEquipments {
 
     getLine(id) {
         return this.linesById.get(id);
+    }
+
+    getHvdcLines() {
+        return this.hvdcLines;
+    }
+
+    getHvdcLine(id) {
+        return this.hvdcLinesById.get(id);
     }
 }
