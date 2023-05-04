@@ -107,35 +107,37 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
 
     const onSelectCatalogLine = useCallback(
         (selectedLine) => {
-            setLineSegments((oldLineSegments) => {
-                let currentSegment = oldLineSegments[
-                    openCatalogDialogIndex
-                ] ?? { ...emptyLineSegment };
+            if (selectedLine) {
+                setLineSegments((oldLineSegments) => {
+                    let currentSegment = oldLineSegments[
+                        openCatalogDialogIndex
+                    ] ?? { ...emptyLineSegment };
 
-                currentSegment['lineType'] = selectedLine[0];
-                currentSegment['resistance'] = roundToDefaultPrecision(
-                    toResistance(
-                        currentSegment['distance'],
-                        selectedLine[0].linearResistance
-                    )
-                );
-                currentSegment['reactance'] = roundToDefaultPrecision(
-                    toReactance(
-                        currentSegment['distance'],
-                        selectedLine[0].linearReactance
-                    )
-                );
-                currentSegment['susceptance'] = roundToDefaultPrecision(
-                    toSusceptance(
-                        currentSegment['distance'],
-                        selectedLine[0].linearCapacity
-                    )
-                );
+                    currentSegment['lineType'] = selectedLine;
+                    currentSegment['resistance'] = roundToDefaultPrecision(
+                        toResistance(
+                            currentSegment['distance'],
+                            selectedLine.linearResistance
+                        )
+                    );
+                    currentSegment['reactance'] = roundToDefaultPrecision(
+                        toReactance(
+                            currentSegment['distance'],
+                            selectedLine.linearReactance
+                        )
+                    );
+                    currentSegment['susceptance'] = roundToDefaultPrecision(
+                        toSusceptance(
+                            currentSegment['distance'],
+                            selectedLine.linearCapacity
+                        )
+                    );
 
-                let newLineSegments = [...oldLineSegments];
-                newLineSegments[openCatalogDialogIndex] = currentSegment;
-                return newLineSegments;
-            });
+                    let newLineSegments = [...oldLineSegments];
+                    newLineSegments[openCatalogDialogIndex] = currentSegment;
+                    return newLineSegments;
+                });
+            }
         },
         [openCatalogDialogIndex]
     );
@@ -178,21 +180,15 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
             (accum, item) => accum + item?.susceptance ?? 0,
             0
         );
-        setValue(
-            `${TOTAL_RESISTANCE}`,
-            roundToDefaultPrecision(totalResistance),
-            { shouldDirty: true }
-        );
-        setValue(
-            `${TOTAL_REACTANCE}`,
-            roundToDefaultPrecision(totalReactance),
-            { shouldDirty: true }
-        );
-        setValue(
-            `${TOTAL_SUSCEPTANCE}`,
-            roundToDefaultPrecision(totalSusceptance),
-            { shouldDirty: true }
-        );
+        setValue(TOTAL_RESISTANCE, roundToDefaultPrecision(totalResistance), {
+            shouldDirty: true,
+        });
+        setValue(TOTAL_REACTANCE, roundToDefaultPrecision(totalReactance), {
+            shouldDirty: true,
+        });
+        setValue(TOTAL_SUSCEPTANCE, roundToDefaultPrecision(totalSusceptance), {
+            shouldDirty: true,
+        });
     }, [setValue, lineSegments]);
 
     const handleSegmentDistantChange = useCallback((index, newDistance) => {
@@ -271,15 +267,9 @@ const LineTypeCatalogDialog = ({ ...dialogProps }) => {
                 />
                 <hr />
                 <Grid container direction="row-reverse" spacing={2}>
-                    {gridItem(
-                        <ReadOnlyInput name={`${TOTAL_SUSCEPTANCE}`} />,
-                        3
-                    )}
-                    {gridItem(<ReadOnlyInput name={`${TOTAL_REACTANCE}`} />, 2)}
-                    {gridItem(
-                        <ReadOnlyInput name={`${TOTAL_RESISTANCE}`} />,
-                        2
-                    )}
+                    {gridItem(<ReadOnlyInput name={TOTAL_SUSCEPTANCE} />, 3)}
+                    {gridItem(<ReadOnlyInput name={TOTAL_REACTANCE} />, 2)}
+                    {gridItem(<ReadOnlyInput name={TOTAL_RESISTANCE} />, 2)}
                 </Grid>
 
                 {openCatalogDialogIndex !== null && (

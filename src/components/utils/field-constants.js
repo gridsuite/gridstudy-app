@@ -124,14 +124,10 @@ export const TEMPORARY_LIMITS = 'temporaryLimits';
 export const TEMPORARY_LIMIT_NAME = 'name';
 export const TEMPORARY_LIMIT_DURATION = 'acceptableDuration';
 export const TEMPORARY_LIMIT_VALUE = 'value';
-export const SEGMENTS = 'segments';
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const TOTAL_RESISTANCE = 'totalResistance';
 export const TOTAL_REACTANCE = 'totalReactance';
 export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
-export const SEGMENT_RESISTANCE = 'segmentResistance';
-export const SEGMENT_REACTANCE = 'segmentReactance';
-export const SEGMENT_SUSCEPTANCE = 'segmentSusceptance';
 
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';

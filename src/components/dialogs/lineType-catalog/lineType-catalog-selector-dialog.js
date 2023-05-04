@@ -13,8 +13,6 @@ import React, {
 } from 'react';
 import { CustomAGGrid } from '../custom-aggrid';
 import ModificationDialog from '../commons/modificationDialog';
-import { SELECTED } from '../../utils/field-constants';
-import { FormProvider, useForm } from 'react-hook-form';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
@@ -27,11 +25,6 @@ export const ALLOWED_KEYS = [
     'ArrowLeft',
     'ArrowRight',
 ];
-
-const emptyFormData = {
-    [SELECTED]: null, // This is a hidden field, and there is no validation schema
-    // TODO This seems less and less useful. Maybe totally remove this field ?
-};
 
 export const LineTypeCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
@@ -52,27 +45,19 @@ const LineTypeCatalogSelectorDialog = (props) => {
     const [rowDataUndergroundTab, setRowDataUndergroundTab] = useState([]);
     const [selectedRow, setSelectedRow] = useState(null);
 
-    const formMethods = useForm({
-        defaultValues: emptyFormData,
-    });
-    const { setValue } = formMethods;
-
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
     const handleSubmit = useCallback(
-        (formData) => onSelectLine && onSelectLine(formData[SELECTED]),
-        [onSelectLine]
+        () => onSelectLine && onSelectLine(selectedRow),
+        [onSelectLine, selectedRow]
     );
     const handleTabChange = useCallback((newValue) => {
         setTabIndex(newValue);
     }, []);
     const onSelectionChanged = useCallback(() => {
-        // We extract the selected row from AGGrid to put it in the hidden SELECTED field.
+        // We extract the selected row from AGGrid
         const selectedRow = gridRef.current?.api?.getSelectedRows();
-        if (selectedRow) {
-            setValue(SELECTED, selectedRow, { shouldDirty: true });
-            setSelectedRow(selectedRow[0]);
-        }
-    }, [setValue]);
+        setSelectedRow(selectedRow[0] ?? null);
+    }, []);
 
     // Filters the data to show only the current tab's line types.
     useEffect(() => {
@@ -236,41 +221,40 @@ const LineTypeCatalogSelectorDialog = (props) => {
     );
 
     return (
-        <FormProvider {...formMethods}>
-            <ModificationDialog
-                fullWidth
-                maxWidth="xl"
-                maxHeight="md"
-                onClear={handleClear}
-                onSave={handleSubmit}
-                aria-labelledby="dialog-lineType-catalog-selector"
-                titleId={props.titleId}
-                subtitle={headerAndTabs}
-                PaperProps={{
-                    sx: {
-                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
-                    },
-                }}
-                {...props}
-            >
-                <div style={{ height: '100%' }}>
-                    <CustomAGGrid
-                        ref={gridRef}
-                        rowData={
-                            tabIndex ===
-                            LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
-                                ? rowDataAerialTab
-                                : rowDataUndergroundTab
-                        }
-                        defaultColDef={defaultColDef}
-                        columnDefs={columns}
-                        rowSelection="single"
-                        onSelectionChanged={onSelectionChanged}
-                        onGridReady={highlightSelectedRow}
-                    />
-                </div>
-            </ModificationDialog>
-        </FormProvider>
+        <ModificationDialog // TODO Instead, we should use a simpler dialog that do not use react-hook-form at all
+            fullWidth
+            maxWidth="xl"
+            maxHeight="md"
+            onClear={handleClear}
+            onSave={handleSubmit}
+            aria-labelledby="dialog-lineType-catalog-selector"
+            titleId={props.titleId}
+            subtitle={headerAndTabs}
+            PaperProps={{
+                sx: {
+                    height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                },
+            }}
+            {...props}
+            disabledSave={!selectedRow}
+        >
+            <div style={{ height: '100%' }}>
+                <CustomAGGrid
+                    ref={gridRef}
+                    rowData={
+                        tabIndex ===
+                        LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
+                            ? rowDataAerialTab
+                            : rowDataUndergroundTab
+                    }
+                    defaultColDef={defaultColDef}
+                    columnDefs={columns}
+                    rowSelection="single"
+                    onSelectionChanged={onSelectionChanged}
+                    onGridReady={highlightSelectedRow}
+                />
+            </div>
+        </ModificationDialog>
     );
 };
 
