@@ -67,7 +67,7 @@ import {
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
-} from '../../../../util/equipment-types';
+} from '../../../utils/equipment-types';
 
 const GeneratorModificationDialog = ({
     editData,

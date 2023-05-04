@@ -69,7 +69,7 @@ import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
 } from '../reactive-limits/reactive-limits-utils';
-import { EQUIPMENT_TYPES } from '../../../../util/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
