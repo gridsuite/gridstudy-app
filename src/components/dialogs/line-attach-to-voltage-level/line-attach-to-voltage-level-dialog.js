@@ -41,6 +41,9 @@ import {
     getLineToAttachOrSplitFormValidationSchema,
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { buildNewBusbarSections } from 'components/utils/utils';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -74,12 +77,16 @@ const formSchema = yup
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const LineAttachToVoltageLevelDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -294,6 +301,13 @@ const LineAttachToVoltageLevelDialog = ({
         }
     }, [getValues, newVoltageLevel]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -303,6 +317,10 @@ const LineAttachToVoltageLevelDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-attach-voltage-level-to-a-line"
                 titleId="LineAttachToVoltageLevel"
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <LineAttachToVoltageLevelForm
@@ -323,6 +341,8 @@ LineAttachToVoltageLevelDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    editDataFetchStatus: PropTypes.string,
+    isUpdate: PropTypes.bool,
 };
 
 export default LineAttachToVoltageLevelDialog;

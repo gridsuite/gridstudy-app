@@ -58,6 +58,7 @@ import { getRegulatingTerminalFormData } from '../../regulating-terminal/regulat
 import { createGenerator } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import {
+    FORM_LOADING_DELAY,
     REGULATION_TYPES,
     UNDEFINED_CONNECTION_DIRECTION,
 } from '../../../network/constants';
@@ -69,6 +70,8 @@ import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
 } from '../reactive-limits/reactive-limits-utils';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const emptyFormData = {
@@ -133,6 +136,8 @@ const GeneratorCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
@@ -330,6 +335,13 @@ const GeneratorCreationDialog = ({
         [currentNodeUuid, editData, studyUuid, snackError]
     );
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -340,6 +352,10 @@ const GeneratorCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateGenerator"
                 searchCopy={searchCopy}
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <GeneratorCreationForm

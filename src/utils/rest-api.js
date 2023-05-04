@@ -55,6 +55,13 @@ function parseError(text) {
     }
 }
 
+export const FetchStatus = {
+    SUCCEED: 'SUCCEED',
+    FAILED: 'FAILED',
+    IDLE: 'IDLE',
+    RUNNING: 'RUNNING',
+};
+
 function handleError(response) {
     return response.text().then((text) => {
         const errorName = 'HttpResponseError : ';

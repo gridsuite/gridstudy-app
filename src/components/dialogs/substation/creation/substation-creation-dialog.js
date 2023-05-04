@@ -26,6 +26,9 @@ import { getPropertiesSchema } from '../property/property-utils';
 import SubstationCreationForm from './substation-creation-form';
 import { createSubstation } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -50,6 +53,8 @@ const SubstationCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -120,6 +125,15 @@ const SubstationCreationDialog = ({
         },
         [currentNodeUuid, editData, snackError, studyUuid]
     );
+
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
+
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -130,6 +144,10 @@ const SubstationCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateSubstation"
                 searchCopy={searchCopy}
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <SubstationCreationForm />

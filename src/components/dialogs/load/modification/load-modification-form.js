@@ -35,8 +35,13 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../utils/equipment-types';
+import { FetchStatus } from 'utils/rest-api';
 
-const LoadModificationForm = ({ currentNode, studyUuid }) => {
+const LoadModificationForm = ({
+    currentNode,
+    studyUuid,
+    setDataFetchStatus,
+}) => {
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [loadInfos, setLoadInfos] = useState(null);
@@ -60,6 +65,7 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
 
     useEffect(() => {
         if (loadId) {
+            setDataFetchStatus(FetchStatus.RUNNING);
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -67,15 +73,22 @@ const LoadModificationForm = ({ currentNode, studyUuid }) => {
                 EQUIPMENT_INFOS_TYPES.FORM.type,
                 loadId,
                 true
-            ).then((value) => {
-                if (value) {
-                    setLoadInfos(value);
-                }
-            });
+            )
+                .then((value) => {
+                    if (value) {
+                        setLoadInfos(value);
+                        setDataFetchStatus(FetchStatus.SUCCEED);
+                    } else {
+                        setDataFetchStatus(FetchStatus.FAILED);
+                    }
+                })
+                .catch(() => {
+                    setDataFetchStatus(FetchStatus.FAILED);
+                });
         } else {
             setLoadInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, loadId]);
+    }, [studyUuid, currentNodeUuid, loadId, setDataFetchStatus]);
 
     const getObjectId = useCallback((object) => {
         if (typeof object === 'string') {
