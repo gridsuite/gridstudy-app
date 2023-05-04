@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -64,18 +64,23 @@ import {
     getRowEmptyFormData,
     REMOVE,
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 
 const GeneratorModificationDialog = ({
     editData,
     defaultIdValue,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
     const shouldEmptyFormOnGeneratorIdChangeRef = useRef(!editData);
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const completeReactiveCapabilityCurvePointsData = (
@@ -246,6 +251,12 @@ const GeneratorModificationDialog = ({
 
     const { reset, getValues, setValue } = formMethods;
 
+    useEffect(() => {
+        if (editData) {
+            setValue(EQUIPMENT_ID, editData?.equipmentId);
+        }
+    }, [editData, setValue]);
+
     //this method empties the form, and let us pass custom data that we want to set
     const setValuesAndEmptyOthers = useCallback(
         (customData = {}, keepDefaultValues = false) => {
@@ -313,6 +324,7 @@ const GeneratorModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
+                setDataFetchStatus(FetchStatus.RUNNING);
                 fetchEquipmentInfos(
                     studyUuid,
                     currentNodeUuid,
@@ -335,29 +347,35 @@ const GeneratorModificationDialog = ({
                                 );
                             } else {
                                 // on first render, we need to adjust the UI for the reactive capability curve table
-                                const currentReactiveCapabilityCurveTable =
-                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
-                                const sizeDiff =
-                                    previousReactiveCapabilityCurveTable.length -
-                                    currentReactiveCapabilityCurveTable.length;
+                                // we need to check if the generator we fetch has reactive capability curve table
+                                if (previousReactiveCapabilityCurveTable) {
+                                    const currentReactiveCapabilityCurveTable =
+                                        getValues(
+                                            REACTIVE_CAPABILITY_CURVE_TABLE
+                                        );
 
-                                // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
-                                if (sizeDiff > 0) {
-                                    for (let i = 0; i < sizeDiff; i++) {
-                                        insertEmptyRowAtSecondToLastIndex(
+                                    const sizeDiff =
+                                        previousReactiveCapabilityCurveTable.length -
+                                        currentReactiveCapabilityCurveTable.length;
+
+                                    // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
+                                    if (sizeDiff > 0) {
+                                        for (let i = 0; i < sizeDiff; i++) {
+                                            insertEmptyRowAtSecondToLastIndex(
+                                                currentReactiveCapabilityCurveTable
+                                            );
+                                        }
+                                        setValue(
+                                            REACTIVE_CAPABILITY_CURVE_TABLE,
                                             currentReactiveCapabilityCurveTable
                                         );
-                                    }
-                                    setValue(
-                                        REACTIVE_CAPABILITY_CURVE_TABLE,
-                                        currentReactiveCapabilityCurveTable
-                                    );
-                                } else if (sizeDiff < 0) {
-                                    // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
-                                    for (let i = 0; i > sizeDiff; i--) {
-                                        insertEmptyRowAtSecondToLastIndex(
-                                            previousReactiveCapabilityCurveTable
-                                        );
+                                    } else if (sizeDiff < 0) {
+                                        // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
+                                        for (let i = 0; i > sizeDiff; i--) {
+                                            insertEmptyRowAtSecondToLastIndex(
+                                                previousReactiveCapabilityCurveTable
+                                            );
+                                        }
                                     }
                                 }
                             }
@@ -368,8 +386,12 @@ const GeneratorModificationDialog = ({
                                     previousReactiveCapabilityCurveTable,
                             });
                         }
+                        setDataFetchStatus(FetchStatus.SUCCEED);
                     })
-                    .catch(() => setGeneratorToModify(null));
+                    .catch(() => {
+                        setGeneratorToModify(null);
+                        setDataFetchStatus(FetchStatus.FAILED);
+                    });
             } else {
                 setValuesAndEmptyOthers();
                 setGeneratorToModify(null);
@@ -538,6 +560,16 @@ const GeneratorModificationDialog = ({
         ]
     );
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            ((editDataFetchStatus === FetchStatus.SUCCEED ||
+                editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED ||
+                    dataFetchStatus === FetchStatus.FAILED)),
+        delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in GeneratorModificationForm and right after receiving the editData without waiting
+    });
+
     return (
         <FormProvider
             validationSchema={schema}
@@ -551,6 +583,13 @@ const GeneratorModificationDialog = ({
                 aria-labelledby="dialog-modification-generator"
                 maxWidth={'md'}
                 titleId="ModifyGenerator"
+                open={open}
+                keepMounted={true}
+                isDataFetching={
+                    isUpdate &&
+                    (editDataFetchStatus === FetchStatus.RUNNING ||
+                        dataFetchStatus === FetchStatus.RUNNING)
+                }
                 {...dialogProps}
             >
                 <GeneratorModificationForm
