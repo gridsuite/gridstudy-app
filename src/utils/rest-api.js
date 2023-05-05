@@ -836,6 +836,21 @@ export function fetchEquipmentInfos(
     return backendFetchJson(fetchEquipmentInfosUrl);
 }
 
+export function fetchOverloadedLines(
+    studyUuid,
+    currentNodeUuid,
+    limitReduction
+) {
+    console.info(
+        `Fetching overloaded lines (with limit reduction ${limitReduction}) ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/overloaded-lines?limitReduction=' +
+        limitReduction.toString();
+    return backendFetchJson(url);
+}
+
 export function fetchBusesForVoltageLevel(
     studyUuid,
     currentNodeUuid,
