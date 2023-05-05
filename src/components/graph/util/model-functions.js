@@ -104,3 +104,15 @@ export function isNodeInNotificationList(node, notificationIdList) {
     }
     return notificationIdList.includes(node.id);
 }
+
+export function getAllChildren(elements, nodeId) {
+    const selectedNode = elements.treeNodes.find((node) => node.id === nodeId);
+    const directChildren = elements.treeNodes.filter(
+        (node) => node.data.parentNodeUuid === selectedNode.id
+    );
+    let allChildren = [...directChildren];
+    directChildren.forEach((child) => {
+        allChildren = allChildren.concat(getAllChildren(elements, child.id));
+    });
+    return allChildren;
+}
