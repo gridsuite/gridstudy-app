@@ -118,6 +118,20 @@ export function networkModificationTreeNodeMoved(
     };
 }
 
+export const NETWORK_MODIFICATION_HANDLE_SUBTREE =
+    'NETWORK_MODIFICATION_HANDLE_SUBTREE';
+
+export function networkModificationHandleSubtree(
+    networkModificationTreeNodes,
+    parentNodeId
+) {
+    return {
+        type: NETWORK_MODIFICATION_HANDLE_SUBTREE,
+        networkModificationTreeNodes: networkModificationTreeNodes,
+        parentNodeId: parentNodeId,
+    };
+}
+
 export const NETWORK_MODIFICATION_TREE_NODES_REMOVED =
     'NETWORK_MODIFICATION_TREE_NODES_REMOVED';
 
@@ -429,12 +443,12 @@ export function setCurrentTreeNode(currentTreeNode) {
     };
 }
 
-export const SELECTED_TREE_NODE_FOR_COPY = 'SELECTED_NODE_FOR_COPY';
+export const SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
 
-export function setSelectedNodeForCopy(nodeForCopy) {
+export function setSelectionForCopy(selectionForCopy) {
     return {
-        type: SELECTED_TREE_NODE_FOR_COPY,
-        selectedNodeForCopy: nodeForCopy,
+        type: SELECTION_FOR_COPY,
+        selectionForCopy: selectionForCopy,
     };
 }
 
