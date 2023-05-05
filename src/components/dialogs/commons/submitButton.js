@@ -9,11 +9,11 @@ import { Button } from '@mui/material';
 import { useFormState } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 
-const SubmitButton = ({ onClick, disabledSave = false }) => {
+const SubmitButton = ({ onClick, disabled = false }) => {
     const { isDirty } = useFormState();
 
     return (
-        <Button onClick={onClick} disabled={!isDirty || disabledSave}>
+        <Button onClick={onClick} disabled={!isDirty || disabled}>
             <FormattedMessage id="validate" />
         </Button>
     );

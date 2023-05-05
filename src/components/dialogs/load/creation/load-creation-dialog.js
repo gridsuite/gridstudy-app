@@ -22,6 +22,7 @@ import { sanitizeString } from '../../dialogUtils';
 import EquipmentSearchDialog from '../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../form-search-copy-hook';
 import {
+    FORM_LOADING_DELAY,
     UNDEFINED_CONNECTION_DIRECTION,
     UNDEFINED_LOAD_TYPE,
 } from '../../../network/constants';
@@ -34,12 +35,15 @@ import {
 } from '../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a load in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
@@ -68,6 +72,8 @@ const LoadCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -164,6 +170,13 @@ const LoadCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -174,6 +187,10 @@ const LoadCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <LoadCreationForm
@@ -197,6 +214,7 @@ LoadCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
 };
 
 export default LoadCreationDialog;
