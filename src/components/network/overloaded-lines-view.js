@@ -18,6 +18,8 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import AlertInvalidNode from '../utils/alert-invalid-node';
 import Box from '@mui/material/Box';
+import { fetchOverloadedLines } from '../../utils/rest-api';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 export const ROW_HEIGHT = 30;
 export const HEADER_ROW_HEIGHT = 48;
@@ -60,70 +62,91 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const OverloadedLinesView = (props) => {
-    const [lines, setLines] = useState(null);
+    const [overloadedLines, setOverloadedLines] = useState(null);
     const classes = useStyles();
-
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
+
     useEffect(() => {
+        const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
+        const PERMANENT_LIMIT_NAME = 'permanent';
         if (props.disabled) {
             return;
         }
-        const makeData = (line) => {
-            let limits = [
-                line.currentLimits1?.permanentLimit,
-                line.currentLimits2?.permanentLimit,
-            ];
-            let intensities = [line.i1, line.i2];
-            let loads = [line.p1, line.p2];
-
-            let vl =
-                props.mapEquipments.getVoltageLevel(line.voltageLevelId1) ||
-                props.mapEquipments.getVoltageLevel(line.voltageLevelId2);
-            const color = getNominalVoltageColor(vl.nominalVoltage);
-
-            let fields = { overload: 0 };
-            for (let i = 0; i < 2; ++i) {
-                if (
-                    limits[i] !== undefined &&
-                    intensities[i] !== undefined &&
-                    intensities[i] !== 0 && // we have enough data
-                    (intensities[i] / limits[i]) * 100 > fields.overload
-                ) {
-                    fields = {
-                        overload: ((intensities[i] / limits[i]) * 100).toFixed(
-                            1
-                        ),
-                        name: line.name || line.id,
-                        intensity: intensities[i],
-                        load: loads[i],
-                        limit: limits[i],
-                        // conversion [r,g,b] => #XXXXXX ; concat '0' to (color value) in hexadecimal keep last 2 characters
-                        //eslint-disable-next-line
-                        color:
-                            '#' +
-                            color
-                                .map((c) =>
-                                    ('0' + Math.max(c, 0).toString(16)).slice(
-                                        -2
-                                    )
-                                )
-                                .join(''),
-                    };
-                }
+        const convertDuration = (acceptableDuration) => {
+            if (acceptableDuration === UNDEFINED_ACCEPTABLE_DURATION) {
+                return undefined;
             }
-            return fields;
+            // if modulo 60 convert into minutes, otherwise we still use seconds (600 -> 10' and 700 -> 700")
+            if (acceptableDuration % 60 === 0) {
+                return acceptableDuration / 60 + "'";
+            } else {
+                return acceptableDuration + '"';
+            }
         };
-        setLines(
-            props.mapEquipments?.lines
-                .map((line) => makeData(line))
-                .filter((line) => line.overload > props.lineFlowAlertThreshold)
-                .sort((a, b) => b.overload - a.overload)
-        );
+        const convertSide = (side) => {
+            return side === 'ONE' ? 1 : side === 'TWO' ? 2 : undefined;
+        };
+        const convertLimitName = (limitName) => {
+            return limitName === PERMANENT_LIMIT_NAME
+                ? intl.formatMessage({ id: 'PermanentLimitName' })
+                : limitName;
+        };
+        const makeData = (overloadedLine) => {
+            const line = props.mapEquipments.getLine(overloadedLine.subjectId);
+            const vl =
+                props.mapEquipments.getVoltageLevel(line?.voltageLevelId1) ||
+                props.mapEquipments.getVoltageLevel(line?.voltageLevelId2);
+            const lineColor = getNominalVoltageColor(vl?.nominalVoltage);
+            return {
+                overload: (
+                    (overloadedLine.value / overloadedLine.limit) *
+                    100
+                ).toFixed(1),
+                name: overloadedLine.subjectId,
+                intensity: overloadedLine.value,
+                acceptableDuration: convertDuration(
+                    overloadedLine.acceptableDuration
+                ),
+                limit: overloadedLine.limit,
+                limitName: convertLimitName(overloadedLine.limitName),
+                side: convertSide(overloadedLine.side),
+                // conversion [r,g,b] => #XXXXXX ; concat '0' to (color value) in hexadecimal keep last 2 characters
+                //eslint-disable-next-line
+                color:
+                    '#' +
+                    lineColor
+                        .map((c) =>
+                            ('0' + Math.max(c, 0).toString(16)).slice(-2)
+                        )
+                        .join(''),
+            };
+        };
+        fetchOverloadedLines(
+            props.studyUuid,
+            props.currentNode?.id,
+            props.lineFlowAlertThreshold / 100.0
+        )
+            .then((overloadedLines) => {
+                const sortedLines = overloadedLines
+                    .map((overloadedLine) => makeData(overloadedLine))
+                    .sort((a, b) => b.overload - a.overload);
+                setOverloadedLines(sortedLines);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'ErrFetchOverloadedLinesMsg',
+                });
+            });
     }, [
-        props.mapEquipments,
-        props.mapEquipments?.lines,
+        props.studyUuid,
+        props.currentNode?.id,
         props.lineFlowAlertThreshold,
         props.disabled,
+        props.mapEquipments,
+        intl,
+        snackError,
     ]);
 
     function MakeCell(label, color) {
@@ -169,7 +192,7 @@ const OverloadedLinesView = (props) => {
                 )}
                 <VirtualizedTable
                     className={classes.table}
-                    rows={props.disabled ? [] : lines}
+                    rows={props.disabled ? [] : overloadedLines}
                     rowStyle={{ alignItems: 'stretch' }}
                     rowHeight={ROW_HEIGHT}
                     classes={{ tableRow: classes.rowCell }}
@@ -177,7 +200,7 @@ const OverloadedLinesView = (props) => {
                     columns={[
                         {
                             width: 180,
-                            label: intl.formatMessage({ id: 'Name' }),
+                            label: intl.formatMessage({ id: 'OverloadedLine' }),
                             dataKey: 'name',
                             numeric: false,
                             headerRenderer: ({ label }) => MakeHead(label),
@@ -188,10 +211,33 @@ const OverloadedLinesView = (props) => {
                                 ),
                         },
                         {
-                            label: intl.formatMessage({ id: 'Load' }),
-                            dataKey: 'load',
+                            width: 90,
+                            label: intl.formatMessage({ id: 'LimitName' }),
+                            dataKey: 'limitName',
+                            numeric: false,
+                            headerRenderer: ({ label }) => MakeHead(label),
+                        },
+                        {
+                            width: 70,
+                            label: intl.formatMessage({ id: 'LimitSide' }),
+                            dataKey: 'side',
                             numeric: true,
-                            width: 120,
+                            headerRenderer: ({ label }) => MakeHead(label),
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'LimitAcceptableDuration',
+                            }),
+                            dataKey: 'acceptableDuration',
+                            numeric: false,
+                            width: 90,
+                            headerRenderer: ({ label }) => MakeHead(label),
+                        },
+                        {
+                            label: intl.formatMessage({ id: 'Limit' }),
+                            dataKey: 'limit',
+                            numeric: true,
+                            width: 100,
                             fractionDigits: 1,
                             headerRenderer: ({ label }) => MakeHead(label),
                         },
@@ -199,23 +245,15 @@ const OverloadedLinesView = (props) => {
                             label: intl.formatMessage({ id: 'Intensity' }),
                             dataKey: 'intensity',
                             numeric: true,
-                            width: 120,
+                            width: 100,
                             headerRenderer: ({ label }) => MakeHead(label),
                             fractionDigits: 1,
                         },
                         {
-                            label: intl.formatMessage({ id: 'Limit' }),
-                            dataKey: 'limit',
-                            numeric: true,
-                            width: 120,
-                            fractionDigits: 1,
-                            headerRenderer: ({ label }) => MakeHead(label),
-                        },
-                        {
-                            label: intl.formatMessage({ id: 'Overload' }),
+                            label: intl.formatMessage({ id: 'LineLoad' }),
                             dataKey: 'overload',
                             numeric: true,
-                            width: 90,
+                            width: 110,
                             fractionDigits: 0,
                             headerRenderer: ({ label }) => MakeHead(label),
                             unit: '%',
@@ -226,7 +264,7 @@ const OverloadedLinesView = (props) => {
         );
     }
 
-    return lines && renderOverloadedLines();
+    return overloadedLines && renderOverloadedLines();
 };
 
 OverloadedLinesView.defaultProps = {
@@ -236,6 +274,8 @@ OverloadedLinesView.defaultProps = {
 };
 
 OverloadedLinesView.propTypes = {
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
     disabled: PropTypes.bool,
     lineFlowAlertThreshold: PropTypes.number,
     mapEquipments: PropTypes.object,
