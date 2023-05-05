@@ -19,7 +19,7 @@ import {
     SEGMENT_REACTANCE,
     SEGMENT_SUSCEPTANCE,
 } from '../../utils/field-constants';
-import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only-input';
+import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
@@ -62,15 +62,13 @@ const LineTypeSegmentCreation = ({
         <>
             {gridItem(segmentDistanceField, 2)}
             {gridItem(
-                <div className={classes.simpleLabel}>
-                    <ReadOnlyInput
-                        name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}
-                    />
-                </div>,
-                2
+                <ReadOnlyInput
+                    name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}
+                />,
+                2.5
             )}
             {onEditButtonClick && (
-                <Grid item xs={1}>
+                <Grid item xs={0.5}>
                     <IconButton
                         className={classes.icon}
                         onClick={handleEditButtonClick}
@@ -80,27 +78,21 @@ const LineTypeSegmentCreation = ({
                 </Grid>
             )}
             {gridItem(
-                <div className={classes.simpleLabel}>
-                    <ReadOnlyInput
-                        name={`${name}.${index}.${SEGMENT_RESISTANCE}`}
-                    />
-                </div>,
+                <ReadOnlyInput
+                    name={`${name}.${index}.${SEGMENT_RESISTANCE}`}
+                />,
                 2
             )}
             {gridItem(
-                <div className={classes.simpleLabel}>
-                    <ReadOnlyInput
-                        name={`${name}.${index}.${SEGMENT_REACTANCE}`}
-                    />
-                </div>,
+                <ReadOnlyInput
+                    name={`${name}.${index}.${SEGMENT_REACTANCE}`}
+                />,
                 2
             )}
             {gridItem(
-                <div className={classes.simpleLabel}>
-                    <ReadOnlyInput
-                        name={`${name}.${index}.${SEGMENT_SUSCEPTANCE}`}
-                    />
-                </div>,
+                <ReadOnlyInput
+                    name={`${name}.${index}.${SEGMENT_SUSCEPTANCE}`}
+                />,
                 2
             )}
         </>

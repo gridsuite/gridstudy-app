@@ -48,9 +48,15 @@ const formSchema = yup.object().shape({
         yup.object().shape({
             [SEGMENT_DISTANCE_VALUE]: yup
                 .number()
-                .nullable()
+                .required('SegmentDistanceGreaterThanZero')
                 .moreThan(0, 'SegmentDistanceGreaterThanZero'),
-            [SEGMENT_TYPE_VALUE]: yup.string(),
+            [SEGMENT_TYPE_VALUE]: yup
+                .string()
+                .test(
+                    'empty-check',
+                    'SegmentTypeMissing',
+                    (value) => value.length > 0
+                ),
             [SEGMENT_KIND_VALUE]: yup.string(),
             [SEGMENT_RESISTANCE]: yup.number(),
             [SEGMENT_REACTANCE]: yup.number(),
@@ -78,7 +84,7 @@ const LineTypeSegmentDialog = ({ onSubmit, onCancel, ...dialogProps }) => {
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                maxWidth="md"
+                maxWidth="lg"
                 onClear={handleClear}
                 aria-labelledby="dialog-lineType-catalog"
                 titleId="LineTypeCatalogDialogTitle"

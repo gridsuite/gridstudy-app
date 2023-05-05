@@ -897,6 +897,7 @@
     "SelectType": "Sélection type",
     "SegmentDistance": "Longueur",
     "SegmentDistanceGreaterThanZero": "La longueur doit être supérieure à zéro",
+    "SegmentTypeMissing": "Type manquant",
     "lineType.resistanceLabel": "Résistance [Ω]",
     "lineType.reactanceLabel": "Réactance [Ω]",
     "lineType.susceptanceLabel": "Susceptance [μS]",

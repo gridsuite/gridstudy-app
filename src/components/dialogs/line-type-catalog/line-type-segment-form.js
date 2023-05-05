@@ -10,7 +10,7 @@ import Grid from '@mui/material/Grid';
 import { gridItem } from '../dialogUtils';
 import { FormattedMessage } from 'react-intl';
 import ExpandableInput from '../../utils/rhf-inputs/expandable-input';
-import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only-input';
+import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import {
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_KIND_VALUE,
@@ -33,9 +33,18 @@ import {
     calculateReactance,
     calculateSusceptance,
 } from '../../utils/utils';
+import makeStyles from '@mui/styles/makeStyles';
+
+const useStyles = makeStyles((theme) => ({
+    header: {
+        paddingLeft: theme.spacing(1.75),
+        fontWeight: 'bold',
+    },
+}));
 
 export const LineTypeSegmentForm = () => {
-    const { setValue, getValues } = useFormContext();
+    const classes = useStyles();
+    const { setValue, getValues, clearErrors } = useFormContext();
     const [lineTypeCatalog, setLineTypeCatalog] = useState([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
 
@@ -127,7 +136,6 @@ export const LineTypeSegmentForm = () => {
         ]
     );
 
-    // TODO CHARLY validations à tester lors du submit
     const updateTotals = useCallback(() => {
         const totalResistance = getValues(SEGMENTS).reduce(
             (accum, item) => accum + item[SEGMENT_RESISTANCE] ?? 0,
@@ -167,11 +175,20 @@ export const LineTypeSegmentForm = () => {
                     `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_KIND_VALUE}`,
                     selectedKind
                 );
+                clearErrors(
+                    `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`
+                );
                 updateSegmentValues(openCatalogDialogIndex);
                 updateTotals();
             }
         },
-        [updateSegmentValues, updateTotals, setValue, openCatalogDialogIndex]
+        [
+            updateSegmentValues,
+            updateTotals,
+            setValue,
+            clearErrors,
+            openCatalogDialogIndex,
+        ]
     );
 
     const handleSegmentDistantChange = useCallback(
@@ -223,18 +240,29 @@ export const LineTypeSegmentForm = () => {
         <>
             <Grid container direction="row-reverse" spacing={2}>
                 {gridItem(
-                    <FormattedMessage id={'lineType.susceptanceLabel'} />,
+                    <div className={classes.header}>
+                        <FormattedMessage id={'lineType.susceptanceLabel'} />
+                    </div>,
                     3
                 )}
                 {gridItem(
-                    <FormattedMessage id={'lineType.reactanceLabel'} />,
+                    <div className={classes.header}>
+                        <FormattedMessage id={'lineType.reactanceLabel'} />
+                    </div>,
                     2
                 )}
                 {gridItem(
-                    <FormattedMessage id={'lineType.resistanceLabel'} />,
+                    <div className={classes.header}>
+                        <FormattedMessage id={'lineType.resistanceLabel'} />
+                    </div>,
                     2
                 )}
-                {gridItem(<FormattedMessage id={'lineType.type'} />, 3)}
+                {gridItem(
+                    <div className={classes.header}>
+                        <FormattedMessage id={'lineType.type'} />
+                    </div>,
+                    3
+                )}
             </Grid>
             <ExpandableInput
                 name={SEGMENTS}
