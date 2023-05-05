@@ -7,12 +7,14 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { LOSS_COEFFICIENT } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { generationDispatch } from '../../../utils/rest-api';
+import { FetchStatus, generationDispatch } from '../../../utils/rest-api';
 import yup from '../../utils/yup-config';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 import ModificationDialog from '../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 
@@ -31,6 +33,8 @@ const GenerationDispatchDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -79,6 +83,14 @@ const GenerationDispatchDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
+
     return (
         <FormProvider
             validationSchema={formSchema}
@@ -92,6 +104,10 @@ const GenerationDispatchDialog = ({
                 aria-labelledby="dialog-generation-dispatch"
                 maxWidth={'sm'}
                 titleId="GenerationDispatch"
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <GenerationDispatchForm
@@ -107,6 +123,8 @@ GenerationDispatchDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default GenerationDispatchDialog;
