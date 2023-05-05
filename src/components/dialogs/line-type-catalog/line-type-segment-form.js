@@ -126,7 +126,7 @@ export const LineTypeSegmentForm = () => {
             getSusceptanceFromCatalog,
         ]
     );
-    // TODO CHARLY onDelete : calculate a nouveau les valeures
+
     // TODO CHARLY validations à tester lors du submit
     const updateTotals = useCallback(() => {
         const totalResistance = getValues(SEGMENTS).reduce(
@@ -182,6 +182,20 @@ export const LineTypeSegmentForm = () => {
         [updateSegmentValues, updateTotals]
     );
 
+    const handleSegmentDelete = useCallback(
+        (index) => {
+            // Forces the values to zero juste before deleting the row.
+            // We have to do this because the line deletion is trigger after this
+            // function's return.
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`, 0);
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_REACTANCE}`, 0);
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`, 0);
+            updateTotals();
+            return true; // Needed to remove the line in ExpandableInput
+        },
+        [setValue, updateTotals]
+    );
+
     // To preselect a row in the LineTypeCatalogSelectorDialog, we need it's
     // kind (to select the correct tab) and it's type (to select the correct row).
     const getPreselectedRowForCatalog = useCallback(
@@ -232,6 +246,7 @@ export const LineTypeSegmentForm = () => {
                 }}
                 addButtonLabel={'AddSegment'}
                 initialValue={emptyLineSegment}
+                deleteCallback={handleSegmentDelete}
             />
             <hr />
             <Grid container direction="row-reverse" spacing={2}>
