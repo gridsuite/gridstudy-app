@@ -857,6 +857,21 @@ export function fetchEquipmentInfos(
     return backendFetchJson(fetchEquipmentInfosUrl);
 }
 
+export function fetchOverloadedLines(
+    studyUuid,
+    currentNodeUuid,
+    limitReduction
+) {
+    console.info(
+        `Fetching overloaded lines (with limit reduction ${limitReduction}) ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/overloaded-lines?limitReduction=' +
+        limitReduction.toString();
+    return backendFetchJson(url);
+}
+
 export function fetchNetworkElementInfos(
     studyUuid,
     currentNodeUuid,
@@ -1509,6 +1524,16 @@ export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
     return backendFetchJson(url);
 }
 
+export function fetchNetworkModificationSubtree(studyUuid, parentNodeUuid) {
+    console.info('Fetching network modification tree node : ', parentNodeUuid);
+    const url =
+        getStudyUrl(studyUuid) +
+        '/subtree?parentNodeUuid=' +
+        encodeURIComponent(parentNodeUuid);
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function createTreeNode(studyUuid, parentId, insertMode, node) {
     const nodeCreationUrl =
         getStudyUrl(studyUuid) +
@@ -1531,6 +1556,19 @@ export function deleteTreeNode(studyUuid, nodeId) {
     console.info('Deleting tree node : ', nodeId);
     const url =
         getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeId);
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'delete',
+    });
+}
+
+export function deleteSubtree(studyUuid, parentNodeId) {
+    console.info('Deleting node subtree : ', parentNodeId);
+    const url =
+        getStudyUrl(studyUuid) +
+        '/tree/nodes/' +
+        encodeURIComponent(parentNodeId) +
+        '?deleteChildren=true';
     console.debug(url);
     return backendFetch(url, {
         method: 'delete',
@@ -1593,6 +1631,40 @@ export function cutTreeNode(
         referenceNodeUuid;
     console.debug(nodeCutUrl);
     return backendFetch(nodeCutUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+    const nodeCopyUrl =
+        getStudyUrl(targetStudyId) +
+        '/tree/subtrees?subtreeToCutParentNodeUuid=' +
+        nodeToCopyUuid +
+        '&referenceNodeUuid=' +
+        referenceNodeUuid;
+    console.debug(nodeCopyUrl);
+    return backendFetch(nodeCopyUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function copySubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+    const nodeCopyUrl =
+        getStudyUrl(targetStudyId) +
+        '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
+        nodeToCopyUuid +
+        '&referenceNodeUuid=' +
+        referenceNodeUuid;
+    console.debug(nodeCopyUrl);
+    return backendFetch(nodeCopyUrl, {
         method: 'post',
         headers: {
             Accept: 'application/json',
