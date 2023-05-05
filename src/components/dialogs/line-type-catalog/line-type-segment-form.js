@@ -23,18 +23,18 @@ import {
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
 } from '../../utils/field-constants';
-import LineTypeCatalogSelectorDialog from './lineType-catalog-selector-dialog';
+import LineTypeCatalogSelectorDialog from './line-type-catalog-selector-dialog';
 import { roundToDefaultPrecision } from '../../../utils/rounding';
-import { LineTypeCatalogSegmentCreation } from './lineType-catalog-segment-creation';
+import LineTypeSegmentCreation from './line-type-segment-creation';
 import { getLineTypeCatalog } from '../../../utils/rest-api';
-import { emptyLineSegment } from './lineType-catalog-segment-dialog';
+import { emptyLineSegment } from './line-type-segment-dialog';
 import {
     calculateResistance,
     calculateReactance,
     calculateSusceptance,
 } from '../../utils/utils';
 
-export const LineTypeCatalogSegmentForm = () => {
+export const LineTypeSegmentForm = () => {
     const { setValue, getValues } = useFormContext();
     const [lineTypeCatalog, setLineTypeCatalog] = useState([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
@@ -127,7 +127,7 @@ export const LineTypeCatalogSegmentForm = () => {
         ]
     );
     // TODO CHARLY onDelete : calculate a nouveau les valeures
-    // TODO CHARLY supprimer les anciens fichiers qui ne sont plus utilisés
+    // TODO CHARLY validations à tester lors du submit
     const updateTotals = useCallback(() => {
         const totalResistance = getValues(SEGMENTS).reduce(
             (accum, item) => accum + item[SEGMENT_RESISTANCE] ?? 0,
@@ -182,7 +182,8 @@ export const LineTypeCatalogSegmentForm = () => {
         [updateSegmentValues, updateTotals]
     );
 
-    // TODO CHARLY ajouter commentaire pour cette fonction
+    // To preselect a row in the LineTypeCatalogSelectorDialog, we need it's
+    // kind (to select the correct tab) and it's type (to select the correct row).
     const getPreselectedRowForCatalog = useCallback(
         (index) => {
             const type = getValues(
@@ -223,7 +224,7 @@ export const LineTypeCatalogSegmentForm = () => {
             </Grid>
             <ExpandableInput
                 name={SEGMENTS}
-                Field={LineTypeCatalogSegmentCreation}
+                Field={LineTypeSegmentCreation}
                 fieldProps={{
                     onSegmentDistanceChange: (index, newDistance) =>
                         handleSegmentDistantChange(index, newDistance),

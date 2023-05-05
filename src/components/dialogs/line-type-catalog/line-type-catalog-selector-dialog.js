@@ -41,9 +41,21 @@ const LineTypeCatalogSelectorDialog = (props) => {
             ? LineTypeCatalogSelectorDialogTabs.UNDERGROUND_TAB
             : LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
     );
-    const [rowDataAerialTab, setRowDataAerialTab] = useState([]); // TODO CHARLY a remplacer par un useMemo
-    const [rowDataUndergroundTab, setRowDataUndergroundTab] = useState([]); // TODO CHARLY a remplacer par un useMemo
     const [selectedRow, setSelectedRow] = useState(null);
+
+    const rowDataAerialTab = useMemo(() => {
+        if (props?.rowData) {
+            return props.rowData.filter((row) => row.kind === 'AERIAL');
+        }
+        return [];
+    }, [props.rowData]);
+
+    const rowDataUndergroundTab = useMemo(() => {
+        if (props?.rowData) {
+            return props.rowData.filter((row) => row.kind === 'UNDERGROUND');
+        }
+        return [];
+    }, [props.rowData]);
 
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
     const handleSubmit = useCallback(
@@ -58,19 +70,6 @@ const LineTypeCatalogSelectorDialog = (props) => {
         const selectedRow = gridRef.current?.api?.getSelectedRows();
         setSelectedRow(selectedRow[0] ?? null);
     }, []);
-
-    // Filters the data to show only the current tab's line types.
-    useEffect(() => {
-        // TODO CHARLY remplacer le useEffect ici par deux useMemo qui stockent les résultats de filtres
-        if (props?.rowData) {
-            setRowDataAerialTab(
-                props.rowData.filter((row) => row.kind === 'AERIAL')
-            );
-            setRowDataUndergroundTab(
-                props.rowData.filter((row) => row.kind === 'UNDERGROUND')
-            );
-        }
-    }, [props.rowData]);
 
     const columns = useMemo(() => {
         return [
@@ -148,7 +147,12 @@ const LineTypeCatalogSelectorDialog = (props) => {
         ];
     }, [intl]);
 
-    // Tries to find in the current tab the preselected row to highlight it
+    // Tries to find in the current tab the preselected row to highlight it.
+    // The props.preselectedRow should be an object like this :
+    // { kind:<string>, type:<string> }
+    // The match is done with its "kind" parameter which should correspond
+    // to the selected tab, and its "type" parameter which should correspond
+    // to the selected line.
     const highlightSelectedRow = useCallback(() => {
         const rowToHightlight = selectedRow ?? props?.preselectedRow;
         if (rowToHightlight && props?.rowData) {
@@ -167,6 +171,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
         }
     }, [selectedRow, tabIndex, props.preselectedRow, props.rowData]);
 
+    // Tries to highlights the preselected row when changing tabs
     useEffect(() => {
         highlightSelectedRow();
     }, [
@@ -252,7 +257,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
                     columnDefs={columns}
                     rowSelection="single"
                     onSelectionChanged={onSelectionChanged}
-                    onGridReady={highlightSelectedRow}
+                    onGridReady={highlightSelectedRow} // Highlights the preselected row when AGGrid is ready
                 />
             </div>
         </BasicModificationDialog>
@@ -264,6 +269,7 @@ LineTypeCatalogSelectorDialog.propTypes = {
     rowData: PropTypes.array,
     onSelectLine: PropTypes.func,
     titleId: PropTypes.string,
+    preselectedRow: PropTypes.object,
 };
 
 export default LineTypeCatalogSelectorDialog;

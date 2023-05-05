@@ -13,7 +13,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import {
-    SEGMENTS,
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_TYPE_VALUE,
     SEGMENT_RESISTANCE,
@@ -21,6 +20,7 @@ import {
     SEGMENT_SUSCEPTANCE,
 } from '../../utils/field-constants';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only-input';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     simpleLabel: {
@@ -28,17 +28,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-// TODO CHARLY should use "name" props instead of `${SEGMENTS}.(...)`
-export const LineTypeCatalogSegmentCreation = ({
+const LineTypeSegmentCreation = ({
+    name,
     index,
     onEditButtonClick,
-    onSegmentDistanceChange /*, lineSegments*/,
+    onSegmentDistanceChange,
 }) => {
     const classes = useStyles();
 
     const segmentDistanceField = (
         <FloatInput
-            name={`${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`}
+            name={`${name}.${index}.${SEGMENT_DISTANCE_VALUE}`}
             label={'SegmentDistance'}
             adornment={KilometerAdornment}
         />
@@ -50,7 +50,7 @@ export const LineTypeCatalogSegmentCreation = ({
     );
 
     const watchDistance = useWatch({
-        name: `${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`,
+        name: `${name}.${index}.${SEGMENT_DISTANCE_VALUE}`,
     });
 
     useEffect(() => {
@@ -64,7 +64,7 @@ export const LineTypeCatalogSegmentCreation = ({
             {gridItem(
                 <div className={classes.simpleLabel}>
                     <ReadOnlyInput
-                        name={`${SEGMENTS}.${index}.${SEGMENT_TYPE_VALUE}`}
+                        name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}
                     />
                 </div>,
                 2
@@ -82,7 +82,7 @@ export const LineTypeCatalogSegmentCreation = ({
             {gridItem(
                 <div className={classes.simpleLabel}>
                     <ReadOnlyInput
-                        name={`${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`}
+                        name={`${name}.${index}.${SEGMENT_RESISTANCE}`}
                     />
                 </div>,
                 2
@@ -90,7 +90,7 @@ export const LineTypeCatalogSegmentCreation = ({
             {gridItem(
                 <div className={classes.simpleLabel}>
                     <ReadOnlyInput
-                        name={`${SEGMENTS}.${index}.${SEGMENT_REACTANCE}`}
+                        name={`${name}.${index}.${SEGMENT_REACTANCE}`}
                     />
                 </div>,
                 2
@@ -98,7 +98,7 @@ export const LineTypeCatalogSegmentCreation = ({
             {gridItem(
                 <div className={classes.simpleLabel}>
                     <ReadOnlyInput
-                        name={`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`}
+                        name={`${name}.${index}.${SEGMENT_SUSCEPTANCE}`}
                     />
                 </div>,
                 2
@@ -106,3 +106,12 @@ export const LineTypeCatalogSegmentCreation = ({
         </>
     );
 };
+
+LineTypeSegmentCreation.prototype = {
+    name: PropTypes.string.isRequired,
+    index: PropTypes.number.isRequired,
+    onEditButtonClick: PropTypes.func.isRequired,
+    onSegmentDistanceChange: PropTypes.func.isRequired,
+};
+
+export default LineTypeSegmentCreation;

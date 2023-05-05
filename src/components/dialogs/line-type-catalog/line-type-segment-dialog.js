@@ -21,7 +21,7 @@ import yup from '../../utils/yup-config';
 import ModificationDialog from '../commons/modificationDialog';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LineTypeCatalogSegmentForm } from './lineType-catalog-segment-form';
+import { LineTypeSegmentForm } from './line-type-segment-form';
 import PropTypes from 'prop-types';
 
 export const emptyLineSegment = {
@@ -59,11 +59,7 @@ const formSchema = yup.object().shape({
     ),
 });
 
-const LineTypeCatalogSegmentDialog = ({
-    onSubmit,
-    onCancel,
-    ...dialogProps
-}) => {
+const LineTypeSegmentDialog = ({ onSubmit, onCancel, ...dialogProps }) => {
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -88,15 +84,15 @@ const LineTypeCatalogSegmentDialog = ({
                 titleId="LineTypeCatalogDialogTitle"
                 {...dialogProps}
             >
-                <LineTypeCatalogSegmentForm />
+                <LineTypeSegmentForm />
             </ModificationDialog>
         </FormProvider>
     );
 };
 
-LineTypeCatalogSegmentDialog.propTypes = {
+LineTypeSegmentDialog.propTypes = {
     onSubmit: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
 };
 
-export default LineTypeCatalogSegmentDialog;
+export default LineTypeSegmentDialog;
