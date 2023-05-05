@@ -182,6 +182,7 @@ export const LineTypeCatalogSegmentForm = () => {
         [updateSegmentValues, updateTotals]
     );
 
+    // TODO CHARLY ajouter commentaire pour cette fonction
     const getPreselectedRowForCatalog = useCallback(
         (index) => {
             const type = getValues(

@@ -12,7 +12,7 @@ import React, {
     useState,
 } from 'react';
 import { CustomAGGrid } from '../custom-aggrid';
-import ModificationDialog from '../commons/modificationDialog';
+import BasicModificationDialog from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
@@ -41,8 +41,8 @@ const LineTypeCatalogSelectorDialog = (props) => {
             ? LineTypeCatalogSelectorDialogTabs.UNDERGROUND_TAB
             : LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
     );
-    const [rowDataAerialTab, setRowDataAerialTab] = useState([]);
-    const [rowDataUndergroundTab, setRowDataUndergroundTab] = useState([]);
+    const [rowDataAerialTab, setRowDataAerialTab] = useState([]); // TODO CHARLY a remplacer par un useMemo
+    const [rowDataUndergroundTab, setRowDataUndergroundTab] = useState([]); // TODO CHARLY a remplacer par un useMemo
     const [selectedRow, setSelectedRow] = useState(null);
 
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
@@ -61,6 +61,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
 
     // Filters the data to show only the current tab's line types.
     useEffect(() => {
+        // TODO CHARLY remplacer le useEffect ici par deux useMemo qui stockent les résultats de filtres
         if (props?.rowData) {
             setRowDataAerialTab(
                 props.rowData.filter((row) => row.kind === 'AERIAL')
@@ -221,7 +222,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
     );
 
     return (
-        <ModificationDialog // TODO Instead, we should use a simpler dialog that do not use react-hook-form at all
+        <BasicModificationDialog
             fullWidth
             maxWidth="xl"
             maxHeight="md"
@@ -254,7 +255,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
                     onGridReady={highlightSelectedRow}
                 />
             </div>
-        </ModificationDialog>
+        </BasicModificationDialog>
     );
 };
 

@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// TODO CHARLY should use "name" props instead of `${SEGMENTS}.(...)`
 export const LineTypeCatalogSegmentCreation = ({
     index,
     onEditButtonClick,
@@ -61,9 +62,11 @@ export const LineTypeCatalogSegmentCreation = ({
         <>
             {gridItem(segmentDistanceField, 2)}
             {gridItem(
-                <ReadOnlyInput
-                    name={`${SEGMENTS}.${index}.${SEGMENT_TYPE_VALUE}`}
-                />,
+                <div className={classes.simpleLabel}>
+                    <ReadOnlyInput
+                        name={`${SEGMENTS}.${index}.${SEGMENT_TYPE_VALUE}`}
+                    />
+                </div>,
                 2
             )}
             {onEditButtonClick && (
@@ -77,21 +80,27 @@ export const LineTypeCatalogSegmentCreation = ({
                 </Grid>
             )}
             {gridItem(
-                <ReadOnlyInput
-                    name={`${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`}
-                />,
+                <div className={classes.simpleLabel}>
+                    <ReadOnlyInput
+                        name={`${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`}
+                    />
+                </div>,
                 2
             )}
             {gridItem(
-                <ReadOnlyInput
-                    name={`${SEGMENTS}.${index}.${SEGMENT_REACTANCE}`}
-                />,
+                <div className={classes.simpleLabel}>
+                    <ReadOnlyInput
+                        name={`${SEGMENTS}.${index}.${SEGMENT_REACTANCE}`}
+                    />
+                </div>,
                 2
             )}
             {gridItem(
-                <ReadOnlyInput
-                    name={`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`}
-                />,
+                <div className={classes.simpleLabel}>
+                    <ReadOnlyInput
+                        name={`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`}
+                    />
+                </div>,
                 2
             )}
         </>
