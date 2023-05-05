@@ -16,6 +16,9 @@ import ModificationDialog from '../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { FetchStatus } from 'utils/rest-api';
 
 const formSchema = yup
     .object()
@@ -35,12 +38,16 @@ const emptyFormData = {
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const EquipmentDeletionDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -95,6 +102,13 @@ const EquipmentDeletionDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -104,6 +118,10 @@ const EquipmentDeletionDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-equipment-deletion"
                 titleId="DeleteEquipment"
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <DeleteEquipmentForm
@@ -119,6 +137,8 @@ EquipmentDeletionDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     editData: PropTypes.object,
+    isUpdate: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default EquipmentDeletionDialog;
