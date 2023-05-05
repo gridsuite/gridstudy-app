@@ -35,6 +35,21 @@ const refreshEditingCell = (params) => {
     }
 };
 
+const checkEditableCondition = (params) => {
+    const dependencyEditor = params.api
+        .getCellEditorInstances()
+        .filter((editor) =>
+            typeof editor.getField !== 'undefined'
+                ? editor.getField() ===
+                  params.colDef.editableCondition.dependencyColumn
+                : undefined
+        )[0];
+    return (
+        dependencyEditor?.getValue() ===
+        params.colDef.editableCondition.columnValue
+    );
+};
+
 export const NumericalField = forwardRef(
     ({ defaultValue, minExpression, maxExpression, ...props }, ref) => {
         const [error, setError] = useState(false);
@@ -69,19 +84,28 @@ export const NumericalField = forwardRef(
             refreshEditingCell(props);
         }, [props, value]);
 
-        const isValid = useCallback((val, minVal, maxVal) => {
-            if (isNaN(val)) {
-                return false;
-            }
-            let valFloat = parseFloat(val);
-            if (isNaN(valFloat)) {
-                return false;
-            }
-            return (
-                (minVal === undefined || valFloat >= minVal) &&
-                (maxVal === undefined || valFloat <= maxVal)
-            );
-        }, []);
+        const isValid = useCallback(
+            (val, minVal, maxVal) => {
+                if (props.colDef.editableCondition) {
+                    const isConditionFulfiled = checkEditableCondition(props);
+                    if (isConditionFulfiled) {
+                        return false;
+                    }
+                }
+                if (isNaN(val)) {
+                    return false;
+                }
+                let valFloat = parseFloat(val);
+                if (isNaN(valFloat)) {
+                    return false;
+                }
+                return (
+                    (minVal === undefined || valFloat >= minVal) &&
+                    (maxVal === undefined || valFloat <= maxVal)
+                );
+            },
+            [props]
+        );
 
         const validateChange = useCallback(() => {
             const updatedErrors = { ...props.context.editErrors };
@@ -110,6 +134,9 @@ export const NumericalField = forwardRef(
                     getValue: () => {
                         return value;
                     },
+                    getField: () => {
+                        return props.colDef.field;
+                    },
                     refreshValidation: () => {
                         setMaxValue(getMax());
                         setMinValue(getMin());
@@ -117,7 +144,7 @@ export const NumericalField = forwardRef(
                     },
                 };
             },
-            [getMax, getMin, validateChange, value]
+            [getMax, getMin, props.colDef.field, validateChange, value]
         );
 
         const validateEvent = useCallback(

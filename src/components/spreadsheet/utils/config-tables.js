@@ -917,7 +917,7 @@ export const TABLES_DEFINITIONS = {
                 },
                 editableCondition: {
                     dependencyColumn: 'voltageRegulatorOn',
-                    columnValue: false,
+                    columnValue: 1,
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
