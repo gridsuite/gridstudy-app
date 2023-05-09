@@ -60,9 +60,7 @@ const DirectoryItemsInput = ({
                 // check if element is already present
                 if (
                     getValues(name).find(
-                        (v) =>
-                            v?.specificMetadata?.id ===
-                            otherElementAttributes.id
+                        (v) => v?.id === otherElementAttributes.id
                     ) !== undefined
                 ) {
                     snackError({

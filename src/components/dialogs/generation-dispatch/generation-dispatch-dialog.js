@@ -8,7 +8,13 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { LOSS_COEFFICIENT } from 'components/utils/field-constants';
+import {
+    LOSS_COEFFICIENT,
+    DEFAULT_OUTAGE_RATE,
+    GENERATORS_WITHOUT_OUTAGE,
+    ID,
+    NAME,
+} from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -20,12 +26,30 @@ import GenerationDispatchForm from './generation-dispatch-form';
 
 const emptyFormData = {
     [LOSS_COEFFICIENT]: null,
+    [DEFAULT_OUTAGE_RATE]: null,
+    [GENERATORS_WITHOUT_OUTAGE]: [],
 };
+
+const getGeneratorsWithoutOutageSchema = (id) => ({
+    [id]: yup.array().of(
+        yup.object().shape({
+            [ID]: yup.string().required(),
+            [NAME]: yup.string().required(),
+        })
+    ),
+});
 
 const formSchema = yup
     .object()
     .shape({
         [LOSS_COEFFICIENT]: yup.number().nullable().min(0).max(100).required(),
+        [DEFAULT_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0)
+            .max(100)
+            .required(),
+        ...getGeneratorsWithoutOutageSchema(GENERATORS_WITHOUT_OUTAGE),
     })
     .required();
 
@@ -51,6 +75,8 @@ const GenerationDispatchDialog = ({
         (generation) => {
             reset({
                 [LOSS_COEFFICIENT]: generation.lossCoefficient,
+                [DEFAULT_OUTAGE_RATE]: generation.defaultOutageRate,
+                [GENERATORS_WITHOUT_OUTAGE]: generation.generatorsWithoutOutage,
             });
         },
         [reset]
@@ -68,7 +94,9 @@ const GenerationDispatchDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 editData?.uuid ?? undefined,
-                generation?.lossCoefficient
+                generation?.lossCoefficient,
+                generation?.defaultOutageRate,
+                generation[GENERATORS_WITHOUT_OUTAGE]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -102,7 +130,7 @@ const GenerationDispatchDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-generation-dispatch"
-                maxWidth={'sm'}
+                maxWidth={'md'}
                 titleId="GenerationDispatch"
                 open={open}
                 isDataFetching={

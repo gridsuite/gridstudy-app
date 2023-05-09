@@ -3200,11 +3200,15 @@ export function generationDispatch(
     studyUuid,
     currentNodeUuid,
     modificationUuid,
-    lossCoefficient
+    lossCoefficient,
+    defaultOutageRate,
+    generatorsWithoutOutage
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
         lossCoefficient,
+        defaultOutageRate,
+        generatorsWithoutOutage,
     });
 
     let generationDispatchUrl =
