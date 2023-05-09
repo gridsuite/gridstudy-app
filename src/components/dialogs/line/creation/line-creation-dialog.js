@@ -70,6 +70,7 @@ import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import TextInput from 'components/utils/rhf-inputs/text-input';
+import { formatTemporaryLimits } from 'components/utils/utils';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -170,10 +171,14 @@ const LineCreationDialog = ({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        line.currentLimits1?.temporaryLimits
+                        formatTemporaryLimits(
+                            line.currentLimits1?.temporaryLimits
+                        )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        line.currentLimits2?.temporaryLimits
+                        formatTemporaryLimits(
+                            line.currentLimits2?.temporaryLimits
+                        )
                     ),
                 }),
             },
@@ -220,10 +225,14 @@ const LineCreationDialog = ({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        line.currentLimits1?.temporaryLimits
+                        formatTemporaryLimits(
+                            line.currentLimits1?.temporaryLimits
+                        )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        line.currentLimits2?.temporaryLimits
+                        formatTemporaryLimits(
+                            line.currentLimits2?.temporaryLimits
+                        )
                     ),
                 }),
             });

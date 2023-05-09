@@ -5,18 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { IconButton, InputAdornment, TextField } from '@mui/material';
-import { useMemo } from 'react';
+import { TextField } from '@mui/material';
 import { useController } from 'react-hook-form';
-import ClearIcon from '@mui/icons-material/Clear';
 
-export const TableTextInput = ({
-    name,
-    style,
-    inputProps,
-    previousValue,
-    ...props
-}) => {
+export const TableTextInput = ({ name, style, inputProps, ...props }) => {
     const {
         field: { onChange, value, ref },
         fieldState: { error },
@@ -29,15 +21,6 @@ export const TableTextInput = ({
     const handleInputChange = (e) => {
         onChange(outputTransform(e.target.value));
     };
-
-    const handleClearValue = () => {
-        onChange(outputTransform(previousValue));
-    };
-
-    const clearable = useMemo(
-        () => previousValue && previousValue !== value,
-        [previousValue, value]
-    );
 
     return (
         <TextField
@@ -54,19 +37,6 @@ export const TableTextInput = ({
                 ...inputProps,
             }}
             InputProps={{
-                endAdornment: (
-                    <InputAdornment position="end">
-                        {/** we add the clear button only if the previous value is different from the current value **/}
-                        <IconButton
-                            onClick={handleClearValue}
-                            style={{
-                                visibility: clearable ? 'visible' : 'hidden',
-                            }}
-                        >
-                            <ClearIcon />
-                        </IconButton>
-                    </InputAdornment>
-                ),
                 disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
             }}
             {...props}

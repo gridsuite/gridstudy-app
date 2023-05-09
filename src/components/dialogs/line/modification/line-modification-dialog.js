@@ -50,6 +50,8 @@ import {
     getCharacteristicsValidationSchema,
     getCharacteristicsWithOutConnectivityFormData,
 } from '../characteristics-pane/line-characteristics-pane-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { formatTemporaryLimits } from 'components/utils/utils';
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -82,41 +84,56 @@ const LineModificationDialog = ({
             name: sanitizeString(name),
         }));
 
-    const formatTemporaryLimits = (temporaryLimits) =>
-        temporaryLimits?.map((limit) => {
-            return {
-                name: limit?.name,
-                value: limit?.value,
-                acceptableDuration: limit?.acceptableDuration,
-            };
-        });
-
-    const addModificationTypeToTemporaryLimits = (
-        temporaryLimits,
-        temporaryLimitsToModify
-    ) =>
-        temporaryLimits.map((limit) => {
-            const limitWithSameName = temporaryLimitsToModify?.find(
-                (limitToModify) => limitToModify.name === limit.name
-            );
-            if (limitWithSameName) {
-                return limitWithSameName.value === limit.value
-                    ? {
-                          ...limit,
-                          modificationType: null,
-                      }
-                    : {
-                          ...limit,
-                          modificationType:
-                              TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED,
-                      };
-            } else {
-                return {
-                    ...limit,
-                    modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED,
-                };
-            }
-        });
+    const addModificationTypeToTemporaryLimits = useCallback(
+        (
+            temporaryLimits,
+            temporaryLimitsToModify,
+            currentModifiedTemporaryLimits
+        ) =>
+            temporaryLimits.map((limit) => {
+                const limitWithSameName = temporaryLimitsToModify?.find(
+                    (limitToModify) => limitToModify.name === limit.name
+                );
+                if (limitWithSameName) {
+                    const currentLimitWithSameName =
+                        currentModifiedTemporaryLimits?.find(
+                            (limitToModify) =>
+                                limitToModify?.name === limitWithSameName?.name
+                        );
+                    if (
+                        (currentLimitWithSameName?.modificationType ===
+                            TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
+                            isNodeBuilt(currentNode)) ||
+                        currentLimitWithSameName?.modificationType ===
+                            TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+                    ) {
+                        return {
+                            ...limit,
+                            modificationType:
+                                currentLimitWithSameName.modificationType,
+                        };
+                    } else {
+                        return limitWithSameName.value === limit.value
+                            ? {
+                                  ...limit,
+                                  modificationType: null,
+                              }
+                            : {
+                                  ...limit,
+                                  modificationType:
+                                      TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED,
+                              };
+                    }
+                } else {
+                    return {
+                        ...limit,
+                        modificationType:
+                            TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED,
+                    };
+                }
+            }),
+        [currentNode]
+    );
 
     const emptyFormData = useMemo(
         () => ({
@@ -242,13 +259,15 @@ const LineModificationDialog = ({
                     sanitizeLimitNames(
                         limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
                     ),
-                    lineToModify?.currentLimits1?.temporaryLimits
+                    lineToModify?.currentLimits1?.temporaryLimits,
+                    editDataRef.current?.currentLimits1?.temporaryLimits
                 ),
                 addModificationTypeToTemporaryLimits(
                     sanitizeLimitNames(
                         limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
                     ),
-                    lineToModify?.currentLimits2?.temporaryLimits
+                    lineToModify?.currentLimits2?.temporaryLimits,
+                    editDataRef.current?.currentLimits2?.temporaryLimits
                 ),
                 !!editDataRef.current,
                 editDataRef.current?.uuid
@@ -259,7 +278,13 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [studyUuid, currentNodeUuid, lineToModify, snackError]
+        [
+            studyUuid,
+            currentNodeUuid,
+            addModificationTypeToTemporaryLimits,
+            lineToModify,
+            snackError,
+        ]
     );
 
     const clear = useCallback(() => {
@@ -289,13 +314,17 @@ const LineModificationDialog = ({
                                         ...getLimitsFormData({
                                             temporaryLimits1:
                                                 addSelectedFieldToRows(
-                                                    line.currentLimits1
-                                                        ?.temporaryLimits
+                                                    formatTemporaryLimits(
+                                                        line.currentLimits1
+                                                            ?.temporaryLimits
+                                                    )
                                                 ),
                                             temporaryLimits2:
                                                 addSelectedFieldToRows(
-                                                    line.currentLimits2
-                                                        ?.temporaryLimits
+                                                    formatTemporaryLimits(
+                                                        line.currentLimits2
+                                                            ?.temporaryLimits
+                                                    )
                                                 ),
                                         }),
                                     }),

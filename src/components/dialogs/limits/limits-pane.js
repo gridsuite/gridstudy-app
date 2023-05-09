@@ -58,14 +58,14 @@ const LimitsPane = ({
             {
                 label: 'TemporaryLimitDuration',
                 dataKey: TEMPORARY_LIMIT_DURATION,
-                initialValue: undefined,
+                initialValue: null,
                 editable: true,
                 numeric: true,
             },
             {
                 label: 'TemporaryLimitValue',
                 dataKey: TEMPORARY_LIMIT_VALUE,
-                initialValue: undefined,
+                initialValue: null,
                 editable: true,
                 numeric: true,
             },

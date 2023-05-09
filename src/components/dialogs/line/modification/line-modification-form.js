@@ -24,6 +24,7 @@ import LineDialogTabs from '../line-dialog-tabs';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import TextInput from 'components/utils/rhf-inputs/text-input';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 const LineModificationForm = ({
     studyUuid,
@@ -136,6 +137,9 @@ const LineModificationForm = ({
                     arrayFormName,
                     temporaryLimits
                 );
+                if (temporaryLimit === undefined) {
+                    return undefined;
+                }
                 if (column.dataKey === TEMPORARY_LIMIT_VALUE) {
                     return temporaryLimit?.value ?? Number.MAX_VALUE;
                 } else if (column.dataKey === TEMPORARY_LIMIT_DURATION) {
@@ -152,12 +156,22 @@ const LineModificationForm = ({
 
     const isTemporaryLimitModified = useCallback(
         (rowIndex, arrayFormName, modifiedValues) => {
-            return (
-                findTemporaryLimit(rowIndex, arrayFormName, modifiedValues)
-                    ?.modificationType !== undefined
+            const temporaryLimit = findTemporaryLimit(
+                rowIndex,
+                arrayFormName,
+                modifiedValues
             );
+            if (
+                temporaryLimit?.modificationType ===
+                    TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
+                !isNodeBuilt(currentNode)
+            ) {
+                return false;
+            } else {
+                return temporaryLimit?.modificationType !== undefined;
+            }
         },
-        [findTemporaryLimit]
+        [currentNode, findTemporaryLimit]
     );
 
     const lineIdField = (
