@@ -113,7 +113,6 @@ const VoltageLevelModificationForm = ({
             outputTransform={(value) => value}
             size={'small'}
             formProps={filledTextField}
-            previousValue={voltageLevelInfos?.substationId}
             disabled //TODO to be removed when it is possible to change the substation of a voltage level in the backend (Powsybl)
         />
     );
