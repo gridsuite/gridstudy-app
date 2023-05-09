@@ -276,6 +276,24 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     },
                     {
                         width: 200,
+                        label: intl.formatMessage({ id: 'LimitName' }),
+                        dataKey: 'limitName',
+                    },
+                    {
+                        width: 90,
+                        label: intl.formatMessage({ id: 'LimitSide' }),
+                        dataKey: 'side',
+                    },
+                    {
+                        width: 160,
+                        label: intl.formatMessage({
+                            id: 'LimitAcceptableDuration',
+                        }),
+                        dataKey: 'acceptableDuration',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
                         label: intl.formatMessage({ id: 'Limit' }),
                         dataKey: 'limit',
                         numeric: true,
@@ -342,6 +360,9 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                             value: limitViolation.value,
                             loading: limitViolation.loading,
                             side: limitViolation.side,
+                            acceptableDuration:
+                                limitViolation.acceptableDuration,
+                            limitName: limitViolation.limitName,
                         });
                     }
                 );
@@ -366,6 +387,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     value: contingency.value,
                     loading: contingency.loading,
                     side: contingency.side,
+                    acceptableDuration: contingency.acceptableDuration,
+                    limitName: contingency.limitName,
                     _group: group,
                 });
             });
@@ -413,6 +436,24 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'LimitType' }),
                         dataKey: 'limitType',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'LimitName' }),
+                        dataKey: 'limitName',
+                    },
+                    {
+                        width: 90,
+                        label: intl.formatMessage({ id: 'LimitSide' }),
+                        dataKey: 'side',
+                    },
+                    {
+                        width: 160,
+                        label: intl.formatMessage({
+                            id: 'LimitAcceptableDuration',
+                        }),
+                        dataKey: 'acceptableDuration',
+                        numeric: true,
                     },
                     {
                         width: 200,

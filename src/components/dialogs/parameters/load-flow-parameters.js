@@ -419,14 +419,16 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     lfParams={params || {}}
                     commitLFParameter={updateParameters}
                 />
-                <SpecificLoadFlowParameters
-                    lfParams={params || {}}
-                    commitLFParameter={updateParameters}
-                    currentProvider={provider}
-                    specificParamsDescription={
-                        specificParamsDescriptions[provider]
-                    }
-                />
+                {specificParamsDescriptions?.[provider] && (
+                    <SpecificLoadFlowParameters
+                        lfParams={params || {}}
+                        commitLFParameter={updateParameters}
+                        currentProvider={provider}
+                        specificParamsDescription={
+                            specificParamsDescriptions[provider]
+                        }
+                    />
+                )}
             </Grid>
             <Grid
                 container
