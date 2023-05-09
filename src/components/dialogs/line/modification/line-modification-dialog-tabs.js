@@ -5,60 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { LineCreationDialogTab } from './line-modification-dialog';
 import {
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_VALUE,
 } from 'components/utils/field-constants';
-import { Box, Grid } from '@mui/material';
-import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
+import { Box } from '@mui/material';
 import LimitsPane from '../../limits/limits-pane';
-import { fetchEquipmentsIds } from 'utils/rest-api';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
-import LineDialogTabs from '../line-dialog-tabs';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-import { areIdsEqual, getObjectId } from 'components/utils/utils';
-import TextInput from 'components/utils/rhf-inputs/text-input';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 
-const LineModificationForm = ({
+const LineModificationDialogTabs = ({
     studyUuid,
     currentNode,
-    onEquipmentIdChange,
     lineToModify,
     modifiedLine,
-    tabIndexesWithError,
+    tabIndex,
 }) => {
-    const [tabIndex, setTabIndex] = useState(
-        LineCreationDialogTab.CHARACTERISTICS_TAB
-    );
-    const [linesOptions, setLinesOptions] = useState([]);
-
-    const watchEquipmentId = useWatch({
-        name: EQUIPMENT_ID,
-    });
-
     const { getValues } = useFormContext();
-    useEffect(() => {
-        onEquipmentIdChange(watchEquipmentId);
-    }, [watchEquipmentId, onEquipmentIdChange]);
-
-    useEffect(() => {
-        fetchEquipmentsIds(
-            studyUuid,
-            currentNode?.id,
-            undefined,
-            'LINE',
-            true
-        ).then((values) => {
-            setLinesOptions(values.sort((a, b) => a.localeCompare(b)));
-        });
-    }, [studyUuid, currentNode?.id]);
 
     const temporaryLimitHasPreviousValue = useCallback(
         (rowIndex, arrayFormName, temporaryLimits) => {
@@ -174,50 +141,8 @@ const LineModificationForm = ({
         [currentNode, findTemporaryLimit]
     );
 
-    const lineIdField = (
-        <AutocompleteInput
-            isOptionEqualToValue={areIdsEqual}
-            allowNewValue
-            forcePopupIcon
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            options={linesOptions}
-            getOptionLabel={getObjectId}
-            outputTransform={getObjectId}
-            size={'small'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
-    );
-
-    const lineNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-            previousValue={lineToModify?.name}
-            clearable
-        />
-    );
-
     return (
         <>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '15px',
-                }}
-            >
-                <Grid container spacing={2}>
-                    {gridItem(lineIdField, 4)}
-                    {gridItem(lineNameField, 4)}
-                </Grid>
-                <LineDialogTabs
-                    tabIndex={tabIndex}
-                    setTabIndex={setTabIndex}
-                    tabIndexesWithError={tabIndexesWithError}
-                />
-            </Box>
             <Box
                 hidden={tabIndex !== LineCreationDialogTab.CHARACTERISTICS_TAB}
                 p={1}
@@ -247,4 +172,4 @@ const LineModificationForm = ({
     );
 };
 
-export default LineModificationForm;
+export default LineModificationDialogTabs;

@@ -44,7 +44,6 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
 } from '../../limits/limits-pane-utils';
-import LineModificationForm from './line-modification-form';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsValidationSchema,
@@ -52,6 +51,8 @@ import {
 } from '../characteristics-pane/line-characteristics-pane-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
+import LineModificationDialogTabs from './line-modification-dialog-tabs';
+import LineModificationDialogHeader from './line-modification-dialog-header';
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -77,6 +78,9 @@ const LineModificationDialog = ({
     const { snackError } = useSnackMessage();
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [lineToModify, setLineToModify] = useState(null);
+    const [tabIndex, setTabIndex] = useState(
+        LineCreationDialogTab.CHARACTERISTICS_TAB
+    );
 
     const sanitizeLimitNames = (temporaryLimitList) =>
         temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
@@ -357,6 +361,18 @@ const LineModificationDialog = ({
         setTabIndexesWithError(tabsInError);
     };
 
+    const headerAndTabs = (
+        <LineModificationDialogHeader
+            studyUuid={studyUuid}
+            currentNode={currentNode}
+            onEquipmentIdChange={onEquipmentIdChange}
+            lineToModify={lineToModify}
+            tabIndexesWithError={tabIndexesWithError}
+            tabIndex={tabIndex}
+            setTabIndex={setTabIndex}
+        />
+    );
+
     return (
         <FormProvider
             validationSchema={schema}
@@ -371,6 +387,7 @@ const LineModificationDialog = ({
                 aria-labelledby="dialog-modify-line"
                 maxWidth={'md'}
                 titleId="ModifyLine"
+                subtitle={headerAndTabs}
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
@@ -378,13 +395,12 @@ const LineModificationDialog = ({
                 }}
                 {...dialogProps}
             >
-                <LineModificationForm
+                <LineModificationDialogTabs
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    onEquipmentIdChange={onEquipmentIdChange}
                     lineToModify={lineToModify}
                     modifiedLine={editDataRef.current}
-                    tabIndexesWithError={tabIndexesWithError}
+                    tabIndex={tabIndex}
                 />
             </ModificationDialog>
         </FormProvider>
