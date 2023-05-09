@@ -41,13 +41,13 @@ const checkCrossValidationMandatory = (params) => {
         .filter((editor) =>
             typeof editor.getField !== 'undefined'
                 ? editor.getField() ===
-                  params.colDef.crossValidation.mandatoryOn.dependencyColumn
+                  params.colDef.crossValidation.requiredOn.dependencyColumn
                 : undefined
         );
 
     return dependencyEditor.length > 0
         ? dependencyEditor[0].getValue() !==
-              params.colDef.crossValidation.mandatoryOn.columnValue
+              params.colDef.crossValidation.requiredOn.columnValue
         : false;
 };
 
@@ -87,7 +87,7 @@ export const NumericalField = forwardRef(
 
         const isValid = useCallback(
             (val, minVal, maxVal) => {
-                if (props.colDef.crossValidation?.mandatoryOn) {
+                if (props.colDef.crossValidation?.requiredOn) {
                     const isConditionFulfiled =
                         checkCrossValidationMandatory(props);
                     if (isConditionFulfiled && !val) {

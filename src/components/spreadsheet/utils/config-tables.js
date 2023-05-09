@@ -916,7 +916,7 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 crossValidation: {
-                    mandatoryOn: {
+                    requiredOn: {
                         dependencyColumn: 'voltageRegulatorOn',
                         columnValue: 0,
                     },
@@ -962,7 +962,7 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 crossValidation: {
-                    mandatoryOn: {
+                    requiredOn: {
                         dependencyColumn: 'voltageRegulatorOn',
                         columnValue: 1,
                     },
