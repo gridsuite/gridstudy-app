@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
     EQUIPMENT_ID,
@@ -23,9 +23,12 @@ import yup from '../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
+    FetchStatus,
     fetchVoltageLevel,
     modifyVoltageLevel,
 } from '../../../../utils/rest-api';
+import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from '../../../network/constants';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -53,58 +56,69 @@ const VoltageLevelModificationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [voltageLevelInfos, setVoltageLevelInfos] = useState(null);
-    const formDataFromEditData = useMemo(
-        () =>
-            editData
-                ? {
-                      [EQUIPMENT_ID]: editData.equipmentId,
-                      [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
-                      [SUBSTATION_ID]: editData?.substationId?.value,
-                      [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value,
-                      [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value,
-                      [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value,
-                      [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                          editData?.lowShortCircuitCurrentLimit?.value,
-                      [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                          editData?.highShortCircuitCurrentLimit?.value,
-                  }
-                : null,
-        [editData]
-    );
-
-    const defaultValues = useMemo(
-        () => (editData ? formDataFromEditData : emptyFormData),
-        [editData, formDataFromEditData]
-    );
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     const methods = useForm({
-        defaultValues: defaultValues,
+        defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
 
-    const { reset } = methods;
+    const { reset, setValue } = methods;
+
+    useEffect(() => {
+        if (editData) {
+            reset(
+                {
+                    [EQUIPMENT_ID]: editData?.equipmentId ?? '',
+                    [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
+                    [SUBSTATION_ID]: editData?.substationId?.value ?? null,
+                    [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value ?? null,
+                    [LOW_VOLTAGE_LIMIT]:
+                        editData?.lowVoltageLimit?.value ?? null,
+                    [HIGH_VOLTAGE_LIMIT]:
+                        editData?.highVoltageLimit?.value ?? null,
+                    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
+                        editData?.ipMin?.value ?? null,
+                    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
+                        editData?.ipMax?.value ?? null,
+                },
+                { keepDefaultValues: true }
+            );
+        }
+    }, [editData, reset]);
 
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
-                fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId).then(
-                    (voltageLevel) => {
+                setDataFetchStatus(FetchStatus.RUNNING);
+                fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId)
+                    .then((voltageLevel) => {
                         if (voltageLevel) {
                             setVoltageLevelInfos(voltageLevel);
+                            setDataFetchStatus(FetchStatus.SUCCEED);
+
+                            //TODO We display the previous value of the substation id in the substation field because we can't change it
+                            // To be removed when it is possible to change the substation of a voltage level in the backend (Powsybl)
+                            setValue(SUBSTATION_ID, voltageLevel?.substationId);
                         }
-                    }
-                );
+                    })
+                    .catch(() => {
+                        setVoltageLevelInfos(null);
+                        setDataFetchStatus(FetchStatus.FAILED);
+                    });
             } else {
                 setVoltageLevelInfos(null);
-                reset(emptyFormData, { keepDefaultValues: false });
+                reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, reset]
+        [studyUuid, currentNodeUuid, reset, setValue]
     );
 
     const onSubmit = useCallback(
@@ -135,6 +149,16 @@ const VoltageLevelModificationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            ((editDataFetchStatus === FetchStatus.SUCCEED ||
+                editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED ||
+                    dataFetchStatus === FetchStatus.FAILED)),
+        delay: FORM_LOADING_DELAY,
+    });
+
     return (
         <FormProvider
             validationSchema={schema}
@@ -147,7 +171,14 @@ const VoltageLevelModificationDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-modify-voltage-level"
                 maxWidth={'md'}
+                open={open}
                 titleId="ModifyVoltageLevel"
+                keepMounted={true}
+                isDataFetching={
+                    isUpdate &&
+                    (editDataFetchStatus === FetchStatus.RUNNING ||
+                        dataFetchStatus === FetchStatus.RUNNING)
+                }
                 {...dialogProps}
             >
                 <VoltageLevelModificationForm
