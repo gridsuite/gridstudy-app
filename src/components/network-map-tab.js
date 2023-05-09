@@ -28,7 +28,6 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../utils/config-params';
-import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
@@ -69,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     divOverloadedLineView: {
         right: 45,
         top: 10,
-        minWidth: '600px',
+        minWidth: '700px',
         position: 'absolute',
         height: '70%',
         opacity: '1',
@@ -135,6 +134,7 @@ export const NetworkMapTab = ({
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
+    const isRootNode = currentNode?.type === 'ROOT';
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
@@ -795,19 +795,6 @@ export const NetworkMapTab = ({
         );
     }
 
-    const linesNearOverload = useCallback(() => {
-        if (mapEquipments) {
-            return mapEquipments.lines.some((l) => {
-                const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
-                return (
-                    zone === LineLoadingZone.WARNING ||
-                    zone === LineLoadingZone.OVERLOAD
-                );
-            });
-        }
-        return false;
-    }, [mapEquipments, lineFlowAlertThreshold]);
-
     const isLoadFlowValid = () => {
         return loadFlowStatus === RunningStatus.SUCCEED;
     };
@@ -875,17 +862,17 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            {displayOverloadTable &&
-                isLoadFlowValid() &&
-                linesNearOverload() && (
-                    <div className={classes.divOverloadedLineView}>
-                        <OverloadedLinesView
-                            lineFlowAlertThreshold={lineFlowAlertThreshold}
-                            mapEquipments={mapEquipments}
-                            disabled={disabled}
-                        />
-                    </div>
-                )}
+            {!isRootNode && displayOverloadTable && isLoadFlowValid() && (
+                <div className={classes.divOverloadedLineView}>
+                    <OverloadedLinesView
+                        lineFlowAlertThreshold={lineFlowAlertThreshold}
+                        disabled={disabled}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        mapEquipments={mapEquipments}
+                    />
+                </div>
+            )}
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
