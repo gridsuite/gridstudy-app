@@ -17,6 +17,7 @@ import {
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
     NOMINAL_VOLTAGE,
+    SUBSTATION_ID,
 } from '../../../utils/field-constants';
 import TextInput from '../../../utils/rhf-inputs/text-input';
 import { useWatch } from 'react-hook-form';
@@ -37,7 +38,7 @@ const VoltageLevelModificationForm = ({
     onEquipmentIdChange,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    //const [substations, setSubstations] = useState([]);
+    const [substations, setSubstations] = useState([]);
 
     const watchVoltageLevelId = useWatch({
         name: `${EQUIPMENT_ID}`,
@@ -49,7 +50,7 @@ const VoltageLevelModificationForm = ({
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            /*fetchEquipmentsIds(
+            fetchEquipmentsIds(
                 studyUuid,
                 currentNodeUuid,
                 undefined,
@@ -57,7 +58,7 @@ const VoltageLevelModificationForm = ({
                 true
             ).then((values) => {
                 setSubstations(values.sort((a, b) => a.localeCompare(b)));
-            });*/
+            });
 
             fetchEquipmentsIds(
                 studyUuid,
@@ -98,7 +99,7 @@ const VoltageLevelModificationForm = ({
         />
     );
 
-    /* const substationField = (
+    const substationField = (
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
@@ -113,8 +114,9 @@ const VoltageLevelModificationForm = ({
             size={'small'}
             formProps={filledTextField}
             previousValue={voltageLevelInfos?.substationId}
+            readOnlyq //TODO to be removed when we can change the substation of a voltage level in the backend (Powsybl)
         />
-    ); */
+    );
 
     const nominalVoltageField = (
         <FloatInput
@@ -171,6 +173,7 @@ const VoltageLevelModificationForm = ({
             <Grid container spacing={2}>
                 {gridItem(voltageLevelIdField, 4)}
                 {gridItem(voltageLevelNameField, 4)}
+                {gridItem(substationField, 4)}
             </Grid>
             <GridSection title={'VoltageText'} />
             <Grid container spacing={2}>
