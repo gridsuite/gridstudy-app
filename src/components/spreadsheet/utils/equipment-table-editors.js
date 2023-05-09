@@ -162,7 +162,7 @@ export const NumericalField = forwardRef(
         function renderNumericText() {
             return (
                 <TextField
-                    value={value}
+                    value={value || ''}
                     onChange={validateEvent}
                     error={error}
                     type={'number'}
