@@ -915,9 +915,11 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetQ,
                     };
                 },
-                editableCondition: {
-                    dependencyColumn: 'voltageRegulatorOn',
-                    columnValue: 1,
+                crossValidation: {
+                    mandatoryOn: {
+                        dependencyColumn: 'voltageRegulatorOn',
+                        columnValue: 0,
+                    },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -959,9 +961,11 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetV,
                     };
                 },
-                editableCondition: {
-                    dependencyColumn: 'voltageRegulatorOn',
-                    columnValue: true,
+                crossValidation: {
+                    mandatoryOn: {
+                        dependencyColumn: 'voltageRegulatorOn',
+                        columnValue: 1,
+                    },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },

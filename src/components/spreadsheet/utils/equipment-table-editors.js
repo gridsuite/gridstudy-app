@@ -35,19 +35,20 @@ const refreshEditingCell = (params) => {
     }
 };
 
-const checkEditableCondition = (params) => {
+const checkCrossValidationMandatory = (params) => {
     const dependencyEditor = params.api
         .getCellEditorInstances()
         .filter((editor) =>
             typeof editor.getField !== 'undefined'
                 ? editor.getField() ===
-                  params.colDef.editableCondition.dependencyColumn
+                  params.colDef.crossValidation.mandatoryOn.dependencyColumn
                 : undefined
-        )[0];
-    return (
-        dependencyEditor?.getValue() ===
-        params.colDef.editableCondition.columnValue
-    );
+        );
+
+    return dependencyEditor.length > 0
+        ? dependencyEditor[0].getValue() !==
+              params.colDef.crossValidation.mandatoryOn.columnValue
+        : false;
 };
 
 export const NumericalField = forwardRef(
@@ -86,10 +87,11 @@ export const NumericalField = forwardRef(
 
         const isValid = useCallback(
             (val, minVal, maxVal) => {
-                if (props.colDef.editableCondition) {
-                    const isConditionFulfiled = checkEditableCondition(props);
-                    if (isConditionFulfiled) {
-                        return false;
+                if (props.colDef.crossValidation?.mandatoryOn) {
+                    const isConditionFulfiled =
+                        checkCrossValidationMandatory(props);
+                    if (isConditionFulfiled && !val) {
+                        return true;
                     }
                 }
                 if (isNaN(val)) {
@@ -224,9 +226,12 @@ export const BooleanListField = forwardRef(
                     getValue: () => {
                         return value;
                     },
+                    getField: () => {
+                        return props.colDef.field;
+                    },
                 };
             },
-            [value]
+            [props.colDef.field, value]
         );
 
         const validateChange = useCallback(
@@ -243,10 +248,13 @@ export const BooleanListField = forwardRef(
                     });
                     props.context.editErrors = updatedErrors;
                 }
-                refreshEditingCell(props);
             },
             [props]
         );
+
+        useEffect(() => {
+            refreshEditingCell(props);
+        }, [props, value]);
 
         return (
             <Select
