@@ -871,6 +871,7 @@
     "ReduceMaxP": "Reduce maxP",
     "DefaultOutageRate": "Default outage rate",
     "GeneratorsWithoutOutage": "Generators without outage simulation",
+    "GeneratorsWithFixedActivePower": "Generators with fixed active power",
     "ReplacingLine": "Replacing line",
     "ConnectionPosition": "Connection position",
     "DisplayTakenPositions": "Display taken positions",

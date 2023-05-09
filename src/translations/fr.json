@@ -873,6 +873,7 @@
     "ReduceMaxP": "Abattement Pmax",
     "DefaultOutageRate": "Taux indisponibilité par défaut",
     "GeneratorsWithoutOutage": "Groupes sans abattement indispo",
+    "GeneratorsWithFixedActivePower": "Groupes non ajustables",
     "ReplacingLine": "Liaison de remplacement",
     "ConnectionPosition": "Position départ",
     "DisplayTakenPositions": "Afficher les positions prises",

@@ -198,3 +198,5 @@ export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
 export const LOSS_COEFFICIENT = 'lossCoefficient';
 export const DEFAULT_OUTAGE_RATE = 'defaultOutageRate';
 export const GENERATORS_WITHOUT_OUTAGE = 'generatorsWithoutOutage';
+export const GENERATORS_WITH_FIXED_ACTIVE_POWER =
+    'generatorsWithFixedActivePower';
