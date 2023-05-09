@@ -33,7 +33,6 @@ import {
 } from '../utils/rest-api';
 import {
     closeStudy,
-    filteredNominalVoltagesUpdated,
     loadNetworkModificationTreeSuccess,
     networkCreated,
     openStudy,
@@ -44,7 +43,7 @@ import {
     isNetworkEquipmentsFetched,
 } from '../redux/actions';
 import Network from './network/network';
-import WaitingLoader from './util/waiting-loader';
+import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import {
@@ -59,7 +58,7 @@ import {
     getShortCircuitRunningStatus,
     getDynamicSimulationRunningStatus,
     RunningStatus,
-} from './util/running-status';
+} from './utils/running-status';
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
@@ -140,7 +139,9 @@ export function useNodeData(
 
     /* initial fetch and update */
     useEffect(() => {
-        if (!studyUuid || !nodeUuid) return;
+        if (!studyUuid || !nodeUuid) {
+            return;
+        }
         const isUpdateForUs = isWorthUpdate(
             studyUpdatedForce,
             fetcher,
@@ -314,7 +315,9 @@ export function StudyContainer({ view, onChangeTab }) {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
             const userId = eventData.headers[USER_HEADER];
-            if (userId !== userName) return;
+            if (userId !== userName) {
+                return;
+            }
             if (updateTypeHeader === 'buildFailed') {
                 snackError({
                     headerId: 'NodeBuildingError',
@@ -507,6 +510,11 @@ export function StudyContainer({ view, onChangeTab }) {
                     .then((res) => {
                         if (res) {
                             networkModificationTreeModel.setCaseName(res);
+                            dispatch(
+                                loadNetworkModificationTreeSuccess(
+                                    networkModificationTreeModel
+                                )
+                            );
                         }
                     })
                     .catch((err) => {
@@ -529,11 +537,6 @@ export function StudyContainer({ view, onChangeTab }) {
                     ),
                 };
                 dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
-                dispatch(
-                    loadNetworkModificationTreeSuccess(
-                        networkModificationTreeModel
-                    )
-                );
             })
             .catch((error) => {
                 if (error.status === 404) {
@@ -652,12 +655,18 @@ export function StudyContainer({ view, onChangeTab }) {
 
     //handles map automatic mode network reload
     useEffect(() => {
-        if (!wsConnected) return;
+        if (!wsConnected) {
+            return;
+        }
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
         // if only node renaming, do not reload network
-        if (isNodeRenamed(previousCurrentNode, currentNode)) return;
-        if (!isNodeBuilt(currentNode)) return;
+        if (isNodeRenamed(previousCurrentNode, currentNode)) {
+            return;
+        }
+        if (!isNodeBuilt(currentNode)) {
+            return;
+        }
         // A modification has been added to the currentNode and this one has been built incrementally.
         // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
         if (
@@ -738,7 +747,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 ws.close();
                 wsDirectory.close();
                 dispatch(closeStudy());
-                dispatch(filteredNominalVoltagesUpdated(null));
             };
         }
         // Note: dispach, loadGeoData

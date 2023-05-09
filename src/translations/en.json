@@ -47,6 +47,7 @@
 
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
+    "svgLoadingFail": "The diagram couldn't be loaded",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
     "geoDataLoadingFail": "Geographical data of study with id \"{studyUuid}\" couldn't be loaded",
 
@@ -62,6 +63,7 @@
     "loadingGeoData": "Loading geographic data in progress...",
     "LoadingRemoteData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",
+    "LoadingOf": "Loading of {value}...",
 
     "centerOnMap": "Center on the map",
     "openVoltageLevel": "Open the voltage level",
@@ -77,7 +79,6 @@
     "Feeders": "Feeder",
     "LineFlowColorMode": "Line color mode: ",
     "NominalVoltage": "Nominal voltage",
-    "Overload": "Overload",
     "Overloads": "Overloads",
     "AlertThresholdLabel": "Threshold for displaying lines before overload (%): ",
     "intensity": "intensity",
@@ -230,12 +231,19 @@
     "HIGH_SHORT_CIRCUIT_CURRENT": "Isc max",
 
     "LimitType": "Limit type",
+    "LimitSide": "Side",
+    "LimitName": "Name",
+    "OverloadedLine": "Line",
+    "PermanentLimitName": "IST",
+    "LineLoad": "Load",
+    "LimitAcceptableDuration": "Duration",
+    "ErrFetchOverloadedLinesMsg": "An error occurred while getting overloaded lines",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",
     "true": "true",
     "false": "false",
-    "Loading": "Loading",
+    "Loading": "Loading (%)",
     "CURRENT": "Current",
     "HIGH_VOLTAGE": "High voltage",
     "LOW_VOLTAGE": "Low voltage",
@@ -254,6 +262,7 @@
     "descLfDcValues": "DC Values",
     "resetToDefault": "default values",
     "showAdvancedParameters": "Advanced settings",
+    "showSpecificParameters": "Specific settings",
 
     "descLfReadSlackBus": "Read slack bus in the network: ",
     "descLfWriteSlackBus": "Write slack bus in the network: ",
@@ -363,6 +372,7 @@
     "Default": "Default",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
+    "DynaFlow": "Dyna Flow",
 
     "fetchLoadFlowProvidersError": "An error occurred while fetching the load flow providers",
     "fetchLoadFlowProviderError": "An error occured when fetching the load flow provider",
@@ -370,6 +380,7 @@
     "updateLoadFlowProviderError": "An error occurred while updating the load flow provider",
     "updateLoadFlowParametersError": "An error occurred while updating the load flow parameters",
     "fetchLoadFlowParametersError": "An error occured when fetching the load flow parameters",
+    "fetchLoadFlowSpecificParametersError": "An error occured when fetching the load flow specific parameters",
 
     "fetchSecurityAnalysisProvidersError": "An error occured when fetching security analysis provider list",
     "fetchSecurityAnalysisProviderError": "An error occured when fetching security analysis provider",
@@ -473,6 +484,7 @@
     "LoadCreationError": "Error while creating load",
     "LoadModificationError": "Error while modifying load",
     "LineCreationError": "Error while creating line",
+    "LineModificationError" : "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
 
     "CreateGenerator": "Create generator",
@@ -543,6 +555,7 @@
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Each active power value must be within the min P and max P values.",
     "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Each minimum reactive power value must be inferior or equal to the corresponding maximum reactive power value.",
 
+    "ModifyLine": "Modify line",
     "CreateLine": "Create line",
     "Characteristics": "Characteristics",
     "Side1": "Side 1",
@@ -584,6 +597,8 @@
     "PropertyName": "Property name",
     "PropertyValue": "Property value",
     "DuplicatedProps": "Duplicated properties: each property must be unique",
+    "ModifySubstation": "Modify substation",
+    "SubstationModificationError": "Error while modifying substation",
 
     "CreateVoltageLevel": "Create a voltage level",
     "Substation": "Substation",
@@ -643,6 +658,7 @@
     "LoadScalingError": "Error while creating a load scaling",
     "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
     "DeleteAttachingLineError": "Error while deleting an attaching line",
+    "GenerationDispatchError": "Error while creating a generation dispatch",
 
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
@@ -765,6 +781,12 @@
     "pasteNetworkModificationNodeBelow": "Paste node below in the current branch",
     "pasteNetworkModificationNodeOnNewBranch": "Paste node in a new branch",
 
+    "copyNetworkModificationSubtree": "Copy subtree",
+    "pasteNetworkModificationSubtree": "Paste subtree",
+    "cutNetworkModificationSubtree": "Cut subtree",
+    "cancelCutNetworkModificationSubtree": "Cancel cut subtree",
+    "removeNetworkModificationSubtree": "Remove subtree",
+
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
     "InvalidNode": "Node not built",
 
@@ -844,6 +866,8 @@
     "LoadScaling": "Load scaling",
     "DeleteVoltageLevelOnLine": "Delete a voltage level on a line",
     "DeleteAttachingLine": "Delete attaching line",
+    "GenerationDispatch": "Generation dispatch",
+    "LossCoefficient": "Loss coefficient",
     "ReplacingLine": "Replacing line",
     "ConnectionPosition": "Connection position",
     "DisplayTakenPositions": "Display taken positions",

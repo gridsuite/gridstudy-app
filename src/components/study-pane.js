@@ -7,14 +7,11 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import {
-    filteredNominalVoltagesUpdated,
-    STUDY_DISPLAY_MODE,
-} from '../redux/actions';
+import { STUDY_DISPLAY_MODE } from '../redux/actions';
 import Paper from '@mui/material/Paper';
 import { equipments } from './network/network-equipments';
 import PropTypes from 'prop-types';
@@ -26,7 +23,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
-import { getLoadFlowRunningStatus } from './util/running-status';
+import { getLoadFlowRunningStatus } from './utils/running-status';
 import NetworkMapTab from './network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
@@ -116,10 +113,6 @@ const StudyPane = ({
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const filteredNominalVoltages = useSelector(
-        (state) => state.filteredNominalVoltages
-    );
-
     const [isComputationRunning, setIsComputationRunning] = useState(false);
 
     const [tableEquipment, setTableEquipment] = useState({
@@ -128,25 +121,11 @@ const StudyPane = ({
         changed: false,
     });
 
-    const dispatch = useDispatch();
-
     const classes = useStyles();
 
     const { openDiagramView } = useDiagram();
 
     const disabled = !isNodeBuilt(currentNode);
-
-    useEffect(() => {
-        if (
-            network &&
-            network.substations.length > 0 &&
-            !filteredNominalVoltages
-        ) {
-            dispatch(
-                filteredNominalVoltagesUpdated(network.getNominalVoltages())
-            );
-        }
-    }, [network, filteredNominalVoltages, dispatch]);
 
     function openVoltageLevelDiagram(vlId) {
         // TODO code factorization for displaying a VL via a hook
@@ -158,14 +137,18 @@ const StudyPane = ({
 
     const openVoltageLevel = useCallback(
         (vlId) => {
-            if (!network) return;
+            if (!network) {
+                return;
+            }
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         },
         [network, openDiagramView]
     );
 
     useEffect(() => {
-        if (!network) return;
+        if (!network) {
+            return;
+        }
         network.useEquipment(equipments.substations);
         network.useEquipment(equipments.lines);
     }, [network]);
@@ -260,9 +243,6 @@ const StudyPane = ({
                                     lineFlowAlertThreshold={
                                         lineFlowAlertThreshold
                                     }
-                                    filteredNominalVoltages={
-                                        filteredNominalVoltages
-                                    }
                                     openVoltageLevel={openVoltageLevel}
                                     /* TODO verif tableEquipment*/
                                     currentNode={currentNode}
@@ -296,7 +276,6 @@ const StudyPane = ({
                                     loadFlowInfos?.loadFlowStatus
                                 )}
                                 currentNode={currentNode}
-                                disabled={disabled}
                                 visible={
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
@@ -340,15 +319,13 @@ const StudyPane = ({
             >
                 {renderMapView()}
             </div>
-            <div
+            <TabPanelLazy
+                key={`spreadsheet-${currentNode?.id}`}
                 className="singlestretch-child"
-                style={{
-                    display:
-                        props.view === StudyView.SPREADSHEET ? null : 'none',
-                }}
+                selected={props.view === StudyView.SPREADSHEET}
             >
                 {renderTableView()}
-            </div>
+            </TabPanelLazy>
             {/* using a key in this tappanellazy because we can change the nodeuuid in this component */}
             <TabPanelLazy
                 key={`results-${currentNode?.id}`}
@@ -359,7 +336,6 @@ const StudyPane = ({
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     loadFlowInfos={loadFlowInfos}
-                    network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
                 />

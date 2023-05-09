@@ -8,7 +8,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import VirtualizedTable from './util/virtualized-table';
+import VirtualizedTable from './utils/virtualized-table';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
 import makeStyles from '@mui/styles/makeStyles';
@@ -180,9 +180,15 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         function sortAndAddResults(result, array) {
             const compareValue = (a, b) => {
                 const mult = reverse ? 1 : -1;
-                if (a === undefined && b === undefined) return 0;
-                else if (b === undefined) return -mult;
-                else if (a === undefined) return mult;
+                if (a === undefined && b === undefined) {
+                    return 0;
+                }
+                if (b === undefined) {
+                    return -mult;
+                }
+                if (a === undefined) {
+                    return mult;
+                }
                 return isNumeric
                     ? (Number(a) < Number(b) ? 1 : -1) * mult
                     : ('' + a).localeCompare(b) * mult;
@@ -270,6 +276,24 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     },
                     {
                         width: 200,
+                        label: intl.formatMessage({ id: 'LimitName' }),
+                        dataKey: 'limitName',
+                    },
+                    {
+                        width: 90,
+                        label: intl.formatMessage({ id: 'LimitSide' }),
+                        dataKey: 'side',
+                    },
+                    {
+                        width: 160,
+                        label: intl.formatMessage({
+                            id: 'LimitAcceptableDuration',
+                        }),
+                        dataKey: 'acceptableDuration',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
                         label: intl.formatMessage({ id: 'Limit' }),
                         dataKey: 'limit',
                         numeric: true,
@@ -336,6 +360,9 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                             value: limitViolation.value,
                             loading: limitViolation.loading,
                             side: limitViolation.side,
+                            acceptableDuration:
+                                limitViolation.acceptableDuration,
+                            limitName: limitViolation.limitName,
                         });
                     }
                 );
@@ -360,6 +387,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     value: contingency.value,
                     loading: contingency.loading,
                     side: contingency.side,
+                    acceptableDuration: contingency.acceptableDuration,
+                    limitName: contingency.limitName,
                     _group: group,
                 });
             });
@@ -407,6 +436,24 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'LimitType' }),
                         dataKey: 'limitType',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'LimitName' }),
+                        dataKey: 'limitName',
+                    },
+                    {
+                        width: 90,
+                        label: intl.formatMessage({ id: 'LimitSide' }),
+                        dataKey: 'side',
+                    },
+                    {
+                        width: 160,
+                        label: intl.formatMessage({
+                            id: 'LimitAcceptableDuration',
+                        }),
+                        dataKey: 'acceptableDuration',
+                        numeric: true,
                     },
                     {
                         width: 200,

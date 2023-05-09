@@ -18,7 +18,7 @@ import {
     SUBSTATION_RADIUS_MAX_PIXEL,
     SUBSTATION_RADIUS_MIN_PIXEL,
 } from './constants';
-import { RunningStatus } from '../util/running-status';
+import { RunningStatus } from '../utils/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
@@ -285,9 +285,9 @@ class LineLayer extends CompositeLayer {
 
                         const key = this.genLineKey(line);
                         let val = mapOriginDestination.get(key);
-                        if (val == null)
+                        if (val == null) {
                             mapOriginDestination.set(key, new Set([line]));
-                        else {
+                        } else {
                             mapOriginDestination.set(key, val.add(line));
                         }
                     });
@@ -615,13 +615,13 @@ class LineLayer extends CompositeLayer {
 
                 let key = this.genLineKey(line);
                 let val = mapMinProximityFactor.get(key);
-                if (val == null)
+                if (val == null) {
                     mapMinProximityFactor.set(key, {
                         lines: [line],
                         start: line.proximityFactorStart,
                         end: line.proximityFactorEnd,
                     });
-                else {
+                } else {
                     val.lines.push(line);
                     val.start = Math.min(val.start, line.proximityFactorStart);
                     val.end = Math.min(val.end, line.proximityFactorEnd);
@@ -650,7 +650,9 @@ class LineLayer extends CompositeLayer {
     computeAngle(props, position1, position2) {
         let angle = props.geoData.getMapAngle(position1, position2);
         angle = (angle * Math.PI) / 180 + Math.PI;
-        if (angle < 0) angle += 2 * Math.PI;
+        if (angle < 0) {
+            angle += 2 * Math.PI;
+        }
         return angle;
     }
 

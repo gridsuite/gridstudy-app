@@ -47,6 +47,7 @@
 
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl} ",
+    "svgLoadingFail": "L'image n'a pas pu être chargée",
     "networkLoadingFail": "Le réseau de l'étude avec l'identifiant \"{studyUuid}\" n'a pas pu être chargé",
     "geoDataLoadingFail": "Les données géographiques du réseau de l'étude avec l'identifiant \"{studyUuid}\" n'ont pas pu être chargées",
 
@@ -62,6 +63,7 @@
     "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
+    "LoadingOf": "Chargement de {value}...",
 
     "centerOnMap": "Centrer sur la carte",
     "openVoltageLevel": "Ouvrir le poste",
@@ -77,7 +79,6 @@
     "Feeders": "Départs",
     "LineFlowColorMode": "Mode de coloration des lignes\u00a0:",
     "NominalVoltage": "Tension nominale",
-    "Overload": "Surcharge",
     "Overloads": "Surcharges",
     "AlertThresholdLabel": "Seuil d'affichage des lignes avant surcharge (%)\u00a0:",
     "intensity": "intensité",
@@ -230,6 +231,13 @@
     "HIGH_SHORT_CIRCUIT_CURRENT": "Icc max",
 
     "LimitType": "Type de limite",
+    "LimitSide": "Côté",
+    "LimitName": "Nom",
+    "OverloadedLine": "Ligne",
+    "PermanentLimitName": "IST",
+    "LineLoad": "Charge",
+    "LimitAcceptableDuration": "Durée",
+    "ErrFetchOverloadedLinesMsg": "Une erreur est survenue lors la récupération des lignes en surcharge",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
     "ComputationStatus": "Statut",
@@ -254,6 +262,7 @@
     "descLfDcValues": "DC",
     "resetToDefault": "Valeurs par défaut",
     "showAdvancedParameters": "Paramètres avancés",
+    "showSpecificParameters": "Paramètres spécifiques",
 
     "descLfReadSlackBus": "Utiliser le nœud bilan défini dans le réseau\u00a0:",
     "descLfWriteSlackBus": "Ecrire le nœud bilan calculé automatiquement dans le réseau\u00a0:",
@@ -363,6 +372,7 @@
     "Default": "Défaut",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
+    "DynaFlow": "Dyna Flow",
 
     "fetchLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de calcul de répartition",
     "fetchLoadFlowProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs de calcul de répartition",
@@ -370,6 +380,7 @@
     "updateLoadFlowProviderError": "Une erreur est survenue lors de la mise à jour du fournisseur courant de calcul de répartition",
     "updateLoadFlowParametersError": "Une erreur est survenue lors de la mise à jour des paramètres de calcul de répartition",
     "fetchLoadFlowParametersError": "Une erreur est survenue lors de la récupération des paramètres de calcul de répartition",
+    "fetchLoadFlowSpecificParametersError": "Une erreur est survenue lors de la récupération des paramètres spécifiques de calcul de répartition",
 
     "fetchSecurityAnalysisProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs d'analyse de sécurité",
     "fetchSecurityAnalysisProviderError": "Une erreur est survenue lors de la récupération du fournisseur courant d'analyse de sécurité",
@@ -473,6 +484,7 @@
     "LoadCreationError": "Erreur lors de la création d'une consommation",
     "LoadModificationError": "Erreur lors de la modification d'une consommation",
     "LineCreationError": "Erreur lors de la création d'une ligne",
+    "LineModificationError": "Erreur lors de la modification d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
 
     "CreateGenerator": "Créer un groupe",
@@ -543,6 +555,7 @@
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Chaque valeur de puissance active doit être comprise entre les valeurs P min et P max.",
     "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Chaque valeur de puissance réactive minimale doit être inférieur ou égale à la puissance réactive maximale correspondante.",
 
+    "ModifyLine": "Modifier une ligne",
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
     "Side1": "Côté origine",
@@ -584,6 +597,8 @@
     "PropertyName": "Nom de la propriété",
     "PropertyValue": "Valeur de la propriété",
     "DuplicatedProps": "Propriétés dupliquées : chaque propriété doit être unique",
+    "ModifySubstation": "Modifier un site",
+    "SubstationModificationError": "Erreur lors de la modification d'un site",
 
     "CreateVoltageLevel": "Créer un poste",
     "Substation": "Site",
@@ -643,6 +658,7 @@
     "LoadScalingError": "Erreur lors de la création de la variation du plan de consommation",
     "DeleteVoltageLevelOnLineError": "Erreur lors de la suppression d'une coupure",
     "DeleteAttachingLineError": "Erreur lors de la suppression d'un piquage",
+    "GenerationDispatchError": "Erreur lors de la création du démarrage de groupes",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
@@ -766,6 +782,12 @@
     "pasteNetworkModificationNodeBelow": "Coller le nœud en dessous dans la branche courante",
     "pasteNetworkModificationNodeOnNewBranch": "Coller le nœud dans une nouvelle branche",
 
+    "copyNetworkModificationSubtree": "Copier le sous arbre",
+    "pasteNetworkModificationSubtree": "Coller le sous arbre",
+    "cutNetworkModificationSubtree": "Couper le sous arbre",
+    "cancelCutNetworkModificationSubtree": "Annuler couper le sous arbre",
+    "removeNetworkModificationSubtree": "Supprimer le sous arbre",
+
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
 
@@ -846,6 +868,8 @@
     "LoadScaling": "Variation plan de consommation",
     "DeleteVoltageLevelOnLine": "Supprimer une coupure",
     "DeleteAttachingLine": "Supprimer un piquage",
+    "GenerationDispatch": "Démarrage de groupes",
+    "LossCoefficient": "Coefficient de pertes",
     "ReplacingLine": "Liaison de remplacement",
     "ConnectionPosition": "Position départ",
     "DisplayTakenPositions": "Afficher les positions prises",

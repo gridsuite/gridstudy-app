@@ -110,8 +110,9 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
                     !eventData['xaxis.range[0]'] ||
                     !eventData['xaxis.range[1]'] ||
                     eventData['xaxis.range[0]'] === eventData['xaxis.range[1]']
-                )
+                ) {
                     return;
+                }
 
                 // mutable layout => constrained from react-plotly.js
                 // https://github.com/plotly/plotly.js/issues/2389

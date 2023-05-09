@@ -34,6 +34,7 @@ import {
     fetchSensitivityAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
+    fetchVoltageLevel,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
@@ -59,9 +60,9 @@ import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
-import { useSearchMatchingEquipments } from './util/search-matching-equipments';
+import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagrams/diagram-common';
-import { EQUIPMENT_TYPES } from './util/equipment-types';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -86,7 +87,8 @@ const useEquipmentStyles = makeStyles(equipmentStyles);
 const CustomSuffixRenderer = ({ props, element }) => {
     const dispatch = useDispatch();
     const equipmentClasses = useEquipmentStyles();
-    const network = useSelector((state) => state.network);
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
     const networkAreaDiagramNbVoltageLevels = useSelector(
         (state) => state.networkAreaDiagramNbVoltageLevels
     );
@@ -96,15 +98,27 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const centerOnSubstationCB = useCallback(
         (e, element) => {
-            const substationId =
-                element.type === EQUIPMENT_TYPES.SUBSTATION.type
-                    ? element.id
-                    : network.getVoltageLevel(element.id).substationId;
-            dispatch(centerOnSubstation(substationId));
-            props.onClose && props.onClose();
-            e.stopPropagation();
+            if (!studyUuid || !currentNode) {
+                return;
+            }
+            let substationIdPromise;
+            if (element.type === EQUIPMENT_TYPES.SUBSTATION.type) {
+                substationIdPromise = Promise.resolve(element.id);
+            } else {
+                substationIdPromise = fetchVoltageLevel(
+                    studyUuid,
+                    currentNode.id,
+                    element.id
+                ).then((vl) => vl.substationId);
+            }
+
+            substationIdPromise.then((substationId) => {
+                dispatch(centerOnSubstation(substationId));
+                props.onClose && props.onClose();
+                e.stopPropagation();
+            });
         },
-        [dispatch, props, network]
+        [dispatch, props, studyUuid, currentNode]
     );
 
     const openNetworkAreaDiagramCB = useCallback(
@@ -119,7 +133,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
     if (
         element.type === EQUIPMENT_TYPES.SUBSTATION.type ||
         element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
-    )
+    ) {
         return (
             <>
                 {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type && (
@@ -137,7 +151,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 )}
                 <IconButton
                     disabled={
-                        !network &&
+                        (!studyUuid || !currentNode) &&
                         element.type !== EQUIPMENT_TYPES.SUBSTATION.type
                     }
                     onClick={(e) => centerOnSubstationCB(e, element)}
@@ -147,6 +161,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 </IconButton>
             </>
         );
+    }
 
     return (
         <TagRenderer
@@ -352,15 +367,17 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     }
 
     function getDisableReason() {
-        if (studyDisplayMode === STUDY_DISPLAY_MODE.TREE)
+        if (studyDisplayMode === STUDY_DISPLAY_MODE.TREE) {
             return intl.formatMessage({
                 id: 'UnsupportedView',
             });
+        }
 
-        if (!isNodeBuilt(currentNode))
+        if (!isNodeBuilt(currentNode)) {
             return intl.formatMessage({
                 id: 'InvalidNode',
             });
+        }
         return '';
     }
 

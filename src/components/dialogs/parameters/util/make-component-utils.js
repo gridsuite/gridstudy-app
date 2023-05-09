@@ -97,7 +97,9 @@ export const makeComponentsFor = (defParams, params, setter) => {
 };
 
 export const getValue = (param, key) => {
-    if (!param || param[key] === undefined) return null;
+    if (!param || param[key] === undefined) {
+        return null;
+    }
     return param[key];
 };
 

@@ -7,9 +7,12 @@
 
 import React, { useMemo, useCallback } from 'react';
 import { useTheme } from '@mui/styles';
-import LoaderWithOverlay from '../util/loader-with-overlay';
+import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
+
+const PINNED_ROW_HEIGHT = 42;
+const DEFAULT_ROW_HEIGHT = 28;
 
 export const EquipmentTable = ({
     rowData,
@@ -24,6 +27,7 @@ export const EquipmentTable = ({
     handleGridReady,
     fetched,
     network,
+    shouldHidePinnedHeaderRightBorder,
 }) => {
     const theme = useTheme();
 
@@ -66,9 +70,6 @@ export const EquipmentTable = ({
             wrapHeaderText: true,
             autoHeaderHeight: true,
             suppressKeyboardEvent: (params) => suppressKeyEvent(params),
-            icons: {
-                menu: '<span class="ag-icon ag-icon-filter" />',
-            },
         }),
         []
     );
@@ -81,6 +82,12 @@ export const EquipmentTable = ({
             isEditing: topPinnedData ? true : false,
         };
     }, [network, topPinnedData]);
+
+    const getRowHeight = useCallback(
+        (params) =>
+            params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
+        []
+    );
 
     return (
         <>
@@ -109,11 +116,14 @@ export const EquipmentTable = ({
                     onRowEditingStopped={handleEditingStopped}
                     onColumnMoved={handleColumnDrag}
                     suppressDragLeaveHidesColumns={true}
-                    suppressPropertyNamesCheck={true}
                     suppressColumnVirtualisation={true}
                     suppressClickEdit={true}
                     context={gridContext}
                     onGridReady={handleGridReady}
+                    shouldHidePinnedHeaderRightBorder={
+                        shouldHidePinnedHeaderRightBorder
+                    }
+                    getRowHeight={getRowHeight}
                 />
             )}
         </>

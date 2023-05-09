@@ -18,13 +18,13 @@ import DeckGL from '@deck.gl/react';
 
 import { makeStyles, useTheme } from '@mui/styles';
 import { decomposeColor } from '@mui/material/styles';
-import LoaderWithOverlay from '../util/loader-with-overlay';
+import LoaderWithOverlay from '../utils/loader-with-overlay';
 
 import GeoData from './geo-data';
 import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
-import { RunningStatus } from '../util/running-status';
+import { RunningStatus } from '../utils/running-status';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -32,7 +32,7 @@ import { Button } from '@mui/material';
 import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
-import { useNameOrId } from '../util/equipmentInfosHandler';
+import { useNameOrId } from '../utils/equipmentInfosHandler';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -94,14 +94,23 @@ const NetworkMap = (props) => {
 
     const readyToDisplayLines =
         readyToDisplay &&
-        props.mapEquipments.lines &&
+        (props.mapEquipments?.lines || props.mapEquipments?.hvdcLines) &&
         props.mapEquipments.voltageLevels &&
         props.geoData.substationPositionsById.size > 0;
+
+    const mapEquipmentsLines = useMemo(() => {
+        return [
+            ...(props.mapEquipments?.lines ?? []),
+            ...(props.mapEquipments?.hvdcLines ?? []),
+        ];
+    }, [props.mapEquipments?.hvdcLines, props.mapEquipments?.lines]);
 
     const classes = useStyles();
 
     useEffect(() => {
-        if (centerOnSubstation === null) return;
+        if (centerOnSubstation === null) {
+            return;
+        }
         setCentered({
             lastCenteredSubstation: null,
             centeredSubstationId: centerOnSubstation?.to,
@@ -131,7 +140,9 @@ const NetworkMap = (props) => {
                     const geodata = props.geoData.substationPositionsById.get(
                         centered.centeredSubstationId
                     );
-                    if (!geodata) return; // can't center on substation if no coordinate.
+                    if (!geodata) {
+                        return;
+                    } // can't center on substation if no coordinate.
                     const copyViewState =
                         lastViewStateRef.current || deck.viewState;
                     const newViewState = {
@@ -312,7 +323,18 @@ const NetworkMap = (props) => {
             // picked line properties are retrieved from network data and not from pickable object infos,
             // because pickable object infos might not be up to date
             let line = network.getLine(info.object.id);
-            props.onLineMenuClick(line, event.center.x, event.center.y);
+            if (line) {
+                props.onLineMenuClick(line, event.center.x, event.center.y);
+            } else {
+                let hvdcLine = network.getHvdcLine(info.object.id);
+                if (hvdcLine) {
+                    props.onHvdcLineMenuClick(
+                        hvdcLine,
+                        event.center.x,
+                        event.center.y
+                    );
+                }
+            }
         }
     }
 
@@ -347,7 +369,7 @@ const NetworkMap = (props) => {
         layers.push(
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
-                data: props.mapEquipments?.lines,
+                data: mapEquipmentsLines,
                 network: props.mapEquipments,
                 updatedLines: props.updatedLines,
                 geoData: props.geoData,
@@ -483,6 +505,7 @@ NetworkMap.propTypes = {
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
     onLineMenuClick: PropTypes.func,
+    onHvdcLineMenuClick: PropTypes.func,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     onVoltageLevelMenuClick: PropTypes.func,

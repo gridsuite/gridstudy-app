@@ -11,8 +11,8 @@ import {
     BRANCH_STATUS_ACTION,
     BRANCH_SIDE,
 } from '../components/network/constants';
-import { MODIFICATION_TYPES } from '../components/util/modification-type';
-import { EQUIPMENT_TYPES } from '../components/util/equipment-types';
+import { MODIFICATION_TYPES } from '../components/utils/modification-type';
+import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -51,6 +51,13 @@ function parseError(text) {
         return null;
     }
 }
+
+export const FetchStatus = {
+    SUCCEED: 'SUCCEED',
+    FAILED: 'FAILED',
+    IDLE: 'IDLE',
+    RUNNING: 'RUNNING',
+};
 
 function handleError(response) {
     return response.text().then((text) => {
@@ -125,12 +132,13 @@ export function backendFetchJson(url, init, token) {
 
 export function fetchValidateUser(user) {
     const sub = user?.profile?.sub;
-    if (!sub)
+    if (!sub) {
         return Promise.reject(
             new Error(
                 'Error : Fetching access for missing user.profile.sub : ' + user
             )
         );
+    }
 
     console.info(`Fetching access for user...`);
     const CheckAccessUrl =
@@ -149,8 +157,11 @@ export function fetchValidateUser(user) {
             return response.status === 200;
         })
         .catch((error) => {
-            if (error.status === 403) return false;
-            else throw error;
+            if (error.status === 403) {
+                return false;
+            } else {
+                throw error;
+            }
         });
 }
 
@@ -750,6 +761,50 @@ export function fetchEquipmentsIds(
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
+export function fetchSubstation(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'substations',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchLine(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'lines',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'voltage-levels',
+        equipmentId,
+        true
+    );
+}
+
+export function fetchLineOrTransformer(
+    studyUuid,
+    currentNodeUuid,
+    equipmentId
+) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        'branch-or-3wt',
+        equipmentId,
+        true
+    );
+}
+
 export function fetchEquipmentInfos(
     studyUuid,
     currentNodeUuid,
@@ -758,7 +813,7 @@ export function fetchEquipmentInfos(
     inUpstreamBuiltParentNode
 ) {
     console.info(
-        `Fetching specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching specific equipment '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
 
     let urlSearchParams = new URLSearchParams();
@@ -779,6 +834,21 @@ export function fetchEquipmentInfos(
         urlSearchParams.toString();
     console.debug(fetchEquipmentInfosUrl);
     return backendFetchJson(fetchEquipmentInfosUrl);
+}
+
+export function fetchOverloadedLines(
+    studyUuid,
+    currentNodeUuid,
+    limitReduction
+) {
+    console.info(
+        `Fetching overloaded lines (with limit reduction ${limitReduction}) ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/overloaded-lines?limitReduction=' +
+        limitReduction.toString();
+    return backendFetchJson(url);
 }
 
 export function fetchBusesForVoltageLevel(
@@ -1295,12 +1365,14 @@ export function fetchDynamicSimulationProviders() {
     console.debug(url);
     return backendFetchJson(url);
 }
+
 export function fetchDynamicSimulationProvider(studyUuid) {
     console.info('fetch dynamic simulation provider');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
     console.debug(url);
     return backendFetchText(url);
 }
+
 export function fetchDefaultDynamicSimulationProvider() {
     console.info('fetch default dynamic simulation provider');
     const url =
@@ -1308,6 +1380,7 @@ export function fetchDefaultDynamicSimulationProvider() {
     console.debug(url);
     return backendFetchText(url);
 }
+
 export function updateDynamicSimulationProvider(studyUuid, newProvider) {
     console.info('update dynamic simulation provider');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/provider';
@@ -1337,6 +1410,7 @@ export function fetchDynamicSimulationParameters(studyUuid) {
         ([parameters, mappings]) => ({ ...parameters, mappings })
     );
 }
+
 export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
@@ -1350,6 +1424,7 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
 // -- Parameters API - END
 // --- Dynamic simulation API - END
 
@@ -1396,6 +1471,16 @@ export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
     return backendFetchJson(url);
 }
 
+export function fetchNetworkModificationSubtree(studyUuid, parentNodeUuid) {
+    console.info('Fetching network modification tree node : ', parentNodeUuid);
+    const url =
+        getStudyUrl(studyUuid) +
+        '/subtree?parentNodeUuid=' +
+        encodeURIComponent(parentNodeUuid);
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function createTreeNode(studyUuid, parentId, insertMode, node) {
     const nodeCreationUrl =
         getStudyUrl(studyUuid) +
@@ -1418,6 +1503,19 @@ export function deleteTreeNode(studyUuid, nodeId) {
     console.info('Deleting tree node : ', nodeId);
     const url =
         getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeId);
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'delete',
+    });
+}
+
+export function deleteSubtree(studyUuid, parentNodeId) {
+    console.info('Deleting node subtree : ', parentNodeId);
+    const url =
+        getStudyUrl(studyUuid) +
+        '/tree/nodes/' +
+        encodeURIComponent(parentNodeId) +
+        '?deleteChildren=true';
     console.debug(url);
     return backendFetch(url, {
         method: 'delete',
@@ -1480,6 +1578,40 @@ export function cutTreeNode(
         referenceNodeUuid;
     console.debug(nodeCutUrl);
     return backendFetch(nodeCutUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+    const nodeCopyUrl =
+        getStudyUrl(targetStudyId) +
+        '/tree/subtrees?subtreeToCutParentNodeUuid=' +
+        nodeToCopyUuid +
+        '&referenceNodeUuid=' +
+        referenceNodeUuid;
+    console.debug(nodeCopyUrl);
+    return backendFetch(nodeCopyUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function copySubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+    const nodeCopyUrl =
+        getStudyUrl(targetStudyId) +
+        '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
+        nodeToCopyUuid +
+        '&referenceNodeUuid=' +
+        referenceNodeUuid;
+    console.debug(nodeCopyUrl);
+    return backendFetch(nodeCopyUrl, {
         method: 'post',
         headers: {
             Accept: 'application/json',
@@ -1688,6 +1820,14 @@ export function getLoadFlowParameters(studyUuid) {
     const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(getLfParams);
     return backendFetchJson(getLfParams);
+}
+
+export function getLoadFlowSpecificParametersDescription() {
+    console.info('get load flow specific parameters description');
+    const getLoadFlowSpecificParameterssUrl =
+        getLoadFlowUrl() + 'specific-parameters';
+    console.debug(getLoadFlowSpecificParameterssUrl);
+    return backendFetchJson(getLoadFlowSpecificParameterssUrl);
 }
 
 export function setShortCircuitParameters(studyUuid, newParams) {
@@ -2233,6 +2373,63 @@ export function createLine(
     });
 }
 
+export function modifyLine(
+    studyUuid,
+    currentNodeUuid,
+    lineId,
+    lineName,
+    seriesResistance,
+    seriesReactance,
+    shuntConductance1,
+    shuntSusceptance1,
+    shuntConductance2,
+    shuntSusceptance2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2,
+    temporaryCurrentLimits1,
+    temporaryCurrentLimits2,
+    isUpdate,
+    modificationUuid
+) {
+    let modifyLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyLineUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating line modification');
+    } else {
+        console.info('Creating line modification');
+    }
+
+    return backendFetchText(modifyLineUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.LINE_MODIFICATION.type,
+            equipmentId: lineId,
+            equipmentName: toModificationOperation(lineName),
+            seriesResistance: toModificationOperation(seriesResistance),
+            seriesReactance: toModificationOperation(seriesReactance),
+            shuntConductance1: toModificationOperation(shuntConductance1),
+            shuntSusceptance1: toModificationOperation(shuntSusceptance1),
+            shuntConductance2: toModificationOperation(shuntConductance2),
+            shuntSusceptance2: toModificationOperation(shuntSusceptance2),
+            currentLimits1: {
+                permanentLimit: permanentCurrentLimit1,
+                temporaryLimits: temporaryCurrentLimits1,
+            },
+            currentLimits2: {
+                permanentLimit: permanentCurrentLimit2,
+                temporaryLimits: temporaryCurrentLimits2,
+            },
+        }),
+    });
+}
+
 export function createTwoWindingsTransformer(
     studyUuid,
     currentNodeUuid,
@@ -2349,6 +2546,43 @@ export function createSubstation(
             'Content-Type': 'application/json',
         },
         body: body,
+    });
+}
+
+export function modifySubstation(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    substationCountry,
+    isUpdate = false,
+    modificationUuid,
+    properties
+) {
+    let modifyUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating substation modification');
+    } else {
+        console.info('Creating substation modification');
+    }
+
+    return backendFetchText(modifyUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
+            equipmentId: id,
+            equipmentName: toModificationOperation(name),
+            substationCountry: toModificationOperation(substationCountry),
+            properties: properties,
+        }),
     });
 }
 
@@ -2945,4 +3179,51 @@ export function fetchMapLines(
         'map-lines',
         inUpstreamBuiltParentNode
     );
+}
+
+export function fetchMapHvdcLines(
+    studyUuid,
+    currentNodeUuid,
+    substationsIds,
+    inUpstreamBuiltParentNode
+) {
+    return fetchMapEquipment(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        'hvdc-lines',
+        'map-hvdc-lines',
+        inUpstreamBuiltParentNode
+    );
+}
+export function generationDispatch(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lossCoefficient
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
+        lossCoefficient,
+    });
+
+    let generationDispatchUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating generation dispatch ', body);
+        generationDispatchUrl =
+            generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating generation dispatch ', body);
+    }
+
+    return backendFetchText(generationDispatchUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
 }
