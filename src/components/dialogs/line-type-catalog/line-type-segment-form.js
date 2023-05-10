@@ -64,32 +64,11 @@ export const LineTypeSegmentForm = () => {
             );
     }, [snackError]);
 
-    const getResistanceFromCatalog = useCallback(
+    const getEntryFromCatalog = useCallback(
         (kind, type) => {
-            const matchingCatalogEntry = lineTypeCatalog?.find(
+            return lineTypeCatalog?.find(
                 (entry) => entry.kind === kind && entry.type === type
             );
-            return matchingCatalogEntry?.linearResistance ?? 0;
-        },
-        [lineTypeCatalog]
-    );
-
-    const getReactanceFromCatalog = useCallback(
-        (kind, type) => {
-            const matchingCatalogEntry = lineTypeCatalog?.find(
-                (entry) => entry.kind === kind && entry.type === type
-            );
-            return matchingCatalogEntry?.linearReactance ?? 0;
-        },
-        [lineTypeCatalog]
-    );
-
-    const getSusceptanceFromCatalog = useCallback(
-        (kind, type) => {
-            const matchingCatalogEntry = lineTypeCatalog?.find(
-                (entry) => entry.kind === kind && entry.type === type
-            );
-            return matchingCatalogEntry?.linearCapacity ?? 0;
         },
         [lineTypeCatalog]
     );
@@ -105,44 +84,38 @@ export const LineTypeSegmentForm = () => {
             const lineType = getValues(
                 `${SEGMENTS}.${index}.${SEGMENT_TYPE_VALUE}`
             );
+            const entryFromCatalog = getEntryFromCatalog(lineKind, lineType);
 
-            const linearResistance = getResistanceFromCatalog(
-                lineKind,
-                lineType
-            );
             const newResistance = roundToDefaultPrecision(
-                calculateResistance(distance, linearResistance)
+                calculateResistance(
+                    distance,
+                    entryFromCatalog?.linearResistance ?? 0
+                )
             );
+            const newReactance = roundToDefaultPrecision(
+                calculateReactance(
+                    distance,
+                    entryFromCatalog?.linearReactance ?? 0
+                )
+            );
+            const newSusceptance = roundToDefaultPrecision(
+                calculateSusceptance(
+                    distance,
+                    entryFromCatalog?.linearCapacity ?? 0
+                )
+            );
+
             setValue(
                 `${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`,
                 newResistance
             );
-
-            const linearReactance = getReactanceFromCatalog(lineKind, lineType);
-            const newReactance = roundToDefaultPrecision(
-                calculateReactance(distance, linearReactance)
-            );
             setValue(`${SEGMENTS}.${index}.${SEGMENT_REACTANCE}`, newReactance);
-
-            const linearSusceptance = getSusceptanceFromCatalog(
-                lineKind,
-                lineType
-            );
-            const newSusceptance = roundToDefaultPrecision(
-                calculateSusceptance(distance, linearSusceptance)
-            );
             setValue(
                 `${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`,
                 newSusceptance
             );
         },
-        [
-            getValues,
-            setValue,
-            getResistanceFromCatalog,
-            getReactanceFromCatalog,
-            getSusceptanceFromCatalog,
-        ]
+        [getValues, setValue, getEntryFromCatalog]
     );
 
     const updateTotals = useCallback(() => {
