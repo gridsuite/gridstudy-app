@@ -105,8 +105,7 @@ export function isNodeInNotificationList(node, notificationIdList) {
     return notificationIdList.includes(node.id);
 }
 
-export function isSameNodeAndBuilt(node1, node2)
-{
+export function isSameNodeAndBuilt(node1, node2) {
     return isSameNode(node1, node2) && isNodeBuilt(node1);
 }
 
