@@ -15,7 +15,9 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
 import { generatorScaling } from '../../../utils/rest-api';
-import { VARIATION_TYPES } from '../../network/constants';
+import { VARIATION_TYPES, FORM_LOADING_DELAY } from '../../network/constants';
+import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,
@@ -34,6 +36,8 @@ const GeneratorScalingDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
@@ -77,6 +81,14 @@ const GeneratorScalingDialog = ({
         [currentNodeUuid, editData, snackError, studyUuid]
     );
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
+
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -86,6 +98,10 @@ const GeneratorScalingDialog = ({
                 aria-labelledby="dialog-generator-scaling"
                 maxWidth={'md'}
                 titleId="GeneratorScaling"
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <GeneratorScalingForm />
