@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useState,
+    useRef,
+    useMemo,
+} from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import makeStyles from '@mui/styles/makeStyles';
@@ -24,6 +30,7 @@ import {
     Select,
     MenuItem,
 } from '@mui/material';
+import { debounce } from '@mui/material/utils';
 
 import {
     fetchDefaultSecurityAnalysisProvider,
@@ -274,6 +281,11 @@ export const useParametersBackend = (
         ]
     );
 
+    const delayedUpdateParameter = useMemo(
+        () => debounce(updateParameter, 1000),
+        [updateParameter]
+    );
+
     const resetParameters = useCallback(
         (callBack) => {
             backendUpdateParameters(studyUuid, null)
@@ -390,7 +402,7 @@ export const useParametersBackend = (
         updateProvider,
         resetProvider,
         params,
-        updateParameter,
+        delayedUpdateParameter,
         resetParameters,
         specificParamsDescription,
     ];
