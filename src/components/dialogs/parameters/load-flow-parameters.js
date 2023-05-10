@@ -5,17 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import {
-    Grid,
-    Box,
-    Typography,
-    Autocomplete,
-    TextField,
-    Chip,
-    Button,
-} from '@mui/material';
+import { Grid, Autocomplete, TextField, Chip, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
 import {
@@ -26,6 +18,11 @@ import {
     useStyles,
 } from './parameters';
 import { LineSeparator } from '../dialogUtils';
+import {
+    FlatParameters,
+    extractDefaultMap,
+    makeDeltaMap,
+} from '@gridsuite/commons-ui';
 import { LocalizedCountries } from '../../utils/localized-countries-hook';
 
 const CountrySelector = ({ value, label, callback }) => {
@@ -34,12 +31,8 @@ const CountrySelector = ({ value, label, callback }) => {
 
     return (
         <>
-            <Grid item xs={6}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
+            <Grid item xs={6} className={classes.parameterName}>
+                <FormattedMessage id={label} />
             </Grid>
             <Grid item container xs={6} className={classes.controlItem}>
                 <Autocomplete
@@ -80,10 +73,23 @@ const CountrySelector = ({ value, label, callback }) => {
     );
 };
 
-function makeComponentsFor(defParams, params, setter) {
+function makeComponentsFor(
+    defParams,
+    localParams,
+    allParams,
+    setter,
+    provider
+) {
     return Object.keys(defParams).map((key) => (
         <Grid container spacing={1} paddingTop={1} key={key}>
-            {makeComponentFor(defParams[key], key, params, setter)}
+            {makeComponentFor(
+                defParams[key],
+                key,
+                localParams,
+                allParams,
+                setter,
+                provider
+            )}
             <LineSeparator />
         </Grid>
     ));
@@ -95,16 +101,44 @@ function getValue(param, key) {
     }
     return param[key];
 }
-function makeComponentFor(defParam, key, lfParams, setter) {
-    const value = getValue(lfParams, key);
+
+function makeComponentFor(
+    defParam,
+    key,
+    localParams,
+    allParams,
+    setter,
+    provider
+) {
+    function updateValues(newval) {
+        localParams = { ...localParams, [key]: newval }; // single value update made
+        let newParams = { ...allParams }; // but we send/update all params to the back
+        if (provider === undefined) {
+            if ('commonParameters' in newParams) {
+                newParams['commonParameters'] = {
+                    ...localParams,
+                };
+            }
+        } else if (
+            'specificParametersPerProvider' in newParams &&
+            provider in newParams['specificParametersPerProvider']
+        ) {
+            newParams['specificParametersPerProvider'][provider] = {
+                ...localParams,
+            };
+        }
+        setter(newParams);
+    }
+
+    const value = getValue(localParams, key);
     if (defParam.type === TYPES.bool) {
         return (
             <SwitchWithLabel
                 value={value}
                 label={defParam.description}
-                callback={(ev) =>
-                    setter({ ...lfParams, [key]: ev.target.checked })
-                }
+                callback={(ev) => {
+                    updateValues(ev.target.checked);
+                }}
             />
         );
     } else if (defParam.type === TYPES.enum) {
@@ -113,9 +147,9 @@ function makeComponentFor(defParam, key, lfParams, setter) {
                 value={value}
                 label={defParam.description}
                 values={defParam.values}
-                callback={(ev) =>
-                    setter({ ...lfParams, [key]: ev.target.value })
-                }
+                callback={(ev) => {
+                    updateValues(ev.target.value);
+                }}
             />
         );
     } else if (defParam.type === TYPES.countries) {
@@ -124,7 +158,7 @@ function makeComponentFor(defParam, key, lfParams, setter) {
                 value={value || []}
                 label={defParam.description}
                 callback={(newValues) => {
-                    setter({ ...lfParams, [key]: [...newValues] });
+                    updateValues([...newValues]);
                 }}
             />
         );
@@ -135,6 +169,9 @@ const TYPES = {
     enum: 'Enum',
     bool: 'Bool',
     countries: 'Countries',
+    string: 'String',
+    double: 'Double',
+    integer: 'Integer',
 };
 
 const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
@@ -179,14 +216,19 @@ const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
         },
     };
 
-    return makeComponentsFor(defParams, lfParams, commitLFParameter);
+    return makeComponentsFor(
+        defParams,
+        lfParams?.commonParameters || {},
+        lfParams,
+        commitLFParameter
+    );
 };
 
-const AdvancedParameterButton = ({ showOpenIcon, label, callback }) => {
+const SubgroupParametersButton = ({ showOpenIcon, label, onClick }) => {
     const classes = useStyles();
     return (
         <>
-            <Grid item xs={12} className={classes.advancedParameterButton}>
+            <Grid item xs={12} className={classes.subgroupParametersButton}>
                 <Button
                     startIcon={<SettingsIcon />}
                     endIcon={
@@ -194,7 +236,7 @@ const AdvancedParameterButton = ({ showOpenIcon, label, callback }) => {
                             <CheckIcon style={{ color: 'green' }} />
                         ) : undefined
                     }
-                    onClick={callback}
+                    onClick={onClick}
                 >
                     <FormattedMessage id={label} />
                 </Button>
@@ -203,12 +245,9 @@ const AdvancedParameterButton = ({ showOpenIcon, label, callback }) => {
     );
 };
 
-const AdvancedLoadFlowParameters = ({
-    lfParams,
-    commitLFParameter,
-    showAdvancedLfParams,
-    setShowAdvancedLfParams,
-}) => {
+const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
+    const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
+
     const defParams = {
         voltageInitMode: {
             type: TYPES.enum,
@@ -251,23 +290,85 @@ const AdvancedLoadFlowParameters = ({
 
     return (
         <>
-            <AdvancedParameterButton
+            <SubgroupParametersButton
                 showOpenIcon={showAdvancedLfParams}
                 label={'showAdvancedParameters'}
-                callback={() => setShowAdvancedLfParams(!showAdvancedLfParams)}
+                onClick={() => setShowAdvancedLfParams(!showAdvancedLfParams)}
             />
             {showAdvancedLfParams &&
-                makeComponentsFor(defParams, lfParams, commitLFParameter)}
+                makeComponentsFor(
+                    defParams,
+                    lfParams?.commonParameters || {},
+                    lfParams,
+                    commitLFParameter
+                )}
         </>
     );
 };
 
-export const LoadFlowParameters = ({
-    hideParameters,
-    parametersBackend,
-    showAdvancedLfParams,
-    setShowAdvancedLfParams,
+const SpecificLoadFlowParameters = ({
+    lfParams,
+    commitLFParameter,
+    currentProvider,
+    specificParamsDescription,
 }) => {
+    const classes = useStyles();
+    const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
+
+    const defaultValues = useMemo(() => {
+        return extractDefaultMap(specificParamsDescription);
+    }, [specificParamsDescription]);
+
+    const onChange = useCallback(
+        (paramName, value, isEdit) => {
+            if (isEdit) {
+                return;
+            }
+            const prevCurrentParameters = {
+                ...defaultValues,
+                ...lfParams?.specificParametersPerProvider?.[currentProvider],
+            };
+            const nextCurrentParameters = {
+                ...prevCurrentParameters,
+                ...{ [paramName]: value },
+            };
+            const deltaMap = makeDeltaMap(defaultValues, nextCurrentParameters);
+            const toSend = { ...lfParams };
+            const oldSpecifics = toSend['specificParametersPerProvider'];
+            toSend['specificParametersPerProvider'] = {
+                ...oldSpecifics,
+                [currentProvider]: deltaMap ?? {},
+            };
+            commitLFParameter(toSend);
+        },
+        [commitLFParameter, currentProvider, defaultValues, lfParams]
+    );
+
+    return (
+        <>
+            <SubgroupParametersButton
+                showOpenIcon={showSpecificLfParams}
+                label={'showSpecificParameters'}
+                onClick={() => setShowSpecificLfParams(!showSpecificLfParams)}
+            />
+            {showSpecificLfParams && (
+                <FlatParameters
+                    className={classes.parameterName}
+                    paramsAsArray={specificParamsDescription}
+                    initValues={{
+                        ...defaultValues,
+                        ...lfParams?.specificParametersPerProvider?.[
+                            currentProvider
+                        ],
+                    }}
+                    onChange={onChange}
+                />
+            )}
+        </>
+    );
+};
+
+export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
     const classes = useStyles();
 
     const [
@@ -278,6 +379,7 @@ export const LoadFlowParameters = ({
         params,
         updateParameters,
         resetParameters,
+        specificParamsDescriptions,
     ] = parametersBackend;
 
     const updateLfProviderCallback = useCallback(
@@ -316,9 +418,17 @@ export const LoadFlowParameters = ({
                 <AdvancedLoadFlowParameters
                     lfParams={params || {}}
                     commitLFParameter={updateParameters}
-                    showAdvancedLfParams={showAdvancedLfParams}
-                    setShowAdvancedLfParams={setShowAdvancedLfParams}
                 />
+                {specificParamsDescriptions?.[provider] && (
+                    <SpecificLoadFlowParameters
+                        lfParams={params || {}}
+                        commitLFParameter={updateParameters}
+                        currentProvider={provider}
+                        specificParamsDescription={
+                            specificParamsDescriptions[provider]
+                        }
+                    />
+                )}
             </Grid>
             <Grid
                 container

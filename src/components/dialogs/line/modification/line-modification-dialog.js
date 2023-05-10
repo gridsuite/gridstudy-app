@@ -32,7 +32,7 @@ import React, {
     useState,
 } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { fetchEquipmentInfos, modifyLine } from 'utils/rest-api';
+import { fetchEquipmentInfos, FetchStatus, modifyLine } from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
 import yup from '../../../utils/yup-config';
@@ -53,6 +53,8 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -66,17 +68,22 @@ export const LineCreationDialogTab = {
  * @param editData the data to edit
  * @param displayConnectivity to display connectivity section or not
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param isUpdate check if edition form
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const LineModificationDialog = ({
     editData,
     studyUuid,
     currentNode,
     displayConnectivity = false,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState(null);
     const [tabIndex, setTabIndex] = useState(
         LineCreationDialogTab.CHARACTERISTICS_TAB
@@ -280,6 +287,7 @@ const LineModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
+                setDataFetchStatus(FetchStatus.RUNNING);
                 fetchEquipmentInfos(
                     studyUuid,
                     currentNodeUuid,
@@ -318,9 +326,11 @@ const LineModificationDialog = ({
                                 );
                             }
                         }
+                        setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
                         setLineToModify(null);
+                        setDataFetchStatus(FetchStatus.FAILED);
                     });
             } else {
                 setLineToModify(null);
@@ -342,6 +352,16 @@ const LineModificationDialog = ({
         }
         setTabIndexesWithError(tabsInError);
     };
+
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            ((editDataFetchStatus === FetchStatus.SUCCEED ||
+                editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED ||
+                    dataFetchStatus === FetchStatus.FAILED)),
+        delay: FORM_LOADING_DELAY,
+    });
 
     const headerAndTabs = (
         <LineModificationDialogHeader
@@ -370,6 +390,13 @@ const LineModificationDialog = ({
                 maxWidth={'md'}
                 titleId="ModifyLine"
                 subtitle={headerAndTabs}
+                open={open}
+                keepMounted={true}
+                isDataFetching={
+                    isUpdate &&
+                    (editDataFetchStatus === FetchStatus.RUNNING ||
+                        dataFetchStatus === FetchStatus.RUNNING)
+                }
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
