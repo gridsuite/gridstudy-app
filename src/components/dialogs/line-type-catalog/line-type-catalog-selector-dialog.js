@@ -31,31 +31,36 @@ export const LineTypeCatalogSelectorDialogTabs = {
     UNDERGROUND_TAB: 1,
 };
 
-const LineTypeCatalogSelectorDialog = (props) => {
+const LineTypeCatalogSelectorDialog = ({
+    onSelectLine,
+    preselectedRow,
+    rowData,
+    onClose,
+    ...dialogProps
+}) => {
     const intl = useIntl();
-    const { onClose, onSelectLine } = props;
     const gridRef = useRef(); // Necessary to call getSelectedRows on aggrid component
 
     const [tabIndex, setTabIndex] = useState(
-        props.preselectedRow?.kind === 'UNDERGROUND'
+        preselectedRow?.kind === 'UNDERGROUND'
             ? LineTypeCatalogSelectorDialogTabs.UNDERGROUND_TAB
             : LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
     );
     const [selectedRow, setSelectedRow] = useState(null);
 
     const rowDataAerialTab = useMemo(() => {
-        if (props?.rowData) {
-            return props.rowData.filter((row) => row.kind === 'AERIAL');
+        if (rowData) {
+            return rowData.filter((row) => row.kind === 'AERIAL');
         }
         return [];
-    }, [props.rowData]);
+    }, [rowData]);
 
     const rowDataUndergroundTab = useMemo(() => {
-        if (props?.rowData) {
-            return props.rowData.filter((row) => row.kind === 'UNDERGROUND');
+        if (rowData) {
+            return rowData.filter((row) => row.kind === 'UNDERGROUND');
         }
         return [];
-    }, [props.rowData]);
+    }, [rowData]);
 
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
     const handleSubmit = useCallback(
@@ -154,8 +159,8 @@ const LineTypeCatalogSelectorDialog = (props) => {
     // to the selected tab, and its "type" parameter which should correspond
     // to the selected line.
     const highlightSelectedRow = useCallback(() => {
-        const rowToHightlight = selectedRow ?? props?.preselectedRow;
-        if (rowToHightlight && props?.rowData) {
+        const rowToHightlight = selectedRow ?? preselectedRow;
+        if (rowToHightlight && rowData) {
             const currentTabKind =
                 tabIndex === LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
                     ? 'AERIAL'
@@ -169,7 +174,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
                 });
             }
         }
-    }, [selectedRow, tabIndex, props.preselectedRow, props.rowData]);
+    }, [selectedRow, tabIndex, preselectedRow, rowData]);
 
     // Tries to highlights the preselected row when changing tabs
     useEffect(() => {
@@ -224,17 +229,17 @@ const LineTypeCatalogSelectorDialog = (props) => {
         <BasicModificationDialog
             fullWidth
             maxWidth="xl"
+            onClose={onClose}
             onClear={handleClear}
             onSave={handleSubmit}
             aria-labelledby="dialog-lineType-catalog-selector"
-            titleId={props.titleId}
             subtitle={headerAndTabs}
             PaperProps={{
                 sx: {
                     height: '95vh', // we want the dialog height to be fixed even when switching tabs
                 },
             }}
-            {...props}
+            {...dialogProps}
             disabledSave={!selectedRow}
         >
             <div style={{ height: '100%' }}>
@@ -261,7 +266,6 @@ LineTypeCatalogSelectorDialog.propTypes = {
     onClose: PropTypes.func,
     rowData: PropTypes.array,
     onSelectLine: PropTypes.func,
-    titleId: PropTypes.string,
     preselectedRow: PropTypes.object,
 };
 
