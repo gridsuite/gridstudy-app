@@ -124,7 +124,7 @@ const CreateNodeMenu = ({
                 CREATE_MODIFICATION_NODE: {
                     onRoot: true,
                     action: () => createNetworkModificationNode('CHILD'),
-                    id: 'networkModificationNodeInNewBranch',
+                    id: 'createNetworkModificationNodeInNewBranch',
                 },
                 INSERT_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
@@ -161,7 +161,7 @@ const CreateNodeMenu = ({
                 PASTE_MODIFICATION_NODE: {
                     onRoot: true,
                     action: () => pasteNetworkModificationNode('CHILD'),
-                    id: 'networkModificationNodeInNewBranch',
+                    id: 'pasteNetworkModificationNodeInNewBranch',
                     disabled: !isPastingAllowed(),
                 },
                 PASTE_MODIFICATION_NODE_BEFORE: {
@@ -201,11 +201,9 @@ const CreateNodeMenu = ({
                     <MenuItem
                         className={classes.menuItem}
                         onClick={item.action}
-                        key={item.id}
                         disabled={item.disabled}
                     >
                         <ListItemText
-                            key={item.id}
                             className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
@@ -237,7 +235,7 @@ const CreateNodeMenu = ({
                 const hasSubMenuItem = item.subMenuItems !== undefined;
                 return (
                     (activeNode?.type !== 'ROOT' || item.onRoot) && (
-                        <>
+                        <div key={item.id}>
                             {!hasSubMenuItem && <SubMenuItem item={item} />}
 
                             {hasSubMenuItem && (
@@ -246,15 +244,21 @@ const CreateNodeMenu = ({
                                         id: item.id,
                                     })}
                                     parentMenuOpen={true}
+                                    disabled={item.disabled}
                                 >
                                     {Object.values(item.subMenuItems).map(
                                         (item) => {
-                                            return <SubMenuItem item={item} />;
+                                            return (
+                                                <SubMenuItem
+                                                    key={item.id}
+                                                    item={item}
+                                                />
+                                            );
                                         }
                                     )}
                                 </NestedMenuItem>
                             )}
-                        </>
+                        </div>
                     )
                 );
             })}
