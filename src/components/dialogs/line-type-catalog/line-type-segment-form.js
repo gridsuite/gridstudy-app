@@ -119,15 +119,16 @@ export const LineTypeSegmentForm = () => {
     );
 
     const updateTotals = useCallback(() => {
-        const totalResistance = getValues(SEGMENTS).reduce(
+        const segments = getValues(SEGMENTS);
+        const totalResistance = segments.reduce(
             (accum, item) => accum + item[SEGMENT_RESISTANCE] ?? 0,
             0
         );
-        const totalReactance = getValues(SEGMENTS).reduce(
+        const totalReactance = segments.reduce(
             (accum, item) => accum + item[SEGMENT_REACTANCE] ?? 0,
             0
         );
-        const totalSusceptance = getValues(SEGMENTS).reduce(
+        const totalSusceptance = segments.reduce(
             (accum, item) => accum + item[SEGMENT_SUSCEPTANCE] ?? 0,
             0
         );
