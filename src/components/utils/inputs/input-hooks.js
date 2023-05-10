@@ -52,6 +52,7 @@ import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
 import clsx from 'clsx';
+import { debounce } from '@mui/material/utils';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -452,7 +453,6 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     const { snackError } = useSnackMessage();
     const [isValidName, setIsValidName] = useState(false);
     const [error, setError] = useState();
-    const timer = useRef();
     const [checking, setChecking] = useState(undefined);
     const [adornment, setAdornment] = useState();
     const [name, field] = useSimpleTextValue({
@@ -491,6 +491,10 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
         },
         [studyUuid, intl, defaultValue, snackError]
     );
+    const debouncedValidName = useMemo(
+        () => debounce(validName, 700),
+        [validName]
+    );
 
     useEffect(() => {
         if (checking === undefined) {
@@ -508,17 +512,16 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     }, [checking, isValidName]);
 
     useEffect(() => {
-        if (name === '' && !timer.current) {
+        if (name === '') {
             return;
         } // initial render
 
-        clearTimeout(timer.current);
         setIsValidName(false);
         setAdornment(undefined);
         setChecking(true);
         setError(undefined);
-        timer.current = setTimeout(() => validName(name), 700);
-    }, [studyUuid, name, validName, triggerReset]);
+        debouncedValidName(name);
+    }, [studyUuid, name, triggerReset]);
 
     return [error, field, isValidName, name];
 };
