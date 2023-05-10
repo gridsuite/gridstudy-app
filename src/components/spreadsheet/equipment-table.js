@@ -25,6 +25,8 @@ export const EquipmentTable = ({
     handleCellEditing,
     handleEditingStopped,
     handleGridReady,
+    handleRowDataUpdated,
+    handleBodyScroll,
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
@@ -113,14 +115,15 @@ export const EquipmentTable = ({
                     editType={'fullRow'}
                     onCellValueChanged={handleCellEditing}
                     onRowValueChanged={handleRowEditing}
+                    onRowDataUpdated={handleRowDataUpdated}
                     onRowEditingStopped={handleEditingStopped}
                     onColumnMoved={handleColumnDrag}
                     suppressDragLeaveHidesColumns={true}
-                    suppressPropertyNamesCheck={true}
                     suppressColumnVirtualisation={true}
                     suppressClickEdit={true}
                     context={gridContext}
                     onGridReady={handleGridReady}
+                    onBodyScroll={handleBodyScroll}
                     shouldHidePinnedHeaderRightBorder={
                         shouldHidePinnedHeaderRightBorder
                     }
