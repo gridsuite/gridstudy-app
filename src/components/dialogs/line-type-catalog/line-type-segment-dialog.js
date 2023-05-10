@@ -22,7 +22,6 @@ import ModificationDialog from '../commons/modificationDialog';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LineTypeSegmentForm } from './line-type-segment-form';
-import PropTypes from 'prop-types';
 
 export const emptyLineSegment = {
     [SEGMENT_DISTANCE_VALUE]: null,
@@ -68,7 +67,7 @@ const formSchema = yup.object().shape({
         .min(1, 'AtLeastOneSegmentNeeded'),
 });
 
-const LineTypeSegmentDialog = ({ onSubmit, onCancel, ...dialogProps }) => {
+const LineTypeSegmentDialog = ({ ...dialogProps }) => {
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -99,9 +98,6 @@ const LineTypeSegmentDialog = ({ onSubmit, onCancel, ...dialogProps }) => {
     );
 };
 
-LineTypeSegmentDialog.propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
-};
+LineTypeSegmentDialog.propTypes = {};
 
 export default LineTypeSegmentDialog;
