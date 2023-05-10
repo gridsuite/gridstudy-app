@@ -14,7 +14,7 @@ import clsx from 'clsx';
 const useStyles = makeStyles((theme) => ({
     readOnlyTextField: {
         '& fieldset': {
-            padding: '0 !important',
+            padding: '0',
         },
         '& input': {
             paddingLeft: 0,

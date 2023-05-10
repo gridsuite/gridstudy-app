@@ -62,7 +62,7 @@ export const LineTypeSegmentForm = () => {
                     headerId: 'LineTypeCatalogFetchingError',
                 })
             );
-    }, []);
+    }, [snackError]);
 
     const getResistanceFromCatalog = useCallback(
         (kind, type) => {

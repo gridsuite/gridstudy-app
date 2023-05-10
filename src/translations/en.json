@@ -884,6 +884,7 @@
     "CatalogButtonTooltip": "Open catalog",
     "LineTypeCatalogDialogTitle": "Define line segments",
     "AddSegment": "Add segment",
+    "AtLeastOneSegmentNeeded": "At least one line segment is needed",
     "SelectType": "Type selection",
     "SegmentDistance": "Length",
     "SegmentDistanceGreaterThanZero": "The length must be greater than zero",

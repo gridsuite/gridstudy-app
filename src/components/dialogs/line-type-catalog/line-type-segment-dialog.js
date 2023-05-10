@@ -44,25 +44,28 @@ const formSchema = yup.object().shape({
     [TOTAL_RESISTANCE]: yup.number().required(),
     [TOTAL_REACTANCE]: yup.number().required(),
     [TOTAL_SUSCEPTANCE]: yup.number().required(),
-    [SEGMENTS]: yup.array().of(
-        yup.object().shape({
-            [SEGMENT_DISTANCE_VALUE]: yup
-                .number()
-                .required('SegmentDistanceGreaterThanZero')
-                .moreThan(0, 'SegmentDistanceGreaterThanZero'),
-            [SEGMENT_TYPE_VALUE]: yup
-                .string()
-                .test(
-                    'empty-check',
-                    'SegmentTypeMissing',
-                    (value) => value.length > 0
-                ),
-            [SEGMENT_KIND_VALUE]: yup.string(),
-            [SEGMENT_RESISTANCE]: yup.number(),
-            [SEGMENT_REACTANCE]: yup.number(),
-            [SEGMENT_SUSCEPTANCE]: yup.number(),
-        })
-    ),
+    [SEGMENTS]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [SEGMENT_DISTANCE_VALUE]: yup
+                    .number()
+                    .required('SegmentDistanceGreaterThanZero')
+                    .moreThan(0, 'SegmentDistanceGreaterThanZero'),
+                [SEGMENT_TYPE_VALUE]: yup
+                    .string()
+                    .test(
+                        'empty-check',
+                        'SegmentTypeMissing',
+                        (value) => value.length > 0
+                    ),
+                [SEGMENT_KIND_VALUE]: yup.string(),
+                [SEGMENT_RESISTANCE]: yup.number(),
+                [SEGMENT_REACTANCE]: yup.number(),
+                [SEGMENT_SUSCEPTANCE]: yup.number(),
+            })
+        )
+        .min(1, 'AtLeastOneSegmentNeeded'),
 });
 
 const LineTypeSegmentDialog = ({ onSubmit, onCancel, ...dialogProps }) => {
