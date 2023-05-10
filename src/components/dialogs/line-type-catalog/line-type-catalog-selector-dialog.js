@@ -224,7 +224,6 @@ const LineTypeCatalogSelectorDialog = (props) => {
         <BasicModificationDialog
             fullWidth
             maxWidth="xl"
-            maxHeight="md"
             onClear={handleClear}
             onSave={handleSubmit}
             aria-labelledby="dialog-lineType-catalog-selector"
