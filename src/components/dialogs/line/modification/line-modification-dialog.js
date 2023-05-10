@@ -82,6 +82,38 @@ const LineModificationDialog = ({
         LineCreationDialogTab.CHARACTERISTICS_TAB
     );
 
+    const emptyFormData = useMemo(
+        () => ({
+            [EQUIPMENT_ID]: '',
+            [EQUIPMENT_NAME]: '',
+            ...getCharacteristicsEmptyFormData(
+                CHARACTERISTICS,
+                displayConnectivity
+            ),
+            ...getLimitsEmptyFormData(),
+        }),
+        [displayConnectivity]
+    );
+
+    const schema = yup
+        .object()
+        .shape({
+            [EQUIPMENT_ID]: yup.string().required(),
+            [EQUIPMENT_NAME]: yup.string(),
+            ...getCharacteristicsValidationSchema(
+                CHARACTERISTICS,
+                displayConnectivity,
+                true
+            ),
+            ...getLimitsValidationSchema(),
+        })
+        .required();
+
+    const methods = useForm({
+        defaultValues: emptyFormData,
+        resolver: yupResolver(schema),
+    });
+
     const sanitizeLimitNames = (temporaryLimitList) =>
         temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
             ...temporaryLimit,
@@ -139,108 +171,58 @@ const LineModificationDialog = ({
         [currentNode]
     );
 
-    const emptyFormData = useMemo(
-        () => ({
-            [EQUIPMENT_ID]: '',
-            [EQUIPMENT_NAME]: '',
-            ...getCharacteristicsEmptyFormData(
-                CHARACTERISTICS,
-                displayConnectivity
-            ),
-            ...getLimitsEmptyFormData(),
-        }),
-        [displayConnectivity]
-    );
-
-    const schema = yup
-        .object()
-        .shape({
-            [EQUIPMENT_ID]: yup.string().required(),
-            [EQUIPMENT_NAME]: yup.string(),
-            ...getCharacteristicsValidationSchema(
-                CHARACTERISTICS,
-                displayConnectivity,
-                true
-            ),
-            ...getLimitsValidationSchema(),
-        })
-        .required();
-
     const editDataRef = useRef(editData);
     useEffect(() => {
         editDataRef.current = editData;
     }, [editData]);
 
-    const formDataFromEditData = useMemo(
-        () =>
-            editDataRef.current
-                ? {
-                      [EQUIPMENT_ID]: editDataRef.current.equipmentId,
-                      [EQUIPMENT_NAME]:
-                          editDataRef.current.equipmentName?.value ?? '',
-                      ...getCharacteristicsWithOutConnectivityFormData({
-                          seriesResistance:
-                              editDataRef.current.seriesResistance?.value ??
-                              null,
-                          seriesReactance:
-                              editDataRef.current.seriesReactance?.value ??
-                              null,
-                          shuntConductance1: unitToMicroUnit(
-                              editDataRef.current.shuntConductance1?.value ??
-                                  null
-                          ),
-                          shuntSusceptance1: unitToMicroUnit(
-                              editDataRef.current.shuntSusceptance1?.value ??
-                                  null
-                          ),
-                          shuntConductance2: unitToMicroUnit(
-                              editDataRef.current.shuntConductance2?.value ??
-                                  null
-                          ),
-                          shuntSusceptance2: unitToMicroUnit(
-                              editDataRef.current.shuntSusceptance2?.value ??
-                                  null
-                          ),
-                      }),
-                      ...getLimitsFormData({
-                          permanentLimit1:
-                              editDataRef.current.currentLimits1
-                                  ?.permanentLimit,
-                          permanentLimit2:
-                              editDataRef.current.currentLimits2
-                                  ?.permanentLimit,
-                          temporaryLimits1: addSelectedFieldToRows(
-                              formatTemporaryLimits(
-                                  editDataRef.current.currentLimits1
-                                      ?.temporaryLimits
-                              )
-                          ),
-                          temporaryLimits2: addSelectedFieldToRows(
-                              formatTemporaryLimits(
-                                  editDataRef.current.currentLimits2
-                                      ?.temporaryLimits
-                              )
-                          ),
-                      }),
-                  }
-                : null,
-        []
+    const { reset, getValues } = methods;
+
+    const fromEditDataToFormValues = useCallback(
+        (line) => {
+            reset({
+                [EQUIPMENT_ID]: line.equipmentId,
+                [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
+                ...getCharacteristicsWithOutConnectivityFormData({
+                    seriesResistance: line.seriesResistance?.value ?? null,
+                    seriesReactance: line.seriesReactance?.value ?? null,
+                    shuntConductance1: unitToMicroUnit(
+                        line.shuntConductance1?.value ?? null
+                    ),
+                    shuntSusceptance1: unitToMicroUnit(
+                        line.shuntSusceptance1?.value ?? null
+                    ),
+                    shuntConductance2: unitToMicroUnit(
+                        line.shuntConductance2?.value ?? null
+                    ),
+                    shuntSusceptance2: unitToMicroUnit(
+                        line.shuntSusceptance2?.value ?? null
+                    ),
+                }),
+                ...getLimitsFormData({
+                    permanentLimit1: line.currentLimits1?.permanentLimit,
+                    permanentLimit2: line.currentLimits2?.permanentLimit,
+                    temporaryLimits1: addSelectedFieldToRows(
+                        formatTemporaryLimits(
+                            line.currentLimits1?.temporaryLimits
+                        )
+                    ),
+                    temporaryLimits2: addSelectedFieldToRows(
+                        formatTemporaryLimits(
+                            line.currentLimits2?.temporaryLimits
+                        )
+                    ),
+                }),
+            });
+        },
+        [reset]
     );
 
-    const defaultFormData = useMemo(() => {
-        if (!editDataRef.current) {
-            return emptyFormData;
-        } else {
-            return formDataFromEditData;
+    useEffect(() => {
+        if (editDataRef.current) {
+            fromEditDataToFormValues(editDataRef.current);
         }
-    }, [emptyFormData, formDataFromEditData]);
-
-    const methods = useForm({
-        defaultValues: defaultFormData,
-        resolver: yupResolver(schema),
-    });
-
-    const { reset, getValues } = methods;
+    }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
         (line) => {
