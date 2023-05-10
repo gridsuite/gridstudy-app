@@ -78,55 +78,58 @@ export const useGroupFilter = (filtersDef, parentKey, linkToParentKey) => {
         [filtersDef]
     );
 
-    const updateFilter = (field, value) => {
-        const isParentFilter =
-            filtersDef.find((filter) => field === filter.field).target ===
-            FILTER_TARGET.PARENT;
+    const updateFilter = useCallback(
+        (field, value) => {
+            const isParentFilter =
+                filtersDef.find((filter) => field === filter.field).target ===
+                FILTER_TARGET.PARENT;
 
-        if (value == null || value.length === 0) {
-            if (isParentFilter) {
-                setParentFilters((oldParentFilters) => {
-                    return [
-                        ...removeElementFromArrayWithFieldValue(
-                            oldParentFilters,
-                            field
-                        ),
-                    ];
-                });
+            if (value == null || value.length === 0) {
+                if (isParentFilter) {
+                    setParentFilters((oldParentFilters) => {
+                        return [
+                            ...removeElementFromArrayWithFieldValue(
+                                oldParentFilters,
+                                field
+                            ),
+                        ];
+                    });
+                } else {
+                    setChildrenFilters((oldChildrenFilters) => {
+                        return [
+                            ...removeElementFromArrayWithFieldValue(
+                                oldChildrenFilters,
+                                field
+                            ),
+                        ];
+                    });
+                }
             } else {
-                setChildrenFilters((oldChildrenFilters) => {
-                    return [
-                        ...removeElementFromArrayWithFieldValue(
-                            oldChildrenFilters,
-                            field
-                        ),
-                    ];
-                });
+                if (isParentFilter) {
+                    setParentFilters((oldParentFilters) => {
+                        return [
+                            ...changeValueFromArrayWithFieldValue(
+                                oldParentFilters,
+                                field,
+                                value
+                            ),
+                        ];
+                    });
+                } else {
+                    setChildrenFilters((oldChildrenFilters) => {
+                        return [
+                            ...changeValueFromArrayWithFieldValue(
+                                oldChildrenFilters,
+                                field,
+                                value
+                            ),
+                        ];
+                    });
+                }
             }
-        } else {
-            if (isParentFilter) {
-                setParentFilters((oldParentFilters) => {
-                    return [
-                        ...changeValueFromArrayWithFieldValue(
-                            oldParentFilters,
-                            field,
-                            value
-                        ),
-                    ];
-                });
-            } else {
-                setChildrenFilters((oldChildrenFilters) => {
-                    return [
-                        ...changeValueFromArrayWithFieldValue(
-                            oldChildrenFilters,
-                            field,
-                            value
-                        ),
-                    ];
-                });
-            }
-        }
-    };
+        },
+        [filtersDef]
+    );
 
     const filterResult = useCallback(
         (result) => {

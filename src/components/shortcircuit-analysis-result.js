@@ -4,7 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useMemo } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -17,12 +23,29 @@ import {
     FILTER_TYPE,
     useGroupFilter,
 } from './spreadsheet/filter-panel/use-group-filter';
+import { AppBar, Button, Grid, IconButton, TextField } from '@mui/material';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import CloseIcon from '@mui/icons-material/Close';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
     const theme = useTheme();
+    const gridRef = useRef();
+    const [bottomBarOpen, setBottomBarOpen] = useState(false);
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+
+    useEffect(() => {
+        const openSearch = (e) => {
+            if (e.ctrlKey && e.key === 'g') {
+                e.preventDefault();
+                setBottomBarOpen(true);
+            }
+        };
+        document.addEventListener('keydown', openSearch);
+        return () => document.removeEventListener('keydown', openSearch);
+    }, []);
 
     const filtersDef = useMemo(
         () => [
@@ -59,6 +82,11 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [intl]
     );
 
+    const focusCell = (index, columnName) => {
+        gridRef.current?.api.ensureIndexVisible(index, 'middle');
+        gridRef.current?.api.setFocusedCell(index, columnName);
+    };
+
     const { filterResult, updateFilter } = useGroupFilter(
         filtersDef,
         'elementId',
@@ -74,6 +102,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
+                cellRenderer: (props) => console.log('aaa', props),
             },
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
@@ -122,7 +151,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     );
 
     function flattenResult(shortcutAnalysisResult) {
-        console.log('RESULTS', shortcutAnalysisResult);
         const rows = [];
         shortcutAnalysisResult?.faults?.forEach((f) => {
             const fault = f.fault;
@@ -190,13 +218,36 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         []
     );
 
-    const renderResult = () => {
-        const rows = filterResult(flattenResult(result));
+    const rows = useMemo(
+        () => filterResult(flattenResult(result)),
+        [result, filterResult, flattenResult]
+    );
 
+    const rowsWithoutHiddenValues = useMemo(
+        () =>
+            rows.map((row) => {
+                const rowWithoutHiddenValue = {};
+                const displayedColumnsField = columns.map(
+                    (column) => column.field
+                );
+
+                for (const [key, value] of Object.entries(row)) {
+                    if (displayedColumnsField.includes(key)) {
+                        rowWithoutHiddenValue[key] = value;
+                    }
+                }
+
+                return rowWithoutHiddenValue;
+            }),
+        [rows, columns]
+    );
+
+    const renderResult = () => {
         return (
             result &&
             shortCircuitNotif && (
                 <CustomAGGrid
+                    ref={gridRef}
                     rowData={rows}
                     columnDefs={columns}
                     getRowStyle={getRowStyle}
@@ -215,7 +266,152 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 />
             </Box>
             {renderResult()}
+            {bottomBarOpen && (
+                <Box height={16} m={3}>
+                    <Counter
+                        rows={rowsWithoutHiddenValues}
+                        onChange={focusCell}
+                        onClose={() => setBottomBarOpen(false)}
+                    />
+                </Box>
+            )}
         </>
+    );
+};
+
+const Counter = ({ rows, onChange, onClose }) => {
+    const searchInputRef = useRef();
+    const [counter, setCounter] = useState(0);
+    const [searchResult, setSearchResult] = useState([]);
+    const [searchInput, setSearchInput] = useState('');
+
+    const handleChange = (value) => {
+        setSearchInput(value);
+
+        if (!value) {
+            setSearchResult([]);
+            setCounter(0);
+            return;
+        }
+
+        const newSearchResult = [];
+        rows.forEach((row, index) =>
+            searchOccurencesInObjectValues(row, value).forEach((r) =>
+                newSearchResult.push([index, r])
+            )
+        );
+
+        //onChange(newSearchResult[0][0], newSearchResult[0][1]);
+
+        //searchInputRef.current.focus();
+        setSearchResult(newSearchResult);
+        setCounter(0);
+    };
+
+    const searchOccurencesInObjectValues = (object, str) => {
+        const result = [];
+        console.log('object', object);
+
+        for (const [key, value] of Object.entries(object)) {
+            console.log(value);
+            if (value?.toString().indexOf(str) >= 0) {
+                result.push(key);
+            }
+        }
+
+        return result;
+    };
+
+    const updateCounter = useCallback(
+        (action) => {
+            if (action === 'NEXT') {
+                setCounter((oldCounter) => {
+                    const newCounter =
+                        oldCounter + 1 < searchResult.length
+                            ? oldCounter + 1
+                            : 0;
+                    onChange(
+                        searchResult[newCounter][0],
+                        searchResult[newCounter][1]
+                    );
+                    return newCounter;
+                });
+            } else if (action === 'PREV') {
+                setCounter((oldCounter) => {
+                    const newCounter =
+                        oldCounter - 1 >= 0
+                            ? oldCounter - 1
+                            : searchResult.length - 1;
+                    onChange(
+                        searchResult[newCounter][0],
+                        searchResult[newCounter][1]
+                    );
+                    return newCounter;
+                });
+            }
+        },
+        [searchResult, onChange]
+    );
+
+    // useEffect(() => {
+    //     const openSearch = (e) => {
+    //         if (e.key === 'Enter') {
+    //             e.preventDefault();
+    //             updateCounter('NEXT');
+    //         }
+    //     };
+    //     document.addEventListener('keydown', openSearch);
+
+    //     return () => document.removeEventListener('keydown', openSearch);
+    // }, [updateCounter]);
+
+    const noResult = useMemo(() => searchResult.length === 0, [searchResult]);
+
+    return (
+        <AppBar style={{ bottom: 0, top: 'auto' }}>
+            <Grid
+                spacing={2}
+                p={1}
+                alignItems={'center'}
+                direction="row"
+                container
+            >
+                <Grid xs={6} item>
+                    <TextField
+                        inputRef={searchInputRef}
+                        size="small"
+                        value={searchInput}
+                        onChange={(e) => handleChange(e.target.value)}
+                        label="Rechercher"
+                    />
+                    <IconButton
+                        disabled={noResult}
+                        onClick={() => updateCounter('PREV')}
+                    >
+                        <KeyboardArrowUpIcon />
+                    </IconButton>
+                    <IconButton
+                        disabled={noResult}
+                        onClick={() => updateCounter('NEXT')}
+                    >
+                        <KeyboardArrowDownIcon />
+                    </IconButton>
+                    {searchInput.length !== 0 && !noResult && (
+                        <>
+                            Occurence {counter + 1} sur {searchResult.length}
+                        </>
+                    )}
+                    {searchInput.length !== 0 && noResult && (
+                        <>Aucun résultat</>
+                    )}
+                </Grid>
+                <Grid xs={6} item textAlign={'right'}>
+                    <IconButton onClick={onClose}>
+                        <CloseIcon />
+                    </IconButton>
+                </Grid>
+            </Grid>
+        </AppBar>
     );
 };
 

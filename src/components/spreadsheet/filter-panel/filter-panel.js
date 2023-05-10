@@ -5,19 +5,19 @@ import { FILTER_TYPE } from './use-group-filter';
 const TEXT_FILTER_DELAY = 200;
 
 const TextFilter = ({ field, label, updateFilter }) => {
-    const [textFiler, setTextFilter] = useState();
+    const [textFilter, setTextFilter] = useState();
 
-    // to avoid input lag when filtering large arrays of data, we use a timeout to start searching when user stops typing
+    // to avoid input lag when filtering large arrays of data, we use a timeout to start searching when user stops typing for {TEXT_FILTER_DELAY} milliseconds
     useEffect(() => {
         const timer = setTimeout(
-            () => updateFilter(field, textFiler),
+            () => updateFilter(field, textFilter),
             TEXT_FILTER_DELAY
         );
 
         return () => {
             clearTimeout(timer);
         };
-    }, [textFiler, updateFilter]);
+    }, [textFilter, field, updateFilter]);
 
     return (
         <TextField
