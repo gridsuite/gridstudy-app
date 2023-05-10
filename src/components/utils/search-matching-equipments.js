@@ -22,6 +22,7 @@ export const useSearchMatchingEquipments = (
 ) => {
     const { snackError } = useSnackMessage();
     const [equipmentsFound, setEquipmentsFound] = useState([]);
+    const timer = useRef();
     const lastSearchTermRef = useRef('');
     const { getUseNameParameterKey, getNameOrId } = useNameOrId();
 
@@ -69,5 +70,5 @@ export const useSearchMatchingEquipments = (
         setEquipmentsFound([]);
     }, [equipmentType]);
 
-    return [delayedSearchMatchingEquipments, equipmentsFound];
+    return [searchMatchingEquipments, equipmentsFound];
 };
