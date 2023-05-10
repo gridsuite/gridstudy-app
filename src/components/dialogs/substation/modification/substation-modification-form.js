@@ -17,6 +17,7 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     PREVIOUS_VALUE,
+    ADDED,
 } from '../../../utils/field-constants';
 import CountrySelectionInput from '../../../utils/rhf-inputs/country-selection-input';
 import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
@@ -74,8 +75,8 @@ const SubstationModificationForm = ({
                 );
                 canRemoveLine = false;
             } else {
-                // we can mark as deleted only real prop (having a previous value)
-                if (properties[idx][PREVIOUS_VALUE]) {
+                // we can mark as deleted only prop having a previous value, not added in current modification
+                if (properties[idx][PREVIOUS_VALUE] && properties[idx][ADDED] === false) {
                     setValue(
                         `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
                         true
