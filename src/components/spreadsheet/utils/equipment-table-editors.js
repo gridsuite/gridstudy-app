@@ -35,7 +35,7 @@ const refreshEditingCell = (params) => {
     }
 };
 
-const checkCrossValidationMandatory = (params) => {
+const checkCrossValidationRequiredOn = (params) => {
     const dependencyEditor = params.api
         .getCellEditorInstances()
         .filter((editor) =>
@@ -89,7 +89,7 @@ export const NumericalField = forwardRef(
             (val, minVal, maxVal) => {
                 if (props.colDef.crossValidation?.requiredOn) {
                     const isConditionFulfiled =
-                        checkCrossValidationMandatory(props);
+                        checkCrossValidationRequiredOn(props);
                     if (isConditionFulfiled && !val) {
                         return true;
                     }
