@@ -910,6 +910,7 @@
     "SegmentDistance": "Longueur",
     "SegmentDistanceGreaterThanZero": "La longueur doit être supérieure à zéro",
     "SegmentTypeMissing": "Type manquant",
+    "LineTypeCatalogFetchingError": "Une erreur est survenue lors de la récupération du catalogue de type de lignes",
     "lineType.resistanceLabel": "Résistance [Ω]",
     "lineType.reactanceLabel": "Réactance [Ω]",
     "lineType.susceptanceLabel": "Susceptance [μS]",

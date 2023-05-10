@@ -34,6 +34,7 @@ import {
     calculateSusceptance,
 } from '../../utils/utils';
 import makeStyles from '@mui/styles/makeStyles';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     header: {
@@ -47,12 +48,20 @@ export const LineTypeSegmentForm = () => {
     const { setValue, getValues, clearErrors } = useFormContext();
     const [lineTypeCatalog, setLineTypeCatalog] = useState([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
+    const { snackError } = useSnackMessage();
 
     // Fetchs the lineType catalog on startup
     useEffect(() => {
-        getLineTypeCatalog().then((values) => {
-            setLineTypeCatalog(values);
-        });
+        getLineTypeCatalog()
+            .then((values) => {
+                setLineTypeCatalog(values);
+            })
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'LineTypeCatalogFetchingError',
+                })
+            );
     }, []);
 
     const getResistanceFromCatalog = useCallback(
