@@ -25,7 +25,11 @@ import {
 } from 'components/utils/field-constants';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { fetchNetworkElementInfos, FetchStatus, modifyLine } from 'utils/rest-api';
+import {
+    fetchNetworkElementInfos,
+    FetchStatus,
+    modifyLine,
+} from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
 import yup from '../../../utils/yup-config';
