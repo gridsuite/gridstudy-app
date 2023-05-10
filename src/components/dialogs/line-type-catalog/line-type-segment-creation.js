@@ -36,6 +36,10 @@ const LineTypeSegmentCreation = ({
 }) => {
     const classes = useStyles();
 
+    const watchDistance = useWatch({
+        name: `${name}.${index}.${SEGMENT_DISTANCE_VALUE}`,
+    });
+
     const segmentDistanceField = (
         <FloatInput
             name={`${name}.${index}.${SEGMENT_DISTANCE_VALUE}`}
@@ -44,14 +48,26 @@ const LineTypeSegmentCreation = ({
         />
     );
 
+    const segmentTypeField = (
+        <ReadOnlyInput name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`} />
+    );
+
+    const segmentResistanceField = (
+        <ReadOnlyInput name={`${name}.${index}.${SEGMENT_RESISTANCE}`} />
+    );
+
+    const segmentReactanceField = (
+        <ReadOnlyInput name={`${name}.${index}.${SEGMENT_REACTANCE}`} />
+    );
+
+    const segmentSusceptanceField = (
+        <ReadOnlyInput name={`${name}.${index}.${SEGMENT_SUSCEPTANCE}`} />
+    );
+
     const handleEditButtonClick = useCallback(
         () => onEditButtonClick && onEditButtonClick(index),
         [index, onEditButtonClick]
     );
-
-    const watchDistance = useWatch({
-        name: `${name}.${index}.${SEGMENT_DISTANCE_VALUE}`,
-    });
 
     useEffect(() => {
         onSegmentDistanceChange &&
@@ -61,12 +77,7 @@ const LineTypeSegmentCreation = ({
     return (
         <>
             {gridItem(segmentDistanceField, 2)}
-            {gridItem(
-                <ReadOnlyInput
-                    name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}
-                />,
-                2.5
-            )}
+            {gridItem(segmentTypeField, 2.5)}
             {onEditButtonClick && (
                 <Grid item xs={0.5}>
                     <IconButton
@@ -77,24 +88,9 @@ const LineTypeSegmentCreation = ({
                     </IconButton>
                 </Grid>
             )}
-            {gridItem(
-                <ReadOnlyInput
-                    name={`${name}.${index}.${SEGMENT_RESISTANCE}`}
-                />,
-                2
-            )}
-            {gridItem(
-                <ReadOnlyInput
-                    name={`${name}.${index}.${SEGMENT_REACTANCE}`}
-                />,
-                2
-            )}
-            {gridItem(
-                <ReadOnlyInput
-                    name={`${name}.${index}.${SEGMENT_SUSCEPTANCE}`}
-                />,
-                2
-            )}
+            {gridItem(segmentResistanceField, 2)}
+            {gridItem(segmentReactanceField, 2)}
+            {gridItem(segmentSusceptanceField, 2)}
         </>
     );
 };

@@ -174,13 +174,7 @@ const LineTypeCatalogSelectorDialog = (props) => {
     // Tries to highlights the preselected row when changing tabs
     useEffect(() => {
         highlightSelectedRow();
-    }, [
-        highlightSelectedRow,
-        selectedRow,
-        tabIndex,
-        props.preselectedRow,
-        props.rowData,
-    ]);
+    }, [highlightSelectedRow]);
 
     const headerAndTabs = (
         <Box
