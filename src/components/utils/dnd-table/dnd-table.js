@@ -91,6 +91,7 @@ function EditableTableCell({
     rowIndex,
     column,
     previousValue,
+    valueModified,
     ...props
 }) {
     return (
@@ -99,12 +100,14 @@ function EditableTableCell({
                 <TableNumericalInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     previousValue={previousValue}
+                    valueModified={valueModified}
                     {...props}
                 />
             )}
             {!column.numeric && (
                 <TableTextInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    previousValue={previousValue}
                     {...props}
                 />
             )}
@@ -125,8 +128,10 @@ const DndTable = ({
     withLeftButtons = true,
     withAddRowsDialog = true,
     previousValues,
+    modifiedValues,
     disableTableCell,
     getPreviousValue,
+    isValueModified,
 }) => {
     const intl = useIntl();
 
@@ -158,7 +163,8 @@ const DndTable = ({
                               rowIndex,
                               column,
                               arrayFormName,
-                              previousValues
+                              previousValues,
+                              modifiedValues
                           )
                         : disabled
                 }
@@ -168,9 +174,19 @@ const DndTable = ({
                               rowIndex,
                               column,
                               arrayFormName,
-                              previousValues
+                              previousValues,
+                              modifiedValues
                           )
                         : undefined
+                }
+                valueModified={
+                    isValueModified
+                        ? isValueModified(
+                              rowIndex,
+                              arrayFormName,
+                              modifiedValues
+                          )
+                        : false
                 }
             />
         );

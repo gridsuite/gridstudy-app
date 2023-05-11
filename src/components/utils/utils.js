@@ -99,6 +99,15 @@ export const buildNewBusbarSections = (
     return newBusbarSections;
 };
 
+export const formatTemporaryLimits = (temporaryLimits) =>
+    temporaryLimits?.map((limit) => {
+        return {
+            name: limit?.name ?? '',
+            value: limit?.value ?? null,
+            acceptableDuration: limit?.acceptableDuration ?? null,
+        };
+    });
+
 export function calculateResistance(distance, linearResistance) {
     if (
         distance === undefined ||
