@@ -521,7 +521,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
         setChecking(true);
         setError(undefined);
         debouncedValidName(name);
-    }, [studyUuid, name, triggerReset]);
+    }, [studyUuid, name, debouncedValidName, triggerReset]);
 
     return [error, field, isValidName, name];
 };
