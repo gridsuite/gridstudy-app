@@ -11,7 +11,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import FloatInput from '../../utils/rhf-inputs/float-input';
 import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
-import Grid from '@mui/material/Grid';
 import {
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_TYPE_VALUE,
@@ -20,6 +19,7 @@ import {
     SEGMENT_SUSCEPTANCE,
 } from '../../utils/field-constants';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
+import { ButtonReadOnlyInput } from '../../utils/rhf-inputs/read-only/button-read-only-input';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
@@ -48,10 +48,6 @@ const LineTypeSegmentCreation = ({
         />
     );
 
-    const segmentTypeField = (
-        <ReadOnlyInput name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`} />
-    );
-
     const segmentResistanceField = (
         <ReadOnlyInput
             isNumerical
@@ -78,6 +74,19 @@ const LineTypeSegmentCreation = ({
         [index, onEditButtonClick]
     );
 
+    const segmentTypeField = (
+        <ButtonReadOnlyInput name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}>
+            {onEditButtonClick && (
+                <IconButton
+                    className={classes.icon}
+                    onClick={handleEditButtonClick}
+                >
+                    <EditIcon />
+                </IconButton>
+            )}
+        </ButtonReadOnlyInput>
+    );
+
     useEffect(() => {
         onSegmentDistanceChange &&
             onSegmentDistanceChange(index, watchDistance);
@@ -86,17 +95,7 @@ const LineTypeSegmentCreation = ({
     return (
         <>
             {gridItem(segmentDistanceField, 2)}
-            {gridItem(segmentTypeField, 2.5)}
-            {onEditButtonClick && (
-                <Grid item xs={0.5}>
-                    <IconButton
-                        className={classes.icon}
-                        onClick={handleEditButtonClick}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                </Grid>
-            )}
+            {gridItem(segmentTypeField, 3)}
             {gridItem(segmentResistanceField, 2)}
             {gridItem(segmentReactanceField, 2)}
             {gridItem(segmentSusceptanceField, 2)}
