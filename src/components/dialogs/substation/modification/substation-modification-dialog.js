@@ -71,7 +71,7 @@ const getPropertiesFromModification = (properties) => {
                   [NAME]: p[NAME],
                   [VALUE]: p[VALUE],
                   [PREVIOUS_VALUE]: null,
-                  [ADDED]: true,
+                  [ADDED]: p[ADDED],
                   [DELETION_MARK]: p[DELETION_MARK],
               };
           })
@@ -177,7 +177,6 @@ const SubstationModificationDialog = ({
                         : null;
                     newModificationProperties.push({
                         ...property,
-                        [ADDED]: true,
                         [PREVIOUS_VALUE]: previousValue,
                     });
                 });
