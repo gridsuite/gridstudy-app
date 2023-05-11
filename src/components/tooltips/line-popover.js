@@ -79,34 +79,38 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
 
                         {currentLimits.temporaryLimits &&
                             currentLimits.temporaryLimits.map(
-                                (temporaryLimit) => (
-                                    <TableRow>
-                                        <TableCell>
-                                            {temporaryLimit.name}
-                                        </TableCell>
-                                        <TableCell>
-                                            {temporaryLimit.value}
-                                        </TableCell>
-                                        <TableCell>
-                                            {loadFlowStatus ===
-                                                RunningStatus.SUCCEED &&
-                                                (side === '1'
-                                                    ? Math.round(
-                                                          (lineInfo.i1 * 100) /
-                                                              temporaryLimit.value
-                                                      )
-                                                    : Math.round(
-                                                          (lineInfo.i2 * 100) /
-                                                              temporaryLimit.value
-                                                      ))}
-                                        </TableCell>
-                                        <TableCell>
-                                            {side === '1'
-                                                ? lineInfo.voltageLevelId1
-                                                : lineInfo.voltageLevelId2}
-                                        </TableCell>
-                                    </TableRow>
-                                )
+                                (temporaryLimit) =>
+                                    //This check is needed since some temporary limits are defined with no value so the row makes no sense
+                                    temporaryLimit.value && (
+                                        <TableRow>
+                                            <TableCell>
+                                                {temporaryLimit.name}
+                                            </TableCell>
+                                            <TableCell>
+                                                {temporaryLimit.value}
+                                            </TableCell>
+                                            <TableCell>
+                                                {loadFlowStatus ===
+                                                    RunningStatus.SUCCEED &&
+                                                    (side === '1'
+                                                        ? Math.round(
+                                                              (lineInfo.i1 *
+                                                                  100) /
+                                                                  temporaryLimit.value
+                                                          )
+                                                        : Math.round(
+                                                              (lineInfo.i2 *
+                                                                  100) /
+                                                                  temporaryLimit.value
+                                                          ))}
+                                            </TableCell>
+                                            <TableCell>
+                                                {side === '1'
+                                                    ? lineInfo.voltageLevelId1
+                                                    : lineInfo.voltageLevelId2}
+                                            </TableCell>
+                                        </TableRow>
+                                    )
                             )}
                     </>
                 )}
