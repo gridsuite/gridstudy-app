@@ -49,7 +49,6 @@ const LineModificationDialogHeader = ({
 
     const lineIdField = (
         <AutocompleteInput
-            isOptionEqualToValue={areIdsEqual}
             allowNewValue
             forcePopupIcon
             name={EQUIPMENT_ID}
