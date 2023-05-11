@@ -58,6 +58,7 @@ import { filledTextField, gridItem, sanitizeString } from '../dialogUtils';
 import EquipmentSearchDialog from '../equipment-search-dialog';
 import { useFormSearchCopy } from '../form-search-copy-hook';
 import {
+    FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
     RATIO_REGULATION_MODES,
     REGULATION_TYPES,
@@ -102,13 +103,17 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
 } from '../limits/limits-pane-utils';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a two windings transformer in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 
 const emptyFormData = {
@@ -142,6 +147,8 @@ const TwoWindingsTransformerCreationDialog = ({
     editData,
     studyUuid,
     currentNode,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -770,6 +777,14 @@ const TwoWindingsTransformerCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
+
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -787,6 +802,10 @@ const TwoWindingsTransformerCreationDialog = ({
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <Box
@@ -859,6 +878,8 @@ TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default TwoWindingsTransformerCreationDialog;

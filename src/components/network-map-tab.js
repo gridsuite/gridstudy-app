@@ -28,7 +28,6 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../utils/config-params';
-import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
@@ -69,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
     divOverloadedLineView: {
         right: 45,
         top: 10,
-        minWidth: '600px',
+        minWidth: '700px',
         position: 'absolute',
         height: '70%',
         opacity: '1',
@@ -99,7 +98,6 @@ export const NetworkMapTab = ({
     /* callbacks */
     openVoltageLevel,
     setIsComputationRunning,
-    filteredNominalVoltages,
     showInSpreadsheet,
     setErrorMessage,
 }) => {
@@ -113,6 +111,7 @@ export const NetworkMapTab = ({
 
     const { snackError } = useSnackMessage();
 
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState();
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
 
@@ -135,6 +134,7 @@ export const NetworkMapTab = ({
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
+    const isRootNode = currentNode?.type === 'ROOT';
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
@@ -171,6 +171,7 @@ export const NetworkMapTab = ({
     const currentNodeRef = useRef(null);
 
     const [updatedLines, setUpdatedLines] = useState([]);
+    const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
 
     function withEquipment(Menu, props) {
         return (
@@ -586,9 +587,8 @@ export const NetworkMapTab = ({
             }
 
             dispatch(resetMapReloaded());
-
             const isFullReload = updatedSubstationsToSend ? false : true;
-            const [updatedSubstations, updatedLines] =
+            const [updatedSubstations, updatedLines, updatedHvdcLines] =
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
                     currentNode,
@@ -620,10 +620,25 @@ export const NetworkMapTab = ({
                     setUpdatedLines(values);
                 }
             });
-
-            return Promise.all([updatedSubstations, updatedLines]).finally(() =>
-                setWaitingLoadData(false)
-            );
+            updatedHvdcLines.then((values) => {
+                if (
+                    currentNodeAtReloadCalling?.id ===
+                    currentNodeRef.current?.id
+                ) {
+                    mapEquipments.updateHvdcLines(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                    setUpdatedHvdcLines(values);
+                }
+            });
+            return Promise.all([
+                updatedSubstations,
+                updatedLines,
+                updatedHvdcLines,
+            ]).finally(() => {
+                setWaitingLoadData(false);
+            });
         },
         [
             currentNode,
@@ -650,7 +665,7 @@ export const NetworkMapTab = ({
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'loadflow'
             ) {
-                updateMapEquipments();
+                updateMapEquipments(currentNodeRef.current);
             }
         }
     }, [isInitialized, studyUpdatedForce, updateMapEquipments]);
@@ -753,12 +768,14 @@ export const NetworkMapTab = ({
         }
         return (
             <>
-                {equipmentMenu.equipmentType === equipments.lines &&
+                {(equipmentMenu.equipmentType === equipments.lines ||
+                    equipmentMenu.equipmentType === equipments.hvdcLines) &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
+
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
                 {equipmentMenu.equipmentType === equipments.voltageLevels &&
@@ -778,19 +795,6 @@ export const NetworkMapTab = ({
         );
     }
 
-    const linesNearOverload = useCallback(() => {
-        if (mapEquipments) {
-            return mapEquipments.lines.some((l) => {
-                const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
-                return (
-                    zone === LineLoadingZone.WARNING ||
-                    zone === LineLoadingZone.OVERLOAD
-                );
-            });
-        }
-        return false;
-    }, [mapEquipments, lineFlowAlertThreshold]);
-
     const isLoadFlowValid = () => {
         return loadFlowStatus === RunningStatus.SUCCEED;
     };
@@ -798,7 +802,10 @@ export const NetworkMapTab = ({
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
-            updatedLines={updatedLines}
+            updatedLines={[
+                ...(updatedLines ?? []),
+                ...(updatedHvdcLines ?? []),
+            ]}
             geoData={geoData}
             displayOverlayLoader={!basicDataReady && waitingLoadData}
             filteredNominalVoltages={filteredNominalVoltages}
@@ -816,6 +823,9 @@ export const NetworkMapTab = ({
             onLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(equipment, x, y, equipments.lines)
             }
+            onHvdcLineMenuClick={(equipment, x, y) =>
+                showEquipmentMenu(equipment, x, y, equipments.hvdcLines)
+            }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
@@ -832,7 +842,11 @@ export const NetworkMapTab = ({
     function renderNominalVoltageFilter() {
         return (
             <div className={classes.divNominalVoltageFilter}>
-                <NominalVoltageFilter />
+                <NominalVoltageFilter
+                    nominalVoltages={mapEquipments.getNominalVoltages()}
+                    filteredNominalVoltages={filteredNominalVoltages}
+                    onChange={setFilteredNominalVoltages}
+                />
             </div>
         );
     }
@@ -848,17 +862,17 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            {displayOverloadTable &&
-                isLoadFlowValid() &&
-                linesNearOverload() && (
-                    <div className={classes.divOverloadedLineView}>
-                        <OverloadedLinesView
-                            lineFlowAlertThreshold={lineFlowAlertThreshold}
-                            mapEquipments={mapEquipments}
-                            disabled={disabled}
-                        />
-                    </div>
-                )}
+            {!isRootNode && displayOverloadTable && isLoadFlowValid() && (
+                <div className={classes.divOverloadedLineView}>
+                    <OverloadedLinesView
+                        lineFlowAlertThreshold={lineFlowAlertThreshold}
+                        disabled={disabled}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        mapEquipments={mapEquipments}
+                    />
+                </div>
+            )}
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
@@ -879,7 +893,6 @@ export const NetworkMapTab = ({
 
 NetworkMapTab.propTypes = {
     updatedLines: PropTypes.arrayOf(PropTypes.any),
-    filteredNominalVoltages: PropTypes.any,
     lineFullPath: PropTypes.any,
     lineParallelPath: PropTypes.any,
     lineFlowMode: PropTypes.any,

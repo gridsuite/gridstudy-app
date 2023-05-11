@@ -17,11 +17,12 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad, fetchEquipmentInfos } from '../../../../utils/rest-api';
+import { createLoad } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import EquipmentSearchDialog from '../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../form-search-copy-hook';
 import {
+    FORM_LOADING_DELAY,
     UNDEFINED_CONNECTION_DIRECTION,
     UNDEFINED_LOAD_TYPE,
 } from '../../../network/constants';
@@ -34,12 +35,15 @@ import {
 } from '../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a load in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  */
 
@@ -68,6 +72,8 @@ const LoadCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -83,80 +89,39 @@ const LoadCreationDialog = ({
     const { reset } = formMethods;
 
     const fromSearchCopyToFormValues = (load) => {
-        fetchEquipmentInfos(
-            studyUuid,
-            currentNodeUuid,
-            'voltage-levels',
-            load.voltageLevelId,
-            true
-        ).then((vlResult) => {
-            reset({
-                [EQUIPMENT_ID]: load.id + '(1)',
-                [EQUIPMENT_NAME]: load.name ?? '',
-                [LOAD_TYPE]: load.type,
-                [ACTIVE_POWER]: load.p0,
-                [REACTIVE_POWER]: load.q0,
-                ...getConnectivityFormData({
-                    voltageLevelId: load.voltageLevelId,
-                    busbarSectionId: load.busOrBusbarSectionId,
-                    voltageLevelTopologyKind: vlResult.topologyKind,
-                    voltageLevelName: vlResult.name,
-                    voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                    voltageLevelSubstationId: vlResult.substationId,
-                    connectionDirection: load.connectionDirection,
-                    connectionName: load.connectionName,
-                }),
-            });
+        reset({
+            [EQUIPMENT_ID]: load.id + '(1)',
+            [EQUIPMENT_NAME]: load.name ?? '',
+            [LOAD_TYPE]: load.type,
+            [ACTIVE_POWER]: load.p0,
+            [REACTIVE_POWER]: load.q0,
+            ...getConnectivityFormData({
+                voltageLevelId: load.voltageLevelId,
+                busbarSectionId: load.busOrBusbarSectionId,
+                connectionDirection: load.connectionDirection,
+                connectionName: load.connectionName,
+            }),
         });
     };
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
-            fetchEquipmentInfos(
-                studyUuid,
-                currentNodeUuid,
-                'voltage-levels',
-                load.voltageLevelId,
-                true
-            )
-                .then((vlResult) => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            voltageLevelTopologyKind: vlResult.topologyKind,
-                            voltageLevelName: vlResult.name,
-                            voltageLevelNominalVoltage: vlResult.nominalVoltage,
-                            voltageLevelSubstationId: vlResult.substationId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                }) // if voltage level can't be found, we fill the form with minimal infos
-                .catch(() => {
-                    reset({
-                        [EQUIPMENT_ID]: load.equipmentId,
-                        [EQUIPMENT_NAME]: load.equipmentName ?? '',
-                        [LOAD_TYPE]: load.loadType,
-                        [ACTIVE_POWER]: load.activePower,
-                        [REACTIVE_POWER]: load.reactivePower,
-                        ...getConnectivityFormData({
-                            voltageLevelId: load.voltageLevelId,
-                            busbarSectionId: load.busOrBusbarSectionId,
-                            connectionDirection: load.connectionDirection,
-                            connectionName: load.connectionName,
-                            connectionPosition: load.connectionPosition,
-                        }),
-                    });
-                });
+            reset({
+                [EQUIPMENT_ID]: load.equipmentId,
+                [EQUIPMENT_NAME]: load.equipmentName ?? '',
+                [LOAD_TYPE]: load.loadType,
+                [ACTIVE_POWER]: load.activePower,
+                [REACTIVE_POWER]: load.reactivePower,
+                ...getConnectivityFormData({
+                    voltageLevelId: load.voltageLevelId,
+                    busbarSectionId: load.busOrBusbarSectionId,
+                    connectionDirection: load.connectionDirection,
+                    connectionName: load.connectionName,
+                    connectionPosition: load.connectionPosition,
+                }),
+            });
         },
-        [studyUuid, currentNodeUuid, reset]
+        [reset]
     );
 
     const searchCopy = useFormSearchCopy({
@@ -205,6 +170,13 @@ const LoadCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -215,6 +187,10 @@ const LoadCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <LoadCreationForm
@@ -238,6 +214,7 @@ LoadCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
 };
 
 export default LoadCreationDialog;
