@@ -159,8 +159,9 @@ export function fetchValidateUser(user) {
         .catch((error) => {
             if (error.status === 403) {
                 return false;
+            } else {
+                throw error;
             }
-            throw error;
         });
 }
 
