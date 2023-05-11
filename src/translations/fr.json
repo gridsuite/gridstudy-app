@@ -291,6 +291,8 @@
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "loadFlowResults": "Résultats du calcul de répartition",
     "startLoadFlowError": "Une erreur est survenue lors du lancement du load flow",
+    "LoadFlowResultsConstraints": "Contraintes",
+    "LoadFlowResultsStatus": "Statut",
 
     "connectedComponentNum": "Numéro de composante connexe",
     "synchronousComponentNum": "Numéro de composante synchrone",
@@ -368,7 +370,7 @@
     "UnableToSwitchOnLine": "Impossible de mettre la ligne en service",
     "UnableToTrip2WTransformer": "Impossible de déclencher le transformateur",
 
-    "Provider": "Fournisseur\u00a0:",
+    "Provider": "Simulateur\u00a0:",
     "Default": "Défaut",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
