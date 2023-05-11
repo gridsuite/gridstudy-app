@@ -53,15 +53,24 @@ const LineTypeSegmentCreation = ({
     );
 
     const segmentResistanceField = (
-        <ReadOnlyInput name={`${name}.${index}.${SEGMENT_RESISTANCE}`} />
+        <ReadOnlyInput
+            isNumerical
+            name={`${name}.${index}.${SEGMENT_RESISTANCE}`}
+        />
     );
 
     const segmentReactanceField = (
-        <ReadOnlyInput name={`${name}.${index}.${SEGMENT_REACTANCE}`} />
+        <ReadOnlyInput
+            isNumerical
+            name={`${name}.${index}.${SEGMENT_REACTANCE}`}
+        />
     );
 
     const segmentSusceptanceField = (
-        <ReadOnlyInput name={`${name}.${index}.${SEGMENT_SUSCEPTANCE}`} />
+        <ReadOnlyInput
+            isNumerical
+            name={`${name}.${index}.${SEGMENT_SUSCEPTANCE}`}
+        />
     );
 
     const handleEditButtonClick = useCallback(

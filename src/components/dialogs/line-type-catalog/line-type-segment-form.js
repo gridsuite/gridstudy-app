@@ -38,8 +38,12 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     header: {
-        paddingLeft: theme.spacing(1.75),
         fontWeight: 'bold',
+    },
+    headerJustifyEnd: {
+        fontWeight: 'bold',
+        display: 'flex',
+        justifyContent: 'end',
     },
 }));
 
@@ -221,31 +225,33 @@ export const LineTypeSegmentForm = () => {
      */
     return (
         <>
-            <Grid container direction="row-reverse" spacing={2}>
-                {gridItem(
-                    <div className={classes.header}>
-                        <FormattedMessage id={'lineType.susceptanceLabel'} />
-                    </div>,
-                    3
-                )}
-                {gridItem(
-                    <div className={classes.header}>
-                        <FormattedMessage id={'lineType.reactanceLabel'} />
-                    </div>,
-                    2
-                )}
-                {gridItem(
-                    <div className={classes.header}>
-                        <FormattedMessage id={'lineType.resistanceLabel'} />
-                    </div>,
-                    2
-                )}
+            <Grid container spacing={2}>
+                {gridItem(<div />, 2)}
                 {gridItem(
                     <div className={classes.header}>
                         <FormattedMessage id={'lineType.type'} />
                     </div>,
                     3
                 )}
+                {gridItem(
+                    <div className={classes.headerJustifyEnd}>
+                        <FormattedMessage id={'lineType.resistanceLabel'} />
+                    </div>,
+                    2
+                )}
+                {gridItem(
+                    <div className={classes.headerJustifyEnd}>
+                        <FormattedMessage id={'lineType.reactanceLabel'} />
+                    </div>,
+                    2
+                )}
+                {gridItem(
+                    <div className={classes.headerJustifyEnd}>
+                        <FormattedMessage id={'lineType.susceptanceLabel'} />
+                    </div>,
+                    2
+                )}
+                {gridItem(<div />, 1)}
             </Grid>
             <ExpandableInput
                 name={SEGMENTS}
@@ -258,12 +264,26 @@ export const LineTypeSegmentForm = () => {
                 addButtonLabel={'AddSegment'}
                 initialValue={emptyLineSegment}
                 deleteCallback={handleSegmentDelete}
+                alignItems="center"
             />
             <hr />
-            <Grid container direction="row-reverse" spacing={2}>
-                {gridItem(<ReadOnlyInput name={TOTAL_SUSCEPTANCE} />, 3)}
-                {gridItem(<ReadOnlyInput name={TOTAL_REACTANCE} />, 2)}
-                {gridItem(<ReadOnlyInput name={TOTAL_RESISTANCE} />, 2)}
+            <Grid container spacing={2}>
+                {gridItem(<div />, 2)}
+                {gridItem(<div />, 2.5)}
+                {gridItem(<div />, 0.5)}
+                {gridItem(
+                    <ReadOnlyInput isNumerical name={TOTAL_RESISTANCE} />,
+                    2
+                )}
+                {gridItem(
+                    <ReadOnlyInput isNumerical name={TOTAL_REACTANCE} />,
+                    2
+                )}
+                {gridItem(
+                    <ReadOnlyInput isNumerical name={TOTAL_SUSCEPTANCE} />,
+                    2
+                )}
+                {gridItem(<div />, 1)}
             </Grid>
 
             {openCatalogDialogIndex !== null && (

@@ -8,28 +8,8 @@
 import { useController } from 'react-hook-form';
 import { TextField } from '@mui/material';
 import { genHelperError } from '../../inputs/hooks-helpers';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
 
-const useStyles = makeStyles((theme) => ({
-    readOnlyTextField: {
-        '& fieldset': {
-            padding: '0',
-        },
-        '& input': {
-            paddingLeft: 0,
-            paddingRight: 0,
-        },
-    },
-    readOnlyTextFieldNoBorder: {
-        '& fieldset': {
-            border: 'none',
-        },
-    },
-}));
-
-export function ReadOnlyInput({ name }) {
-    const classes = useStyles();
+export function ReadOnlyInput({ name, isNumerical = false }) {
     const {
         field: { value },
         fieldState: { error },
@@ -40,14 +20,17 @@ export function ReadOnlyInput({ name }) {
             InputProps={{
                 readOnly: true,
                 disableUnderline: true,
+                sx: isNumerical
+                    ? {
+                          '& input': {
+                              textAlign: 'right',
+                          },
+                      }
+                    : {},
             }}
-            multiline
-            size="small"
             fullWidth
             value={value}
-            className={clsx(classes.readOnlyTextField, {
-                [classes.readOnlyTextFieldNoBorder]: !error,
-            })}
+            variant="standard"
             {...genHelperError(error?.message)}
         />
     );
