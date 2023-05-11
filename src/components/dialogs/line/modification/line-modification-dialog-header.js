@@ -13,7 +13,7 @@ import { fetchEquipmentsIds } from 'utils/rest-api';
 import { useWatch } from 'react-hook-form';
 import LineDialogTabs from '../line-dialog-tabs';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-import { areIdsEqual, getObjectId } from 'components/utils/utils';
+import { getObjectId } from 'components/utils/utils';
 import TextInput from 'components/utils/rhf-inputs/text-input';
 
 const LineModificationDialogHeader = ({
