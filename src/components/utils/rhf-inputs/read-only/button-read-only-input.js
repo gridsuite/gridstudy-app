@@ -23,7 +23,6 @@ export function ButtonReadOnlyInput({ name, isNumerical = false, children }) {
         <TextField
             InputProps={{
                 readOnly: true,
-                disableUnderline: true,
                 sx: isNumerical
                     ? {
                           '& input': {

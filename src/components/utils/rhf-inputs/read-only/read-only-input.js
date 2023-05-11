@@ -29,7 +29,6 @@ export function ReadOnlyInput({ name, isNumerical = false }) {
                     : {},
             }}
             fullWidth
-            multiline
             value={value}
             variant="standard"
             {...genHelperError(error?.message)}

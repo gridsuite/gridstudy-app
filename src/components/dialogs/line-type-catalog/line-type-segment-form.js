@@ -220,37 +220,50 @@ export const LineTypeSegmentForm = () => {
         [getValues]
     );
 
-    /**
-     * RENDER
-     */
+    const segmentTypeHeader = (
+        <div className={classes.header}>
+            <FormattedMessage id={'lineType.type'} />
+        </div>
+    );
+
+    const segmentResistanceHeader = (
+        <div className={classes.headerJustifyEnd}>
+            <FormattedMessage id={'lineType.resistanceLabel'} />
+        </div>
+    );
+
+    const segmentReactanceHeader = (
+        <div className={classes.headerJustifyEnd}>
+            <FormattedMessage id={'lineType.reactanceLabel'} />
+        </div>
+    );
+
+    const segmentSusceptanceHeader = (
+        <div className={classes.headerJustifyEnd}>
+            <FormattedMessage id={'lineType.susceptanceLabel'} />
+        </div>
+    );
+
+    const totalResistanceField = (
+        <ReadOnlyInput isNumerical name={TOTAL_RESISTANCE} />
+    );
+
+    const totalReactanceField = (
+        <ReadOnlyInput isNumerical name={TOTAL_REACTANCE} />
+    );
+
+    const totalSusceptanceField = (
+        <ReadOnlyInput isNumerical name={TOTAL_SUSCEPTANCE} />
+    );
+
     return (
         <>
             <Grid container spacing={2}>
                 {gridItem(<div />, 2)}
-                {gridItem(
-                    <div className={classes.header}>
-                        <FormattedMessage id={'lineType.type'} />
-                    </div>,
-                    3
-                )}
-                {gridItem(
-                    <div className={classes.headerJustifyEnd}>
-                        <FormattedMessage id={'lineType.resistanceLabel'} />
-                    </div>,
-                    2
-                )}
-                {gridItem(
-                    <div className={classes.headerJustifyEnd}>
-                        <FormattedMessage id={'lineType.reactanceLabel'} />
-                    </div>,
-                    2
-                )}
-                {gridItem(
-                    <div className={classes.headerJustifyEnd}>
-                        <FormattedMessage id={'lineType.susceptanceLabel'} />
-                    </div>,
-                    2
-                )}
+                {gridItem(segmentTypeHeader, 3)}
+                {gridItem(segmentResistanceHeader, 2)}
+                {gridItem(segmentReactanceHeader, 2)}
+                {gridItem(segmentSusceptanceHeader, 2)}
                 {gridItem(<div />, 1)}
             </Grid>
             <ExpandableInput
@@ -268,21 +281,10 @@ export const LineTypeSegmentForm = () => {
             />
             <hr />
             <Grid container spacing={2}>
-                {gridItem(<div />, 2)}
-                {gridItem(<div />, 2.5)}
-                {gridItem(<div />, 0.5)}
-                {gridItem(
-                    <ReadOnlyInput isNumerical name={TOTAL_RESISTANCE} />,
-                    2
-                )}
-                {gridItem(
-                    <ReadOnlyInput isNumerical name={TOTAL_REACTANCE} />,
-                    2
-                )}
-                {gridItem(
-                    <ReadOnlyInput isNumerical name={TOTAL_SUSCEPTANCE} />,
-                    2
-                )}
+                {gridItem(<div />, 5)}
+                {gridItem(totalResistanceField, 2)}
+                {gridItem(totalReactanceField, 2)}
+                {gridItem(totalSusceptanceField, 2)}
                 {gridItem(<div />, 1)}
             </Grid>
 
