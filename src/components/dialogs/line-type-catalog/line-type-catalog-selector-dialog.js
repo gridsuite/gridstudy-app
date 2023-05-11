@@ -33,7 +33,7 @@ export const LineTypeCatalogSelectorDialogTabs = {
 
 const LineTypeCatalogSelectorDialog = ({
     onSelectLine,
-    preselectedRow,
+    preselectedRowId,
     rowData,
     onClose,
     ...dialogProps
@@ -42,10 +42,9 @@ const LineTypeCatalogSelectorDialog = ({
     const gridRef = useRef(); // Necessary to call getSelectedRows on aggrid component
 
     const [tabIndex, setTabIndex] = useState(
-        preselectedRow?.kind === 'UNDERGROUND'
-            ? LineTypeCatalogSelectorDialogTabs.UNDERGROUND_TAB
-            : LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
+        LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
     );
+
     const [selectedRow, setSelectedRow] = useState(null);
 
     const rowDataAerialTab = useMemo(() => {
@@ -152,34 +151,34 @@ const LineTypeCatalogSelectorDialog = ({
         ];
     }, [intl]);
 
-    // Tries to find in the current tab the preselected row to highlight it.
-    // The props.preselectedRow should be an object like this :
-    // { kind:<string>, type:<string> }
-    // The match is done with its "kind" parameter which should correspond
-    // to the selected tab, and its "type" parameter which should correspond
-    // to the selected line.
+    // Tries to find the preselected row to highlight it.
     const highlightSelectedRow = useCallback(() => {
-        const rowToHightlight = selectedRow ?? preselectedRow;
-        if (rowToHightlight && rowData) {
-            const currentTabKind =
-                tabIndex === LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
-                    ? 'AERIAL'
-                    : 'UNDERGROUND';
-            if (rowToHightlight.kind === currentTabKind) {
-                gridRef.current?.api?.forEachNode(function (node) {
-                    node.setSelected(
-                        node.data?.kind === currentTabKind &&
-                            node.data?.type === rowToHightlight.type
-                    );
-                });
-            }
+        const rowIdToHighlight = selectedRow?.id ?? preselectedRowId;
+        if (rowIdToHighlight && rowData) {
+            gridRef.current?.api?.forEachNode(function (node) {
+                node.setSelected(node.data?.id === rowIdToHighlight);
+            });
         }
-    }, [selectedRow, tabIndex, preselectedRow, rowData]);
+    }, [selectedRow, preselectedRowId, rowData]);
 
-    // Tries to highlights the preselected row when changing tabs
+    // Select the correct tab when opening the dialog, if a row is preselected
+    useEffect(() => {
+        if (preselectedRowId && rowData) {
+            const preselectedRow = rowData?.find(
+                (entry) => entry.id === preselectedRowId
+            );
+            const newTabIndex =
+                preselectedRow?.kind === 'UNDERGROUND'
+                    ? LineTypeCatalogSelectorDialogTabs.UNDERGROUND_TAB
+                    : LineTypeCatalogSelectorDialogTabs.AERIAL_TAB;
+            setTabIndex(newTabIndex);
+        }
+    }, [rowData, preselectedRowId]);
+
+    // Tries to highlight the preselected row when changing tabs
     useEffect(() => {
         highlightSelectedRow();
-    }, [highlightSelectedRow]);
+    }, [highlightSelectedRow, tabIndex]);
 
     const headerAndTabs = (
         <Box
@@ -279,7 +278,7 @@ LineTypeCatalogSelectorDialog.propTypes = {
     onClose: PropTypes.func,
     rowData: PropTypes.array,
     onSelectLine: PropTypes.func,
-    preselectedRow: PropTypes.object,
+    preselectedRowId: PropTypes.string,
 };
 
 export default LineTypeCatalogSelectorDialog;

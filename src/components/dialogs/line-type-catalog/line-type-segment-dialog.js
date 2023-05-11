@@ -9,7 +9,7 @@ import {
     SEGMENTS,
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_TYPE_VALUE,
-    SEGMENT_KIND_VALUE,
+    SEGMENT_TYPE_ID,
     SEGMENT_RESISTANCE,
     SEGMENT_REACTANCE,
     SEGMENT_SUSCEPTANCE,
@@ -26,7 +26,7 @@ import { LineTypeSegmentForm } from './line-type-segment-form';
 export const emptyLineSegment = {
     [SEGMENT_DISTANCE_VALUE]: null,
     [SEGMENT_TYPE_VALUE]: '',
-    [SEGMENT_KIND_VALUE]: '',
+    [SEGMENT_TYPE_ID]: '',
     [SEGMENT_RESISTANCE]: 0.0,
     [SEGMENT_REACTANCE]: 0.0,
     [SEGMENT_SUSCEPTANCE]: 0.0,
@@ -58,7 +58,7 @@ const formSchema = yup.object().shape({
                         'SegmentTypeMissing',
                         (value) => value.length > 0
                     ),
-                [SEGMENT_KIND_VALUE]: yup.string(),
+                [SEGMENT_TYPE_ID]: yup.string(),
                 [SEGMENT_RESISTANCE]: yup.number(),
                 [SEGMENT_REACTANCE]: yup.number(),
                 [SEGMENT_SUSCEPTANCE]: yup.number(),

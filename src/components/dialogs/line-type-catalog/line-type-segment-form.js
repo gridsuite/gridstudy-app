@@ -13,7 +13,7 @@ import ExpandableInput from '../../utils/rhf-inputs/expandable-input';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import {
     SEGMENT_DISTANCE_VALUE,
-    SEGMENT_KIND_VALUE,
+    SEGMENT_TYPE_ID,
     SEGMENT_REACTANCE,
     SEGMENT_RESISTANCE,
     SEGMENT_SUSCEPTANCE,
@@ -68,27 +68,16 @@ export const LineTypeSegmentForm = () => {
             );
     }, [snackError]);
 
-    const getEntryFromCatalog = useCallback(
-        (kind, type) => {
-            return lineTypeCatalog?.find(
-                (entry) => entry.kind === kind && entry.type === type
-            );
-        },
-        [lineTypeCatalog]
-    );
-
     const updateSegmentValues = useCallback(
         (index) => {
             const distance = getValues(
                 `${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`
             );
-            const lineKind = getValues(
-                `${SEGMENTS}.${index}.${SEGMENT_KIND_VALUE}`
+            const typeId = getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
+
+            const entryFromCatalog = lineTypeCatalog?.find(
+                (entry) => entry.id === typeId
             );
-            const lineType = getValues(
-                `${SEGMENTS}.${index}.${SEGMENT_TYPE_VALUE}`
-            );
-            const entryFromCatalog = getEntryFromCatalog(lineKind, lineType);
 
             const newResistance = roundToDefaultPrecision(
                 calculateResistance(
@@ -119,7 +108,7 @@ export const LineTypeSegmentForm = () => {
                 newSusceptance
             );
         },
-        [getValues, setValue, getEntryFromCatalog]
+        [getValues, setValue, lineTypeCatalog]
     );
 
     const updateTotals = useCallback(() => {
@@ -153,14 +142,14 @@ export const LineTypeSegmentForm = () => {
         (selectedLine) => {
             if (selectedLine) {
                 const selectedType = selectedLine.type ?? '';
-                const selectedKind = selectedLine.kind ?? '';
+                const selectedTypeId = selectedLine.id ?? '';
                 setValue(
                     `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`,
                     selectedType
                 );
                 setValue(
-                    `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_KIND_VALUE}`,
-                    selectedKind
+                    `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_ID}`,
+                    selectedTypeId
                 );
                 clearErrors(
                     `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`
@@ -200,22 +189,9 @@ export const LineTypeSegmentForm = () => {
         [setValue, updateTotals]
     );
 
-    // To preselect a row in the LineTypeCatalogSelectorDialog, we need it's
-    // kind (to select the correct tab) and it's type (to select the correct row).
-    const getPreselectedRowForCatalog = useCallback(
+    const getPreselectedRowIdForCatalog = useCallback(
         (index) => {
-            const type = getValues(
-                `${SEGMENTS}.${index}.${SEGMENT_TYPE_VALUE}`
-            );
-            const kind = getValues(
-                `${SEGMENTS}.${index}.${SEGMENT_KIND_VALUE}`
-            );
-            return type && kind
-                ? {
-                      type: type,
-                      kind: kind,
-                  }
-                : undefined;
+            return getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
         },
         [getValues]
     );
@@ -295,7 +271,7 @@ export const LineTypeSegmentForm = () => {
                     rowData={lineTypeCatalog}
                     onSelectLine={onSelectCatalogLine}
                     titleId={'SelectType'}
-                    preselectedRow={getPreselectedRowForCatalog(
+                    preselectedRowId={getPreselectedRowIdForCatalog(
                         openCatalogDialogIndex
                     )}
                 />
