@@ -154,44 +154,48 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
                             <Typography variant="h6">{lineId}</Typography>
                         </Grid>
 
-                        {loadFlowStatus === RunningStatus.SUCCEED && (
-                            <Grid item>
-                                <TableContainer component={Paper}>
-                                    <Table size={'small'}>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>
-                                                    {intl.formatMessage({
-                                                        id: 'Intensity',
-                                                    })}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {lineInfo.voltageLevelId1}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {lineInfo.voltageLevelId2}
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            <TableRow>
-                                                <TableCell>
-                                                    {intl.formatMessage({
-                                                        id: 'I_(A)',
-                                                    })}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {Math.round(lineInfo.i1)}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {Math.round(lineInfo.i2)}
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </Grid>
-                        )}
+                        <Grid item>
+                            <TableContainer component={Paper}>
+                                <Table size={'small'}>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                {intl.formatMessage({
+                                                    id: 'Intensity',
+                                                })}
+                                            </TableCell>
+                                            <TableCell>
+                                                {lineInfo.voltageLevelId1}
+                                            </TableCell>
+                                            <TableCell>
+                                                {lineInfo.voltageLevelId2}
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>
+                                                {intl.formatMessage({
+                                                    id: 'I_(A)',
+                                                })}
+                                            </TableCell>
+                                            <TableCell>
+                                                {loadFlowStatus ===
+                                                RunningStatus.SUCCEED
+                                                    ? Math.round(lineInfo.i1)
+                                                    : null}
+                                            </TableCell>
+                                            <TableCell>
+                                                {loadFlowStatus ===
+                                                RunningStatus.SUCCEED
+                                                    ? Math.round(lineInfo.i2)
+                                                    : null}
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Grid>
 
                         <Grid item>
                             <TableContainer component={Paper}>
