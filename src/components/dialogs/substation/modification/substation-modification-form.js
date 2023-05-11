@@ -76,7 +76,10 @@ const SubstationModificationForm = ({
                 canRemoveLine = false;
             } else {
                 // we can mark as deleted only prop having a previous value, not added in current modification
-                if (properties[idx][PREVIOUS_VALUE] && properties[idx][ADDED] === false) {
+                if (
+                    properties[idx][PREVIOUS_VALUE] &&
+                    properties[idx][ADDED] === false
+                ) {
                     setValue(
                         `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
                         true
