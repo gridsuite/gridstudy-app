@@ -225,6 +225,34 @@ const LineTypeCatalogSelectorDialog = ({
         []
     );
 
+    const displayTable = useCallback(
+        (currentTab) => {
+            const data =
+                currentTab === LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
+                    ? rowDataAerialTab
+                    : rowDataUndergroundTab;
+            return (
+                <CustomAGGrid
+                    ref={gridRef}
+                    rowData={data}
+                    defaultColDef={defaultColDef}
+                    columnDefs={columns}
+                    rowSelection="single"
+                    onSelectionChanged={onSelectionChanged}
+                    onGridReady={highlightSelectedRow} // Highlights the preselected row when AGGrid is ready
+                />
+            );
+        },
+        [
+            columns,
+            defaultColDef,
+            highlightSelectedRow,
+            onSelectionChanged,
+            rowDataAerialTab,
+            rowDataUndergroundTab,
+        ]
+    );
+
     return (
         <BasicModificationDialog
             fullWidth
@@ -242,22 +270,7 @@ const LineTypeCatalogSelectorDialog = ({
             {...dialogProps}
             disabledSave={!selectedRow}
         >
-            <div style={{ height: '100%' }}>
-                <CustomAGGrid
-                    ref={gridRef}
-                    rowData={
-                        tabIndex ===
-                        LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
-                            ? rowDataAerialTab
-                            : rowDataUndergroundTab
-                    }
-                    defaultColDef={defaultColDef}
-                    columnDefs={columns}
-                    rowSelection="single"
-                    onSelectionChanged={onSelectionChanged}
-                    onGridReady={highlightSelectedRow} // Highlights the preselected row when AGGrid is ready
-                />
-            </div>
+            <div style={{ height: '100%' }}>{displayTable(tabIndex)}</div>
         </BasicModificationDialog>
     );
 };
