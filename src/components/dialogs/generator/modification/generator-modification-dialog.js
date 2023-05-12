@@ -82,9 +82,6 @@ const GeneratorModificationDialog = ({
     const shouldEmptyFormOnGeneratorIdChangeRef = useRef(!editData);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    useEffect(() => {
-        console.log('editDataFetchStatus : ', editDataFetchStatus)
-    }, [editDataFetchStatus])
     //in order to work properly, react hook form needs all fields to be set at least to null
     const completeReactiveCapabilityCurvePointsData = (
         reactiveCapabilityCurvePoints
@@ -252,7 +249,7 @@ const GeneratorModificationDialog = ({
         resolver: yupResolver(schema),
     });
 
-    const { reset, getValues, setValue, formState:{defaultValues: defaultValues} } = formMethods;
+    const { reset, getValues, setValue } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -264,11 +261,11 @@ const GeneratorModificationDialog = ({
     const setValuesAndEmptyOthers = useCallback(
         (customData = {}, keepDefaultValues = false) => {
             reset(
-                { ...defaultFormData, ...customData },
+                { ...emptyFormData, ...customData },
                 { keepDefaultValues: keepDefaultValues }
             );
         },
-        [defaultFormData, reset]
+        [emptyFormData, reset]
     );
 
     const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
@@ -573,12 +570,6 @@ const GeneratorModificationDialog = ({
         delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in GeneratorModificationForm and right after receiving the editData without waiting
     });
 
-    useEffect(() => {
-        if (open) {
-            console.log('open : ', editData);
-            console.log('open : ', defaultValues)
-        }
-    }, [editData, open, defaultValues])
     return (
         <FormProvider
             validationSchema={schema}
