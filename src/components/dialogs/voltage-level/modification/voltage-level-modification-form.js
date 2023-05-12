@@ -5,9 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import React, { useEffect, useState } from 'react';
+import { fetchEquipmentsIds } from '../../../../utils/rest-api';
+import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
+import { areIdsEqual, getObjectId } from '../../../utils/utils';
 import {
-    BUS_BAR_COUNT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -15,30 +17,36 @@ import {
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
     LOW_VOLTAGE_LIMIT,
     NOMINAL_VOLTAGE,
-    SECTION_COUNT,
     SUBSTATION_ID,
-} from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
-import { fetchEquipmentsIds } from 'utils/rest-api';
+} from '../../../utils/field-constants';
+import TextInput from '../../../utils/rhf-inputs/text-input';
+import { useWatch } from 'react-hook-form';
+import FloatInput from '../../../utils/rhf-inputs/float-input';
 import {
+    filledTextField,
     gridItem,
     GridSection,
-    VoltageAdornment,
     KiloAmpereAdornment,
-} from 'components/dialogs/dialogUtils';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
-import TextInput from 'components/utils/rhf-inputs/text-input';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-import { getObjectId } from 'components/utils/utils';
-import { Box } from '@mui/material';
-import IntegerInput from 'components/utils/rhf-inputs/integer-input';
+    VoltageAdornment,
+} from '../../dialogUtils';
+import Grid from '@mui/material/Grid';
 
-import { CouplingOmnibusForm } from './coupling-omnibus/coupling-omnibus-form';
-import { SwitchesBetweenSections } from './switches-between-sections/switches-between-sections';
-
-const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
-    const currentNodeUuid = currentNode?.id;
+const VoltageLevelModificationForm = ({
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelInfos,
+    onEquipmentIdChange,
+}) => {
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [substations, setSubstations] = useState([]);
+
+    const watchVoltageLevelId = useWatch({
+        name: `${EQUIPMENT_ID}`,
+    });
+
+    useEffect(() => {
+        onEquipmentIdChange(watchVoltageLevelId);
+    }, [watchVoltageLevelId, onEquipmentIdChange]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -51,14 +59,33 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             ).then((values) => {
                 setSubstations(values.sort((a, b) => a.localeCompare(b)));
             });
+
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNodeUuid,
+                undefined,
+                'VOLTAGE_LEVEL',
+                true
+            ).then((values) => {
+                setVoltageLevelOptions(
+                    values.sort((a, b) => a.localeCompare(b))
+                );
+            });
         }
     }, [studyUuid, currentNodeUuid]);
 
     const voltageLevelIdField = (
-        <TextInput
+        <AutocompleteInput
+            isOptionEqualToValue={areIdsEqual}
+            allowNewValue
+            forcePopupIcon
             name={EQUIPMENT_ID}
             label={'ID'}
-            formProps={{ autoFocus: true, margin: 'normal' }}
+            options={voltageLevelOptions}
+            getOptionLabel={getObjectId}
+            outputTransform={getObjectId}
+            size={'small'}
+            formProps={{ autoFocus: true, ...filledTextField }}
         />
     );
 
@@ -66,7 +93,9 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
         <TextInput
             name={EQUIPMENT_NAME}
             label={'Name'}
-            formProps={{ margin: 'normal' }}
+            formProps={filledTextField}
+            clearable
+            previousValue={voltageLevelInfos?.name}
         />
     );
 
@@ -83,7 +112,8 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) => value}
             size={'small'}
-            formProps={{ margin: 'normal' }}
+            formProps={filledTextField}
+            disabled //TODO to be removed when it is possible to change the substation of a voltage level in the backend (Powsybl)
         />
     );
 
@@ -92,6 +122,8 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             name={NOMINAL_VOLTAGE}
             label={'NominalVoltage'}
             adornment={VoltageAdornment}
+            clearable
+            previousValue={voltageLevelInfos?.nominalVoltage}
         />
     );
 
@@ -100,6 +132,8 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             name={LOW_VOLTAGE_LIMIT}
             label={'LowVoltageLimit'}
             adornment={VoltageAdornment}
+            clearable
+            previousValue={voltageLevelInfos?.lowVoltageLimit}
         />
     );
 
@@ -108,6 +142,8 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             name={HIGH_VOLTAGE_LIMIT}
             label={'HighVoltageLimit'}
             adornment={VoltageAdornment}
+            clearable
+            previousValue={voltageLevelInfos?.highVoltageLimit}
         />
     );
 
@@ -116,6 +152,8 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             name={LOW_SHORT_CIRCUIT_CURRENT_LIMIT}
             label={'LowShortCircuitCurrentLimit'}
             adornment={KiloAmpereAdornment}
+            clearable
+            previousValue={voltageLevelInfos?.ipMin}
         />
     );
 
@@ -124,18 +162,10 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             name={HIGH_SHORT_CIRCUIT_CURRENT_LIMIT}
             label={'HighShortCircuitCurrentLimit'}
             adornment={KiloAmpereAdornment}
+            clearable
+            previousValue={voltageLevelInfos?.ipMax}
         />
     );
-
-    const busBarCountField = (
-        <IntegerInput name={BUS_BAR_COUNT} label={'BusBarCount'} />
-    );
-
-    const sectionCountField = (
-        <IntegerInput name={SECTION_COUNT} label={'SectionCount'} />
-    );
-
-    const couplingOmnibusForm = <CouplingOmnibusForm />;
 
     return (
         <>
@@ -154,18 +184,9 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
             <Grid container spacing={2}>
                 {gridItem(lowShortCircuitCurrentLimitField, 4)}
                 {gridItem(highShortCircuitCurrentLimitField, 4)}
-                <Box sx={{ width: '100%' }} />
             </Grid>
-            <GridSection title={'BusBarSections'} />
-            <Grid container spacing={2}>
-                {gridItem(busBarCountField, 4)}
-                {gridItem(sectionCountField, 4)}
-                <SwitchesBetweenSections />
-            </Grid>
-            <GridSection title={'Coupling_Omnibus'} />
-            <Grid container>{gridItem(couplingOmnibusForm, 12)}</Grid>
         </>
     );
 };
 
-export default VoltageLevelCreationForm;
+export default VoltageLevelModificationForm;
