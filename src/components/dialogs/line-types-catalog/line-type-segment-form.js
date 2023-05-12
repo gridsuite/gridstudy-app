@@ -54,7 +54,7 @@ export const LineTypeSegmentForm = () => {
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
     const { snackError } = useSnackMessage();
 
-    // Fetchs the lineType catalog on startup
+    // Fetchs the lineTypes catalog on startup
     useEffect(() => {
         getLineTypesCatalog()
             .then((values) => {
@@ -198,25 +198,25 @@ export const LineTypeSegmentForm = () => {
 
     const segmentTypeHeader = (
         <div className={classes.header}>
-            <FormattedMessage id={'lineType.type'} />
+            <FormattedMessage id={'lineTypes.type'} />
         </div>
     );
 
     const segmentResistanceHeader = (
         <div className={classes.headerJustifyEnd}>
-            <FormattedMessage id={'lineType.resistanceLabel'} />
+            <FormattedMessage id={'lineTypes.resistanceLabel'} />
         </div>
     );
 
     const segmentReactanceHeader = (
         <div className={classes.headerJustifyEnd}>
-            <FormattedMessage id={'lineType.reactanceLabel'} />
+            <FormattedMessage id={'lineTypes.reactanceLabel'} />
         </div>
     );
 
     const segmentSusceptanceHeader = (
         <div className={classes.headerJustifyEnd}>
-            <FormattedMessage id={'lineType.susceptanceLabel'} />
+            <FormattedMessage id={'lineTypes.susceptanceLabel'} />
         </div>
     );
 

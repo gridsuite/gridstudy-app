@@ -49,14 +49,14 @@ const LineTypesCatalogSelectorDialog = ({
 
     const rowDataAerialTab = useMemo(() => {
         if (rowData) {
-            return rowData.filter((row) => row.kind === 'AERIAL');
+            return rowData.filter((row) => row.category === 'AERIAL');
         }
         return [];
     }, [rowData]);
 
     const rowDataUndergroundTab = useMemo(() => {
         if (rowData) {
-            return rowData.filter((row) => row.kind === 'UNDERGROUND');
+            return rowData.filter((row) => row.category === 'UNDERGROUND');
         }
         return [];
     }, [rowData]);
@@ -78,31 +78,31 @@ const LineTypesCatalogSelectorDialog = ({
     const columns = useMemo(() => {
         return [
             {
-                headerName: intl.formatMessage({ id: 'lineType.type' }),
+                headerName: intl.formatMessage({ id: 'lineTypes.type' }),
                 field: 'type',
                 pinned: 'left',
             },
             {
-                headerName: intl.formatMessage({ id: 'lineType.voltage' }),
+                headerName: intl.formatMessage({ id: 'lineTypes.voltage' }),
                 field: 'voltage',
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'lineType.conductorType',
+                    id: 'lineTypes.conductorType',
                 }),
                 field: 'conductorType',
             },
             {
-                headerName: intl.formatMessage({ id: 'lineType.section' }),
+                headerName: intl.formatMessage({ id: 'lineTypes.section' }),
                 field: 'section',
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'lineType.conductorsNumber',
+                    id: 'lineTypes.conductorsNumber',
                 }),
                 field: 'conductorsNumber',
                 cellRenderer: DefaultCellRenderer,
@@ -110,7 +110,7 @@ const LineTypesCatalogSelectorDialog = ({
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'lineType.circuitsNumber',
+                    id: 'lineTypes.circuitsNumber',
                 }),
                 field: 'circuitsNumber',
                 cellRenderer: DefaultCellRenderer,
@@ -118,7 +118,7 @@ const LineTypesCatalogSelectorDialog = ({
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'lineType.groundWiresNumber',
+                    id: 'lineTypes.groundWiresNumber',
                 }),
                 field: 'groundWiresNumber',
                 cellRenderer: DefaultCellRenderer,
@@ -126,7 +126,7 @@ const LineTypesCatalogSelectorDialog = ({
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'lineType.linearResistance',
+                    id: 'lineTypes.linearResistance',
                 }),
                 field: 'linearResistance',
                 cellRenderer: DefaultCellRenderer,
@@ -134,7 +134,7 @@ const LineTypesCatalogSelectorDialog = ({
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'lineType.linearReactance',
+                    id: 'lineTypes.linearReactance',
                 }),
                 field: 'linearReactance',
                 cellRenderer: DefaultCellRenderer,
@@ -142,7 +142,7 @@ const LineTypesCatalogSelectorDialog = ({
             },
             {
                 headerName: intl.formatMessage({
-                    id: 'lineType.linearCapacity',
+                    id: 'lineTypes.linearCapacity',
                 }),
                 field: 'linearCapacity',
                 cellRenderer: DefaultCellRenderer,
@@ -168,7 +168,7 @@ const LineTypesCatalogSelectorDialog = ({
                 (entry) => entry.id === preselectedRowId
             );
             const newTabIndex =
-                preselectedRow?.kind === 'UNDERGROUND'
+                preselectedRow?.category === 'UNDERGROUND'
                     ? LineTypesCatalogSelectorDialogTabs.UNDERGROUND_TAB
                     : LineTypesCatalogSelectorDialogTabs.AERIAL_TAB;
             setTabIndex(newTabIndex);
@@ -195,11 +195,13 @@ const LineTypesCatalogSelectorDialog = ({
                     onChange={(event, newValue) => handleTabChange(newValue)}
                 >
                     <Tab
-                        label={<FormattedMessage id="lineType.kind.aerial" />}
+                        label={
+                            <FormattedMessage id="lineTypes.category.aerial" />
+                        }
                     />
                     <Tab
                         label={
-                            <FormattedMessage id="lineType.kind.underground" />
+                            <FormattedMessage id="lineTypes.category.underground" />
                         }
                     />
                 </Tabs>
