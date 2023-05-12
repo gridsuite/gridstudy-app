@@ -531,6 +531,11 @@ export function StudyContainer({ view, onChangeTab }) {
                     .then((res) => {
                         if (res) {
                             networkModificationTreeModel.setCaseName(res);
+                            dispatch(
+                                loadNetworkModificationTreeSuccess(
+                                    networkModificationTreeModel
+                                )
+                            );
                         }
                     })
                     .catch((err) => {
@@ -553,11 +558,6 @@ export function StudyContainer({ view, onChangeTab }) {
                     ),
                 };
                 dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
-                dispatch(
-                    loadNetworkModificationTreeSuccess(
-                        networkModificationTreeModel
-                    )
-                );
             })
             .catch((error) => {
                 if (error.status === 404) {

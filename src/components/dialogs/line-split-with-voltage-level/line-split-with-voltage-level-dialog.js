@@ -38,6 +38,9 @@ import {
 } from '../line-to-attach-or-split-form/line-to-attach-or-split-utils';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import { buildNewBusbarSections } from 'components/utils/utils';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [LINE1_ID]: '',
@@ -65,12 +68,16 @@ const formSchema = yup
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const LineSplitWithVoltageLevelDialog = ({
     studyUuid,
     currentNode,
     editData,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
@@ -218,6 +225,13 @@ const LineSplitWithVoltageLevelDialog = ({
         }
     }, [getValues, newVoltageLevel]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -227,6 +241,10 @@ const LineSplitWithVoltageLevelDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-voltage-level-amidst-a-line"
                 titleId="LineSplitWithVoltageLevel"
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <LineSplitWithVoltageLevelForm
@@ -245,6 +263,8 @@ LineSplitWithVoltageLevelDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default LineSplitWithVoltageLevelDialog;

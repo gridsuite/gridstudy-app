@@ -25,9 +25,12 @@ import {
 import SubstationModificationForm from './substation-modification-form';
 import {
     fetchEquipmentInfos,
+    FetchStatus,
     modifySubstation,
 } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
+import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 
 const checkUniquePropertiesNames = (properties) => {
     const validValues = properties.filter((v) => v?.name);
@@ -68,7 +71,7 @@ const getPropertiesFromModification = (properties) => {
                   [NAME]: p[NAME],
                   [VALUE]: p[VALUE],
                   [PREVIOUS_VALUE]: null,
-                  [ADDED]: true,
+                  [ADDED]: p[ADDED],
                   [DELETION_MARK]: p[DELETION_MARK],
               };
           })
@@ -82,17 +85,22 @@ const getPropertiesFromModification = (properties) => {
  * @param currentNode The node we are currently working on
  * @param studyUuid the study we are currently working on
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param isUpdate check if edition form
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const SubstationModificationDialog = ({
     editData,
     defaultIdValue,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [substationToModify, setSubstationToModify] = useState(null);
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     const emptyFormData = useMemo(
         () => ({
@@ -169,7 +177,6 @@ const SubstationModificationDialog = ({
                         : null;
                     newModificationProperties.push({
                         ...property,
-                        [ADDED]: true,
                         [PREVIOUS_VALUE]: previousValue,
                     });
                 });
@@ -215,6 +222,7 @@ const SubstationModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
+                setDataFetchStatus(FetchStatus.RUNNING);
                 fetchEquipmentInfos(
                     studyUuid,
                     currentNodeUuid,
@@ -234,6 +242,7 @@ const SubstationModificationDialog = ({
                                 { keepDefaultValues: true }
                             );
                         }
+                        setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
                         setSubstationToModify(null);
@@ -245,6 +254,7 @@ const SubstationModificationDialog = ({
                             }),
                             { keepDefaultValues: true }
                         );
+                        setDataFetchStatus(FetchStatus.FAILED);
                     });
             } else {
                 setSubstationToModify(null);
@@ -288,6 +298,16 @@ const SubstationModificationDialog = ({
         },
         [currentNodeUuid, editData, snackError, studyUuid]
     );
+
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            ((editDataFetchStatus === FetchStatus.SUCCEED ||
+                editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED ||
+                    dataFetchStatus === FetchStatus.FAILED)),
+        delay: FORM_LOADING_DELAY,
+    });
     return (
         <FormProvider
             validationSchema={formSchema}
@@ -301,6 +321,13 @@ const SubstationModificationDialog = ({
                 aria-labelledby="dialog-modify-substation"
                 maxWidth={'md'}
                 titleId="ModifySubstation"
+                open={open}
+                keepMounted={true}
+                isDataFetching={
+                    isUpdate &&
+                    (editDataFetchStatus === FetchStatus.RUNNING ||
+                        dataFetchStatus === FetchStatus.RUNNING)
+                }
                 {...dialogProps}
             >
                 <SubstationModificationForm
