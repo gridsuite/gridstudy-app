@@ -275,7 +275,6 @@ export function RunButtonContainer({
         } else if (action === runnable.VOLTAGE_INIT) {
             setVoltageInitStatusState(RunningStatus.RUNNING);
             startVoltageInit(studyUuid, currentNode?.id).catch((error) => {
-                console.info('failed');
                 setVoltageInitStatusState(RunningStatus.FAILED);
                 snackError({
                     messageTxt: error.message,
