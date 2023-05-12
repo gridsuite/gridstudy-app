@@ -26,12 +26,12 @@ export const ALLOWED_KEYS = [
     'ArrowRight',
 ];
 
-export const LineTypeCatalogSelectorDialogTabs = {
+export const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
     UNDERGROUND_TAB: 1,
 };
 
-const LineTypeCatalogSelectorDialog = ({
+const LineTypesCatalogSelectorDialog = ({
     onSelectLine,
     preselectedRowId,
     rowData,
@@ -42,7 +42,7 @@ const LineTypeCatalogSelectorDialog = ({
     const gridRef = useRef(); // Necessary to call getSelectedRows on aggrid component
 
     const [tabIndex, setTabIndex] = useState(
-        LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
+        LineTypesCatalogSelectorDialogTabs.AERIAL_TAB
     );
 
     const [selectedRow, setSelectedRow] = useState(null);
@@ -169,8 +169,8 @@ const LineTypeCatalogSelectorDialog = ({
             );
             const newTabIndex =
                 preselectedRow?.kind === 'UNDERGROUND'
-                    ? LineTypeCatalogSelectorDialogTabs.UNDERGROUND_TAB
-                    : LineTypeCatalogSelectorDialogTabs.AERIAL_TAB;
+                    ? LineTypesCatalogSelectorDialogTabs.UNDERGROUND_TAB
+                    : LineTypesCatalogSelectorDialogTabs.AERIAL_TAB;
             setTabIndex(newTabIndex);
         }
     }, [rowData, preselectedRowId]);
@@ -227,7 +227,7 @@ const LineTypeCatalogSelectorDialog = ({
     const displayTable = useCallback(
         (currentTab) => {
             const data =
-                currentTab === LineTypeCatalogSelectorDialogTabs.AERIAL_TAB
+                currentTab === LineTypesCatalogSelectorDialogTabs.AERIAL_TAB
                     ? rowDataAerialTab
                     : rowDataUndergroundTab;
             return (
@@ -259,7 +259,7 @@ const LineTypeCatalogSelectorDialog = ({
             onClose={onClose}
             onClear={handleClear}
             onSave={handleSubmit}
-            aria-labelledby="dialog-lineType-catalog-selector"
+            aria-labelledby="dialog-lineTypes-catalog-selector"
             subtitle={headerAndTabs}
             PaperProps={{
                 sx: {
@@ -274,11 +274,11 @@ const LineTypeCatalogSelectorDialog = ({
     );
 };
 
-LineTypeCatalogSelectorDialog.propTypes = {
+LineTypesCatalogSelectorDialog.propTypes = {
     onClose: PropTypes.func,
     rowData: PropTypes.array,
     onSelectLine: PropTypes.func,
     preselectedRowId: PropTypes.string,
 };
 
-export default LineTypeCatalogSelectorDialog;
+export default LineTypesCatalogSelectorDialog;

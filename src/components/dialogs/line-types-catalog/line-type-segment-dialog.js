@@ -88,8 +88,8 @@ const LineTypeSegmentDialog = ({ ...dialogProps }) => {
                 fullWidth
                 maxWidth="lg"
                 onClear={handleClear}
-                aria-labelledby="dialog-lineType-catalog"
-                titleId="LineTypeCatalogDialogTitle"
+                aria-labelledby="dialog-lineTypes-catalog"
+                titleId="LineTypesCatalogDialogTitle"
                 {...dialogProps}
             >
                 <LineTypeSegmentForm />

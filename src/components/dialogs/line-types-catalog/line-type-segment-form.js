@@ -23,10 +23,10 @@ import {
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
 } from '../../utils/field-constants';
-import LineTypeCatalogSelectorDialog from './line-type-catalog-selector-dialog';
+import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog';
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
-import { getLineTypeCatalog } from '../../../utils/rest-api';
+import { getLineTypesCatalog } from '../../../utils/rest-api';
 import { emptyLineSegment } from './line-type-segment-dialog';
 import {
     calculateResistance,
@@ -50,20 +50,20 @@ const useStyles = makeStyles((theme) => ({
 export const LineTypeSegmentForm = () => {
     const classes = useStyles();
     const { setValue, getValues, clearErrors } = useFormContext();
-    const [lineTypeCatalog, setLineTypeCatalog] = useState([]);
+    const [lineTypesCatalog, setLineTypesCatalog] = useState([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
     const { snackError } = useSnackMessage();
 
     // Fetchs the lineType catalog on startup
     useEffect(() => {
-        getLineTypeCatalog()
+        getLineTypesCatalog()
             .then((values) => {
-                setLineTypeCatalog(values);
+                setLineTypesCatalog(values);
             })
             .catch((error) =>
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'LineTypeCatalogFetchingError',
+                    headerId: 'LineTypesCatalogFetchingError',
                 })
             );
     }, [snackError]);
@@ -75,7 +75,7 @@ export const LineTypeSegmentForm = () => {
             );
             const typeId = getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
 
-            const entryFromCatalog = lineTypeCatalog?.find(
+            const entryFromCatalog = lineTypesCatalog?.find(
                 (entry) => entry.id === typeId
             );
 
@@ -108,7 +108,7 @@ export const LineTypeSegmentForm = () => {
                 newSusceptance
             );
         },
-        [getValues, setValue, lineTypeCatalog]
+        [getValues, setValue, lineTypesCatalog]
     );
 
     const updateTotals = useCallback(() => {
@@ -265,10 +265,10 @@ export const LineTypeSegmentForm = () => {
             </Grid>
 
             {openCatalogDialogIndex !== null && (
-                <LineTypeCatalogSelectorDialog
+                <LineTypesCatalogSelectorDialog
                     open={true}
                     onClose={onCatalogDialogClose}
-                    rowData={lineTypeCatalog}
+                    rowData={lineTypesCatalog}
                     onSelectLine={onSelectCatalogLine}
                     titleId={'SelectType'}
                     preselectedRowId={getPreselectedRowIdForCatalog(

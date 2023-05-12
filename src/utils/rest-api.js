@@ -3271,7 +3271,7 @@ export function generationDispatch(
     });
 }
 
-export function getLineTypeCatalog() {
+export function getLineTypesCatalog() {
     console.info(`get line types catalog`);
     const url =
         PREFIX_NETWORK_MODIFICATION_QUERIES +

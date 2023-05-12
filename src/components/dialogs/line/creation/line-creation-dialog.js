@@ -77,7 +77,7 @@ import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import { formatTemporaryLimits } from 'components/utils/utils';
-import LineTypeSegmentDialog from '../../line-type-catalog/line-type-segment-dialog';
+import LineTypeSegmentDialog from '../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 
@@ -126,11 +126,11 @@ const LineCreationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
-    const [isOpenLineTypeCatalogDialog, setOpenLineTypeCatalogDialog] =
+    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] =
         useState(false);
 
-    const handleCloseLineTypeCatalogDialog = () => {
-        setOpenLineTypeCatalogDialog(false);
+    const handleCloseLineTypesCatalogDialog = () => {
+        setOpenLineTypesCatalogDialog(false);
     };
 
     const formSchema = yup
@@ -437,7 +437,7 @@ const LineCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
-                onOpenCatalogDialog={() => setOpenLineTypeCatalogDialog(true)}
+                onOpenCatalogDialog={() => setOpenLineTypesCatalogDialog(true)}
                 searchCopy={searchCopy}
                 PaperProps={{
                     sx: {
@@ -479,8 +479,8 @@ const LineCreationDialog = ({
                     currentNodeUuid={currentNodeUuid}
                 />
                 <LineTypeSegmentDialog
-                    open={isOpenLineTypeCatalogDialog}
-                    onClose={handleCloseLineTypeCatalogDialog}
+                    open={isOpenLineTypesCatalogDialog}
+                    onClose={handleCloseLineTypesCatalogDialog}
                     onSave={handleLineSegmentsBuildSubmit}
                 />
             </ModificationDialog>
