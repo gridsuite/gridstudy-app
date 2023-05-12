@@ -133,7 +133,7 @@ const VoltageLevelModificationDialog = ({
                 voltageLevel[HIGH_VOLTAGE_LIMIT],
                 voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT],
                 voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT],
-                !!editData,
+                isUpdate,
                 editData?.uuid
             ).catch((error) => {
                 snackError({
@@ -142,7 +142,7 @@ const VoltageLevelModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, snackError, isUpdate]
     );
 
     const clear = useCallback(() => {
