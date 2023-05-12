@@ -19,7 +19,9 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { fetchOverloadedLines } from '../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { FormattedMessage } from "react-intl/lib";
+import { FormattedMessage } from 'react-intl/lib';
+import { useSelector } from 'react-redux';
+import { PARAM_LINE_FLOW_ALERT_THRESHOLD } from '../utils/config-params';
 
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const useStyles = makeStyles((theme) => ({
@@ -48,6 +50,10 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState(0);
     const [overloadedLines, setOverloadedLines] = useState(null);
+
+    const lineFlowAlertThreshold = useSelector((state) =>
+        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
+    );
 
     useEffect(() => {
         const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
@@ -87,7 +93,11 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 side: convertSide(overloadedLine.side),
             };
         };
-        fetchOverloadedLines(studyUuid, nodeUuid, 75.0 / 100.0)
+        fetchOverloadedLines(
+            studyUuid,
+            nodeUuid,
+            lineFlowAlertThreshold / 100.0
+        )
             .then((overloadedLines) => {
                 const sortedLines = overloadedLines
                     .map((overloadedLine) => makeData(overloadedLine))
@@ -100,7 +110,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     headerId: 'ErrFetchOverloadedLinesMsg',
                 });
             });
-    }, [studyUuid, nodeUuid, intl, snackError]);
+    }, [studyUuid, nodeUuid, lineFlowAlertThreshold, intl, snackError]);
 
     function StatusCellRender(cellData) {
         const status = cellData.rowData[cellData.dataKey];
@@ -188,7 +198,6 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     }
 
     function renderLoadFlowConstraints() {
-        console.log('DBR renderLoadFlowConstraints', overloadedLines);
         return (
             <Paper className={classes.tablePaper}>
                 <VirtualizedTable
@@ -243,7 +252,6 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     }
 
     function renderLoadFlowResultTabs() {
-        console.log('DBR renderLoadFlowResultTabs', result?.componentResults);
         return (
             <>
                 <div className={classes.container}>
@@ -254,12 +262,26 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                                 setTabIndex(newTabIndex)
                             }
                         >
-                            <Tab label={<FormattedMessage id={'LoadFlowResultsConstraints'} />} />
-                            <Tab label={<FormattedMessage id={'LoadFlowResultsStatus'} />} />
+                            <Tab
+                                label={
+                                    <FormattedMessage
+                                        id={'LoadFlowResultsConstraints'}
+                                    />
+                                }
+                            />
+                            <Tab
+                                label={
+                                    <FormattedMessage
+                                        id={'LoadFlowResultsStatus'}
+                                    />
+                                }
+                            />
                         </Tabs>
                     </div>
                 </div>
-                {tabIndex === 0 && overloadedLines && renderLoadFlowConstraints()}
+                {tabIndex === 0 &&
+                    overloadedLines &&
+                    renderLoadFlowConstraints()}
                 {tabIndex === 1 && renderLoadFlowResult()}
             </>
         );

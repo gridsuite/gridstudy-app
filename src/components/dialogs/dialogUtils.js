@@ -252,6 +252,8 @@ export const LabelledSilder = ({
     disabled,
     onCommitCallback,
     marks,
+    minValue = 0,
+    maxValue = 100,
 }) => {
     const [sliderValue, setSliderValue] = useState(value);
 
@@ -272,8 +274,8 @@ export const LabelledSilder = ({
             </Grid>
             <Grid item container xs={5} className={classes.controlItem}>
                 <Slider
-                    min={0}
-                    max={100}
+                    min={minValue}
+                    max={maxValue}
                     valueLabelDisplay="auto"
                     onChange={handleValueChanged}
                     onChangeCommitted={onCommitCallback}
