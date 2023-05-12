@@ -3229,9 +3229,9 @@ export function generationDispatch(
 }
 
 export function getLineTypeCatalog() {
-    console.info(`get lineType catalog`);
+    console.info(`get line types catalog`);
     const url =
         PREFIX_NETWORK_MODIFICATION_QUERIES +
-        '/v1/network-modifications/line/catalog';
+        '/v1/network-modifications/catalog/line-types';
     return backendFetchJson(url);
 }
