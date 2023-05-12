@@ -32,33 +32,35 @@ const VoltageRegulation = ({
     previousValues,
 }) => {
     const intl = useIntl();
-    const getPreviousRegulationType = useCallback(
-        (previousValues) => {
-            if (previousValues?.voltageRegulatorOn) {
-                return previousValues?.regulatingTerminalVlId ||
-                    previousValues?.regulatingTerminalConnectableId
-                    ? intl.formatMessage({
-                          id: REGULATION_TYPES.DISTANT.label,
-                      })
-                    : intl.formatMessage({
-                          id: REGULATION_TYPES.LOCAL.label,
-                      });
-            } else {
-                return null;
-            }
-        },
-        [intl]
-    );
+    const getPreviousRegulationType = useCallback((previousValues) => {
+        if (previousValues?.voltageRegulatorOn) {
+            return previousValues?.regulatingTerminalVlId ||
+                previousValues?.regulatingTerminalConnectableId
+                ? REGULATION_TYPES.DISTANT.label
+                : REGULATION_TYPES.LOCAL.label;
+        } else {
+            return null;
+        }
+    }, []);
 
     const voltageRegulationType = useWatch({
         name: VOLTAGE_REGULATION_TYPE,
     });
 
+    const translatedPreviousRegulationType = useMemo(() => {
+        return getPreviousRegulationType(previousValues)
+            ? intl.formatMessage({
+                  id: getPreviousRegulationType(previousValues),
+              })
+            : null;
+    }, [getPreviousRegulationType, intl, previousValues]);
+
     const isDistantRegulation = useMemo(() => {
         return (
             voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
-            getPreviousRegulationType(previousValues) ===
-                REGULATION_TYPES.DISTANT.label
+            (!voltageRegulationType &&
+                getPreviousRegulationType(previousValues) ===
+                    REGULATION_TYPES.DISTANT.label)
         );
     }, [getPreviousRegulationType, previousValues, voltageRegulationType]);
 
@@ -68,7 +70,7 @@ const VoltageRegulation = ({
             name={VOLTAGE_REGULATION_TYPE}
             label={'RegulationTypeText'}
             size={'small'}
-            previousValue={getPreviousRegulationType(previousValues)}
+            previousValue={translatedPreviousRegulationType}
         />
     );
 
