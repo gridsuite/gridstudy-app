@@ -23,7 +23,7 @@ import {
     FILTER_TYPE,
     useGroupFilter,
 } from './spreadsheet/filter-panel/use-group-filter';
-import { AppBar, Button, Grid, IconButton, TextField } from '@mui/material';
+import { AppBar, Grid, IconButton, TextField } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CloseIcon from '@mui/icons-material/Close';
@@ -102,7 +102,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
-                cellRenderer: (props) => console.log('aaa', props),
             },
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
@@ -150,70 +149,74 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [theme.selectedRow.background]
     );
 
-    function flattenResult(shortcutAnalysisResult) {
-        const rows = [];
-        shortcutAnalysisResult?.faults?.forEach((f) => {
-            const fault = f.fault;
-            const limitViolations = f.limitViolations;
-            let firstLimitViolation;
-            if (limitViolations.length > 0) {
-                let lv = limitViolations[0];
-                firstLimitViolation = {
-                    limitType: intl.formatMessage({
-                        id: lv.limitType,
-                    }),
-                    limitMin:
-                        lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
-                            : null,
-                    limitMax:
-                        lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
-                            : null,
-                    limitName: lv.limitName,
-                    current: lv.value,
-                };
-            }
-            rows.push({
-                faultId: fault.id,
-                elementId: fault.elementId,
-                faultType: intl.formatMessage({ id: fault.faultType }),
-                shortCircuitPower: f.shortCircuitPower,
-                current: f.current,
-                ...firstLimitViolation,
-            });
-            limitViolations.slice(1).forEach((lv) => {
+    const flattenResult = useCallback(
+        (shortcutAnalysisResult) => {
+            const rows = [];
+            shortcutAnalysisResult?.faults?.forEach((f) => {
+                const fault = f.fault;
+                const limitViolations = f.limitViolations;
+                let firstLimitViolation;
+                if (limitViolations.length > 0) {
+                    let lv = limitViolations[0];
+                    firstLimitViolation = {
+                        limitType: intl.formatMessage({
+                            id: lv.limitType,
+                        }),
+                        limitMin:
+                            lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
+                                ? lv.limit
+                                : null,
+                        limitMax:
+                            lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
+                                ? lv.limit
+                                : null,
+                        limitName: lv.limitName,
+                        current: lv.value,
+                    };
+                }
                 rows.push({
-                    limitType: intl.formatMessage({
-                        id: lv.limitType,
-                    }),
-                    limitMin:
-                        lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
-                            : null,
-                    limitMax:
-                        lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
-                            : null,
-                    limitName: lv.limitName,
-                    current: lv.value,
+                    faultId: fault.id,
+                    elementId: fault.elementId,
+                    faultType: intl.formatMessage({ id: fault.faultType }),
+                    shortCircuitPower: f.shortCircuitPower,
+                    current: f.current,
+                    ...firstLimitViolation,
+                });
+                limitViolations.slice(1).forEach((lv) => {
+                    rows.push({
+                        limitType: intl.formatMessage({
+                            id: lv.limitType,
+                        }),
+                        limitMin:
+                            lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
+                                ? lv.limit
+                                : null,
+                        limitMax:
+                            lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
+                                ? lv.limit
+                                : null,
+                        limitName: lv.limitName,
+                        current: lv.value,
+                    });
+                });
+                const feederResults = f.feederResults;
+                feederResults.forEach((fr) => {
+                    rows.push({
+                        connectableId: fr.connectableId,
+                        current: fr.current,
+                        parentElementId: fault.elementId,
+                    });
                 });
             });
-            const feederResults = f.feederResults;
-            feederResults.forEach((fr) => {
-                rows.push({
-                    connectableId: fr.connectableId,
-                    current: fr.current,
-                    parentElementId: fault.elementId,
-                });
-            });
-        });
-        return rows;
-    }
+            return rows;
+        },
+        [intl]
+    );
 
     const defaultColDef = useMemo(
         () => ({
-            suppressMovable: true,
+            //suppressMovable: true,
+            sortable: true,
         }),
         []
     );
@@ -223,24 +226,58 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [result, filterResult, flattenResult]
     );
 
-    const rowsWithoutHiddenValues = useMemo(
-        () =>
-            rows.map((row) => {
+    const filterHiddenValuesFromRows = useCallback(
+        (fullRows) =>
+            fullRows.map((fullRow) => {
                 const rowWithoutHiddenValue = {};
-                const displayedColumnsField = columns.map(
-                    (column) => column.field
-                );
+                // column definition depends on current AGGrid state
+                // if user is moving/hiding the columns, this state will be up to date
+                const currentColumnDefinition =
+                    gridRef.current?.api.getColumnDefs();
 
-                for (const [key, value] of Object.entries(row)) {
-                    if (displayedColumnsField.includes(key)) {
-                        rowWithoutHiddenValue[key] = value;
+                const displayedColumnsField = currentColumnDefinition
+                    .filter((column) => column.hide !== true)
+                    .map((column) => column.field);
+
+                const rowKeys = Object.keys(fullRow);
+
+                displayedColumnsField.forEach((displayedField) => {
+                    if (rowKeys.includes(displayedField)) {
+                        rowWithoutHiddenValue[displayedField] =
+                            rowKeys[displayedField];
                     }
-                }
+                });
+
+                // for (const [key, value] of Object.entries(fullRow)) {
+                //     if (displayedColumnsField.includes(key)) {
+                //         rowWithoutHiddenValue[key] = value;
+                //     }
+                // }
 
                 return rowWithoutHiddenValue;
             }),
-        [rows, columns]
+        []
     );
+
+    const [setRowsToSearchFrom, searchInput, setSearchInput, searchResult] =
+        useSearchBar();
+
+    const printFilterSortedRows = useCallback(() => {
+        const results = [];
+        gridRef.current?.api.forEachNodeAfterFilterAndSort((rowNode, index) => {
+            results.push(rowNode.data);
+        });
+
+        console.log('COLUMNS', gridRef.current?.api.getColumnDefs());
+
+        console.log(
+            'NOFILTER FILTER',
+            results,
+            filterHiddenValuesFromRows(results),
+            rows
+        );
+        setRowsToSearchFrom(filterHiddenValuesFromRows(results));
+    }, [rows]);
 
     const renderResult = () => {
         return (
@@ -252,11 +289,13 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     columnDefs={columns}
                     getRowStyle={getRowStyle}
                     defaultColDef={defaultColDef}
+                    onSortChanged={printFilterSortedRows}
                 />
             )
         );
     };
 
+    console.log('SEARCH RESULTS', searchResult);
     return (
         <>
             <Box m={1}>
@@ -268,8 +307,10 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             {renderResult()}
             {bottomBarOpen && (
                 <Box height={16} m={3}>
-                    <Counter
-                        rows={rowsWithoutHiddenValues}
+                    <SearchBar
+                        searchResult={searchResult}
+                        setSearchInput={setSearchInput}
+                        searchInput={searchInput}
                         onChange={focusCell}
                         onClose={() => setBottomBarOpen(false)}
                     />
@@ -279,41 +320,15 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     );
 };
 
-const Counter = ({ rows, onChange, onClose }) => {
-    const searchInputRef = useRef();
-    const [counter, setCounter] = useState(0);
-    const [searchResult, setSearchResult] = useState([]);
+const useSearchBar = () => {
+    const [rowsToSearchFrom, setRowsToSearchFrom] = useState([]);
     const [searchInput, setSearchInput] = useState('');
-
-    const handleChange = (value) => {
-        setSearchInput(value);
-
-        if (!value) {
-            setSearchResult([]);
-            setCounter(0);
-            return;
-        }
-
-        const newSearchResult = [];
-        rows.forEach((row, index) =>
-            searchOccurencesInObjectValues(row, value).forEach((r) =>
-                newSearchResult.push([index, r])
-            )
-        );
-
-        //onChange(newSearchResult[0][0], newSearchResult[0][1]);
-
-        //searchInputRef.current.focus();
-        setSearchResult(newSearchResult);
-        setCounter(0);
-    };
+    const [searchResult, setSearchResult] = useState([]);
 
     const searchOccurencesInObjectValues = (object, str) => {
         const result = [];
-        console.log('object', object);
 
         for (const [key, value] of Object.entries(object)) {
-            console.log(value);
             if (value?.toString().indexOf(str) >= 0) {
                 result.push(key);
             }
@@ -321,6 +336,84 @@ const Counter = ({ rows, onChange, onClose }) => {
 
         return result;
     };
+
+    const handleSearchInputChange = useCallback(
+        (value) => {
+            if (!value) {
+                setSearchResult([]);
+                return;
+            }
+
+            console.log('ROWS', rowsToSearchFrom);
+            const newSearchResult = [];
+            rowsToSearchFrom.forEach((row, index) =>
+                searchOccurencesInObjectValues(row, value).forEach((r) =>
+                    newSearchResult.push([index, r])
+                )
+            );
+
+            setSearchResult(newSearchResult);
+        },
+        [rowsToSearchFrom]
+    );
+
+    useEffect(() => {
+        console.log('SEARCH INPUT', searchInput);
+        handleSearchInputChange(searchInput);
+    }, [searchInput, handleSearchInputChange]);
+
+    return [setRowsToSearchFrom, searchInput, setSearchInput, searchResult];
+};
+
+const SearchBar = ({
+    searchInput,
+    setSearchInput,
+    searchResult,
+    onChange,
+    onClose,
+}) => {
+    const searchInputRef = useRef();
+    const [counter, setCounter] = useState(-1);
+    // const [searchResult, setSearchResult] = useState([]);
+
+    // const handleSearchInputChange = useCallback(
+    //     (value) => {
+    //         if (!value) {
+    //             setSearchResult([]);
+    //             setCounter(-1);
+    //             return;
+    //         }
+
+    //         const newSearchResult = [];
+    //         rows.forEach((row, index) =>
+    //             searchOccurencesInObjectValues(row, value).forEach((r) =>
+    //                 newSearchResult.push([index, r])
+    //             )
+    //         );
+
+    //         setSearchResult(newSearchResult);
+    //         setCounter(-1);
+    //     },
+    //     [rows]
+    // );
+
+    // useEffect(() => {
+    //     handleSearchInputChange(searchInput);
+    // }, [searchInput, handleSearchInputChange]);
+
+    // const searchOccurencesInObjectValues = (object, str) => {
+    //     const result = [];
+    //     console.log('object', object);
+
+    //     for (const [key, value] of Object.entries(object)) {
+    //         console.log(value);
+    //         if (value?.toString().indexOf(str) >= 0) {
+    //             result.push(key);
+    //         }
+    //     }
+
+    //     return result;
+    // };
 
     const updateCounter = useCallback(
         (action) => {
@@ -348,22 +441,30 @@ const Counter = ({ rows, onChange, onClose }) => {
                     );
                     return newCounter;
                 });
+            } else if (action === 'RESET') {
+                setCounter(-1);
             }
         },
         [searchResult, onChange]
     );
 
-    // useEffect(() => {
-    //     const openSearch = (e) => {
-    //         if (e.key === 'Enter') {
-    //             e.preventDefault();
-    //             updateCounter('NEXT');
-    //         }
-    //     };
-    //     document.addEventListener('keydown', openSearch);
+    useEffect(() => {
+        updateCounter('RESET');
+    }, [searchResult, updateCounter]);
 
-    //     return () => document.removeEventListener('keydown', openSearch);
-    // }, [updateCounter]);
+    useEffect(() => {
+        const openSearch = (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                updateCounter('NEXT');
+            }
+        };
+        document.addEventListener('keydown', openSearch);
+
+        searchInputRef.current.focus();
+
+        return () => document.removeEventListener('keydown', openSearch);
+    }, [updateCounter]);
 
     const noResult = useMemo(() => searchResult.length === 0, [searchResult]);
 
@@ -381,7 +482,7 @@ const Counter = ({ rows, onChange, onClose }) => {
                         inputRef={searchInputRef}
                         size="small"
                         value={searchInput}
-                        onChange={(e) => handleChange(e.target.value)}
+                        onChange={(e) => setSearchInput(e.target.value)}
                         label="Rechercher"
                     />
                     <IconButton
@@ -396,14 +497,21 @@ const Counter = ({ rows, onChange, onClose }) => {
                     >
                         <KeyboardArrowDownIcon />
                     </IconButton>
-                    {searchInput.length !== 0 && !noResult && (
-                        <>
-                            Occurence {counter + 1} sur {searchResult.length}
-                        </>
-                    )}
-                    {searchInput.length !== 0 && noResult && (
-                        <>Aucun résultat</>
-                    )}
+                    {searchInput.length !== 0 &&
+                        (noResult ? (
+                            <>Aucun résultat</>
+                        ) : (
+                            <>
+                                {counter === -1 ? (
+                                    <>{searchResult.length} occurences</>
+                                ) : (
+                                    <>
+                                        Occurence {counter + 1} sur{' '}
+                                        {searchResult.length}
+                                    </>
+                                )}
+                            </>
+                        ))}
                 </Grid>
                 <Grid xs={6} item textAlign={'right'}>
                     <IconButton onClick={onClose}>

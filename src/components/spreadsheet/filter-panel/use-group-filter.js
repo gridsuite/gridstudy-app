@@ -167,7 +167,13 @@ export const useGroupFilter = (filtersDef, parentKey, linkToParentKey) => {
                 return result;
             }, []);
         },
-        [parentFilters, childrenFilters, linkToParentKey, applyFilters]
+        [
+            parentFilters,
+            childrenFilters,
+            parentKey,
+            linkToParentKey,
+            applyFilters,
+        ]
     );
 
     return { filterResult, updateFilter };
