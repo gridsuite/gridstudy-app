@@ -135,8 +135,6 @@
     "VoltageRegulatorOn": "Voltage regulation",
     "RegulatingTerminal": "Regulated node",
 
-    "displayOverloadTable": "Display the overload table when threshold is exceeded: ",
-
     "LoadFlow": "LoadFlow",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",

@@ -135,8 +135,6 @@
     "VoltageRegulatorOn": "Réglage de tension",
     "RegulatingTerminal": "Nœud réglé",
 
-    "displayOverloadTable": "Afficher la table des surcharges en cas de dépassement de seuil\u00a0:",
-
     "LoadFlow": "Calcul de répartition",
     "Network": "Réseau",
     "SecurityAnalysis": "Analyse de sécurité",

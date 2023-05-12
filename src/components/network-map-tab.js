@@ -24,10 +24,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    PARAM_DISPLAY_OVERLOAD_TABLE,
-    PARAM_MAP_MANUAL_REFRESH,
-} from '../utils/config-params';
+import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
@@ -130,9 +127,6 @@ export const NetworkMapTab = ({
     */
     const temporaryGeoDataIdsRef = useRef();
 
-    const displayOverloadTable = useSelector(
-        (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
-    );
     const disabled = !visible || !isNodeBuilt(currentNode);
     const isRootNode = currentNode?.type === 'ROOT';
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
@@ -862,7 +856,7 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            {!isRootNode && displayOverloadTable && isLoadFlowValid() && (
+            {!isRootNode && isLoadFlowValid() && (
                 <div className={classes.divOverloadedLineView}>
                     <OverloadedLinesView
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
