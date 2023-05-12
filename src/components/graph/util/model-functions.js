@@ -105,6 +105,10 @@ export function isNodeInNotificationList(node, notificationIdList) {
     return notificationIdList.includes(node.id);
 }
 
+export function isSameNodeAndBuilt(node1, node2) {
+    return isSameNode(node1, node2) && isNodeBuilt(node1);
+}
+
 export function getAllChildren(elements, nodeId) {
     const selectedNode = elements.treeNodes.find((node) => node.id === nodeId);
     const directChildren = elements.treeNodes.filter(
