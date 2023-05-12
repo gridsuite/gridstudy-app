@@ -427,27 +427,39 @@ const EquipmentFilter = forwardRef(
                     </Grid>
                 </Grid>
                 {/* Equipments */}
-                <Grid item xs sx={{ width: '100%' }}>
-                    <Typography
-                        sx={{ marginBottom: theme.spacing(1) }}
-                        variant="subtitle1"
-                    >
-                        <FormattedMessage
-                            id={'DynamicSimulationCurveEquipment'}
-                        ></FormattedMessage>
-                        {` (${selectedRowsLength} / ${equipmentRowData.length})`}
-                    </Typography>
-                    <div className={clsx([theme.aggrid, classes.grid])}>
-                        <AgGridReact
-                            ref={equipmentsRef}
-                            rowData={equipmentRowData}
-                            columnDefs={columnDefs}
-                            defaultColDef={defaultColDef}
-                            rowSelection={'multiple'}
-                            onGridReady={onGridReady}
-                            onSelectionChanged={handleEquipmentSelectionChanged}
-                        ></AgGridReact>
-                    </div>
+                <Grid
+                    item
+                    container
+                    xs
+                    sx={{ width: '100%' }}
+                    direction={'column'}
+                >
+                    <Grid>
+                        <Typography
+                            sx={{ marginBottom: theme.spacing(1) }}
+                            variant="subtitle1"
+                        >
+                            <FormattedMessage
+                                id={'DynamicSimulationCurveEquipment'}
+                            ></FormattedMessage>
+                            {` (${selectedRowsLength} / ${equipmentRowData.length})`}
+                        </Typography>
+                    </Grid>
+                    <Grid xs>
+                        <div className={clsx([theme.aggrid, classes.grid])}>
+                            <AgGridReact
+                                ref={equipmentsRef}
+                                rowData={equipmentRowData}
+                                columnDefs={columnDefs}
+                                defaultColDef={defaultColDef}
+                                rowSelection={'multiple'}
+                                onGridReady={onGridReady}
+                                onSelectionChanged={
+                                    handleEquipmentSelectionChanged
+                                }
+                            ></AgGridReact>
+                        </div>
+                    </Grid>
                 </Grid>
             </>
         );

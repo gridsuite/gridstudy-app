@@ -221,28 +221,38 @@ const ModelFilter = forwardRef(
                     </Grid>
                 </Grid>
                 {/* Variables which found in models used in a mapping */}
-                <Grid item sx={{ width: '100%' }}>
-                    <Typography
-                        sx={{ marginBottom: theme.spacing(1) }}
-                        variant="subtitle1"
-                    >
-                        <FormattedMessage
-                            id={'DynamicSimulationCurveVariable'}
-                        ></FormattedMessage>
-                    </Typography>
-                    <div className={clsx([theme.aggrid, classes.grid])}>
-                        <CheckboxTreeview
-                            ref={variablesRef}
-                            data={filteredVariables}
-                            checkAll
-                            sx={{
-                                height: '480px',
-                                maxWidth: '500px',
-                                flexGrow: 1,
-                                overflow: 'auto',
-                            }}
-                        />
-                    </div>
+                <Grid
+                    item
+                    xs
+                    sx={{ width: '100%' }}
+                    container
+                    direction={'column'}
+                >
+                    <Grid>
+                        <Typography
+                            sx={{ marginBottom: theme.spacing(1) }}
+                            variant="subtitle1"
+                        >
+                            <FormattedMessage
+                                id={'DynamicSimulationCurveVariable'}
+                            ></FormattedMessage>
+                        </Typography>
+                    </Grid>
+                    <Grid xs>
+                        <div className={clsx([theme.aggrid, classes.grid])}>
+                            <CheckboxTreeview
+                                ref={variablesRef}
+                                data={filteredVariables}
+                                checkAll
+                                sx={{
+                                    maxHeight: '460px',
+                                    maxWidth: '500px',
+                                    flexGrow: 1,
+                                    overflow: 'auto',
+                                }}
+                            />
+                        </div>
+                    </Grid>
                 </Grid>
             </>
         );

@@ -17,7 +17,7 @@ import React, {
 } from 'react';
 import { makeStyles, useTheme } from '@mui/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
@@ -119,22 +119,29 @@ const CurvePreview = forwardRef((props, ref) => {
 
     return (
         <>
-            <Typography sx={{ marginBottom: theme.spacing(2) }} variant="h6">
-                <FormattedMessage
-                    id={'DynamicSimulationCurveToAdd'}
-                ></FormattedMessage>
-                {` (${selectedRowsLength} / ${rowData.length})`}
-            </Typography>
-            <div className={clsx([theme.aggrid, classes.grid])}>
-                <AgGridReact
-                    ref={gridRef}
-                    rowData={rowData}
-                    columnDefs={columnDefs}
-                    defaultColDef={defaultColDef}
-                    rowSelection={'multiple'}
-                    onSelectionChanged={onSelectionChanged}
-                ></AgGridReact>
-            </div>
+            <Grid item>
+                <Typography
+                    sx={{ marginBottom: theme.spacing(2) }}
+                    variant="h6"
+                >
+                    <FormattedMessage
+                        id={'DynamicSimulationCurveToAdd'}
+                    ></FormattedMessage>
+                    {` (${selectedRowsLength} / ${rowData.length})`}
+                </Typography>
+            </Grid>
+            <Grid xs>
+                <div className={clsx([theme.aggrid, classes.grid])}>
+                    <AgGridReact
+                        ref={gridRef}
+                        rowData={rowData}
+                        columnDefs={columnDefs}
+                        defaultColDef={defaultColDef}
+                        rowSelection={'multiple'}
+                        onSelectionChanged={onSelectionChanged}
+                    ></AgGridReact>
+                </div>
+            </Grid>
         </>
     );
 });

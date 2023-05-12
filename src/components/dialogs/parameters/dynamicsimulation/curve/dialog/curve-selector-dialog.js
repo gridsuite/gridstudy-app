@@ -136,7 +136,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
                             </Tooltip>
                         </Grid>
                     </Grid>
-                    <Grid item xs>
+                    <Grid item container xs direction={'column'}>
                         <CurvePreview ref={previewRef} />
                     </Grid>
                 </Grid>

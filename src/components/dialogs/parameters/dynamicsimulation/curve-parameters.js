@@ -21,8 +21,7 @@ import { GlobalFilter } from '../../../spreadsheet/global-filter';
 const useStyles = makeStyles((theme) => ({
     grid: {
         width: 'auto',
-        height: '400px',
-        position: 'relative',
+        height: '100%',
     },
 }));
 
@@ -134,46 +133,55 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
     return (
         curves && (
             <>
-                <Grid container item sx={{ marginBottom: theme.spacing(1) }}>
-                    <Grid container item xs={'auto'}>
-                        <GlobalFilter
-                            key={'curve-quick-filter'}
-                            ref={quickFilterRef}
-                            gridRef={gridRef}
-                            disabled={false}
-                        />
-                    </Grid>
+                <Grid container direction={'column'} sx={{ height: 460 }}>
+                    {/* header toolbar of the aggrid */}
                     <Grid
                         container
                         item
-                        xs={'auto'}
-                        sx={{
-                            justifyContent: 'flex-end',
-                            alignItems: 'flex-end',
-                            paddingLeft: theme.spacing(1),
-                        }}
+                        sx={{ marginBottom: theme.spacing(1) }}
                     >
-                        <Typography variant="subtitle1">
-                            {`(${selectedRowsLength} / ${rowData.length})`}
-                        </Typography>
+                        <Grid container item xs={'auto'}>
+                            <GlobalFilter
+                                key={'curve-quick-filter'}
+                                ref={quickFilterRef}
+                                gridRef={gridRef}
+                                disabled={false}
+                            />
+                        </Grid>
+                        <Grid
+                            container
+                            item
+                            xs={'auto'}
+                            sx={{
+                                justifyContent: 'flex-end',
+                                alignItems: 'flex-end',
+                                paddingLeft: theme.spacing(1),
+                            }}
+                        >
+                            <Typography variant="subtitle1">
+                                {`(${selectedRowsLength} / ${rowData.length})`}
+                            </Typography>
+                        </Grid>
+                        <GridButtons
+                            onAddButton={handleAdd}
+                            onDeleteButton={handleDelete}
+                        />
                     </Grid>
-                    <GridButtons
-                        onAddButton={handleAdd}
-                        onDeleteButton={handleDelete}
-                    />
+                    {/* aggrid for configured curves */}
+                    <Grid item xs>
+                        <div className={clsx([theme.aggrid, classes.grid])}>
+                            <AgGridReact
+                                ref={gridRef}
+                                rowData={rowData}
+                                columnDefs={columnDefs}
+                                defaultColDef={defaultColDef}
+                                rowSelection={'multiple'}
+                                onGridReady={onGridReady}
+                                onSelectionChanged={onSelectionChanged}
+                            ></AgGridReact>
+                        </div>
+                    </Grid>
                 </Grid>
-
-                <div className={clsx([theme.aggrid, classes.grid])}>
-                    <AgGridReact
-                        ref={gridRef}
-                        rowData={rowData}
-                        columnDefs={columnDefs}
-                        defaultColDef={defaultColDef}
-                        rowSelection={'multiple'}
-                        onGridReady={onGridReady}
-                        onSelectionChanged={onSelectionChanged}
-                    ></AgGridReact>
-                </div>
                 {open && (
                     <CurveSelectorDialog
                         open={open}
