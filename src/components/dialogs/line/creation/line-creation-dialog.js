@@ -31,6 +31,9 @@ import {
     LIMITS,
     TEMPORARY_LIMITS,
     TAB_HEADER,
+    TOTAL_RESISTANCE,
+    TOTAL_REACTANCE,
+    TOTAL_SUSCEPTANCE,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
@@ -74,6 +77,7 @@ import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import { formatTemporaryLimits } from 'components/utils/utils';
+import LineTypeSegmentDialog from '../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 
@@ -122,6 +126,13 @@ const LineCreationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
+    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] =
+        useState(false);
+
+    const handleCloseLineTypesCatalogDialog = () => {
+        setOpenLineTypesCatalogDialog(false);
+    };
+
     const formSchema = yup
         .object()
         .shape({
@@ -139,7 +150,7 @@ const LineCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, setValue } = formMethods;
 
     const fromSearchCopyToFormValues = (line) => {
         reset(
@@ -281,6 +292,29 @@ const LineCreationDialog = ({
             name: sanitizeString(name),
         }));
 
+    const handleLineSegmentsBuildSubmit = (data) => {
+        setValue(
+            `${CHARACTERISTICS}.${SERIES_RESISTANCE}`,
+            data[TOTAL_RESISTANCE],
+            { shouldDirty: true }
+        );
+        setValue(
+            `${CHARACTERISTICS}.${SERIES_REACTANCE}`,
+            data[TOTAL_REACTANCE],
+            { shouldDirty: true }
+        );
+        setValue(
+            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_1}`,
+            data[TOTAL_SUSCEPTANCE] / 2,
+            { shouldDirty: true }
+        );
+        setValue(
+            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_2}`,
+            data[TOTAL_SUSCEPTANCE] / 2,
+            { shouldDirty: true }
+        );
+    };
+
     const onSubmit = useCallback(
         (line) => {
             const header = line[TAB_HEADER];
@@ -403,6 +437,7 @@ const LineCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
+                onOpenCatalogDialog={() => setOpenLineTypesCatalogDialog(true)}
                 searchCopy={searchCopy}
                 PaperProps={{
                     sx: {
@@ -442,6 +477,11 @@ const LineCreationDialog = ({
                     equipmentType={EQUIPMENT_TYPES.LINE.type}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                />
+                <LineTypeSegmentDialog
+                    open={isOpenLineTypesCatalogDialog}
+                    onClose={handleCloseLineTypesCatalogDialog}
+                    onSave={handleLineSegmentsBuildSubmit}
                 />
             </ModificationDialog>
         </FormProvider>

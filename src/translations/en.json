@@ -881,5 +881,30 @@
     "YupNotTypeDefault": "Field value format is incorrect",
 
     "SubstationNotFound": "This substation does not exist in this network",
-    "VoltageLevelNotFound": "This voltage level does not exist in this network"
+    "VoltageLevelNotFound": "This voltage level does not exist in this network",
+
+    "CatalogButtonTooltip": "Open catalog",
+    "LineTypesCatalogDialogTitle": "Define line segments",
+    "AddSegment": "Add segment",
+    "AtLeastOneSegmentNeeded": "At least one line segment is needed",
+    "SelectType": "Type selection",
+    "SegmentDistance": "Length",
+    "SegmentDistanceGreaterThanZero": "The length must be greater than zero",
+    "SegmentTypeMissing": "Type missing",
+    "LineTypesCatalogFetchingError": "An error occurred while retrieving the line types catalog",
+    "lineTypes.resistanceLabel": "Resistance [Ω]",
+    "lineTypes.reactanceLabel": "Reactance [Ω]",
+    "lineTypes.susceptanceLabel": "Susceptance [μS]",
+    "lineTypes.type": "Type",
+    "lineTypes.voltage": "Voltage [kV]",
+    "lineTypes.conductorType": "Type of conductor",
+    "lineTypes.section": "Section [mm²]",
+    "lineTypes.conductorsNumber": "Number of conductors",
+    "lineTypes.circuitsNumber": "Number of circuits",
+    "lineTypes.groundWiresNumber": "Number of ground wires",
+    "lineTypes.linearResistance": "Linear resistance [Ω/km]",
+    "lineTypes.linearReactance": "Linear reactance [Ω/km]",
+    "lineTypes.linearCapacity": "Linear capacity [F/km]",
+    "lineTypes.category.aerial": "Overhead power lines",
+    "lineTypes.category.underground": "Underground cables"
 }

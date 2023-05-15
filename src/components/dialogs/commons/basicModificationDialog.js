@@ -20,12 +20,9 @@ import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
-import { useFormContext } from 'react-hook-form';
-import SubmitButton from './submitButton';
 
 /**
- * Generic Modification Dialog which manage basic common behaviors with react
- * hook form validation.
+ * Generic Modification Dialog which manage basic common behaviors
  * @param {String} titleId id for title translation
  * @param {EventListener} onClose Event to close the dialog
  * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
@@ -36,25 +33,19 @@ import SubmitButton from './submitButton';
  * @param {ReactElement} subtitle subtitle component to put inside DialogTitle
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
  * @param {Boolean} isDataFetching props to display loading
- * @param {CallbackEvent} onValidated callback when validation is successful
- * @param {CallbackEvent} onValidationError callback when validation failed
  */
-const ModificationDialog = ({
+const BasicModificationDialog = ({
     titleId,
     onClose,
     onClear,
     onSave,
-    onValidationError,
     disabledSave = false,
     onOpenCatalogDialog,
     searchCopy,
     subtitle,
-    onValidated,
     isDataFetching = false,
     ...dialogProps
 }) => {
-    const { handleSubmit } = useFormContext();
-
     const catalogButton = useButtonWithTooltip({
         label: 'CatalogButtonTooltip',
         handleClick: onOpenCatalogDialog,
@@ -84,15 +75,11 @@ const ModificationDialog = ({
         closeAndClear(event, 'cancelButtonClick');
     };
 
-    const handleValidate = (data) => {
-        onValidated && onValidated();
-        onSave(data);
+    const handleSubmit = (event) => {
+        onSave();
         // do not wait fetch response and close dialog, errors will be shown in snackbar.
-        closeAndClear(data, 'validateButtonClick');
+        closeAndClear(event, 'validateButtonClick');
     };
-
-    const handleValidationError = (errors) =>
-        onValidationError && onValidationError(errors);
 
     return (
         <Dialog
@@ -116,29 +103,23 @@ const ModificationDialog = ({
                 <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <SubmitButton
-                    onClick={handleSubmit(
-                        handleValidate,
-                        handleValidationError
-                    )}
-                    disabled={disabledSave}
-                />
+                <Button onClick={handleSubmit} disabled={disabledSave}>
+                    <FormattedMessage id="validate" />
+                </Button>
             </DialogActions>
         </Dialog>
     );
 };
 
-ModificationDialog.propTypes = {
+BasicModificationDialog.propTypes = {
     titleId: PropTypes.string.isRequired,
     onClose: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
-    onValidationError: PropTypes.func,
-    onValidated: PropTypes.func,
     disabledSave: PropTypes.bool,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
     isDataFetching: PropTypes.bool,
 };
 
-export default ModificationDialog;
+export default BasicModificationDialog;
