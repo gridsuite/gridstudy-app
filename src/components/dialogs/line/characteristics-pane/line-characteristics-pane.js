@@ -28,6 +28,7 @@ import {
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
+import { unitToMicroUnit } from 'utils/rounding';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
@@ -42,6 +43,8 @@ const LineCharacteristicsPane = ({
     currentNode,
     voltageLevelOptions,
     displayConnectivity,
+    lineToModify,
+    clearableFields = false,
 }) => {
     const classes = useStyles();
 
@@ -50,6 +53,8 @@ const LineCharacteristicsPane = ({
             name={`${id}.${SERIES_RESISTANCE}`}
             label="SeriesResistanceText"
             adornment={OhmAdornment}
+            previousValue={lineToModify?.r}
+            clearable={clearableFields}
         />
     );
 
@@ -58,6 +63,8 @@ const LineCharacteristicsPane = ({
             name={`${id}.${SERIES_REACTANCE}`}
             label="SeriesReactanceText"
             adornment={OhmAdornment}
+            previousValue={lineToModify?.x}
+            clearable={clearableFields}
         />
     );
 
@@ -66,6 +73,8 @@ const LineCharacteristicsPane = ({
             name={`${id}.${SHUNT_CONDUCTANCE_1}`}
             label="ShuntConductanceText"
             adornment={MicroSusceptanceAdornment}
+            previousValue={unitToMicroUnit(lineToModify?.g1)}
+            clearable={clearableFields}
         />
     );
 
@@ -74,6 +83,8 @@ const LineCharacteristicsPane = ({
             name={`${id}.${SHUNT_SUSCEPTANCE_1}`}
             label="ShuntSusceptanceText"
             adornment={MicroSusceptanceAdornment}
+            previousValue={unitToMicroUnit(lineToModify?.b1)}
+            clearable={clearableFields}
         />
     );
 
@@ -82,6 +93,8 @@ const LineCharacteristicsPane = ({
             name={`${id}.${SHUNT_CONDUCTANCE_2}`}
             label="ShuntConductanceText"
             adornment={MicroSusceptanceAdornment}
+            previousValue={unitToMicroUnit(lineToModify?.g2)}
+            clearable={clearableFields}
         />
     );
 
@@ -90,6 +103,8 @@ const LineCharacteristicsPane = ({
             name={`${id}.${SHUNT_SUSCEPTANCE_2}`}
             label="ShuntSusceptanceText"
             adornment={MicroSusceptanceAdornment}
+            previousValue={unitToMicroUnit(lineToModify?.b2)}
+            clearable={clearableFields}
         />
     );
 

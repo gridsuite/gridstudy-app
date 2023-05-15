@@ -31,7 +31,7 @@ import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
 import ErrorInput from '../rhf-inputs/error-inputs/error-input';
 import FieldErrorAlert from '../rhf-inputs/error-inputs/field-error-alert';
-import { ReadOnlyInput } from '../rhf-inputs/read-only-input';
+import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 
 export const MAX_ROWS_NUMBER = 100;
@@ -78,7 +78,7 @@ function MultiCheckbox({
 function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 1 }}>
-            <ReadOnlyInput
+            <RawReadOnlyInput
                 name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                 {...props}
             />
@@ -86,18 +86,28 @@ function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
     );
 }
 
-function EditableTableCell({ arrayFormName, rowIndex, column, ...props }) {
+function EditableTableCell({
+    arrayFormName,
+    rowIndex,
+    column,
+    previousValue,
+    valueModified,
+    ...props
+}) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 0.5 }}>
             {column.numeric && (
                 <TableNumericalInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    previousValue={previousValue}
+                    valueModified={valueModified}
                     {...props}
                 />
             )}
             {!column.numeric && (
                 <TableTextInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    previousValue={previousValue}
                     {...props}
                 />
             )}
@@ -117,6 +127,11 @@ const DndTable = ({
     disabled = false,
     withLeftButtons = true,
     withAddRowsDialog = true,
+    previousValues,
+    modifiedValues,
+    disableTableCell,
+    getPreviousValue,
+    isValueModified,
 }) => {
     const intl = useIntl();
 
@@ -142,7 +157,37 @@ const DndTable = ({
                 arrayFormName={arrayFormName}
                 rowIndex={rowIndex}
                 column={column}
-                disabled={disabled}
+                disabled={
+                    disableTableCell
+                        ? disableTableCell(
+                              rowIndex,
+                              column,
+                              arrayFormName,
+                              previousValues,
+                              modifiedValues
+                          )
+                        : disabled
+                }
+                previousValue={
+                    getPreviousValue
+                        ? getPreviousValue(
+                              rowIndex,
+                              column,
+                              arrayFormName,
+                              previousValues,
+                              modifiedValues
+                          )
+                        : undefined
+                }
+                valueModified={
+                    isValueModified
+                        ? isValueModified(
+                              rowIndex,
+                              arrayFormName,
+                              modifiedValues
+                          )
+                        : false
+                }
             />
         );
     }

@@ -31,6 +31,7 @@ const ExpandableInput = ({
     initialValue, // Initial value to display when we add a new entry to array
     getDeletionMark = null,
     deleteCallback = null,
+    alignItems = 'stretch', // default value for a flex container
 }) => {
     const classes = useStyles();
     const {
@@ -47,7 +48,13 @@ const ExpandableInput = ({
                 <ErrorInput name={name} InputField={MidFormError} />
             </Grid>
             {values.map((value, idx) => (
-                <Grid key={value.id} container spacing={2} item>
+                <Grid
+                    key={value.id}
+                    container
+                    spacing={2}
+                    item
+                    alignItems={alignItems}
+                >
                     <Field name={name} index={idx} {...fieldProps} />
                     <Grid item xs={1}>
                         <IconButton
@@ -75,7 +82,7 @@ const ExpandableInput = ({
             <span>
                 <Button
                     fullWidth
-                    className={classes.button}
+                    className={classes.button + ' ' + classes.paddingButton}
                     startIcon={<AddIcon />}
                     onClick={() => append(initialValue)}
                 >

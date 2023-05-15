@@ -17,6 +17,9 @@ export const MODIFICATION_TYPES = {
     LINE_CREATION: {
         type: 'LINE_CREATION',
     },
+    LINE_MODIFICATION: {
+        type: 'LINE_MODIFICATION',
+    },
     SUBSTATION_CREATION: {
         type: 'SUBSTATION_CREATION',
     },
@@ -25,6 +28,9 @@ export const MODIFICATION_TYPES = {
     },
     VOLTAGE_LEVEL_CREATION: {
         type: 'VOLTAGE_LEVEL_CREATION',
+    },
+    VOLTAGE_LEVEL_MODIFICATION: {
+        type: 'VOLTAGE_LEVEL_MODIFICATION',
     },
     SHUNT_COMPENSATOR_CREATION: {
         type: 'SHUNT_COMPENSATOR_CREATION',

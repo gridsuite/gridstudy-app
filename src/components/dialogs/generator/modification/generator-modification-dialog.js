@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
@@ -64,18 +64,22 @@ import {
     getRowEmptyFormData,
     REMOVE,
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 
 const GeneratorModificationDialog = ({
     editData,
     defaultIdValue,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [generatorToModify, setGeneratorToModify] = useState();
-    const shouldEmptyFormOnGeneratorIdChangeRef = useRef(!editData);
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     //in order to work properly, react hook form needs all fields to be set at least to null
     const completeReactiveCapabilityCurvePointsData = (
@@ -115,81 +119,6 @@ const GeneratorModificationDialog = ({
         }),
         [defaultIdValue]
     );
-
-    const formDataFromEditData = useMemo(
-        () =>
-            editData
-                ? {
-                      [EQUIPMENT_ID]: editData?.equipmentId,
-                      [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                      [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
-                      [MAXIMUM_ACTIVE_POWER]:
-                          editData?.maxActivePower?.value ?? null,
-                      [MINIMUM_ACTIVE_POWER]:
-                          editData?.minActivePower?.value ?? null,
-                      [RATED_NOMINAL_POWER]:
-                          editData?.ratedNominalPower?.value ?? null,
-                      [ACTIVE_POWER_SET_POINT]:
-                          editData?.activePowerSetpoint?.value ?? null,
-                      [VOLTAGE_REGULATION]:
-                          editData?.voltageRegulationOn?.value ?? null,
-                      [VOLTAGE_SET_POINT]:
-                          editData?.voltageSetpoint?.value ?? null,
-                      [REACTIVE_POWER_SET_POINT]:
-                          editData?.reactivePowerSetpoint?.value ?? null,
-                      [PLANNED_ACTIVE_POWER_SET_POINT]:
-                          editData?.plannedActivePowerSetPoint?.value ?? null,
-                      [STARTUP_COST]: editData?.startupCost?.value ?? null,
-                      [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
-                      [PLANNED_OUTAGE_RATE]:
-                          editData?.plannedOutageRate?.value ?? null,
-                      [FORCED_OUTAGE_RATE]:
-                          editData?.forcedOutageRate?.value ?? null,
-                      [FREQUENCY_REGULATION]:
-                          editData?.participate?.value ?? null,
-                      [DROOP]: editData?.droop?.value ?? null,
-                      [TRANSIENT_REACTANCE]:
-                          editData?.transientReactance?.value ?? null,
-                      [TRANSFORMER_REACTANCE]:
-                          editData?.stepUpTransformerReactance?.value ?? null,
-                      [VOLTAGE_REGULATION_TYPE]:
-                          editData?.voltageRegulationType?.value ?? null,
-                      [MINIMUM_REACTIVE_POWER]:
-                          editData?.minimumReactivePower?.value ?? null,
-                      [MAXIMUM_REACTIVE_POWER]:
-                          editData?.maximumReactivePower?.value ?? null,
-                      [Q_PERCENT]: editData?.qPercent?.value ?? null,
-                      [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                          !editData?.reactiveCapabilityCurve?.value &&
-                          (editData?.minimumReactivePower ||
-                              editData?.maximumReactivePower)
-                              ? 'MINMAX'
-                              : 'CURVE',
-                      [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                          editData?.reactiveCapabilityCurvePoints.length > 0
-                              ? completeReactiveCapabilityCurvePointsData(
-                                    editData?.reactiveCapabilityCurvePoints
-                                )
-                              : [getRowEmptyFormData(), getRowEmptyFormData()],
-                      ...getRegulatingTerminalFormData({
-                          equipmentId: editData?.regulatingTerminalId?.value,
-                          equipmentType:
-                              editData?.regulatingTerminalType?.value,
-                          voltageLevelId:
-                              editData?.regulatingTerminalVlId?.value,
-                      }),
-                  }
-                : null,
-        [editData]
-    );
-
-    const defaultFormData = useMemo(() => {
-        if (!editData) {
-            return emptyFormData;
-        } else {
-            return formDataFromEditData;
-        }
-    }, [editData, emptyFormData, formDataFromEditData]);
 
     const schema = useMemo(
         () =>
@@ -242,11 +171,74 @@ const GeneratorModificationDialog = ({
     );
 
     const formMethods = useForm({
-        defaultValues: defaultFormData,
+        defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
 
     const { reset, getValues, setValue } = formMethods;
+
+    const fromEditDataToFormValues = useCallback(
+        (editData) => {
+            reset({
+                [EQUIPMENT_ID]: editData?.equipmentId,
+                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
+                [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
+                [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
+                [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value ?? null,
+                [RATED_NOMINAL_POWER]:
+                    editData?.ratedNominalPower?.value ?? null,
+                [ACTIVE_POWER_SET_POINT]:
+                    editData?.activePowerSetpoint?.value ?? null,
+                [VOLTAGE_REGULATION]:
+                    editData?.voltageRegulationOn?.value ?? null,
+                [VOLTAGE_SET_POINT]: editData?.voltageSetpoint?.value ?? null,
+                [REACTIVE_POWER_SET_POINT]:
+                    editData?.reactivePowerSetpoint?.value ?? null,
+                [PLANNED_ACTIVE_POWER_SET_POINT]:
+                    editData?.plannedActivePowerSetPoint?.value ?? null,
+                [STARTUP_COST]: editData?.startupCost?.value ?? null,
+                [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
+                [PLANNED_OUTAGE_RATE]:
+                    editData?.plannedOutageRate?.value ?? null,
+                [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
+                [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
+                [DROOP]: editData?.droop?.value ?? null,
+                [TRANSIENT_REACTANCE]:
+                    editData?.transientReactance?.value ?? null,
+                [TRANSFORMER_REACTANCE]:
+                    editData?.stepUpTransformerReactance?.value ?? null,
+                [VOLTAGE_REGULATION_TYPE]:
+                    editData?.voltageRegulationType?.value ?? null,
+                [MINIMUM_REACTIVE_POWER]:
+                    editData?.minimumReactivePower?.value ?? null,
+                [MAXIMUM_REACTIVE_POWER]:
+                    editData?.maximumReactivePower?.value ?? null,
+                [Q_PERCENT]: editData?.qPercent?.value ?? null,
+                [REACTIVE_CAPABILITY_CURVE_CHOICE]: editData
+                    ?.reactiveCapabilityCurve?.value
+                    ? 'CURVE'
+                    : 'MINMAX',
+                [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                    editData?.reactiveCapabilityCurvePoints.length > 0
+                        ? completeReactiveCapabilityCurvePointsData(
+                              editData?.reactiveCapabilityCurvePoints
+                          )
+                        : [getRowEmptyFormData(), getRowEmptyFormData()],
+                ...getRegulatingTerminalFormData({
+                    equipmentId: editData?.regulatingTerminalId?.value,
+                    equipmentType: editData?.regulatingTerminalType?.value,
+                    voltageLevelId: editData?.regulatingTerminalVlId?.value,
+                }),
+            });
+        },
+        [reset]
+    );
+
+    useEffect(() => {
+        if (editData) {
+            fromEditDataToFormValues(editData);
+        }
+    }, [fromEditDataToFormValues, editData]);
 
     //this method empties the form, and let us pass custom data that we want to set
     const setValuesAndEmptyOthers = useCallback(
@@ -315,6 +307,7 @@ const GeneratorModificationDialog = ({
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
+                setDataFetchStatus(FetchStatus.RUNNING);
                 fetchEquipmentInfos(
                     studyUuid,
                     currentNodeUuid,
@@ -329,7 +322,8 @@ const GeneratorModificationDialog = ({
                             const previousReactiveCapabilityCurveTable =
                                 value.reactiveCapabilityCurvePoints;
                             if (
-                                shouldEmptyFormOnGeneratorIdChangeRef?.current
+                                editData?.equipmentId !==
+                                getValues(`${EQUIPMENT_ID}`)
                             ) {
                                 emptyFormAndFormatReactiveCapabilityCurveTable(
                                     value,
@@ -337,53 +331,63 @@ const GeneratorModificationDialog = ({
                                 );
                             } else {
                                 // on first render, we need to adjust the UI for the reactive capability curve table
-                                const currentReactiveCapabilityCurveTable =
-                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
-                                const sizeDiff =
-                                    previousReactiveCapabilityCurveTable.length -
-                                    currentReactiveCapabilityCurveTable.length;
+                                // we need to check if the generator we fetch has reactive capability curve table
+                                if (previousReactiveCapabilityCurveTable) {
+                                    const currentReactiveCapabilityCurveTable =
+                                        getValues(
+                                            REACTIVE_CAPABILITY_CURVE_TABLE
+                                        );
 
-                                // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
-                                if (sizeDiff > 0) {
-                                    for (let i = 0; i < sizeDiff; i++) {
-                                        insertEmptyRowAtSecondToLastIndex(
+                                    const sizeDiff =
+                                        previousReactiveCapabilityCurveTable.length -
+                                        currentReactiveCapabilityCurveTable.length;
+
+                                    // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
+                                    if (sizeDiff > 0) {
+                                        for (let i = 0; i < sizeDiff; i++) {
+                                            insertEmptyRowAtSecondToLastIndex(
+                                                currentReactiveCapabilityCurveTable
+                                            );
+                                        }
+                                        setValue(
+                                            REACTIVE_CAPABILITY_CURVE_TABLE,
                                             currentReactiveCapabilityCurveTable
                                         );
-                                    }
-                                    setValue(
-                                        REACTIVE_CAPABILITY_CURVE_TABLE,
-                                        currentReactiveCapabilityCurveTable
-                                    );
-                                } else if (sizeDiff < 0) {
-                                    // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
-                                    for (let i = 0; i > sizeDiff; i--) {
-                                        insertEmptyRowAtSecondToLastIndex(
-                                            previousReactiveCapabilityCurveTable
-                                        );
+                                    } else if (sizeDiff < 0) {
+                                        // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
+                                        for (let i = 0; i > sizeDiff; i--) {
+                                            insertEmptyRowAtSecondToLastIndex(
+                                                previousReactiveCapabilityCurveTable
+                                            );
+                                        }
                                     }
                                 }
                             }
-                            shouldEmptyFormOnGeneratorIdChangeRef.current = true;
                             setGeneratorToModify({
                                 ...value,
                                 reactiveCapabilityCurveTable:
                                     previousReactiveCapabilityCurveTable,
                             });
                         }
+                        setDataFetchStatus(FetchStatus.SUCCEED);
                     })
-                    .catch(() => setGeneratorToModify(null));
+                    .catch(() => {
+                        setGeneratorToModify(null);
+                        setDataFetchStatus(FetchStatus.FAILED);
+                    });
             } else {
                 setValuesAndEmptyOthers();
                 setGeneratorToModify(null);
             }
         },
         [
+            studyUuid,
+            currentNodeUuid,
+            editData?.equipmentId,
+            getValues,
             emptyFormAndFormatReactiveCapabilityCurveTable,
             setValue,
-            getValues,
             setValuesAndEmptyOthers,
-            currentNodeUuid,
-            studyUuid,
         ]
     );
 
@@ -540,6 +544,16 @@ const GeneratorModificationDialog = ({
         ]
     );
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            ((editDataFetchStatus === FetchStatus.SUCCEED ||
+                editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED ||
+                    dataFetchStatus === FetchStatus.FAILED)),
+        delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in GeneratorModificationForm and right after receiving the editData without waiting
+    });
+
     return (
         <FormProvider
             validationSchema={schema}
@@ -553,6 +567,13 @@ const GeneratorModificationDialog = ({
                 aria-labelledby="dialog-modification-generator"
                 maxWidth={'md'}
                 titleId="ModifyGenerator"
+                open={open}
+                keepMounted={true}
+                isDataFetching={
+                    isUpdate &&
+                    (editDataFetchStatus === FetchStatus.RUNNING ||
+                        dataFetchStatus === FetchStatus.RUNNING)
+                }
                 {...dialogProps}
             >
                 <GeneratorModificationForm

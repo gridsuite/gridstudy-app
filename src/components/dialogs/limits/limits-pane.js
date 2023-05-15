@@ -34,7 +34,15 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LimitsPane = ({ id = LIMITS }) => {
+const LimitsPane = ({
+    id = LIMITS,
+    equipmentToModify,
+    modifiedEquipment,
+    disableTableCell,
+    clearableFields,
+    getTemporaryLimitPreviousValue,
+    isTemporaryLimitModified,
+}) => {
     const intl = useIntl();
     const classes = useStyles();
 
@@ -50,14 +58,14 @@ const LimitsPane = ({ id = LIMITS }) => {
             {
                 label: 'TemporaryLimitDuration',
                 dataKey: TEMPORARY_LIMIT_DURATION,
-                initialValue: undefined,
+                initialValue: null,
                 editable: true,
                 numeric: true,
             },
             {
                 label: 'TemporaryLimitValue',
                 dataKey: TEMPORARY_LIMIT_VALUE,
-                initialValue: undefined,
+                initialValue: null,
                 editable: true,
                 numeric: true,
             },
@@ -89,6 +97,8 @@ const LimitsPane = ({ id = LIMITS }) => {
             name={`${id}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`}
             label="PermanentCurrentLimitText"
             adornment={AmpereAdornment}
+            previousValue={equipmentToModify?.currentLimits1?.permanentLimit}
+            clearable={clearableFields}
         />
     );
 
@@ -97,6 +107,8 @@ const LimitsPane = ({ id = LIMITS }) => {
             name={`${id}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`}
             label="PermanentCurrentLimitText"
             adornment={AmpereAdornment}
+            previousValue={equipmentToModify?.currentLimits2?.permanentLimit}
+            clearable={clearableFields}
         />
     );
 
@@ -121,6 +133,15 @@ const LimitsPane = ({ id = LIMITS }) => {
                 tableHeight={270}
                 withLeftButtons={false}
                 withAddRowsDialog={false}
+                previousValues={
+                    equipmentToModify?.currentLimits1?.temporaryLimits
+                }
+                modifiedValues={
+                    modifiedEquipment?.currentLimits1?.temporaryLimits
+                }
+                disableTableCell={disableTableCell}
+                getPreviousValue={getTemporaryLimitPreviousValue}
+                isValueModified={isTemporaryLimitModified}
             />
             <GridSection title="Side2" />
             <Grid container spacing={2}>
@@ -136,6 +157,15 @@ const LimitsPane = ({ id = LIMITS }) => {
                     tableHeight={270}
                     withLeftButtons={false}
                     withAddRowsDialog={false}
+                    previousValues={
+                        equipmentToModify?.currentLimits2?.temporaryLimits
+                    }
+                    modifiedValues={
+                        modifiedEquipment?.currentLimits2?.temporaryLimits
+                    }
+                    disableTableCell={disableTableCell}
+                    getPreviousValue={getTemporaryLimitPreviousValue}
+                    isValueModified={isTemporaryLimitModified}
                 />
             </Grid>
         </>
