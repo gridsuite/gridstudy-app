@@ -235,6 +235,7 @@
     "LimitType": "Type de limite",
     "LimitSide": "Côté",
     "LimitName": "Nom",
+    "Limit_name": "Seuil",
     "OverloadedLine": "Ligne",
     "PermanentLimitName": "IST",
     "LineLoad": "Charge",

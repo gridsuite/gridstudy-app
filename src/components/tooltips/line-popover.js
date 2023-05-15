@@ -185,7 +185,7 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
                                         <TableRow>
                                             <TableCell>
                                                 {intl.formatMessage({
-                                                    id: 'Intensity',
+                                                    id: 'CURRENT',
                                                 })}
                                             </TableCell>
                                             <TableCell>
@@ -240,7 +240,7 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
                                         <TableRow>
                                             <TableCell>
                                                 {intl.formatMessage({
-                                                    id: 'LimitType',
+                                                    id: 'Limit_name',
                                                 })}
                                             </TableCell>
                                             <TableCell>
