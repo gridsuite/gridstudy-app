@@ -127,6 +127,7 @@ function SingleLineDiagramContent(props) {
 
     const showEquipmentMenu = useCallback(
         (equipmentId, equipmentType, svgId, x, y) => {
+            handleTogglePopover(false, null, null);
             setEquipmentMenu({
                 position: [x, y],
                 equipmentId: equipmentId,
@@ -135,7 +136,7 @@ function SingleLineDiagramContent(props) {
                 display: true,
             });
         },
-        []
+        [handleTogglePopover]
     );
 
     const closeEquipmentMenu = useCallback(() => {
