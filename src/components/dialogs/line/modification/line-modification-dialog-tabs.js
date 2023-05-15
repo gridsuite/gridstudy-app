@@ -146,6 +146,7 @@ const LineModificationDialogTabs = ({
             <Box
                 hidden={tabIndex !== LineCreationDialogTab.CHARACTERISTICS_TAB}
                 p={1}
+                sx={{ marginTop: -2 }}
             >
                 <LineCharacteristicsPane
                     displayConnectivity={false}
