@@ -45,7 +45,7 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
     };
 
     const checkValue = (value) => {
-        if (value) {
+        if (value != null) {
             return value;
         } else {
             return '';
