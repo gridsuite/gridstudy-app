@@ -109,11 +109,9 @@ const NetworkMap = (props) => {
     const classes = useStyles();
 
     useEffect(() => {
-        fetchMapBoxToken()
-            .then((token) => setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN))
-            .catch(() => {
-                setMapBoxToken(FALLBACK_MAPBOX_TOKEN);
-            });
+        fetchMapBoxToken().then((token) =>
+            setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN)
+        );
     }, []);
 
     useEffect(() => {
