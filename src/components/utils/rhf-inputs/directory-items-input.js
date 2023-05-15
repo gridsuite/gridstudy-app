@@ -20,7 +20,7 @@ import { useController, useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import ErrorInput from './error-inputs/error-input';
 import MidFormError from './error-inputs/mid-form-error';
-import { ReadOnlyInput } from './read-only-input';
+import { RawReadOnlyInput } from './read-only/raw-read-only-input';
 import { NAME } from '../field-constants';
 import { isFieldRequired } from '../utils';
 
@@ -106,7 +106,7 @@ const DirectoryItemsInput = ({
                                 label={
                                     <OverflowableText
                                         text={
-                                            <ReadOnlyInput
+                                            <RawReadOnlyInput
                                                 name={`${name}.${index}.${NAME}`}
                                             />
                                         }

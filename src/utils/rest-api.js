@@ -3276,3 +3276,11 @@ export function generationDispatch(
         body,
     });
 }
+
+export function getLineTypesCatalog() {
+    console.info(`get line types catalog`);
+    const url =
+        PREFIX_NETWORK_MODIFICATION_QUERIES +
+        '/v1/network-modifications/catalog/line_types';
+    return backendFetchJson(url);
+}
