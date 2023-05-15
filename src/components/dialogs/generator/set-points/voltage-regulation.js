@@ -12,7 +12,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import FloatInput from '../../../utils/rhf-inputs/float-input';
 import {
     gridItem,
@@ -32,35 +32,46 @@ const VoltageRegulation = ({
     previousValues,
 }) => {
     const intl = useIntl();
-    const getPreviousRegulationType = useCallback(
-        (previousValues) => {
-            if (previousValues?.voltageRegulatorOn) {
-                return previousValues?.regulatingTerminalVlId ||
-                    previousValues?.regulatingTerminalConnectableId
-                    ? intl.formatMessage({
-                          id: REGULATION_TYPES.DISTANT.label,
-                      })
-                    : intl.formatMessage({
-                          id: REGULATION_TYPES.LOCAL.label,
-                      });
-            } else {
-                return null;
-            }
-        },
-        [intl]
-    );
+    const previousRegulationType = useMemo(() => {
+        if (!previousValues?.voltageRegulatorOn) {
+            return null;
+        }
+        if (
+            previousValues?.regulatingTerminalVlId ||
+            previousValues?.regulatingTerminalConnectableId
+        ) {
+            return REGULATION_TYPES.DISTANT.id;
+        } else {
+            return REGULATION_TYPES.LOCAL.id;
+        }
+    }, [previousValues]);
 
     const voltageRegulationType = useWatch({
         name: VOLTAGE_REGULATION_TYPE,
     });
 
+    const translatedPreviousRegulationLabel = useMemo(() => {
+        switch (previousRegulationType) {
+            case REGULATION_TYPES.LOCAL.id:
+                return intl.formatMessage({
+                    id: REGULATION_TYPES.LOCAL.label,
+                });
+            case REGULATION_TYPES.DISTANT.id:
+                return intl.formatMessage({
+                    id: REGULATION_TYPES.DISTANT.label,
+                });
+            default:
+                return null;
+        }
+    }, [intl, previousRegulationType]);
+
     const isDistantRegulation = useMemo(() => {
         return (
             voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
-            getPreviousRegulationType(previousValues) ===
-                REGULATION_TYPES.DISTANT.label
+            (!voltageRegulationType &&
+                previousRegulationType === REGULATION_TYPES.DISTANT.id)
         );
-    }, [getPreviousRegulationType, previousValues, voltageRegulationType]);
+    }, [previousRegulationType, voltageRegulationType]);
 
     const voltageRegulationTypeField = (
         <SelectInput
@@ -68,7 +79,7 @@ const VoltageRegulation = ({
             name={VOLTAGE_REGULATION_TYPE}
             label={'RegulationTypeText'}
             size={'small'}
-            previousValue={getPreviousRegulationType(previousValues)}
+            previousValue={translatedPreviousRegulationLabel}
         />
     );
 
