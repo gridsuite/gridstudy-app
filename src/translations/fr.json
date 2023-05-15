@@ -622,6 +622,7 @@
     "SubstationModificationError": "Erreur lors de la modification d'un site",
 
     "CreateVoltageLevel": "Créer un poste",
+    "ModifyVoltageLevel": "Modifier un poste",
     "Substation": "Site",
     "BusBarSections": "Sections de jeu de barre",
     "BusBarCount": "Nb de barres",
@@ -646,6 +647,7 @@
     "SameHorizAndVertPos": "Au moins deux SJBs ont les mêmes positions horizontale et verticale",
     "DuplicateId": "Identifiant non unique",
     "CouplingOmnibusBetweenSameBusbar": "Couplage/omnibus interdit entre le même SJB",
+    "VoltageLevelModificationError": "Erreur lors de la modification d'un poste",
 
     "LineSplitWithVoltageLevel": "Créer une coupure",
     "LineToSplit": "Liaison coupée",
