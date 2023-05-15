@@ -23,16 +23,14 @@ import {
     FILTER_TYPE,
     useGroupFilter,
 } from './spreadsheet/filter-panel/use-group-filter';
-import { AppBar, Grid, IconButton, TextField } from '@mui/material';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import CloseIcon from '@mui/icons-material/Close';
+import { SearchBar } from './spreadsheet/search-bar/search-bar';
+import { useSearchBar } from './spreadsheet/search-bar/use-search-bar';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
     const theme = useTheme();
     const gridRef = useRef();
-    const [bottomBarOpen, setBottomBarOpen] = useState(false);
+    const [searchBarOpen, setSearchBarOpen] = useState(false);
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
 
@@ -40,7 +38,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         const openSearch = (e) => {
             if (e.ctrlKey && e.key === 'g') {
                 e.preventDefault();
-                setBottomBarOpen(true);
+                setSearchBarOpen(true);
             }
         };
         document.addEventListener('keydown', openSearch);
@@ -84,7 +82,11 @@ const ShortCircuitAnalysisResult = ({ result }) => {
 
     const focusCell = (index, columnName) => {
         gridRef.current?.api.ensureIndexVisible(index, 'middle');
-        gridRef.current?.api.setFocusedCell(index, columnName);
+        // ensureIndexVisible seems to be an asynchronous method, because it takes some times to scroll to the desired index
+        // setFocusCell will do nothing if the selected cell is not visible within the screen, we need to wait for the scroll to be done
+        setTimeout(() => {
+            gridRef.current?.api.setFocusedCell(index, columnName);
+        }, 100);
     };
 
     const { filterResult, updateFilter } = useGroupFilter(
@@ -217,67 +219,26 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         () => ({
             //suppressMovable: true,
             sortable: true,
+            filter: true,
         }),
         []
     );
 
-    const rows = useMemo(
+    const filteredFlattenedResults = useMemo(
         () => filterResult(flattenResult(result)),
         [result, filterResult, flattenResult]
     );
 
-    const filterHiddenValuesFromRows = useCallback(
-        (fullRows) =>
-            fullRows.map((fullRow) => {
-                const rowWithoutHiddenValue = {};
-                // column definition depends on current AGGrid state
-                // if user is moving/hiding the columns, this state will be up to date
-                const currentColumnDefinition =
-                    gridRef.current?.api.getColumnDefs();
+    const [
+        calculateSearchBarResults,
+        searchInput,
+        setSearchInput,
+        searchResult,
+    ] = useSearchBar(gridRef);
 
-                const displayedColumnsField = currentColumnDefinition
-                    .filter((column) => column.hide !== true)
-                    .map((column) => column.field);
-
-                const rowKeys = Object.keys(fullRow);
-
-                displayedColumnsField.forEach((displayedField) => {
-                    if (rowKeys.includes(displayedField)) {
-                        rowWithoutHiddenValue[displayedField] =
-                            rowKeys[displayedField];
-                    }
-                });
-
-                // for (const [key, value] of Object.entries(fullRow)) {
-                //     if (displayedColumnsField.includes(key)) {
-                //         rowWithoutHiddenValue[key] = value;
-                //     }
-                // }
-
-                return rowWithoutHiddenValue;
-            }),
-        []
-    );
-
-    const [setRowsToSearchFrom, searchInput, setSearchInput, searchResult] =
-        useSearchBar();
-
-    const printFilterSortedRows = useCallback(() => {
-        const results = [];
-        gridRef.current?.api.forEachNodeAfterFilterAndSort((rowNode, index) => {
-            results.push(rowNode.data);
-        });
-
-        console.log('COLUMNS', gridRef.current?.api.getColumnDefs());
-
-        console.log(
-            'NOFILTER FILTER',
-            results,
-            filterHiddenValuesFromRows(results),
-            rows
-        );
-        setRowsToSearchFrom(filterHiddenValuesFromRows(results));
-    }, [rows]);
+    useEffect(() => {
+        calculateSearchBarResults();
+    }, [filteredFlattenedResults, searchInput, calculateSearchBarResults]);
 
     const renderResult = () => {
         return (
@@ -285,17 +246,18 @@ const ShortCircuitAnalysisResult = ({ result }) => {
             shortCircuitNotif && (
                 <CustomAGGrid
                     ref={gridRef}
-                    rowData={rows}
+                    rowData={filteredFlattenedResults}
                     columnDefs={columns}
                     getRowStyle={getRowStyle}
                     defaultColDef={defaultColDef}
-                    onSortChanged={printFilterSortedRows}
+                    onSortChanged={calculateSearchBarResults}
+                    onFilterChanged={calculateSearchBarResults}
+                    onColumnMoved={calculateSearchBarResults}
                 />
             )
         );
     };
 
-    console.log('SEARCH RESULTS', searchResult);
     return (
         <>
             <Box m={1}>
@@ -305,221 +267,18 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 />
             </Box>
             {renderResult()}
-            {bottomBarOpen && (
-                <Box height={16} m={3}>
-                    <SearchBar
-                        searchResult={searchResult}
-                        setSearchInput={setSearchInput}
-                        searchInput={searchInput}
-                        onChange={focusCell}
-                        onClose={() => setBottomBarOpen(false)}
-                    />
-                </Box>
+            {searchBarOpen && (
+                <SearchBar
+                    searchResult={searchResult}
+                    setSearchInput={(value) => {
+                        setSearchInput(value);
+                    }}
+                    searchInput={searchInput}
+                    focusCellCallback={focusCell}
+                    onClose={() => setSearchBarOpen(false)}
+                />
             )}
         </>
-    );
-};
-
-const useSearchBar = () => {
-    const [rowsToSearchFrom, setRowsToSearchFrom] = useState([]);
-    const [searchInput, setSearchInput] = useState('');
-    const [searchResult, setSearchResult] = useState([]);
-
-    const searchOccurencesInObjectValues = (object, str) => {
-        const result = [];
-
-        for (const [key, value] of Object.entries(object)) {
-            if (value?.toString().indexOf(str) >= 0) {
-                result.push(key);
-            }
-        }
-
-        return result;
-    };
-
-    const handleSearchInputChange = useCallback(
-        (value) => {
-            if (!value) {
-                setSearchResult([]);
-                return;
-            }
-
-            console.log('ROWS', rowsToSearchFrom);
-            const newSearchResult = [];
-            rowsToSearchFrom.forEach((row, index) =>
-                searchOccurencesInObjectValues(row, value).forEach((r) =>
-                    newSearchResult.push([index, r])
-                )
-            );
-
-            setSearchResult(newSearchResult);
-        },
-        [rowsToSearchFrom]
-    );
-
-    useEffect(() => {
-        console.log('SEARCH INPUT', searchInput);
-        handleSearchInputChange(searchInput);
-    }, [searchInput, handleSearchInputChange]);
-
-    return [setRowsToSearchFrom, searchInput, setSearchInput, searchResult];
-};
-
-const SearchBar = ({
-    searchInput,
-    setSearchInput,
-    searchResult,
-    onChange,
-    onClose,
-}) => {
-    const searchInputRef = useRef();
-    const [counter, setCounter] = useState(-1);
-    // const [searchResult, setSearchResult] = useState([]);
-
-    // const handleSearchInputChange = useCallback(
-    //     (value) => {
-    //         if (!value) {
-    //             setSearchResult([]);
-    //             setCounter(-1);
-    //             return;
-    //         }
-
-    //         const newSearchResult = [];
-    //         rows.forEach((row, index) =>
-    //             searchOccurencesInObjectValues(row, value).forEach((r) =>
-    //                 newSearchResult.push([index, r])
-    //             )
-    //         );
-
-    //         setSearchResult(newSearchResult);
-    //         setCounter(-1);
-    //     },
-    //     [rows]
-    // );
-
-    // useEffect(() => {
-    //     handleSearchInputChange(searchInput);
-    // }, [searchInput, handleSearchInputChange]);
-
-    // const searchOccurencesInObjectValues = (object, str) => {
-    //     const result = [];
-    //     console.log('object', object);
-
-    //     for (const [key, value] of Object.entries(object)) {
-    //         console.log(value);
-    //         if (value?.toString().indexOf(str) >= 0) {
-    //             result.push(key);
-    //         }
-    //     }
-
-    //     return result;
-    // };
-
-    const updateCounter = useCallback(
-        (action) => {
-            if (action === 'NEXT') {
-                setCounter((oldCounter) => {
-                    const newCounter =
-                        oldCounter + 1 < searchResult.length
-                            ? oldCounter + 1
-                            : 0;
-                    onChange(
-                        searchResult[newCounter][0],
-                        searchResult[newCounter][1]
-                    );
-                    return newCounter;
-                });
-            } else if (action === 'PREV') {
-                setCounter((oldCounter) => {
-                    const newCounter =
-                        oldCounter - 1 >= 0
-                            ? oldCounter - 1
-                            : searchResult.length - 1;
-                    onChange(
-                        searchResult[newCounter][0],
-                        searchResult[newCounter][1]
-                    );
-                    return newCounter;
-                });
-            } else if (action === 'RESET') {
-                setCounter(-1);
-            }
-        },
-        [searchResult, onChange]
-    );
-
-    useEffect(() => {
-        updateCounter('RESET');
-    }, [searchResult, updateCounter]);
-
-    useEffect(() => {
-        const openSearch = (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                updateCounter('NEXT');
-            }
-        };
-        document.addEventListener('keydown', openSearch);
-
-        searchInputRef.current.focus();
-
-        return () => document.removeEventListener('keydown', openSearch);
-    }, [updateCounter]);
-
-    const noResult = useMemo(() => searchResult.length === 0, [searchResult]);
-
-    return (
-        <AppBar style={{ bottom: 0, top: 'auto' }}>
-            <Grid
-                spacing={2}
-                p={1}
-                alignItems={'center'}
-                direction="row"
-                container
-            >
-                <Grid xs={6} item>
-                    <TextField
-                        inputRef={searchInputRef}
-                        size="small"
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        label="Rechercher"
-                    />
-                    <IconButton
-                        disabled={noResult}
-                        onClick={() => updateCounter('PREV')}
-                    >
-                        <KeyboardArrowUpIcon />
-                    </IconButton>
-                    <IconButton
-                        disabled={noResult}
-                        onClick={() => updateCounter('NEXT')}
-                    >
-                        <KeyboardArrowDownIcon />
-                    </IconButton>
-                    {searchInput.length !== 0 &&
-                        (noResult ? (
-                            <>Aucun résultat</>
-                        ) : (
-                            <>
-                                {counter === -1 ? (
-                                    <>{searchResult.length} occurences</>
-                                ) : (
-                                    <>
-                                        Occurence {counter + 1} sur{' '}
-                                        {searchResult.length}
-                                    </>
-                                )}
-                            </>
-                        ))}
-                </Grid>
-                <Grid xs={6} item textAlign={'right'}>
-                    <IconButton onClick={onClose}>
-                        <CloseIcon />
-                    </IconButton>
-                </Grid>
-            </Grid>
-        </AppBar>
     );
 };
 
