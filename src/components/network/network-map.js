@@ -50,13 +50,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const FALLBACK_MAPBOX_TOKEN =
+    'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
 let MAPBOX_TOKEN;
-fetchMapBoxToken().then(
-    (token) =>
-        (MAPBOX_TOKEN = token
-            ? token
-            : 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug')
-);
+fetchMapBoxToken()
+    .then((token) => (MAPBOX_TOKEN = token ? token : FALLBACK_MAPBOX_TOKEN))
+    .catch(() => {
+        MAPBOX_TOKEN = FALLBACK_MAPBOX_TOKEN;
+    });
 
 const SUBSTATION_LAYER_PREFIX = 'substationLayer';
 const LINE_LAYER_PREFIX = 'lineLayer';
