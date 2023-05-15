@@ -22,8 +22,15 @@ import {
     CHARACTERISTICS,
     LIMITS,
     TEMPORARY_LIMITS,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
     fetchNetworkElementInfos,
@@ -41,12 +48,15 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
 } from '../../limits/limits-pane-utils';
-import LineModificationForm from './line-modification-form';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsValidationSchema,
     getCharacteristicsWithOutConnectivityFormData,
 } from '../characteristics-pane/line-characteristics-pane-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { formatTemporaryLimits } from 'components/utils/utils';
+import LineModificationDialogTabs from './line-modification-dialog-tabs';
+import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
@@ -83,21 +93,9 @@ const LineModificationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState(null);
-
-    const sanitizeLimitNames = (temporaryLimitList) =>
-        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
-            ...temporaryLimit,
-            name: sanitizeString(name),
-        }));
-
-    const formatTemporaryLimits = (temporaryLimits) =>
-        temporaryLimits?.map((limit) => {
-            return {
-                name: limit?.name,
-                value: limit?.value,
-                acceptableDuration: limit?.acceptableDuration,
-            };
-        });
+    const [tabIndex, setTabIndex] = useState(
+        LineCreationDialogTab.CHARACTERISTICS_TAB
+    );
 
     const emptyFormData = useMemo(
         () => ({
@@ -126,65 +124,120 @@ const LineModificationDialog = ({
         })
         .required();
 
-    const formDataFromEditData = useMemo(
-        () =>
-            editData
-                ? {
-                      [EQUIPMENT_ID]: editData.equipmentId,
-                      [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
-                      ...getCharacteristicsWithOutConnectivityFormData({
-                          seriesResistance:
-                              editData.seriesResistance?.value ?? null,
-                          seriesReactance:
-                              editData.seriesReactance?.value ?? null,
-                          shuntConductance1: unitToMicroUnit(
-                              editData.shuntConductance1?.value ?? null
-                          ),
-                          shuntSusceptance1: unitToMicroUnit(
-                              editData.shuntSusceptance1?.value ?? null
-                          ),
-                          shuntConductance2: unitToMicroUnit(
-                              editData.shuntConductance2?.value ?? null
-                          ),
-                          shuntSusceptance2: unitToMicroUnit(
-                              editData.shuntSusceptance2?.value ?? null
-                          ),
-                      }),
-                      ...getLimitsFormData({
-                          permanentLimit1:
-                              editData.currentLimits1?.permanentLimit,
-                          permanentLimit2:
-                              editData.currentLimits2?.permanentLimit,
-                          temporaryLimits1: addSelectedFieldToRows(
-                              formatTemporaryLimits(
-                                  editData.currentLimits1?.temporaryLimits
-                              )
-                          ),
-                          temporaryLimits2: addSelectedFieldToRows(
-                              formatTemporaryLimits(
-                                  editData.currentLimits2?.temporaryLimits
-                              )
-                          ),
-                      }),
-                  }
-                : null,
-        [editData]
-    );
-
-    const defaultFormData = useMemo(() => {
-        if (!editData) {
-            return emptyFormData;
-        } else {
-            return formDataFromEditData;
-        }
-    }, [editData, emptyFormData, formDataFromEditData]);
-
     const methods = useForm({
-        defaultValues: defaultFormData,
+        defaultValues: emptyFormData,
         resolver: yupResolver(schema),
     });
 
-    const { reset, getValues, setValue } = methods;
+    const sanitizeLimitNames = (temporaryLimitList) =>
+        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
+            ...temporaryLimit,
+            name: sanitizeString(name),
+        }));
+
+    const addModificationTypeToTemporaryLimits = useCallback(
+        (
+            temporaryLimits,
+            temporaryLimitsToModify,
+            currentModifiedTemporaryLimits
+        ) =>
+            temporaryLimits.map((limit) => {
+                const limitWithSameName = temporaryLimitsToModify?.find(
+                    (limitToModify) => limitToModify.name === limit.name
+                );
+                if (limitWithSameName) {
+                    const currentLimitWithSameName =
+                        currentModifiedTemporaryLimits?.find(
+                            (limitToModify) =>
+                                limitToModify?.name === limitWithSameName?.name
+                        );
+                    if (
+                        (currentLimitWithSameName?.modificationType ===
+                            TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
+                            isNodeBuilt(currentNode)) ||
+                        currentLimitWithSameName?.modificationType ===
+                            TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+                    ) {
+                        return {
+                            ...limit,
+                            modificationType:
+                                currentLimitWithSameName.modificationType,
+                        };
+                    } else {
+                        return limitWithSameName.value === limit.value
+                            ? {
+                                  ...limit,
+                                  modificationType: null,
+                              }
+                            : {
+                                  ...limit,
+                                  modificationType:
+                                      TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED,
+                              };
+                    }
+                } else {
+                    return {
+                        ...limit,
+                        modificationType:
+                            TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED,
+                    };
+                }
+            }),
+        [currentNode]
+    );
+
+    const editDataRef = useRef(editData);
+    useEffect(() => {
+        editDataRef.current = editData;
+    }, [editData]);
+
+    const { reset, getValues } = methods;
+
+    const fromEditDataToFormValues = useCallback(
+        (line) => {
+            reset({
+                [EQUIPMENT_ID]: line.equipmentId,
+                [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
+                ...getCharacteristicsWithOutConnectivityFormData({
+                    seriesResistance: line.seriesResistance?.value ?? null,
+                    seriesReactance: line.seriesReactance?.value ?? null,
+                    shuntConductance1: unitToMicroUnit(
+                        line.shuntConductance1?.value ?? null
+                    ),
+                    shuntSusceptance1: unitToMicroUnit(
+                        line.shuntSusceptance1?.value ?? null
+                    ),
+                    shuntConductance2: unitToMicroUnit(
+                        line.shuntConductance2?.value ?? null
+                    ),
+                    shuntSusceptance2: unitToMicroUnit(
+                        line.shuntSusceptance2?.value ?? null
+                    ),
+                }),
+                ...getLimitsFormData({
+                    permanentLimit1: line.currentLimits1?.permanentLimit,
+                    permanentLimit2: line.currentLimits2?.permanentLimit,
+                    temporaryLimits1: addSelectedFieldToRows(
+                        formatTemporaryLimits(
+                            line.currentLimits1?.temporaryLimits
+                        )
+                    ),
+                    temporaryLimits2: addSelectedFieldToRows(
+                        formatTemporaryLimits(
+                            line.currentLimits2?.temporaryLimits
+                        )
+                    ),
+                }),
+            });
+        },
+        [reset]
+    );
+
+    useEffect(() => {
+        if (editDataRef.current) {
+            fromEditDataToFormValues(editDataRef.current);
+        }
+    }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
         (line) => {
@@ -203,14 +256,22 @@ const LineModificationDialog = ({
                 microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_2]),
                 limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
                 limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
+                addModificationTypeToTemporaryLimits(
+                    sanitizeLimitNames(
+                        limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
+                    ),
+                    lineToModify?.currentLimits1?.temporaryLimits,
+                    editDataRef.current?.currentLimits1?.temporaryLimits
                 ),
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
+                addModificationTypeToTemporaryLimits(
+                    sanitizeLimitNames(
+                        limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
+                    ),
+                    lineToModify?.currentLimits2?.temporaryLimits,
+                    editDataRef.current?.currentLimits2?.temporaryLimits
                 ),
-                editData ? true : false,
-                editData ? editData.uuid : undefined
+                !!editDataRef.current,
+                editDataRef.current?.uuid
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -218,18 +279,18 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [
+            studyUuid,
+            currentNodeUuid,
+            addModificationTypeToTemporaryLimits,
+            lineToModify,
+            snackError,
+        ]
     );
 
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [emptyFormData, reset]);
-
-    useEffect(() => {
-        if (editData) {
-            setValue(EQUIPMENT_ID, editData?.equipmentId);
-        }
-    }, [editData, setValue]);
 
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
@@ -247,7 +308,7 @@ const LineModificationDialog = ({
                         if (line) {
                             setLineToModify(line);
                             if (
-                                editData?.equipmentId !==
+                                editDataRef.current?.equipmentId !==
                                 getValues(`${EQUIPMENT_ID}`)
                             ) {
                                 reset(
@@ -256,13 +317,17 @@ const LineModificationDialog = ({
                                         ...getLimitsFormData({
                                             temporaryLimits1:
                                                 addSelectedFieldToRows(
-                                                    line.currentLimits1
-                                                        ?.temporaryLimits
+                                                    formatTemporaryLimits(
+                                                        line.currentLimits1
+                                                            ?.temporaryLimits
+                                                    )
                                                 ),
                                             temporaryLimits2:
                                                 addSelectedFieldToRows(
-                                                    line.currentLimits2
-                                                        ?.temporaryLimits
+                                                    formatTemporaryLimits(
+                                                        line.currentLimits2
+                                                            ?.temporaryLimits
+                                                    )
                                                 ),
                                         }),
                                     }),
@@ -278,11 +343,12 @@ const LineModificationDialog = ({
                     });
             } else {
                 setLineToModify(null);
-
+                //we set the editDataRef to null to avoid to have the old editData when we clear the form
+                editDataRef.current = null;
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, editData, getValues, reset, emptyFormData]
+        [studyUuid, currentNodeUuid, getValues, reset, emptyFormData]
     );
 
     const onValidationError = (errors) => {
@@ -306,6 +372,18 @@ const LineModificationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
+    const headerAndTabs = (
+        <LineModificationDialogHeader
+            studyUuid={studyUuid}
+            currentNode={currentNode}
+            onEquipmentIdChange={onEquipmentIdChange}
+            lineToModify={lineToModify}
+            tabIndexesWithError={tabIndexesWithError}
+            tabIndex={tabIndex}
+            setTabIndex={setTabIndex}
+        />
+    );
+
     return (
         <FormProvider
             validationSchema={schema}
@@ -320,6 +398,7 @@ const LineModificationDialog = ({
                 aria-labelledby="dialog-modify-line"
                 maxWidth={'md'}
                 titleId="ModifyLine"
+                subtitle={headerAndTabs}
                 open={open}
                 keepMounted={true}
                 isDataFetching={
@@ -334,12 +413,12 @@ const LineModificationDialog = ({
                 }}
                 {...dialogProps}
             >
-                <LineModificationForm
+                <LineModificationDialogTabs
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    onEquipmentIdChange={onEquipmentIdChange}
                     lineToModify={lineToModify}
-                    tabIndexesWithError={tabIndexesWithError}
+                    modifiedLine={editDataRef.current}
+                    tabIndex={tabIndex}
                 />
             </ModificationDialog>
         </FormProvider>

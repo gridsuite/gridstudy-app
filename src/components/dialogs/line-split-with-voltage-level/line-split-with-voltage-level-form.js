@@ -22,7 +22,7 @@ import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
-import VoltageLevelCreationDialog from '../voltage-level-creation/voltage-level-creation-dialog';
+import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 
 const LineSplitWithVoltageLevelForm = ({
     studyUuid,
