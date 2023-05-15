@@ -29,6 +29,7 @@ import {
 } from '../../../../utils/rest-api';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
+import { unitToKiloUnit } from '../../../../utils/rounding';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -85,9 +86,9 @@ const VoltageLevelModificationDialog = ({
                     [HIGH_VOLTAGE_LIMIT]:
                         editData?.highVoltageLimit?.value ?? null,
                     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                        editData?.ipMin?.value ?? null,
+                        unitToKiloUnit(editData?.ipMin?.value) ?? null,
                     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                        editData?.ipMax?.value ?? null,
+                        unitToKiloUnit(editData?.ipMax?.value) ?? null,
                 },
                 { keepDefaultValues: true }
             );
@@ -101,6 +102,13 @@ const VoltageLevelModificationDialog = ({
                 fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId)
                     .then((voltageLevel) => {
                         if (voltageLevel) {
+                            //We convert values of low short circuit current limit and high short circuit current limit from A to KA
+                            voltageLevel.ipMax = unitToKiloUnit(
+                                voltageLevel?.ipMax
+                            );
+                            voltageLevel.ipMin = unitToKiloUnit(
+                                voltageLevel?.ipMin
+                            );
                             setVoltageLevelInfos(voltageLevel);
                             setDataFetchStatus(FetchStatus.SUCCEED);
 
