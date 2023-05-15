@@ -26,7 +26,7 @@ import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
-import VoltageLevelCreationDialog from '../voltage-level-creation/voltage-level-creation-dialog';
+import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 
 const LineAttachToVoltageLevelForm = ({

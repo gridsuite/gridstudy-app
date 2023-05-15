@@ -79,7 +79,6 @@
     "Feeders": "Départs",
     "LineFlowColorMode": "Mode de coloration des lignes\u00a0:",
     "NominalVoltage": "Tension nominale",
-    "Overload": "Surcharge",
     "Overloads": "Surcharges",
     "AlertThresholdLabel": "Seuil d'affichage des lignes avant surcharge (%)\u00a0:",
     "intensity": "intensité",
@@ -232,6 +231,13 @@
     "HIGH_SHORT_CIRCUIT_CURRENT": "Icc max",
 
     "LimitType": "Type de limite",
+    "LimitSide": "Côté",
+    "LimitName": "Nom",
+    "OverloadedLine": "Ligne",
+    "PermanentLimitName": "IST",
+    "LineLoad": "Charge",
+    "LimitAcceptableDuration": "Durée",
+    "ErrFetchOverloadedLinesMsg": "Une erreur est survenue lors la récupération des lignes en surcharge",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
     "ComputationStatus": "Statut",
@@ -595,6 +601,7 @@
     "SubstationModificationError": "Erreur lors de la modification d'un site",
 
     "CreateVoltageLevel": "Créer un poste",
+    "ModifyVoltageLevel": "Modifier un poste",
     "Substation": "Site",
     "BusBarSections": "Sections de jeu de barre",
     "BusBarCount": "Nb de barres",
@@ -619,6 +626,7 @@
     "SameHorizAndVertPos": "Au moins deux SJBs ont les mêmes positions horizontale et verticale",
     "DuplicateId": "Identifiant non unique",
     "CouplingOmnibusBetweenSameBusbar": "Couplage/omnibus interdit entre le même SJB",
+    "VoltageLevelModificationError": "Erreur lors de la modification d'un poste",
     "TopologyNotRetrieved": "La topologie du poste n'a pas pu être récupérée",
 
     "LineSplitWithVoltageLevel": "Créer une coupure",
@@ -777,6 +785,12 @@
     "pasteNetworkModificationNodeBelow": "Coller le nœud en dessous dans la branche courante",
     "pasteNetworkModificationNodeOnNewBranch": "Coller le nœud dans une nouvelle branche",
 
+    "copyNetworkModificationSubtree": "Copier le sous arbre",
+    "pasteNetworkModificationSubtree": "Coller le sous arbre",
+    "cutNetworkModificationSubtree": "Couper le sous arbre",
+    "cancelCutNetworkModificationSubtree": "Annuler couper le sous arbre",
+    "removeNetworkModificationSubtree": "Supprimer le sous arbre",
+
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Nœud non réalisé",
 
@@ -891,5 +905,30 @@
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
-    "NetworkElementNotFound": "L'élément de réseau \"{elementId}\" n'existe pas"
+    "NetworkElementNotFound": "L'élément de réseau \"{elementId}\" n'existe pas",
+
+    "CatalogButtonTooltip": "Ouvrir le catalogue",
+    "LineTypesCatalogDialogTitle": "Définir les segments de ligne",
+    "AddSegment": "Ajouter segment",
+    "AtLeastOneSegmentNeeded": "Au moins un segment de ligne est nécessaire",
+    "SelectType": "Sélection type",
+    "SegmentDistance": "Longueur",
+    "SegmentDistanceGreaterThanZero": "La longueur doit être supérieure à zéro",
+    "SegmentTypeMissing": "Type manquant",
+    "LineTypesCatalogFetchingError": "Une erreur est survenue lors de la récupération du catalogue de types de ligne",
+    "lineTypes.resistanceLabel": "Résistance [Ω]",
+    "lineTypes.reactanceLabel": "Réactance [Ω]",
+    "lineTypes.susceptanceLabel": "Susceptance [μS]",
+    "lineTypes.type": "Type",
+    "lineTypes.voltage": "Tension de construction [kV]",
+    "lineTypes.conductorType": "Type conducteur",
+    "lineTypes.section": "Section [mm²]",
+    "lineTypes.conductorsNumber": "Nb conducteurs par faisceau",
+    "lineTypes.circuitsNumber": "Nb ternes",
+    "lineTypes.groundWiresNumber": "Nb câbles de garde",
+    "lineTypes.linearResistance": "Résistance linéique directe [Ω/km]",
+    "lineTypes.linearReactance": "Réactance linéique directe [Ω/km]",
+    "lineTypes.linearCapacity": "Capacité linéique directe [F/km]",
+    "lineTypes.category.aerial": "Lignes aériennes",
+    "lineTypes.category.underground": "Câbles souterrains"
 }
