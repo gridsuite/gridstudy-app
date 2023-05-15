@@ -29,6 +29,7 @@ import {
     isNodeBuilt,
     isNodeReadOnly,
     isNodeRenamed,
+    isSameNodeAndBuilt,
 } from './graph/util/model-functions';
 import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
@@ -62,6 +63,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const NODE_CHANGED_ERROR =
+    'Node has changed or is not built anymore. The Promise is rejected.';
 export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
@@ -375,6 +378,14 @@ export const NetworkMapTab = ({
         [linePositionsAreEqual]
     );
 
+    const checkNodeConsistency = (node) => {
+        if (!isSameNodeAndBuilt(currentNodeRef.current, node)) {
+            console.debug(NODE_CHANGED_ERROR);
+            return false;
+        }
+        return true;
+    };
+
     const loadMissingGeoData = useCallback(() => {
         const notFoundSubstationIds = getEquipmentsNotFoundIds(
             geoDataRef.current.substationPositionsById,
@@ -404,8 +415,13 @@ export const NetworkMapTab = ({
                 fetchLinePositions
             );
 
+            const nodeBeforeFetch = currentNodeRef.current;
             Promise.all([missingSubstationPositions, missingLinesPositions])
                 .then((positions) => {
+                    // If the node changed or if it is not built anymore, we ignore the results returned by the fetch
+                    if (!checkNodeConsistency(nodeBeforeFetch)) {
+                        return Promise(true); // break
+                    }
                     const [fetchedSubstationPositions, fetchedLinePositions] =
                         positions;
                     const substationsDataChanged =
@@ -448,6 +464,11 @@ export const NetworkMapTab = ({
                 })
                 .catch(function (error) {
                     console.error(error.message);
+
+                    // we display the error to the user only if the node is built
+                    if (!checkNodeConsistency(nodeBeforeFetch)) {
+                        return;
+                    }
                     setErrorMessage(
                         intlRef.current.formatMessage(
                             { id: 'geoDataLoadingFail' },
@@ -473,11 +494,16 @@ export const NetworkMapTab = ({
     const loadAllGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         setWaitingLoadData(true);
+        const nodeBeforeFetch = currentNodeRef.current;
 
         const substationPositionsDone = fetchSubstationPositions(
             studyUuid,
             currentNodeRef.current?.id
         ).then((data) => {
+            if (!checkNodeConsistency(nodeBeforeFetch)) {
+                return Promise(true); // break
+            }
+
             console.info(`Received substations of study '${studyUuid}'...`);
             const newGeoData = new GeoData(
                 new Map(),
@@ -492,6 +518,10 @@ export const NetworkMapTab = ({
             ? Promise.resolve()
             : fetchLinePositions(studyUuid, currentNodeRef.current?.id).then(
                   (data) => {
+                      if (!checkNodeConsistency(nodeBeforeFetch)) {
+                          return Promise(true); // break
+                      }
+
                       console.info(`Received lines of study '${studyUuid}'...`);
                       const newGeoData = new GeoData(
                           geoDataRef.current?.substationPositionsById ||
@@ -510,6 +540,11 @@ export const NetworkMapTab = ({
             })
             .catch(function (error) {
                 console.error(error.message);
+
+                // we display the error to the user only if the node is built
+                if (!checkNodeConsistency(nodeBeforeFetch)) {
+                    return;
+                }
                 setErrorMessage(
                     intlRef.current.formatMessage(
                         { id: 'geoDataLoadingFail' },
@@ -590,10 +625,7 @@ export const NetworkMapTab = ({
                 }
             });
             updatedLines.then((values) => {
-                if (
-                    currentNodeAtReloadCalling?.id ===
-                    currentNodeRef.current?.id
-                ) {
+                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateLines(
                         mapEquipments.checkAndGetValues(values),
                         isFullReload
@@ -602,10 +634,7 @@ export const NetworkMapTab = ({
                 }
             });
             updatedHvdcLines.then((values) => {
-                if (
-                    currentNodeAtReloadCalling?.id ===
-                    currentNodeRef.current?.id
-                ) {
+                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateHvdcLines(
                         mapEquipments.checkAndGetValues(values),
                         isFullReload
@@ -634,7 +663,7 @@ export const NetworkMapTab = ({
     const updateMapEquipmentsAndGeoData = useCallback(() => {
         const currentNodeAtReloadCalling = currentNodeRef.current;
         updateMapEquipments(currentNodeAtReloadCalling).then(() => {
-            if (currentNodeAtReloadCalling === currentNodeRef.current) {
+            if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                 loadGeoData();
             }
         });

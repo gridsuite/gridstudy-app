@@ -112,6 +112,10 @@ export const VoltageAdornment = {
     position: 'end',
     text: 'kV',
 };
+export const KilometerAdornment = {
+    position: 'end',
+    text: 'km',
+};
 export const filledTextField = {
     variant: 'filled',
 };

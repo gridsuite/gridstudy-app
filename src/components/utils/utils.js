@@ -98,3 +98,55 @@ export const buildNewBusbarSections = (
     }
     return newBusbarSections;
 };
+
+export const formatTemporaryLimits = (temporaryLimits) =>
+    temporaryLimits?.map((limit) => {
+        return {
+            name: limit?.name ?? '',
+            value: limit?.value ?? null,
+            acceptableDuration: limit?.acceptableDuration ?? null,
+        };
+    });
+
+export function calculateResistance(distance, linearResistance) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearResistance === undefined ||
+        isNaN(linearResistance)
+    ) {
+        return 0;
+    }
+    return Number(distance) * Number(linearResistance);
+}
+
+export function calculateReactance(distance, linearReactance) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearReactance === undefined ||
+        isNaN(linearReactance)
+    ) {
+        return 0;
+    }
+    return Number(distance) * Number(linearReactance);
+}
+
+export function calculateSusceptance(distance, linearCapacity) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearCapacity === undefined ||
+        isNaN(linearCapacity)
+    ) {
+        return 0;
+    }
+    return (
+        Number(distance) *
+        Number(linearCapacity) *
+        2 *
+        Math.PI *
+        50 *
+        Math.pow(10, 6)
+    );
+}

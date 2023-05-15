@@ -4,6 +4,7 @@
     "network_modifications/SUBSTATION_CREATION": "Creating substation {computedLabel}",
     "network_modifications/SUBSTATION_MODIFICATION": "Modifying substation {computedLabel}",
     "network_modifications/VOLTAGE_LEVEL_CREATION": "Creating voltage level {computedLabel}",
+    "network_modifications/VOLTAGE_LEVEL_MODIFICATION": "Modifying voltage level {computedLabel}",
     "network_modifications/LINE_SPLIT_WITH_VOLTAGE_LEVEL": "Splitting a line {computedLabel}",
     "network_modifications/LINE_ATTACH_TO_VOLTAGE_LEVEL": "Attaching line {computedLabel}",
     "network_modifications/LINES_ATTACH_TO_SPLIT_LINES": "Attaching lines to splitting lines {computedLabel}",

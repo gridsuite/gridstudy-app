@@ -38,7 +38,6 @@ import {
     toIntValue,
     useStyles,
 } from '../../dialogs/dialogUtils';
-import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
@@ -251,7 +250,7 @@ export const useDoubleValue = ({
     });
 };
 
-export const useButtonWithTooltip = ({ handleClick, label }) => {
+export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
     const classes = useStyles();
 
     return useMemo(() => {
@@ -265,11 +264,11 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
                 classes={{ tooltip: classes.tooltip }}
             >
                 <IconButton style={{ padding: '2px' }} onClick={handleClick}>
-                    <FindInPageIcon />
+                    {icon}
                 </IconButton>
             </Tooltip>
         );
-    }, [label, handleClick, classes.tooltip]);
+    }, [label, handleClick, classes.tooltip, icon]);
 };
 
 export const useOptionalEnumValue = (props) => {
