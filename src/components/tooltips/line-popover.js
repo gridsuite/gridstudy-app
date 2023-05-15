@@ -44,35 +44,47 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
         setLineInfo(null);
     };
 
+    const checkValue = (value) => {
+        if (value) {
+            return value;
+        } else {
+            return '';
+        }
+    };
+
     const generateRows = (currentLimits, side) => {
         return (
             <>
                 {currentLimits && (
                     <>
                         {currentLimits.permanentLimit && (
-                            <TableRow>
+                            <TableRow key={currentLimits.permanentLimit + side}>
                                 <TableCell>
                                     {intl.formatMessage({
                                         id: 'PermanentCurrentLimitText',
                                     })}
                                 </TableCell>
                                 <TableCell>
-                                    {currentLimits.permanentLimit}
+                                    {checkValue(currentLimits.permanentLimit)}
                                 </TableCell>
                                 <TableCell>
                                     {loadFlowStatus === RunningStatus.SUCCEED &&
-                                        Math.round(
-                                            side === '1'
-                                                ? (lineInfo.i1 * 100) /
-                                                      currentLimits.permanentLimit
-                                                : (lineInfo.i2 * 100) /
-                                                      currentLimits.permanentLimit
+                                        checkValue(
+                                            Math.round(
+                                                side === '1'
+                                                    ? (lineInfo.i1 * 100) /
+                                                          currentLimits.permanentLimit
+                                                    : (lineInfo.i2 * 100) /
+                                                          currentLimits.permanentLimit
+                                            )
                                         )}
                                 </TableCell>
                                 <TableCell>
-                                    {side === '1'
-                                        ? lineInfo.voltageLevelId1
-                                        : lineInfo.voltageLevelId2}
+                                    {checkValue(
+                                        side === '1'
+                                            ? lineInfo.voltageLevelId1
+                                            : lineInfo.voltageLevelId2
+                                    )}
                                 </TableCell>
                             </TableRow>
                         )}
@@ -82,32 +94,44 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
                                 (temporaryLimit) =>
                                     //This check is needed since some temporary limits are defined with no value so the row makes no sense
                                     temporaryLimit.value && (
-                                        <TableRow>
+                                        <TableRow
+                                            key={temporaryLimit.name + side}
+                                        >
                                             <TableCell>
-                                                {temporaryLimit.name}
+                                                {checkValue(
+                                                    temporaryLimit.name
+                                                )}
                                             </TableCell>
                                             <TableCell>
-                                                {temporaryLimit.value}
+                                                {checkValue(
+                                                    temporaryLimit.value
+                                                )}
                                             </TableCell>
                                             <TableCell>
                                                 {loadFlowStatus ===
                                                     RunningStatus.SUCCEED &&
                                                     (side === '1'
-                                                        ? Math.round(
-                                                              (lineInfo.i1 *
-                                                                  100) /
-                                                                  temporaryLimit.value
+                                                        ? checkValue(
+                                                              Math.round(
+                                                                  (lineInfo.i1 *
+                                                                      100) /
+                                                                      temporaryLimit.value
+                                                              )
                                                           )
-                                                        : Math.round(
-                                                              (lineInfo.i2 *
-                                                                  100) /
-                                                                  temporaryLimit.value
+                                                        : checkValue(
+                                                              Math.round(
+                                                                  (lineInfo.i2 *
+                                                                      100) /
+                                                                      temporaryLimit.value
+                                                              )
                                                           ))}
                                             </TableCell>
                                             <TableCell>
-                                                {side === '1'
-                                                    ? lineInfo.voltageLevelId1
-                                                    : lineInfo.voltageLevelId2}
+                                                {checkValue(
+                                                    side === '1'
+                                                        ? lineInfo.voltageLevelId1
+                                                        : lineInfo.voltageLevelId2
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     )
@@ -165,10 +189,14 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
                                                 })}
                                             </TableCell>
                                             <TableCell>
-                                                {lineInfo.voltageLevelId1}
+                                                {checkValue(
+                                                    lineInfo.voltageLevelId1
+                                                )}
                                             </TableCell>
                                             <TableCell>
-                                                {lineInfo.voltageLevelId2}
+                                                {checkValue(
+                                                    lineInfo.voltageLevelId2
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -182,13 +210,21 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
                                             <TableCell>
                                                 {loadFlowStatus ===
                                                 RunningStatus.SUCCEED
-                                                    ? Math.round(lineInfo.i1)
+                                                    ? checkValue(
+                                                          Math.round(
+                                                              lineInfo.i1
+                                                          )
+                                                      )
                                                     : null}
                                             </TableCell>
                                             <TableCell>
                                                 {loadFlowStatus ===
                                                 RunningStatus.SUCCEED
-                                                    ? Math.round(lineInfo.i2)
+                                                    ? checkValue(
+                                                          Math.round(
+                                                              lineInfo.i2
+                                                          )
+                                                      )
                                                     : null}
                                             </TableCell>
                                         </TableRow>
