@@ -52,18 +52,12 @@ const useStyles = makeStyles((theme) => ({
 
 const FALLBACK_MAPBOX_TOKEN =
     'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
-let MAPBOX_TOKEN;
-fetchMapBoxToken()
-    .then((token) => (MAPBOX_TOKEN = token || FALLBACK_MAPBOX_TOKEN))
-    .catch(() => {
-        MAPBOX_TOKEN = FALLBACK_MAPBOX_TOKEN;
-    });
-
 const SUBSTATION_LAYER_PREFIX = 'substationLayer';
 const LINE_LAYER_PREFIX = 'lineLayer';
 const LABEL_SIZE = 12;
 
 const NetworkMap = (props) => {
+    const [mapBoxToken, setMapBoxToken] = useState();
     const [labelsVisible, setLabelsVisible] = useState(false);
     const [showLineFlow, setShowLineFlow] = useState(true);
     const [deck, setDeck] = useState(null);
@@ -113,6 +107,14 @@ const NetworkMap = (props) => {
     }, [props.mapEquipments?.hvdcLines, props.mapEquipments?.lines]);
 
     const classes = useStyles();
+
+    useEffect(() => {
+        fetchMapBoxToken()
+            .then((token) => setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN))
+            .catch(() => {
+                setMapBoxToken(FALLBACK_MAPBOX_TOKEN);
+            });
+    }, []);
 
     useEffect(() => {
         if (centerOnSubstation === null) {
@@ -467,11 +469,11 @@ const NetworkMap = (props) => {
                         </div>
                     )}
 
-                {MAPBOX_TOKEN && (
+                {mapBoxToken && (
                     <StaticMap
                         mapStyle={theme.mapboxStyle}
                         preventStyleDiffing={true}
-                        mapboxApiAccessToken={MAPBOX_TOKEN}
+                        mapboxApiAccessToken={mapBoxToken}
                     >
                         {renderTooltip()}
                     </StaticMap>
