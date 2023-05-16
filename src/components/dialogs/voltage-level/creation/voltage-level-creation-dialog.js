@@ -38,12 +38,12 @@ import { createVoltageLevel } from 'utils/rest-api';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
-import { controlCouplingOmnibusBetweenSections } from './voltage-level-creation-utils';
+import { controlCouplingOmnibusBetweenSections } from '../voltage-level-creation-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
+import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 
 /**
@@ -81,7 +81,14 @@ const formSchema = yup.object().shape({
     [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
     [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.number().nullable(),
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.number().nullable(),
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+        .number()
+        .nullable()
+        .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
+            is: (lowShortCircuitCurrentLimit) =>
+                lowShortCircuitCurrentLimit != null,
+            then: (schema) => schema.required(),
+        }),
     [BUS_BAR_COUNT]: yup.number().min(1).nullable().required(),
     [SECTION_COUNT]: yup.number().min(1).nullable().required(),
     [SWITCHES_BETWEEN_SECTIONS]: yup

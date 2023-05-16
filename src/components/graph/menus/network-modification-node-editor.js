@@ -51,7 +51,7 @@ import {
     setModificationsInProgress,
 } from '../../../redux/actions';
 import LoadScalingDialog from 'components/dialogs/load-scaling/load-scaling-dialog';
-import VoltageLevelCreationDialog from 'components/dialogs/voltage-level-creation/voltage-level-creation-dialog';
+import VoltageLevelCreationDialog from 'components/dialogs/voltage-level/creation/voltage-level-creation-dialog';
 import GeneratorCreationDialog from 'components/dialogs/generator/creation/generator-creation-dialog';
 import DeleteVoltageLevelOnLineDialog from 'components/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
 import DeleteAttachingLineDialog from 'components/dialogs/delete-attaching-line/delete-attaching-line-dialog';
@@ -62,6 +62,7 @@ import SubstationCreationDialog from 'components/dialogs/substation/creation/sub
 import SubstationModificationDialog from 'components/dialogs/substation/modification/substation-modification-dialog';
 import GenerationDispatchDialog from 'components/dialogs/generation-dispatch/generation-dispatch-dialog';
 import LineModificationDialog from 'components/dialogs/line/modification/line-modification-dialog';
+import VoltageLevelModificationDialog from '../../dialogs/voltage-level/modification/voltage-level-modification-dialog';
 import { UPDATE_TYPE } from 'components/network/constants';
 import { FetchStatus } from 'utils/rest-api';
 
@@ -277,6 +278,11 @@ const NetworkModificationNodeEditor = () => {
         VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
             dialog: () => adapt(VoltageLevelCreationDialog),
+            icon: <AddIcon />,
+        },
+        VOLTAGE_LEVEL_MODIFICATION: {
+            label: 'ModifyVoltageLevel',
+            dialog: () => adapt(VoltageLevelModificationDialog),
             icon: <AddIcon />,
         },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
