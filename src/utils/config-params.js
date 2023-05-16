@@ -17,7 +17,6 @@ export const PARAM_LINE_PARALLEL_PATH = 'lineParallelPath';
 export const PARAM_LINE_FLOW_MODE = 'lineFlowMode';
 export const PARAM_LINE_FLOW_COLOR_MODE = 'lineFlowColorMode';
 export const PARAM_LINE_FLOW_ALERT_THRESHOLD = 'lineFlowAlertThreshold';
-export const PARAM_DISPLAY_OVERLOAD_TABLE = 'displayOverloadTable';
 export const PARAM_MAP_MANUAL_REFRESH = 'mapManualRefresh';
 export const PARAM_SUBSTATION_LAYOUT = 'substationLayout';
 export const PARAM_COMPONENT_LIBRARY = 'componentLibrary';
