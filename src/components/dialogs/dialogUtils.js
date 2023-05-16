@@ -34,6 +34,9 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 'small',
         marginTop: theme.spacing(1),
     },
+    paddingButton: {
+        paddingLeft: theme.spacing(2),
+    },
     emptyListError: {
         color: theme.palette.error.main,
         fontSize: 'small',
@@ -108,6 +111,10 @@ export const MVAPowerAdornment = {
 export const VoltageAdornment = {
     position: 'end',
     text: 'kV',
+};
+export const KilometerAdornment = {
+    position: 'end',
+    text: 'km',
 };
 export const filledTextField = {
     variant: 'filled',

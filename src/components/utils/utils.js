@@ -11,11 +11,7 @@ import { toNumber } from './validation-functions';
 export const isFieldRequired = (fieldName, schema, values) => {
     const { schema: fieldSchema, parent: parentValues } =
         getIn(schema, fieldName, values) || {};
-
-    return (
-        fieldSchema.resolve({ parent: parentValues })?.exclusiveTests
-            ?.required === true
-    );
+    return fieldSchema.describe({ parent: parentValues })?.optional === false;
 
     //static way, not working when using "when" in schema, but does not need form values
     //return yup.reach(schema, fieldName)?.exclusiveTests?.required === true;
@@ -102,3 +98,55 @@ export const buildNewBusbarSections = (
     }
     return newBusbarSections;
 };
+
+export const formatTemporaryLimits = (temporaryLimits) =>
+    temporaryLimits?.map((limit) => {
+        return {
+            name: limit?.name ?? '',
+            value: limit?.value ?? null,
+            acceptableDuration: limit?.acceptableDuration ?? null,
+        };
+    });
+
+export function calculateResistance(distance, linearResistance) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearResistance === undefined ||
+        isNaN(linearResistance)
+    ) {
+        return 0;
+    }
+    return Number(distance) * Number(linearResistance);
+}
+
+export function calculateReactance(distance, linearReactance) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearReactance === undefined ||
+        isNaN(linearReactance)
+    ) {
+        return 0;
+    }
+    return Number(distance) * Number(linearReactance);
+}
+
+export function calculateSusceptance(distance, linearCapacity) {
+    if (
+        distance === undefined ||
+        isNaN(distance) ||
+        linearCapacity === undefined ||
+        isNaN(linearCapacity)
+    ) {
+        return 0;
+    }
+    return (
+        Number(distance) *
+        Number(linearCapacity) *
+        2 *
+        Math.PI *
+        50 *
+        Math.pow(10, 6)
+    );
+}

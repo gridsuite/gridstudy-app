@@ -33,6 +33,7 @@ import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
+import { fetchMapBoxToken } from 'utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -49,14 +50,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const MAPBOX_TOKEN =
+const FALLBACK_MAPBOX_TOKEN =
     'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
-
 const SUBSTATION_LAYER_PREFIX = 'substationLayer';
 const LINE_LAYER_PREFIX = 'lineLayer';
 const LABEL_SIZE = 12;
 
 const NetworkMap = (props) => {
+    const [mapBoxToken, setMapBoxToken] = useState();
     const [labelsVisible, setLabelsVisible] = useState(false);
     const [showLineFlow, setShowLineFlow] = useState(true);
     const [deck, setDeck] = useState(null);
@@ -94,11 +95,24 @@ const NetworkMap = (props) => {
 
     const readyToDisplayLines =
         readyToDisplay &&
-        props.mapEquipments.lines &&
+        (props.mapEquipments?.lines || props.mapEquipments?.hvdcLines) &&
         props.mapEquipments.voltageLevels &&
         props.geoData.substationPositionsById.size > 0;
 
+    const mapEquipmentsLines = useMemo(() => {
+        return [
+            ...(props.mapEquipments?.lines ?? []),
+            ...(props.mapEquipments?.hvdcLines ?? []),
+        ];
+    }, [props.mapEquipments?.hvdcLines, props.mapEquipments?.lines]);
+
     const classes = useStyles();
+
+    useEffect(() => {
+        fetchMapBoxToken().then((token) =>
+            setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN)
+        );
+    }, []);
 
     useEffect(() => {
         if (centerOnSubstation === null) {
@@ -316,7 +330,18 @@ const NetworkMap = (props) => {
             // picked line properties are retrieved from network data and not from pickable object infos,
             // because pickable object infos might not be up to date
             let line = network.getLine(info.object.id);
-            props.onLineMenuClick(line, event.center.x, event.center.y);
+            if (line) {
+                props.onLineMenuClick(line, event.center.x, event.center.y);
+            } else {
+                let hvdcLine = network.getHvdcLine(info.object.id);
+                if (hvdcLine) {
+                    props.onHvdcLineMenuClick(
+                        hvdcLine,
+                        event.center.x,
+                        event.center.y
+                    );
+                }
+            }
         }
     }
 
@@ -351,7 +376,7 @@ const NetworkMap = (props) => {
         layers.push(
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
-                data: props.mapEquipments?.lines,
+                data: mapEquipmentsLines,
                 network: props.mapEquipments,
                 updatedLines: props.updatedLines,
                 geoData: props.geoData,
@@ -442,13 +467,15 @@ const NetworkMap = (props) => {
                         </div>
                     )}
 
-                <StaticMap
-                    mapStyle={theme.mapboxStyle}
-                    preventStyleDiffing={true}
-                    mapboxApiAccessToken={MAPBOX_TOKEN}
-                >
-                    {renderTooltip()}
-                </StaticMap>
+                {mapBoxToken && (
+                    <StaticMap
+                        mapStyle={theme.mapboxStyle}
+                        preventStyleDiffing={true}
+                        mapboxApiAccessToken={mapBoxToken}
+                    >
+                        {renderTooltip()}
+                    </StaticMap>
+                )}
                 <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
             </DeckGL>
         </>
@@ -487,6 +514,7 @@ NetworkMap.propTypes = {
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
     onLineMenuClick: PropTypes.func,
+    onHvdcLineMenuClick: PropTypes.func,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
     onVoltageLevelMenuClick: PropTypes.func,

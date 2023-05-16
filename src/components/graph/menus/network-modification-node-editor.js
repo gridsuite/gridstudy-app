@@ -50,9 +50,8 @@ import {
     removeNotificationByNode,
     setModificationsInProgress,
 } from '../../../redux/actions';
-import { UPDATE_TYPE } from '../../network/constants';
 import LoadScalingDialog from 'components/dialogs/load-scaling/load-scaling-dialog';
-import VoltageLevelCreationDialog from 'components/dialogs/voltage-level-creation/voltage-level-creation-dialog';
+import VoltageLevelCreationDialog from 'components/dialogs/voltage-level/creation/voltage-level-creation-dialog';
 import GeneratorCreationDialog from 'components/dialogs/generator/creation/generator-creation-dialog';
 import DeleteVoltageLevelOnLineDialog from 'components/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
 import DeleteAttachingLineDialog from 'components/dialogs/delete-attaching-line/delete-attaching-line-dialog';
@@ -63,6 +62,9 @@ import SubstationCreationDialog from 'components/dialogs/substation/creation/sub
 import SubstationModificationDialog from 'components/dialogs/substation/modification/substation-modification-dialog';
 import GenerationDispatchDialog from 'components/dialogs/generation-dispatch/generation-dispatch-dialog';
 import LineModificationDialog from 'components/dialogs/line/modification/line-modification-dialog';
+import VoltageLevelModificationDialog from '../../dialogs/voltage-level/modification/voltage-level-modification-dialog';
+import { UPDATE_TYPE } from 'components/network/constants';
+import { FetchStatus } from 'utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -148,7 +150,6 @@ export const CopyType = {
 };
 
 const NetworkModificationNodeEditor = () => {
-    const network = useSelector((state) => state.network);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
@@ -167,10 +168,14 @@ const NetworkModificationNodeEditor = () => {
 
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
+    const [editDataFetchStatus, setEditDataFetchStatus] = useState(
+        FetchStatus.IDLE
+    );
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
+    const [isUpdate, setIsUpdate] = useState(false);
 
     const cleanClipboard = useCallback(() => {
         if (copiedModifications.length <= 0) {
@@ -201,12 +206,13 @@ const NetworkModificationNodeEditor = () => {
     function withDefaultParams(Dialog, props) {
         return (
             <Dialog
-                open={true}
                 onClose={handleCloseDialog}
                 onValidated={handleValidatedDialog}
                 currentNode={currentNode}
                 studyUuid={studyUuid}
                 editData={editData}
+                isUpdate={isUpdate}
+                editDataFetchStatus={editDataFetchStatus}
                 {...props}
             />
         );
@@ -272,6 +278,11 @@ const NetworkModificationNodeEditor = () => {
         VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
             dialog: () => adapt(VoltageLevelCreationDialog),
+            icon: <AddIcon />,
+        },
+        VOLTAGE_LEVEL_MODIFICATION: {
+            label: 'ModifyVoltageLevel',
+            dialog: () => adapt(VoltageLevelModificationDialog),
             icon: <AddIcon />,
         },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
@@ -460,6 +471,7 @@ const NetworkModificationNodeEditor = () => {
     const closeNetworkModificationConfiguration = () => {
         setOpenNetworkModificationsDialog(false);
         setEditData(undefined);
+        setEditDataFetchStatus(FetchStatus.IDLE);
     };
 
     const doDeleteModification = useCallback(() => {
@@ -575,20 +587,30 @@ const NetworkModificationNodeEditor = () => {
         return dataTemp;
     }
 
-    const doEditModification = (modificationUuid) => {
+    const doEditModification = (modificationUuid, type) => {
+        setIsUpdate(true);
+        setEditDialogOpen(type);
+        setEditDataFetchStatus(FetchStatus.RUNNING);
         const modification = fetchNetworkModification(modificationUuid);
         modification
             .then((res) => {
-                res.json().then((data) => {
+                return res.json().then((data) => {
                     //remove all null values to avoid showing a "null" in the forms
                     setEditData(removeNullFields(data));
+                    setEditDataFetchStatus(FetchStatus.SUCCEED);
                 });
             })
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
                 });
+                setEditDataFetchStatus(FetchStatus.FAILED);
             });
+    };
+
+    const onOpenDialog = (id) => {
+        setEditDialogOpen(id);
+        setIsUpdate(false);
     };
 
     const toggleSelectAllModifications = useCallback(() => {
@@ -644,7 +666,7 @@ const NetworkModificationNodeEditor = () => {
         );
     };
 
-    const renderNetworkModificationsList = (network) => {
+    const renderNetworkModificationsList = () => {
         return (
             <DragDropContext
                 onDragEnd={commit}
@@ -670,10 +692,9 @@ const NetworkModificationNodeEditor = () => {
                                         key={props.item.uuid}
                                         onEdit={doEditModification}
                                         isDragging={isDragging}
-                                        network={network}
                                         isOneNodeBuilding={isAnyNodeBuilding}
-                                        {...props}
                                         disabled={isLoading()}
+                                        {...props}
                                     />
                                 )}
                                 toggleSelectAll={toggleSelectAll}
@@ -832,7 +853,7 @@ const NetworkModificationNodeEditor = () => {
             </Toolbar>
             {renderPaneSubtitle()}
 
-            {renderNetworkModificationsList(network)}
+            {renderNetworkModificationsList()}
             <Fab
                 className={classes.addButton}
                 color="primary"
@@ -847,7 +868,7 @@ const NetworkModificationNodeEditor = () => {
                 open={openNetworkModificationsDialog}
                 onClose={closeNetworkModificationConfiguration}
                 currentNodeUuid={currentNode?.id}
-                onOpenDialog={setEditDialogOpen}
+                onOpenDialog={onOpenDialog}
                 dialogs={dialogs}
             />
             {editDialogOpen && renderDialog()}

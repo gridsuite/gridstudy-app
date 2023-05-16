@@ -38,18 +38,23 @@ import { createVoltageLevel } from 'utils/rest-api';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
-import { controlCouplingOmnibusBetweenSections } from './voltage-level-creation-utils';
+import { controlCouplingOmnibusBetweenSections } from '../voltage-level-creation-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a load in the network
  * @param currentNode The node we are currently working on
  * @param studyUuid the study we are currently working on
  * @param editData the data to edit
+ * @param isUpdate check if edition form
  * @param onCreateVoltageLevel to create voltage level from other forms,
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
  */
 
 const emptyFormData = {
@@ -76,7 +81,14 @@ const formSchema = yup.object().shape({
     [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
     [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
     [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.number().nullable(),
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup.number().nullable(),
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
+        .number()
+        .nullable()
+        .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
+            is: (lowShortCircuitCurrentLimit) =>
+                lowShortCircuitCurrentLimit != null,
+            then: (schema) => schema.required(),
+        }),
     [BUS_BAR_COUNT]: yup.number().min(1).nullable().required(),
     [SECTION_COUNT]: yup.number().min(1).nullable().required(),
     [SWITCHES_BETWEEN_SECTIONS]: yup
@@ -106,6 +118,8 @@ const VoltageLevelCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    isUpdate,
+    editDataFetchStatus,
     onCreateVoltageLevel = createVoltageLevel,
     ...dialogProps
 }) => {
@@ -139,17 +153,20 @@ const VoltageLevelCreationDialog = ({
                 [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
                     voltageLevel.ipMax
                 ),
-                [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT],
-                [SECTION_COUNT]: voltageLevel[SECTION_COUNT],
+                [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
+                [SECTION_COUNT]: voltageLevel[SECTION_COUNT] ?? 1,
                 [SWITCHES_BETWEEN_SECTIONS]: voltageLevel.switchKinds
                     ?.map((switchKind) => {
                         return intl.formatMessage({ id: switchKind });
                     })
                     .join(' / '),
                 [COUPLING_OMNIBUS]: voltageLevel.couplingDevices,
-                [SWITCH_KINDS]: voltageLevel.switchKinds?.map((switchKind) => ({
-                    [SWITCH_KIND]: switchKind,
-                })),
+                [SWITCH_KINDS]:
+                    voltageLevel.switchKinds != null
+                        ? voltageLevel.switchKinds?.map((switchKind) => ({
+                              [SWITCH_KIND]: switchKind,
+                          }))
+                        : [],
             });
             if (voltageLevel.isPartiallyCopied) {
                 snackWarning({
@@ -214,6 +231,14 @@ const VoltageLevelCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
+    const open = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            editDataFetchStatus === FetchStatus.SUCCEED ||
+            editDataFetchStatus === FetchStatus.FAILED,
+        delay: FORM_LOADING_DELAY,
+    });
+
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -224,6 +249,10 @@ const VoltageLevelCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateVoltageLevel"
                 searchCopy={searchCopy}
+                open={open}
+                isDataFetching={
+                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                }
                 {...dialogProps}
             >
                 <VoltageLevelCreationForm
@@ -246,7 +275,9 @@ VoltageLevelCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
     onCreateVoltageLevel: PropTypes.func,
+    editDataFetchStatus: PropTypes.string,
 };
 
 export default VoltageLevelCreationDialog;

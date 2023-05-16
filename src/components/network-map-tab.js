@@ -28,12 +28,12 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../utils/config-params';
-import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
     isNodeReadOnly,
     isNodeRenamed,
+    isSameNodeAndBuilt,
 } from './graph/util/model-functions';
 import { RunningStatus } from './utils/running-status';
 import { resetMapReloaded } from '../redux/actions';
@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     divOverloadedLineView: {
         right: 45,
         top: 10,
-        minWidth: '600px',
+        minWidth: '700px',
         position: 'absolute',
         height: '70%',
         opacity: '1',
@@ -78,6 +78,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const NODE_CHANGED_ERROR =
+    'Node has changed or is not built anymore. The Promise is rejected.';
 export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
@@ -99,7 +101,6 @@ export const NetworkMapTab = ({
     /* callbacks */
     openVoltageLevel,
     setIsComputationRunning,
-    filteredNominalVoltages,
     showInSpreadsheet,
     setErrorMessage,
 }) => {
@@ -113,6 +114,7 @@ export const NetworkMapTab = ({
 
     const { snackError } = useSnackMessage();
 
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState();
     const [geoData, setGeoData] = useState();
     const geoDataRef = useRef();
 
@@ -135,6 +137,7 @@ export const NetworkMapTab = ({
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
     const disabled = !visible || !isNodeBuilt(currentNode);
+    const isRootNode = currentNode?.type === 'ROOT';
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
@@ -171,6 +174,7 @@ export const NetworkMapTab = ({
     const currentNodeRef = useRef(null);
 
     const [updatedLines, setUpdatedLines] = useState([]);
+    const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
 
     function withEquipment(Menu, props) {
         return (
@@ -393,6 +397,14 @@ export const NetworkMapTab = ({
         [linePositionsAreEqual]
     );
 
+    const checkNodeConsistency = (node) => {
+        if (!isSameNodeAndBuilt(currentNodeRef.current, node)) {
+            console.debug(NODE_CHANGED_ERROR);
+            return false;
+        }
+        return true;
+    };
+
     const loadMissingGeoData = useCallback(() => {
         const notFoundSubstationIds = getEquipmentsNotFoundIds(
             geoDataRef.current.substationPositionsById,
@@ -422,8 +434,13 @@ export const NetworkMapTab = ({
                 fetchLinePositions
             );
 
+            const nodeBeforeFetch = currentNodeRef.current;
             Promise.all([missingSubstationPositions, missingLinesPositions])
                 .then((positions) => {
+                    // If the node changed or if it is not built anymore, we ignore the results returned by the fetch
+                    if (!checkNodeConsistency(nodeBeforeFetch)) {
+                        return Promise(true); // break
+                    }
                     const [fetchedSubstationPositions, fetchedLinePositions] =
                         positions;
                     const substationsDataChanged =
@@ -466,6 +483,11 @@ export const NetworkMapTab = ({
                 })
                 .catch(function (error) {
                     console.error(error.message);
+
+                    // we display the error to the user only if the node is built
+                    if (!checkNodeConsistency(nodeBeforeFetch)) {
+                        return;
+                    }
                     setErrorMessage(
                         intlRef.current.formatMessage(
                             { id: 'geoDataLoadingFail' },
@@ -491,11 +513,16 @@ export const NetworkMapTab = ({
     const loadAllGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         setWaitingLoadData(true);
+        const nodeBeforeFetch = currentNodeRef.current;
 
         const substationPositionsDone = fetchSubstationPositions(
             studyUuid,
             currentNodeRef.current?.id
         ).then((data) => {
+            if (!checkNodeConsistency(nodeBeforeFetch)) {
+                return Promise(true); // break
+            }
+
             console.info(`Received substations of study '${studyUuid}'...`);
             const newGeoData = new GeoData(
                 new Map(),
@@ -510,6 +537,10 @@ export const NetworkMapTab = ({
             ? Promise.resolve()
             : fetchLinePositions(studyUuid, currentNodeRef.current?.id).then(
                   (data) => {
+                      if (!checkNodeConsistency(nodeBeforeFetch)) {
+                          return Promise(true); // break
+                      }
+
                       console.info(`Received lines of study '${studyUuid}'...`);
                       const newGeoData = new GeoData(
                           geoDataRef.current?.substationPositionsById ||
@@ -528,6 +559,11 @@ export const NetworkMapTab = ({
             })
             .catch(function (error) {
                 console.error(error.message);
+
+                // we display the error to the user only if the node is built
+                if (!checkNodeConsistency(nodeBeforeFetch)) {
+                    return;
+                }
                 setErrorMessage(
                     intlRef.current.formatMessage(
                         { id: 'geoDataLoadingFail' },
@@ -586,9 +622,8 @@ export const NetworkMapTab = ({
             }
 
             dispatch(resetMapReloaded());
-
             const isFullReload = updatedSubstationsToSend ? false : true;
-            const [updatedSubstations, updatedLines] =
+            const [updatedSubstations, updatedLines, updatedHvdcLines] =
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
                     currentNode,
@@ -609,10 +644,7 @@ export const NetworkMapTab = ({
                 }
             });
             updatedLines.then((values) => {
-                if (
-                    currentNodeAtReloadCalling?.id ===
-                    currentNodeRef.current?.id
-                ) {
+                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                     mapEquipments.updateLines(
                         mapEquipments.checkAndGetValues(values),
                         isFullReload
@@ -620,10 +652,22 @@ export const NetworkMapTab = ({
                     setUpdatedLines(values);
                 }
             });
-
-            return Promise.all([updatedSubstations, updatedLines]).finally(() =>
-                setWaitingLoadData(false)
-            );
+            updatedHvdcLines.then((values) => {
+                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
+                    mapEquipments.updateHvdcLines(
+                        mapEquipments.checkAndGetValues(values),
+                        isFullReload
+                    );
+                    setUpdatedHvdcLines(values);
+                }
+            });
+            return Promise.all([
+                updatedSubstations,
+                updatedLines,
+                updatedHvdcLines,
+            ]).finally(() => {
+                setWaitingLoadData(false);
+            });
         },
         [
             currentNode,
@@ -638,7 +682,7 @@ export const NetworkMapTab = ({
     const updateMapEquipmentsAndGeoData = useCallback(() => {
         const currentNodeAtReloadCalling = currentNodeRef.current;
         updateMapEquipments(currentNodeAtReloadCalling).then(() => {
-            if (currentNodeAtReloadCalling === currentNodeRef.current) {
+            if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                 loadGeoData();
             }
         });
@@ -650,7 +694,7 @@ export const NetworkMapTab = ({
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'loadflow'
             ) {
-                updateMapEquipments();
+                updateMapEquipments(currentNodeRef.current);
             }
         }
     }, [isInitialized, studyUpdatedForce, updateMapEquipments]);
@@ -753,12 +797,14 @@ export const NetworkMapTab = ({
         }
         return (
             <>
-                {equipmentMenu.equipmentType === equipments.lines &&
+                {(equipmentMenu.equipmentType === equipments.lines ||
+                    equipmentMenu.equipmentType === equipments.hvdcLines) &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
+
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
                 {equipmentMenu.equipmentType === equipments.voltageLevels &&
@@ -778,19 +824,6 @@ export const NetworkMapTab = ({
         );
     }
 
-    const linesNearOverload = useCallback(() => {
-        if (mapEquipments) {
-            return mapEquipments.lines.some((l) => {
-                const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
-                return (
-                    zone === LineLoadingZone.WARNING ||
-                    zone === LineLoadingZone.OVERLOAD
-                );
-            });
-        }
-        return false;
-    }, [mapEquipments, lineFlowAlertThreshold]);
-
     const isLoadFlowValid = () => {
         return loadFlowStatus === RunningStatus.SUCCEED;
     };
@@ -798,7 +831,10 @@ export const NetworkMapTab = ({
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
-            updatedLines={updatedLines}
+            updatedLines={[
+                ...(updatedLines ?? []),
+                ...(updatedHvdcLines ?? []),
+            ]}
             geoData={geoData}
             displayOverlayLoader={!basicDataReady && waitingLoadData}
             filteredNominalVoltages={filteredNominalVoltages}
@@ -816,6 +852,9 @@ export const NetworkMapTab = ({
             onLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(equipment, x, y, equipments.lines)
             }
+            onHvdcLineMenuClick={(equipment, x, y) =>
+                showEquipmentMenu(equipment, x, y, equipments.hvdcLines)
+            }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
@@ -832,7 +871,11 @@ export const NetworkMapTab = ({
     function renderNominalVoltageFilter() {
         return (
             <div className={classes.divNominalVoltageFilter}>
-                <NominalVoltageFilter />
+                <NominalVoltageFilter
+                    nominalVoltages={mapEquipments.getNominalVoltages()}
+                    filteredNominalVoltages={filteredNominalVoltages}
+                    onChange={setFilteredNominalVoltages}
+                />
             </div>
         );
     }
@@ -848,17 +891,17 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            {displayOverloadTable &&
-                isLoadFlowValid() &&
-                linesNearOverload() && (
-                    <div className={classes.divOverloadedLineView}>
-                        <OverloadedLinesView
-                            lineFlowAlertThreshold={lineFlowAlertThreshold}
-                            mapEquipments={mapEquipments}
-                            disabled={disabled}
-                        />
-                    </div>
-                )}
+            {!isRootNode && displayOverloadTable && isLoadFlowValid() && (
+                <div className={classes.divOverloadedLineView}>
+                    <OverloadedLinesView
+                        lineFlowAlertThreshold={lineFlowAlertThreshold}
+                        disabled={disabled}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        mapEquipments={mapEquipments}
+                    />
+                </div>
+            )}
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
@@ -879,7 +922,6 @@ export const NetworkMapTab = ({
 
 NetworkMapTab.propTypes = {
     updatedLines: PropTypes.arrayOf(PropTypes.any),
-    filteredNominalVoltages: PropTypes.any,
     lineFullPath: PropTypes.any,
     lineParallelPath: PropTypes.any,
     lineFlowMode: PropTypes.any,

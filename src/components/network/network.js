@@ -320,10 +320,6 @@ export default class Network {
         return this.substationsById.get(id);
     }
 
-    getNominalVoltages() {
-        return this.nominalVoltages;
-    }
-
     getLines() {
         return this.lines;
     }
