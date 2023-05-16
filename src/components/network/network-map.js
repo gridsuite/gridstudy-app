@@ -34,6 +34,7 @@ import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { fetchMapBoxToken } from 'utils/rest-api';
+import LinePopover from '.././tooltips/line-popover';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -106,7 +107,11 @@ const NetworkMap = (props) => {
         ];
     }, [props.mapEquipments?.hvdcLines, props.mapEquipments?.lines]);
 
+    const studyUuid = useSelector((state) => state.studyUuid);
+
     const classes = useStyles();
+
+    const divRef = useRef();
 
     useEffect(() => {
         fetchMapBoxToken().then((token) =>
@@ -249,6 +254,7 @@ const NetworkMap = (props) => {
         return (
             tooltip && (
                 <div
+                ref={divRef}
                     style={{
                         position: 'absolute',
                         color: theme.palette.text.primary,
@@ -258,8 +264,13 @@ const NetworkMap = (props) => {
                         top: tooltip.pointerY,
                     }}
                 >
-                    {tooltip.message}
-                </div>
+       <LinePopover
+                        studyUuid={studyUuid}
+                        lineinfos={tooltip.lineinfos}
+                        anchorEl={divRef.current}
+                        lineId={tooltip.lineId}
+                        loadFlowStatus={props.loadFlowStatus}
+                    />                </div>
             )
         );
     }
@@ -400,9 +411,11 @@ const NetworkMap = (props) => {
                     if (object) {
                         setCursorType('pointer');
                         setTooltip({
-                            message: getNameOrId(object),
+                            lineId: getNameOrId(object),
                             pointerX: x,
                             pointerY: y,
+                            lineinfos: object
+
                         });
                     } else {
                         setCursorType('grab');

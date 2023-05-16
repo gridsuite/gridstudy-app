@@ -25,20 +25,20 @@ import { fetchLine } from '../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
 
-const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
+const LinePopover = ({ studyUuid, lineinfos, anchorEl, lineId, loadFlowStatus }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [lineInfo, setLineInfo] = useState(null);
     const intl = useIntl();
 
     useEffect(() => {
-        if (lineId !== '') {
+        if (lineinfos) {
+            setLineInfo(lineinfos);
+        } else if (lineId && lineId !== '') {
             fetchLine(studyUuid, currentNode.id, lineId).then((value) => {
                 setLineInfo(value);
             });
-        } else {
-            setLineInfo(null);
         }
-    }, [lineId, currentNode.id, studyUuid]);
+    }, [lineId, currentNode.id, studyUuid, lineinfos]);
 
     const handlePopoverClose = () => {
         setLineInfo(null);
@@ -73,9 +73,9 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
                                             Math.round(
                                                 side === '1'
                                                     ? (lineInfo.i1 * 100) /
-                                                          currentLimits.permanentLimit
+                                                    currentLimits.permanentLimit
                                                     : (lineInfo.i2 * 100) /
-                                                          currentLimits.permanentLimit
+                                                    currentLimits.permanentLimit
                                             )
                                         )}
                                 </TableCell>
@@ -112,19 +112,19 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
                                                     RunningStatus.SUCCEED &&
                                                     (side === '1'
                                                         ? checkValue(
-                                                              Math.round(
-                                                                  (lineInfo.i1 *
-                                                                      100) /
-                                                                      temporaryLimit.value
-                                                              )
-                                                          )
+                                                            Math.round(
+                                                                (lineInfo.i1 *
+                                                                    100) /
+                                                                temporaryLimit.value
+                                                            )
+                                                        )
                                                         : checkValue(
-                                                              Math.round(
-                                                                  (lineInfo.i2 *
-                                                                      100) /
-                                                                      temporaryLimit.value
-                                                              )
-                                                          ))}
+                                                            Math.round(
+                                                                (lineInfo.i2 *
+                                                                    100) /
+                                                                temporaryLimit.value
+                                                            )
+                                                        ))}
                                             </TableCell>
                                             <TableCell>
                                                 {checkValue(
@@ -209,22 +209,22 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
                                             </TableCell>
                                             <TableCell>
                                                 {loadFlowStatus ===
-                                                RunningStatus.SUCCEED
+                                                    RunningStatus.SUCCEED
                                                     ? checkValue(
-                                                          Math.round(
-                                                              lineInfo.i1
-                                                          )
-                                                      )
+                                                        Math.round(
+                                                            lineInfo.i1
+                                                        )
+                                                    )
                                                     : null}
                                             </TableCell>
                                             <TableCell>
                                                 {loadFlowStatus ===
-                                                RunningStatus.SUCCEED
+                                                    RunningStatus.SUCCEED
                                                     ? checkValue(
-                                                          Math.round(
-                                                              lineInfo.i2
-                                                          )
-                                                      )
+                                                        Math.round(
+                                                            lineInfo.i2
+                                                        )
+                                                    )
                                                     : null}
                                             </TableCell>
                                         </TableRow>
