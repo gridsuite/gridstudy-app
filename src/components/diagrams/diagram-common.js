@@ -80,7 +80,7 @@ export const useDiagramStyles = makeStyles((theme) => ({
             fill: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
-        '& .sld-disconnector:not(.sld-fictitious), :not(.sld-breaker):not(.sld-disconnector):not(.sld-load-break-switch).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
+        '& .sld-disconnector:not(.sld-fictitious), :not(.sld-breaker):not(.sld-disconnector):not(.sld-load-break-switch):not(.sld-lock .sld-disconnected):not(.sld-flash .sld-disconnected).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
             {
                 stroke: theme.palette.text.primary,
             },
