@@ -43,12 +43,18 @@ export function networkCreated(network) {
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
-export function mapEquipmentsCreated(mapEquipments, newLines, newSubstations) {
+export function mapEquipmentsCreated(
+    mapEquipments,
+    newLines,
+    newSubstations,
+    newHvdcLines
+) {
     return {
         type: MAP_EQUIPMENTS_CREATED,
         mapEquipments: mapEquipments,
         newLines: newLines,
         newSubstations: newSubstations,
+        newHvdcLines: newHvdcLines,
     };
 }
 
@@ -109,6 +115,20 @@ export function networkModificationTreeNodeMoved(
         networkModificationTreeNode: networkModificationTreeNode,
         parentNodeId: parentNodeId,
         insertMode: insertMode,
+    };
+}
+
+export const NETWORK_MODIFICATION_HANDLE_SUBTREE =
+    'NETWORK_MODIFICATION_HANDLE_SUBTREE';
+
+export function networkModificationHandleSubtree(
+    networkModificationTreeNodes,
+    parentNodeId
+) {
+    return {
+        type: NETWORK_MODIFICATION_HANDLE_SUBTREE,
+        networkModificationTreeNodes: networkModificationTreeNodes,
+        parentNodeId: parentNodeId,
     };
 }
 
@@ -350,16 +370,6 @@ export function resetDynamicSimulationNotif() {
 }
 // --- Dynamic simulation ACTION - END
 
-export const FILTERED_NOMINAL_VOLTAGES_UPDATED =
-    'FILTERED_NOMINAL_VOLTAGES_UPDATED';
-
-export function filteredNominalVoltagesUpdated(filteredNV) {
-    return {
-        type: FILTERED_NOMINAL_VOLTAGES_UPDATED,
-        filteredNominalVoltages: filteredNV,
-    };
-}
-
 export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
 
 export function selectSubstationLayout(substationLayout) {
@@ -433,12 +443,12 @@ export function setCurrentTreeNode(currentTreeNode) {
     };
 }
 
-export const SELECTED_TREE_NODE_FOR_COPY = 'SELECTED_NODE_FOR_COPY';
+export const SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
 
-export function setSelectedNodeForCopy(nodeForCopy) {
+export function setSelectionForCopy(selectionForCopy) {
     return {
-        type: SELECTED_TREE_NODE_FOR_COPY,
-        selectedNodeForCopy: nodeForCopy,
+        type: SELECTION_FOR_COPY,
+        selectionForCopy: selectionForCopy,
     };
 }
 
