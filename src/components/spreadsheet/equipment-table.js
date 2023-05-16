@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { useTheme } from '@mui/styles';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { ALLOWED_KEYS } from './utils/config-tables';
@@ -13,6 +13,8 @@ import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
 import { FILTER_TYPE, useRowFilter } from './filter-panel/use-row-filter';
 import { useIntl } from 'react-intl';
 import { FilterPanel } from './filter-panel/filter-panel';
+import { SearchBar } from './search-bar/search-bar';
+import { useSearchBar } from './search-bar/use-search-bar';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -47,6 +49,7 @@ export const EquipmentTable = ({
     );
 
     const { filterResult, updateFilter } = useRowFilter(filtersDef);
+    const [searchBarOpen, setSearchBarOpen] = useState(false);
 
     const getRowStyle = useCallback(
         (params) => {
@@ -106,6 +109,34 @@ export const EquipmentTable = ({
         []
     );
 
+    const filteredResults = useMemo(
+        () => filterResult(rowData),
+        [rowData, filterResult]
+    );
+
+    useEffect(() => {
+        const openSearch = (e) => {
+            if (e.ctrlKey && e.key === 'g') {
+                e.preventDefault();
+                setSearchBarOpen(true);
+            }
+        };
+        document.addEventListener('keydown', openSearch);
+        return () => document.removeEventListener('keydown', openSearch);
+    }, []);
+
+    const {
+        calculateSearchBarResults,
+        focusCell,
+        searchInput,
+        setSearchInput,
+        searchResult,
+    } = useSearchBar(gridRef);
+
+    useEffect(() => {
+        calculateSearchBarResults();
+    }, [filteredResults, searchInput, calculateSearchBarResults]);
+
     return (
         <>
             {!fetched ? (
@@ -125,7 +156,7 @@ export const EquipmentTable = ({
                     <CustomAGGrid
                         ref={gridRef}
                         getRowId={getRowId}
-                        rowData={filterResult(rowData)}
+                        rowData={filteredResults}
                         pinnedTopRowData={topPinnedData}
                         getRowStyle={getRowStyle}
                         columnDefs={columnData}
@@ -147,7 +178,21 @@ export const EquipmentTable = ({
                             shouldHidePinnedHeaderRightBorder
                         }
                         getRowHeight={getRowHeight}
+                        onSortChanged={calculateSearchBarResults}
+                        onFilterChanged={calculateSearchBarResults}
+                        //onColumnMoved={calculateSearchBarResults}
                     />
+                    {searchBarOpen && (
+                        <SearchBar
+                            searchResult={searchResult}
+                            setSearchInput={(value) => {
+                                setSearchInput(value);
+                            }}
+                            searchInput={searchInput}
+                            focusCellCallback={focusCell}
+                            onClose={() => setSearchBarOpen(false)}
+                        />
+                    )}
                 </>
             )}
         </>

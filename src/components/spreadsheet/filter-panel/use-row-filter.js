@@ -64,7 +64,7 @@ export const useRowFilter = (filtersDef) => {
         [filtersDef]
     );
 
-    const updateFilter = (field, value) => {
+    const updateFilter = useCallback((field, value) => {
         if (value == null || value.length === 0) {
             setRowFilters((oldRowFilters) => {
                 return [
@@ -85,7 +85,7 @@ export const useRowFilter = (filtersDef) => {
                 ];
             });
         }
-    };
+    }, []);
 
     const filterResult = useCallback(
         (result) => {

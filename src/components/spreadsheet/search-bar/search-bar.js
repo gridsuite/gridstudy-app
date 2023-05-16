@@ -16,6 +16,7 @@ export const SearchBar = ({
 
     const goToNextOccurence = useCallback(
         (action) => {
+            console.log('tesst');
             if (action === 'NEXT') {
                 setOccurenceIndex((oldOccurenceIndex) => {
                     const newOccurenceIndex =
@@ -48,6 +49,7 @@ export const SearchBar = ({
     );
 
     useEffect(() => {
+        console.log('searchResult', searchResult);
         goToNextOccurence('RESET');
     }, [searchResult, goToNextOccurence]);
 

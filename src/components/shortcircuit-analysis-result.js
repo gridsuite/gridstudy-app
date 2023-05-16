@@ -80,15 +80,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [intl]
     );
 
-    const focusCell = (index, columnName) => {
-        gridRef.current?.api.ensureIndexVisible(index, 'middle');
-        // ensureIndexVisible seems to be an asynchronous method, because it takes some times to scroll to the desired index
-        // setFocusCell will do nothing if the selected cell is not visible within the screen, we need to wait for the scroll to be done
-        setTimeout(() => {
-            gridRef.current?.api.setFocusedCell(index, columnName);
-        }, 100);
-    };
-
     const { filterResult, updateFilter } = useGroupFilter(
         filtersDef,
         'elementId',
@@ -229,12 +220,13 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [result, filterResult, flattenResult]
     );
 
-    const [
+    const {
         calculateSearchBarResults,
+        focusCell,
         searchInput,
         setSearchInput,
         searchResult,
-    ] = useSearchBar(gridRef);
+    } = useSearchBar(gridRef);
 
     useEffect(() => {
         calculateSearchBarResults();

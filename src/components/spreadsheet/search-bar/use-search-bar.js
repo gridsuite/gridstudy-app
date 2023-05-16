@@ -18,6 +18,7 @@ export const useSearchBar = (aggridRef) => {
 
     const executeSearchOnRows = useCallback(
         (rowsToSearchFrom) => {
+            console.log(searchInput);
             if (!searchInput) {
                 setSearchResult([]);
                 return;
@@ -75,10 +76,20 @@ export const useSearchBar = (aggridRef) => {
         }
     }, [filterHiddenValuesFromRows, executeSearchOnRows]);
 
-    return [
+    const focusCell = useCallback((index, columnName) => {
+        aggridRef.current?.api.ensureIndexVisible(index, 'middle');
+        // ensureIndexVisible will scroll to the desired index, but it takes some time to render the rows
+        // setFocusCell will do nothing if the selected cell is rendered yet, we need to wait for the scroll to be done
+        setTimeout(() => {
+            aggridRef.current?.api.setFocusedCell(index, columnName);
+        }, 100);
+    }, []);
+
+    return {
         calculateSearchBarResults,
+        focusCell,
         searchInput,
         setSearchInput,
         searchResult,
-    ];
+    };
 };
