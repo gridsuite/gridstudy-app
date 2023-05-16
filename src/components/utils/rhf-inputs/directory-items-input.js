@@ -61,7 +61,7 @@ const DirectoryItemsInput = ({
                 if (
                     getValues(name).find(
                         (v) =>
-                            v?.specificMetadata?.id ===
+                            v?.id ===
                             otherElementAttributes.id
                     ) !== undefined
                 ) {
