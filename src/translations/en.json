@@ -238,7 +238,7 @@
     "PermanentLimitName": "IST",
     "LineLoad": "Load",
     "LimitAcceptableDuration": "Duration",
-    "ErrFetchCurrentLimitViolationsMsg": "An error occurred while getting current limit violations",
+    "ErrFetchCurrentLimitViolationsMsg": "An error occurred while getting the current limit violations",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",
