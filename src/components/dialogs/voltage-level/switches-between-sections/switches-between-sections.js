@@ -45,7 +45,7 @@ export const SwitchesBetweenSections = () => {
     }, [watchSectionCount]);
 
     const intl = useIntl();
-    const handleCreateSwitchesDialog = useCallback(
+    const setSwitchesKinds = useCallback(
         (data) => {
             const map = data[SWITCH_KINDS].map((switchData) => {
                 return intl.formatMessage({ id: switchData[SWITCH_KIND] });
@@ -58,6 +58,14 @@ export const SwitchesBetweenSections = () => {
         },
         [intl, setValue]
     );
+
+    const handleCreateSwitchesDialog = useCallback(
+        (data) => {
+            setSwitchesKinds(data);
+        },
+        [setSwitchesKinds]
+    );
+
     const sectionCountRef = useRef(watchSectionCount);
     const switchesBetweenSectionsRef = useRef(watchSwitchesBetweenSections);
     useEffect(() => {
@@ -66,12 +74,19 @@ export const SwitchesBetweenSections = () => {
             sectionCountRef.current !== watchSectionCount &&
             switchesBetweenSectionsRef.current === watchSwitchesBetweenSections
         ) {
-            setValue(SWITCH_KINDS, []);
-            setValue(SWITCHES_BETWEEN_SECTIONS, '');
+            const initialKindDisconnector = { switchKind: 'DISCONNECTOR' };
+            let list = [];
+            if (watchSectionCount) {
+                list = Array(watchSectionCount - 1).fill(
+                    initialKindDisconnector
+                );
+            }
+            const data = { switchKinds: list };
+            setSwitchesKinds(data);
         }
         sectionCountRef.current = watchSectionCount;
         switchesBetweenSectionsRef.current = watchSwitchesBetweenSections;
-    }, [watchSectionCount, setValue, watchSwitchesBetweenSections]);
+    }, [watchSectionCount, watchSwitchesBetweenSections, setSwitchesKinds]);
 
     const switchesBetweenSectionsField = (
         <TextInput
