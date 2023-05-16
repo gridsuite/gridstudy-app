@@ -31,7 +31,7 @@ import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
 import ErrorInput from '../rhf-inputs/error-inputs/error-input';
 import FieldErrorAlert from '../rhf-inputs/error-inputs/field-error-alert';
-import { ReadOnlyInput } from '../rhf-inputs/read-only-input';
+import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 
 export const MAX_ROWS_NUMBER = 100;
@@ -78,7 +78,7 @@ function MultiCheckbox({
 function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 1 }}>
-            <ReadOnlyInput
+            <RawReadOnlyInput
                 name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                 {...props}
             />
