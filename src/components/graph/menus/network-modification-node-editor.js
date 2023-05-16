@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     changeNetworkModificationOrder,
     copyOrMoveModifications,
@@ -224,7 +224,6 @@ const NetworkModificationNodeEditor = () => {
     }
 
     const dialogs = {
-
         CREATE: {
             id: 'CREATE',
             label: 'Create',
@@ -233,7 +232,7 @@ const NetworkModificationNodeEditor = () => {
                 LOAD_CREATION: {
                     id: 'LOAD_CREATION',
                     label: 'LOAD',
-                    dialog: () => adapt(LoadCreationDialog)
+                    dialog: () => adapt(LoadCreationDialog),
                 },
                 GENERATOR_CREATION: {
                     id: 'GENERATOR_CREATION',
@@ -264,8 +263,8 @@ const NetworkModificationNodeEditor = () => {
                     id: 'SUBSTATION_CREATION',
                     label: 'SUBSTATION',
                     dialog: () => adapt(SubstationCreationDialog),
-                }
-            }
+                },
+            },
         },
         EDIT: {
             id: 'EDIT',
@@ -276,7 +275,10 @@ const NetworkModificationNodeEditor = () => {
                     label: 'LOAD',
                     dialog: () => adapt(LoadModificationDialog),
                 },
-                GENERATOR_MODIFICATION: {label: 'GENERATOR', dialog: () => adapt(GeneratorModificationDialog),},
+                GENERATOR_MODIFICATION: {
+                    label: 'GENERATOR',
+                    dialog: () => adapt(GeneratorModificationDialog),
+                },
                 LINE_MODIFICATION: {
                     label: 'OverloadedLine',
                     dialog: () => adapt(LineModificationDialog),
@@ -288,8 +290,8 @@ const NetworkModificationNodeEditor = () => {
                 SUBSTATION_MODIFICATION: {
                     label: 'SUBSTATION',
                     dialog: () => adapt(SubstationModificationDialog),
-                }
-            }
+                },
+            },
         },
         DELETE: {
             id: 'DELETE',
@@ -299,8 +301,8 @@ const NetworkModificationNodeEditor = () => {
                 EQUIPMENT_DELETION: {
                     label: 'Equipment',
                     dialog: () => adapt(EquipmentDeletionDialog),
-                }
-            }
+                },
+            },
         },
         ATTACHING_SPLITTING_LINES: {
             id: 'ATTACHING_SPLITTING_LINES',
@@ -310,20 +312,24 @@ const NetworkModificationNodeEditor = () => {
                 LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
                     label: 'LineSplitWithVoltageLevel',
                     dialog: () => adapt(LineSplitWithVoltageLevelDialog),
-                }, LINE_ATTACH_TO_VOLTAGE_LEVEL: {
+                },
+                LINE_ATTACH_TO_VOLTAGE_LEVEL: {
                     label: 'LineAttachToVoltageLevel',
                     dialog: () => adapt(LineAttachToVoltageLevelDialog),
-                }, LINES_ATTACH_TO_SPLIT_LINES: {
+                },
+                LINES_ATTACH_TO_SPLIT_LINES: {
                     label: 'LinesAttachToSplitLines',
                     dialog: () => adapt(LinesAttachToSplitLinesDialog),
-                }, DELETE_VOLTAGE_LEVEL_ON_LINE: {
+                },
+                DELETE_VOLTAGE_LEVEL_ON_LINE: {
                     label: 'DeleteVoltageLevelOnLine',
                     dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
-                }, DELETE_ATTACHING_LINE: {
+                },
+                DELETE_ATTACHING_LINE: {
                     label: 'DeleteAttachingLine',
                     dialog: () => adapt(DeleteAttachingLineDialog),
-                }
-            }
+                },
+            },
         },
         GENERATION_AND_LOAD: {
             id: 'GENERATION_AND_LOAD',
@@ -333,18 +339,22 @@ const NetworkModificationNodeEditor = () => {
                 GENERATOR_SCALING: {
                     label: 'GeneratorScaling',
                     dialog: () => adapt(GeneratorScalingDialog),
-                }, LOAD_SCALING: {
+                },
+                LOAD_SCALING: {
                     label: 'LoadScaling',
                     dialog: () => adapt(LoadScalingDialog),
-                }, GENERATION_DISPATCH: {
+                },
+                GENERATION_DISPATCH: {
                     label: 'GenerationDispatch',
                     dialog: () => adapt(GenerationDispatchDialog),
-                }
-            }
-        }
+                },
+            },
+        },
     };
 
-    const subItemDialogsList = useMemo(() => Object.values(Object.values(dialogs).map(a => a.subItems)).reduce((result, current) => Object.assign(result, current), {}), [dialogs])
+    const subItemDialogsList = Object.values(
+        Object.values(dialogs).map((dialog) => dialog.subItems)
+    ).reduce((result, current) => Object.assign(result, current), {});
 
     const fillNotification = useCallback(
         (study, messageId) => {
