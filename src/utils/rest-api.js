@@ -846,7 +846,7 @@ export function fetchOverloadedLines(
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/overloaded-lines?limitReduction=' +
+        '/current-limit-violations?limitReduction=' +
         limitReduction.toString();
     return backendFetchJson(url);
 }
