@@ -198,7 +198,7 @@ const NetworkModificationNodeEditor = () => {
         }
     };
 
-    const handleCloseDialog = (e, reason) => {
+    const handleCloseDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
@@ -282,7 +282,7 @@ const NetworkModificationNodeEditor = () => {
                     dialog: () => adapt(LineModificationDialog),
                 },
                 VOLTAGE_LEVEL_MODIFICATION: {
-                    label: 'ModifyVoltageLevel',
+                    label: 'VoltageLevel',
                     dialog: () => adapt(VoltageLevelModificationDialog),
                 },
                 SUBSTATION_MODIFICATION: {

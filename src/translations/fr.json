@@ -932,7 +932,7 @@
     "lineTypes.linearReactance": "Réactance linéique directe [Ω/km]",
     "lineTypes.linearCapacity": "Capacité linéique directe [F/km]",
     "lineTypes.category.aerial": "Lignes aériennes",
-    "lineTypes.category.underground": "Câbles souterrains"
+    "lineTypes.category.underground": "Câbles souterrains",
     "Create": "Créer",
     "ShuntCompensator": "Moyen de compensation statique",
     "AttachingAndSplittingLines": "Piquage et coupure",

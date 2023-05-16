@@ -910,7 +910,7 @@
     "lineTypes.linearReactance": "Linear reactance [Ω/km]",
     "lineTypes.linearCapacity": "Linear capacity [F/km]",
     "lineTypes.category.aerial": "Overhead power lines",
-    "lineTypes.category.underground": "Underground cables"
+    "lineTypes.category.underground": "Underground cables",
     "Create": "Create",
     "ShuntCompensator": "Shunt compensator",
     "AttachingAndSplittingLines": "Attaching and splitting lines",
