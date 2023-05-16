@@ -1227,6 +1227,53 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
+// --- Voltage init API - BEGIN
+export function startVoltageInit(studyUuid, currentNodeUuid) {
+    console.info(
+        `Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const startVoltageInitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/run';
+    console.debug(startVoltageInitUrl);
+    return backendFetch(startVoltageInitUrl, { method: 'put' });
+}
+
+export function stopVoltageInit(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopVoltageInitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/stop';
+    console.debug(stopVoltageInitUrl);
+    return backendFetch(stopVoltageInitUrl, { method: 'put' });
+}
+
+export function fetchVoltageInitStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching voltage init status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/status';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchVoltageInitResult(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/result';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+// --- Voltage init API - END
+
 // --- Dynamic simulation API - BEGIN
 export function getDynamicMappings(studyUuid) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
