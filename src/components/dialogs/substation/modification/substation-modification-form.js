@@ -71,7 +71,8 @@ const SubstationModificationForm = ({
                 // just unmark
                 setValue(
                     `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
-                    false
+                    false,
+                    { shouldDirty: true }
                 );
                 canRemoveLine = false;
             } else {
@@ -82,7 +83,8 @@ const SubstationModificationForm = ({
                 ) {
                     setValue(
                         `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
-                        true
+                        true,
+                        { shouldDirty: true }
                     );
                     canRemoveLine = false;
                 }
@@ -150,6 +152,7 @@ const SubstationModificationForm = ({
             initialValue={getPropertyInitialValues()}
             getDeletionMark={getDeletionMark}
             deleteCallback={deleteCallback}
+            watchProps={watchProps}
         />
     );
 
