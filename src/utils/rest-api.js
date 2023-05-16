@@ -836,17 +836,17 @@ export function fetchEquipmentInfos(
     return backendFetchJson(fetchEquipmentInfosUrl);
 }
 
-export function fetchOverloadedLines(
+export function fetchCurrentLimitViolations(
     studyUuid,
     currentNodeUuid,
     limitReduction
 ) {
     console.info(
-        `Fetching overloaded lines (with limit reduction ${limitReduction}) ...`
+        `Fetching current limit violations (with limit reduction ${limitReduction}) ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/overloaded-lines?limitReduction=' +
+        '/current-limit-violations?limitReduction=' +
         limitReduction.toString();
     return backendFetchJson(url);
 }
@@ -1778,6 +1778,15 @@ export function fetchAppsAndUrls() {
             ).then((response) => {
                 return response.json();
             });
+        });
+}
+
+export function fetchMapBoxToken() {
+    console.info(`Fetching MapBoxToken...`);
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return res.mapBoxToken;
         });
 }
 
