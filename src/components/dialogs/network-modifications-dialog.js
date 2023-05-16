@@ -11,11 +11,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import { useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import {NestedMenuItem} from "mui-nested-menu";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemText from "@mui/material/ListItemText";
+import { NestedMenuItem } from 'mui-nested-menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemText from '@mui/material/ListItemText';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     dialog: {
         alignItems: 'flex-end',
     },
@@ -54,29 +54,32 @@ const NetworkModificationDialog = ({
                 }}
             >
                 <DialogContent>
-                    {Object.entries(dialogs).map(([id, values]) =>
+                    {Object.entries(dialogs).map(([id, values]) => (
                         <NestedMenuItem
                             key={id}
                             parentMenuOpen={true}
-                            label={intl.formatMessage({id: values.label})}>
-                            {Object.entries(values.subItems).map(([subItemId, subItemValue]) =>
-                                <MenuItem
-                                    key={subItemId}
-                                    onClick={() => onOpenDialog(subItemId)}
-                                >
-                                    <ListItemText
-                                        primary={
-                                            <Typography noWrap>
-                                                {intl.formatMessage({
-                                                    id: subItemValue.label,
-                                                })}
-                                            </Typography>
-                                        }
-                                    />
-                                </MenuItem>
+                            label={intl.formatMessage({ id: values.label })}
+                        >
+                            {Object.entries(values.subItems).map(
+                                ([subItemId, subItemValue]) => (
+                                    <MenuItem
+                                        key={subItemId}
+                                        onClick={() => onOpenDialog(subItemId)}
+                                    >
+                                        <ListItemText
+                                            primary={
+                                                <Typography noWrap>
+                                                    {intl.formatMessage({
+                                                        id: subItemValue.label,
+                                                    })}
+                                                </Typography>
+                                            }
+                                        />
+                                    </MenuItem>
+                                )
                             )}
                         </NestedMenuItem>
-                    )}
+                    ))}
                 </DialogContent>
             </Dialog>
         </>

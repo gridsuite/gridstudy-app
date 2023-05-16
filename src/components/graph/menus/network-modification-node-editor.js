@@ -354,7 +354,9 @@ const NetworkModificationNodeEditor = () => {
 
     const subItemDialogsList = Object.values(
         Object.values(dialogs).map((dialog) => dialog.subItems)
-    ).reduce((result, current) => Object.assign(result, current), {});
+    ).reduce((result, current) => {
+        return { ...result, ...current };
+    }, {});
 
     const fillNotification = useCallback(
         (study, messageId) => {
