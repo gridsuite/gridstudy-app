@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
     changeNetworkModificationOrder,
     copyOrMoveModifications,
@@ -223,108 +223,123 @@ const NetworkModificationNodeEditor = () => {
     }
 
     const dialogs = {
-        LOAD_CREATION: {
-            label: 'CreateLoad',
-            dialog: () => adapt(LoadCreationDialog),
-            icon: <AddIcon />,
+
+        CREATE: {
+            id: 'CREATE',
+            label: 'Create',
+            dialog: null,
+            subItems: {
+                LOAD_CREATION: {
+                    id: 'LOAD_CREATION',
+                    label: 'LOAD',
+                    dialog: () => adapt(LoadCreationDialog)
+                },
+                GENERATOR_CREATION: {
+                    id: 'GENERATOR_CREATION',
+                    label: 'GENERATOR',
+                    dialog: () => adapt(GeneratorCreationDialog),
+                },
+                SHUNT_COMPENSATOR_CREATION: {
+                    id: 'SHUNT_COMPENSATOR_CREATION',
+                    label: 'SHUNT_COMPENSATOR',
+                    dialog: () => adapt(ShuntCompensatorCreationDialog),
+                },
+                LINE_CREATION: {
+                    id: 'LINE_CREATION',
+                    label: 'OverloadedLine',
+                    dialog: () => adapt(LineCreationDialog),
+                },
+                TWO_WINDINGS_TRANSFORMER_CREATION: {
+                    id: 'TWO_WINDINGS_TRANSFORMER_CREATION',
+                    label: 'TWO_WINDINGS_TRANSFORMER',
+                    dialog: () => adapt(TwoWindingsTransformerCreationDialog),
+                },
+                VOLTAGE_LEVEL_CREATION: {
+                    id: 'VOLTAGE_LEVEL_CREATION',
+                    label: 'VOLTAGE_LEVEL',
+                    dialog: () => adapt(VoltageLevelCreationDialog),
+                },
+                SUBSTATION_CREATION: {
+                    id: 'SUBSTATION_CREATION',
+                    label: 'SUBSTATION',
+                    dialog: () => adapt(SubstationCreationDialog),
+                }
+            }
         },
-        LOAD_MODIFICATION: {
-            label: 'ModifyLoad',
-            dialog: () => adapt(LoadModificationDialog),
-            icon: <AddIcon />,
+        EDIT: {
+            id: 'EDIT',
+            label: 'edit',
+            dialog: null,
+            subItems: {
+                LOAD_MODIFICATION: {
+                    label: 'LOAD',
+                    dialog: () => adapt(LoadModificationDialog),
+                },
+                GENERATOR_MODIFICATION: {label: 'GENERATOR', dialog: () => adapt(GeneratorModificationDialog),},
+                LINE_MODIFICATION: {
+                    label: 'OverloadedLine',
+                    dialog: () => adapt(LineModificationDialog),
+                },
+                SUBSTATION_MODIFICATION: {
+                    label: 'SUBSTATION',
+                    dialog: () => adapt(SubstationModificationDialog),
+                }
+            }
         },
-        GENERATOR_CREATION: {
-            label: 'CreateGenerator',
-            dialog: () => adapt(GeneratorCreationDialog),
-            icon: <AddIcon />,
+        DELETE: {
+            id: 'DELETE',
+            label: 'DeleteContingencyList',
+            dialog: null,
+            subItems: {
+                EQUIPMENT_DELETION: {
+                    label: 'Equipment',
+                    dialog: () => adapt(EquipmentDeletionDialog),
+                }
+            }
         },
-        GENERATOR_MODIFICATION: {
-            label: 'ModifyGenerator',
-            dialog: () => adapt(GeneratorModificationDialog),
-            icon: <AddIcon />,
+        ATTACHING_SPLITTING_LINES: {
+            id: 'ATTACHING_SPLITTING_LINES',
+            label: 'AttachingAndSplittingLines',
+            dialog: null,
+            subItems: {
+                LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
+                    label: 'LineSplitWithVoltageLevel',
+                    dialog: () => adapt(LineSplitWithVoltageLevelDialog),
+                }, LINE_ATTACH_TO_VOLTAGE_LEVEL: {
+                    label: 'LineAttachToVoltageLevel',
+                    dialog: () => adapt(LineAttachToVoltageLevelDialog),
+                }, LINES_ATTACH_TO_SPLIT_LINES: {
+                    label: 'LinesAttachToSplitLines',
+                    dialog: () => adapt(LinesAttachToSplitLinesDialog),
+                }, DELETE_VOLTAGE_LEVEL_ON_LINE: {
+                    label: 'DeleteVoltageLevelOnLine',
+                    dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
+                }, DELETE_ATTACHING_LINE: {
+                    label: 'DeleteAttachingLine',
+                    dialog: () => adapt(DeleteAttachingLineDialog),
+                }
+            }
         },
-        SHUNT_COMPENSATOR_CREATION: {
-            label: 'CreateShuntCompensator',
-            dialog: () => adapt(ShuntCompensatorCreationDialog),
-            icon: <AddIcon />,
-        },
-        LINE_CREATION: {
-            label: 'CreateLine',
-            dialog: () => adapt(LineCreationDialog),
-            icon: <AddIcon />,
-        },
-        LINE_MODIFICATION: {
-            label: 'ModifyLine',
-            dialog: () => adapt(LineModificationDialog),
-            icon: <AddIcon />,
-        },
-        TWO_WINDINGS_TRANSFORMER_CREATION: {
-            onlyDeveloperMode: true,
-            label: 'CreateTwoWindingsTransformer',
-            dialog: () => adapt(TwoWindingsTransformerCreationDialog),
-            icon: <AddIcon />,
-        },
-        SUBSTATION_CREATION: {
-            label: 'CreateSubstation',
-            dialog: () => adapt(SubstationCreationDialog),
-            icon: <AddIcon />,
-        },
-        SUBSTATION_MODIFICATION: {
-            label: 'ModifySubstation',
-            dialog: () => adapt(SubstationModificationDialog),
-            icon: <AddIcon />,
-        },
-        VOLTAGE_LEVEL_CREATION: {
-            label: 'CreateVoltageLevel',
-            dialog: () => adapt(VoltageLevelCreationDialog),
-            icon: <AddIcon />,
-        },
-        LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
-            label: 'LineSplitWithVoltageLevel',
-            dialog: () => adapt(LineSplitWithVoltageLevelDialog),
-            icon: <AddIcon />,
-        },
-        LINE_ATTACH_TO_VOLTAGE_LEVEL: {
-            label: 'LineAttachToVoltageLevel',
-            dialog: () => adapt(LineAttachToVoltageLevelDialog),
-            icon: <AddIcon />,
-        },
-        LINES_ATTACH_TO_SPLIT_LINES: {
-            label: 'LinesAttachToSplitLines',
-            dialog: () => adapt(LinesAttachToSplitLinesDialog),
-            icon: <AddIcon />,
-        },
-        GENERATOR_SCALING: {
-            label: 'GeneratorScaling',
-            dialog: () => adapt(GeneratorScalingDialog),
-            icon: <AddIcon />,
-        },
-        LOAD_SCALING: {
-            label: 'LoadScaling',
-            dialog: () => adapt(LoadScalingDialog),
-            icon: <AddIcon />,
-        },
-        DELETE_VOLTAGE_LEVEL_ON_LINE: {
-            label: 'DeleteVoltageLevelOnLine',
-            dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
-            icon: <AddIcon />,
-        },
-        DELETE_ATTACHING_LINE: {
-            label: 'DeleteAttachingLine',
-            dialog: () => adapt(DeleteAttachingLineDialog),
-            icon: <AddIcon />,
-        },
-        EQUIPMENT_DELETION: {
-            label: 'DeleteEquipment',
-            dialog: () => adapt(EquipmentDeletionDialog),
-            icon: <DeleteIcon />,
-        },
-        GENERATION_DISPATCH: {
-            label: 'GenerationDispatch',
-            dialog: () => adapt(GenerationDispatchDialog),
-            icon: <AddIcon />,
-        },
+        GENERATION_AND_LOAD: {
+            id: 'GENERATION_AND_LOAD',
+            label: 'GenerationAndLoad',
+            dialog: null,
+            subItems: {
+                GENERATOR_SCALING: {
+                    label: 'GeneratorScaling',
+                    dialog: () => adapt(GeneratorScalingDialog),
+                }, LOAD_SCALING: {
+                    label: 'LoadScaling',
+                    dialog: () => adapt(LoadScalingDialog),
+                }, GENERATION_DISPATCH: {
+                    label: 'GenerationDispatch',
+                    dialog: () => adapt(GenerationDispatchDialog),
+                }
+            }
+        }
     };
+
+    const subItemDialogsList = useMemo(() => Object.values(Object.values(dialogs).map(a => a.subItems)).reduce((result, current) => Object.assign(result, current), {}), [dialogs])
 
     const fillNotification = useCallback(
         (study, messageId) => {
@@ -612,7 +627,7 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const renderDialog = () => {
-        return dialogs[editDialogOpen].dialog();
+        return subItemDialogsList[editDialogOpen].dialog();
     };
 
     const commit = useCallback(

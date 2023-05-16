@@ -7,20 +7,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Grid from '@mui/material/Grid';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
-import { useParameterState } from './parameters/parameters';
+import {NestedMenuItem} from "mui-nested-menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemText from "@mui/material/ListItemText";
 
 const useStyles = makeStyles((theme) => ({
-    button: {
-        justifyContent: 'flex-start',
+    dialog: {
+        alignItems: 'flex-end',
     },
 }));
 
@@ -40,8 +37,6 @@ const NetworkModificationDialog = ({
     const classes = useStyles();
     const intl = useIntl();
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
     const handleClose = () => {
         onClose();
     };
@@ -54,43 +49,35 @@ const NetworkModificationDialog = ({
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="dialog-network-modifications"
+                classes={{
+                    scrollPaper: classes.dialog,
+                }}
             >
-                <DialogTitle>
-                    {intl.formatMessage({ id: 'NetworkModifications' })}
-                </DialogTitle>
                 <DialogContent>
-                    <Grid container direction="column" spacing={2}>
-                        {Object.entries(dialogs)
-                            .filter(
-                                ([id, values]) =>
-                                    !values.onlyDeveloperMode ||
-                                    (values.onlyDeveloperMode &&
-                                        enableDeveloperMode)
-                            )
-                            .map(([id, values]) => (
-                                <Grid key={id} item>
-                                    <Button
-                                        fullWidth
-                                        className={classes.button}
-                                        variant="outlined"
-                                        startIcon={values.icon}
-                                        onClick={() => onOpenDialog(id)}
-                                    >
-                                        <Typography align="left">
-                                            <FormattedMessage
-                                                id={values.label}
-                                            />
-                                        </Typography>
-                                    </Button>
-                                </Grid>
-                            ))}
-                    </Grid>
+                    {Object.entries(dialogs).map(([id, values]) =>
+                        <NestedMenuItem
+                            key={id}
+                            parentMenuOpen={true}
+                            label={intl.formatMessage({id: values.label})}>
+                            {Object.entries(values.subItems).map(([subItemId, subItemValue]) =>
+                                <MenuItem
+                                    key={subItemId}
+                                    onClick={() => onOpenDialog(subItemId)}
+                                >
+                                    <ListItemText
+                                        primary={
+                                            <Typography noWrap>
+                                                {intl.formatMessage({
+                                                    id: subItemValue.label,
+                                                })}
+                                            </Typography>
+                                        }
+                                    />
+                                </MenuItem>
+                            )}
+                        </NestedMenuItem>
+                    )}
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>
-                        <FormattedMessage id="close" />
-                    </Button>
-                </DialogActions>
             </Dialog>
         </>
     );

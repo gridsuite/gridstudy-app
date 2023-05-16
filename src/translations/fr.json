@@ -901,5 +901,9 @@
     "grid.noRowsToShow": "Aucune Donnée",
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
-    "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau"
+    "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
+    "Create": "Créer",
+    "ShuntCompensator": "Moyen de compensation statique",
+    "AttachingAndSplittingLines": "Piquage et coupure",
+    "GenerationAndLoad": "Production et consommation"
 }

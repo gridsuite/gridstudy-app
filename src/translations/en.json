@@ -879,5 +879,9 @@
     "YupNotTypeDefault": "Field value format is incorrect",
 
     "SubstationNotFound": "This substation does not exist in this network",
-    "VoltageLevelNotFound": "This voltage level does not exist in this network"
+    "VoltageLevelNotFound": "This voltage level does not exist in this network",
+    "Create": "Create",
+    "ShuntCompensator": "Shunt compensator",
+    "AttachingAndSplittingLines": "Attaching and splitting lines",
+    "GenerationAndLoad": "Generation and load"
 }
