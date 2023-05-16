@@ -910,5 +910,7 @@
     "lineTypes.linearReactance": "Linear reactance [Ω/km]",
     "lineTypes.linearCapacity": "Linear capacity [F/km]",
     "lineTypes.category.aerial": "Overhead power lines",
-    "lineTypes.category.underground": "Underground cables"
+    "lineTypes.category.underground": "Underground cables",
+    "lineTypes.insulator": "Insulator",
+    "lineTypes.screen": "Screen"
 }
