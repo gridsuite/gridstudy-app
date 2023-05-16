@@ -254,7 +254,7 @@ const NetworkMap = (props) => {
         return (
             tooltip && (
                 <div
-                ref={divRef}
+                    ref={divRef}
                     style={{
                         position: 'absolute',
                         color: theme.palette.text.primary,
@@ -264,13 +264,14 @@ const NetworkMap = (props) => {
                         top: tooltip.pointerY,
                     }}
                 >
-       <LinePopover
+                    <LinePopover
                         studyUuid={studyUuid}
                         lineinfos={tooltip.lineinfos}
                         anchorEl={divRef.current}
                         lineId={tooltip.lineId}
                         loadFlowStatus={props.loadFlowStatus}
-                    />                </div>
+                    />{' '}
+                </div>
             )
         );
     }
@@ -414,8 +415,7 @@ const NetworkMap = (props) => {
                             lineId: getNameOrId(object),
                             pointerX: x,
                             pointerY: y,
-                            lineinfos: object
-
+                            lineinfos: object,
                         });
                     } else {
                         setCursorType('grab');

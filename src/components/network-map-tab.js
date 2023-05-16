@@ -413,9 +413,9 @@ export const NetworkMapTab = ({
 
         const notFoundLineIds = lineFullPath
             ? getEquipmentsNotFoundIds(
-                geoDataRef.current.linePositionsById,
-                mapEquipments.lines
-            )
+                  geoDataRef.current.linePositionsById,
+                  mapEquipments.lines
+              )
             : [];
 
         if (notFoundSubstationIds.length > 0 || notFoundLineIds.length > 0) {
@@ -460,12 +460,12 @@ export const NetworkMapTab = ({
                         const newGeoData = new GeoData(
                             substationsDataChanged
                                 ? new Map(
-                                    geoDataRef.current.substationPositionsById
-                                )
+                                      geoDataRef.current.substationPositionsById
+                                  )
                                 : geoDataRef.current.substationPositionsById,
                             // If lineFullPath is off, we need to render the lines layer when there are some substation positions changed
                             linesDataChanged ||
-                                (!lineFullPath && substationsDataChanged)
+                            (!lineFullPath && substationsDataChanged)
                                 ? new Map(geoDataRef.current.linePositionsById)
                                 : geoDataRef.current.linePositionsById
                         );
@@ -612,8 +612,8 @@ export const NetworkMapTab = ({
             setWaitingLoadData(true);
             const updatedSubstationsToSend =
                 !refIsMapManualRefreshEnabled.current &&
-                    !isUpdatedSubstationsApplied &&
-                    updatedSubstationsIds?.length > 0
+                !isUpdatedSubstationsApplied &&
+                updatedSubstationsIds?.length > 0
                     ? updatedSubstationsIds
                     : undefined;
 
