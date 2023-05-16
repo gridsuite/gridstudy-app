@@ -29,7 +29,7 @@ import {
 } from '../../../../utils/rest-api';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
-import { unitToKiloUnit } from '../../../../utils/rounding';
+import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/rounding';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -139,8 +139,8 @@ const VoltageLevelModificationDialog = ({
                 voltageLevel[NOMINAL_VOLTAGE],
                 voltageLevel[LOW_VOLTAGE_LIMIT],
                 voltageLevel[HIGH_VOLTAGE_LIMIT],
-                voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT],
-                voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT],
+                kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
+                kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
                 isUpdate,
                 editData?.uuid
             ).catch((error) => {
