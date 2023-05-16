@@ -238,7 +238,7 @@
     "PermanentLimitName": "IST",
     "LineLoad": "Load",
     "LimitAcceptableDuration": "Duration",
-    "ErrFetchOverloadedLinesMsg": "An error occurred while getting overloaded lines",
+    "ErrFetchCurrentLimitViolationsMsg": "An error occurred while getting current limit violations",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",

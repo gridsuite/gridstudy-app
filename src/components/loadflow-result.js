@@ -17,7 +17,7 @@ import Grid from '@mui/material/Grid';
 import { green, red } from '@mui/material/colors';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { fetchOverloadedLines } from '../utils/rest-api';
+import { fetchCurrentLimitViolations } from '../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
@@ -93,7 +93,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 side: convertSide(overloadedLine.side),
             };
         };
-        fetchOverloadedLines(
+        fetchCurrentLimitViolations(
             studyUuid,
             nodeUuid,
             lineFlowAlertThreshold / 100.0
@@ -107,7 +107,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'ErrFetchOverloadedLinesMsg',
+                    headerId: 'ErrFetchCurrentLimitViolationsMsg',
                 });
             });
     }, [studyUuid, nodeUuid, lineFlowAlertThreshold, intl, snackError]);

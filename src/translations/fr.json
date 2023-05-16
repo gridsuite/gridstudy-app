@@ -238,7 +238,7 @@
     "PermanentLimitName": "IST",
     "LineLoad": "Charge",
     "LimitAcceptableDuration": "Durée",
-    "ErrFetchOverloadedLinesMsg": "Une erreur est survenue lors la récupération des lignes en surcharge",
+    "ErrFetchCurrentLimitViolationsMsg": "Une erreur est survenue lors la récupération des violations de contraintes en courant",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
     "ComputationStatus": "Statut",
