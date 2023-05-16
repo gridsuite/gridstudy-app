@@ -903,5 +903,30 @@
     "grid.noRowsToShow": "Aucune Donnée",
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
-    "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau"
+    "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
+
+    "CatalogButtonTooltip": "Ouvrir le catalogue",
+    "LineTypesCatalogDialogTitle": "Définir les segments de ligne",
+    "AddSegment": "Ajouter segment",
+    "AtLeastOneSegmentNeeded": "Au moins un segment de ligne est nécessaire",
+    "SelectType": "Sélection type",
+    "SegmentDistance": "Longueur",
+    "SegmentDistanceGreaterThanZero": "La longueur doit être supérieure à zéro",
+    "SegmentTypeMissing": "Type manquant",
+    "LineTypesCatalogFetchingError": "Une erreur est survenue lors de la récupération du catalogue de types de ligne",
+    "lineTypes.resistanceLabel": "Résistance [Ω]",
+    "lineTypes.reactanceLabel": "Réactance [Ω]",
+    "lineTypes.susceptanceLabel": "Susceptance [μS]",
+    "lineTypes.type": "Type",
+    "lineTypes.voltage": "Tension de construction [kV]",
+    "lineTypes.conductorType": "Type conducteur",
+    "lineTypes.section": "Section [mm²]",
+    "lineTypes.conductorsNumber": "Nb conducteurs par faisceau",
+    "lineTypes.circuitsNumber": "Nb ternes",
+    "lineTypes.groundWiresNumber": "Nb câbles de garde",
+    "lineTypes.linearResistance": "Résistance linéique directe [Ω/km]",
+    "lineTypes.linearReactance": "Réactance linéique directe [Ω/km]",
+    "lineTypes.linearCapacity": "Capacité linéique directe [F/km]",
+    "lineTypes.category.aerial": "Lignes aériennes",
+    "lineTypes.category.underground": "Câbles souterrains"
 }
