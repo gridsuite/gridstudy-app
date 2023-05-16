@@ -270,7 +270,7 @@ const NetworkMap = (props) => {
                         anchorEl={divRef.current}
                         lineId={tooltip.lineId}
                         loadFlowStatus={props.loadFlowStatus}
-                    />{' '}
+                    />
                 </div>
             )
         );
