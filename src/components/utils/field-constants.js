@@ -128,6 +128,17 @@ export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     MODIFIED: 'MODIFIED',
     ADDED: 'ADDED',
 };
+export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
+export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
+export const SEGMENT_TYPE_ID = 'segmentTypeId';
+export const SEGMENT_RESISTANCE = 'segmentResistance';
+export const SEGMENT_REACTANCE = 'segmentReactance';
+export const SEGMENT_SUSCEPTANCE = 'segmentSusceptance';
+export const TOTAL_RESISTANCE = 'totalResistance';
+export const TOTAL_REACTANCE = 'totalReactance';
+export const TOTAL_SUSCEPTANCE = 'totalSusceptance';
+export const SEGMENTS = 'segments';
+
 // Voltage level
 export const BUS_BAR_SECTIONS = 'busbarSections';
 export const BUS_BAR_SECTION_ID1 = 'busbarSectionId1';
