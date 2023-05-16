@@ -1828,6 +1828,15 @@ export function fetchAppsAndUrls() {
         });
 }
 
+export function fetchMapBoxToken() {
+    console.info(`Fetching MapBoxToken...`);
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return res.mapBoxToken;
+        });
+}
+
 export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     console.info('Creating groovy script (request network change)');
     const changeUrl =
@@ -2688,6 +2697,49 @@ export function createVoltageLevel({
     });
 }
 
+export function modifyVoltageLevel(
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelId,
+    voltageLevelName,
+    nominalVoltage,
+    lowVoltageLimit,
+    highVoltageLimit,
+    lowShortCircuitCurrentLimit,
+    highShortCircuitCurrentLimit,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating voltage level modification');
+    } else {
+        console.info('Creating voltage level modification');
+    }
+
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+            equipmentId: voltageLevelId,
+            equipmentName: toModificationOperation(voltageLevelName),
+            nominalVoltage: toModificationOperation(nominalVoltage),
+            lowVoltageLimit: toModificationOperation(lowVoltageLimit),
+            highVoltageLimit: toModificationOperation(highVoltageLimit),
+            ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
+            ipMax: toModificationOperation(highShortCircuitCurrentLimit),
+        }),
+    });
+}
+
 export function divideLine(
     studyUuid,
     currentNodeUuid,
@@ -3273,4 +3325,12 @@ export function generationDispatch(
         },
         body,
     });
+}
+
+export function getLineTypesCatalog() {
+    console.info(`get line types catalog`);
+    const url =
+        PREFIX_NETWORK_MODIFICATION_QUERIES +
+        '/v1/network-modifications/catalog/line_types';
+    return backendFetchJson(url);
 }
