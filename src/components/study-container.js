@@ -30,6 +30,7 @@ import {
     connectDeletedStudyNotificationsWebsocket,
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
+    fetchVoltageInitStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -57,6 +58,7 @@ import {
     getSensiRunningStatus,
     getShortCircuitRunningStatus,
     getDynamicSimulationRunningStatus,
+    getVoltageInitRunningStatus,
     RunningStatus,
 } from './utils/running-status';
 import { useIntl } from 'react-intl';
@@ -220,6 +222,11 @@ const dynamicSimulationStatusInvalidations = [
     'dynamicSimulation_status',
     'dynamicSimulation_failed',
 ];
+const voltageInitStatusInvalidations = [
+    'voltageInit_status',
+    'voltageInit_failed',
+];
+
 export const UPDATE_TYPE_HEADER = 'updateType';
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
@@ -300,6 +307,15 @@ export function StudyContainer({ view, onChangeTab }) {
         getDynamicSimulationRunningStatus
     );
 
+    const [voltageInitStatus] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchVoltageInitStatus,
+        voltageInitStatusInvalidations,
+        RunningStatus.IDLE,
+        getVoltageInitRunningStatus
+    );
+
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const [wsConnected, setWsConnected] = useState(false);
@@ -345,6 +361,11 @@ export function StudyContainer({ view, onChangeTab }) {
             if (updateTypeHeader === 'dynamicSimulation_failed') {
                 snackError({
                     headerId: 'dynamicSimulationError',
+                });
+            }
+            if (updateTypeHeader === 'voltageinit_failed') {
+                snackError({
+                    headerId: 'voltageInitError',
                 });
             }
         },
@@ -773,6 +794,9 @@ export function StudyContainer({ view, onChangeTab }) {
             DYNAMIC_SIMULATION: intl.formatMessage({
                 id: 'DynamicSimulation',
             }),
+            VOLTAGE_INIT: intl.formatMessage({
+                id: 'VoltageInit',
+            }),
         };
     }, [intl]);
 
@@ -795,6 +819,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 sensiStatus={sensiStatus}
                 shortCircuitStatus={shortCircuitStatus}
                 dynamicSimulationStatus={dynamicSimulationStatus}
+                voltageInitStatus={voltageInitStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />
