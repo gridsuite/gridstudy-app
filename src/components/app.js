@@ -27,7 +27,6 @@ import {
     selectComponentLibrary,
     selectComputedLanguage,
     selectDiagonalLabelState,
-    selectDisplayOverloadTableState,
     selectFavoriteContingencyLists,
     selectLanguage,
     selectLineFlowAlertThreshold,
@@ -68,7 +67,6 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
-    PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_LANGUAGE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -192,13 +190,6 @@ const App = () => {
                         break;
                     case PARAM_COMPONENT_LIBRARY:
                         dispatch(selectComponentLibrary(param.value));
-                        break;
-                    case PARAM_DISPLAY_OVERLOAD_TABLE:
-                        dispatch(
-                            selectDisplayOverloadTableState(
-                                param.value === 'true'
-                            )
-                        );
                         break;
                     case PARAM_MAP_MANUAL_REFRESH:
                         dispatch(
