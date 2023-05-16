@@ -31,6 +31,7 @@ const ExpandableInput = ({
     initialValue, // Initial value to display when we add a new entry to array
     getDeletionMark = null,
     deleteCallback = null,
+    alignItems = 'stretch', // default value for a flex container
     watchProps = true,
 }) => {
     const classes = useStyles();
@@ -49,7 +50,13 @@ const ExpandableInput = ({
             </Grid>
             {watchProps &&
                 values.map((value, idx) => (
-                    <Grid key={value.id} container spacing={2} item>
+                    <Grid
+                        key={value.id}
+                        container
+                        spacing={2}
+                        item
+                        alignItems={alignItems}
+                    >
                         <Field name={name} index={idx} {...fieldProps} />
                         <Grid item xs={1}>
                             <IconButton

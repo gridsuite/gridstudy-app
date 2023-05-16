@@ -13,6 +13,7 @@ import {
     COUPLING_OMNIBUS,
 } from 'components/utils/field-constants';
 
+// TODO should use "name" props instead of `${COUPLING_OMNIBUS}.(...)`
 export const CouplingOmnibusCreation = ({ index, sectionOptions }) => {
     const busBarSectionId1Field = (
         <AutocompleteInput
