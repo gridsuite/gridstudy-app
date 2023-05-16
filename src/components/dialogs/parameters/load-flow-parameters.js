@@ -18,7 +18,7 @@ import {
     useParameterState,
     useStyles,
 } from './parameters';
-import { LabelledSilder, LineSeparator } from '../dialogUtils';
+import { LabelledSlider, LineSeparator } from '../dialogUtils';
 import {
     FlatParameters,
     extractDefaultMap,
@@ -384,7 +384,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
     const [lineFlowAlertThresholdLocal, handleChangeLineFlowAlertThreshold] =
         useParameterState(PARAM_LINE_FLOW_ALERT_THRESHOLD);
 
-    const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 1;
+    const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 50;
     const alertThresholdMarks = [
         {
             value: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
@@ -423,7 +423,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 />
                 <Grid container spacing={1} paddingTop={1}>
                     <LineSeparator />
-                    <LabelledSilder
+                    <LabelledSlider
                         value={Number(lineFlowAlertThresholdLocal)}
                         label="AlertThresholdLabel"
                         onCommitCallback={(event, value) => {

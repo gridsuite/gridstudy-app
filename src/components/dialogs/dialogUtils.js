@@ -250,7 +250,7 @@ export function LineSeparator() {
     );
 }
 
-export const LabelledSilder = ({
+export const LabelledSlider = ({
     value,
     label,
     disabled,
