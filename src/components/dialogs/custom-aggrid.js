@@ -62,8 +62,6 @@ export const CustomAGGrid = React.forwardRef((props, ref) => {
                 ref={ref}
                 getLocaleText={getLocaleText}
                 debounceVerticalScrollbar={true}
-                onBodyScroll={() => console.log('STARTSCROLL')}
-                onBodyScrollEnd={() => console.log('ENDSCROLL')}
                 {...props}
             />
         </div>

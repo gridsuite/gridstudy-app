@@ -1,35 +1,32 @@
 import { useCallback, useState } from 'react';
 
+// aggridRef is a ref to AGGrid in order to use the Aggrid API
+// eslint can't tell it's a ref when passing it as an argument, we need to add it to hooks dependencies even if it won't change
 export const useSearchBar = (aggridRef) => {
     const [searchInput, setSearchInput] = useState('');
     const [searchResult, setSearchResult] = useState([]);
 
     const searchOccurencesInObjectValues = (object, str) => {
-        const result = [];
-
-        object.forEach((value, key) => {
-            if (value?.toString().indexOf(str) >= 0) {
-                result.push(key);
-            }
-        });
-
-        return result;
+        return (
+            Object.values(object).filter(
+                (value) => value?.toString().indexOf(str) >= 0
+            ).length > 0
+        );
     };
 
     const executeSearchOnRows = useCallback(
         (rowsToSearchFrom) => {
-            console.log(searchInput);
             if (!searchInput) {
                 setSearchResult([]);
                 return;
             }
 
             const newSearchResult = [];
-            rowsToSearchFrom.forEach((row, index) =>
-                searchOccurencesInObjectValues(row, searchInput).forEach((r) =>
-                    newSearchResult.push([index, r])
-                )
-            );
+            rowsToSearchFrom.forEach((row, index) => {
+                if (searchOccurencesInObjectValues(row, searchInput)) {
+                    newSearchResult.push(index);
+                }
+            });
 
             setSearchResult(newSearchResult);
         },
@@ -39,7 +36,7 @@ export const useSearchBar = (aggridRef) => {
     const filterHiddenValuesFromRows = useCallback(
         (fullRows) =>
             fullRows.map((fullRow) => {
-                const rowWithoutHiddenValue = new Map();
+                const rowWithoutHiddenValue = {};
                 // column definition depends on current AGGrid state
                 // if user is moving/hiding the columns, this state will be up to date
                 const currentColumnDefinition =
@@ -53,20 +50,17 @@ export const useSearchBar = (aggridRef) => {
 
                 displayedColumnsField.forEach((displayedField) => {
                     if (rowKeys.includes(displayedField)) {
-                        rowWithoutHiddenValue.set(
-                            displayedField,
-                            fullRow[displayedField]
-                        );
+                        rowWithoutHiddenValue[displayedField] =
+                            fullRow[displayedField];
                     }
                 });
 
                 return rowWithoutHiddenValue;
             }),
-        []
+        [aggridRef]
     );
 
     const calculateSearchBarResults = useCallback(() => {
-        console.log(aggridRef.current?.api);
         if (aggridRef.current?.api != null) {
             const results = [];
             aggridRef.current?.api.forEachNodeAfterFilterAndSort((rowNode) => {
@@ -74,16 +68,17 @@ export const useSearchBar = (aggridRef) => {
             });
             executeSearchOnRows(filterHiddenValuesFromRows(results));
         }
-    }, [filterHiddenValuesFromRows, executeSearchOnRows]);
+    }, [filterHiddenValuesFromRows, executeSearchOnRows, aggridRef]);
 
-    const focusCell = useCallback((index, columnName) => {
-        aggridRef.current?.api.ensureIndexVisible(index, 'middle');
-        // ensureIndexVisible will scroll to the desired index, but it takes some time to render the rows
-        // setFocusCell will do nothing if the selected cell is rendered yet, we need to wait for the scroll to be done
-        setTimeout(() => {
-            aggridRef.current?.api.setFocusedCell(index, columnName);
-        }, 100);
-    }, []);
+    const focusCell = useCallback(
+        (index) => {
+            aggridRef.current?.api.ensureIndexVisible(index, 'middle');
+            aggridRef.current?.api
+                .getDisplayedRowAtIndex(index)
+                .setSelected(true);
+        },
+        [aggridRef]
+    );
 
     return {
         calculateSearchBarResults,

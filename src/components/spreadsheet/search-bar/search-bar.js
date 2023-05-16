@@ -16,17 +16,13 @@ export const SearchBar = ({
 
     const goToNextOccurence = useCallback(
         (action) => {
-            console.log('tesst');
             if (action === 'NEXT') {
                 setOccurenceIndex((oldOccurenceIndex) => {
                     const newOccurenceIndex =
                         oldOccurenceIndex + 1 < searchResult.length
                             ? oldOccurenceIndex + 1
                             : 0;
-                    focusCellCallback(
-                        searchResult[newOccurenceIndex][0],
-                        searchResult[newOccurenceIndex][1]
-                    );
+                    focusCellCallback(searchResult[newOccurenceIndex]);
                     return newOccurenceIndex;
                 });
             } else if (action === 'PREV') {
@@ -35,10 +31,7 @@ export const SearchBar = ({
                         oldOccurenceIndex - 1 >= 0
                             ? oldOccurenceIndex - 1
                             : searchResult.length - 1;
-                    focusCellCallback(
-                        searchResult[newOccurenceIndex][0],
-                        searchResult[newOccurenceIndex][1]
-                    );
+                    focusCellCallback(searchResult[newOccurenceIndex]);
                     return newOccurenceIndex;
                 });
             } else if (action === 'RESET') {
@@ -49,7 +42,6 @@ export const SearchBar = ({
     );
 
     useEffect(() => {
-        console.log('searchResult', searchResult);
         goToNextOccurence('RESET');
     }, [searchResult, goToNextOccurence]);
 
