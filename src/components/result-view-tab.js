@@ -70,7 +70,11 @@ export const ResultViewTab = ({
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.table}>
-                <LoadFlowResult result={loadFlowInfos?.loadFlowResult} />
+                <LoadFlowResult
+                    result={loadFlowInfos?.loadFlowResult}
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                />
             </Paper>
         );
     }
