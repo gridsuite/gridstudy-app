@@ -178,7 +178,11 @@ const GeneratorModificationForm = ({
             name={TRANSFORMER_REACTANCE}
             label={'TransformerReactance'}
             adornment={OhmAdornment}
-            previousValue={generatorToModify?.stepUpTransformerReactance}
+            previousValue={
+                isNaN(generatorToModify?.stepUpTransformerReactance)
+                    ? null
+                    : generatorToModify?.stepUpTransformerReactance
+            }
             clearable={true}
         />
     );

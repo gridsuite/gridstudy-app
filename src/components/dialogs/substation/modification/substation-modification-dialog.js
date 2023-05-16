@@ -81,7 +81,6 @@ const getPropertiesFromModification = (properties) => {
 /**
  * Dialog to modify a substation in the network
  * @param editData the data to edit
- * @param defaultIdValue the default equipment id
  * @param currentNode The node we are currently working on
  * @param studyUuid the study we are currently working on
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -90,7 +89,6 @@ const getPropertiesFromModification = (properties) => {
  */
 const SubstationModificationDialog = ({
     editData,
-    defaultIdValue,
     currentNode,
     studyUuid,
     isUpdate,
@@ -104,12 +102,12 @@ const SubstationModificationDialog = ({
 
     const emptyFormData = useMemo(
         () => ({
-            [EQUIPMENT_ID]: defaultIdValue ?? null,
+            [EQUIPMENT_ID]: null,
             [EQUIPMENT_NAME]: '',
             [COUNTRY]: null,
             [ADDITIONAL_PROPERTIES]: null,
         }),
-        [defaultIdValue]
+        []
     );
 
     const formMethods = useForm({
@@ -203,25 +201,12 @@ const SubstationModificationDialog = ({
         [getValues]
     );
 
-    const getModificationProperties = useCallback(() => {
-        let newModificationProperties = [];
-        // ex: Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
-        const modificationProperties = getValues(`${ADDITIONAL_PROPERTIES}`);
-        if (modificationProperties) {
-            modificationProperties.forEach(function (property) {
-                if (property[ADDED]) {
-                    newModificationProperties.push({
-                        ...property,
-                    });
-                }
-            });
-        }
-        return newModificationProperties;
-    }, [getValues]);
-
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
-            if (equipmentId) {
+            if (!equipmentId) {
+                setSubstationToModify(null);
+                reset(emptyFormData, { keepDefaultValues: true });
+            } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchEquipmentInfos(
                     studyUuid,
@@ -233,38 +218,21 @@ const SubstationModificationDialog = ({
                     .then((substation) => {
                         if (substation) {
                             setSubstationToModify(substation);
-                            reset(
-                                (formValues) => ({
-                                    ...formValues,
-                                    [ADDITIONAL_PROPERTIES]:
-                                        getAdditionalProperties(substation),
-                                }),
-                                { keepDefaultValues: true }
-                            );
+                            reset((formValues) => ({
+                                ...formValues,
+                                [ADDITIONAL_PROPERTIES]:
+                                    getAdditionalProperties(substation),
+                            }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
-                        setSubstationToModify(null);
-                        reset(
-                            (formValues) => ({
-                                ...formValues,
-                                [ADDITIONAL_PROPERTIES]:
-                                    getModificationProperties(),
-                            }),
-                            { keepDefaultValues: true }
-                        );
                         setDataFetchStatus(FetchStatus.FAILED);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setSubstationToModify(null);
+                            reset(emptyFormData);
+                        }
                     });
-            } else {
-                setSubstationToModify(null);
-                reset(
-                    (formValues) => ({
-                        ...formValues,
-                        [ADDITIONAL_PROPERTIES]: getModificationProperties(),
-                    }),
-                    { keepDefaultValues: true }
-                );
             }
         },
         [
@@ -272,7 +240,8 @@ const SubstationModificationDialog = ({
             currentNodeUuid,
             reset,
             getAdditionalProperties,
-            getModificationProperties,
+            editData,
+            emptyFormData,
         ]
     );
 
