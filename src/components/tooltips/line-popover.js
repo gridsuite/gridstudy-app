@@ -27,7 +27,7 @@ import { RunningStatus } from '../utils/running-status';
 
 const LinePopover = ({
     studyUuid,
-    lineinfos,
+    lineInfos,
     anchorEl,
     lineId,
     loadFlowStatus,
@@ -37,14 +37,14 @@ const LinePopover = ({
     const intl = useIntl();
 
     useEffect(() => {
-        if (lineinfos) {
-            setLineInfo(lineinfos);
+        if (lineInfos) {
+            setLineInfo(lineInfos);
         } else if (lineId && lineId !== '') {
             fetchLine(studyUuid, currentNode.id, lineId).then((value) => {
                 setLineInfo(value);
             });
         }
-    }, [lineId, currentNode.id, studyUuid, lineinfos]);
+    }, [lineId, currentNode.id, studyUuid, lineInfos]);
 
     const handlePopoverClose = () => {
         setLineInfo(null);

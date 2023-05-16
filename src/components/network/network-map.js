@@ -252,7 +252,8 @@ const NetworkMap = (props) => {
 
     function renderTooltip() {
         return (
-            tooltip && (
+            tooltip &&
+            tooltip.visible && (
                 <div
                     ref={divRef}
                     style={{
@@ -266,7 +267,7 @@ const NetworkMap = (props) => {
                 >
                     <LinePopover
                         studyUuid={studyUuid}
-                        lineinfos={tooltip.lineinfos}
+                        lineInfos={tooltip.lineInfos}
                         anchorEl={divRef.current}
                         lineId={tooltip.lineId}
                         loadFlowStatus={props.loadFlowStatus}
@@ -415,7 +416,8 @@ const NetworkMap = (props) => {
                             lineId: getNameOrId(object),
                             pointerX: x,
                             pointerY: y,
-                            lineinfos: object,
+                            lineInfos: object,
+                            visible: true,
                         });
                     } else {
                         setCursorType('grab');
