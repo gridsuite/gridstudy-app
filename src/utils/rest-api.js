@@ -1781,6 +1781,15 @@ export function fetchAppsAndUrls() {
         });
 }
 
+export function fetchMapBoxToken() {
+    console.info(`Fetching MapBoxToken...`);
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return res.mapBoxToken;
+        });
+}
+
 export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     console.info('Creating groovy script (request network change)');
     const changeUrl =
