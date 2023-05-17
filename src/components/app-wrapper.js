@@ -61,6 +61,9 @@ const lightTheme = createTheme({
     selectedRow: {
         background: '#8E9C9B',
     },
+    tooltipTable: {
+        background: '#e6e6e6',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
     aggrid: 'ag-theme-alpine',
 });
@@ -80,7 +83,10 @@ const darkTheme = createTheme({
     selectedRow: {
         background: '#545C5B',
     },
-    mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
+    tooltipTable: {
+        background: '#121212',
+    },
+    mapboxStyle: 'mapbox://styles   /mapbox/dark-v9',
     aggrid: 'ag-theme-alpine-dark',
 });
 
