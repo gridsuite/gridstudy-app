@@ -12,6 +12,7 @@ import {
     LOSS_COEFFICIENT,
     DEFAULT_OUTAGE_RATE,
     GENERATORS_WITHOUT_OUTAGE,
+    GENERATORS_WITH_FIXED_ACTIVE_POWER,
     ID,
     NAME,
 } from 'components/utils/field-constants';
@@ -28,9 +29,10 @@ const emptyFormData = {
     [LOSS_COEFFICIENT]: null,
     [DEFAULT_OUTAGE_RATE]: null,
     [GENERATORS_WITHOUT_OUTAGE]: [],
+    [GENERATORS_WITH_FIXED_ACTIVE_POWER]: [],
 };
 
-const getGeneratorsWithoutOutageSchema = (id) => ({
+const getGeneratorsFiltersSchema = (id) => ({
     [id]: yup.array().of(
         yup.object().shape({
             [ID]: yup.string().required(),
@@ -49,7 +51,8 @@ const formSchema = yup
             .min(0)
             .max(100)
             .required(),
-        ...getGeneratorsWithoutOutageSchema(GENERATORS_WITHOUT_OUTAGE),
+        ...getGeneratorsFiltersSchema(GENERATORS_WITHOUT_OUTAGE),
+        ...getGeneratorsFiltersSchema(GENERATORS_WITH_FIXED_ACTIVE_POWER),
     })
     .required();
 
@@ -77,6 +80,8 @@ const GenerationDispatchDialog = ({
                 [LOSS_COEFFICIENT]: generation.lossCoefficient,
                 [DEFAULT_OUTAGE_RATE]: generation.defaultOutageRate,
                 [GENERATORS_WITHOUT_OUTAGE]: generation.generatorsWithoutOutage,
+                [GENERATORS_WITH_FIXED_ACTIVE_POWER]:
+                    generation.generatorsWithFixedSupply,
             });
         },
         [reset]
@@ -96,6 +101,8 @@ const GenerationDispatchDialog = ({
                 editData?.uuid ?? undefined,
                 generation?.lossCoefficient,
                 generation?.defaultOutageRate,
+                generation[GENERATORS_WITHOUT_OUTAGE],
+                generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
                 generation[GENERATORS_WITHOUT_OUTAGE]
             ).catch((error) => {
                 snackError({

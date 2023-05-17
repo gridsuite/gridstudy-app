@@ -3317,13 +3317,15 @@ export function generationDispatch(
     modificationUuid,
     lossCoefficient,
     defaultOutageRate,
-    generatorsWithoutOutage
+    generatorsWithoutOutage,
+    generatorsWithFixedActivePower
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
-        lossCoefficient,
-        defaultOutageRate,
-        generatorsWithoutOutage,
+        lossCoefficient: lossCoefficient,
+        defaultOutageRate: defaultOutageRate,
+        generatorsWithoutOutage: generatorsWithoutOutage,
+        generatorsWithFixedSupply: generatorsWithFixedActivePower,
     });
 
     let generationDispatchUrl =

@@ -11,6 +11,7 @@ import {
     LOSS_COEFFICIENT,
     DEFAULT_OUTAGE_RATE,
     GENERATORS_WITHOUT_OUTAGE,
+    GENERATORS_WITH_FIXED_ACTIVE_POWER,
 } from '../../utils/field-constants';
 import {
     gridItem,
@@ -73,15 +74,27 @@ const GenerationDispatchForm = ({ currentNode, studyUuid }) => {
         />
     );
 
+    const generatorsWithFixedActivePowerField = (
+        <DirectoryItemsInput
+            name={`${GENERATORS_WITH_FIXED_ACTIVE_POWER}`}
+            equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
+            elementType={elementType.FILTER}
+            label={'GeneratorsWithFixedActivePower'}
+            titleId={'FiltersListsSelection'}
+        />
+    );
+
     return (
         <>
             <Grid
                 container
+                direction="column"
                 spacing={2}
-                alignItems="center"
+                alignItems="start"
                 className={classes.padding}
             >
                 {gridItem(lossCoefficientField, 4)}
+                {gridItem(generatorsWithFixedActivePowerField, 6)}
             </Grid>
             <GridSection title="ReduceMaxP" />
             <Grid container spacing={2} alignItems="center">
