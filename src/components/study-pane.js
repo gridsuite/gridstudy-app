@@ -90,6 +90,7 @@ const StudyPane = ({
     sensiStatus,
     shortCircuitStatus,
     dynamicSimulationStatus,
+    voltageInitStatus,
     runnable,
     setErrorMessage,
     ...props
@@ -266,6 +267,7 @@ const StudyPane = ({
                                     dynamicSimulationStatus={
                                         dynamicSimulationStatus
                                     }
+                                    voltageInitStatus={voltageInitStatus}
                                     setIsComputationRunning={
                                         setIsComputationRunning
                                     }
