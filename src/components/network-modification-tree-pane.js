@@ -202,7 +202,6 @@ export const NetworkModificationTreePane = ({
             messageId: 'CopiedNodeInvalidationMessage',
         });
 
-        //in the future if we need to reset the clipboard across tabs, just change the definition of isCrossTabNodeCopyInitiated
         if (true === isInitiatingCopyTab.current) {
             broadcastChannel.postMessage(noSelectionForCopy);
 
