@@ -137,11 +137,11 @@
     "VoltageRegulatorOn": "Voltage regulation",
     "RegulatingTerminal": "Regulated node",
 
-    "displayOverloadTable": "Display the overload table when threshold is exceeded: ",
-
     "LoadFlow": "LoadFlow",
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
+    "VoltageInit": "Voltage profile initialization",
+    "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
 
     "DynamicSimulation": "Dynamic simulation",
     "DynamicSimulationGetMappingError": "Get dynamic mappings",
@@ -240,7 +240,7 @@
     "PermanentLimitName": "IST",
     "LineLoad": "Load",
     "LimitAcceptableDuration": "Duration",
-    "ErrFetchOverloadedLinesMsg": "An error occurred while getting overloaded lines",
+    "ErrFetchCurrentLimitViolationsMsg": "An error occurred while getting the current limit violations",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",
@@ -294,6 +294,8 @@
     "securityAnalysisError": "An error occurred while executing the security analysis",
     "loadFlowResults": "Loadflow results",
     "startLoadFlowError": "An error occurred while starting the load flow",
+    "LoadFlowResultsConstraints": "Constraints",
+    "LoadFlowResultsStatus": "Status",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
