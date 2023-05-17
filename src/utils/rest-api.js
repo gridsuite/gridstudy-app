@@ -836,17 +836,17 @@ export function fetchEquipmentInfos(
     return backendFetchJson(fetchEquipmentInfosUrl);
 }
 
-export function fetchOverloadedLines(
+export function fetchCurrentLimitViolations(
     studyUuid,
     currentNodeUuid,
     limitReduction
 ) {
     console.info(
-        `Fetching overloaded lines (with limit reduction ${limitReduction}) ...`
+        `Fetching current limit violations (with limit reduction ${limitReduction}) ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/overloaded-lines?limitReduction=' +
+        '/current-limit-violations?limitReduction=' +
         limitReduction.toString();
     return backendFetchJson(url);
 }
@@ -1226,6 +1226,53 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     console.debug(url);
     return backendFetchJson(url);
 }
+
+// --- Voltage init API - BEGIN
+export function startVoltageInit(studyUuid, currentNodeUuid) {
+    console.info(
+        `Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const startVoltageInitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/run';
+    console.debug(startVoltageInitUrl);
+    return backendFetch(startVoltageInitUrl, { method: 'put' });
+}
+
+export function stopVoltageInit(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopVoltageInitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/stop';
+    console.debug(stopVoltageInitUrl);
+    return backendFetch(stopVoltageInitUrl, { method: 'put' });
+}
+
+export function fetchVoltageInitStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching voltage init status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/status';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchVoltageInitResult(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/result';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+// --- Voltage init API - END
 
 // --- Dynamic simulation API - BEGIN
 export function getDynamicMappings(studyUuid) {
@@ -1778,6 +1825,15 @@ export function fetchAppsAndUrls() {
             ).then((response) => {
                 return response.json();
             });
+        });
+}
+
+export function fetchMapBoxToken() {
+    console.info(`Fetching MapBoxToken...`);
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return res.mapBoxToken;
         });
 }
 
@@ -3269,4 +3325,12 @@ export function generationDispatch(
         },
         body,
     });
+}
+
+export function getLineTypesCatalog() {
+    console.info(`get line types catalog`);
+    const url =
+        PREFIX_NETWORK_MODIFICATION_QUERIES +
+        '/v1/network-modifications/catalog/line_types';
+    return backendFetchJson(url);
 }
