@@ -3306,10 +3306,10 @@ export function generationDispatch(
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
-        lossCoefficient,
-        defaultOutageRate,
-        generatorsWithoutOutage,
-        generatorsWithFixedActivePower,
+        lossCoefficient: lossCoefficient,
+        defaultOutageRate: defaultOutageRate,
+        generatorsWithoutOutage: generatorsWithoutOutage,
+        generatorsWithFixedSupply: generatorsWithFixedActivePower,
     });
 
     let generationDispatchUrl =

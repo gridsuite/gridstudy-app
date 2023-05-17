@@ -81,7 +81,7 @@ const GenerationDispatchDialog = ({
                 [DEFAULT_OUTAGE_RATE]: generation.defaultOutageRate,
                 [GENERATORS_WITHOUT_OUTAGE]: generation.generatorsWithoutOutage,
                 [GENERATORS_WITH_FIXED_ACTIVE_POWER]:
-                    generation.generatorsWithFixedActivePower,
+                    generation.generatorsWithFixedSupply,
             });
         },
         [reset]
