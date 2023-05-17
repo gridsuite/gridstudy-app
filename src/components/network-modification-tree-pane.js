@@ -202,6 +202,7 @@ export const NetworkModificationTreePane = ({
             messageId: 'CopiedNodeInvalidationMessage',
         });
 
+        //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
         if (true === isInitiatingCopyTab.current) {
             broadcastChannel.postMessage(noSelectionForCopy);
 
@@ -286,7 +287,6 @@ export const NetworkModificationTreePane = ({
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeDeleted'
             ) {
-                //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) =>
@@ -326,7 +326,6 @@ export const NetworkModificationTreePane = ({
                         studyUpdatedForce.eventData.headers['nodes']
                     )
                 ) {
-                    //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
                     resetNodeClipboard();
                 }
             } else if (
