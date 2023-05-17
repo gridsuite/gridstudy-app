@@ -4,47 +4,89 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import TextInput from '../../utils/rhf-inputs/text-input';
-import { LOSS_COEFFICIENT } from '../../utils/field-constants';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import DirectoryItemsInput from '../../utils/rhf-inputs/directory-items-input';
+import FloatInput from '../../utils/rhf-inputs/float-input';
+import {
+    LOSS_COEFFICIENT,
+    DEFAULT_OUTAGE_RATE,
+    GENERATORS_WITHOUT_OUTAGE,
+} from '../../utils/field-constants';
 import {
     gridItem,
     percentageTextField,
-    standardTextField,
+    GridSection,
 } from '../../dialogs/dialogUtils';
 import Grid from '@mui/material/Grid';
 import {
     formatPercentageValue,
     isValidPercentage,
 } from '../percentage-area/percentage-area-utils';
-import { useFormContext } from 'react-hook-form';
+import { elementType } from '@gridsuite/commons-ui';
 import React from 'react';
+import makeStyles from '@mui/styles/makeStyles';
+
+export const useStyles = makeStyles((theme) => ({
+    padding: {
+        paddingTop: theme.spacing(2),
+    },
+}));
 
 const GenerationDispatchForm = ({ currentNode, studyUuid }) => {
-    const { setValue } = useFormContext();
+    const classes = useStyles();
 
-    const handleLossCoefficientValueChange = (value) => {
-        const lossCoefficientValue = formatPercentageValue(value);
-        setValue(LOSS_COEFFICIENT, lossCoefficientValue, {
-            shouldValidate: true,
-        });
-        return lossCoefficientValue;
+    const handleCoefficientValueChange = (id, value) => {
+        return formatPercentageValue(value);
     };
 
     const lossCoefficientField = (
-        <TextInput
+        <FloatInput
             name={LOSS_COEFFICIENT}
             label={'LossCoefficient'}
             adornment={percentageTextField}
             acceptValue={isValidPercentage}
-            outputTransform={handleLossCoefficientValueChange}
-            formProps={standardTextField}
+            outputTransform={(value) =>
+                handleCoefficientValueChange(LOSS_COEFFICIENT, value)
+            }
+        />
+    );
+
+    const defaultOutageRateField = (
+        <FloatInput
+            name={DEFAULT_OUTAGE_RATE}
+            label={'DefaultOutageRate'}
+            adornment={percentageTextField}
+            acceptValue={isValidPercentage}
+            outputTransform={(value) =>
+                handleCoefficientValueChange(DEFAULT_OUTAGE_RATE, value)
+            }
+        />
+    );
+
+    const generatorsWithoutOutageField = (
+        <DirectoryItemsInput
+            name={`${GENERATORS_WITHOUT_OUTAGE}`}
+            equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
+            elementType={elementType.FILTER}
+            label={'GeneratorsWithoutOutage'}
+            titleId={'FiltersListsSelection'}
         />
     );
 
     return (
         <>
-            <Grid container spacing={2} alignItems="center">
+            <Grid
+                container
+                spacing={2}
+                alignItems="center"
+                className={classes.padding}
+            >
                 {gridItem(lossCoefficientField, 4)}
+            </Grid>
+            <GridSection title="ReduceMaxP" />
+            <Grid container spacing={2} alignItems="center">
+                {gridItem(defaultOutageRateField, 4)}
+                {gridItem(generatorsWithoutOutageField, 6)}
             </Grid>
         </>
     );
