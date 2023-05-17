@@ -1406,6 +1406,18 @@ function getDynamicSimulationUrl() {
     return PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES + '/v1/';
 }
 
+export function fetchDynamicSimulationModels(studyUuid, nodeUuid) {
+    console.info(
+        `Fetching dynamic simulation models on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/dynamic-simulation/models';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function fetchDynamicSimulationProviders() {
     console.info('fetch dynamic simulation providers');
     const url = getDynamicSimulationUrl() + 'providers';
@@ -1454,7 +1466,10 @@ export function fetchDynamicSimulationParameters(studyUuid) {
     const mappingsPromise = getDynamicMappings(studyUuid);
 
     return Promise.all([parametersPromise, mappingsPromise]).then(
-        ([parameters, mappings]) => ({ ...parameters, mappings })
+        ([parameters, mappings]) => ({
+            ...parameters,
+            mappings,
+        })
     );
 }
 
@@ -1462,6 +1477,7 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
+
     return backendFetch(url, {
         method: 'POST',
         headers: {
