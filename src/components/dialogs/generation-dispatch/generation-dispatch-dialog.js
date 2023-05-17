@@ -102,7 +102,8 @@ const GenerationDispatchDialog = ({
                 generation?.lossCoefficient,
                 generation?.defaultOutageRate,
                 generation[GENERATORS_WITHOUT_OUTAGE],
-                generation[GENERATORS_WITH_FIXED_ACTIVE_POWER]
+                generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
+                generation[GENERATORS_WITHOUT_OUTAGE]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
