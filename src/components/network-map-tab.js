@@ -21,13 +21,9 @@ import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import makeStyles from '@mui/styles/makeStyles';
-import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    PARAM_DISPLAY_OVERLOAD_TABLE,
-    PARAM_MAP_MANUAL_REFRESH,
-} from '../utils/config-params';
+import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
@@ -35,7 +31,6 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from './graph/util/model-functions';
-import { RunningStatus } from './utils/running-status';
 import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -66,16 +61,6 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         zIndex: 1,
     },
-    divOverloadedLineView: {
-        right: 45,
-        top: 10,
-        minWidth: '700px',
-        position: 'absolute',
-        height: '70%',
-        opacity: '1',
-        flex: 1,
-        pointerEvents: 'none',
-    },
 }));
 
 const NODE_CHANGED_ERROR =
@@ -91,6 +76,7 @@ export const NetworkMapTab = ({
     sensiStatus,
     shortCircuitStatus,
     dynamicSimulationStatus,
+    voltageInitStatus,
     /* visual*/
     visible,
     lineFullPath,
@@ -133,11 +119,7 @@ export const NetworkMapTab = ({
     */
     const temporaryGeoDataIdsRef = useRef();
 
-    const displayOverloadTable = useSelector(
-        (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
-    );
     const disabled = !visible || !isNodeBuilt(currentNode);
-    const isRootNode = currentNode?.type === 'ROOT';
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
@@ -824,10 +806,6 @@ export const NetworkMapTab = ({
         );
     }
 
-    const isLoadFlowValid = () => {
-        return loadFlowStatus === RunningStatus.SUCCEED;
-    };
-
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
@@ -891,17 +869,6 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            {!isRootNode && displayOverloadTable && isLoadFlowValid() && (
-                <div className={classes.divOverloadedLineView}>
-                    <OverloadedLinesView
-                        lineFlowAlertThreshold={lineFlowAlertThreshold}
-                        disabled={disabled}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        mapEquipments={mapEquipments}
-                    />
-                </div>
-            )}
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
@@ -911,6 +878,7 @@ export const NetworkMapTab = ({
                     sensiStatus={sensiStatus}
                     shortCircuitStatus={shortCircuitStatus}
                     dynamicSimulationStatus={dynamicSimulationStatus}
+                    voltageInitStatus={voltageInitStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
                     disabled={disabled || isNodeReadOnly(currentNode)}
