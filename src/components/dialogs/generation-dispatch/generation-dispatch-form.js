@@ -23,7 +23,6 @@ import {
     isValidPercentage,
 } from '../percentage-area/percentage-area-utils';
 import { elementType } from '@gridsuite/commons-ui';
-import { useFormContext } from 'react-hook-form';
 import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -35,14 +34,9 @@ export const useStyles = makeStyles((theme) => ({
 
 const GenerationDispatchForm = ({ currentNode, studyUuid }) => {
     const classes = useStyles();
-    const { setValue } = useFormContext();
 
     const handleCoefficientValueChange = (id, value) => {
-        const coefficientValue = formatPercentageValue(value);
-        setValue(id, coefficientValue, {
-            shouldValidate: true,
-        });
-        return coefficientValue;
+        return formatPercentageValue(value);
     };
 
     const lossCoefficientField = (
