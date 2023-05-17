@@ -41,7 +41,7 @@ import { useStore } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
-import { BUILD_STATUS } from './network/constants';
+import { BUILD_STATUS, UPDATE_TYPE } from './network/constants';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -182,6 +182,31 @@ export const NetworkModificationTreePane = ({
         [studyUuid, dispatch]
     );
 
+    const isSubtreeImpacted = useCallback(
+        (headerName) => {
+            const nodesImpacted = Array.isArray(
+                studyUpdatedForce.eventData.headers[headerName]
+            )
+                ? studyUpdatedForce.eventData.headers[headerName]
+                : Array(studyUpdatedForce.eventData.headers[headerName]);
+
+            return (
+                (selectionForCopyRef.current.copyType ===
+                    CopyType.SUBTREE_COPY ||
+                    selectionForCopyRef.current.copyType ===
+                        CopyType.SUBTREE_CUT) &&
+                nodesImpacted.some(
+                    (nodeId) =>
+                        nodeId === selectionForCopyRef.current.nodeId ||
+                        selectionForCopyRef.current.allChildrenIds?.includes(
+                            nodeId
+                        )
+                )
+            );
+        },
+        [studyUpdatedForce.eventData.headers]
+    );
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
@@ -200,6 +225,13 @@ export const NetworkModificationTreePane = ({
                         )
                     );
                 });
+
+                if (isSubtreeImpacted('parentNode')) {
+                    dispatch(setSelectionForCopy(noSelectionForCopy));
+                    snackInfo({
+                        messageId: 'CopiedNodeInvalidationMessage',
+                    });
+                }
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'subtreeCreated'
@@ -252,30 +284,18 @@ export const NetworkModificationTreePane = ({
             ) {
                 //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
                 if (
-                    true === isInitiatingCopyTab.current &&
-                    studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) =>
-                            nodeId === selectionForCopyRef.current.nodeId
-                    )
+                    (true === isInitiatingCopyTab.current &&
+                        studyUpdatedForce.eventData.headers['nodes'].some(
+                            (nodeId) =>
+                                nodeId === selectionForCopyRef.current.nodeId
+                        )) ||
+                    isSubtreeImpacted('nodes')
                 ) {
                     dispatch(setSelectionForCopy(noSelectionForCopy));
                     snackInfo({
                         messageId: 'CopiedNodeInvalidationMessage',
                     });
                     broadcastChannel.postMessage(noSelectionForCopy);
-                } else if (
-                    studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) =>
-                            nodeId === selectionForCopyRef.current.nodeId ||
-                            selectionForCopyRef.current.allChildrenIds?.includes(
-                                nodeId
-                            )
-                    )
-                ) {
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
-                    snackInfo({
-                        messageId: 'CopiedNodeInvalidationMessage',
-                    });
                 }
                 dispatch(
                     networkModificationTreeNodesRemoved(
@@ -297,11 +317,12 @@ export const NetworkModificationTreePane = ({
                     );
                 }
                 if (
-                    true === isInitiatingCopyTab.current &&
-                    studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) =>
-                            nodeId === selectionForCopyRef.current.nodeId
-                    )
+                    (true === isInitiatingCopyTab.current &&
+                        studyUpdatedForce.eventData.headers['nodes'].some(
+                            (nodeId) =>
+                                nodeId === selectionForCopyRef.current.nodeId
+                        )) ||
+                    isSubtreeImpacted('nodes')
                 ) {
                     //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
                     dispatch(setSelectionForCopy(noSelectionForCopy));
@@ -309,19 +330,6 @@ export const NetworkModificationTreePane = ({
                         messageId: 'CopiedNodeInvalidationMessage',
                     });
                     broadcastChannel.postMessage(noSelectionForCopy);
-                } else if (
-                    studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) =>
-                            nodeId === selectionForCopyRef.current.nodeId ||
-                            selectionForCopyRef.current.allChildrenIds?.includes(
-                                nodeId
-                            )
-                    )
-                ) {
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
-                    snackInfo({
-                        messageId: 'CopiedNodeInvalidationMessage',
-                    });
                 }
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
@@ -342,6 +350,23 @@ export const NetworkModificationTreePane = ({
                         removeNotificationByNode([currentNodeRef.current?.id])
                     );
                 }
+                //creating, updating or deleting modifications must invalidate the node clipboard
+            } else if (
+                UPDATE_TYPE.includes(
+                    studyUpdatedForce.eventData.headers['updateType']
+                )
+            ) {
+                if (
+                    (true === isInitiatingCopyTab.current &&
+                        studyUpdatedForce.eventData.headers['parentNode'] ===
+                            selectionForCopyRef.current.nodeId) ||
+                    isSubtreeImpacted('parentNode')
+                ) {
+                    dispatch(setSelectionForCopy(noSelectionForCopy));
+                    snackInfo({
+                        messageId: 'CopiedNodeInvalidationMessage',
+                    });
+                }
             }
         }
     }, [
@@ -351,6 +376,7 @@ export const NetworkModificationTreePane = ({
         snackInfo,
         dispatch,
         broadcastChannel,
+        isSubtreeImpacted,
     ]);
 
     const handleCreateNode = useCallback(
