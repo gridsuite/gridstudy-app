@@ -183,29 +183,33 @@ export const NetworkModificationTreePane = ({
     );
 
     const isSubtreeImpacted = useCallback(
-        (headerName) => {
-            const nodesImpacted = Array.isArray(
-                studyUpdatedForce.eventData.headers[headerName]
-            )
-                ? studyUpdatedForce.eventData.headers[headerName]
-                : Array(studyUpdatedForce.eventData.headers[headerName]);
+        (nodes) =>
+            (selectionForCopyRef.current.copyType === CopyType.SUBTREE_COPY ||
+                selectionForCopyRef.current.copyType ===
+                    CopyType.SUBTREE_CUT) &&
+            nodes.some(
+                (nodeId) =>
+                    nodeId === selectionForCopyRef.current.nodeId ||
+                    selectionForCopyRef.current.allChildrenIds?.includes(nodeId)
+            ),
 
-            return (
-                (selectionForCopyRef.current.copyType ===
-                    CopyType.SUBTREE_COPY ||
-                    selectionForCopyRef.current.copyType ===
-                        CopyType.SUBTREE_CUT) &&
-                nodesImpacted.some(
-                    (nodeId) =>
-                        nodeId === selectionForCopyRef.current.nodeId ||
-                        selectionForCopyRef.current.allChildrenIds?.includes(
-                            nodeId
-                        )
-                )
-            );
-        },
-        [studyUpdatedForce.eventData.headers]
+        []
     );
+
+    const resetNodeClipboard = useCallback(() => {
+        dispatch(setSelectionForCopy(noSelectionForCopy));
+        snackInfo({
+            messageId: 'CopiedNodeInvalidationMessage',
+        });
+
+        //in the future if we need to reset the clipboard across tabs, just change the definition of isCrossTabNodeCopyInitiated
+        if (true === isInitiatingCopyTab.current) {
+            broadcastChannel.postMessage(noSelectionForCopy);
+
+            //we need to reset isInitiatingCopyTab here otherwise it won't in the current tab thus next unrelated pasting actions will reset other tabs clipboard
+            isInitiatingCopyTab.current = false;
+        }
+    }, [broadcastChannel, dispatch, snackInfo]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -226,11 +230,12 @@ export const NetworkModificationTreePane = ({
                     );
                 });
 
-                if (isSubtreeImpacted('parentNode')) {
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
-                    snackInfo({
-                        messageId: 'CopiedNodeInvalidationMessage',
-                    });
+                if (
+                    isSubtreeImpacted([
+                        studyUpdatedForce.eventData.headers['parentNode'],
+                    ])
+                ) {
+                    resetNodeClipboard();
                 }
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
@@ -284,18 +289,15 @@ export const NetworkModificationTreePane = ({
             ) {
                 //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
                 if (
-                    (true === isInitiatingCopyTab.current &&
-                        studyUpdatedForce.eventData.headers['nodes'].some(
-                            (nodeId) =>
-                                nodeId === selectionForCopyRef.current.nodeId
-                        )) ||
-                    isSubtreeImpacted('nodes')
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) =>
+                            nodeId === selectionForCopyRef.current.nodeId
+                    ) ||
+                    isSubtreeImpacted(
+                        studyUpdatedForce.eventData.headers['nodes']
+                    )
                 ) {
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
-                    snackInfo({
-                        messageId: 'CopiedNodeInvalidationMessage',
-                    });
-                    broadcastChannel.postMessage(noSelectionForCopy);
+                    resetNodeClipboard();
                 }
                 dispatch(
                     networkModificationTreeNodesRemoved(
@@ -317,19 +319,16 @@ export const NetworkModificationTreePane = ({
                     );
                 }
                 if (
-                    (true === isInitiatingCopyTab.current &&
-                        studyUpdatedForce.eventData.headers['nodes'].some(
-                            (nodeId) =>
-                                nodeId === selectionForCopyRef.current.nodeId
-                        )) ||
-                    isSubtreeImpacted('nodes')
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) =>
+                            nodeId === selectionForCopyRef.current.nodeId
+                    ) ||
+                    isSubtreeImpacted(
+                        studyUpdatedForce.eventData.headers['nodes']
+                    )
                 ) {
                     //only the tab that initiated the copy should update through the websocket, all the other tabs will get the info through broadcast
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
-                    snackInfo({
-                        messageId: 'CopiedNodeInvalidationMessage',
-                    });
-                    broadcastChannel.postMessage(noSelectionForCopy);
+                    resetNodeClipboard();
                 }
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
@@ -357,15 +356,13 @@ export const NetworkModificationTreePane = ({
                 )
             ) {
                 if (
-                    (true === isInitiatingCopyTab.current &&
-                        studyUpdatedForce.eventData.headers['parentNode'] ===
-                            selectionForCopyRef.current.nodeId) ||
-                    isSubtreeImpacted('parentNode')
+                    studyUpdatedForce.eventData.headers['parentNode'] ===
+                        selectionForCopyRef.current.nodeId ||
+                    isSubtreeImpacted([
+                        studyUpdatedForce.eventData.headers['parentNode'],
+                    ])
                 ) {
-                    dispatch(setSelectionForCopy(noSelectionForCopy));
-                    snackInfo({
-                        messageId: 'CopiedNodeInvalidationMessage',
-                    });
+                    resetNodeClipboard();
                 }
             }
         }
@@ -377,6 +374,7 @@ export const NetworkModificationTreePane = ({
         dispatch,
         broadcastChannel,
         isSubtreeImpacted,
+        resetNodeClipboard,
     ]);
 
     const handleCreateNode = useCallback(
