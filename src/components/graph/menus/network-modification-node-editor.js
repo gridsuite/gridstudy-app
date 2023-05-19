@@ -15,8 +15,8 @@ import {
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import LineAttachToVoltageLevelDialog from '../../dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
+import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
+import NetworkModificationDialog from 'components/dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
 import {
@@ -29,12 +29,12 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import LoadCreationDialog from '../../dialogs/network-modifications/load/creation/load-creation-dialog';
-import LoadModificationDialog from '../../dialogs/network-modifications/load/modification/load-modification-dialog';
+import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
+import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import LineCreationDialog from 'components/dialogs/network-modifications/line/creation/line-creation-dialog';
-import TwoWindingsTransformerCreationDialog from '../../dialogs/network-modifications/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
-import ShuntCompensatorCreationDialog from '../../dialogs/network-modifications/shunt-compensator-creation/shunt-compensator-creation-dialog';
-import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog.js';
+import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
+import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator-creation/shunt-compensator-creation-dialog';
+import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog.js';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -61,7 +61,7 @@ import SubstationCreationDialog from 'components/dialogs/network-modifications/s
 import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import GenerationDispatchDialog from 'components/dialogs/network-modifications/generation-dispatch/generation-dispatch-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
-import VoltageLevelModificationDialog from '../../dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
+import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { UPDATE_TYPE } from 'components/network/constants';
 import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
