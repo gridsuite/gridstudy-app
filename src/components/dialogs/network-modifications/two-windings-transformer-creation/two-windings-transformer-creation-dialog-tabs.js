@@ -16,7 +16,7 @@ import {
     ENABLED,
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
-} from '../../../utils/field-constants';
+} from 'components/utils/field-constants';
 
 const useStyles = makeStyles((theme) => ({
     tabWithError: {

@@ -39,17 +39,18 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLine, fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
-
 import {
-    microUnitToUnit,
-    unitToMicroUnit,
-} from '../../../../../utils/rounding';
+    createLine,
+    fetchVoltageLevelsIdAndTopology,
+    FetchStatus,
+} from 'utils/rest-api';
+
+import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
     FORM_LOADING_DELAY,
 } from 'components/network/constants';
-import yup from '../../../../utils/yup-config';
+import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
@@ -82,7 +83,6 @@ import TextInput from 'components/utils/rhf-inputs/text-input';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),

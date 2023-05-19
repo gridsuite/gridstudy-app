@@ -6,9 +6,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { fetchEquipmentsIds } from '../../../../../utils/rest-api';
-import AutocompleteInput from '../../../../utils/rhf-inputs/autocomplete-input';
-import { areIdsEqual, getObjectId } from '../../../../utils/utils';
+import { fetchEquipmentsIds } from 'utils/rest-api';
+import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -18,10 +18,10 @@ import {
     LOW_VOLTAGE_LIMIT,
     NOMINAL_VOLTAGE,
     SUBSTATION_ID,
-} from '../../../../utils/field-constants';
-import TextInput from '../../../../utils/rhf-inputs/text-input';
+} from 'components/utils/field-constants';
+import TextInput from 'components/utils/rhf-inputs/text-input';
 import { useWatch } from 'react-hook-form';
-import FloatInput from '../../../../utils/rhf-inputs/float-input';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
 import {
     filledTextField,
     gridItem,

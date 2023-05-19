@@ -7,18 +7,18 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import yup from '../../../utils/yup-config';
+import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
 import GeneratorScalingForm from './generator-scaling-form';
 import { useCallback, useEffect } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { VARIATION_TYPE, VARIATIONS } from '../../../utils/field-constants';
+import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
-import { generatorScaling } from '../../../../utils/rest-api';
+import { generatorScaling } from 'utils/rest-api';
 import {
     VARIATION_TYPES,
     FORM_LOADING_DELAY,
-} from '../../../network/constants';
+} from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 

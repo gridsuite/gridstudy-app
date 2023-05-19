@@ -27,9 +27,9 @@ import {
     PHASE_REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
-} from '../../../../../network/constants';
-import FloatInput from '../../../../../utils/rhf-inputs/float-input';
-import SelectInput from '../../../../../utils/rhf-inputs/select-input';
+} from 'components/network/constants';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
+import SelectInput from 'components/utils/rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';

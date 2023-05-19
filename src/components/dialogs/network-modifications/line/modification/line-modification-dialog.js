@@ -34,11 +34,8 @@ import React, {
 import { FormProvider, useForm } from 'react-hook-form';
 import { fetchEquipmentInfos, FetchStatus, modifyLine } from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
-import {
-    microUnitToUnit,
-    unitToMicroUnit,
-} from '../../../../../utils/rounding';
-import yup from '../../../../utils/yup-config';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
+import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';

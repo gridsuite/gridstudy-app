@@ -5,28 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import DirectoryItemsInput from '../../../../utils/rhf-inputs/directory-items-input';
+import DirectoryItemsInput from 'components/utils/rhf-inputs/directory-items-input';
 import {
     FILTERS,
     REACTIVE_VARIATION_MODE,
     VARIATION_MODE,
     VARIATION_TYPE,
     VARIATION_VALUE,
-} from '../../../../utils/field-constants';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
-import { useCallback } from 'react';
+} from 'components/utils/field-constants';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import React, { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
-import SelectInput from '../../../../utils/rhf-inputs/select-input';
+import SelectInput from 'components/utils/rhf-inputs/select-input';
 import {
     ACTIVE_VARIATION_MODES,
     REACTIVE_VARIATION_MODES,
     VARIATION_TYPES,
-} from '../../../../network/constants';
-import FloatInput from '../../../../utils/rhf-inputs/float-input';
+} from 'components/network/constants';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
 import { elementType } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
-import React from 'react';
 
 const LOADS = [EQUIPMENT_TYPES.LOAD.type];
 

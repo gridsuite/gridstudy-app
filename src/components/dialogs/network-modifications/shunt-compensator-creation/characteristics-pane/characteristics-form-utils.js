@@ -13,7 +13,7 @@ import {
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
 } from 'components/utils/field-constants';
-import yup from '../../../../utils/yup-config';
+import yup from 'components/utils/yup-config';
 
 const characteristicsValidationSchema = () => ({
     [CHARACTERISTICS_CHOICE]: yup.string().required(),

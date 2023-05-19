@@ -12,7 +12,7 @@ import { useCallback, useEffect } from 'react';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../../../utils/yup-config';
+import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
     BUS_OR_BUSBAR_SECTION,
@@ -47,7 +47,7 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-} from '../../../../utils/field-constants';
+} from 'components/utils/field-constants';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityFormData,
@@ -55,13 +55,13 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import { createGenerator } from '../../../../../utils/rest-api';
+import { createGenerator } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import {
     FORM_LOADING_DELAY,
     REGULATION_TYPES,
     UNDEFINED_CONNECTION_DIRECTION,
-} from '../../../../network/constants';
+} from 'components/network/constants';
 import {
     getSetPointsEmptyFormData,
     getSetPointsSchema,

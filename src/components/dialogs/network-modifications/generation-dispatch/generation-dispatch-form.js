@@ -4,15 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
-import FloatInput from '../../../utils/rhf-inputs/float-input';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import DirectoryItemsInput from 'components/utils/rhf-inputs/directory-items-input';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
 import {
     LOSS_COEFFICIENT,
     DEFAULT_OUTAGE_RATE,
     GENERATORS_WITHOUT_OUTAGE,
     GENERATORS_WITH_FIXED_ACTIVE_POWER,
-} from '../../../utils/field-constants';
+} from 'components/utils/field-constants';
 import { gridItem, percentageTextField, GridSection } from '../../dialogUtils';
 import Grid from '@mui/material/Grid';
 import {

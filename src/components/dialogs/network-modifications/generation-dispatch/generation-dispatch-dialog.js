@@ -19,8 +19,8 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FetchStatus, generationDispatch } from '../../../../utils/rest-api';
-import yup from '../../../utils/yup-config';
+import { FetchStatus, generationDispatch } from 'utils/rest-api';
+import yup from 'components/utils/yup-config';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';

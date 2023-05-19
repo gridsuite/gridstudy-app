@@ -22,9 +22,9 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-} from '../../../../utils/field-constants';
-import yup from '../../../../utils/yup-config';
-import { REGULATION_TYPES } from '../../../../network/constants';
+} from 'components/utils/field-constants';
+import yup from 'components/utils/yup-config';
+import { REGULATION_TYPES } from 'components/network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 
 const getFrequencyRegulationEmptyFormData = (isGeneratorModification) => ({

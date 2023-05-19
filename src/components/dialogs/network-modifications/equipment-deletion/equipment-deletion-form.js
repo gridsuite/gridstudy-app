@@ -18,7 +18,7 @@ import {
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import { EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const richTypeEquals = (a, b) => a.type === b.type;
 

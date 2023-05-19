@@ -8,11 +8,11 @@
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import React, { useCallback, useEffect } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../../../utils/yup-config';
+import yup from 'components/utils/yup-config';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import {
     ADDITIONAL_PROPERTIES,
@@ -21,14 +21,13 @@ import {
     EQUIPMENT_NAME,
     NAME,
     VALUE,
-} from '../../../../utils/field-constants';
+} from 'components/utils/field-constants';
 import { getPropertiesSchema } from '../property/property-utils';
 import SubstationCreationForm from './substation-creation-form';
-import { createSubstation } from '../../../../../utils/rest-api';
+import { createSubstation, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

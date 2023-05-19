@@ -8,15 +8,15 @@
 import Grid from '@mui/material/Grid';
 import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
 import React from 'react';
-import TextInput from '../../../../utils/rhf-inputs/text-input';
+import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-} from '../../../../utils/field-constants';
-import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selection-input';
-import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
+} from 'components/utils/field-constants';
+import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
+import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
 import PropertyForm from '../property/property-form';
 import { getPropertyInitialValues } from '../property/property-utils';
 

@@ -20,16 +20,16 @@ import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { gridItem, VoltageAdornment } from '../../../../dialogUtils';
-import SwitchInput from '../../../../../utils/rhf-inputs/booleans/switch-input';
-import FloatInput from '../../../../../utils/rhf-inputs/float-input';
+import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
 import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import {
     RATIO_REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
-} from '../../../../../network/constants';
-import SelectInput from '../../../../../utils/rhf-inputs/select-input';
+} from 'components/network/constants';
+import SelectInput from 'components/utils/rhf-inputs/select-input';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const RatioTapChangerPane = ({

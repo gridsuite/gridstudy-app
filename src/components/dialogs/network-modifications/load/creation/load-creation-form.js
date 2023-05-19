@@ -22,10 +22,10 @@ import {
     GridSection,
     ReactivePowerAdornment,
 } from '../../../dialogUtils';
-import { LOAD_TYPES } from '../../../../network/constants';
-import FloatInput from '../../../../utils/rhf-inputs/float-input';
-import SelectInput from '../../../../utils/rhf-inputs/select-input';
-import TextInput from '../../../../utils/rhf-inputs/text-input';
+import { LOAD_TYPES } from 'components/network/constants';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
+import SelectInput from 'components/utils/rhf-inputs/select-input';
+import TextInput from 'components/utils/rhf-inputs/text-input';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {

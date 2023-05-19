@@ -18,18 +18,18 @@ import {
     LOW_VOLTAGE_LIMIT,
     NOMINAL_VOLTAGE,
     SUBSTATION_ID,
-} from '../../../../utils/field-constants';
-import yup from '../../../../utils/yup-config';
+} from 'components/utils/field-constants';
+import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     FetchStatus,
     fetchVoltageLevel,
     modifyVoltageLevel,
-} from '../../../../../utils/rest-api';
+} from 'utils/rest-api';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
-import { kiloUnitToUnit, unitToKiloUnit } from '../../../../../utils/rounding';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

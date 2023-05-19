@@ -52,11 +52,9 @@ import { FormProvider, useForm } from 'react-hook-form';
 import {
     createTwoWindingsTransformer,
     fetchVoltageLevelsIdAndTopology,
+    FetchStatus,
 } from 'utils/rest-api';
-import {
-    microUnitToUnit,
-    unitToMicroUnit,
-} from '../../../../utils/rounding.js';
+import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
 import { filledTextField, gridItem, sanitizeString } from '../../dialogUtils';
 import EquipmentSearchDialog from '../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../form-search-copy-hook';
@@ -67,8 +65,8 @@ import {
     REGULATION_TYPES,
     SIDE,
     UNDEFINED_CONNECTION_DIRECTION,
-} from '../../../network/constants';
-import yup from '../../../utils/yup-config';
+} from 'components/network/constants';
+import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../connectivity/connectivity-form-utils';
 import PhaseTapChangerPane from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
@@ -90,16 +88,16 @@ import {
     getTwoWindingsTransformerFormData,
     getTwoWindingsTransformerValidationSchema,
 } from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
-import { addSelectedFieldToRows } from '../../../utils/dnd-table/dnd-table';
-import SwitchInput from '../../../utils/rhf-inputs/booleans/switch-input';
-import TextInput from '../../../utils/rhf-inputs/text-input';
+import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
+import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
+import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     LIMITS,
     PERMANENT_LIMIT,
     TEMPORARY_LIMITS,
-} from '../../../utils/field-constants.js';
+} from 'components/utils/field-constants.js';
 import LimitsPane from '../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
@@ -107,7 +105,6 @@ import {
     getLimitsValidationSchema,
 } from '../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a two windings transformer in the network

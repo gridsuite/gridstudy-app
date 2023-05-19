@@ -17,7 +17,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad } from '../../../../../utils/rest-api';
+import { createLoad, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
@@ -25,8 +25,8 @@ import {
     FORM_LOADING_DELAY,
     UNDEFINED_CONNECTION_DIRECTION,
     UNDEFINED_LOAD_TYPE,
-} from '../../../../network/constants';
-import yup from '../../../../utils/yup-config';
+} from 'components/network/constants';
+import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import {
     getConnectivityWithPositionEmptyFormData,
@@ -36,7 +36,6 @@ import {
 import LoadCreationForm from './load-creation-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
 
 /**
  * Dialog to create a load in the network

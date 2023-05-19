@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import RadioInput from '../../../../utils/rhf-inputs/radio-input';
+import RadioInput from 'components/utils/rhf-inputs/radio-input';
 import {
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
-} from '../../../../utils/field-constants';
-import { REACTIVE_LIMIT_TYPES } from '../../../../network/constants';
+} from 'components/utils/field-constants';
+import { REACTIVE_LIMIT_TYPES } from 'components/network/constants';
 import React from 'react';
-import FloatInput from '../../../../utils/rhf-inputs/float-input';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
 import { gridItem, ReactivePowerAdornment } from '../../../dialogUtils';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';

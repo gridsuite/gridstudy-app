@@ -15,16 +15,16 @@ import {
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
 import React from 'react';
-import FloatInput from '../../../../utils/rhf-inputs/float-input';
+import FloatInput from 'components/utils/rhf-inputs/float-input';
 import {
     ACTIVE_POWER_SET_POINT,
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_REGULATION,
-} from '../../../../utils/field-constants';
+} from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import FrequencyRegulation from './frequency-regulation';
 import VoltageRegulation from './voltage-regulation';
-import SwitchInput from '../../../../utils/rhf-inputs/booleans/switch-input';
+import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 

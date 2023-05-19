@@ -11,10 +11,10 @@ import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import IntegerInput from '../../../../utils/rhf-inputs/integer-input';
+import IntegerInput from 'components/utils/rhf-inputs/integer-input';
 import DndTable, {
     MAX_ROWS_NUMBER,
-} from '../../../../utils/dnd-table/dnd-table';
+} from 'components/utils/dnd-table/dnd-table';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {

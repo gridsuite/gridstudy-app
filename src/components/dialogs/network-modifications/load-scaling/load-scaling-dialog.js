@@ -7,20 +7,19 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import yup from '../../../utils/yup-config';
+import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
 import LoadScalingForm from './load-scaling-form';
 import { useCallback, useEffect } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { VARIATION_TYPE, VARIATIONS } from '../../../utils/field-constants';
+import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
-import { loadScaling } from '../../../../utils/rest-api';
+import { loadScaling, FetchStatus } from 'utils/rest-api';
 import {
     FORM_LOADING_DELAY,
     VARIATION_TYPES,
-} from '../../../network/constants';
+} from 'components/network/constants';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
 
 const emptyFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,

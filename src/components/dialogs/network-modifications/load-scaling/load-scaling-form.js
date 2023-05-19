@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import RadioInput from '../../../utils/rhf-inputs/radio-input';
+import RadioInput from 'components/utils/rhf-inputs/radio-input';
 import {
     ACTIVE_VARIATION_MODES,
     VARIATION_TYPES,
-} from '../../../network/constants';
-import { VARIATION_TYPE, VARIATIONS } from '../../../utils/field-constants';
+} from 'components/network/constants';
+import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import VariationForm from './variation/variation-form';
-import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
+import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
 import Grid from '@mui/material/Grid';
 import { gridItem, GridSection } from '../../dialogUtils';
 import makeStyles from '@mui/styles/makeStyles';

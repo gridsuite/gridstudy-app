@@ -10,7 +10,7 @@ import ModificationDialog from '../../../commons/modificationDialog';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../../../utils/yup-config';
+import yup from 'components/utils/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
@@ -21,13 +21,13 @@ import {
     PREVIOUS_VALUE,
     VALUE,
     ADDED,
-} from '../../../../utils/field-constants';
+} from 'components/utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
 import {
     fetchEquipmentInfos,
     FetchStatus,
     modifySubstation,
-} from '../../../../../utils/rest-api';
+} from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';

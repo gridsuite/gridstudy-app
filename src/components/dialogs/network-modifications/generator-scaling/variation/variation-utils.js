@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../../utils/yup-config';
+import yup from 'components/utils/yup-config';
 import {
     FILTERS,
     ID,
@@ -14,8 +14,8 @@ import {
     TYPE,
     VARIATION_MODE,
     VARIATION_VALUE,
-} from '../../../../utils/field-constants';
-import { VARIATION_MODES } from '../../../../network/constants';
+} from 'components/utils/field-constants';
+import { VARIATION_MODES } from 'components/network/constants';
 
 export const IDENTIFIER_LIST = 'IDENTIFIER_LIST';
 export const getVariationSchema = () =>

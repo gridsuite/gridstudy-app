@@ -10,7 +10,7 @@ import ModificationDialog from '../../../commons/modificationDialog';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../../../utils/yup-config';
+import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
     DROOP,
@@ -42,14 +42,11 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-} from '../../../../utils/field-constants';
+} from 'components/utils/field-constants';
 
-import {
-    fetchEquipmentInfos,
-    modifyGenerator,
-} from '../../../../../utils/rest-api';
+import { fetchEquipmentInfos, modifyGenerator } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
-import { REGULATION_TYPES } from '../../../../network/constants';
+import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import {
     getSetPointsEmptyFormData,

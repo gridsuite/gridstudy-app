@@ -37,8 +37,8 @@ import {
 import {
     areNumbersOrdered,
     areArrayElementsUnique,
-} from '../../../../../utils/utils';
-import yup from '../../../../../utils/yup-config';
+} from 'components/utils/utils';
+import yup from 'components/utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
@@ -47,7 +47,7 @@ import {
     PHASE_REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
-} from '../../../../../network/constants';
+} from 'components/network/constants';
 
 const phaseTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
