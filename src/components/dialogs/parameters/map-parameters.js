@@ -5,11 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import React, { useState, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 import { LineFlowMode } from '../../network/line-layer';
 import { LineFlowColorMode } from '../../network/line-layer';
 import {
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
@@ -18,7 +20,7 @@ import {
 } from '../../../utils/config-params';
 import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
 import { useStyles } from './parameters';
-import { LineSeparator } from '../dialogUtils';
+import { LabelledSlider, LineSeparator } from '../dialogUtils';
 
 export const MapParameters = ({ hideParameters }) => {
     const classes = useStyles();
@@ -35,8 +37,31 @@ export const MapParameters = ({ hideParameters }) => {
     const [lineFlowColorModeLocal, handleChangeLineFlowColorMode] =
         useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
 
+    const [lineFlowAlertThresholdLocal, handleChangeLineFlowAlertThreshold] =
+        useParameterState(PARAM_LINE_FLOW_ALERT_THRESHOLD);
+
     const [mapManualRefreshLocal, handleChangeMapManualRefresh] =
         useParameterState(PARAM_MAP_MANUAL_REFRESH);
+
+    const [disabledFlowAlertThreshold, setDisabledFlowAlertThreshold] =
+        useState(lineFlowColorModeLocal === 'nominalVoltage');
+
+    const alertThresholdMarks = [
+        {
+            value: 0,
+            label: '0',
+        },
+        {
+            value: 100,
+            label: '100',
+        },
+    ];
+
+    useEffect(() => {
+        setDisabledFlowAlertThreshold(
+            lineFlowColorModeLocal === 'nominalVoltage'
+        );
+    }, [lineFlowColorModeLocal]);
 
     return (
         <>
@@ -114,6 +139,16 @@ export const MapParameters = ({ hideParameters }) => {
                         </MenuItem>
                     </Select>
                 </Grid>
+                <LineSeparator />
+                <LabelledSlider
+                    value={Number(lineFlowAlertThresholdLocal)}
+                    label="AlertThresholdLabel"
+                    disabled={disabledFlowAlertThreshold}
+                    onCommitCallback={(event, value) => {
+                        handleChangeLineFlowAlertThreshold(value);
+                    }}
+                    marks={alertThresholdMarks}
+                />
                 <LineSeparator />
                 <SwitchWithLabel
                     value={mapManualRefreshLocal}

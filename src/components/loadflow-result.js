@@ -21,7 +21,7 @@ import { fetchCurrentLimitViolations } from '../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
-import { PARAM_LINE_FLOW_ALERT_THRESHOLD } from '../utils/config-params';
+import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const useStyles = makeStyles((theme) => ({
@@ -51,8 +51,8 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const [overloadedLines, setOverloadedLines] = useState(null);
 
-    const lineFlowAlertThreshold = useSelector((state) =>
-        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
+    const limitReductionParam = useSelector((state) =>
+        Number(state[PARAM_LIMIT_REDUCTION])
     );
 
     useEffect(() => {
@@ -96,7 +96,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         fetchCurrentLimitViolations(
             studyUuid,
             nodeUuid,
-            lineFlowAlertThreshold / 100.0
+            limitReductionParam / 100.0
         )
             .then((overloadedLines) => {
                 const sortedLines = overloadedLines
@@ -110,7 +110,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     headerId: 'ErrFetchCurrentLimitViolationsMsg',
                 });
             });
-    }, [studyUuid, nodeUuid, lineFlowAlertThreshold, intl, snackError]);
+    }, [studyUuid, nodeUuid, limitReductionParam, intl, snackError]);
 
     function StatusCellRender(cellData) {
         const status = cellData.rowData[cellData.dataKey];

@@ -80,7 +80,7 @@
     "LineFlowColorMode": "Line color mode: ",
     "NominalVoltage": "Nominal voltage",
     "Overloads": "Overloads",
-    "AlertThresholdLabel": "Threshold for displaying lines before overload (%): ",
+    "AlertThresholdLabel": "Line overloads warning threshold (%): ",
     "intensity": "intensity",
     "Intensity": "Intensity",
     "I_(A)": "I (A)",
@@ -418,6 +418,7 @@
     "UnableToTrip2WTransformer": "Unable to trip the transformer",
 
     "Provider": "Provider: ",
+    "LimitReduction": "Limit reduction: ",
     "Default": "Default",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
