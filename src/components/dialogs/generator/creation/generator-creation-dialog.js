@@ -143,8 +143,6 @@ const GeneratorCreationDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    const equipmentPath = 'generators';
-
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -209,7 +207,6 @@ const GeneratorCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.GENERATOR.type,
