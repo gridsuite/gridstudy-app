@@ -281,13 +281,14 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 </div>
                 {tabIndex === 0 &&
                     overloadedLines &&
+                    result &&
                     renderLoadFlowConstraints()}
-                {tabIndex === 1 && renderLoadFlowResult()}
+                {tabIndex === 1 && result && renderLoadFlowResult()}
             </>
         );
     }
 
-    return result && renderLoadFlowResultTabs();
+    return renderLoadFlowResultTabs();
 };
 
 LoadFlowResult.defaultProps = {

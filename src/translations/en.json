@@ -338,7 +338,7 @@
     "securityAnalysisError": "An error occurred while executing the security analysis",
     "loadFlowResults": "Loadflow results",
     "startLoadFlowError": "An error occurred while starting the load flow",
-    "LoadFlowResultsConstraints": "Constraints",
+    "LoadFlowResultsConstraints": "Violations",
     "LoadFlowResultsStatus": "Status",
 
     "connectedComponentNum": "Connected component number",
