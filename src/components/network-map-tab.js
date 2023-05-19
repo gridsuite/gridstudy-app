@@ -14,7 +14,6 @@ import {
     fetchSubstationPositions,
 } from '../utils/rest-api';
 import GeoData from './network/geo-data';
-import { equipments } from './network/network-equipments';
 import withBranchMenu from './menus/branch-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
@@ -40,6 +39,7 @@ import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from './study-container';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -194,13 +194,13 @@ export const NetworkMapTab = ({
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
         'substation-menus',
-        equipments.substations
+        EQUIPMENT_TYPES.SUBSTATION.plurial //substations SUBSTATION
     );
 
     const MenuVoltageLevel = withEquipmentMenu(
         BaseEquipmentMenu,
         'voltage-level-menus',
-        equipments.voltageLevels
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL.plurial
     );
 
     function showEquipmentMenu(equipment, x, y, type) {
@@ -255,7 +255,12 @@ export const NetworkMapTab = ({
     }
 
     const voltageLevelMenuClick = (equipment, x, y) => {
-        showEquipmentMenu(equipment, x, y, equipments.voltageLevels);
+        showEquipmentMenu(
+            equipment,
+            x,
+            y,
+            EQUIPMENT_TYPES.VOLTAGE_LEVEL.plurial
+        );
     };
 
     const chooseVoltageLevelForSubstation = useCallback(
@@ -797,17 +802,21 @@ export const NetworkMapTab = ({
         }
         return (
             <>
-                {(equipmentMenu.equipmentType === equipments.lines ||
-                    equipmentMenu.equipmentType === equipments.hvdcLines) &&
+                {(equipmentMenu.equipmentType ===
+                    EQUIPMENT_TYPES.LINE.plurial ||
+                    equipmentMenu.equipmentType ===
+                        EQUIPMENT_TYPES.HVDC_LINE.plurial) &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
 
-                {equipmentMenu.equipmentType === equipments.substations &&
+                {equipmentMenu.equipmentType ===
+                    EQUIPMENT_TYPES.SUBSTATION.plurial &&
                     withEquipment(MenuSubstation)}
-                {equipmentMenu.equipmentType === equipments.voltageLevels &&
+                {equipmentMenu.equipmentType ===
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.plurial &&
                     withEquipment(MenuVoltageLevel)}
             </>
         );
@@ -850,17 +859,27 @@ export const NetworkMapTab = ({
             loadFlowStatus={loadFlowStatus}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.lines)
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE.plurial)
             }
             onHvdcLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.hvdcLines)
+                showEquipmentMenu(
+                    equipment,
+                    x,
+                    y,
+                    EQUIPMENT_TYPES.HVDC_LINE.plurial
+                )
             }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.substations)
+                showEquipmentMenu(
+                    equipment,
+                    x,
+                    y,
+                    EQUIPMENT_TYPES.SUBSTATION.plurial
+                )
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
