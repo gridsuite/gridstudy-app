@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { RunningStatus } from '../../utils/running-status';
-import { equipments } from '../../network/network-equipments';
 import {
     getEquipmentTypeFromFeederType,
     MIN_HEIGHT,
@@ -36,6 +35,7 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from '../../dialogs/load/modification/load-modification-dialog';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -153,9 +153,9 @@ function SingleLineDiagramContent(props) {
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
-            (equipmentMenu.equipmentType === equipments.lines ||
+            (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE.plurial ||
                 equipmentMenu.equipmentType ===
-                    equipments.twoWindingsTransformers) && (
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.plurial) && (
                 <MenuBranch
                     id={equipmentMenu.equipmentId}
                     equipmentType={equipmentMenu.equipmentType}
@@ -195,7 +195,7 @@ function SingleLineDiagramContent(props) {
 
     const displayModificationDialog = (equipmentType) => {
         switch (equipmentType) {
-            case equipments.generators:
+            case EQUIPMENT_TYPES.GENERATOR.plurial:
                 return (
                     <GeneratorModificationDialog
                         open={true}
@@ -205,7 +205,7 @@ function SingleLineDiagramContent(props) {
                         defaultIdValue={equipmentToModify.equipmentId}
                     />
                 );
-            case equipments.loads:
+            case EQUIPMENT_TYPES.LOAD.plurial:
                 return (
                     <LoadModificationDialog
                         open={true}
@@ -364,29 +364,32 @@ function SingleLineDiagramContent(props) {
                 style={{ height: '100%' }}
             />
             {displayBranchMenu()}
-            {displayMenu(equipments.loads, 'load-menus')}
-            {displayMenu(equipments.batteries, 'battery-menus')}
-            {displayMenu(equipments.danglingLines, 'dangling-line-menus')}
-            {displayMenu(equipments.generators, 'generator-menus')}
+            {displayMenu(EQUIPMENT_TYPES.LOAD.plurial, 'load-menus')}
+            {displayMenu(EQUIPMENT_TYPES.BATTERY.plurial, 'battery-menus')}
             {displayMenu(
-                equipments.staticVarCompensators,
+                EQUIPMENT_TYPES.DANGLING_LINE.plurial,
+                'dangling-line-menus'
+            )}
+            {displayMenu(EQUIPMENT_TYPES.GENERATOR.plurial, 'generator-menus')}
+            {displayMenu(
+                EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.plurial,
                 'static-var-compensator-menus'
             )}
             {displayMenu(
-                equipments.shuntCompensators,
+                EQUIPMENT_TYPES.SHUNT_COMPENSATOR.plurial,
                 'shunt-compensator-menus'
             )}
             {displayMenu(
-                equipments.threeWindingsTransformers,
+                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.plurial,
                 'three-windings-transformer-menus'
             )}
-            {displayMenu(equipments.hvdcLines, 'hvdc-line-menus')}
+            {displayMenu(EQUIPMENT_TYPES.HVDC_LINE.plurial, 'hvdc-line-menus')}
             {displayMenu(
-                equipments.lccConverterStations,
+                EQUIPMENT_TYPES.LCC_CONVERTER_STATION.plurial,
                 'lcc-converter-station-menus'
             )}
             {displayMenu(
-                equipments.vscConverterStations,
+                EQUIPMENT_TYPES.VSC_CONVERTER_STATION.plurial,
                 'vsc-converter-station-menus'
             )}
             {equipmentToModify &&
