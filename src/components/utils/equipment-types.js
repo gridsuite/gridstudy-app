@@ -25,62 +25,62 @@ export const EQUIPMENT_INFOS_TYPES = {
 export const EQUIPMENT_TYPES = {
     SUBSTATION: {
         type: 'SUBSTATION',
-        plurial: 'substations',
+        name: 'substations',
         fetchers: [fetchSubstations],
     },
     VOLTAGE_LEVEL: {
         type: 'VOLTAGE_LEVEL',
-        plurial: 'voltageLevels',
+        name: 'voltageLevels',
         fetchers: [fetchVoltageLevels],
     },
     LINE: {
         type: 'LINE',
-        plurial: 'lines',
+        name: 'lines',
         fetchers: [fetchLines],
     },
     TWO_WINDINGS_TRANSFORMER: {
         type: 'TWO_WINDINGS_TRANSFORMER',
-        plurial: 'twoWindingsTransformers',
+        name: 'twoWindingsTransformers',
         fetchers: [fetchTwoWindingsTransformers],
     },
     THREE_WINDINGS_TRANSFORMER: {
         type: 'THREE_WINDINGS_TRANSFORMER',
-        plurial: 'threeWindingsTransformers',
+        name: 'threeWindingsTransformers',
         fetchers: [fetchThreeWindingsTransformers],
     },
     HVDC_LINE: {
         type: 'HVDC_LINE',
-        plurial: 'hvdcLines',
+        name: 'hvdcLines',
         fetchers: [fetchHvdcLines],
     },
     GENERATOR: {
         type: 'GENERATOR',
-        plurial: 'generators',
+        name: 'generators',
         fetchers: [fetchGenerators],
     },
     BATTERY: {
         type: 'BATTERY',
-        plurial: 'batteries',
+        name: 'batteries',
         fetchers: [fetchBatteries],
     },
     LOAD: {
         type: 'LOAD',
-        plurial: 'loads',
+        name: 'loads',
         fetchers: [fetchLoads],
     },
     SHUNT_COMPENSATOR: {
         type: 'SHUNT_COMPENSATOR',
-        plurial: 'shuntCompensators',
+        name: 'shuntCompensators',
         fetchers: [fetchShuntCompensators],
     },
     DANGLING_LINE: {
         type: 'DANGLING_LINE',
-        plurial: 'danglingLines',
+        name: 'danglingLines',
         fetchers: [fetchDanglingLines],
     },
     STATIC_VAR_COMPENSATOR: {
         type: 'STATIC_VAR_COMPENSATOR',
-        plurial: 'staticVarCompensators',
+        name: 'staticVarCompensators',
         fetchers: [fetchStaticVarCompensators],
     },
     HVDC_CONVERTER_STATION: {
@@ -89,12 +89,12 @@ export const EQUIPMENT_TYPES = {
     },
     VSC_CONVERTER_STATION: {
         type: 'VSC_CONVERTER_STATION',
-        plurial: 'vscConverterStations',
+        name: 'vscConverterStations',
         fetchers: [fetchVscConverterStations],
     },
     LCC_CONVERTER_STATION: {
         type: 'LCC_CONVERTER_STATION',
-        plurial: 'lccConverterStations',
+        name: 'lccConverterStations',
         fetchers: [fetchLccConverterStations],
     },
     SWITCH: {

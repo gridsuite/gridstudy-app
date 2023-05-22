@@ -148,8 +148,8 @@ const StudyPane = ({
         if (!network) {
             return;
         }
-        network.useEquipment(EQUIPMENT_TYPES.SUBSTATION.plurial);
-        network.useEquipment(EQUIPMENT_TYPES.LINE.plurial);
+        network.useEquipment(EQUIPMENT_TYPES.SUBSTATION.name);
+        network.useEquipment(EQUIPMENT_TYPES.LINE.name);
     }, [network]);
 
     function showInSpreadsheet(equipment) {

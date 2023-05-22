@@ -188,7 +188,7 @@ export default class Network {
         this.lines = this.updateEquipments(
             this.lines,
             lines,
-            EQUIPMENT_TYPES.LINE.plurial
+            EQUIPMENT_TYPES.LINE.name
         );
 
         // add more infos
@@ -206,7 +206,7 @@ export default class Network {
         this.twoWindingsTransformers = this.updateEquipments(
             this.twoWindingsTransformers,
             twoWindingsTransformers,
-            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.plurial
+            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name
         );
 
         // add more infos
@@ -222,7 +222,7 @@ export default class Network {
         this.threeWindingsTransformers = this.updateEquipments(
             this.threeWindingsTransformers,
             threeWindingsTransformers,
-            EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.plurial
+            EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.name
         );
 
         // add more infos
@@ -240,7 +240,7 @@ export default class Network {
         this.generators = this.updateEquipments(
             this.generators,
             generators,
-            EQUIPMENT_TYPES.GENERATOR.plurial
+            EQUIPMENT_TYPES.GENERATOR.name
         );
 
         // add more infos
@@ -251,7 +251,7 @@ export default class Network {
         this.batteries = this.updateEquipments(
             this.batteries,
             batteries,
-            EQUIPMENT_TYPES.BATTERY.plurial
+            EQUIPMENT_TYPES.BATTERY.name
         );
     }
 
@@ -259,7 +259,7 @@ export default class Network {
         this.loads = this.updateEquipments(
             this.loads,
             loads,
-            EQUIPMENT_TYPES.LOAD.plurial
+            EQUIPMENT_TYPES.LOAD.name
         );
     }
 
@@ -267,7 +267,7 @@ export default class Network {
         this.danglingLines = this.updateEquipments(
             this.danglingLines,
             danglingLines,
-            EQUIPMENT_TYPES.DANGLING_LINE.plurial
+            EQUIPMENT_TYPES.DANGLING_LINE.name
         );
     }
 
@@ -275,7 +275,7 @@ export default class Network {
         this.shuntCompensators = this.updateEquipments(
             this.shuntCompensators,
             shuntCompensators,
-            EQUIPMENT_TYPES.SHUNT_COMPENSATOR.plurial
+            EQUIPMENT_TYPES.SHUNT_COMPENSATOR.name
         );
     }
 
@@ -283,7 +283,7 @@ export default class Network {
         this.staticVarCompensators = this.updateEquipments(
             this.staticVarCompensators,
             staticVarCompensators,
-            EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.plurial
+            EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.name
         );
     }
 
@@ -291,7 +291,7 @@ export default class Network {
         this.hvdcLines = this.updateEquipments(
             this.hvdcLines,
             hvdcLines,
-            EQUIPMENT_TYPES.HVDC_LINE.plurial
+            EQUIPMENT_TYPES.HVDC_LINE.name
         );
     }
 
@@ -299,7 +299,7 @@ export default class Network {
         this.lccConverterStations = this.updateEquipments(
             this.lccConverterStations,
             lccConverterStations,
-            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.plurial
+            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.name
         );
     }
 
@@ -307,7 +307,7 @@ export default class Network {
         this.vscConverterStations = this.updateEquipments(
             this.vscConverterStations,
             vscConverterStations,
-            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.plurial
+            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.name
         );
     }
 
@@ -400,19 +400,19 @@ export default class Network {
     setEquipment(equipment, values) {
         this[equipment] = values;
         switch (equipment) {
-            case EQUIPMENT_TYPES.SUBSTATION.plurial:
+            case EQUIPMENT_TYPES.SUBSTATION.name:
                 this.completeSubstationsInfos();
                 break;
-            case EQUIPMENT_TYPES.LINE.plurial:
+            case EQUIPMENT_TYPES.LINE.name:
                 this.completeLinesInfos();
                 break;
-            case EQUIPMENT_TYPES.GENERATOR.plurial:
+            case EQUIPMENT_TYPES.GENERATOR.name:
                 this.completeGeneratorsInfos();
                 break;
-            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.plurial:
+            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name:
                 this.completeTwoWindingsTransformersInfos();
                 break;
-            case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.plurial:
+            case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.name:
                 this.completeThreeWindingsTransformersInfos();
                 break;
             default:
@@ -482,8 +482,8 @@ export default class Network {
             errHandler,
         });
         this.lazyLoaders.set(
-            EQUIPMENT_TYPES.VOLTAGE_LEVEL.plurial,
-            this.lazyLoaders.get(EQUIPMENT_TYPES.SUBSTATION.plurial)
+            EQUIPMENT_TYPES.VOLTAGE_LEVEL.name,
+            this.lazyLoaders.get(EQUIPMENT_TYPES.SUBSTATION.name)
         );
 
         this.dispatch = dispatch;
