@@ -130,16 +130,15 @@ const GeneratorModificationDialog = ({
                         [MINIMUM_ACTIVE_POWER]: yup
                             .number()
                             .nullable()
-                            .when(
-                                MAXIMUM_ACTIVE_POWER,
-                                (maximumActivePower, schema) =>
-                                    maximumActivePower != null
-                                        ? schema.max(
-                                              maximumActivePower,
-                                              'MinActivePowerLessThanMaxActivePower'
-                                          )
-                                        : schema
-                            ),
+                            .when([MAXIMUM_ACTIVE_POWER], {
+                                is: (maximumActivePower) =>
+                                    maximumActivePower != null,
+                                then: (schema, maximumActivePower) =>
+                                    schema.max(
+                                        maximumActivePower,
+                                        'MinActivePowerLessThanMaxActivePower'
+                                    ),
+                            }),
                         [RATED_NOMINAL_POWER]: yup.number().nullable(),
                         [TRANSIENT_REACTANCE]: yup.number().nullable(),
                         [TRANSFORMER_REACTANCE]: yup.number().nullable(),
