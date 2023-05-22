@@ -14,20 +14,15 @@ import {
     fetchSubstationPositions,
 } from '../utils/rest-api';
 import GeoData from './network/geo-data';
-import { equipments } from './network/network-equipments';
 import withBranchMenu from './menus/branch-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import makeStyles from '@mui/styles/makeStyles';
-import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    PARAM_DISPLAY_OVERLOAD_TABLE,
-    PARAM_MAP_MANUAL_REFRESH,
-} from '../utils/config-params';
+import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
@@ -35,11 +30,11 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from './graph/util/model-functions';
-import { RunningStatus } from './utils/running-status';
 import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from './study-container';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -66,16 +61,6 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         zIndex: 1,
     },
-    divOverloadedLineView: {
-        right: 45,
-        top: 10,
-        minWidth: '700px',
-        position: 'absolute',
-        height: '70%',
-        opacity: '1',
-        flex: 1,
-        pointerEvents: 'none',
-    },
 }));
 
 const NODE_CHANGED_ERROR =
@@ -91,6 +76,7 @@ export const NetworkMapTab = ({
     sensiStatus,
     shortCircuitStatus,
     dynamicSimulationStatus,
+    voltageInitStatus,
     /* visual*/
     visible,
     lineFullPath,
@@ -133,11 +119,7 @@ export const NetworkMapTab = ({
     */
     const temporaryGeoDataIdsRef = useRef();
 
-    const displayOverloadTable = useSelector(
-        (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
-    );
     const disabled = !visible || !isNodeBuilt(currentNode);
-    const isRootNode = currentNode?.type === 'ROOT';
     const isCurrentNodeBuiltRef = useRef(isNodeBuilt(currentNode));
 
     const mapManualRefresh = useSelector(
@@ -194,13 +176,13 @@ export const NetworkMapTab = ({
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
         'substation-menus',
-        equipments.substations
+        EQUIPMENT_TYPES.SUBSTATION.name
     );
 
     const MenuVoltageLevel = withEquipmentMenu(
         BaseEquipmentMenu,
         'voltage-level-menus',
-        equipments.voltageLevels
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL.name
     );
 
     function showEquipmentMenu(equipment, x, y, type) {
@@ -255,7 +237,7 @@ export const NetworkMapTab = ({
     }
 
     const voltageLevelMenuClick = (equipment, x, y) => {
-        showEquipmentMenu(equipment, x, y, equipments.voltageLevels);
+        showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.VOLTAGE_LEVEL.name);
     };
 
     const chooseVoltageLevelForSubstation = useCallback(
@@ -797,17 +779,20 @@ export const NetworkMapTab = ({
         }
         return (
             <>
-                {(equipmentMenu.equipmentType === equipments.lines ||
-                    equipmentMenu.equipmentType === equipments.hvdcLines) &&
+                {(equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE.name ||
+                    equipmentMenu.equipmentType ===
+                        EQUIPMENT_TYPES.HVDC_LINE.name) &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
 
-                {equipmentMenu.equipmentType === equipments.substations &&
+                {equipmentMenu.equipmentType ===
+                    EQUIPMENT_TYPES.SUBSTATION.name &&
                     withEquipment(MenuSubstation)}
-                {equipmentMenu.equipmentType === equipments.voltageLevels &&
+                {equipmentMenu.equipmentType ===
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.name &&
                     withEquipment(MenuVoltageLevel)}
             </>
         );
@@ -823,10 +808,6 @@ export const NetworkMapTab = ({
             />
         );
     }
-
-    const isLoadFlowValid = () => {
-        return loadFlowStatus === RunningStatus.SUCCEED;
-    };
 
     const renderMap = () => (
         <NetworkMap
@@ -850,17 +831,27 @@ export const NetworkMapTab = ({
             loadFlowStatus={loadFlowStatus}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.lines)
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE.name)
             }
             onHvdcLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.hvdcLines)
+                showEquipmentMenu(
+                    equipment,
+                    x,
+                    y,
+                    EQUIPMENT_TYPES.HVDC_LINE.name
+                )
             }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.substations)
+                showEquipmentMenu(
+                    equipment,
+                    x,
+                    y,
+                    EQUIPMENT_TYPES.SUBSTATION.name
+                )
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
@@ -891,17 +882,6 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            {!isRootNode && displayOverloadTable && isLoadFlowValid() && (
-                <div className={classes.divOverloadedLineView}>
-                    <OverloadedLinesView
-                        lineFlowAlertThreshold={lineFlowAlertThreshold}
-                        disabled={disabled}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        mapEquipments={mapEquipments}
-                    />
-                </div>
-            )}
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
@@ -911,6 +891,7 @@ export const NetworkMapTab = ({
                     sensiStatus={sensiStatus}
                     shortCircuitStatus={shortCircuitStatus}
                     dynamicSimulationStatus={dynamicSimulationStatus}
+                    voltageInitStatus={voltageInitStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}
                     disabled={disabled || isNodeReadOnly(currentNode)}

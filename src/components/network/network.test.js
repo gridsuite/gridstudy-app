@@ -7,7 +7,7 @@
 
 import Network from './network';
 import 'core-js/es/array/flat-map';
-import { equipments } from './network-equipments';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const substations = [
     {
@@ -39,7 +39,7 @@ test('network', () => {
     const baseNetwork = new Network();
 
     const network = baseNetwork.newSharedForUpdate(
-        equipments.substations,
+        EQUIPMENT_TYPES.SUBSTATION.name,
         substations
     );
     // Substation

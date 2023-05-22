@@ -18,9 +18,9 @@ import {
     INVALID_LOADFLOW_OPACITY,
     NAD_INVALID_LOADFLOW_OPACITY,
 } from '../../utils/colors';
-import { equipments } from '../network/network-equipments';
 import { FEEDER_TYPES } from 'components/utils/feederType';
 import makeStyles from '@mui/styles/makeStyles';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 export const LOADING_WIDTH = 300;
 export const LOADING_HEIGHT = 300;
@@ -147,33 +147,33 @@ export const DiagramType = {
 export function getEquipmentTypeFromFeederType(feederType) {
     switch (feederType) {
         case FEEDER_TYPES.LINE.type:
-            return equipments.lines;
+            return EQUIPMENT_TYPES.LINE.name;
         case FEEDER_TYPES.LOAD.type:
-            return equipments.loads;
+            return EQUIPMENT_TYPES.LOAD.name;
         case FEEDER_TYPES.BATTERY.type:
-            return equipments.batteries;
+            return EQUIPMENT_TYPES.BATTERY.name;
         case FEEDER_TYPES.DANGLING_LINE.type:
-            return equipments.danglingLines;
+            return EQUIPMENT_TYPES.DANGLING_LINE.name;
         case FEEDER_TYPES.GENERATOR.type:
-            return equipments.generators;
+            return EQUIPMENT_TYPES.GENERATOR.name;
         case FEEDER_TYPES.VSC_CONVERTER_STATION.type:
-            return equipments.vscConverterStations;
+            return EQUIPMENT_TYPES.VSC_CONVERTER_STATION.name;
         case FEEDER_TYPES.LCC_CONVERTER_STATION.type:
-            return equipments.lccConverterStations;
+            return EQUIPMENT_TYPES.LCC_CONVERTER_STATION.name;
         case FEEDER_TYPES.HVDC_LINE.type:
-            return equipments.hvdcLines;
+            return EQUIPMENT_TYPES.HVDC_LINE.name;
         case FEEDER_TYPES.CAPACITOR.type:
         case FEEDER_TYPES.INDUCTOR.type:
-            return equipments.shuntCompensators;
+            return EQUIPMENT_TYPES.SHUNT_COMPENSATOR.name;
         case FEEDER_TYPES.STATIC_VAR_COMPENSATOR.type:
-            return equipments.staticVarCompensators;
+            return EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.name;
         case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER.type:
         case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER_LEG.type:
         case FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER.type:
-            return equipments.twoWindingsTransformers;
+            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name;
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER.type:
         case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER_LEG.type:
-            return equipments.threeWindingsTransformers;
+            return EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.name;
         default: {
             console.log('bad feeder type ', feederType);
             return null;
@@ -183,32 +183,32 @@ export function getEquipmentTypeFromFeederType(feederType) {
 
 export function getFeederTypeFromEquipmentType(equipmentType) {
     switch (equipmentType) {
-        case equipments.substations:
+        case EQUIPMENT_TYPES.SUBSTATION.name:
             return FEEDER_TYPES.SUBSTATION.type;
-        case equipments.voltageLevels:
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL.name:
             return FEEDER_TYPES.VOLTAGE_LEVEL.type;
-        case equipments.lines:
+        case EQUIPMENT_TYPES.LINE.name:
             return FEEDER_TYPES.LINE.type;
-        case equipments.loads:
+        case EQUIPMENT_TYPES.LOAD.name:
             return FEEDER_TYPES.LOAD.type;
-        case equipments.batteries:
+        case EQUIPMENT_TYPES.BATTERY.name:
             return FEEDER_TYPES.BATTERY.type;
-        case equipments.danglingLines:
+        case EQUIPMENT_TYPES.DANGLING_LINE.name:
             return FEEDER_TYPES.DANGLING_LINE.type;
-        case equipments.generators:
+        case EQUIPMENT_TYPES.GENERATOR.name:
             return FEEDER_TYPES.GENERATOR.type;
-        case equipments.vscConverterStations:
-        case equipments.lccConverterStations:
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION.name:
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION.name:
             return FEEDER_TYPES.HVDC_CONVERTER_STATION.type;
-        case equipments.hvdcLines:
+        case EQUIPMENT_TYPES.HVDC_LINE.name:
             return FEEDER_TYPES.HVDC_LINE.type;
-        case equipments.shuntCompensators:
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR.name:
             return FEEDER_TYPES.SHUNT_COMPENSATOR.type;
-        case equipments.staticVarCompensators:
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.name:
             return FEEDER_TYPES.STATIC_VAR_COMPENSATOR.type;
-        case equipments.twoWindingsTransformers:
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name:
             return FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER.type;
-        case equipments.threeWindingsTransformers:
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.name:
             return FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER.type;
         default: {
             console.log('bad equipment type ', equipmentType);
