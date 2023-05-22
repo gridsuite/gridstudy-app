@@ -85,6 +85,7 @@ import {
     NETWORK_EQUIPMENT_FETCHED,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     SELECTION_FOR_COPY,
+    LIMIT_REDUCTION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -99,6 +100,7 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_LANGUAGE,
+    PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -126,6 +128,7 @@ const paramsInitialState = {
     [PARAM_USE_NAME]: true,
     [PARAM_LINE_FULL_PATH]: true,
     [PARAM_LINE_PARALLEL_PATH]: true,
+    [PARAM_LIMIT_REDUCTION]: 100,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_MAP_MANUAL_REFRESH]: false,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
@@ -431,6 +434,10 @@ export const reducer = createReducer(initialState, {
 
     [LINE_FLOW_COLOR_MODE]: (state, action) => {
         state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
+    },
+
+    [LIMIT_REDUCTION]: (state, action) => {
+        state[PARAM_LIMIT_REDUCTION] = action[PARAM_LIMIT_REDUCTION];
     },
 
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
