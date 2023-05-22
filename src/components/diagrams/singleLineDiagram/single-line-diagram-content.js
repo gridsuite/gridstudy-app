@@ -155,7 +155,7 @@ function SingleLineDiagramContent(props) {
             equipmentMenu.display &&
             (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE.name ||
                 equipmentMenu.equipmentType ===
-                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name) && (
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name) && (
                 <MenuBranch
                     id={equipmentMenu.equipmentId}
                     equipmentType={equipmentMenu.equipmentType}
@@ -298,9 +298,9 @@ function SingleLineDiagramContent(props) {
             if (
                 diagramViewerRef.current &&
                 diagramViewer.getWidth() ===
-                diagramViewerRef.current.getWidth() &&
+                    diagramViewerRef.current.getWidth() &&
                 diagramViewer.getHeight() ===
-                diagramViewerRef.current.getHeight()
+                    diagramViewerRef.current.getHeight()
             ) {
                 diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
             }
@@ -366,7 +366,10 @@ function SingleLineDiagramContent(props) {
             {displayBranchMenu()}
             {displayMenu(EQUIPMENT_TYPES.LOAD.name, 'load-menus')}
             {displayMenu(EQUIPMENT_TYPES.BATTERY.name, 'battery-menus')}
-            {displayMenu(EQUIPMENT_TYPES.DANGLING_LINE.name, 'dangling-line-menus')}
+            {displayMenu(
+                EQUIPMENT_TYPES.DANGLING_LINE.name,
+                'dangling-line-menus'
+            )}
             {displayMenu(EQUIPMENT_TYPES.GENERATOR.name, 'generator-menus')}
             {displayMenu(
                 EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.name,
