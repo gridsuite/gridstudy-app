@@ -29,6 +29,7 @@ import {
     selectDiagonalLabelState,
     selectFavoriteContingencyLists,
     selectLanguage,
+    selectLimitReduction,
     selectLineFlowAlertThreshold,
     selectLineFlowColorMode,
     selectLineFlowMode,
@@ -80,6 +81,7 @@ import {
     PARAM_FLUX_CONVENTION,
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_DEVELOPER_MODE,
+    PARAM_LIMIT_REDUCTION,
 } from '../utils/config-params';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -157,6 +159,9 @@ const App = () => {
                         dispatch(
                             selectDiagonalLabelState(param.value === 'true')
                         );
+                        break;
+                    case PARAM_LIMIT_REDUCTION:
+                        dispatch(selectLimitReduction(param.value));
                         break;
                     case PARAM_LINE_FLOW_ALERT_THRESHOLD:
                         dispatch(selectLineFlowAlertThreshold(param.value));

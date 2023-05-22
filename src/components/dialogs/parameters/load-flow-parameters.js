@@ -25,7 +25,7 @@ import {
     makeDeltaMap,
 } from '@gridsuite/commons-ui';
 import { LocalizedCountries } from '../../utils/localized-countries-hook';
-import { PARAM_LINE_FLOW_ALERT_THRESHOLD } from '../../../utils/config-params';
+import { PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
 
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
@@ -381,8 +381,9 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         specificParamsDescriptions,
     ] = parametersBackend;
 
-    const [lineFlowAlertThresholdLocal, handleChangeLineFlowAlertThreshold] =
-        useParameterState(PARAM_LINE_FLOW_ALERT_THRESHOLD);
+    const [limitReductionParam, handleChangeLimitReduction] = useParameterState(
+        PARAM_LIMIT_REDUCTION
+    );
 
     const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 50;
     const alertThresholdMarks = [
@@ -424,10 +425,10 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 <Grid container spacing={1} paddingTop={1}>
                     <LineSeparator />
                     <LabelledSlider
-                        value={Number(lineFlowAlertThresholdLocal)}
-                        label="AlertThresholdLabel"
+                        value={Number(limitReductionParam)}
+                        label="LimitReduction"
                         onCommitCallback={(event, value) => {
-                            handleChangeLineFlowAlertThreshold(value);
+                            handleChangeLimitReduction(value);
                         }}
                         marks={alertThresholdMarks}
                         minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
