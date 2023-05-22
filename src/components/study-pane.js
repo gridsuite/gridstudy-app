@@ -13,6 +13,7 @@ import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { STUDY_DISPLAY_MODE } from '../redux/actions';
 import Paper from '@mui/material/Paper';
+import { equipments } from './network/network-equipments';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import {
@@ -34,7 +35,6 @@ import { ReactFlowProvider } from 'react-flow-renderer';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
-import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -148,8 +148,8 @@ const StudyPane = ({
         if (!network) {
             return;
         }
-        network.useEquipment(EQUIPMENT_TYPES.SUBSTATION.name);
-        network.useEquipment(EQUIPMENT_TYPES.LINE.name);
+        network.useEquipment(equipments.substations);
+        network.useEquipment(equipments.lines);
     }, [network]);
 
     function showInSpreadsheet(equipment) {

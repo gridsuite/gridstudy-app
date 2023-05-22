@@ -62,8 +62,8 @@ import {
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
+import { equipments } from './network/network-equipments';
 import { BUILD_STATUS } from './network/constants';
-import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -634,10 +634,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     displayNetworkLoadingFailMessage,
                     dispatch,
                     {
-                        equipments: [
-                            EQUIPMENT_TYPES.LINE.name,
-                            EQUIPMENT_TYPES.SUBSTATION.name,
-                        ],
+                        equipments: [equipments.lines, equipments.substations],
                     }
                 );
             } else {

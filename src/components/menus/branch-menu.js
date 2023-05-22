@@ -30,6 +30,7 @@ import {
 } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
@@ -78,11 +79,11 @@ const withBranchMenu =
 
         const getEquipmentTranslation = useCallback((equipmentType) => {
             switch (equipmentType) {
-                case EQUIPMENT_TYPES.LINE.name:
+                case equipments.lines:
                     return 'Line';
-                case EQUIPMENT_TYPES.HVDC_LINE.name:
+                case equipments.hvdcLines:
                     return 'HvdcLine';
-                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name:
+                case equipments.twoWindingsTransformers:
                     return '2WTransformer';
                 default:
                     break;
@@ -91,11 +92,11 @@ const withBranchMenu =
 
         const getRealEquipmentType = useCallback((equipmentType) => {
             switch (equipmentType) {
-                case EQUIPMENT_TYPES.LINE.name:
+                case equipments.lines:
                     return EQUIPMENT_TYPES.LINE.type;
-                case EQUIPMENT_TYPES.HVDC_LINE.name:
+                case equipments.hvdcLines:
                     return EQUIPMENT_TYPES.HVDC_LINE.type;
-                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name:
+                case equipments.twoWindingsTransformers:
                     return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
                 default:
                     break;
@@ -208,7 +209,7 @@ const withBranchMenu =
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
                 />
-                {equipmentType === EQUIPMENT_TYPES.LINE.name && (
+                {equipmentType === equipments.lines && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleLockout()}
@@ -233,7 +234,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.name && (
+                {equipmentType !== equipments.hvdcLines && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleTrip()}
@@ -258,7 +259,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === EQUIPMENT_TYPES.LINE.name && (
+                {equipmentType === equipments.lines && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
@@ -294,7 +295,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === EQUIPMENT_TYPES.LINE.name && (
+                {equipmentType === equipments.lines && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
@@ -330,7 +331,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === EQUIPMENT_TYPES.LINE.name && (
+                {equipmentType === equipments.lines && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleSwitchOn()}
@@ -356,7 +357,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.name && (
+                {equipmentType !== equipments.hvdcLines && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() =>

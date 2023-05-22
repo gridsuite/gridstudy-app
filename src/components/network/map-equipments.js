@@ -11,6 +11,7 @@ import {
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
 } from '../../utils/rest-api';
+import { equipments } from './network-equipments';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
@@ -278,11 +279,7 @@ export default class MapEquipments {
         if (fullReload) {
             this.lines = [];
         }
-        this.lines = this.updateEquipments(
-            this.lines,
-            lines,
-            EQUIPMENT_TYPES.LINE.name
-        );
+        this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
         this.completeLinesInfos(fullReload ? [] : lines);
     }
 
@@ -293,7 +290,7 @@ export default class MapEquipments {
         this.hvdcLines = this.updateEquipments(
             this.hvdcLines,
             hvdcLines,
-            EQUIPMENT_TYPES.HVDC_LINE.name
+            equipments.hvdcLines
         );
         this.completeHvdcLinesInfos(fullReload ? [] : hvdcLines);
     }

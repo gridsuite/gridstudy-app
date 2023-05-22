@@ -27,6 +27,7 @@ import {
     fetchTwoWindingsTransformers,
     fetchVscConverterStations,
 } from '../../utils/rest-api';
+import { equipments } from './network-equipments';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
@@ -185,11 +186,7 @@ export default class Network {
     }
 
     updateLines(lines) {
-        this.lines = this.updateEquipments(
-            this.lines,
-            lines,
-            EQUIPMENT_TYPES.LINE.name
-        );
+        this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
 
         // add more infos
         this.completeLinesInfos();
@@ -206,7 +203,7 @@ export default class Network {
         this.twoWindingsTransformers = this.updateEquipments(
             this.twoWindingsTransformers,
             twoWindingsTransformers,
-            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name
+            equipments.twoWindingsTransformers
         );
 
         // add more infos
@@ -222,7 +219,7 @@ export default class Network {
         this.threeWindingsTransformers = this.updateEquipments(
             this.threeWindingsTransformers,
             threeWindingsTransformers,
-            EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.name
+            equipments.threeWindingsTransformers
         );
 
         // add more infos
@@ -240,7 +237,7 @@ export default class Network {
         this.generators = this.updateEquipments(
             this.generators,
             generators,
-            EQUIPMENT_TYPES.GENERATOR.name
+            equipments.generators
         );
 
         // add more infos
@@ -251,23 +248,19 @@ export default class Network {
         this.batteries = this.updateEquipments(
             this.batteries,
             batteries,
-            EQUIPMENT_TYPES.BATTERY.name
+            equipments.batteries
         );
     }
 
     updateLoads(loads) {
-        this.loads = this.updateEquipments(
-            this.loads,
-            loads,
-            EQUIPMENT_TYPES.LOAD.name
-        );
+        this.loads = this.updateEquipments(this.loads, loads, equipments.loads);
     }
 
     updateDanglingLines(danglingLines) {
         this.danglingLines = this.updateEquipments(
             this.danglingLines,
             danglingLines,
-            EQUIPMENT_TYPES.DANGLING_LINE.name
+            equipments.danglingLines
         );
     }
 
@@ -275,7 +268,7 @@ export default class Network {
         this.shuntCompensators = this.updateEquipments(
             this.shuntCompensators,
             shuntCompensators,
-            EQUIPMENT_TYPES.SHUNT_COMPENSATOR.name
+            equipments.shuntCompensators
         );
     }
 
@@ -283,7 +276,7 @@ export default class Network {
         this.staticVarCompensators = this.updateEquipments(
             this.staticVarCompensators,
             staticVarCompensators,
-            EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.name
+            equipments.staticVarCompensators
         );
     }
 
@@ -291,7 +284,7 @@ export default class Network {
         this.hvdcLines = this.updateEquipments(
             this.hvdcLines,
             hvdcLines,
-            EQUIPMENT_TYPES.HVDC_LINE.name
+            equipments.hvdcLines
         );
     }
 
@@ -299,7 +292,7 @@ export default class Network {
         this.lccConverterStations = this.updateEquipments(
             this.lccConverterStations,
             lccConverterStations,
-            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.name
+            equipments.lccConverterStations
         );
     }
 
@@ -307,7 +300,7 @@ export default class Network {
         this.vscConverterStations = this.updateEquipments(
             this.vscConverterStations,
             vscConverterStations,
-            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.name
+            equipments.vscConverterStations
         );
     }
 
@@ -400,19 +393,19 @@ export default class Network {
     setEquipment(equipment, values) {
         this[equipment] = values;
         switch (equipment) {
-            case EQUIPMENT_TYPES.SUBSTATION.name:
+            case equipments.substations:
                 this.completeSubstationsInfos();
                 break;
-            case EQUIPMENT_TYPES.LINE.name:
+            case equipments.lines:
                 this.completeLinesInfos();
                 break;
-            case EQUIPMENT_TYPES.GENERATOR.name:
+            case equipments.generators:
                 this.completeGeneratorsInfos();
                 break;
-            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name:
+            case equipments.twoWindingsTransformers:
                 this.completeTwoWindingsTransformersInfos();
                 break;
-            case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.name:
+            case equipments.threeWindingsTransformers:
                 this.completeThreeWindingsTransformersInfos();
                 break;
             default:
@@ -482,8 +475,8 @@ export default class Network {
             errHandler,
         });
         this.lazyLoaders.set(
-            EQUIPMENT_TYPES.VOLTAGE_LEVEL.name,
-            this.lazyLoaders.get(EQUIPMENT_TYPES.SUBSTATION.name)
+            equipments.voltageLevels,
+            this.lazyLoaders.get(equipments.substations)
         );
 
         this.dispatch = dispatch;
