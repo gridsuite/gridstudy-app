@@ -164,6 +164,17 @@ function makeComponentFor(
                 }}
             />
         );
+    } else if (defParam.type === TYPES.double) {
+        return (
+            <TextField
+                fullWidth
+                sx={{ input: { textAlign: 'right' } }}
+                value={value}
+                onChange={(ev) => {
+                    updateValues(ev.target.value);
+                }}
+            />
+        );
     }
 }
 
@@ -171,6 +182,7 @@ const TYPES = {
     enum: 'Enum',
     bool: 'Bool',
     countries: 'Countries',
+    double: 'Double',
 };
 
 const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
@@ -284,6 +296,10 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
         dcUseTransformerRatio: {
             type: TYPES.bool,
             description: 'descLfDcUseTransformerRatio',
+        },
+        dcPowerFactor: {
+            type: TYPES.double,
+            description: 'descLfDcPowerFactor',
         },
     };
 
