@@ -20,7 +20,7 @@ import {
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { LabelledSilder, LineSeparator } from '../dialogUtils';
+import { LabelledSlider, LineSeparator } from '../dialogUtils';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -105,7 +105,7 @@ function makeComponentFor(defParam, key, scParams, setter) {
             );
         } else if (defParam.type === TYPES.slider) {
             return (
-                <LabelledSilder
+                <LabelledSlider
                     value={Number(value)}
                     label={defParam.description}
                     onCommitCallback={(event, currentValue) => {
