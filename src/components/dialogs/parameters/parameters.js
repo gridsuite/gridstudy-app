@@ -540,9 +540,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             label={
                                 <FormattedMessage id="SensitivityAnalysis" />
                             }
-                            value={
-                                TAB_VALUES.sensitivityAnalysisParamsTabValue
-                            }
+                            value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
                         />
                         {enableDeveloperMode && (
                             <Tab
@@ -614,9 +612,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         </TabPanel>
                         <TabPanel
                             value={tabValue}
-                            index={
-                                TAB_VALUES.sensitivityAnalysisParamsTabValue
-                            }
+                            index={TAB_VALUES.sensitivityAnalysisParamsTabValue}
                             keepState
                         >
                             {studyUuid && (
