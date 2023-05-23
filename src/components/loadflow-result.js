@@ -207,7 +207,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     sortable={true}
                     columns={[
                         {
-                            label: intl.formatMessage({ id: 'OverloadedLine' }),
+                            label: intl.formatMessage({
+                                id: 'OverloadedEquipment',
+                            }),
                             dataKey: 'name',
                             numeric: false,
                         },
@@ -241,7 +243,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                             fractionDigits: 1,
                         },
                         {
-                            label: intl.formatMessage({ id: 'LineLoad' }),
+                            label: intl.formatMessage({
+                                id: 'EquipmentOverload',
+                            }),
                             dataKey: 'overload',
                             numeric: true,
                             fractionDigits: 0,
