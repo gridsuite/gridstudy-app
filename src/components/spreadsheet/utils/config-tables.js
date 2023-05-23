@@ -856,6 +856,10 @@ export const TABLES_DEFINITIONS = {
                     return {
                         maxExpression: 'maxP',
                         defaultValue: params.data.minP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -873,6 +877,10 @@ export const TABLES_DEFINITIONS = {
                     return {
                         minExpression: 'minP',
                         defaultValue: params.data.maxP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -896,6 +904,10 @@ export const TABLES_DEFINITIONS = {
                         minExpression: 'minP',
                         maxExpression: 'maxP',
                         defaultValue: params.data.targetP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 fractionDigits: 1,
@@ -913,6 +925,10 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.targetQ,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 crossValidation: {
@@ -933,6 +949,9 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.voltageRegulatorOn | 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
                     };
                 },
                 resetColumnsInError: [
@@ -959,6 +978,10 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.targetV,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 crossValidation: {
@@ -1056,6 +1079,10 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.p0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1072,6 +1099,10 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.q0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
