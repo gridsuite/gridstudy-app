@@ -934,6 +934,7 @@ export const TABLES_DEFINITIONS = {
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn: 'voltageRegulatorOn',
+                        //the following value is matched against the input of a boolean input, so 1 convey the following value : false
                         columnValue: 0,
                     },
                 },
@@ -987,6 +988,7 @@ export const TABLES_DEFINITIONS = {
                 crossValidation: {
                     requiredOn: {
                         dependencyColumn: 'voltageRegulatorOn',
+                        //the following value is matched against the input of a boolean input, so 1 convey the following value : true
                         columnValue: 1,
                     },
                 },
