@@ -74,7 +74,7 @@ const NetworkModificationTree = ({
                 return '#4287f5';
             }
             switch (
-                node.data.buildStatus // TODO replace the switch with a simpler if/else ?
+                node.data.buildStatusLocal // TODO replace the switch with a simpler if/else ?
             ) {
                 case BUILD_STATUS.BUILT:
                     return '#70d136';

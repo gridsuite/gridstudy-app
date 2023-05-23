@@ -31,6 +31,15 @@ const buildBanner = {
     left: '0px',
 };
 
+const bottomBuildBanner = {
+    display: 'flex',
+    height: '25%',
+    width: '15%',
+    position: 'absolute',
+    bottom: '0px',
+    left: '0px',
+};
+
 const useStyles = makeStyles((theme) => ({
     networkModificationSelected: {
         position: 'relative',
@@ -91,6 +100,23 @@ const useStyles = makeStyles((theme) => ({
         ...buildBanner,
         background: NOT_BUILT_NODE_BANNER_COLOR,
     },
+    bottomBuildBannerOK: {
+        ...bottomBuildBanner,
+        background: BUILT_NODE_BANNER_COLOR,
+    },
+    bottomBuildBannerWarning: {
+        ...bottomBuildBanner,
+        background: BUILT_WITH_WARNING_NODE_BANNER_COLOR,
+    },
+    bottomBuildBannerError: {
+        ...bottomBuildBanner,
+        background: BUILT_WITH_ERROR_NODE_BANNER_COLOR,
+    },
+    bottomBuildBannerNotBuilt: {
+        ...bottomBuildBanner,
+        background: NOT_BUILT_NODE_BANNER_COLOR,
+    },
+
     margin: {
         marginLeft: theme.spacing(1.25),
     },
@@ -141,6 +167,19 @@ const NetworkModificationNode = (props) => {
         }
     }
 
+    function getClassForBottomBanner(buildStatus) {
+        switch (buildStatus) {
+            case BUILD_STATUS.BUILT:
+                return classes.bottomBuildBannerOK;
+            case BUILD_STATUS.BUILT_WITH_ERROR:
+                return classes.bottomBuildBannerError;
+            case BUILD_STATUS.BUILT_WITH_WARNING:
+                return classes.bottomBuildBannerWarning;
+            default:
+                return classes.bottomBuildBannerNotBuilt;
+        }
+    }
+
     return (
         <>
             <Handle
@@ -165,7 +204,7 @@ const NetworkModificationNode = (props) => {
                         : classes.networkModification
                 }
             >
-                <div className={getClassForBanner(props.data.buildStatus)}>
+                <div className={getClassForBanner(props.data.buildStatusLocal)}>
                     {props.data.buildStatus === 'BUILDING' && (
                         <CircularProgress
                             size={20}
@@ -174,6 +213,11 @@ const NetworkModificationNode = (props) => {
                         />
                     )}
                 </div>
+                <div
+                    className={getClassForBottomBanner(
+                        props.data.buildStatusComputed
+                    )}
+                ></div>
 
                 <div className={classes.labelWrapper}>
                     <span

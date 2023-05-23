@@ -360,7 +360,8 @@ export const NetworkModificationTreePane = ({
                     createTreeNode(studyUuid, element.id, insertMode, {
                         name: response,
                         type: type,
-                        buildStatus: BUILD_STATUS.NOT_BUILT,
+                        buildStatusLocal: BUILD_STATUS.NOT_BUILT,
+                        buildStatusLocalComputed: BUILD_STATUS.NOT_BUILT,
                     }).catch((error) => {
                         snackError({
                             messageTxt: error.message,
