@@ -93,24 +93,26 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 side: convertSide(overloadedLine.side),
             };
         };
-        fetchCurrentLimitViolations(
-            studyUuid,
-            nodeUuid,
-            limitReductionParam / 100.0
-        )
-            .then((overloadedLines) => {
-                const sortedLines = overloadedLines
-                    .map((overloadedLine) => makeData(overloadedLine))
-                    .sort((a, b) => b.overload - a.overload);
-                setOverloadedLines(sortedLines);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ErrFetchCurrentLimitViolationsMsg',
+        if (result) {
+            fetchCurrentLimitViolations(
+                studyUuid,
+                nodeUuid,
+                limitReductionParam / 100.0
+            )
+                .then((overloadedLines) => {
+                    const sortedLines = overloadedLines
+                        .map((overloadedLine) => makeData(overloadedLine))
+                        .sort((a, b) => b.overload - a.overload);
+                    setOverloadedLines(sortedLines);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'ErrFetchCurrentLimitViolationsMsg',
+                    });
                 });
-            });
-    }, [studyUuid, nodeUuid, limitReductionParam, intl, snackError]);
+        }
+    }, [studyUuid, nodeUuid, limitReductionParam, intl, snackError, result]);
 
     function StatusCellRender(cellData) {
         const status = cellData.rowData[cellData.dataKey];
