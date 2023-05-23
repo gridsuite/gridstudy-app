@@ -361,7 +361,7 @@ export const NetworkModificationTreePane = ({
                         name: response,
                         type: type,
                         buildStatusLocal: BUILD_STATUS.NOT_BUILT,
-                        buildStatusLocalComputed: BUILD_STATUS.NOT_BUILT,
+                        buildStatusGlobal: BUILD_STATUS.NOT_BUILT,
                     }).catch((error) => {
                         snackError({
                             messageTxt: error.message,
