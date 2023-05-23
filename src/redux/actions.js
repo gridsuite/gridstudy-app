@@ -8,8 +8,8 @@
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
-    PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LANGUAGE,
+    PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -276,19 +276,19 @@ export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
     };
 }
 
+export const LIMIT_REDUCTION = 'LIMIT_REDUCTION';
+
+export function selectLimitReduction(limitReduction) {
+    return {
+        type: LIMIT_REDUCTION,
+        [PARAM_LIMIT_REDUCTION]: limitReduction,
+    };
+}
+
 export const STUDY_UPDATED = 'STUDY_UPDATED';
 
 export function studyUpdated(eventData) {
     return { type: STUDY_UPDATED, eventData };
-}
-
-export const DISPLAY_OVERLOAD_TABLE = 'DISPLAY_OVERLOAD_TABLE';
-
-export function selectDisplayOverloadTableState(displayOverloadTable) {
-    return {
-        type: DISPLAY_OVERLOAD_TABLE,
-        [PARAM_DISPLAY_OVERLOAD_TABLE]: displayOverloadTable,
-    };
 }
 
 export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';

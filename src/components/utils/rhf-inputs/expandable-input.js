@@ -31,6 +31,8 @@ const ExpandableInput = ({
     initialValue, // Initial value to display when we add a new entry to array
     getDeletionMark = null,
     deleteCallback = null,
+    alignItems = 'stretch', // default value for a flex container
+    watchProps = true,
 }) => {
     const classes = useStyles();
     const {
@@ -46,32 +48,39 @@ const ExpandableInput = ({
             <Grid item xs={12}>
                 <ErrorInput name={name} InputField={MidFormError} />
             </Grid>
-            {values.map((value, idx) => (
-                <Grid key={value.id} container spacing={2} item>
-                    <Field name={name} index={idx} {...fieldProps} />
-                    <Grid item xs={1}>
-                        <IconButton
-                            className={classes.icon}
-                            key={value.id}
-                            onClick={() => {
-                                if (deleteCallback) {
-                                    if (deleteCallback(idx) === true) {
+            {watchProps &&
+                values.map((value, idx) => (
+                    <Grid
+                        key={value.id}
+                        container
+                        spacing={2}
+                        item
+                        alignItems={alignItems}
+                    >
+                        <Field name={name} index={idx} {...fieldProps} />
+                        <Grid item xs={1}>
+                            <IconButton
+                                className={classes.icon}
+                                key={value.id}
+                                onClick={() => {
+                                    if (deleteCallback) {
+                                        if (deleteCallback(idx) === true) {
+                                            remove(idx);
+                                        }
+                                    } else {
                                         remove(idx);
                                     }
-                                } else {
-                                    remove(idx);
-                                }
-                            }}
-                        >
-                            {getDeletionMark && getDeletionMark(idx) ? (
-                                <RestoreFromTrashIcon />
-                            ) : (
-                                <DeleteIcon />
-                            )}
-                        </IconButton>
+                                }}
+                            >
+                                {getDeletionMark && getDeletionMark(idx) ? (
+                                    <RestoreFromTrashIcon />
+                                ) : (
+                                    <DeleteIcon />
+                                )}
+                            </IconButton>
+                        </Grid>
                     </Grid>
-                </Grid>
-            ))}
+                ))}
             <span>
                 <Button
                     fullWidth

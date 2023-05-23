@@ -35,7 +35,6 @@ import {
     SELECT_COMPUTED_LANGUAGE,
     SET_PARAMS_LOADED,
     STUDY_UPDATED,
-    DISPLAY_OVERLOAD_TABLE,
     MAP_MANUAL_REFRESH,
     SUBSTATION_LAYOUT,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
@@ -86,6 +85,7 @@ import {
     NETWORK_EQUIPMENT_FETCHED,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     SELECTION_FOR_COPY,
+    LIMIT_REDUCTION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -98,9 +98,9 @@ import { TABLES_COLUMNS_NAMES_JSON } from '../components/spreadsheet/utils/confi
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
-    PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_LANGUAGE,
+    PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -128,8 +128,8 @@ const paramsInitialState = {
     [PARAM_USE_NAME]: true,
     [PARAM_LINE_FULL_PATH]: true,
     [PARAM_LINE_PARALLEL_PATH]: true,
+    [PARAM_LIMIT_REDUCTION]: 100,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
-    [PARAM_DISPLAY_OVERLOAD_TABLE]: false,
     [PARAM_MAP_MANUAL_REFRESH]: false,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
@@ -436,6 +436,10 @@ export const reducer = createReducer(initialState, {
         state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
     },
 
+    [LIMIT_REDUCTION]: (state, action) => {
+        state[PARAM_LIMIT_REDUCTION] = action[PARAM_LIMIT_REDUCTION];
+    },
+
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
         state[PARAM_LINE_FLOW_ALERT_THRESHOLD] =
             action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
@@ -460,11 +464,6 @@ export const reducer = createReducer(initialState, {
     [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
         state.showAuthenticationRouterLogin =
             action.showAuthenticationRouterLogin;
-    },
-
-    [DISPLAY_OVERLOAD_TABLE]: (state, action) => {
-        state[PARAM_DISPLAY_OVERLOAD_TABLE] =
-            action[PARAM_DISPLAY_OVERLOAD_TABLE];
     },
 
     [MAP_MANUAL_REFRESH]: (state, action) => {

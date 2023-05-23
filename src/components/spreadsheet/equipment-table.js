@@ -107,6 +107,7 @@ export const EquipmentTable = ({
                     getRowId={getRowId}
                     rowData={rowData}
                     pinnedTopRowData={topPinnedData}
+                    debounceVerticalScrollbar={true}
                     getRowStyle={getRowStyle}
                     columnDefs={columnData}
                     defaultColDef={defaultColDef}
