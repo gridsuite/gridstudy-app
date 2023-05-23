@@ -315,7 +315,7 @@ export const useParametersBackend = (
                 .then((providers) => {
                     // we can consider the provider gotten from back will be also used as
                     // a key for translation
-                    const providersObj = providers.reduce(function (obj, v, i) {
+                    const providersObj = providers.reduce(function (obj, v) {
                         obj[v] = v;
                         return obj;
                     }, {});
@@ -535,17 +535,15 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             label={<FormattedMessage id="SecurityAnalysis" />}
                             value={TAB_VALUES.securityAnalysisParamsTabValue}
                         />
-                        {enableDeveloperMode && (
-                            <Tab
-                                disabled={!studyUuid}
-                                label={
-                                    <FormattedMessage id="SensitivityAnalysis" />
-                                }
-                                value={
-                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
-                                }
-                            />
-                        )}
+                        <Tab
+                            disabled={!studyUuid}
+                            label={
+                                <FormattedMessage id="SensitivityAnalysis" />
+                            }
+                            value={
+                                TAB_VALUES.sensitivityAnalysisParamsTabValue
+                            }
+                        />
                         {enableDeveloperMode && (
                             <Tab
                                 disabled={!studyUuid}
@@ -614,27 +612,22 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 />
                             )}
                         </TabPanel>
-                        {
-                            //To be removed when Sensitivity Analysis is not in developer mode only.
-                            enableDeveloperMode && (
-                                <TabPanel
-                                    value={tabValue}
-                                    index={
-                                        TAB_VALUES.sensitivityAnalysisParamsTabValue
+                        <TabPanel
+                            value={tabValue}
+                            index={
+                                TAB_VALUES.sensitivityAnalysisParamsTabValue
+                            }
+                            keepState
+                        >
+                            {studyUuid && (
+                                <SensitivityAnalysisParameters
+                                    hideParameters={hideParameters}
+                                    parametersBackend={
+                                        sensitivityAnalysisParametersBackend
                                     }
-                                    keepState
-                                >
-                                    {studyUuid && (
-                                        <SensitivityAnalysisParameters
-                                            hideParameters={hideParameters}
-                                            parametersBackend={
-                                                sensitivityAnalysisParametersBackend
-                                            }
-                                        />
-                                    )}
-                                </TabPanel>
-                            )
-                        }
+                                />
+                            )}
+                        </TabPanel>
                         {
                             //To be removed when ShortCircuit is not in developer mode only.
                             enableDeveloperMode && (
