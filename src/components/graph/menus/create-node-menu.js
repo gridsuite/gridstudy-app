@@ -156,8 +156,8 @@ const CreateNodeMenu = ({
             action: () => buildNode(),
             id: 'buildNode',
             disabled:
-                activeNode?.data?.buildStatusComputed?.startsWith('BUILT') ||
-                activeNode?.data?.buildStatusComputed === 'BUILDING' ||
+                activeNode?.data?.buildStatusGlobal?.startsWith('BUILT') ||
+                activeNode?.data?.buildStatusGlobal === 'BUILDING' ||
                 isModificationsInProgress,
         },
         CREATE_MODIFICATION_NODE: {
@@ -251,7 +251,7 @@ const CreateNodeMenu = ({
             id: 'exportCaseOnNode',
             disabled:
                 activeNode?.type !== 'ROOT' &&
-                !activeNode?.data?.buildStatusComputed?.startsWith('BUILT'),
+                !activeNode?.data?.buildStatusGlobal?.startsWith('BUILT'),
         },
     };
 

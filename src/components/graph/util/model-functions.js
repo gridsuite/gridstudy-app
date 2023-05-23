@@ -23,7 +23,7 @@ export function convertNodetoReactFlowModelNode(node, parentNodeUuid) {
             parentNodeUuid: parentNodeUuid,
             label: node.name,
             description: node.description,
-            buildStatusComputed: node.buildStatusComputed,
+            buildStatusGlobal: node.buildStatusGlobal,
             buildStatusLocal: node.buildStatusLocal,
             readOnly: node.readOnly,
         },
@@ -51,7 +51,7 @@ export function recursiveSearchFirstNodeOfType(
     if (
         elements.type === nodeType &&
         (buildStatusList === undefined ||
-            buildStatusList.includes(elements.buildStatusComputed))
+            buildStatusList.includes(elements.buildStatusGlobal))
     ) {
         return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
     }
@@ -83,7 +83,7 @@ export function isNodeBuilt(node) {
     if (node.type === 'ROOT') {
         return true;
     }
-    return node.data?.buildStatusComputed?.startsWith('BUILT');
+    return node.data?.buildStatusGlobal?.startsWith('BUILT');
 }
 
 export function isSameNode(node1, node2) {

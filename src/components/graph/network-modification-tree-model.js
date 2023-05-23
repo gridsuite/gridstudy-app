@@ -136,7 +136,7 @@ export default class NetworkModificationTreeModel {
                 this.treeNodes[indexModifiedNode].data = {
                     ...this.treeNodes[indexModifiedNode].data,
                     label: node.name,
-                    buildStatusComputed: node.buildStatusComputed,
+                    buildStatusGlobal: node.buildStatusGlobal,
                     buildStatusLocal: node.buildStatusLocal,
                     readOnly: node.readOnly,
                 };
@@ -169,7 +169,7 @@ export default class NetworkModificationTreeModel {
     setBuildingStatus() {
         this.isAnyNodeBuilding =
             this.treeNodes.find(
-                (node) => node?.data?.buildStatusComputed === 'BUILDING'
+                (node) => node?.data?.buildStatusGlobal === 'BUILDING'
             ) !== undefined;
     }
 
