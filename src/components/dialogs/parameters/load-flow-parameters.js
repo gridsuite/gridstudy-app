@@ -319,7 +319,7 @@ const SpecificLoadFlowParameters = ({
     }, [specificParamsDescription]);
 
     // change object's NaN values into null
-    const getObjectWithoutNanValuse = useCallback((initialObject) => {
+    const getObjectWithoutNanValues = useCallback((initialObject) => {
         initialObject &&
             Object.keys(initialObject)?.map((key) =>
                 Number.isNaN(initialObject[key])
@@ -345,7 +345,7 @@ const SpecificLoadFlowParameters = ({
             const deltaMap = makeDeltaMap(defaultValues, nextCurrentParameters);
 
             const toSend = { ...lfParams };
-            getObjectWithoutNanValuse(deltaMap);
+            getObjectWithoutNanValues(deltaMap);
 
             const oldSpecifics = toSend['specificParametersPerProvider'];
             toSend['specificParametersPerProvider'] = {
@@ -363,7 +363,7 @@ const SpecificLoadFlowParameters = ({
             getObjectWithoutNanValuse,
         ]
     );
-    getObjectWithoutNanValuse(defaultValues);
+    getObjectWithoutNanValues(defaultValues);
 
     return (
         <>
