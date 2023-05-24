@@ -24,6 +24,16 @@ import Typography from '@mui/material/Typography';
 import { fetchLine } from '../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
+import makeStyles from '@mui/styles/makeStyles';
+
+const useStyles = makeStyles((theme) => ({
+    tableCells: {
+        fontSize: 10,
+    },
+    table: {
+        backgroundColor: theme.tooltipTable.background,
+    },
+}));
 
 const LinePopover = ({
     studyUuid,
@@ -35,6 +45,8 @@ const LinePopover = ({
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [lineInfo, setLineInfo] = useState(null);
     const intl = useIntl();
+    const classes = useStyles();
+    const [localAnchorEl, setLocalAnchorEl] = useState(null);
 
     useEffect(() => {
         if (lineInfos) {
@@ -50,11 +62,25 @@ const LinePopover = ({
         setLineInfo(null);
     };
 
+    //When multiple rerender happens on the svg the anchorEl can be already removed from the dom
+    //which will cause the popover to jump all over the place during a few frames so we wait a little to avoid
+    //that effect
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (document.contains(anchorEl)) {
+                setLocalAnchorEl(anchorEl);
+            } else {
+                setLocalAnchorEl(null);
+            }
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [anchorEl]);
+
     const checkValue = (value) => {
-        if (value != null) {
+        if (value != null && !Number.isNaN(value)) {
             return value;
         } else {
-            return '';
+            return '_';
         }
     };
 
@@ -65,27 +91,35 @@ const LinePopover = ({
                     <>
                         {currentLimits.permanentLimit && (
                             <TableRow key={currentLimits.permanentLimit + side}>
-                                <TableCell>
+                                <TableCell className={classes.tableCells}>
                                     {intl.formatMessage({
                                         id: 'PermanentCurrentLimitText',
                                     })}
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className={classes.tableCells}>
                                     {checkValue(currentLimits.permanentLimit)}
                                 </TableCell>
-                                <TableCell>
-                                    {loadFlowStatus === RunningStatus.SUCCEED &&
-                                        checkValue(
-                                            Math.round(
-                                                side === '1'
-                                                    ? (lineInfo.i1 * 100) /
-                                                          currentLimits.permanentLimit
-                                                    : (lineInfo.i2 * 100) /
-                                                          currentLimits.permanentLimit
-                                            )
-                                        )}
+                                <TableCell
+                                    className={classes.tableCells}
+                                    sx={{
+                                        opacity:
+                                            loadFlowStatus ===
+                                            RunningStatus.SUCCEED
+                                                ? 1
+                                                : 0.2,
+                                    }}
+                                >
+                                    {checkValue(
+                                        Math.round(
+                                            side === '1'
+                                                ? (lineInfo.i1 * 100) /
+                                                      currentLimits.permanentLimit
+                                                : (lineInfo.i2 * 100) /
+                                                      currentLimits.permanentLimit
+                                        )
+                                    )}
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className={classes.tableCells}>
                                     {checkValue(
                                         side === '1'
                                             ? lineInfo.voltageLevelId1
@@ -103,36 +137,49 @@ const LinePopover = ({
                                         <TableRow
                                             key={temporaryLimit.name + side}
                                         >
-                                            <TableCell>
+                                            <TableCell
+                                                className={classes.tableCells}
+                                            >
                                                 {checkValue(
                                                     temporaryLimit.name
                                                 )}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell
+                                                className={classes.tableCells}
+                                            >
                                                 {checkValue(
                                                     temporaryLimit.value
                                                 )}
                                             </TableCell>
-                                            <TableCell>
-                                                {loadFlowStatus ===
-                                                    RunningStatus.SUCCEED &&
-                                                    (side === '1'
-                                                        ? checkValue(
-                                                              Math.round(
-                                                                  (lineInfo.i1 *
-                                                                      100) /
-                                                                      temporaryLimit.value
-                                                              )
+                                            <TableCell
+                                                className={classes.tableCells}
+                                                sx={{
+                                                    opacity:
+                                                        loadFlowStatus ===
+                                                        RunningStatus.SUCCEED
+                                                            ? 1
+                                                            : 0.2,
+                                                }}
+                                            >
+                                                {side === '1'
+                                                    ? checkValue(
+                                                          Math.round(
+                                                              (lineInfo.i1 *
+                                                                  100) /
+                                                                  temporaryLimit.value
                                                           )
-                                                        : checkValue(
-                                                              Math.round(
-                                                                  (lineInfo.i2 *
-                                                                      100) /
-                                                                      temporaryLimit.value
-                                                              )
-                                                          ))}
+                                                      )
+                                                    : checkValue(
+                                                          Math.round(
+                                                              (lineInfo.i2 *
+                                                                  100) /
+                                                                  temporaryLimit.value
+                                                          )
+                                                      )}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell
+                                                className={classes.tableCells}
+                                            >
                                                 {checkValue(
                                                     side === '1'
                                                         ? lineInfo.voltageLevelId1
@@ -149,140 +196,201 @@ const LinePopover = ({
     };
 
     return (
-        <Popover
-            anchorEl={anchorEl}
-            sx={{
-                pointerEvents: 'none',
-            }}
-            anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-            }}
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            onClose={handlePopoverClose}
-            open={Boolean(anchorEl)}
-            disableRestoreFocus
-        >
-            {lineInfo === null && (
-                <Box height={2} minWidth={100}>
-                    <LinearProgress />
-                </Box>
-            )}
-
-            {lineInfo !== null && (
-                <Grid
-                    container
-                    rowSpacing={2}
-                    direction={'column'}
-                    alignItems={'center'}
+        <>
+            {localAnchorEl && (
+                <Popover
+                    anchorEl={localAnchorEl}
+                    sx={{
+                        pointerEvents: 'none',
+                    }}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                    onClose={handlePopoverClose}
+                    open={Boolean(localAnchorEl)}
+                    disableRestoreFocus
                 >
-                    <>
-                        <Grid item>
-                            <Typography variant="h6">{lineId}</Typography>
-                        </Grid>
+                    {lineInfo === null && (
+                        <Box height={2} minWidth={100}>
+                            <LinearProgress />
+                        </Box>
+                    )}
 
-                        <Grid item>
-                            <TableContainer component={Paper}>
-                                <Table size={'small'}>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>
-                                                {intl.formatMessage({
-                                                    id: 'CURRENT',
-                                                })}
-                                            </TableCell>
-                                            <TableCell>
-                                                {checkValue(
-                                                    lineInfo.voltageLevelId1
-                                                )}
-                                            </TableCell>
-                                            <TableCell>
-                                                {checkValue(
-                                                    lineInfo.voltageLevelId2
-                                                )}
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell>
-                                                {intl.formatMessage({
-                                                    id: 'I_(A)',
-                                                })}
-                                            </TableCell>
-                                            <TableCell>
-                                                {loadFlowStatus ===
-                                                RunningStatus.SUCCEED
-                                                    ? checkValue(
-                                                          Math.round(
-                                                              lineInfo.i1
-                                                          )
-                                                      )
-                                                    : null}
-                                            </TableCell>
-                                            <TableCell>
-                                                {loadFlowStatus ===
-                                                RunningStatus.SUCCEED
-                                                    ? checkValue(
-                                                          Math.round(
-                                                              lineInfo.i2
-                                                          )
-                                                      )
-                                                    : null}
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </Grid>
+                    {lineInfo !== null && (
+                        <Grid
+                            container
+                            rowSpacing={2}
+                            direction={'column'}
+                            alignItems={'center'}
+                            sx={{ marginRight: '10px', marginBottom: '5px' }}
+                        >
+                            <>
+                                <Grid item>
+                                    <Typography variant="caption">
+                                        {lineId}
+                                    </Typography>
+                                </Grid>
 
-                        <Grid item>
-                            <TableContainer component={Paper}>
-                                <Table size={'small'}>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>
-                                                {intl.formatMessage({
-                                                    id: 'Limit_name',
-                                                })}
-                                            </TableCell>
-                                            <TableCell>
-                                                {intl.formatMessage({
-                                                    id: 'LimitLabel',
-                                                })}
-                                            </TableCell>
-                                            <TableCell>
-                                                {intl.formatMessage({
-                                                    id: 'Loading',
-                                                })}
-                                            </TableCell>
-                                            <TableCell>
-                                                {intl.formatMessage({
-                                                    id: 'Side',
-                                                })}
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {generateRows(
-                                            lineInfo.currentLimits1,
-                                            '1'
-                                        )}
-                                        {generateRows(
-                                            lineInfo.currentLimits2,
-                                            '2'
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                <Grid item>
+                                    <TableContainer
+                                        component={Paper}
+                                        className={classes.table}
+                                    >
+                                        <Table size={'small'}>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell
+                                                        className={
+                                                            classes.tableCells
+                                                        }
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'CURRENT',
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        className={
+                                                            classes.tableCells
+                                                        }
+                                                    >
+                                                        {checkValue(
+                                                            lineInfo.voltageLevelId1
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        className={
+                                                            classes.tableCells
+                                                        }
+                                                    >
+                                                        {checkValue(
+                                                            lineInfo.voltageLevelId2
+                                                        )}
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                <TableRow>
+                                                    <TableCell
+                                                        className={
+                                                            classes.tableCells
+                                                        }
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'I_(A)',
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        className={
+                                                            classes.tableCells
+                                                        }
+                                                        sx={{
+                                                            opacity:
+                                                                loadFlowStatus ===
+                                                                RunningStatus.SUCCEED
+                                                                    ? 1
+                                                                    : 0.2,
+                                                        }}
+                                                    >
+                                                        {checkValue(
+                                                            Math.round(
+                                                                lineInfo.i1
+                                                            )
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        className={
+                                                            classes.tableCells
+                                                        }
+                                                        sx={{
+                                                            opacity:
+                                                                loadFlowStatus ===
+                                                                RunningStatus.SUCCEED
+                                                                    ? 1
+                                                                    : 0.2,
+                                                        }}
+                                                    >
+                                                        {checkValue(
+                                                            Math.round(
+                                                                lineInfo.i2
+                                                            )
+                                                        )}
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Grid>
+
+                                <Grid item>
+                                    <TableContainer
+                                        component={Paper}
+                                        className={classes.table}
+                                    >
+                                        <Table size={'small'}>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell
+                                                        className={
+                                                            classes.tableCells
+                                                        }
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'Limit_name',
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        className={
+                                                            classes.tableCells
+                                                        }
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'LimitLabel',
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        className={
+                                                            classes.tableCells
+                                                        }
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'Loading',
+                                                        })}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        className={
+                                                            classes.tableCells
+                                                        }
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'Side',
+                                                        })}
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {generateRows(
+                                                    lineInfo.currentLimits1,
+                                                    '1'
+                                                )}
+                                                {generateRows(
+                                                    lineInfo.currentLimits2,
+                                                    '2'
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Grid>
+                            </>
                         </Grid>
-                    </>
-                </Grid>
+                    )}
+                </Popover>
             )}
-        </Popover>
+        </>
     );
 };
 
