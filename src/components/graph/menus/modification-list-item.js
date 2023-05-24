@@ -15,12 +15,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { fetchNetworkElementInfos } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../utils/equipment-types';
+import { fetchNetworkElementInfos } from '../../../services/study';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',

@@ -24,7 +24,7 @@ import { useAutocompleteField } from '../../utils/inputs/use-autocomplete-field'
 import {
     fetchDynamicSimulationParameters,
     updateDynamicSimulationParameters,
-} from '../../../utils/rest-api';
+} from '../../../services/study';
 
 export const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {

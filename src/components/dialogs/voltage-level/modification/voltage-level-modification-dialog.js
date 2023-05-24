@@ -22,17 +22,17 @@ import {
 import yup from '../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    modifyVoltageLevel,
-} from '../../../../utils/rest-api';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
+import { FetchStatus } from '../../../../utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../utils/equipment-types';
+import {
+    fetchNetworkElementInfos,
+    modifyVoltageLevel,
+} from '../../../../services/study';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

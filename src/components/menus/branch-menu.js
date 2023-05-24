@@ -21,13 +21,6 @@ import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import {
-    energiseBranchEnd,
-    fetchNetworkElementInfos,
-    lockoutBranch,
-    switchOnBranch,
-    tripBranch,
-} from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
@@ -39,6 +32,13 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
+import {
+    energiseBranchEnd,
+    fetchNetworkElementInfos,
+    lockoutBranch,
+    switchOnBranch,
+    tripBranch,
+} from '../../services/study';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {

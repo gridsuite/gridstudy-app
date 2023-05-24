@@ -9,17 +9,6 @@ import SensiParametersSelector from './dialogs/sensi/sensi-parameters-selector';
 import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-    startLoadFlow,
-    startSecurityAnalysis,
-    startSensitivityAnalysis,
-    startShortCircuitAnalysis,
-    startDynamicSimulation,
-    stopSecurityAnalysis,
-    stopSensitivityAnalysis,
-    stopShortCircuitAnalysis,
-    stopDynamicSimulation,
-} from '../utils/rest-api';
 import { RunningStatus } from './utils/running-status';
 
 import ContingencyListSelector from './dialogs/contingency-list-selector';
@@ -38,6 +27,17 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
 } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+import {
+    startDynamicSimulation,
+    startLoadFlow,
+    startSecurityAnalysis,
+    startSensitivityAnalysis,
+    startShortCircuitAnalysis,
+    stopDynamicSimulation,
+    stopSecurityAnalysis,
+    stopSensitivityAnalysis,
+    stopShortCircuitAnalysis,
+} from '../services/study';
 
 export function RunButtonContainer({
     studyUuid,

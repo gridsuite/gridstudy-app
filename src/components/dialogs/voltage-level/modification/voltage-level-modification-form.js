@@ -6,7 +6,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { fetchEquipmentsIds } from '../../../../utils/rest-api';
 import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
 import { areIdsEqual, getObjectId } from '../../../utils/utils';
 import {
@@ -30,6 +29,8 @@ import {
     VoltageAdornment,
 } from '../../dialogUtils';
 import Grid from '@mui/material/Grid';
+
+import { fetchEquipmentsIds } from '../../../../services/study';
 
 const VoltageLevelModificationForm = ({
     studyUuid,

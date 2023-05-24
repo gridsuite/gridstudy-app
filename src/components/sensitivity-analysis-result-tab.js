@@ -6,7 +6,6 @@
  */
 
 import { useNodeData } from './study-container';
-import { fetchSensitivityAnalysisResult } from '../utils/rest-api';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import React, {
     useCallback,
@@ -22,6 +21,8 @@ import { FormattedMessage } from 'react-intl/lib';
 import { TablePagination } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
 import LinearProgress from '@mui/material/LinearProgress';
+
+import { fetchSensitivityAnalysisResult } from '../services/study';
 
 const sensitivityAnalysisResultInvalidations = ['sensitivityAnalysisResult'];
 

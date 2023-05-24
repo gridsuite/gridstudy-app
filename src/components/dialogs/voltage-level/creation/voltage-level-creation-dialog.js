@@ -34,17 +34,17 @@ import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createVoltageLevel } from 'utils/rest-api';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
 import { controlCouplingOmnibusBetweenSections } from '../voltage-level-creation-utils';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from '../../../../utils/rest-api';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { createVoltageLevel } from '../../../../services/study';
 
 /**
  * Dialog to create a load in the network

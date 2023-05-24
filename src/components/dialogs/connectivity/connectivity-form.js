@@ -22,10 +22,6 @@ import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import {
-    fetchBusbarSectionsForVoltageLevel,
-    fetchBusesForVoltageLevel,
-} from '../../../utils/rest-api';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS } from '../../network/constants';
@@ -37,6 +33,10 @@ import {
     getConnectivityBusBarSectionData,
     getConnectivityVoltageLevelData,
 } from './connectivity-form-utils';
+import {
+    fetchBusbarSectionsForVoltageLevel,
+    fetchBusesForVoltageLevel,
+} from '../../../services/study';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)

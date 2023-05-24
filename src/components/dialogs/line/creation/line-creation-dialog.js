@@ -35,11 +35,9 @@ import {
     TOTAL_REACTANCE,
     TOTAL_SUSCEPTANCE,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLine, fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
@@ -78,7 +76,12 @@ import TextInput from 'components/utils/rhf-inputs/text-input';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import LineTypeSegmentDialog from '../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from '../../../../utils/rest-api';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import {
+    createLine,
+    fetchVoltageLevelsListInfos,
+} from '../../../../services/study';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),

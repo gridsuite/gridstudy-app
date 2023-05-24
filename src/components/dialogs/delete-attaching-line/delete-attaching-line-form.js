@@ -17,8 +17,9 @@ import {
     REPLACING_LINE_1_ID,
     REPLACING_LINE_1_NAME,
 } from 'components/utils/field-constants';
-import { fetchEquipmentsIds } from 'utils/rest-api';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
+
+import { fetchEquipmentsIds } from '../../../services/study';
 
 const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
     const [linesOptions, setLinesOptions] = useState([]);

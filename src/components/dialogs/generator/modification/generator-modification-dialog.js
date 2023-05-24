@@ -44,10 +44,6 @@ import {
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
 
-import {
-    fetchNetworkElementInfos,
-    modifyGenerator,
-} from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import { REGULATION_TYPES } from '../../../network/constants';
 import GeneratorModificationForm from './generator-modification-form';
@@ -65,11 +61,15 @@ import {
     REMOVE,
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from '../../../../utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../utils/equipment-types';
+import {
+    fetchNetworkElementInfos,
+    modifyGenerator,
+} from '../../../../services/study';
 
 const GeneratorModificationDialog = ({
     editData,

@@ -23,18 +23,18 @@ import {
     ADDED,
 } from '../../../utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    modifySubstation,
-} from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { FetchStatus } from '../../../../utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../utils/equipment-types';
+import {
+    fetchNetworkElementInfos,
+    modifySubstation,
+} from '../../../../services/study';
 
 const checkUniquePropertiesNames = (properties) => {
     const validValues = properties.filter((v) => v?.name);

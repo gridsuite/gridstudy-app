@@ -27,15 +27,6 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    fetchAppsAndUrls,
-    fetchLoadFlowInfos,
-    fetchSecurityAnalysisStatus,
-    fetchSensitivityAnalysisStatus,
-    fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
-    fetchNetworkElementInfos,
-} from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
@@ -62,10 +53,19 @@ import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagrams/diagram-common';
+import { fetchAppsAndUrls } from '../utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
+import {
+    fetchDynamicSimulationStatus,
+    fetchLoadFlowInfos,
+    fetchNetworkElementInfos,
+    fetchSecurityAnalysisStatus,
+    fetchSensitivityAnalysisStatus,
+    fetchShortCircuitAnalysisStatus,
+} from '../services/study';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {

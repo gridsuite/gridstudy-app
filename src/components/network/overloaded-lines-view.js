@@ -18,8 +18,9 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import AlertInvalidNode from '../utils/alert-invalid-node';
 import Box from '@mui/material/Box';
-import { fetchOverloadedLines } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+
+import { fetchOverloadedLines } from '../../services/study';
 
 export const ROW_HEIGHT = 30;
 export const HEADER_ROW_HEIGHT = 48;

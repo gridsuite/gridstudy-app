@@ -6,9 +6,10 @@
  */
 
 import { useNodeData } from './study-container';
-import { fetchShortCircuitAnalysisResult } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import ShortCircuitAnalysisResult from './shortcircuit-analysis-result';
+
+import { fetchShortCircuitAnalysisResult } from '../services/study';
 
 const shortCircuitAnalysisResultInvalidations = ['shortCircuitAnalysisResult'];
 

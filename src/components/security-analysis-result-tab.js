@@ -6,11 +6,6 @@
  */
 
 import { useNodeData } from './study-container';
-import {
-    fetchLineOrTransformer,
-    fetchNetworkElementInfos,
-    fetchSecurityAnalysisResult,
-} from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import SecurityAnalysisResult from './security-analysis-result';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -18,6 +13,11 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
+import {
+    fetchLineOrTransformer,
+    fetchNetworkElementInfos,
+    fetchSecurityAnalysisResult,
+} from '../services/study';
 
 const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
 

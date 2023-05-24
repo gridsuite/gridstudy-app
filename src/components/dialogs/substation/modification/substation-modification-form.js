@@ -23,10 +23,11 @@ import CountrySelectionInput from '../../../utils/rhf-inputs/country-selection-i
 import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
 import PropertyForm from '../property/property-form';
 import { getPropertyInitialValues } from '../property/property-utils';
-import { fetchEquipmentsIds } from '../../../../utils/rest-api';
 import { useFormContext, useWatch } from 'react-hook-form';
 import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
 import { LocalizedCountries } from '../../../utils/localized-countries-hook';
+
+import { fetchEquipmentsIds } from '../../../../services/study';
 
 const SubstationModificationForm = ({
     currentNode,

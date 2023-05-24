@@ -9,12 +9,13 @@ import { useEffect, useState } from 'react';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { Box, Grid } from '@mui/material';
 import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
-import { fetchEquipmentsIds } from 'utils/rest-api';
 import { useWatch } from 'react-hook-form';
 import LineDialogTabs from '../line-dialog-tabs';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import { getObjectId } from 'components/utils/utils';
 import TextInput from 'components/utils/rhf-inputs/text-input';
+
+import { fetchEquipmentsIds } from '../../../../services/study';
 
 const LineModificationDialogHeader = ({
     studyUuid,

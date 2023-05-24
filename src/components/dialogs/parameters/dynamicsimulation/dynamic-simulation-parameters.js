@@ -21,14 +21,14 @@ import {
     useParametersBackend,
     useStyles,
 } from '../parameters';
+import { fetchDynamicSimulationProviders } from '../../../../services/dynamic-simulation';
 import {
     fetchDefaultDynamicSimulationProvider,
     fetchDynamicSimulationParameters,
     fetchDynamicSimulationProvider,
-    fetchDynamicSimulationProviders,
     updateDynamicSimulationParameters,
     updateDynamicSimulationProvider,
-} from '../../../../utils/rest-api';
+} from '../../../../services/study';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',

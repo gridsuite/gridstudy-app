@@ -18,20 +18,6 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
-    connectNotificationsWebsocket,
-    fetchLoadFlowInfos,
-    fetchNetworkModificationTree,
-    fetchSecurityAnalysisStatus,
-    fetchStudyExists,
-    fetchPath,
-    connectNotificationsWsUpdateDirectories,
-    fetchCaseName,
-    fetchSensitivityAnalysisStatus,
-    connectDeletedStudyNotificationsWebsocket,
-    fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
-} from '../utils/rest-api';
-import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
     networkCreated,
@@ -64,6 +50,22 @@ import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { equipments } from './network/network-equipments';
 import { BUILD_STATUS } from './network/constants';
+import {
+    fetchCaseName,
+    fetchDynamicSimulationStatus,
+    fetchLoadFlowInfos,
+    fetchNetworkModificationTree,
+    fetchSecurityAnalysisStatus,
+    fetchSensitivityAnalysisStatus,
+    fetchShortCircuitAnalysisStatus,
+    fetchStudyExists,
+} from '../services/study';
+import { fetchPath } from '../services/directory';
+import {
+    connectDeletedStudyNotificationsWebsocket,
+    connectNotificationsWsUpdateDirectories,
+} from '../services/directory-notification';
+import { connectNotificationsWebsocket } from '../services/study-notification';
 
 function isWorthUpdate(
     studyUpdatedForce,

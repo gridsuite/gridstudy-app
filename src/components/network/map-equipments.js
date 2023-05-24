@@ -6,14 +6,14 @@
  */
 
 import { mapEquipmentsCreated } from '../../redux/actions';
+import { equipments } from './network-equipments';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
-} from '../../utils/rest-api';
-import { equipments } from './network-equipments';
-import { EQUIPMENT_TYPES } from '../utils/equipment-types';
-import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
+} from '../../services/study';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);

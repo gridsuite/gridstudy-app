@@ -39,7 +39,6 @@ import {
     useStyles,
 } from '../../dialogs/dialogUtils';
 import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
-import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import {
     FieldLabel,
@@ -51,6 +50,8 @@ import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
 import clsx from 'clsx';
+
+import { isNodeExists } from '../../../services/study';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());

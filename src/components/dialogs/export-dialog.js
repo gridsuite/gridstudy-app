@@ -25,9 +25,9 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
-import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
 import IconButton from '@mui/material/IconButton';
 import { useImportExportParams } from '@gridsuite/commons-ui';
+import { getAvailableExportFormats, getExportUrl } from '../../services/study';
 
 /**
  * Dialog to export the network case

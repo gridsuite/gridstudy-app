@@ -32,11 +32,6 @@ import React, {
     useState,
 } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    modifyLine,
-} from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { microUnitToUnit, unitToMicroUnit } from '../../../../utils/rounding';
 import yup from '../../../utils/yup-config';
@@ -63,6 +58,12 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../utils/equipment-types';
+
+import { FetchStatus } from '../../../../utils/rest-api';
+import {
+    fetchNetworkElementInfos,
+    modifyLine,
+} from '../../../../services/study';
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,

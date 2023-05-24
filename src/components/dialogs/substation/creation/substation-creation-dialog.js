@@ -8,7 +8,6 @@
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../equipment-search-dialog';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import React, { useCallback, useEffect } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -24,11 +23,12 @@ import {
 } from '../../../utils/field-constants';
 import { getPropertiesSchema } from '../property/property-utils';
 import SubstationCreationForm from './substation-creation-form';
-import { createSubstation } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from '../../../../utils/rest-api';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { createSubstation } from '../../../../services/study';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

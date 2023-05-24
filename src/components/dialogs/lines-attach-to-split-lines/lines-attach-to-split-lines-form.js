@@ -18,13 +18,13 @@ import {
     REPLACING_LINE_2_NAME,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import {
-    fetchEquipmentsIds,
-    fetchVoltageLevelsListInfos,
-} from 'utils/rest-api';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
+import {
+    fetchEquipmentsIds,
+    fetchVoltageLevelsListInfos,
+} from '../../../services/study';
 
 const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

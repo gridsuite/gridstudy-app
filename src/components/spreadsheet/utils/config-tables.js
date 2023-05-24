@@ -7,10 +7,10 @@
 
 import { equipments } from '../../network/network-equipments';
 import { BooleanCellRenderer } from './cell-renderers';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const generateTapPositions = (params) => {
     return params

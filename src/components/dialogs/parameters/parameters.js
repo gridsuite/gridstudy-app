@@ -25,25 +25,6 @@ import {
     MenuItem,
 } from '@mui/material';
 
-import {
-    fetchDefaultSecurityAnalysisProvider,
-    fetchDefaultSensitivityAnalysisProvider,
-    fetchSecurityAnalysisProvider,
-    fetchSensitivityAnalysisProvider,
-    fetchSecurityAnalysisProviders,
-    fetchSensitivityAnalysisProviders,
-    updateConfigParameter,
-    updateSecurityAnalysisProvider,
-    updateSensitivityAnalysisProvider,
-    getLoadFlowParameters,
-    getLoadFlowProviders,
-    getLoadFlowProvider,
-    getDefaultLoadFlowProvider,
-    setLoadFlowProvider,
-    setLoadFlowParameters,
-    getLoadFlowSpecificParametersDescription,
-} from '../../../utils/rest-api';
-
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 import {
@@ -62,6 +43,26 @@ import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import { fetchSecurityAnalysisProviders } from '../../../services/security-analysis';
+import {
+    getLoadFlowProviders,
+    getLoadFlowSpecificParametersDescription,
+} from '../../../services/loadflow';
+import { fetchSensitivityAnalysisProviders } from '../../../services/sensitivity-analysis';
+import { updateConfigParameter } from '../../../services/config';
+import {
+    fetchDefaultSecurityAnalysisProvider,
+    fetchDefaultSensitivityAnalysisProvider,
+    fetchSecurityAnalysisProvider,
+    fetchSensitivityAnalysisProvider,
+    getDefaultLoadFlowProvider,
+    getLoadFlowParameters,
+    getLoadFlowProvider,
+    setLoadFlowParameters,
+    setLoadFlowProvider,
+    updateSecurityAnalysisProvider,
+    updateSensitivityAnalysisProvider,
+} from '../../../services/study';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (

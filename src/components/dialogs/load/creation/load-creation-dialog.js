@@ -17,7 +17,6 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad } from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import EquipmentSearchDialog from '../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../form-search-copy-hook';
@@ -34,9 +33,10 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from '../../../../utils/rest-api';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { createLoad } from '../../../../services/study';
 
 /**
  * Dialog to create a load in the network

@@ -18,7 +18,8 @@ import {
 import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
 import { useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import { getAvailableComponentLibraries } from '../../../utils/rest-api';
+
+import { getAvailableComponentLibraries } from '../../../services/study';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);

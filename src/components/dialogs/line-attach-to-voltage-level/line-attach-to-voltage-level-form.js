@@ -20,7 +20,6 @@ import { gridItem, GridSection } from '../dialogUtils';
 
 import TextInput from '../../utils/rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -28,6 +27,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
+
+import { fetchVoltageLevelsListInfos } from '../../../services/study';
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,

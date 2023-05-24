@@ -13,8 +13,9 @@ import { filledTextField, gridItem, GridSection } from '../dialogUtils';
 
 import TextInput from '../../utils/rhf-inputs/text-input';
 import { ConnectivityForm } from '../connectivity/connectivity-form';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import { CharacteristicsForm } from './characteristics-pane/characteristics-form';
+
+import { fetchVoltageLevelsListInfos } from '../../../services/study';
 
 const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);

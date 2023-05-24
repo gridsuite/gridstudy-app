@@ -19,7 +19,6 @@ import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
-import { fetchSvg } from '../../../utils/rest-api';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
     useDiagramStyles,
@@ -32,6 +31,8 @@ import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
 import clsx from 'clsx';
+
+import { fetchSvg } from '../../../utils/rest-api';
 
 const PositionDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
