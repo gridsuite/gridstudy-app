@@ -321,10 +321,11 @@ const SpecificLoadFlowParameters = ({
     // change object's NaN values into null
     const getObjectWithoutNanValues = useCallback((initialObject) => {
         initialObject &&
-            Object.keys(initialObject)?.map((key) =>
-                Number.isNaN(initialObject[key])
-                    ? (initialObject[key] = null)
-                    : initialObject[key]
+            Object.keys(initialObject)?.map(
+                (key) =>
+                    (initialObject[key] = Number.isNaN(initialObject[key])
+                        ? null
+                        : initialObject[key])
             );
     }, []);
 
@@ -360,7 +361,7 @@ const SpecificLoadFlowParameters = ({
             currentProvider,
             defaultValues,
             lfParams,
-            getObjectWithoutNanValuse,
+            getObjectWithoutNanValues,
         ]
     );
     getObjectWithoutNanValues(defaultValues);
