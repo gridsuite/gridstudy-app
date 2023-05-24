@@ -296,7 +296,7 @@ const EquipmentFilter = forwardRef(
         const columnDefs = useMemo(() => {
             return [
                 {
-                    field: 'name',
+                    field: 'id',
                     checkboxSelection: true,
                     headerCheckboxSelection: true,
                     headerCheckboxSelectionFilteredOnly: true,
@@ -384,7 +384,9 @@ const EquipmentFilter = forwardRef(
                         <CheckboxSelect
                             value={selectedVoltageLevelIds}
                             options={voltageLevelIds}
-                            getOptionLabel={(value) => voltageLevels[value]}
+                            getOptionLabel={(value) =>
+                                voltageLevels[value] ?? value
+                            }
                             onChange={handleVoltageLevelChange}
                         />
                     </Grid>
