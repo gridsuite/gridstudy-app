@@ -86,7 +86,7 @@ const darkTheme = createTheme({
     tooltipTable: {
         background: '#121212',
     },
-    mapboxStyle: 'mapbox://styles   /mapbox/dark-v9',
+    mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
     aggrid: 'ag-theme-alpine-dark',
 });
 
