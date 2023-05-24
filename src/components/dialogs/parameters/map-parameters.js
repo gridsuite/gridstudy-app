@@ -8,8 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
-import { LineFlowMode } from '../../network/line-layer';
-import { LineFlowColorMode } from '../../network/line-layer';
+import { LineFlowMode, LineFlowColorMode } from '@powsybl/network-map-viewer';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,

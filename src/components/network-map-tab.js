@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import NetworkMap from './network/network-map';
+import { NetworkMap, GeoData } from '@powsybl/network-map-viewer';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
     deleteEquipment,
     fetchLinePositions,
     fetchSubstationPositions,
+    fetchMapBoxToken,
 } from '../utils/rest-api';
-import GeoData from './network/geo-data';
 import { equipments } from './network/network-equipments';
 import withBranchMenu from './menus/branch-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
@@ -23,7 +23,10 @@ import NominalVoltageFilter from './network/nominal-voltage-filter';
 import makeStyles from '@mui/styles/makeStyles';
 import { RunButtonContainer } from './run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
-import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
+import {
+    PARAM_MAP_MANUAL_REFRESH,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
@@ -806,6 +809,15 @@ export const NetworkMapTab = ({
         );
     }
 
+    const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
+    const currentTreeNode = useSelector((state) => state.currentTreeNode);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
+    const currentNodeBuilt = isNodeBuilt(currentTreeNode);
+    const [mapBoxToken, setMapBoxToken] = useState();
+    useEffect(() => {
+        fetchMapBoxToken().then((token) => setMapBoxToken(token || null));
+    }, []);
+
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
@@ -843,6 +855,12 @@ export const NetworkMapTab = ({
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
             onReloadMapClick={updateMapEquipmentsAndGeoData}
+            centerOnSubstation={centerOnSubstation}
+            mapManualRefresh={mapManualRefresh}
+            reloadMapNeeded={reloadMapNeeded}
+            currentNodeBuilt={currentNodeBuilt}
+            useName={useName}
+            mapBoxToken={mapBoxToken}
         />
     );
 
