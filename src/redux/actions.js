@@ -9,6 +9,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
     PARAM_LANGUAGE,
+    PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -272,6 +273,15 @@ export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
     return {
         type: LINE_FLOW_ALERT_THRESHOLD,
         [PARAM_LINE_FLOW_ALERT_THRESHOLD]: lineFlowAlertThreshold,
+    };
+}
+
+export const LIMIT_REDUCTION = 'LIMIT_REDUCTION';
+
+export function selectLimitReduction(limitReduction) {
+    return {
+        type: LIMIT_REDUCTION,
+        [PARAM_LIMIT_REDUCTION]: limitReduction,
     };
 }
 
