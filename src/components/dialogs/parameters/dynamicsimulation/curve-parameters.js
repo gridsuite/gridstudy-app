@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const CurveParameters = ({ curves = [], onUpdateCurve }) => {
+const CurveParameters = ({ curves, onUpdateCurve }) => {
     const intl = useIntl();
     const [rowData, setRowData] = useState([]);
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
@@ -40,7 +40,7 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
             // do save here
             const notYetAddedCurves = newCurves.filter(
                 (curve) =>
-                    !curves.find(
+                    !curves?.find(
                         (elem) =>
                             elem.equipmentId === curve.equipmentId &&
                             elem.variableId === curve.variableId

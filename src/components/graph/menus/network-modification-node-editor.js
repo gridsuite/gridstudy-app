@@ -260,7 +260,6 @@ const NetworkModificationNodeEditor = () => {
             icon: <AddIcon />,
         },
         TWO_WINDINGS_TRANSFORMER_CREATION: {
-            onlyDeveloperMode: true,
             label: 'CreateTwoWindingsTransformer',
             dialog: () => adapt(TwoWindingsTransformerCreationDialog),
             icon: <AddIcon />,
