@@ -102,7 +102,7 @@ const LineModificationDialog = ({
         [displayConnectivity]
     );
 
-    const schema = yup
+    const formSchema = yup
         .object()
         .shape({
             [EQUIPMENT_ID]: yup.string().required(),
@@ -116,9 +116,9 @@ const LineModificationDialog = ({
         })
         .required();
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
     const sanitizeLimitNames = (temporaryLimitList) =>
@@ -183,7 +183,7 @@ const LineModificationDialog = ({
         editDataRef.current = editData;
     }, [editData]);
 
-    const { reset, getValues } = methods;
+    const { reset, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (line) => {
@@ -377,9 +377,9 @@ const LineModificationDialog = ({
 
     return (
         <FormProvider
-            validationSchema={schema}
+            validationSchema={formSchema}
             removeOptional={true}
-            {...methods}
+            {...formMethods}
         >
             <ModificationDialog
                 fullWidth
