@@ -93,24 +93,26 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 side: convertSide(overloadedLine.side),
             };
         };
-        fetchCurrentLimitViolations(
-            studyUuid,
-            nodeUuid,
-            limitReductionParam / 100.0
-        )
-            .then((overloadedLines) => {
-                const sortedLines = overloadedLines
-                    .map((overloadedLine) => makeData(overloadedLine))
-                    .sort((a, b) => b.overload - a.overload);
-                setOverloadedLines(sortedLines);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ErrFetchCurrentLimitViolationsMsg',
+        if (result) {
+            fetchCurrentLimitViolations(
+                studyUuid,
+                nodeUuid,
+                limitReductionParam / 100.0
+            )
+                .then((overloadedLines) => {
+                    const sortedLines = overloadedLines
+                        .map((overloadedLine) => makeData(overloadedLine))
+                        .sort((a, b) => b.overload - a.overload);
+                    setOverloadedLines(sortedLines);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'ErrFetchCurrentLimitViolationsMsg',
+                    });
                 });
-            });
-    }, [studyUuid, nodeUuid, limitReductionParam, intl, snackError]);
+        }
+    }, [studyUuid, nodeUuid, limitReductionParam, intl, snackError, result]);
 
     function StatusCellRender(cellData) {
         const status = cellData.rowData[cellData.dataKey];
@@ -205,7 +207,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     sortable={true}
                     columns={[
                         {
-                            label: intl.formatMessage({ id: 'OverloadedLine' }),
+                            label: intl.formatMessage({
+                                id: 'OverloadedEquipment',
+                            }),
                             dataKey: 'name',
                             numeric: false,
                         },
@@ -239,7 +243,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                             fractionDigits: 1,
                         },
                         {
-                            label: intl.formatMessage({ id: 'LineLoad' }),
+                            label: intl.formatMessage({
+                                id: 'EquipmentOverload',
+                            }),
                             dataKey: 'overload',
                             numeric: true,
                             fractionDigits: 0,
