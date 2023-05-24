@@ -15,7 +15,6 @@ import {
     VARIATION_TYPE,
     VARIATION_VALUE,
 } from '../../../utils/field-constants';
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { useCallback, useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import SelectInput from '../../../utils/rhf-inputs/select-input';
@@ -23,9 +22,10 @@ import { VARIATION_MODES, VARIATION_TYPES } from '../../../network/constants';
 import FloatInput from '../../../utils/rhf-inputs/float-input';
 import { ActivePowerAdornment, gridItem } from '../../dialogUtils';
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
-import { fetchElementsMetadata } from '../../../../utils/rest-api';
 import { IDENTIFIER_LIST } from './variation-utils';
 import { useMemo } from 'react';
+import { fetchElementsMetadata } from '../../../../services/explore';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR.type];
 

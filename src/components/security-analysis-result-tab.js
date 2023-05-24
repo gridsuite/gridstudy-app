@@ -6,14 +6,12 @@
  */
 
 import { useNodeData } from './study-container';
-import {
-    fetchLineOrTransformer,
-    fetchNetworkElementInfos,
-    fetchSecurityAnalysisResult,
-} from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import SecurityAnalysisResult from './security-analysis-result';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchNetworkElementInfos } from '../services/study/network-elements';
+import { fetchLineOrTransformer } from '../services/study/network-map';
+import { fetchSecurityAnalysisResult } from '../services/study/security-analysis';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,

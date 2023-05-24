@@ -23,14 +23,12 @@ import {
     ADDED,
 } from '../../../utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    modifySubstation,
-} from '../../../../utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { fetchNetworkElementInfos } from '../../../../services/study/network-elements';
+import { modifySubstation } from '../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,

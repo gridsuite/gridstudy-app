@@ -8,11 +8,6 @@
 import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import {
-    deleteEquipment,
-    fetchLinePositions,
-    fetchSubstationPositions,
-} from '../utils/rest-api';
 import GeoData from './network/geo-data';
 import { equipments } from './network/network-equipments';
 import withBranchMenu from './menus/branch-menu';
@@ -40,6 +35,11 @@ import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from './study-container';
+import { deleteEquipment } from '../services/study/network-modifications';
+import {
+    fetchLinePositions,
+    fetchSubstationPositions,
+} from '../services/study/geo-data';
 
 const INITIAL_POSITION = [0, 0];
 

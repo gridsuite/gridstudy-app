@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { fetchReport } from '../utils/rest-api';
 import Paper from '@mui/material/Paper';
 import clsx from 'clsx';
 import { ReportViewer, useSnackMessage } from '@gridsuite/commons-ui';
@@ -17,6 +16,7 @@ import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
+import { fetchReport } from '../services/study/report';
 
 const useStyles = makeStyles(() => ({
     div: {

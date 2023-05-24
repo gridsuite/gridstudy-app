@@ -22,13 +22,11 @@ import {
 import yup from '../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    modifyVoltageLevel,
-} from '../../../../utils/rest-api';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
+import { fetchNetworkElementInfos } from '../../../../services/study/network-elements';
+import { modifyVoltageLevel } from '../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,

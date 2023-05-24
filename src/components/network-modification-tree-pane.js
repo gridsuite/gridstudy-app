@@ -7,19 +7,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    createTreeNode,
-    deleteTreeNode,
-    fetchNetworkModificationTreeNode,
-    getUniqueNodeName,
-    buildNode,
-    copyTreeNode,
-    cutTreeNode,
-    deleteSubtree,
-    fetchNetworkModificationSubtree,
-    cutSubtree,
-    copySubtree,
-} from '../utils/rest-api';
-import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
@@ -42,6 +29,19 @@ import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
 import { BUILD_STATUS } from './network/constants';
+import {
+    copySubtree,
+    copyTreeNode,
+    createTreeNode,
+    cutSubtree,
+    cutTreeNode,
+    deleteSubtree,
+    deleteTreeNode,
+    fetchNetworkModificationTreeNode,
+} from '../services/study/tree';
+import { getUniqueNodeName } from '../services/study/nodes';
+import { buildNode } from '../services/study/build';
+import { fetchNetworkModificationSubtree } from '../services/study/subtree';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {

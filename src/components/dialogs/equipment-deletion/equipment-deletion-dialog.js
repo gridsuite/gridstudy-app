@@ -11,14 +11,14 @@ import { TYPE, EQUIPMENT_ID } from '../../utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
 import React, { useCallback, useEffect } from 'react';
-import { deleteEquipment } from '../../../utils/rest-api';
 import ModificationDialog from '../commons/modificationDialog';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { FetchStatus } from 'utils/rest-api';
+import { deleteEquipment } from '../../../services/study/network-modifications';
+import { FetchStatus } from '../../../utils/rest-api';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 const formSchema = yup
     .object()

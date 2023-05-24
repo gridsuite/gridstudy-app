@@ -37,15 +37,13 @@ import {
 import Grid from '@mui/material/Grid';
 import React, { useCallback, useEffect, useState } from 'react';
 import FloatInput from '../../../utils/rhf-inputs/float-input';
-import {
-    fetchEquipmentsIds,
-    fetchVoltageLevelsListInfos,
-} from '../../../../utils/rest-api';
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
+import { fetchVoltageLevelsListInfos } from '../../../../services/study/network-elements';
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const GeneratorModificationForm = ({

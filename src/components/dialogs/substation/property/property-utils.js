@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { fetchAppsAndUrls } from '../../../../utils/rest-api';
 import yup from '../../../utils/yup-config';
 import {
     ADDITIONAL_PROPERTIES,
@@ -15,6 +14,8 @@ import {
     VALUE,
     ADDED,
 } from '../../../utils/field-constants';
+
+import { fetchAppsAndUrls } from '../../../../utils/rest-api';
 
 export const checkUniqueProperties = (properties) => {
     const validValues = properties.filter((v) => v?.name && v?.value);

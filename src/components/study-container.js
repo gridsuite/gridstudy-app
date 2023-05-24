@@ -18,20 +18,6 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
-    connectNotificationsWebsocket,
-    fetchLoadFlowInfos,
-    fetchNetworkModificationTree,
-    fetchSecurityAnalysisStatus,
-    fetchStudyExists,
-    fetchPath,
-    connectNotificationsWsUpdateDirectories,
-    fetchCaseName,
-    fetchSensitivityAnalysisStatus,
-    connectDeletedStudyNotificationsWebsocket,
-    fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
-} from '../utils/rest-api';
-import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
     networkCreated,
@@ -64,6 +50,20 @@ import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { equipments } from './network/network-equipments';
 import { BUILD_STATUS } from './network/constants';
+import { fetchStudyExists } from '../services/study';
+import { fetchSecurityAnalysisStatus } from '../services/study/security-analysis';
+import { fetchSensitivityAnalysisStatus } from '../services/study/sensitivity-analysis';
+import { fetchShortCircuitAnalysisStatus } from '../services/study/shortcircuit';
+import { fetchDynamicSimulationStatus } from '../services/study/dynamic-simulation';
+import { fetchNetworkModificationTree } from '../services/study/tree';
+import { fetchLoadFlowInfos } from '../services/study/loadflow';
+import { fetchCaseName } from '../services/study/case';
+import { fetchPath } from '../services/directory';
+import {
+    connectDeletedStudyNotificationsWebsocket,
+    connectNotificationsWsUpdateDirectories,
+} from '../services/directory-notification';
+import { connectNotificationsWebsocket } from '../services/study-notification';
 
 function isWorthUpdate(
     studyUpdatedForce,

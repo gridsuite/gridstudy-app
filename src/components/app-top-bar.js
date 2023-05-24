@@ -27,15 +27,6 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    fetchAppsAndUrls,
-    fetchLoadFlowInfos,
-    fetchSecurityAnalysisStatus,
-    fetchSensitivityAnalysisStatus,
-    fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
-    fetchNetworkElementInfos,
-} from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
@@ -62,6 +53,13 @@ import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagrams/diagram-common';
+import { fetchNetworkElementInfos } from '../services/study/network-elements';
+import { fetchSecurityAnalysisStatus } from '../services/study/security-analysis';
+import { fetchSensitivityAnalysisStatus } from '../services/study/sensitivity-analysis';
+import { fetchShortCircuitAnalysisStatus } from '../services/study/shortcircuit';
+import { fetchDynamicSimulationStatus } from '../services/study/dynamic-simulation';
+import { fetchLoadFlowInfos } from '../services/study/loadflow';
+import { fetchAppsAndUrls } from '../utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,

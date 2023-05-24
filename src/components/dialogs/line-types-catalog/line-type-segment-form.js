@@ -26,7 +26,6 @@ import {
 import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog';
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
-import { getLineTypesCatalog } from '../../../utils/rest-api';
 import { emptyLineSegment } from './line-type-segment-dialog';
 import {
     calculateResistance,
@@ -35,6 +34,7 @@ import {
 } from '../../utils/utils';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { getLineTypesCatalog } from '../../../services/network-modification';
 
 const useStyles = makeStyles((theme) => ({
     header: {

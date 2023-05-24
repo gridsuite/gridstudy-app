@@ -45,14 +45,9 @@ import {
     TARGET_V,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import {
-    createTwoWindingsTransformer,
-    fetchVoltageLevelsListInfos,
-} from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from '../../../utils/rounding.js';
 import { filledTextField, gridItem, sanitizeString } from '../dialogUtils';
 import EquipmentSearchDialog from '../equipment-search-dialog';
@@ -104,7 +99,10 @@ import {
     getLimitsValidationSchema,
 } from '../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
+import { fetchVoltageLevelsListInfos } from '../../../services/study/network-elements';
+import { createTwoWindingsTransformer } from '../../../services/study/network-modifications';
+import { FetchStatus } from '../../../utils/rest-api';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 /**
  * Dialog to create a two windings transformer in the network

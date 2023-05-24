@@ -7,7 +7,6 @@
 
 import Dialog from '@mui/material/Dialog';
 import { useCallback, useEffect, useState } from 'react';
-import { getVoltageLevelSingleLineDiagram } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import {
     PARAM_CENTER_LABEL,
@@ -19,6 +18,7 @@ import {
 import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
 import { DiagramType } from '../diagram-common';
+import { getVoltageLevelSingleLineDiagram } from '../../../services/study/network-voltage-levels';
 
 const PositionDiagramPane = ({
     open,

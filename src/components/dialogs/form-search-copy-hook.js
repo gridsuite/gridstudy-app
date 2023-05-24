@@ -7,8 +7,8 @@
 
 import { useIntl } from 'react-intl';
 import { useState } from 'react';
-import { fetchNetworkElementInfos } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchNetworkElementInfos } from '../../services/study/network-elements';
 import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 
 export const useFormSearchCopy = ({

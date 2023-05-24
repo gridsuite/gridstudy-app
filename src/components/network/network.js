@@ -11,8 +11,9 @@ import {
     networkEquipmentLoaded,
     isNetworkEquipmentsFetched,
 } from '../../redux/actions';
+import { equipments } from './network-equipments';
+import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 import {
-    fetchAllEquipments,
     fetchBatteries,
     fetchDanglingLines,
     fetchGenerators,
@@ -26,9 +27,8 @@ import {
     fetchThreeWindingsTransformers,
     fetchTwoWindingsTransformers,
     fetchVscConverterStations,
-} from '../../utils/rest-api';
-import { equipments } from './network-equipments';
-import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
+} from '../../services/study/network-elements';
+import { fetchAllEquipments } from '../../services/study/network-map';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const elementIdIndexer = (map, element) => {

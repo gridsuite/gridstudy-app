@@ -14,12 +14,6 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../utils/config-params';
-import {
-    fetchSvg,
-    getSubstationSingleLineDiagram,
-    getVoltageLevelSingleLineDiagram,
-    getNetworkAreaDiagramUrl,
-} from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -55,6 +49,11 @@ import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
+import { getVoltageLevelSingleLineDiagram } from '../../services/study/network-voltage-levels';
+import { getSubstationSingleLineDiagram } from '../../services/study/network-substations';
+import { getNetworkAreaDiagramUrl } from '../../services/study/network-area-diagram';
+
+import { fetchSvg } from '../../utils/rest-api';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {

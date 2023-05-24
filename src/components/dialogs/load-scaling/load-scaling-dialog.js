@@ -14,10 +14,11 @@ import { useCallback, useEffect } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from '../../utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
-import { loadScaling } from '../../../utils/rest-api';
 import { FORM_LOADING_DELAY, VARIATION_TYPES } from '../../network/constants';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
+import { loadScaling } from '../../../services/study/network-modifications';
+
+import { FetchStatus } from '../../../utils/rest-api';
 
 const emptyFormData = {
     [VARIATION_TYPE]: VARIATION_TYPES.DELTA_P.id,

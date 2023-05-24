@@ -6,12 +6,12 @@
  */
 
 import { mapEquipmentsCreated } from '../../redux/actions';
+import { equipments } from './network-equipments';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
-} from '../../utils/rest-api';
-import { equipments } from './network-equipments';
+} from '../../services/study/network-elements';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 

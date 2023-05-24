@@ -7,11 +7,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-    fetchDirectoryContent,
-    fetchElementsMetadata,
-    fetchRootFolders,
-} from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import {
     getFileIcon,
@@ -21,6 +16,8 @@ import {
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { notificationType } from '../utils/NotificationType';
+import { fetchElementsMetadata } from '../services/explore';
+import { fetchDirectoryContent, fetchRootFolders } from '../services/directory';
 
 const useStyles = makeStyles((theme) => ({
     icon: {

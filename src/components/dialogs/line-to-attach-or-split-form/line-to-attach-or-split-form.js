@@ -13,8 +13,8 @@ import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { useEffect, useState } from 'react';
 import { PercentageArea } from '../percentage-area/percentage-area';
 import { useWatch } from 'react-hook-form';
-import { fetchLines } from 'utils/rest-api';
 import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
+import { fetchLines } from '../../../services/study/network-elements';
 
 export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
     const [line1Substation, setLine1Substation] = useState('');

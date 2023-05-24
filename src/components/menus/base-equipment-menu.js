@@ -22,8 +22,8 @@ import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
-import { fetchNetworkElementInfos } from '../../utils/rest-api';
 import { isNodeReadOnly } from '../graph/util/model-functions';
+import { fetchNetworkElementInfos } from '../../services/study/network-elements';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,

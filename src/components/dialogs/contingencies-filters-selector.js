@@ -13,13 +13,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    fetchContingencyAndFiltersLists,
-    updateConfigParameter,
-} from '../../utils/rest-api';
 import DirectoryItemSelector from '../directory-item-selector';
 import CheckboxList from '../utils/checkbox-list';
 import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
+import { updateConfigParameter } from '../../services/config';
+import { fetchContingencyAndFiltersLists } from '../../services/directory';
 
 const ContingenciesFiltersSelector = ({
     title,

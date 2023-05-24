@@ -24,18 +24,16 @@ import { getLoadTypeLabel, LOAD_TYPES } from '../../../network/constants';
 import FloatInput from '../../../utils/rhf-inputs/float-input';
 import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useState } from 'react';
-import {
-    fetchEquipmentsIds,
-    fetchNetworkElementInfos,
-} from '../../../../utils/rest-api';
 import AutocompleteInput from '../../../utils/rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
+import { fetchNetworkElementInfos } from '../../../../services/study/network-elements';
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
+import { FetchStatus } from '../../../../utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../utils/equipment-types';
-import { FetchStatus } from 'utils/rest-api';
 
 const LoadModificationForm = ({
     currentNode,

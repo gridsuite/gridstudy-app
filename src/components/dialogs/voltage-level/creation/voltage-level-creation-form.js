@@ -19,7 +19,6 @@ import {
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import { fetchEquipmentsIds } from 'utils/rest-api';
 import {
     gridItem,
     GridSection,
@@ -35,6 +34,7 @@ import IntegerInput from 'components/utils/rhf-inputs/integer-input';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

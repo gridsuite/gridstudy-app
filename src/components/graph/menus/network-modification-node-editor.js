@@ -6,13 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    changeNetworkModificationOrder,
-    copyOrMoveModifications,
-    deleteModifications,
-    fetchNetworkModification,
-    fetchNetworkModifications,
-} from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
@@ -64,7 +57,15 @@ import GenerationDispatchDialog from 'components/dialogs/generation-dispatch/gen
 import LineModificationDialog from 'components/dialogs/line/modification/line-modification-dialog';
 import VoltageLevelModificationDialog from '../../dialogs/voltage-level/modification/voltage-level-modification-dialog';
 import { UPDATE_TYPE } from 'components/network/constants';
-import { FetchStatus } from 'utils/rest-api';
+import {
+    copyOrMoveModifications,
+    deleteModifications,
+    fetchNetworkModifications,
+} from '../../../services/study/nodes';
+import { changeNetworkModificationOrder } from '../../../services/study/network-modification';
+import { fetchNetworkModification } from '../../../services/network-modification';
+
+import { FetchStatus } from '../../../utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {

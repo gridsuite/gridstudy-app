@@ -12,11 +12,13 @@ import { LOSS_COEFFICIENT } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FetchStatus, generationDispatch } from '../../../utils/rest-api';
 import yup from '../../utils/yup-config';
 import { useOpenShortWaitFetching } from '../commons/handle-modification-form';
 import ModificationDialog from '../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
+import { generationDispatch } from '../../../services/study/network-modifications';
+
+import { FetchStatus } from '../../../utils/rest-api';
 
 const emptyFormData = {
     [LOSS_COEFFICIENT]: null,

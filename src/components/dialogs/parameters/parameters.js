@@ -25,25 +25,6 @@ import {
     MenuItem,
 } from '@mui/material';
 
-import {
-    fetchDefaultSecurityAnalysisProvider,
-    fetchDefaultSensitivityAnalysisProvider,
-    fetchSecurityAnalysisProvider,
-    fetchSensitivityAnalysisProvider,
-    fetchSecurityAnalysisProviders,
-    fetchSensitivityAnalysisProviders,
-    updateConfigParameter,
-    updateSecurityAnalysisProvider,
-    updateSensitivityAnalysisProvider,
-    getLoadFlowParameters,
-    getLoadFlowProviders,
-    getLoadFlowProvider,
-    getDefaultLoadFlowProvider,
-    setLoadFlowProvider,
-    setLoadFlowParameters,
-    getLoadFlowSpecificParametersDescription,
-} from '../../../utils/rest-api';
-
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 import {
@@ -62,6 +43,30 @@ import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import {
+    fetchDefaultSecurityAnalysisProvider,
+    fetchSecurityAnalysisProvider,
+    updateSecurityAnalysisProvider,
+} from '../../../services/study/security-analysis';
+import {
+    fetchDefaultSensitivityAnalysisProvider,
+    fetchSensitivityAnalysisProvider,
+    updateSensitivityAnalysisProvider,
+} from '../../../services/study/sensitivity-analysis';
+import {
+    getDefaultLoadFlowProvider,
+    getLoadFlowParameters,
+    getLoadFlowProvider,
+    setLoadFlowParameters,
+    setLoadFlowProvider,
+} from '../../../services/study/loadflow';
+import { fetchSecurityAnalysisProviders } from '../../../services/security-analysis';
+import {
+    getLoadFlowProviders,
+    getLoadFlowSpecificParametersDescription,
+} from '../../../services/loadflow';
+import { fetchSensitivityAnalysisProviders } from '../../../services/sensitivity-analysis';
+import { updateConfigParameter } from '../../../services/config';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (

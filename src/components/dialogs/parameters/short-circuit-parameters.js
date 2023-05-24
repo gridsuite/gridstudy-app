@@ -14,13 +14,13 @@ import {
     SwitchWithLabel,
     useStyles,
 } from './parameters';
-import {
-    getShortCircuitParameters,
-    setShortCircuitParameters,
-} from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LabelledSilder, LineSeparator } from '../dialogUtils';
+import {
+    getShortCircuitParameters,
+    setShortCircuitParameters,
+} from '../../../services/study/short-circuit-analysis';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
