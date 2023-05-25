@@ -55,9 +55,7 @@ import {
     FetchStatus,
 } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
-import {
-    sanitizeString,
-} from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import {
