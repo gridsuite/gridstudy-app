@@ -12,7 +12,7 @@ import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     PHASE_TAP_CHANGER,
-    RATIO_TAP_CHANGER
+    RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
 import React from 'react';
 import { filledTextField, gridItem } from '../../../dialogUtils';
@@ -20,7 +20,6 @@ import TextInput from 'components/utils/rhf-inputs/text-input';
 import SwitchInput from '../../../../utils/rhf-inputs/booleans/switch-input';
 
 const TwoWindingsTransformerCreationDialogHeader = () => {
-
     const twoWindingsTransformerIdField = (
         <TextInput
             name={`${CHARACTERISTICS}.${EQUIPMENT_ID}`}

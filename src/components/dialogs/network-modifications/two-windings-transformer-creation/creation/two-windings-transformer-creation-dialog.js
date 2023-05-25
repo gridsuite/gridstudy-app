@@ -55,7 +55,9 @@ import {
     FetchStatus,
 } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
-import { filledTextField, gridItem, sanitizeString } from '../../../dialogUtils';
+import {
+    sanitizeString,
+} from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import {
@@ -89,8 +91,6 @@ import {
     getTwoWindingsTransformerValidationSchema,
 } from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
-import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
@@ -500,7 +500,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const headerAndTabs = (
         <Grid container spacing={2}>
-            <TwoWindingsTransformerCreationDialogHeader/>
+            <TwoWindingsTransformerCreationDialogHeader />
             <TwoWindingsTransformerCreationDialogTabs
                 tabIndex={tabIndex}
                 tabIndexesWithError={tabIndexesWithError}
