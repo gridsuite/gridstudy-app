@@ -39,6 +39,7 @@ import {
     MAP_BOTTOM_OFFSET,
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
     NoSvg,
+    sortDiagrams,
 } from './diagram-common';
 import {
     isNodeBuilt,
@@ -50,7 +51,6 @@ import { SLD_DISPLAY_MODE } from '../network/constants';
 import clsx from 'clsx';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
-import { sortDiagrams } from '../utils/sort-functions';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { useSnackMessage } from '@gridsuite/commons-ui';
