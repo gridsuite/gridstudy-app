@@ -39,8 +39,8 @@ import {
     MAP_BOTTOM_OFFSET,
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
     NoSvg,
-    sortDiagrams,
 } from './diagram-common';
+import { sortDiagrams } from './diagram-utils';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
