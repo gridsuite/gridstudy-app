@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import DirectoryItemsInput from 'components/utils/rhf-inputs/directory-items-input';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
