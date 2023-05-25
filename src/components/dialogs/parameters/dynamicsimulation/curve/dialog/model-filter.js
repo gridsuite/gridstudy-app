@@ -98,6 +98,7 @@ const useStyles = makeStyles((theme) => ({
         border: 'solid',
         borderWidth: '.5px',
         borderColor: lighten(theme.palette.background.paper, 0.5),
+        overflow: 'auto',
     },
 }));
 
@@ -246,9 +247,7 @@ const ModelFilter = forwardRef(
                                 checkAll
                                 sx={{
                                     maxHeight: '460px',
-                                    maxWidth: '500px',
-                                    flexGrow: 1,
-                                    overflow: 'auto',
+                                    maxWidth: '50px',
                                 }}
                             />
                         </div>
