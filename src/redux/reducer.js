@@ -334,7 +334,7 @@ export const reducer = createReducer(initialState, {
             state.networkModificationTreeModel = newModel;
 
             //we assume all the deleted nodes are contiguous, so the new parent selected will be the nearest upstream node.
-            //in case the deleted nodes are no longer contiguous we will need to browse the tree in order to select the deepest leaf
+            //in the future, if the deleted nodes are no longer contiguous we will need another implementation
             const newParentUuid = newModel.treeNodes
                 .map((node) => node.id)
                 .find((nodeId) => deletedNodesParentsUuids.includes(nodeId));
