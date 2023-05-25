@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React from 'react';
 import Button from '@mui/material/Button';
 import { Handle } from 'react-flow-renderer';
@@ -103,9 +104,7 @@ const NetworkModificationNode = (props) => {
     const classes = useStyles();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const selectedNodeForCopy = useSelector(
-        (state) => state.selectedNodeForCopy
-    );
+    const selectionForCopy = useSelector((state) => state.selectionForCopy);
 
     const isSelectedNode = () => {
         // TODO This is a hack, when ReactFlow v10 is available, we should remove this.
@@ -114,8 +113,11 @@ const NetworkModificationNode = (props) => {
 
     const isSelectedForCut = () => {
         return (
-            props.id === selectedNodeForCopy?.nodeId &&
-            selectedNodeForCopy?.copyType === CopyType.CUT
+            (props.id === selectionForCopy?.nodeId &&
+                selectionForCopy?.copyType === CopyType.NODE_CUT) ||
+            ((props.id === selectionForCopy?.nodeId ||
+                selectionForCopy.allChildrenIds?.includes(props.id)) &&
+                selectionForCopy?.copyType === CopyType.SUBTREE_CUT)
         );
     };
 

@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -213,7 +214,9 @@ export const ModificationListItem = ({
                             !isDragging &&
                             isEditableModification(modif) && (
                                 <IconButton
-                                    onClick={() => onEdit(modif.uuid)}
+                                    onClick={() =>
+                                        onEdit(modif.uuid, modif?.type)
+                                    }
                                     size={'small'}
                                     className={classes.iconEdit}
                                 >

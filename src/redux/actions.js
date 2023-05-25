@@ -8,8 +8,8 @@
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
-    PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LANGUAGE,
+    PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -115,6 +115,20 @@ export function networkModificationTreeNodeMoved(
         networkModificationTreeNode: networkModificationTreeNode,
         parentNodeId: parentNodeId,
         insertMode: insertMode,
+    };
+}
+
+export const NETWORK_MODIFICATION_HANDLE_SUBTREE =
+    'NETWORK_MODIFICATION_HANDLE_SUBTREE';
+
+export function networkModificationHandleSubtree(
+    networkModificationTreeNodes,
+    parentNodeId
+) {
+    return {
+        type: NETWORK_MODIFICATION_HANDLE_SUBTREE,
+        networkModificationTreeNodes: networkModificationTreeNodes,
+        parentNodeId: parentNodeId,
     };
 }
 
@@ -262,19 +276,19 @@ export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
     };
 }
 
+export const LIMIT_REDUCTION = 'LIMIT_REDUCTION';
+
+export function selectLimitReduction(limitReduction) {
+    return {
+        type: LIMIT_REDUCTION,
+        [PARAM_LIMIT_REDUCTION]: limitReduction,
+    };
+}
+
 export const STUDY_UPDATED = 'STUDY_UPDATED';
 
 export function studyUpdated(eventData) {
     return { type: STUDY_UPDATED, eventData };
-}
-
-export const DISPLAY_OVERLOAD_TABLE = 'DISPLAY_OVERLOAD_TABLE';
-
-export function selectDisplayOverloadTableState(displayOverloadTable) {
-    return {
-        type: DISPLAY_OVERLOAD_TABLE,
-        [PARAM_DISPLAY_OVERLOAD_TABLE]: displayOverloadTable,
-    };
 }
 
 export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
@@ -429,12 +443,12 @@ export function setCurrentTreeNode(currentTreeNode) {
     };
 }
 
-export const SELECTED_TREE_NODE_FOR_COPY = 'SELECTED_NODE_FOR_COPY';
+export const SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
 
-export function setSelectedNodeForCopy(nodeForCopy) {
+export function setSelectionForCopy(selectionForCopy) {
     return {
-        type: SELECTED_TREE_NODE_FOR_COPY,
-        selectedNodeForCopy: nodeForCopy,
+        type: SELECTION_FOR_COPY,
+        selectionForCopy: selectionForCopy,
     };
 }
 

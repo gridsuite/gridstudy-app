@@ -15,8 +15,8 @@ import {
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
+import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
+import NetworkModificationDialog from 'components/dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
 import {
@@ -29,13 +29,12 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import LoadCreationDialog from '../../dialogs/load/creation/load-creation-dialog';
-import LoadModificationDialog from '../../dialogs/load/modification/load-modification-dialog';
-import LineCreationDialog from 'components/dialogs/line/creation/line-creation-dialog';
-import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
-import ShuntCompensatorCreationDialog from '../../dialogs/shunt-compensator-creation/shunt-compensator-creation-dialog';
-import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
-import EquipmentDeletionDialog from '../../dialogs/equipment-deletion/equipment-deletion-dialog.js';
+import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
+import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
+import LineCreationDialog from 'components/dialogs/network-modifications/line/creation/line-creation-dialog';
+import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
+import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator-creation/shunt-compensator-creation-dialog';
+import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog.js';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -50,19 +49,22 @@ import {
     removeNotificationByNode,
     setModificationsInProgress,
 } from '../../../redux/actions';
-import { UPDATE_TYPE } from '../../network/constants';
-import LoadScalingDialog from 'components/dialogs/load-scaling/load-scaling-dialog';
-import VoltageLevelCreationDialog from 'components/dialogs/voltage-level-creation/voltage-level-creation-dialog';
-import GeneratorCreationDialog from 'components/dialogs/generator/creation/generator-creation-dialog';
-import DeleteVoltageLevelOnLineDialog from 'components/dialogs/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
-import DeleteAttachingLineDialog from 'components/dialogs/delete-attaching-line/delete-attaching-line-dialog';
-import LinesAttachToSplitLinesDialog from 'components/dialogs/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
-import GeneratorScalingDialog from 'components/dialogs/generator-scaling/generator-scaling-dialog';
-import GeneratorModificationDialog from 'components/dialogs/generator/modification/generator-modification-dialog';
-import SubstationCreationDialog from 'components/dialogs/substation/creation/substation-creation-dialog';
-import SubstationModificationDialog from 'components/dialogs/substation/modification/substation-modification-dialog';
-import GenerationDispatchDialog from 'components/dialogs/generation-dispatch/generation-dispatch-dialog';
-import LineModificationDialog from 'components/dialogs/line/modification/line-modification-dialog';
+import LoadScalingDialog from 'components/dialogs/network-modifications/load-scaling/load-scaling-dialog';
+import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
+import GeneratorCreationDialog from 'components/dialogs/network-modifications/generator/creation/generator-creation-dialog';
+import DeleteVoltageLevelOnLineDialog from 'components/dialogs/network-modifications/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
+import DeleteAttachingLineDialog from 'components/dialogs/network-modifications/delete-attaching-line/delete-attaching-line-dialog';
+import LinesAttachToSplitLinesDialog from 'components/dialogs/network-modifications/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
+import GeneratorScalingDialog from 'components/dialogs/network-modifications/generator-scaling/generator-scaling-dialog';
+import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
+import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
+import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
+import GenerationDispatchDialog from 'components/dialogs/network-modifications/generation-dispatch/generation-dispatch-dialog';
+import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
+import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
+import { UPDATE_TYPE } from 'components/network/constants';
+import { FetchStatus } from 'utils/rest-api';
+import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -166,10 +168,14 @@ const NetworkModificationNodeEditor = () => {
 
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
+    const [editDataFetchStatus, setEditDataFetchStatus] = useState(
+        FetchStatus.IDLE
+    );
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
+    const [isUpdate, setIsUpdate] = useState(false);
 
     const cleanClipboard = useCallback(() => {
         if (copiedModifications.length <= 0) {
@@ -200,12 +206,13 @@ const NetworkModificationNodeEditor = () => {
     function withDefaultParams(Dialog, props) {
         return (
             <Dialog
-                open={true}
                 onClose={handleCloseDialog}
                 onValidated={handleValidatedDialog}
                 currentNode={currentNode}
                 studyUuid={studyUuid}
                 editData={editData}
+                isUpdate={isUpdate}
+                editDataFetchStatus={editDataFetchStatus}
                 {...props}
             />
         );
@@ -253,7 +260,6 @@ const NetworkModificationNodeEditor = () => {
             icon: <AddIcon />,
         },
         TWO_WINDINGS_TRANSFORMER_CREATION: {
-            onlyDeveloperMode: true,
             label: 'CreateTwoWindingsTransformer',
             dialog: () => adapt(TwoWindingsTransformerCreationDialog),
             icon: <AddIcon />,
@@ -271,6 +277,11 @@ const NetworkModificationNodeEditor = () => {
         VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
             dialog: () => adapt(VoltageLevelCreationDialog),
+            icon: <AddIcon />,
+        },
+        VOLTAGE_LEVEL_MODIFICATION: {
+            label: 'ModifyVoltageLevel',
+            dialog: () => adapt(VoltageLevelModificationDialog),
             icon: <AddIcon />,
         },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
@@ -459,6 +470,7 @@ const NetworkModificationNodeEditor = () => {
     const closeNetworkModificationConfiguration = () => {
         setOpenNetworkModificationsDialog(false);
         setEditData(undefined);
+        setEditDataFetchStatus(FetchStatus.IDLE);
     };
 
     const doDeleteModification = useCallback(() => {
@@ -574,20 +586,30 @@ const NetworkModificationNodeEditor = () => {
         return dataTemp;
     }
 
-    const doEditModification = (modificationUuid) => {
+    const doEditModification = (modificationUuid, type) => {
+        setIsUpdate(true);
+        setEditDialogOpen(type);
+        setEditDataFetchStatus(FetchStatus.RUNNING);
         const modification = fetchNetworkModification(modificationUuid);
         modification
             .then((res) => {
-                res.json().then((data) => {
+                return res.json().then((data) => {
                     //remove all null values to avoid showing a "null" in the forms
                     setEditData(removeNullFields(data));
+                    setEditDataFetchStatus(FetchStatus.SUCCEED);
                 });
             })
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
                 });
+                setEditDataFetchStatus(FetchStatus.FAILED);
             });
+    };
+
+    const onOpenDialog = (id) => {
+        setEditDialogOpen(id);
+        setIsUpdate(false);
     };
 
     const toggleSelectAllModifications = useCallback(() => {
@@ -670,8 +692,8 @@ const NetworkModificationNodeEditor = () => {
                                         onEdit={doEditModification}
                                         isDragging={isDragging}
                                         isOneNodeBuilding={isAnyNodeBuilding}
-                                        {...props}
                                         disabled={isLoading()}
+                                        {...props}
                                     />
                                 )}
                                 toggleSelectAll={toggleSelectAll}
@@ -845,7 +867,7 @@ const NetworkModificationNodeEditor = () => {
                 open={openNetworkModificationsDialog}
                 onClose={closeNetworkModificationConfiguration}
                 currentNodeUuid={currentNode?.id}
-                onOpenDialog={setEditDialogOpen}
+                onOpenDialog={onOpenDialog}
                 dialogs={dialogs}
             />
             {editDialogOpen && renderDialog()}

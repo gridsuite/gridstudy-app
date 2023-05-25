@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
@@ -51,6 +52,13 @@ function parseError(text) {
         return null;
     }
 }
+
+export const FetchStatus = {
+    SUCCEED: 'SUCCEED',
+    FAILED: 'FAILED',
+    IDLE: 'IDLE',
+    RUNNING: 'RUNNING',
+};
 
 function handleError(response) {
     return response.text().then((text) => {
@@ -829,6 +837,21 @@ export function fetchEquipmentInfos(
     return backendFetchJson(fetchEquipmentInfosUrl);
 }
 
+export function fetchCurrentLimitViolations(
+    studyUuid,
+    currentNodeUuid,
+    limitReduction
+) {
+    console.info(
+        `Fetching current limit violations (with limit reduction ${limitReduction}) ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/current-limit-violations?limitReduction=' +
+        limitReduction.toString();
+    return backendFetchJson(url);
+}
+
 export function fetchBusesForVoltageLevel(
     studyUuid,
     currentNodeUuid,
@@ -1205,6 +1228,53 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
+// --- Voltage init API - BEGIN
+export function startVoltageInit(studyUuid, currentNodeUuid) {
+    console.info(
+        `Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const startVoltageInitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/run';
+    console.debug(startVoltageInitUrl);
+    return backendFetch(startVoltageInitUrl, { method: 'put' });
+}
+
+export function stopVoltageInit(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopVoltageInitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/stop';
+    console.debug(stopVoltageInitUrl);
+    return backendFetch(stopVoltageInitUrl, { method: 'put' });
+}
+
+export function fetchVoltageInitStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching voltage init status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/status';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchVoltageInitResult(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/result';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+// --- Voltage init API - END
+
 // --- Dynamic simulation API - BEGIN
 export function getDynamicMappings(studyUuid) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
@@ -1337,6 +1407,18 @@ function getDynamicSimulationUrl() {
     return PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES + '/v1/';
 }
 
+export function fetchDynamicSimulationModels(studyUuid, nodeUuid) {
+    console.info(
+        `Fetching dynamic simulation models on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/dynamic-simulation/models';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function fetchDynamicSimulationProviders() {
     console.info('fetch dynamic simulation providers');
     const url = getDynamicSimulationUrl() + 'providers';
@@ -1385,7 +1467,10 @@ export function fetchDynamicSimulationParameters(studyUuid) {
     const mappingsPromise = getDynamicMappings(studyUuid);
 
     return Promise.all([parametersPromise, mappingsPromise]).then(
-        ([parameters, mappings]) => ({ ...parameters, mappings })
+        ([parameters, mappings]) => ({
+            ...parameters,
+            mappings,
+        })
     );
 }
 
@@ -1393,6 +1478,7 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
+
     return backendFetch(url, {
         method: 'POST',
         headers: {
@@ -1449,6 +1535,16 @@ export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
     return backendFetchJson(url);
 }
 
+export function fetchNetworkModificationSubtree(studyUuid, parentNodeUuid) {
+    console.info('Fetching network modification tree node : ', parentNodeUuid);
+    const url =
+        getStudyUrl(studyUuid) +
+        '/subtree?parentNodeUuid=' +
+        encodeURIComponent(parentNodeUuid);
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function createTreeNode(studyUuid, parentId, insertMode, node) {
     const nodeCreationUrl =
         getStudyUrl(studyUuid) +
@@ -1471,6 +1567,19 @@ export function deleteTreeNode(studyUuid, nodeId) {
     console.info('Deleting tree node : ', nodeId);
     const url =
         getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeId);
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'delete',
+    });
+}
+
+export function deleteSubtree(studyUuid, parentNodeId) {
+    console.info('Deleting node subtree : ', parentNodeId);
+    const url =
+        getStudyUrl(studyUuid) +
+        '/tree/nodes/' +
+        encodeURIComponent(parentNodeId) +
+        '?deleteChildren=true';
     console.debug(url);
     return backendFetch(url, {
         method: 'delete',
@@ -1533,6 +1642,40 @@ export function cutTreeNode(
         referenceNodeUuid;
     console.debug(nodeCutUrl);
     return backendFetch(nodeCutUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+    const nodeCopyUrl =
+        getStudyUrl(targetStudyId) +
+        '/tree/subtrees?subtreeToCutParentNodeUuid=' +
+        nodeToCopyUuid +
+        '&referenceNodeUuid=' +
+        referenceNodeUuid;
+    console.debug(nodeCopyUrl);
+    return backendFetch(nodeCopyUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function copySubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+    const nodeCopyUrl =
+        getStudyUrl(targetStudyId) +
+        '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
+        nodeToCopyUuid +
+        '&referenceNodeUuid=' +
+        referenceNodeUuid;
+    console.debug(nodeCopyUrl);
+    return backendFetch(nodeCopyUrl, {
         method: 'post',
         headers: {
             Accept: 'application/json',
@@ -1699,6 +1842,15 @@ export function fetchAppsAndUrls() {
             ).then((response) => {
                 return response.json();
             });
+        });
+}
+
+export function fetchMapBoxToken() {
+    console.info(`Fetching MapBoxToken...`);
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return res.mapBoxToken;
         });
 }
 
@@ -2562,6 +2714,49 @@ export function createVoltageLevel({
     });
 }
 
+export function modifyVoltageLevel(
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelId,
+    voltageLevelName,
+    nominalVoltage,
+    lowVoltageLimit,
+    highVoltageLimit,
+    lowShortCircuitCurrentLimit,
+    highShortCircuitCurrentLimit,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating voltage level modification');
+    } else {
+        console.info('Creating voltage level modification');
+    }
+
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+            equipmentId: voltageLevelId,
+            equipmentName: toModificationOperation(voltageLevelName),
+            nominalVoltage: toModificationOperation(nominalVoltage),
+            lowVoltageLimit: toModificationOperation(lowVoltageLimit),
+            highVoltageLimit: toModificationOperation(highVoltageLimit),
+            ipMin: toModificationOperation(lowShortCircuitCurrentLimit),
+            ipMax: toModificationOperation(highShortCircuitCurrentLimit),
+        }),
+    });
+}
+
 export function divideLine(
     studyUuid,
     currentNodeUuid,
@@ -3121,11 +3316,17 @@ export function generationDispatch(
     studyUuid,
     currentNodeUuid,
     modificationUuid,
-    lossCoefficient
+    lossCoefficient,
+    defaultOutageRate,
+    generatorsWithoutOutage,
+    generatorsWithFixedActivePower
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
-        lossCoefficient,
+        lossCoefficient: lossCoefficient,
+        defaultOutageRate: defaultOutageRate,
+        generatorsWithoutOutage: generatorsWithoutOutage,
+        generatorsWithFixedSupply: generatorsWithFixedActivePower,
     });
 
     let generationDispatchUrl =
@@ -3147,4 +3348,12 @@ export function generationDispatch(
         },
         body,
     });
+}
+
+export function getLineTypesCatalog() {
+    console.info(`get line types catalog`);
+    const url =
+        PREFIX_NETWORK_MODIFICATION_QUERIES +
+        '/v1/network-modifications/catalog/line_types';
+    return backendFetchJson(url);
 }

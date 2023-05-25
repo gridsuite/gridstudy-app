@@ -15,15 +15,17 @@ import {
     DropDown,
     LabelledButton,
     SwitchWithLabel,
+    useParameterState,
     useStyles,
 } from './parameters';
-import { LineSeparator } from '../dialogUtils';
+import { LabelledSlider, LineSeparator } from '../dialogUtils';
 import {
     FlatParameters,
     extractDefaultMap,
     makeDeltaMap,
 } from '@gridsuite/commons-ui';
 import { LocalizedCountries } from '../../utils/localized-countries-hook';
+import { PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
 
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
@@ -169,9 +171,6 @@ const TYPES = {
     enum: 'Enum',
     bool: 'Bool',
     countries: 'Countries',
-    string: 'String',
-    double: 'Double',
-    integer: 'Integer',
 };
 
 const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
@@ -319,6 +318,17 @@ const SpecificLoadFlowParameters = ({
         return extractDefaultMap(specificParamsDescription);
     }, [specificParamsDescription]);
 
+    // change object's NaN values into null
+    const getObjectWithoutNanValues = useCallback((initialObject) => {
+        initialObject &&
+            Object.keys(initialObject)?.map(
+                (key) =>
+                    (initialObject[key] = Number.isNaN(initialObject[key])
+                        ? null
+                        : initialObject[key])
+            );
+    }, []);
+
     const onChange = useCallback(
         (paramName, value, isEdit) => {
             if (isEdit) {
@@ -332,17 +342,29 @@ const SpecificLoadFlowParameters = ({
                 ...prevCurrentParameters,
                 ...{ [paramName]: value },
             };
+
             const deltaMap = makeDeltaMap(defaultValues, nextCurrentParameters);
+
             const toSend = { ...lfParams };
+            getObjectWithoutNanValues(deltaMap);
+
             const oldSpecifics = toSend['specificParametersPerProvider'];
             toSend['specificParametersPerProvider'] = {
                 ...oldSpecifics,
                 [currentProvider]: deltaMap ?? {},
             };
+
             commitLFParameter(toSend);
         },
-        [commitLFParameter, currentProvider, defaultValues, lfParams]
+        [
+            commitLFParameter,
+            currentProvider,
+            defaultValues,
+            lfParams,
+            getObjectWithoutNanValues,
+        ]
     );
+    getObjectWithoutNanValues(defaultValues);
 
     return (
         <>
@@ -382,6 +404,22 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         specificParamsDescriptions,
     ] = parametersBackend;
 
+    const [limitReductionParam, handleChangeLimitReduction] = useParameterState(
+        PARAM_LIMIT_REDUCTION
+    );
+
+    const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 50;
+    const alertThresholdMarks = [
+        {
+            value: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION,
+            label: MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION.toString(),
+        },
+        {
+            value: 100,
+            label: '100',
+        },
+    ];
+
     const updateLfProviderCallback = useCallback(
         (evt) => {
             updateProvider(evt.target.value);
@@ -407,8 +445,17 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     values={providers}
                     callback={updateLfProviderCallback}
                 />
-
-                <Grid container paddingTop={1}>
+                <Grid container spacing={1} paddingTop={1}>
+                    <LineSeparator />
+                    <LabelledSlider
+                        value={Number(limitReductionParam)}
+                        label="LimitReduction"
+                        onCommitCallback={(event, value) => {
+                            handleChangeLimitReduction(value);
+                        }}
+                        marks={alertThresholdMarks}
+                        minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                    />
                     <LineSeparator />
                 </Grid>
                 <BasicLoadFlowParameters
@@ -419,14 +466,16 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     lfParams={params || {}}
                     commitLFParameter={updateParameters}
                 />
-                <SpecificLoadFlowParameters
-                    lfParams={params || {}}
-                    commitLFParameter={updateParameters}
-                    currentProvider={provider}
-                    specificParamsDescription={
-                        specificParamsDescriptions[provider]
-                    }
-                />
+                {specificParamsDescriptions?.[provider] && (
+                    <SpecificLoadFlowParameters
+                        lfParams={params || {}}
+                        commitLFParameter={updateParameters}
+                        currentProvider={provider}
+                        specificParamsDescription={
+                            specificParamsDescriptions[provider]
+                        }
+                    />
+                )}
             </Grid>
             <Grid
                 container

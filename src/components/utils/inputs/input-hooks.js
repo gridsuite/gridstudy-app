@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,7 +38,6 @@ import {
     toIntValue,
     useStyles,
 } from '../../dialogs/dialogUtils';
-import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
@@ -252,7 +251,7 @@ export const useDoubleValue = ({
     });
 };
 
-export const useButtonWithTooltip = ({ handleClick, label }) => {
+export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
     const classes = useStyles();
 
     return useMemo(() => {
@@ -266,11 +265,11 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
                 classes={{ tooltip: classes.tooltip }}
             >
                 <IconButton style={{ padding: '2px' }} onClick={handleClick}>
-                    <FindInPageIcon />
+                    {icon}
                 </IconButton>
             </Tooltip>
         );
-    }, [label, handleClick, classes.tooltip]);
+    }, [label, handleClick, classes.tooltip, icon]);
 };
 
 export const useOptionalEnumValue = (props) => {

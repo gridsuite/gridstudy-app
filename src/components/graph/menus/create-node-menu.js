@@ -38,10 +38,14 @@ const CreateNodeMenu = ({
     handleNodeRemoval,
     handleExportCaseOnNode,
     activeNode,
-    selectedNodeForCopy,
+    selectionForCopy,
     handleCopyNode,
     handleCutNode,
     handlePasteNode,
+    handleRemovalSubtree,
+    handleCutSubtree,
+    handleCopySubtree,
+    handlePasteSubtree,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -90,19 +94,59 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
-    function isPastingAllowed() {
+    function copySubtree() {
+        handleCopySubtree(activeNode.id);
+        handleClose();
+    }
+
+    function pasteSubtree() {
+        handlePasteSubtree(activeNode.id);
+        handleClose();
+    }
+
+    function cutSubtree() {
+        handleCutSubtree(activeNode.id);
+        handleClose();
+    }
+
+    function cancelCutSubtree() {
+        handleCutSubtree(null);
+        handleClose();
+    }
+
+    function removeSubtree() {
+        handleRemovalSubtree(activeNode);
+        handleClose();
+    }
+
+    function isNodePastingAllowed() {
         return (
-            selectedNodeForCopy &&
-            selectedNodeForCopy.nodeId !== null &&
-            (selectedNodeForCopy.nodeId !== activeNode.id ||
-                selectedNodeForCopy.copyType !== CopyType.CUT)
+            (selectionForCopy.nodeId !== activeNode.id &&
+                selectionForCopy.copyType === CopyType.NODE_CUT) ||
+            selectionForCopy.copyType === CopyType.NODE_COPY
         );
     }
 
-    function isAlreadySelectedForCut() {
+    function isSubtreePastingAllowed() {
         return (
-            selectedNodeForCopy?.nodeId === activeNode.id &&
-            selectedNodeForCopy?.copyType === CopyType.CUT
+            (selectionForCopy.nodeId !== activeNode.id &&
+                !selectionForCopy.allChildrenIds?.includes(activeNode.id) &&
+                selectionForCopy.copyType === CopyType.SUBTREE_CUT) ||
+            selectionForCopy.copyType === CopyType.SUBTREE_COPY
+        );
+    }
+
+    function isNodeAlreadySelectedForCut() {
+        return (
+            selectionForCopy?.nodeId === activeNode.id &&
+            selectionForCopy?.copyType === CopyType.NODE_CUT
+        );
+    }
+
+    function isSubtreeAlreadySelectedForCut() {
+        return (
+            selectionForCopy?.nodeId === activeNode.id &&
+            selectionForCopy?.copyType === CopyType.SUBTREE_CUT
         );
     }
 
@@ -139,10 +183,10 @@ const CreateNodeMenu = ({
         CUT_MODIFICATION_NODE: {
             onRoot: false,
             action: () =>
-                isAlreadySelectedForCut()
+                isNodeAlreadySelectedForCut()
                     ? cancelCutNetworkModificationNode()
                     : cutNetworkModificationNode(),
-            id: isAlreadySelectedForCut()
+            id: isNodeAlreadySelectedForCut()
                 ? 'cancelCutNetworkModificationNode'
                 : 'cutNetworkModificationNode',
         },
@@ -150,24 +194,55 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => pasteNetworkModificationNode('CHILD'),
             id: 'pasteNetworkModificationNodeOnNewBranch',
-            disabled: !isPastingAllowed(),
+            disabled: !isNodePastingAllowed(),
         },
         PASTE_MODIFICATION_NODE_BEFORE: {
             onRoot: false,
             action: () => pasteNetworkModificationNode('BEFORE'),
             id: 'pasteNetworkModificationNodeAbove',
-            disabled: !isPastingAllowed(),
+            disabled: !isNodePastingAllowed(),
         },
         PASTE_MODIFICATION_NODE_AFTER: {
             onRoot: true,
             action: () => pasteNetworkModificationNode('AFTER'),
             id: 'pasteNetworkModificationNodeBelow',
-            disabled: !isPastingAllowed(),
+            disabled: !isNodePastingAllowed(),
         },
         REMOVE_NODE: {
             onRoot: false,
             action: () => removeNode(),
             id: 'removeNode',
+            disabled: isAnyNodeBuilding,
+            sectionEnd: true,
+        },
+        COPY_SUBTREE: {
+            onRoot: false,
+            action: () => copySubtree(),
+            id: 'copyNetworkModificationSubtree',
+            disabled: isAnyNodeBuilding,
+        },
+        CUT_SUBTREE: {
+            onRoot: false,
+            action: () =>
+                isSubtreeAlreadySelectedForCut()
+                    ? cancelCutSubtree()
+                    : cutSubtree(),
+            id: isSubtreeAlreadySelectedForCut()
+                ? 'cancelCutNetworkModificationSubtree'
+                : 'cutNetworkModificationSubtree',
+            disabled: isAnyNodeBuilding,
+            sectionEnd: true,
+        },
+        PASTE_SUBTREE: {
+            onRoot: true,
+            action: () => pasteSubtree(),
+            id: 'pasteNetworkModificationSubtree',
+            disabled: !isSubtreePastingAllowed(),
+        },
+        REMOVE_SUBTREE: {
+            onRoot: false,
+            action: () => removeSubtree(),
+            id: 'removeNetworkModificationSubtree',
             disabled: isAnyNodeBuilding,
         },
         EXPORT_NETWORK_ON_NODE: {

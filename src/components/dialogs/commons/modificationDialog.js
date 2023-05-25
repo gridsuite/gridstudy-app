@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -14,22 +14,30 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    LinearProgress,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
+import FindInPageIcon from '@mui/icons-material/FindInPage';
+import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import { useFormContext } from 'react-hook-form';
 import SubmitButton from './submitButton';
 
 /**
- * Generic Modification Dialog which manage basic common behaviors
+ * Generic Modification Dialog which manage basic common behaviors with react
+ * hook form validation.
  * @param {String} titleId id for title translation
  * @param {EventListener} onClose Event to close the dialog
  * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
  * @param {CallbackEvent} onSave callback when saving the modification
  * @param {Boolean} disabledSave to control disabled prop of the validate button
+ * @param {Object} onOpenCatalogDialog Object managing catalog
  * @param {Object} searchCopy Object managing search equipments for copy
  * @param {ReactElement} subtitle subtitle component to put inside DialogTitle
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
+ * @param {Boolean} isDataFetching props to display loading
+ * @param {CallbackEvent} onValidated callback when validation is successful
+ * @param {CallbackEvent} onValidationError callback when validation failed
  */
 const ModificationDialog = ({
     titleId,
@@ -38,16 +46,25 @@ const ModificationDialog = ({
     onSave,
     onValidationError,
     disabledSave = false,
+    onOpenCatalogDialog,
     searchCopy,
     subtitle,
     onValidated,
+    isDataFetching = false,
     ...dialogProps
 }) => {
     const { handleSubmit } = useFormContext();
 
+    const catalogButton = useButtonWithTooltip({
+        label: 'CatalogButtonTooltip',
+        handleClick: onOpenCatalogDialog,
+        icon: <AutoStoriesOutlinedIcon />,
+    });
+
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: searchCopy?.handleOpenSearchDialog,
+        icon: <FindInPageIcon />,
     });
 
     const closeAndClear = (event, reason) => {
@@ -83,11 +100,13 @@ const ModificationDialog = ({
             aria-labelledby={titleId}
             {...dialogProps}
         >
+            {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container justifyContent={'space-between'}>
                     <Grid item xs={11}>
                         <FormattedMessage id={titleId} />
                     </Grid>
+                    {onOpenCatalogDialog && <Grid item> {catalogButton} </Grid>}
                     {searchCopy && <Grid item> {copyEquipmentButton} </Grid>}
                 </Grid>
                 {subtitle}
@@ -119,6 +138,7 @@ ModificationDialog.propTypes = {
     disabledSave: PropTypes.bool,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
+    isDataFetching: PropTypes.bool,
 };
 
 export default ModificationDialog;
