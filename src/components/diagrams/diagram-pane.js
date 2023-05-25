@@ -505,7 +505,7 @@ export function DiagramPane({
                 const nadViewId = views.findIndex(
                     (view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
                 );
-                if (nadViewId) {
+                if (nadViewId >= 0) {
                     updatedViews[nadViewId] = {
                         ...updatedViews[nadViewId], // trick to avoid resizing
                         ...newDiagram,
@@ -654,39 +654,6 @@ export function DiagramPane({
         }
     }, []);
 
-    const reorderViews = useCallback((diagramStates) => {
-        setViews((views) => {
-            // we only sort SLD
-            const sortedViews = views
-                .filter(
-                    (view) => view.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
-                )
-                .sort(
-                    (a, b) =>
-                        diagramStates.findIndex(
-                            (diagramState) =>
-                                diagramState.svgType !==
-                                    DiagramType.NETWORK_AREA_DIAGRAM &&
-                                diagramState.id === a.id
-                        ) -
-                        diagramStates.findIndex(
-                            (diagramState) =>
-                                diagramState.svgType !==
-                                    DiagramType.NETWORK_AREA_DIAGRAM &&
-                                diagramState.id === b.id
-                        )
-                );
-            // if we have a NAD, we keep it at the same position (last)
-            const nadViewId = views.findIndex(
-                (view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-            );
-            if (nadViewId) {
-                sortedViews.push(views[nadViewId]);
-            }
-            return sortedViews;
-        });
-    }, []);
-
     // UPDATE DIAGRAM VIEWS
     useEffect(() => {
         if (
@@ -702,8 +669,6 @@ export function DiagramPane({
         updateSLDs(diagramStates);
         // NAD MANAGEMENT (adding, removing or updating the NAD)
         updateNAD(diagramStates);
-        // REORDER (to keep the same order as in the redux store)
-        reorderViews(diagramStates);
     }, [
         diagramStates,
         visible,
@@ -712,7 +677,6 @@ export function DiagramPane({
         updateDiagramStates,
         updateSLDs,
         updateNAD,
-        reorderViews,
     ]);
 
     const displayedDiagrams = views
