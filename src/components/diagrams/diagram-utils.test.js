@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { sortDiagrams } from './diagram-common';
+import { sortDiagrams } from './diagram-utils';
 
 test('diagram-common.sortDiagrams', () => {
     const diagramStates = [
@@ -26,16 +26,17 @@ test('diagram-common.sortDiagrams', () => {
         { id: 0, align: 'hello world' },
     ].sort(sortDiagrams(diagramStates));
 
-    expect(table[0]?.align).toBe('left');
-    expect(table[0]?.id).toBe(3);
-    expect(table[1]?.align).toBe('left');
-    expect(table[1]?.id).toBe(2);
-    expect(table[2]?.align).toBe('right');
-    expect(table[2]?.id).toBe(4);
-    expect(table[3]?.align).toBe('right');
-    expect(table[3]?.id).toBe(1);
-    expect(table[4]?.align).not.toBe('left');
-    expect(table[4]?.align).not.toBe('right');
-    expect(table[4]?.id).toBe(0);
     expect(table.length).toBe(7);
+    expect(table[0].align).toBe('left');
+    expect(table[0].id).toBe(3);
+    expect(table[1].align).toBe('left');
+    expect(table[1].id).toBe(2);
+    expect(table[2].align).toBe('right');
+    expect(table[2].id).toBe(4);
+    expect(table[3].align).toBe('right');
+    expect(table[3].id).toBe(1);
+    expect(table[4]).toStrictEqual({});
+    expect(table[5]).toBe(null);
+    expect(table[6].align).toBe('hello world');
+    expect(table[6].id).toBe(0);
 });
