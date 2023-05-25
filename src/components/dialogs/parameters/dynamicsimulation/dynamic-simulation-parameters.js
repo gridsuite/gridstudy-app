@@ -30,12 +30,14 @@ import {
     updateDynamicSimulationProvider,
 } from '../../../../utils/rest-api';
 import NetworkParameters from './network-parameters';
+import CurveParameters from './curve-parameters';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',
     solverParamsTabValue: 'Solver',
     mappingParamsTabValue: 'Mapping',
     networkParamsTabValue: 'Network',
+    curveParamsTabValue: 'Curve',
 };
 
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
@@ -94,6 +96,13 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const handleUpdateSolver = useCallback(
         (newSolver) => {
             updateParameters({ ...parameters, ...newSolver });
+        },
+        [updateParameters, parameters]
+    );
+
+    const handleUpdateCurve = useCallback(
+        (newCurves) => {
+            updateParameters({ ...parameters, curves: newCurves });
         },
         [updateParameters, parameters]
     );
@@ -173,6 +182,12 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                             }
                             value={TAB_VALUES.networkParamsTabValue}
                         />
+                        <Tab
+                            label={
+                                <FormattedMessage id="DynamicSimulationCurve" />
+                            }
+                            value={TAB_VALUES.curveParamsTabValue}
+                        />
                     </Tabs>
 
                     <TabPanel
@@ -237,6 +252,22 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                                     : undefined
                             }
                             onUpdateNetwork={handleUpdateNetwork}
+                        />
+                    </TabPanel>
+                    <TabPanel
+                        value={tabValue}
+                        index={TAB_VALUES.curveParamsTabValue}
+                    >
+                        <CurveParameters
+                            key={`curve-${resetRevision}`} // to force remount a component having internal states
+                            curves={
+                                parameters
+                                    ? parameters.curves
+                                        ? [...parameters.curves]
+                                        : []
+                                    : undefined
+                            }
+                            onUpdateCurve={handleUpdateCurve}
                         />
                     </TabPanel>
                 </Grid>
