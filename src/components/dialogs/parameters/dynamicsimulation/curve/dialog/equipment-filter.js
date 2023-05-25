@@ -23,11 +23,11 @@ import CountrySelect from '../country-select';
 import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES as ALL_EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 
-export const EQUIPMENT_TYPES = {
-    [ALL_EQUIPMENT_TYPES.GENERATOR.type]: ALL_EQUIPMENT_TYPES.GENERATOR,
-    [ALL_EQUIPMENT_TYPES.LOAD.type]: ALL_EQUIPMENT_TYPES.LOAD,
+export const CURVE_EQUIPMENT_TYPES = {
+    [EQUIPMENT_TYPES.GENERATOR.type]: EQUIPMENT_TYPES.GENERATOR,
+    [EQUIPMENT_TYPES.LOAD.type]: EQUIPMENT_TYPES.LOAD,
 };
 
 const TENSION_UNIT = 'kV';
@@ -361,7 +361,7 @@ const EquipmentFilter = forwardRef(
                             size="small"
                             sx={{ width: '100%' }}
                         >
-                            {Object.entries(EQUIPMENT_TYPES).map(
+                            {Object.entries(CURVE_EQUIPMENT_TYPES).map(
                                 ([key, value]) => (
                                     <MenuItem key={key} value={value}>
                                         {intl.formatMessage({ id: value.type })}
