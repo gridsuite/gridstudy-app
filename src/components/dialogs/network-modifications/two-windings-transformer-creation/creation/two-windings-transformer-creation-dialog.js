@@ -105,8 +105,6 @@ import {
     getLimitsValidationSchema,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import TwoWindingsTransformerModificationDialogHeader
-    from '../modification/two-windings-transformer-modification-dialog-header';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
 
 /**
