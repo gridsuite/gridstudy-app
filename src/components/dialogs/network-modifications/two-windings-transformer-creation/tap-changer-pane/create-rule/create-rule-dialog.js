@@ -20,12 +20,12 @@ import {
 import CreateRuleDialogSubmitButton from './create-rule-dialog-submit-button';
 
 const emptyFormData = getCreateRuteEmptyFormData();
-const schema = getCreateRuleValidationSchema();
+const formSchema = getCreateRuleValidationSchema();
 
 export const CreateRuleDialog = (props) => {
     const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
     const {
@@ -48,7 +48,7 @@ export const CreateRuleDialog = (props) => {
 
     return (
         <Dialog open={props.openCreateRuleDialog} fullWidth={true}>
-            <FormProvider validationSchema={schema} {...formMethods}>
+            <FormProvider validationSchema={formSchema} {...formMethods}>
                 <CreateRuleForm {...props} />
                 <DialogActions>
                     <Button onClick={handleCloseDialog}>
