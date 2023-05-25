@@ -55,9 +55,9 @@ import {
     FetchStatus,
 } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
-import { filledTextField, gridItem, sanitizeString } from '../../dialogUtils';
-import EquipmentSearchDialog from '../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../form-search-copy-hook';
+import { filledTextField, gridItem, sanitizeString } from '../../../dialogUtils';
+import EquipmentSearchDialog from '../../../equipment-search-dialog';
+import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import {
     FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
@@ -67,8 +67,8 @@ import {
     UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../commons/modificationDialog';
-import { getConnectivityFormData } from '../../connectivity/connectivity-form-utils';
+import ModificationDialog from '../../../commons/modificationDialog';
+import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import PhaseTapChangerPane from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
@@ -98,13 +98,16 @@ import {
     PERMANENT_LIMIT,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants.js';
-import LimitsPane from '../../limits/limits-pane';
+import LimitsPane from '../../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
     getLimitsFormData,
     getLimitsValidationSchema,
-} from '../../limits/limits-pane-utils';
+} from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import TwoWindingsTransformerModificationDialogHeader
+    from '../modification/two-windings-transformer-modification-dialog-header';
+import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -497,44 +500,9 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const ratioTapChangerEnabledField = (
-        <SwitchInput
-            name={`${RATIO_TAP_CHANGER}.${ENABLED}`}
-            label="ConfigureRatioTapChanger"
-        />
-    );
-
-    const phaseTapChangerEnabledField = (
-        <SwitchInput
-            name={`${PHASE_TAP_CHANGER}.${ENABLED}`}
-            label="ConfigurePhaseTapChanger"
-        />
-    );
-
-    const twoWindingsTransformerIdField = (
-        <TextInput
-            name={`${CHARACTERISTICS}.${EQUIPMENT_ID}`}
-            label="ID"
-            formProps={filledTextField}
-        />
-    );
-
-    const twoWindingsTransformerNameField = (
-        <TextInput
-            name={`${CHARACTERISTICS}.${EQUIPMENT_NAME}`}
-            label="Name"
-            formProps={filledTextField}
-        />
-    );
-
     const headerAndTabs = (
         <Grid container spacing={2}>
-            <Grid container item spacing={2}>
-                {gridItem(twoWindingsTransformerIdField, 4)}
-                {gridItem(twoWindingsTransformerNameField, 4)}
-                {gridItem(ratioTapChangerEnabledField, 2)}
-                {gridItem(phaseTapChangerEnabledField, 2)}
-            </Grid>
+            <TwoWindingsTransformerCreationDialogHeader/>
             <TwoWindingsTransformerCreationDialogTabs
                 tabIndex={tabIndex}
                 tabIndexesWithError={tabIndexesWithError}
