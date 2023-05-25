@@ -742,7 +742,7 @@ export function DiagramPane({
                         } else {
                             updatedDiagramPromise = currentView.fetchSvg();
                         }
-                        updatedDiagramPromise.then((svg) => {
+                        updatedDiagramPromise?.then((svg) => {
                             setViews((views) => {
                                 const updatedViews = views.slice();
                                 updatedViews[i] = {
