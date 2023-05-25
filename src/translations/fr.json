@@ -307,8 +307,8 @@
     "descLfUniformValues": "Uniforme",
     "descLfPreviousValues": "Précédentes",
     "descLfDcValues": "DC",
-    "resetToDefault": "Réinitialiser Tout",
-    "resetLfToDefault": "Réinitialiser les paramètres du simulateur",
+    "resetToDefault": "Tout réinitialiser ",
+    "resetProviderValuesToDefault": "Réinitialiser les paramètres du simulateur",
     "showAdvancedParameters": "Paramètres avancés",
     "showSpecificParameters": "Paramètres spécifiques",
 

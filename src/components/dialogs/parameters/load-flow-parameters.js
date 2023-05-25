@@ -451,8 +451,8 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 className={classes.scrollableGrid}
                 key="lfParameters"
             >
+                <LineSeparator />
                 <Grid container spacing={1} paddingTop={1}>
-                    <LineSeparator />
                     <LabelledSlider
                         value={Number(limitReductionParam)}
                         label="LimitReduction"
@@ -494,7 +494,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 />
                 <LabelledButton
                     callback={resetLfParameters}
-                    label="resetLfToDefault"
+                    label="resetProviderValuesToDefault"
                 />
                 <CloseButton
                     hideParameters={hideParameters}

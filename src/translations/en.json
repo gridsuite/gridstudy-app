@@ -308,7 +308,7 @@
     "descLfPreviousValues": "Previous values",
     "descLfDcValues": "DC Values",
     "resetToDefault": "Reset All",
-    "resetLfToDefault": "Reset LF default values",
+    "resetProviderValuesToDefault": "Reset provider default values",
     "showAdvancedParameters": "Advanced settings",
     "showSpecificParameters": "Specific settings",
 
