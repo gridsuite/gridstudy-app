@@ -8,16 +8,13 @@
 import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-
-import ListItemText from '@mui/material/ListItemText';
-import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
 import { NestedMenuItem } from 'mui-nested-menu';
+import NodeMenuItem from './create-node-item';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -269,31 +266,6 @@ const CreateNodeMenu = ({
         },
     };
 
-    const SubMenuItem = ({ item }) => {
-        return (
-            <>
-                {item && (
-                    <MenuItem
-                        className={classes.menuItem}
-                        onClick={item.action}
-                        disabled={item.disabled}
-                    >
-                        <ListItemText
-                            className={classes.listItemText}
-                            primary={
-                                <Typography noWrap>
-                                    {intl.formatMessage({
-                                        id: item.id,
-                                    })}
-                                </Typography>
-                            }
-                        />
-                    </MenuItem>
-                )}
-            </>
-        );
-    };
-
     return (
         <Menu
             anchorReference="anchorPosition"
@@ -311,7 +283,7 @@ const CreateNodeMenu = ({
                 return (
                     (activeNode?.type !== 'ROOT' || item.onRoot) && (
                         <div key={item.id}>
-                            {!hasSubMenuItem && <SubMenuItem item={item} />}
+                            {!hasSubMenuItem && <NodeMenuItem item={item} />}
 
                             {hasSubMenuItem && (
                                 <NestedMenuItem
@@ -322,11 +294,11 @@ const CreateNodeMenu = ({
                                     disabled={item.disabled}
                                 >
                                     {Object.values(item.subMenuItems).map(
-                                        (item) => {
+                                        (subItem) => {
                                             return (
-                                                <SubMenuItem
-                                                    key={item.id}
-                                                    item={item}
+                                                <NodeMenuItem
+                                                    key={subItem.id}
+                                                    item={subItem}
                                                 />
                                             );
                                         }
