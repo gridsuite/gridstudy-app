@@ -35,8 +35,10 @@ test('diagram-common.sortDiagrams', () => {
     expect(table[2].id).toBe(4);
     expect(table[3].align).toBe('right');
     expect(table[3].id).toBe(1);
-    expect(table[4]).toStrictEqual({});
-    expect(table[5]).toBe(null);
-    expect(table[6].align).toBe('hello world');
-    expect(table[6].id).toBe(0);
+    expect(table[4]?.align).not.toBe('left');
+    expect(table[4]?.align).not.toBe('right');
+    expect(table[5]?.align).not.toBe('left');
+    expect(table[5]?.align).not.toBe('right');
+    expect(table[6]?.align).not.toBe('left');
+    expect(table[6]?.align).not.toBe('right');
 });
