@@ -97,7 +97,7 @@ const EquipmentFilter = forwardRef(
         // load VoltageLevels from backend
         useEffect(() => {
             Promise.all(
-                ALL_EQUIPMENT_TYPES.VOLTAGE_LEVEL.fetchers.map((fetchPromise) =>
+                EQUIPMENT_TYPES.VOLTAGE_LEVEL.fetchers.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -148,7 +148,7 @@ const EquipmentFilter = forwardRef(
         // load substation from backend to infer countries
         useEffect(() => {
             Promise.all(
-                ALL_EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
+                EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -181,7 +181,7 @@ const EquipmentFilter = forwardRef(
         const loadFilteredEquipments = useCallback(() => {
             // get all substations which include also voltage levels
             return Promise.all(
-                ALL_EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
+                EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
