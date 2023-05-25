@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -15,18 +14,6 @@ import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
 import { NestedMenuItem } from 'mui-nested-menu';
 import NodeMenuItem from './create-node-item';
-
-const useStyles = makeStyles((theme) => ({
-    menuItem: {
-        padding: '0px',
-        margin: '7px',
-    },
-    listItemText: {
-        fontSize: 12,
-        padding: '0px',
-        margin: '4px',
-    },
-}));
 
 const CreateNodeMenu = ({
     position,
@@ -45,7 +32,6 @@ const CreateNodeMenu = ({
     handleCopySubtree,
     handlePasteSubtree,
 }) => {
-    const classes = useStyles();
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const isModificationsInProgress = useSelector(
