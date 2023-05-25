@@ -42,7 +42,7 @@ const emptyFormData = {
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
 };
 
-const schema = yup.object().shape({
+const formSchema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().required(),
     [EQUIPMENT_NAME]: yup.string().nullable(),
     [SUBSTATION_ID]: yup.string().nullable(),
@@ -66,12 +66,12 @@ const VoltageLevelModificationDialog = ({
     const [voltageLevelInfos, setVoltageLevelInfos] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = methods;
+    const { reset, setValue } = formMethods;
 
     useEffect(() => {
         if (editData) {
@@ -169,9 +169,9 @@ const VoltageLevelModificationDialog = ({
 
     return (
         <FormProvider
-            validationSchema={schema}
+            validationSchema={formSchema}
             removeOptional={true}
-            {...methods}
+            {...formMethods}
         >
             <ModificationDialog
                 fullWidth
