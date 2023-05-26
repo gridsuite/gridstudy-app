@@ -45,7 +45,6 @@ const checkCrossValidationRequiredOn = (gridApi, colDef) => {
                 : undefined
         );
 
-    console.log(dependencyEditor);
     return dependencyEditor.length > 0
         ? dependencyEditor[0].getValue() !==
               colDef.crossValidation.requiredOn.columnValue
