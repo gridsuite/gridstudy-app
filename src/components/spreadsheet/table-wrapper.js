@@ -47,6 +47,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
+import { useEquipments } from 'components/network/use-equipments';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -297,24 +298,32 @@ const TableWrapper = (props) => {
         ]
     );
 
+    const { equipments: testEquipments, isFetching } = useEquipments(
+        TABLES_DEFINITION_INDEXES.get(tabIndex)
+    );
+
+    console.log('TEST EQUIPMENT', testEquipments);
+
     const getRows = useCallback(
         (index) => {
             if (props.disabled || !props.network) {
                 return [];
             }
             const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
-            const datasourceRows = tableDefinition.getter
-                ? tableDefinition.getter(props.network)
-                : props.network[tableDefinition.resource];
+            // const datasourceRows = tableDefinition.getter
+            //     ? tableDefinition.getter(props.network)
+            //     : props.network[tableDefinition.resource];
+
+            const datasourceRows = testEquipments;
 
             if (!datasourceRows) {
                 return [];
             }
 
             //the method returns a new array so that the table component detects its data changed thus rerendering its rows
-            return [...datasourceRows];
+            return datasourceRows;
         },
-        [props.disabled, props.network]
+        [testEquipments, props.disabled, props.network]
     );
 
     useEffect(() => {
@@ -363,13 +372,13 @@ const TableWrapper = (props) => {
         );
     }, [allReorderedTableDefinitionIndexes, tabIndex]);
 
-    useEffect(() => {
-        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        if (!props.network || props.disabled) {
-            return;
-        }
-        props.network.useEquipment(resource);
-    }, [props.network, props.disabled, tabIndex]);
+    // useEffect(() => {
+    //     const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
+    //     if (!props.network || props.disabled) {
+    //         return;
+    //     }
+    //     props.network.useEquipment(resource);
+    // }, [props.network, props.disabled, tabIndex]);
 
     useEffect(() => {
         setManualTabSwitch(false);
@@ -709,15 +718,10 @@ const TableWrapper = (props) => {
                         rowData={rowData}
                         columnData={columnData}
                         topPinnedData={topPinnedData}
-                        fetched={
-                            equipmentFetched &&
-                            props.network?.isResourceFetched(
-                                TABLES_DEFINITION_INDEXES.get(tabIndex).resource
-                            )
-                        }
+                        fetched={!isFetching}
                         scrollToIndex={scrollToIndex}
                         visible={props.visible}
-                        network={props.network}
+                        //network={props.network}
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}

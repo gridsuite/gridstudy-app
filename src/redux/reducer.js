@@ -86,6 +86,7 @@ import {
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     SELECTION_FOR_COPY,
     LIMIT_REDUCTION,
+    LOAD_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -143,6 +144,32 @@ const paramsInitialState = {
     [PARAMS_LOADED]: false,
 };
 
+const initialNetworkState = {
+    substations: null,
+    lines: null,
+    twoWindingsTransformers: null,
+    threeWindingsTransformers: null,
+    generators: null,
+    loads: null,
+    batteries: null,
+    danglingLines: null,
+    hvdcLines: null,
+    lccConverterStations: null,
+    vscConverterStations: null,
+    shuntCompensators: null,
+    staticVarCompensators: null,
+    lazyLoaders: new Map(),
+    voltageLevelsByNominalVoltage: new Map(),
+    voltageLevelsById: new Map(),
+    voltageLevels: null,
+    substationsById: new Map(),
+    linesById: new Map(),
+    twoWindingsTransformersById: new Map(),
+    threeWindingsTransformersById: new Map(),
+    generatorsById: new Map(),
+    nominalVoltages: null,
+};
+
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
@@ -184,6 +211,7 @@ const initialState = {
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     networkEquipmentsFetched: false, // indicate if network equipments are fetched
+    ...initialNetworkState,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -892,6 +920,9 @@ export const reducer = createReducer(initialState, {
     },
     [NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS]: (state, action) => {
         state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
+    },
+    [LOAD_EQUIPMENTS]: (state, action) => {
+        state[action.equipmentType] = action.equipments;
     },
 });
 

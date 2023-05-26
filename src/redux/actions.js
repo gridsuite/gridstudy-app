@@ -41,6 +41,16 @@ export function networkCreated(network) {
     return { type: NETWORK_CREATED, network: network };
 }
 
+export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
+
+export function loadEquipments(equipmentType, equipments) {
+    return {
+        type: LOAD_EQUIPMENTS,
+        equipmentType: equipmentType,
+        equipments: equipments,
+    };
+}
+
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
 export function mapEquipmentsCreated(

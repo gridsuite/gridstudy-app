@@ -48,6 +48,7 @@ export const TABLES_DEFINITIONS = {
         index: 0,
         name: 'Substations',
         resource: equipments.substations,
+        type: EQUIPMENT_TYPES.SUBSTATION,
         columns: [
             {
                 id: 'ID',
@@ -69,6 +70,7 @@ export const TABLES_DEFINITIONS = {
         index: 1,
         name: 'VoltageLevels',
         resource: equipments.voltageLevels,
+        type: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
         modifiableEquipmentType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
         getter: (network) => network.getVoltageLevels(),
         columns: [
@@ -99,6 +101,7 @@ export const TABLES_DEFINITIONS = {
         index: 2,
         name: 'Lines',
         resource: equipments.lines,
+        type: EQUIPMENT_TYPES.LINE,
         columns: [
             {
                 id: 'ID',
@@ -186,6 +189,7 @@ export const TABLES_DEFINITIONS = {
         index: 3,
         name: 'TwoWindingsTransformers',
         resource: equipments.twoWindingsTransformers,
+        type: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
         modifiableEquipmentType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
         groovyEquipmentGetter: 'getTwoWindingsTransformer',
         columns: [
@@ -375,6 +379,7 @@ export const TABLES_DEFINITIONS = {
         index: 4,
         name: 'ThreeWindingsTransformers',
         resource: equipments.threeWindingsTransformers,
+        type: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
         modifiableEquipmentType:
             EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
         groovyEquipmentGetter: 'getThreeWindingsTransformer',
@@ -774,6 +779,7 @@ export const TABLES_DEFINITIONS = {
         name: 'Generators',
         resource: equipments.generators,
         modifiableEquipmentType: EQUIPMENT_TYPES.GENERATOR.type,
+        type: EQUIPMENT_TYPES.GENERATOR,
         columns: [
             {
                 id: 'ID',
@@ -976,6 +982,7 @@ export const TABLES_DEFINITIONS = {
         index: 6,
         name: 'Loads',
         resource: equipments.loads,
+        type: EQUIPMENT_TYPES.LOAD,
         modifiableEquipmentType: EQUIPMENT_TYPES.LOAD.type,
         columns: [
             {
@@ -1079,6 +1086,7 @@ export const TABLES_DEFINITIONS = {
         index: 7,
         name: 'ShuntCompensators',
         resource: equipments.shuntCompensators,
+        type: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
         columns: [
             {
                 id: 'ID',
@@ -1140,6 +1148,7 @@ export const TABLES_DEFINITIONS = {
         index: 8,
         name: 'StaticVarCompensators',
         resource: equipments.staticVarCompensators,
+        type: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
         columns: [
             {
                 id: 'ID',
@@ -1208,6 +1217,7 @@ export const TABLES_DEFINITIONS = {
         index: 9,
         name: 'Batteries',
         resource: equipments.batteries,
+        type: EQUIPMENT_TYPES.BATTERY,
         columns: [
             {
                 id: 'ID',
@@ -1277,6 +1287,7 @@ export const TABLES_DEFINITIONS = {
         index: 10,
         name: 'HvdcLines',
         resource: equipments.hvdcLines,
+        type: EQUIPMENT_TYPES.HVDC_LINE,
         columns: [
             {
                 id: 'ID',
@@ -1377,6 +1388,7 @@ export const TABLES_DEFINITIONS = {
         index: 11,
         name: 'LccConverterStations',
         resource: equipments.lccConverterStations,
+        type: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
         columns: [
             {
                 id: 'ID',
@@ -1448,6 +1460,7 @@ export const TABLES_DEFINITIONS = {
         index: 12,
         name: 'VscConverterStations',
         resource: equipments.vscConverterStations,
+        type: EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
         columns: [
             {
                 id: 'ID',
@@ -1535,6 +1548,7 @@ export const TABLES_DEFINITIONS = {
         index: 13,
         name: 'DanglingLines',
         resource: equipments.danglingLines,
+        type: EQUIPMENT_TYPES.DANGLING_LINE,
         columns: [
             {
                 id: 'ID',

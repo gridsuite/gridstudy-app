@@ -145,14 +145,6 @@ const StudyPane = ({
         [network, openDiagramView]
     );
 
-    useEffect(() => {
-        if (!network) {
-            return;
-        }
-        network.useEquipment(equipments.substations);
-        network.useEquipment(equipments.lines);
-    }, [network]);
-
     function showInSpreadsheet(equipment) {
         let newTableEquipment = {
             id: equipment.equipmentId,
