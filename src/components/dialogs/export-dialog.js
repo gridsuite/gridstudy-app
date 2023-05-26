@@ -18,7 +18,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
@@ -68,26 +68,28 @@ const ExportDialog = ({
 
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
     const metasAsArray = formatWithParameter?.parameters || [];
-    const [currentValues, setCurrentValues] = useState({});
-    const currentParameters = {};
+    const [currentParameters, setCurrentParameters] = useState({});
     const onChange = useCallback((paramName, value, isEdit) => {
         if (!isEdit) {
-            setCurrentValues((prevCurrentValues) => {
+            setCurrentParameters((prevCurrentParameters) => {
                 return {
-                    ...prevCurrentValues,
+                    ...prevCurrentParameters,
                     ...{ [paramName]: value },
                 };
             });
         }
     }, []);
-    const paramsComponent = (
-        <FlatParameters
-            paramsAsArray={metasAsArray}
-            initValues={currentValues}
-            onChange={onChange}
-            variant="standard"
-        />
-    );
+    const paramsComponent = useMemo(() => {
+        return (
+            <FlatParameters
+                paramsAsArray={metasAsArray}
+                initValues={currentParameters}
+                onChange={onChange}
+                variant="standard"
+            />
+        );
+    }, [metasAsArray, currentParameters, onChange]);
+
     const handleExportClick = () => {
         if (selectedFormat) {
             const downloadUrl = getExportUrl(
