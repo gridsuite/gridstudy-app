@@ -33,6 +33,7 @@ import ErrorInput from '../rhf-inputs/error-inputs/error-input';
 import FieldErrorAlert from '../rhf-inputs/error-inputs/field-error-alert';
 import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
+import DirectoryItemsInput from '../rhf-inputs/directory-items-input';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -104,11 +105,19 @@ function EditableTableCell({
                     {...props}
                 />
             )}
-            {!column.numeric && (
+            {!column.numeric && !column.directoryItems && (
                 <TableTextInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     previousValue={previousValue}
                     {...props}
+                />
+            )}
+            {column.directoryItems && (
+                <DirectoryItemsInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    equipmentTypes={column.equipmentTypes}
+                    elementType={column.elementType}
+                    titleId={column.titleId}
                 />
             )}
         </TableCell>

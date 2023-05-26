@@ -15,6 +15,9 @@ import {
     GENERATORS_WITH_FIXED_ACTIVE_POWER,
     ID,
     NAME,
+    GENERATORS_FILTERS,
+    GENERATORS_FREQUENCY_RESERVES,
+    FREQUENCY_RESERVE,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
@@ -24,12 +27,14 @@ import yup from 'components/utils/yup-config';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
+import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 
 const emptyFormData = {
     [LOSS_COEFFICIENT]: null,
     [DEFAULT_OUTAGE_RATE]: null,
     [GENERATORS_WITHOUT_OUTAGE]: [],
     [GENERATORS_WITH_FIXED_ACTIVE_POWER]: [],
+    [GENERATORS_FREQUENCY_RESERVES]: [],
 };
 
 const getGeneratorsFiltersSchema = (id) => ({
@@ -37,6 +42,25 @@ const getGeneratorsFiltersSchema = (id) => ({
         yup.object().shape({
             [ID]: yup.string().required(),
             [NAME]: yup.string().required(),
+        })
+    ),
+});
+
+const getGeneratorsFrequencyReserveSchema = (id) => ({
+    [id]: yup.array().of(
+        yup.object().shape({
+            [GENERATORS_FILTERS]: yup.array().of(
+                yup.object().shape({
+                    [ID]: yup.string().required(),
+                    [NAME]: yup.string().required(),
+                })
+            ),
+            [FREQUENCY_RESERVE]: yup
+                .number()
+                .nullable()
+                .min(0)
+                .max(100)
+                .required(),
         })
     ),
 });
@@ -53,6 +77,7 @@ const formSchema = yup
             .required(),
         ...getGeneratorsFiltersSchema(GENERATORS_WITHOUT_OUTAGE),
         ...getGeneratorsFiltersSchema(GENERATORS_WITH_FIXED_ACTIVE_POWER),
+        ...getGeneratorsFrequencyReserveSchema(GENERATORS_FREQUENCY_RESERVES),
     })
     .required();
 
@@ -82,6 +107,9 @@ const GenerationDispatchDialog = ({
                 [GENERATORS_WITHOUT_OUTAGE]: generation.generatorsWithoutOutage,
                 [GENERATORS_WITH_FIXED_ACTIVE_POWER]:
                     generation.generatorsWithFixedSupply,
+                [GENERATORS_FREQUENCY_RESERVES]: addSelectedFieldToRows(
+                    generation.generatorsFrequencyReserve
+                ),
             });
         },
         [reset]
@@ -103,7 +131,7 @@ const GenerationDispatchDialog = ({
                 generation?.defaultOutageRate,
                 generation[GENERATORS_WITHOUT_OUTAGE],
                 generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
-                generation[GENERATORS_WITHOUT_OUTAGE]
+                generation[GENERATORS_FREQUENCY_RESERVES]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

@@ -84,7 +84,7 @@ const DirectoryItemsInput = ({
                 })}
                 error={!!error?.message}
             >
-                {elements?.length === 0 && (
+                {elements?.length === 0 && label && (
                     <FieldLabel
                         label={label}
                         optional={
@@ -135,7 +135,7 @@ const DirectoryItemsInput = ({
                 onClose={addElements}
                 types={types}
                 equipmentTypes={equipmentTypes}
-                title={intl.formatMessage({ id: titleId })}
+                title={titleId ? intl.formatMessage({ id: titleId }) : ''}
                 itemFilter={itemFilter}
             />
         </>
