@@ -5,6 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { TextDecoder, TextEncoder } from 'util';
+
+import '@testing-library/jest-dom';
+
+jest.mock('uuid', () => ({
+    v1: () => 'xxx-xxx-xxx-xxx-xxx',
+}));
+
+Object.assign(global, { TextDecoder, TextEncoder });
+
 //FIXME workaround svg.panzoom.js import crash even though it's not used
 global.SVG = () => {};
 global.SVG.extend = () => {};

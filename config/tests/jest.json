@@ -1,0 +1,19 @@
+{
+  "rootDir": "../../",
+  "testPathIgnorePatterns": [
+    "<rootDir>/(build|node_modules|public|dist|config)/"
+  ],
+  "setupFilesAfterEnv": ["<rootDir>/config/tests/jest.setup.js"],
+  "verbose": true,
+  "clearMocks": true,
+  "collectCoverage": true,
+  "testMatch": ["<rootDir>/src/**/*.test.{jsx,js}"],
+  "testEnvironment": "jsdom",
+  "moduleDirectories": [
+    "node_modules",
+    "src"
+  ],
+  "moduleNameMapper": {
+    "\\.(png|svg|css)$": "<rootDir>/config/tests/fileMock.js"
+  }
+}

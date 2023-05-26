@@ -1,0 +1,106 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "jest/globals": true,
+        "node": true
+    },
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "jest",
+        "react-hooks",
+        "prettier",
+        "testing-library",
+        "unused-imports",
+        "import",
+        "simple-import-sort"
+    ],
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react/jsx-runtime",
+        "plugin:react-hooks/recommended",
+        "plugin:jest/recommended",
+        "plugin:testing-library/react"
+    ],
+    "root": true,
+    "rules": {
+        "prefer-const": "error",
+        "prettier/prettier": ["error"],
+        "prefer-template": "error",
+        "no-console": ["error", { "allow": ["warn", "error", "info", "debug"] }] ,
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "error",
+        "require-jsdoc": [
+            "warn",
+            {
+                "require": {
+                    "FunctionDeclaration": true,
+                    "MethodDefinition": true,
+                    "ClassDeclaration": true,
+                    "ArrowFunctionExpression": true
+                }
+            }
+        ],
+        "react/function-component-definition": [
+            "error",
+            {
+                "namedComponents": "arrow-function",
+                "unnamedComponents": "arrow-function"
+            }
+        ],
+        "react/jsx-uses-react": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/destructuring-assignment": "warn",
+        "react/require-default-props": ["warn", {
+            "forbidDefaultForRequired": true
+        }],
+        "react/prefer-exact-props": "warn",
+        "react/jsx-no-useless-fragment": "warn",
+        "react/no-unstable-nested-components": "warn",
+        "react/no-array-index-key": "error",
+        "function-paren-newline": "off",
+        "object-curly-newline": [
+            "error",
+            {
+                "multiline": true,
+                "consistent": true
+            }
+        ],
+        "no-unsafe-optional-chaining": "error",
+        "unused-imports/no-unused-imports": "error",
+        "import/no-cycle": "off", // consume a lot of CPU
+        "import/first": "error",
+        "import/newline-after-import": "error",
+        "import/no-duplicates": "error",
+        "simple-import-sort/imports": [
+            "error",
+            {
+                "groups": [
+                    [
+                        "react",
+                        "^react-redux",
+                        "^@?\\w"
+                    ],
+                    ["tools", "utils", "constants"],
+                    ["redux"],
+                    ["@gridsuite","@mui"],
+                    ["^(\\.*\\./)*plugins","^(\\.*\\./)*translations"],
+                    ["^(\\.*\\./)*images"]
+                ]
+            }
+        ]
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    }
+}

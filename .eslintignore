@@ -1,5 +1,5 @@
 build
-coverage
 node_modules
 public
+coverage
 config

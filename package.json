@@ -1,6 +1,9 @@
 {
     "name": "gridstudy-app",
     "version": "0.1.0",
+    "engines": {
+        "node": ">=14.20"
+    },
     "homepage": ".",
     "private": true,
     "dependencies": {
@@ -8,17 +11,21 @@
         "@emotion/styled": "^11.8.1",
         "@gridsuite/commons-ui": "0.32.2",
         "@hookform/resolvers": "^3.0.0",
-        "@powsybl/diagram-viewer": "0.1.9",
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
         "@mui/material": "^5.5.3",
         "@mui/styles": "^5.5.3",
+        "@powsybl/diagram-viewer": "0.1.9",
         "@reduxjs/toolkit": "^1.2.3",
         "@svgdotjs/svg.js": "^3.0.12",
         "@svgdotjs/svg.panzoom.js": "^2.1.2",
+        "ag-grid-community": "^29.0.0",
+        "ag-grid-react": "^29.0.0",
+        "babel-jest": "^29.5.0",
         "cheap-ruler": "^3.0.0",
         "clsx": "^1.0.4",
         "core-js": "^3.6.4",
+        "cross-env": "^7.0.3",
         "dagre": "^0.8.5",
         "deck.gl": "^8.0.0",
         "eventemitter3": "^5.0.0",
@@ -51,25 +58,18 @@
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
         "typeface-roboto": "^1.0.0",
-        "yup": "^1.0.0",
-        "ag-grid-community": "^29.0.0",
-        "ag-grid-react": "^29.0.0"
+        "yup": "^1.0.0"
     },
     "scripts": {
-        "start": "react-scripts start",
+        "start": "ESLINT_NO_DEV_ERRORS='true' react-scripts start",
         "build": "react-scripts build",
-        "test": "react-scripts test --watchAll=false",
-        "eject": "react-scripts eject"
-    },
-    "eslintConfig": {
-        "extends": [
-            "react-app",
-            "plugin:prettier/recommended"
-        ],
-        "rules": {
-            "prettier/prettier": "warn",
-            "curly": "error"
-        }
+        "test": "cross-env BABEL_ENV=test jest -u --config ./config/tests/jest.json",
+        "eject": "react-scripts eject",
+        "lint": "eslint -c .eslintrc --ext .js,.jsx .",
+        "lint:fix": "npm run lint -- --fix",
+        "lint:staged": "lint-staged",
+        "prettier-format": "prettier --config .prettierrc 'src/**/*.js' --write",
+        "prepare": "husky install"
     },
     "browserslist": {
         "production": [
@@ -86,9 +86,25 @@
         ]
     },
     "devDependencies": {
-        "http-proxy-middleware": "^2.0.0",
+        "@testing-library/jest-dom": "^5.16.5",
+        "@testing-library/react": "^14.0.0",
+        "@testing-library/user-event": "^14.4.3",
+        "eslint": "^8.41.0",
         "eslint-config-prettier": "^8.0.0",
-        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-import": "^2.27.5",
+        "eslint-plugin-jest": "^27.2.1",
+        "eslint-plugin-prettier": "^4.2.1",
+        "eslint-plugin-react": "^7.32.2",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "eslint-plugin-simple-import-sort": "^10.0.0",
+        "eslint-plugin-testing-library": "^5.11.0",
+        "eslint-plugin-unused-imports": "^2.0.0",
+        "http-proxy-middleware": "^2.0.0",
+        "husky": "^8.0.0",
+        "jest": "^29.5.0",
+        "jest-cli": "^29.5.0",
+        "jest-environment-jsdom": "^29.5.0",
+        "lint-staged": "^13.2.2",
         "prettier": "^2.0.5"
     }
 }
