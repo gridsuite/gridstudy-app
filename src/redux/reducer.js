@@ -323,6 +323,20 @@ export const reducer = createReducer(initialState, {
             let newModel =
                 state.networkModificationTreeModel.newSharedForUpdate();
 
+            //we assume all the deleted nodes are contiguous, so the new parent selected will be the nearest upstream node.
+            //in the future, if the deleted nodes are no longer contiguous we will need another implementation
+            const nextCurrentNodeUuid = newModel.treeNodes
+                .filter((node) =>
+                    action.networkModificationTreeNodes.includes(node.id)
+                )
+                .map((node) => node.data.parentNodeUuid)
+                .find(
+                    (parentNodeUuid) =>
+                        !action.networkModificationTreeNodes.includes(
+                            parentNodeUuid
+                        )
+                );
+
             newModel.removeNodes(action.networkModificationTreeNodes);
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
@@ -333,12 +347,7 @@ export const reducer = createReducer(initialState, {
                     state.currentTreeNode?.id
                 )
             ) {
-                // TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
-                // If tomorrow we need to delete multiple nodes, we need to check that the parentNode here isn't in the action.networkModificationTreeNodes list
-                synchCurrentTreeNode(
-                    state,
-                    state.currentTreeNode?.data?.parentNodeUuid
-                );
+                synchCurrentTreeNode(state, nextCurrentNodeUuid);
             } // check if parent node of the current node is in the nodes deleted list
             else if (
                 action.networkModificationTreeNodes.includes(
