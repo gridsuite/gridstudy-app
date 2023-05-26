@@ -22,6 +22,7 @@ import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
+import { VoltageInitResultTab } from './voltage-init-result-tab';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -86,6 +87,17 @@ export const ResultViewTab = ({
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
+                />
+            </Paper>
+        );
+    }
+
+    function renderVoltageInitResult() {
+        return (
+            <Paper className={classes.table}>
+                <VoltageInitResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
                 />
             </Paper>
         );
@@ -174,6 +186,14 @@ export const ResultViewTab = ({
                             disabled={disabled}
                         />
                     )}
+                    {enableDeveloperMode && (
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'VoltageInitResults',
+                            })}
+                            disabled={disabled}
+                        />
+                    )}
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
@@ -207,6 +227,12 @@ export const ResultViewTab = ({
                 selected={tabIndex === 4 && !disabled}
             >
                 {renderDynamicSimulationResult()}
+            </TabPanelLazy>
+            <TabPanelLazy
+                className={classes.tabPanel}
+                selected={tabIndex === 5 && !disabled}
+            >
+                {renderVoltageInitResult()}
             </TabPanelLazy>
         </Paper>
     );

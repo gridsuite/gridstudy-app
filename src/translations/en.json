@@ -141,6 +141,12 @@
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
     "VoltageInit": "Voltage profile initialization",
+    "VoltageInitResults" : "Voltage profile initialization results",
+    "Indicators": "Indicators",
+    "ReactiveSlacks": "Reactive slacks",
+    "Slack": "Slack (MVar)",
+    "BusId": "Bus ID",
+    "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
 
     "SelectAll": "Select all",

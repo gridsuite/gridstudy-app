@@ -141,6 +141,12 @@
     "Network": "Réseau",
     "SecurityAnalysis": "Analyse de sécurité",
     "VoltageInit": "Initialiser plan de tension",
+    "VoltageInitResults" : "Résultats de l'initialisation du plan de tension",
+    "Indicators": "Indicateurs",
+    "ReactiveSlacks": "Investissements réactifs",
+    "Slack": "Investissement (MVar)",
+    "BusId": "ID Nœud",
+    "VoltageInitStatus": "STATUT",
     "startVoltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
 
     "SelectAll": "Tout selectionner",
