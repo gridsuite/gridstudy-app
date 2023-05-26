@@ -14,9 +14,9 @@ import {
     MVAPowerAdornment,
     OhmAdornment,
     VoltageAdornment,
-} from '../../../dialogUtils';
+} from '../../../../dialogUtils';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import {
     CHARACTERISTICS,
     CONNECTIVITY_1,

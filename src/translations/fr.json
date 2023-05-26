@@ -817,7 +817,7 @@
 
     "MagnetizingConductance": "Conductance magnétisante",
     "MagnetizingSusceptance": "Susceptance magnétisante",
-    "RatedVoltage": "Tension nominale",
+    "RatedVoltage": "Tension d'enroulement",
     "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements",
     "NewName": "Nouveau nom",
 
@@ -983,5 +983,7 @@
     "lineTypes.linearReactance": "Réactance linéique directe [Ω/km]",
     "lineTypes.linearCapacity": "Capacité linéique directe [F/km]",
     "lineTypes.category.aerial": "Lignes aériennes",
-    "lineTypes.category.underground": "Câbles souterrains"
+    "lineTypes.category.underground": "Câbles souterrains",
+    "lineTypes.insulator": "Isolant",
+    "lineTypes.screen": "Écran"
 }
