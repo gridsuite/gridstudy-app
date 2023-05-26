@@ -99,12 +99,12 @@ export const NumericalField = forwardRef(
 
         const isValid = useCallback(
             (val, minVal, maxVal) => {
-                if (colDef.crossValidation?.requiredOn) {
+                if (!val && colDef.crossValidation?.requiredOn) {
                     const isConditionFulfiled = checkCrossValidationRequiredOn(
                         gridApi,
                         colDef
                     );
-                    if (isConditionFulfiled && !val) {
+                    if (isConditionFulfiled) {
                         return true;
                     }
                 }
