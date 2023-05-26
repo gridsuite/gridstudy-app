@@ -817,7 +817,7 @@
 
     "MagnetizingConductance": "Conductance magnétisante",
     "MagnetizingSusceptance": "Susceptance magnétisante",
-    "RatedVoltage": "Tension nominale",
+    "RatedVoltage": "Tension d'enroulement",
     "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements",
     "NewName": "Nouveau nom",
 
