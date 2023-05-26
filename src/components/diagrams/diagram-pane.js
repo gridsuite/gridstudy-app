@@ -494,6 +494,8 @@ export function DiagramPane({
             // First we add the empty diagram in the views
             setViews((views) => {
                 const newDiagram = {
+                    id: networkAreaIds[0],
+                    ids: networkAreaIds,
                     name: intl.formatMessage(
                         { id: 'LoadingOf' },
                         { value: networkAreaIds.toString() }
@@ -719,12 +721,16 @@ export function DiagramPane({
     const updateDiagramsByIds = useCallback(
         (ids, fromScratch) => {
             if (ids?.length) {
+                // we remove duplicates (because of NAD)
+                let uniqueIds = ids.filter(
+                    (id, index) => ids.indexOf(id) === index
+                );
                 // Before we get the results, we set loadingState = true
                 setViews((views) => {
                     const updatedViews = views.slice();
                     for (let i = 0; i < views.length; i++) {
                         const currentView = views[i];
-                        if (ids.includes(currentView.id)) {
+                        if (uniqueIds.includes(currentView.id)) {
                             updatedViews[i] = {
                                 ...updatedViews[i],
                                 loadingState: true,
@@ -736,14 +742,14 @@ export function DiagramPane({
                 // Then we add the data once we have it
                 for (let i = 0; i < viewsRef.current.length; i++) {
                     const currentView = viewsRef.current[i];
-                    if (ids.includes(currentView.id)) {
+                    if (uniqueIds.includes(currentView.id)) {
                         let updatedDiagramPromise;
                         if (fromScratch) {
                             updatedDiagramPromise = createView(currentView);
                         } else {
                             updatedDiagramPromise = currentView.fetchSvg();
                         }
-                        updatedDiagramPromise?.then((svg) => {
+                        updatedDiagramPromise.then((svg) => {
                             setViews((views) => {
                                 const updatedViews = views.slice();
                                 updatedViews[i] = {
@@ -767,25 +773,20 @@ export function DiagramPane({
         let idsToUpdate = viewsRef.current
             .filter(
                 (diagramView) =>
+                    !diagramView.loadingState && // no need to reload if it's already loading
                     diagramView.nodeId === currentNodeRef.current?.id
             )
             .map((diagramView) => diagramView.id);
         if (idsToUpdate?.length) {
-            // we remove duplicates (because of NAD)
-            idsToUpdate = idsToUpdate.filter(
-                (id, index) => idsToUpdate.indexOf(id) === index
-            );
             updateDiagramsByIds(idsToUpdate, false);
         }
     }, [updateDiagramsByIds]);
 
     // When the current node change, we reset all the diagrams
     useEffect(() => {
-        let allDiagramIds = viewsRef.current.map((view) => view.id);
-        // we remove duplicates (because of NAD)
-        allDiagramIds = allDiagramIds.filter(
-            (id, index) => allDiagramIds.indexOf(id) === index
-        );
+        let allDiagramIds = viewsRef.current
+            .filter((view) => !view.loadingState) // no need to reload if it's already loading
+            .map((view) => view.id);
         updateDiagramsByIds(allDiagramIds, true);
     }, [currentNode, updateDiagramsByIds]);
 
