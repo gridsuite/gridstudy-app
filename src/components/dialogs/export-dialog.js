@@ -18,7 +18,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useMemo, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
@@ -79,16 +79,14 @@ const ExportDialog = ({
             });
         }
     }, []);
-    const paramsComponent = useMemo(() => {
-        return (
-            <FlatParameters
-                paramsAsArray={metasAsArray}
-                initValues={currentParameters}
-                onChange={onChange}
-                variant="standard"
-            />
-        );
-    }, [metasAsArray, currentParameters, onChange]);
+    const paramsComponent = (
+        <FlatParameters
+            paramsAsArray={metasAsArray}
+            initValues={currentParameters}
+            onChange={onChange}
+            variant="standard"
+        />
+    );
 
     const handleExportClick = () => {
         if (selectedFormat) {
