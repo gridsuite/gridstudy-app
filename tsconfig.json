@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "allowJs": true,
+        "target": "es6",
+        "jsx": "react",
+        "strict": false,
+    },
+    "include": ["src"]
+}
