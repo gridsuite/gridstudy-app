@@ -17,7 +17,7 @@ import {
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
-import { parseIntData } from '../../../../dialogUtils';
+import { parseIntData } from '../../../../../dialogUtils';
 import { RATIO_TAP } from '../../two-windings-transformer-creation-dialog';
 
 const RatioTapChangerPaneSteps = ({ disabled }) => {
