@@ -178,7 +178,7 @@ DiagramHeader.propTypes = {
     pinned: PropTypes.bool,
     showCloseControl: PropTypes.bool,
     onClose: PropTypes.func,
-    diagramId: PropTypes.string.isRequired,
+    diagramId: PropTypes.string,
     svgType: PropTypes.string.isRequired,
 };
 
