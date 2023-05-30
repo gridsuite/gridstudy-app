@@ -23,7 +23,7 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     div: {
         display: 'flex',
     },
@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
  * @param currentNode : object current node
  * @param loadFlowInfos : object result of load flow
  * @param openVoltageLevelDiagram : function
+ * @param disabled
  * @returns {JSX.Element}
  * @constructor
  */
@@ -158,14 +159,12 @@ export const ResultViewTab = ({
                             disabled={disabled}
                         />
                     )}
-                    {enableDeveloperMode && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'sensitivityAnalysisResults',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'sensitivityAnalysisResults',
+                        })}
+                        disabled={disabled}
+                    />
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
