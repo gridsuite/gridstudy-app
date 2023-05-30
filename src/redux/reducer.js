@@ -87,6 +87,7 @@ import {
     SELECTION_FOR_COPY,
     LIMIT_REDUCTION,
     LOAD_EQUIPMENTS,
+    UPDATE_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -158,16 +159,16 @@ const initialNetworkState = {
     vscConverterStations: null,
     shuntCompensators: null,
     staticVarCompensators: null,
-    lazyLoaders: new Map(),
-    voltageLevelsByNominalVoltage: new Map(),
-    voltageLevelsById: new Map(),
+    // lazyLoaders: new Map(),
+    // voltageLevelsByNominalVoltage: new Map(),
+    // voltageLevelsById: new Map(),
     voltageLevels: null,
-    substationsById: new Map(),
-    linesById: new Map(),
-    twoWindingsTransformersById: new Map(),
-    threeWindingsTransformersById: new Map(),
-    generatorsById: new Map(),
-    nominalVoltages: null,
+    // substationsById: new Map(),
+    // linesById: new Map(),
+    // twoWindingsTransformersById: new Map(),
+    // threeWindingsTransformersById: new Map(),
+    // generatorsById: new Map(),
+    // nominalVoltages: null,
 };
 
 const initialState = {
@@ -211,7 +212,7 @@ const initialState = {
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     networkEquipmentsFetched: false, // indicate if network equipments are fetched
-    ...initialNetworkState,
+    spreadsheetNetwork: { ...initialNetworkState },
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -922,9 +923,54 @@ export const reducer = createReducer(initialState, {
         state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
     },
     [LOAD_EQUIPMENTS]: (state, action) => {
-        state[action.equipmentType] = action.equipments;
+        state.spreadsheetNetwork[action.equipmentType] = action.equipments;
+    },
+    [UPDATE_EQUIPMENTS]: (state, action) => {
+        // for now, this action receives an object containing all equipments from a substation
+        // it will be modified when the notifications received after a network modification will be more precise
+        const updatedEquipements = action.equipments;
+
+        for (const [equipmentType, equipmentList] of Object.entries(
+            updatedEquipements
+        )) {
+            const currentEquipment = state.spreadsheetNetwork[equipmentType];
+
+            // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
+            if (currentEquipment != null) {
+                state.spreadsheetNetwork[equipmentType] = updateEquipments(
+                    currentEquipment,
+                    equipmentList
+                );
+            }
+        }
     },
 });
+
+function updateEquipments(currentEquipments, newEquipements) {
+    // replace current modified equipments
+    currentEquipments.forEach((equipment1, index) => {
+        const found = newEquipements.filter(
+            (equipment2) => equipment2.id === equipment1.id
+        );
+        currentEquipments[index] = found.length > 0 ? found[0] : equipment1;
+    });
+    // add newly created equipments
+    let equipmentsAdded = false;
+
+    newEquipements.forEach((equipment1) => {
+        const found = currentEquipments.find(
+            (equipment2) => equipment2.id === equipment1.id
+        );
+        if (found === undefined) {
+            currentEquipments.push(equipment1);
+            equipmentsAdded = true;
+        }
+    });
+
+    return equipmentsAdded === true
+        ? [...currentEquipments]
+        : currentEquipments;
+}
 
 function synchCurrentTreeNode(state, nextCurrentNodeUuid) {
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(

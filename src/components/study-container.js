@@ -31,6 +31,7 @@ import {
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
     fetchVoltageInitStatus,
+    fetchAllEquipments,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -42,6 +43,7 @@ import {
     setDeletedEquipments,
     setUpdatedSubstationsIds,
     isNetworkEquipmentsFetched,
+    updateEquipments,
 } from '../redux/actions';
 import Network from './network/network';
 import WaitingLoader from './utils/waiting-loader';
@@ -65,7 +67,10 @@ import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { equipments } from './network/network-equipments';
-import { BUILD_STATUS } from './network/constants';
+import {
+    BUILD_STATUS,
+    MAX_NUMBER_OF_IMPACTED_SUBSTATIONS,
+} from './network/constants';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -626,12 +631,28 @@ export function StudyContainer({ view, onChangeTab }) {
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
-                    network.reloadImpactedSubstationsEquipments(
+                    const substationsIdsToFetch =
+                        substationsIds?.length >
+                        MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
+                            ? undefined
+                            : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
+                    const updatedEquipments = fetchAllEquipments(
                         studyUuid,
-                        currentNodeRef.current,
-                        substationsIds
+                        currentNode?.id,
+                        substationsIdsToFetch
                     );
-                    dispatch(setUpdatedSubstationsIds(substationsIds));
+
+                    updatedEquipments.then((values) => {
+                        console.log('UPDATING', values);
+                        dispatch(updateEquipments(values));
+                    });
+
+                    // network.reloadImpactedSubstationsEquipments(
+                    //     studyUuid,
+                    //     currentNodeRef.current,
+                    //     substationsIds
+                    // );
+                    // dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
             }
         }

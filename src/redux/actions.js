@@ -51,6 +51,15 @@ export function loadEquipments(equipmentType, equipments) {
     };
 }
 
+export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
+
+export function updateEquipments(equipments) {
+    return {
+        type: UPDATE_EQUIPMENTS,
+        equipments: equipments,
+    };
+}
+
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
 export function mapEquipmentsCreated(

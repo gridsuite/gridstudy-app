@@ -4,7 +4,9 @@ import { loadEquipments } from 'redux/actions';
 
 export const useEquipments = (equipmentType) => {
     const dispatch = useDispatch();
-    const equipments = useSelector((state) => state[equipmentType.resource]);
+    const equipments = useSelector(
+        (state) => state.spreadsheetNetwork[equipmentType.resource]
+    );
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
 

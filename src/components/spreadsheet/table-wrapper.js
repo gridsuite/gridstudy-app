@@ -721,7 +721,7 @@ const TableWrapper = (props) => {
                         fetched={!isFetching}
                         scrollToIndex={scrollToIndex}
                         visible={props.visible}
-                        //network={props.network}
+                        network={props.network}
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}
