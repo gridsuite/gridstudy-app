@@ -135,7 +135,7 @@ const DirectoryItemsInput = ({
                 onClose={addElements}
                 types={types}
                 equipmentTypes={equipmentTypes}
-                title={titleId ? intl.formatMessage({ id: titleId }) : ''}
+                title={intl.formatMessage({ id: titleId })}
                 itemFilter={itemFilter}
             />
         </>
