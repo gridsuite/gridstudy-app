@@ -54,6 +54,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const limitReductionParam = useSelector((state) =>
         Number(state[PARAM_LIMIT_REDUCTION])
     );
+    const loadflowNotif = useSelector((state) => state.loadflowNotif);
 
     useEffect(() => {
         const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
@@ -114,7 +115,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     });
                 });
         }
-    }, [studyUuid, nodeUuid, limitReductionParam, intl, snackError, result]);
+    }, [studyUuid, nodeUuid, intl, snackError, limitReductionParam, result]);
 
     function StatusCellRender(cellData) {
         const status = cellData.rowData[cellData.dataKey];
@@ -289,9 +290,13 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 </div>
                 {tabIndex === 0 &&
                     overloadedEquipments &&
+                    loadflowNotif &&
                     result &&
                     renderLoadFlowConstraints()}
-                {tabIndex === 1 && result && renderLoadFlowResult()}
+                {tabIndex === 1 &&
+                    loadflowNotif &&
+                    result &&
+                    renderLoadFlowResult()}
             </>
         );
     }
