@@ -32,15 +32,6 @@ const useStyles = makeStyles((theme) => ({
     fail: {
         color: red[500],
     },
-    stack: {
-        direction: 'row',
-        alignItems: 'center',
-        gap: 1,
-        marginBottom: -3,
-        marginTop: 2,
-        marginLeft: 2,
-        verticalAlign: 'middle',
-    },
 }));
 
 const VoltageInitResult = ({ result, status }) => {
@@ -62,10 +53,10 @@ const VoltageInitResult = ({ result, status }) => {
         return (
             <>
                 <Stack
-                    direction="row"
+                    direction={'row'}
                     gap={1}
-                    marginBottom={-3}
-                    marginTop={2}
+                    marginBottom={-4.5}
+                    marginTop={1.5}
                     marginLeft={2}
                 >
                     <Typography style={{ fontWeight: 'bold' }}>
