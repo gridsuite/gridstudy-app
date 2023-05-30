@@ -23,11 +23,11 @@ import CountrySelect from '../country-select';
 import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES as ALL_EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 
-export const EQUIPMENT_TYPES = {
-    [ALL_EQUIPMENT_TYPES.GENERATOR.type]: ALL_EQUIPMENT_TYPES.GENERATOR,
-    [ALL_EQUIPMENT_TYPES.LOAD.type]: ALL_EQUIPMENT_TYPES.LOAD,
+export const CURVE_EQUIPMENT_TYPES = {
+    [EQUIPMENT_TYPES.GENERATOR.type]: EQUIPMENT_TYPES.GENERATOR,
+    [EQUIPMENT_TYPES.LOAD.type]: EQUIPMENT_TYPES.LOAD,
 };
 
 const TENSION_UNIT = 'kV';
@@ -97,7 +97,7 @@ const EquipmentFilter = forwardRef(
         // load VoltageLevels from backend
         useEffect(() => {
             Promise.all(
-                ALL_EQUIPMENT_TYPES.VOLTAGE_LEVEL.fetchers.map((fetchPromise) =>
+                EQUIPMENT_TYPES.VOLTAGE_LEVEL.fetchers.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -148,7 +148,7 @@ const EquipmentFilter = forwardRef(
         // load substation from backend to infer countries
         useEffect(() => {
             Promise.all(
-                ALL_EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
+                EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -181,7 +181,7 @@ const EquipmentFilter = forwardRef(
         const loadFilteredEquipments = useCallback(() => {
             // get all substations which include also voltage levels
             return Promise.all(
-                ALL_EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
+                EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -296,7 +296,7 @@ const EquipmentFilter = forwardRef(
         const columnDefs = useMemo(() => {
             return [
                 {
-                    field: 'name',
+                    field: 'id',
                     checkboxSelection: true,
                     headerCheckboxSelection: true,
                     headerCheckboxSelectionFilteredOnly: true,
@@ -361,7 +361,7 @@ const EquipmentFilter = forwardRef(
                             size="small"
                             sx={{ width: '100%' }}
                         >
-                            {Object.entries(EQUIPMENT_TYPES).map(
+                            {Object.entries(CURVE_EQUIPMENT_TYPES).map(
                                 ([key, value]) => (
                                     <MenuItem key={key} value={value}>
                                         {intl.formatMessage({ id: value.type })}
@@ -384,7 +384,9 @@ const EquipmentFilter = forwardRef(
                         <CheckboxSelect
                             value={selectedVoltageLevelIds}
                             options={voltageLevelIds}
-                            getOptionLabel={(value) => voltageLevels[value]}
+                            getOptionLabel={(value) =>
+                                voltageLevels[value] ?? value
+                            }
                             onChange={handleVoltageLevelChange}
                         />
                     </Grid>

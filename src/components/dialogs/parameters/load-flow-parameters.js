@@ -410,13 +410,13 @@ const SpecificLoadFlowParameters = ({
         return extractDefaultMap(specificParamsDescription);
     }, [specificParamsDescription]);
 
-    // change object's NaN values into null
+    // change object's NaN values into empty string
     const getObjectWithoutNanValues = useCallback((initialObject) => {
         initialObject &&
             Object.keys(initialObject)?.map(
                 (key) =>
                     (initialObject[key] = Number.isNaN(initialObject[key])
-                        ? null
+                        ? ''
                         : initialObject[key])
             );
     }, []);
