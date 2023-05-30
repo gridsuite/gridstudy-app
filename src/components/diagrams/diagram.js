@@ -190,7 +190,7 @@ Diagram.defaultProps = {
 
 Diagram.propTypes = {
     align: PropTypes.string,
-    diagramId: PropTypes.string.isRequired,
+    diagramId: PropTypes.string,
     diagramTitle: PropTypes.string.isRequired,
     warningToDisplay: PropTypes.string,
     pinned: PropTypes.bool,
