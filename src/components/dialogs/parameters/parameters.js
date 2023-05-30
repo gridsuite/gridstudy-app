@@ -42,6 +42,8 @@ import {
     setLoadFlowProvider,
     setLoadFlowParameters,
     getLoadFlowSpecificParametersDescription,
+    getSecurityAnalysisParameters,
+    setSecurityAnalysisParameters,
 } from '../../../utils/rest-api';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -151,6 +153,39 @@ export const useStyles = makeStyles((theme) => ({
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(1),
         flexGrow: 1,
+    },
+    item: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
+    maxWidthItem: {
+        display: 'flex',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
+    multipleTextField: {
+        fontWeight: 'bold',
+        //marginTop: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        marginLeft: theme.spacing(3),
+    },
+    singleTextField: {
+        display: 'flex',
+        //marginTop: theme.spacing(1),
+        marginRight: theme.spacing(1),
+        marginLeft: theme.spacing(1),
+    },
+    text: {
+        display: 'flex',
+        flex: '-moz-available',
+        marginBottom: theme.spacing(1),
+        marginTop: theme.spacing(1),
     },
 }));
 
@@ -462,7 +497,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         fetchSecurityAnalysisProviders,
         fetchSecurityAnalysisProvider,
         fetchDefaultSecurityAnalysisProvider,
-        updateSecurityAnalysisProvider
+        updateSecurityAnalysisProvider,
+        getSecurityAnalysisParameters,
+        setSecurityAnalysisParameters
     );
 
     const sensitivityAnalysisParametersBackend = useParametersBackend(
