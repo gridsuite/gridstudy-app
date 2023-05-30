@@ -117,7 +117,7 @@ const GeneratorModificationDialog = ({
         [defaultIdValue]
     );
 
-    const schema = useMemo(
+    const formSchema = useMemo(
         () =>
             yup
                 .object()
@@ -168,7 +168,7 @@ const GeneratorModificationDialog = ({
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
     const { reset, getValues, setValue } = formMethods;
@@ -552,7 +552,7 @@ const GeneratorModificationDialog = ({
 
     return (
         <FormProvider
-            validationSchema={schema}
+            validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
         >
