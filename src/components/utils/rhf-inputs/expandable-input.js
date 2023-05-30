@@ -33,6 +33,7 @@ const ExpandableInput = ({
     deleteCallback = null,
     alignItems = 'stretch', // default value for a flex container
     watchProps = true,
+    disabled = false,
 }) => {
     const classes = useStyles();
     const {
@@ -83,6 +84,7 @@ const ExpandableInput = ({
                 ))}
             <span>
                 <Button
+                    disabled={disabled}
                     fullWidth
                     className={classes.button + ' ' + classes.paddingButton}
                     startIcon={<AddIcon />}

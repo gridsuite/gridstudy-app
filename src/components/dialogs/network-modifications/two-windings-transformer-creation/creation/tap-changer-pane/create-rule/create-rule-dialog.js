@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { Button, Dialog, DialogActions } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -20,12 +21,12 @@ import {
 import CreateRuleDialogSubmitButton from './create-rule-dialog-submit-button';
 
 const emptyFormData = getCreateRuteEmptyFormData();
-const schema = getCreateRuleValidationSchema();
+const formSchema = getCreateRuleValidationSchema();
 
 export const CreateRuleDialog = (props) => {
     const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
     const {
@@ -48,7 +49,7 @@ export const CreateRuleDialog = (props) => {
 
     return (
         <Dialog open={props.openCreateRuleDialog} fullWidth={true}>
-            <FormProvider validationSchema={schema} {...formMethods}>
+            <FormProvider validationSchema={formSchema} {...formMethods}>
                 <CreateRuleForm {...props} />
                 <DialogActions>
                     <Button onClick={handleCloseDialog}>
