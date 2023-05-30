@@ -95,6 +95,38 @@ const DeleteEquipmentItem = ({
         </MenuItem>
     );
 };
+const ModifyEquipmentItem = ({
+    equipmentType,
+    equipmentId,
+    itemText,
+    handleOpenModificationDialog,
+}) => {
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const classes = useStyles();
+
+    return (
+        <MenuItem
+            className={classes.menuItem}
+            onClick={() =>
+                handleOpenModificationDialog(
+                    getFeederTypeFromEquipmentType(equipmentType),
+                    equipmentId
+                )
+            }
+            selected={false}
+            disabled={isNodeReadOnly(currentNode)}
+        >
+            <ListItemIcon>
+                <DeleteIcon />
+            </ListItemIcon>
+
+            <ListItemText
+                className={classes.listItemText}
+                primary={<Typography noWrap>{itemText}</Typography>}
+            />
+        </MenuItem>
+    );
+};
 
 const ItemViewInForm = ({
     equipmentType,
@@ -338,6 +370,30 @@ const BaseEquipmentMenu = ({
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
                     </NestedMenuItem>
+
+                    {/* here */}
+                    <NestedMenuItem
+                        label={intl.formatMessage({ id: 'ModifyFromMenu' })}
+                        parentMenuOpen={true}
+                    >
+                        {/* menus for the substation */}
+                        <ModifyEquipmentItem
+                            key={equipment.substationId}
+                            equipmentType={equipments.substations}
+                            equipmentId={equipment.substationId}
+                            itemText={equipmentSubstationNameOrId}
+                            handleOpenModificationDialog={handleOpenModificationDialog}
+                            />
+                        {/* menus for the voltage level */}
+                        <ModifyEquipmentItem
+                            key={equipment.id}
+                            equipmentType={equipments.voltageLevels}
+                            equipmentId={equipment.id}
+                            itemText={getNameOrId(equipment)}
+                            handleOpenModificationDialog={handleOpenModificationDialog}
+                            />
+                    </NestedMenuItem>
+                    {/* here */}
                 </>
             )}
         </>

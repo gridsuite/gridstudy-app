@@ -9,6 +9,7 @@ import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
+    FetchStatus,
     deleteEquipment,
     fetchLinePositions,
     fetchSubstationPositions,
@@ -35,10 +36,13 @@ import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from './study-container';
+import SubstationModificationDialog from './dialogs/network-modifications/substation/modification/substation-modification-dialog';
+import VoltageLevelModificationDialog from './dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 const INITIAL_POSITION = [0, 0];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     divNominalVoltageFilter: {
         position: 'absolute',
         right: 10,
@@ -157,7 +161,75 @@ export const NetworkMapTab = ({
 
     const [updatedLines, setUpdatedLines] = useState([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
+    const [equipmentToModify, setEquipmentToModify] = useState(null);
 
+    //BEGIN =======================
+
+    // TODO this is not complete.
+    // We should clean Clipboard on notifications when another user edit
+    // a modification on a public study which is in the clipboard.
+    // We don't have precision on notifications to do this for now.
+
+    const [editDialogOpen, setEditDialogOpen] = useState(undefined);
+ 
+    const closeModificationDialog = () => {
+        setEquipmentToModify();
+        setEditDialogOpen(false);
+    };
+
+    function renderModificationDialog() {
+        // return adapt(SubstationModificationDialog);
+        console.log(
+            'from render ',
+            equipments.substations,
+            equipmentToModify.equipmentId,
+            '__',
+            EQUIPMENT_TYPES.SUBSTATION.type
+        );
+        switch (equipmentToModify.equipmentId) {
+            case EQUIPMENT_TYPES.SUBSTATION.type:
+                return (
+                    <SubstationModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        isUpdate={false}
+                        editDataFetchStatus={FetchStatus.IDLE}
+                        onClose={() => closeModificationDialog()}
+                        defaultIdValue={equipmentToModify.equipmentType}
+                    />
+                );
+            case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+                return (
+                    <VoltageLevelModificationDialog
+                        open={true}
+                        editData={{
+                            equipmentId: equipmentToModify.equipmentType,
+                            equipmentType: equipmentToModify.equipmentId,
+                            // Other editData properties...
+                        }}
+                        studyUuid={studyUuid}
+                        isUpdate={false}
+                        currentNode={currentNode}
+                        onClose={() => closeModificationDialog()}
+                        defaultIdValue={equipmentToModify.equipmentType}
+                    />
+                );
+            default:
+                return <></>;
+        }
+    }
+    const handleOpenModificationDialog = (equipmentId, equipmentType) => {
+        console.log(
+            'HELLO from handleOpenModificationDialog ',
+            equipmentId,
+            equipmentType
+        );
+
+        setEquipmentToModify({ equipmentId, equipmentType });
+        setEditDialogOpen(true);
+        closeEquipmentMenu();
+    };
     function withEquipment(Menu, props) {
         return (
             <Menu
@@ -166,6 +238,7 @@ export const NetworkMapTab = ({
                 handleClose={closeEquipmentMenu}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
                 handleDeleteEquipment={handleDeleteEquipment}
+                handleOpenModificationDialog={handleOpenModificationDialog}
                 {...props}
             />
         );
@@ -865,6 +938,7 @@ export const NetworkMapTab = ({
             </div>
             {renderMap()}
             {renderEquipmentMenu()}
+            {editDialogOpen && renderModificationDialog()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}

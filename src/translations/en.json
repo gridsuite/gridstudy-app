@@ -404,7 +404,7 @@
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
-
+    "ModifyFromMenu": "Modify",
     "LockoutLine": "Lock out the line",
     "TripLine": "Trip the line",
     "EnergiseOnOneEndLine": "Energise on one end ({substation})",
