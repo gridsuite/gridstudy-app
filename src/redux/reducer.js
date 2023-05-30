@@ -937,39 +937,71 @@ export const reducer = createReducer(initialState, {
 
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
             if (currentEquipment != null) {
-                state.spreadsheetNetwork[equipmentType] = updateEquipments(
-                    currentEquipment,
-                    equipmentList
-                );
+                //since substations data contains voltage level ones, they have to be treated separatly
+                if (equipmentType === 'substations') {
+                    const [updatedSubtations, updatedVoltageLevels] =
+                        updateSubstationsAndVoltageLevels(
+                            state.spreadsheetNetwork.substations,
+                            state.spreadsheetNetwork.voltageLevels,
+                            equipmentList
+                        );
+
+                    state.spreadsheetNetwork.substations = updatedSubtations;
+                    state.spreadsheetNetwork.voltageLevels =
+                        updatedVoltageLevels;
+                } else {
+                    state.spreadsheetNetwork[equipmentType] = updateEquipments(
+                        currentEquipment,
+                        equipmentList
+                    );
+                }
             }
         }
     },
 });
 
-function updateEquipments(currentEquipments, newEquipements) {
-    // replace current modified equipments
-    currentEquipments.forEach((equipment1, index) => {
-        const found = newEquipements.filter(
-            (equipment2) => equipment2.id === equipment1.id
-        );
-        currentEquipments[index] = found.length > 0 ? found[0] : equipment1;
-    });
-    // add newly created equipments
-    let equipmentsAdded = false;
+function updateSubstationsAndVoltageLevels(
+    currentSubstations,
+    currentVoltageLevels,
+    newOrUpdatedSubstations
+) {
+    currentSubstations = updateEquipments(
+        currentSubstations,
+        newOrUpdatedSubstations
+    );
 
-    newEquipements.forEach((equipment1) => {
-        const found = currentEquipments.find(
-            (equipment2) => equipment2.id === equipment1.id
+    // if voltage levels are not loaded yet, we don't need to update them
+    if (currentVoltageLevels != null) {
+        const newOrUpdatedVoltageLevels = newOrUpdatedSubstations.reduce(
+            (acc, currentSub) => {
+                return acc.concat([...currentSub.voltageLevels]);
+            },
+            []
         );
-        if (found === undefined) {
-            currentEquipments.push(equipment1);
-            equipmentsAdded = true;
+
+        currentVoltageLevels = updateEquipments(
+            currentVoltageLevels,
+            newOrUpdatedVoltageLevels
+        );
+    }
+
+    return [currentSubstations, currentVoltageLevels];
+}
+
+function updateEquipments(currentEquipments, newOrUpdatedEquipements) {
+    newOrUpdatedEquipements.forEach((equipment) => {
+        const existingEquipmentIndex = currentEquipments.findIndex(
+            (equip) => equip.id === equipment.id
+        );
+
+        if (existingEquipmentIndex >= 0) {
+            currentEquipments[existingEquipmentIndex] = equipment;
+        } else {
+            currentEquipments.push(equipment);
         }
     });
 
-    return equipmentsAdded === true
-        ? [...currentEquipments]
-        : currentEquipments;
+    return currentEquipments;
 }
 
 function synchCurrentTreeNode(state, nextCurrentNodeUuid) {

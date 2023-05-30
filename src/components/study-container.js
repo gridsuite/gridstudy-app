@@ -643,16 +643,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     );
 
                     updatedEquipments.then((values) => {
-                        console.log('UPDATING', values);
                         dispatch(updateEquipments(values));
                     });
 
-                    // network.reloadImpactedSubstationsEquipments(
-                    //     studyUuid,
-                    //     currentNodeRef.current,
-                    //     substationsIds
-                    // );
-                    // dispatch(setUpdatedSubstationsIds(substationsIds));
+                    dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
             }
         }
