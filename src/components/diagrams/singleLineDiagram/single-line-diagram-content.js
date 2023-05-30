@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React, { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -34,8 +35,8 @@ import { useTheme } from '@mui/material/styles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-import GeneratorModificationDialog from 'components/dialogs/generator/modification/generator-modification-dialog';
-import LoadModificationDialog from '../../dialogs/load/modification/load-modification-dialog';
+import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
+import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import LinePopover from '../../tooltips/line-popover';
 
 function SingleLineDiagramContent(props) {

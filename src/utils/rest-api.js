@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
@@ -1227,6 +1228,53 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
+// --- Voltage init API - BEGIN
+export function startVoltageInit(studyUuid, currentNodeUuid) {
+    console.info(
+        `Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const startVoltageInitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/run';
+    console.debug(startVoltageInitUrl);
+    return backendFetch(startVoltageInitUrl, { method: 'put' });
+}
+
+export function stopVoltageInit(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopVoltageInitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/stop';
+    console.debug(stopVoltageInitUrl);
+    return backendFetch(stopVoltageInitUrl, { method: 'put' });
+}
+
+export function fetchVoltageInitStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching voltage init status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/status';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchVoltageInitResult(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/result';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+// --- Voltage init API - END
+
 // --- Dynamic simulation API - BEGIN
 export function getDynamicMappings(studyUuid) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
@@ -1359,6 +1407,18 @@ function getDynamicSimulationUrl() {
     return PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES + '/v1/';
 }
 
+export function fetchDynamicSimulationModels(studyUuid, nodeUuid) {
+    console.info(
+        `Fetching dynamic simulation models on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/dynamic-simulation/models';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function fetchDynamicSimulationProviders() {
     console.info('fetch dynamic simulation providers');
     const url = getDynamicSimulationUrl() + 'providers';
@@ -1407,7 +1467,10 @@ export function fetchDynamicSimulationParameters(studyUuid) {
     const mappingsPromise = getDynamicMappings(studyUuid);
 
     return Promise.all([parametersPromise, mappingsPromise]).then(
-        ([parameters, mappings]) => ({ ...parameters, mappings })
+        ([parameters, mappings]) => ({
+            ...parameters,
+            mappings,
+        })
     );
 }
 
@@ -1415,6 +1478,7 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
+
     return backendFetch(url, {
         method: 'POST',
         headers: {
@@ -3252,11 +3316,17 @@ export function generationDispatch(
     studyUuid,
     currentNodeUuid,
     modificationUuid,
-    lossCoefficient
+    lossCoefficient,
+    defaultOutageRate,
+    generatorsWithoutOutage,
+    generatorsWithFixedActivePower
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
-        lossCoefficient,
+        lossCoefficient: lossCoefficient,
+        defaultOutageRate: defaultOutageRate,
+        generatorsWithoutOutage: generatorsWithoutOutage,
+        generatorsWithFixedSupply: generatorsWithFixedActivePower,
     });
 
     let generationDispatchUrl =

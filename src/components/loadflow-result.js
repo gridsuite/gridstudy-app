@@ -21,7 +21,7 @@ import { fetchCurrentLimitViolations } from '../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
-import { PARAM_LINE_FLOW_ALERT_THRESHOLD } from '../utils/config-params';
+import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const useStyles = makeStyles((theme) => ({
@@ -51,8 +51,8 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const [overloadedLines, setOverloadedLines] = useState(null);
 
-    const lineFlowAlertThreshold = useSelector((state) =>
-        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
+    const limitReductionParam = useSelector((state) =>
+        Number(state[PARAM_LIMIT_REDUCTION])
     );
 
     useEffect(() => {
@@ -93,24 +93,26 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 side: convertSide(overloadedLine.side),
             };
         };
-        fetchCurrentLimitViolations(
-            studyUuid,
-            nodeUuid,
-            lineFlowAlertThreshold / 100.0
-        )
-            .then((overloadedLines) => {
-                const sortedLines = overloadedLines
-                    .map((overloadedLine) => makeData(overloadedLine))
-                    .sort((a, b) => b.overload - a.overload);
-                setOverloadedLines(sortedLines);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ErrFetchCurrentLimitViolationsMsg',
+        if (result) {
+            fetchCurrentLimitViolations(
+                studyUuid,
+                nodeUuid,
+                limitReductionParam / 100.0
+            )
+                .then((overloadedLines) => {
+                    const sortedLines = overloadedLines
+                        .map((overloadedLine) => makeData(overloadedLine))
+                        .sort((a, b) => b.overload - a.overload);
+                    setOverloadedLines(sortedLines);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'ErrFetchCurrentLimitViolationsMsg',
+                    });
                 });
-            });
-    }, [studyUuid, nodeUuid, lineFlowAlertThreshold, intl, snackError]);
+        }
+    }, [studyUuid, nodeUuid, limitReductionParam, intl, snackError, result]);
 
     function StatusCellRender(cellData) {
         const status = cellData.rowData[cellData.dataKey];
@@ -205,7 +207,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     sortable={true}
                     columns={[
                         {
-                            label: intl.formatMessage({ id: 'OverloadedLine' }),
+                            label: intl.formatMessage({
+                                id: 'OverloadedEquipment',
+                            }),
                             dataKey: 'name',
                             numeric: false,
                         },
@@ -239,7 +243,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                             fractionDigits: 1,
                         },
                         {
-                            label: intl.formatMessage({ id: 'LineLoad' }),
+                            label: intl.formatMessage({
+                                id: 'EquipmentOverload',
+                            }),
                             dataKey: 'overload',
                             numeric: true,
                             fractionDigits: 0,
@@ -281,13 +287,14 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 </div>
                 {tabIndex === 0 &&
                     overloadedLines &&
+                    result &&
                     renderLoadFlowConstraints()}
-                {tabIndex === 1 && renderLoadFlowResult()}
+                {tabIndex === 1 && result && renderLoadFlowResult()}
             </>
         );
     }
 
-    return result && renderLoadFlowResultTabs();
+    return renderLoadFlowResultTabs();
 };
 
 LoadFlowResult.defaultProps = {
