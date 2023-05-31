@@ -51,7 +51,7 @@ import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
 import clsx from 'clsx';
-import { debounce } from '@mui/material/utils';
+import useDebounce from '../../../utils/use-debounce';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -490,10 +490,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
         },
         [studyUuid, intl, defaultValue, snackError]
     );
-    const debouncedValidName = useMemo(
-        () => debounce(validName, 700),
-        [validName]
-    );
+    const debouncedValidName = useDebounce(validName, 700);
 
     useEffect(() => {
         if (checking === undefined) {

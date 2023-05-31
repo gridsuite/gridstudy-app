@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { searchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
 import { useNameOrId } from './equipmentInfosHandler';
-import { debounce } from '@mui/material/utils';
+import useDebounce from '../../utils/use-debounce';
 
 export const useSearchMatchingEquipments = (
     studyUuid,
@@ -60,9 +60,9 @@ export const useSearchMatchingEquipments = (
         ]
     );
 
-    const delayedSearchMatchingEquipments = useMemo(
-        () => debounce(searchMatchingEquipments, SEARCH_FETCH_TIMEOUT_MILLIS),
-        [searchMatchingEquipments]
+    const delayedSearchMatchingEquipments = useDebounce(
+        searchMatchingEquipments,
+        SEARCH_FETCH_TIMEOUT_MILLIS
     );
 
     useEffect(() => {

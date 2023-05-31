@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useState,
-    useRef,
-    useMemo,
-} from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import makeStyles from '@mui/styles/makeStyles';
@@ -30,7 +24,6 @@ import {
     Select,
     MenuItem,
 } from '@mui/material';
-import { debounce } from '@mui/material/utils';
 
 import {
     fetchDefaultSecurityAnalysisProvider,
@@ -69,6 +62,7 @@ import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import useDebounce from '../../../utils/use-debounce';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -281,10 +275,7 @@ export const useParametersBackend = (
         ]
     );
 
-    const delayedUpdateParameter = useMemo(
-        () => debounce(updateParameter, 1000),
-        [updateParameter]
-    );
+    const delayedUpdateParameter = useDebounce(updateParameter, 1000);
 
     const resetParameters = useCallback(
         (callBack) => {
