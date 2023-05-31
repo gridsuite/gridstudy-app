@@ -54,12 +54,12 @@ const useStyles = makeStyles(() => ({
  * @constructor
  */
 export const ResultViewTab = ({
-    studyUuid,
-    currentNode,
-    loadFlowInfos,
-    openVoltageLevelDiagram,
-    disabled,
-}) => {
+                                  studyUuid,
+                                  currentNode,
+                                  loadFlowInfos,
+                                  openVoltageLevelDiagram,
+                                  disabled,
+                              }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const classes = useStyles();
