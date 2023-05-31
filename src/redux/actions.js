@@ -352,6 +352,18 @@ export function resetSANotif() {
     return { type: RESET_SA_NOTIF };
 }
 
+export const ADD_VOLTAGE_INIT_NOTIF = 'ADD_VOLTAGE_INIT_NOTIF';
+
+export function addVoltageInitNotif() {
+    return { type: ADD_VOLTAGE_INIT_NOTIF };
+}
+
+export const RESET_VOLTAGE_INIT_NOTIF = 'RESET_VOLTAGE_INIT_NOTIF';
+
+export function resetVoltageInitNotif() {
+    return { type: RESET_VOLTAGE_INIT_NOTIF };
+}
+
 export const ADD_SENSI_NOTIF = 'ADD_SENSI_NOTIF';
 
 export function addSensiNotif() {

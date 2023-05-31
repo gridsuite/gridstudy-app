@@ -36,6 +36,7 @@ import {
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
     fetchVoltageLevel,
+    fetchVoltageInitStatus,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
@@ -53,6 +54,8 @@ import {
     resetShortCircuitNotif,
     resetDynamicSimulationNotif,
     STUDY_DISPLAY_MODE,
+    addVoltageInitNotif,
+    resetVoltageInitNotif,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
@@ -192,6 +195,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
 
+    const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
+
     const dynamicSimulationNotif = useSelector(
         (state) => state.dynamicSimulationNotif
     );
@@ -232,6 +237,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         'dynamicSimulation_status',
         'dynamicSimulation_failed',
     ];
+    const voltageInitStatusInvalidations = [
+        'voltageInit_status',
+        'voltageInit_failed',
+    ];
     const [loadFlowInfosNode] = useNodeData(
         studyUuid,
         currentNode?.id,
@@ -265,6 +274,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         currentNode?.id,
         fetchDynamicSimulationStatus,
         dynamicSimulationStatusInvalidations
+    );
+
+    const [voltageInitStatusNode] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        fetchVoltageInitStatus,
+        voltageInitStatusInvalidations
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
@@ -358,6 +374,18 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             dispatch(resetDynamicSimulationNotif());
         }
     }, [currentNode, dispatch, dynamicSimulationStatusNode, tabIndex, user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            (voltageInitStatusNode === 'OK' ||
+                voltageInitStatusNode === 'NOT_OK')
+        ) {
+            dispatch(addVoltageInitNotif());
+        } else {
+            dispatch(resetVoltageInitNotif());
+        }
+    }, [currentNode, dispatch, voltageInitStatusNode, tabIndex, user]);
 
     function showParameters() {
         setParametersOpen(true);
@@ -463,7 +491,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                     saNotif ||
                                     sensiNotif ||
                                     shortCircuitNotif ||
-                                    dynamicSimulationNotif)
+                                    dynamicSimulationNotif ||
+                                    voltageInitNotif)
                             ) {
                                 label = (
                                     <Badge
@@ -472,7 +501,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                             saNotif +
                                             sensiNotif +
                                             shortCircuitNotif +
-                                            dynamicSimulationNotif
+                                            dynamicSimulationNotif +
+                                            voltageInitNotif
                                         }
                                         color="secondary"
                                     >
