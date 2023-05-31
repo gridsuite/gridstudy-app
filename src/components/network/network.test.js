@@ -38,10 +38,7 @@ test('network', () => {
     // Data initialisation
     const baseNetwork = new Network();
 
-    const network = baseNetwork.newSharedForUpdate(
-        EQUIPMENT_TYPES.SUBSTATION.name,
-        substations
-    );
+    const network = baseNetwork.newSharedForUpdate('substations', substations);
     // Substation
     expect(network.substations).toHaveLength(2);
     expect(network.substations[0].id).toEqual('S1');

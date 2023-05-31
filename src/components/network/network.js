@@ -398,21 +398,39 @@ export default class Network {
     }
 
     setEquipment(equipment, values) {
+        const EQUIPMENTS = {
+            [EQUIPMENT_TYPES.LINE.type]: {
+                type: 'lines',
+            },
+            [EQUIPMENT_TYPES.SUBSTATION.type]: {
+                type: 'substations',
+            },
+            [EQUIPMENT_TYPES.GENERATOR.type]: {
+                type: 'generators',
+            },
+            [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type]: {
+                type: 'twoWindingsTransformers',
+            },
+            [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type]: {
+                type: 'threeWindingsTransformers',
+            },
+        };
         this[equipment] = values;
         switch (equipment) {
-            case EQUIPMENT_TYPES.SUBSTATION.name:
+            case EQUIPMENTS[EQUIPMENT_TYPES.SUBSTATION.type].type:
                 this.completeSubstationsInfos();
                 break;
-            case EQUIPMENT_TYPES.LINE.type:
+            case EQUIPMENTS[EQUIPMENT_TYPES.LINE.type].type:
                 this.completeLinesInfos();
                 break;
-            case EQUIPMENT_TYPES.GENERATOR.type:
+            case EQUIPMENTS[EQUIPMENT_TYPES.GENERATOR.type].type:
                 this.completeGeneratorsInfos();
                 break;
-            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
+            case EQUIPMENTS[EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type].type:
                 this.completeTwoWindingsTransformersInfos();
                 break;
-            case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type:
+            case EQUIPMENTS[EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type]
+                .type:
                 this.completeThreeWindingsTransformersInfos();
                 break;
             default:
