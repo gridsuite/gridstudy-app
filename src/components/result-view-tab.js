@@ -22,6 +22,7 @@ import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
+import { VoltageInitResultTab } from './voltage-init-result-tab';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -92,6 +93,17 @@ export const ResultViewTab = ({
         );
     }
 
+    function renderVoltageInitResult() {
+        return (
+            <Paper className={classes.table}>
+                <VoltageInitResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                />
+            </Paper>
+        );
+    }
+
     function renderSensitivityAnalysisResult() {
         return (
             <Paper className={classes.analysisResult}>
@@ -137,6 +149,7 @@ export const ResultViewTab = ({
             <div className={classes.div}>
                 <Tabs
                     value={tabIndex}
+                    variant="scrollable"
                     onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
                 >
                     <Tab
@@ -169,6 +182,14 @@ export const ResultViewTab = ({
                         <Tab
                             label={intl.formatMessage({
                                 id: 'DynamicSimulationResults',
+                            })}
+                            disabled={disabled}
+                        />
+                    )}
+                    {enableDeveloperMode && (
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'VoltageInitResults',
                             })}
                             disabled={disabled}
                         />
@@ -206,6 +227,12 @@ export const ResultViewTab = ({
                 selected={tabIndex === 4 && !disabled}
             >
                 {renderDynamicSimulationResult()}
+            </TabPanelLazy>
+            <TabPanelLazy
+                className={classes.tabPanel}
+                selected={tabIndex === 5 && !disabled}
+            >
+                {renderVoltageInitResult()}
             </TabPanelLazy>
         </Paper>
     );
