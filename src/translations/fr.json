@@ -326,6 +326,7 @@
     "descLfHvdcAcEmulation": "Permettre l'émulation AC des HVDC\u00a0:",
     "descLfDistributedSlack": "Activer la compensation\u00a0:",
     "descLfDcUseTransformerRatio": "Prise en compte de la valeur des rapports de transformation dans l'équation de transit en actif seul\u00a0:",
+    "descLfDcPowerFactor": "Facteur de puissance en actif seul (cos phi)",
     "descLfBalanceType": "Mode de compensation proportionnel à\u00a0:",
     "descLfBalanceTypeGenP": "puissance de consigne des groupes",
     "descLfBalanceTypeGenPMax": "puissance maximale des groupes",
