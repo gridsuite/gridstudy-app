@@ -324,6 +324,8 @@ const LineModificationDialog = ({
                                     }),
                                     { keepDefaultValues: true }
                                 );
+                            } else {
+                                fromEditDataToFormValues(editDataRef.current);
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -339,7 +341,7 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, getValues, reset, emptyFormData]
+        [studyUuid, currentNodeUuid, getValues, reset, emptyFormData, fromEditDataToFormValues]
     );
 
     const onValidationError = (errors) => {
