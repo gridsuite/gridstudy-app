@@ -151,12 +151,6 @@ export const ResultViewTab = ({
                         })}
                         disabled={disabled}
                     />
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'sensitivityAnalysisResults',
-                        })}
-                        disabled={disabled}
-                    />
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
@@ -165,6 +159,12 @@ export const ResultViewTab = ({
                             disabled={disabled}
                         />
                     )}
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'sensitivityAnalysisResults',
+                        })}
+                        disabled={disabled}
+                    />
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
@@ -193,13 +193,13 @@ export const ResultViewTab = ({
                 className={classes.tabPanel}
                 selected={tabIndex === 2 && !disabled}
             >
-                {renderSensitivityAnalysisResult()}
+                {renderShortCircuitAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
                 selected={tabIndex === 3 && !disabled}
             >
-                {renderShortCircuitAnalysisResult()}
+                {renderSensitivityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
