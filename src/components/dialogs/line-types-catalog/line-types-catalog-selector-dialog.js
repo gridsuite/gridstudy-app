@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React, {
     useCallback,
     useRef,
@@ -75,7 +76,7 @@ const LineTypesCatalogSelectorDialog = ({
         setSelectedRow(selectedRow[0] ?? null);
     }, []);
 
-    const columns = useMemo(() => {
+    const aerialColumnDefs = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'lineTypes.type' }),
@@ -123,6 +124,70 @@ const LineTypesCatalogSelectorDialog = ({
                 field: 'groundWiresNumber',
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'lineTypes.linearResistance',
+                }),
+                field: 'linearResistance',
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'lineTypes.linearReactance',
+                }),
+                field: 'linearReactance',
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'lineTypes.linearCapacity',
+                }),
+                field: 'linearCapacity',
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+        ];
+    }, [intl]);
+
+    const undergroundColumnDefs = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'lineTypes.type' }),
+                field: 'type',
+                pinned: 'left',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'lineTypes.voltage' }),
+                field: 'voltage',
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'lineTypes.conductorType',
+                }),
+                field: 'conductorType',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'lineTypes.section' }),
+                field: 'section',
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'lineTypes.insulator',
+                }),
+                field: 'insulator',
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'lineTypes.screen',
+                }),
+                field: 'screen',
             },
             {
                 headerName: intl.formatMessage({
@@ -228,16 +293,20 @@ const LineTypesCatalogSelectorDialog = ({
 
     const displayTable = useCallback(
         (currentTab) => {
-            const data =
-                currentTab === LineTypesCatalogSelectorDialogTabs.AERIAL_TAB
-                    ? rowDataAerialTab
-                    : rowDataUndergroundTab;
+            let rowData, columnDefs;
+            if (currentTab === LineTypesCatalogSelectorDialogTabs.AERIAL_TAB) {
+                rowData = rowDataAerialTab;
+                columnDefs = aerialColumnDefs;
+            } else {
+                rowData = rowDataUndergroundTab;
+                columnDefs = undergroundColumnDefs;
+            }
             return (
                 <CustomAGGrid
                     ref={gridRef}
-                    rowData={data}
+                    rowData={rowData}
                     defaultColDef={defaultColDef}
-                    columnDefs={columns}
+                    columnDefs={columnDefs}
                     rowSelection="single"
                     onSelectionChanged={onSelectionChanged}
                     onGridReady={highlightSelectedRow} // Highlights the preselected row when AGGrid is ready
@@ -245,7 +314,8 @@ const LineTypesCatalogSelectorDialog = ({
             );
         },
         [
-            columns,
+            aerialColumnDefs,
+            undergroundColumnDefs,
             defaultColDef,
             highlightSelectedRow,
             onSelectionChanged,
