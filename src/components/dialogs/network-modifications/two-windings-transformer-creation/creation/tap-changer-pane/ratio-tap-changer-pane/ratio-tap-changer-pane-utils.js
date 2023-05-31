@@ -41,7 +41,7 @@ import yup from 'components/utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
-} from '../../../../regulating-terminal/regulating-terminal-form-utils';
+} from '../../../../../regulating-terminal/regulating-terminal-form-utils';
 import {
     RATIO_REGULATION_MODES,
     REGULATION_TYPES,
