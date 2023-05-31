@@ -97,7 +97,7 @@ export const TABLES_DEFINITIONS = {
     LINES: {
         index: 2,
         name: 'Lines',
-        resource: EQUIPMENT_TYPES.LINE.name,
+        resource: EQUIPMENT_TYPES.LINE.type,
         columns: [
             {
                 id: 'ID',
@@ -184,7 +184,7 @@ export const TABLES_DEFINITIONS = {
     TWO_WINDINGS_TRANSFORMERS: {
         index: 3,
         name: 'TwoWindingsTransformers',
-        resource: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name,
+        resource: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
         modifiableEquipmentType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
         groovyEquipmentGetter: 'getTwoWindingsTransformer',
         columns: [
@@ -373,7 +373,7 @@ export const TABLES_DEFINITIONS = {
     THREE_WINDINGS_TRANSFORMERS: {
         index: 4,
         name: 'ThreeWindingsTransformers',
-        resource: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.name,
+        resource: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
         modifiableEquipmentType:
             EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
         groovyEquipmentGetter: 'getThreeWindingsTransformer',
@@ -771,7 +771,7 @@ export const TABLES_DEFINITIONS = {
     GENERATORS: {
         index: 5,
         name: 'Generators',
-        resource: EQUIPMENT_TYPES.GENERATOR.name,
+        resource: EQUIPMENT_TYPES.GENERATOR.type,
         modifiableEquipmentType: EQUIPMENT_TYPES.GENERATOR.type,
         columns: [
             {
@@ -974,7 +974,7 @@ export const TABLES_DEFINITIONS = {
     LOADS: {
         index: 6,
         name: 'Loads',
-        resource: EQUIPMENT_TYPES.LOAD.name,
+        resource: EQUIPMENT_TYPES.LOAD.type,
         modifiableEquipmentType: EQUIPMENT_TYPES.LOAD.type,
         columns: [
             {
@@ -1077,7 +1077,7 @@ export const TABLES_DEFINITIONS = {
     SHUNT_COMPENSATORS: {
         index: 7,
         name: 'ShuntCompensators',
-        resource: EQUIPMENT_TYPES.SHUNT_COMPENSATOR.name,
+        resource: EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
         columns: [
             {
                 id: 'ID',
@@ -1138,7 +1138,7 @@ export const TABLES_DEFINITIONS = {
     STATIC_VAR_COMPENSATORS: {
         index: 8,
         name: 'StaticVarCompensators',
-        resource: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.name,
+        resource: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
         columns: [
             {
                 id: 'ID',
@@ -1206,7 +1206,7 @@ export const TABLES_DEFINITIONS = {
     BATTERIES: {
         index: 9,
         name: 'Batteries',
-        resource: EQUIPMENT_TYPES.BATTERY.name,
+        resource: EQUIPMENT_TYPES.BATTERY.type,
         columns: [
             {
                 id: 'ID',
@@ -1275,7 +1275,7 @@ export const TABLES_DEFINITIONS = {
     HVDC_LINES: {
         index: 10,
         name: 'HvdcLines',
-        resource: EQUIPMENT_TYPES.HVDC_LINE.name,
+        resource: EQUIPMENT_TYPES.HVDC_LINE.type,
         columns: [
             {
                 id: 'ID',
@@ -1375,7 +1375,7 @@ export const TABLES_DEFINITIONS = {
     LCC_CONVERTER_STATIONS: {
         index: 11,
         name: 'LccConverterStations',
-        resource: EQUIPMENT_TYPES.LCC_CONVERTER_STATION.name,
+        resource: EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
         columns: [
             {
                 id: 'ID',
@@ -1446,7 +1446,7 @@ export const TABLES_DEFINITIONS = {
     VSC_CONVERTER_STATIONS: {
         index: 12,
         name: 'VscConverterStations',
-        resource: EQUIPMENT_TYPES.VSC_CONVERTER_STATION.name,
+        resource: EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
         columns: [
             {
                 id: 'ID',
@@ -1533,7 +1533,7 @@ export const TABLES_DEFINITIONS = {
     DANGLING_LINES: {
         index: 13,
         name: 'DanglingLines',
-        resource: EQUIPMENT_TYPES.DANGLING_LINE.name,
+        resource: EQUIPMENT_TYPES.DANGLING_LINE.type,
         columns: [
             {
                 id: 'ID',

@@ -779,9 +779,9 @@ export const NetworkMapTab = ({
         }
         return (
             <>
-                {(equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE.name ||
+                {(equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE.type ||
                     equipmentMenu.equipmentType ===
-                        EQUIPMENT_TYPES.HVDC_LINE.name) &&
+                        EQUIPMENT_TYPES.HVDC_LINE.type) &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
@@ -831,14 +831,14 @@ export const NetworkMapTab = ({
             loadFlowStatus={loadFlowStatus}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE.name)
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE.type)
             }
             onHvdcLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(
                     equipment,
                     x,
                     y,
-                    EQUIPMENT_TYPES.HVDC_LINE.name
+                    EQUIPMENT_TYPES.HVDC_LINE.type
                 )
             }
             visible={visible}
