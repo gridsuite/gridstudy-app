@@ -322,6 +322,34 @@ const BaseEquipmentMenu = ({
                             />
                         ))}
                     </NestedMenuItem>
+                    <NestedMenuItem
+                        label={intl.formatMessage({ id: 'ModifyFromMenu' })}
+                        parentMenuOpen={true}
+                    >
+                        {/* menus for the substation */}
+                        <ModifyEquipmentItem
+                            key={equipment.id}
+                            equipmentType={equipmentType}
+                            equipmentId={equipment.id}
+                            itemText={getNameOrId(equipment)}
+                            handleOpenModificationDialog={
+                                handleOpenModificationDialog
+                            }
+                        />
+                        {/* menus for the voltage level */}
+                        {equipment.voltageLevels.map((voltageLevel) => (
+                            // menus for all voltage levels in the substation
+                            <ModifyEquipmentItem
+                                key={voltageLevel.id}
+                                equipmentType={equipments.voltageLevels}
+                                equipmentId={voltageLevel.id}
+                                itemText={getNameOrId(voltageLevel)}
+                                handleOpenModificationDialog={
+                                    handleOpenModificationDialog
+                                }
+                            />
+                        ))}
+                    </NestedMenuItem>
                 </>
             )}
 

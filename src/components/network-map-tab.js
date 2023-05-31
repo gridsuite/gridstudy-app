@@ -189,7 +189,6 @@ export const NetworkMapTab = ({
                         editData={{
                             equipmentId: equipmentToModify.equipmentId,
                             equipmentType: equipmentToModify.equipmentType,
-                            // Other editData properties...
                         }}
                         studyUuid={studyUuid}
                         isUpdate={false}
@@ -202,12 +201,6 @@ export const NetworkMapTab = ({
         }
     }
     const handleOpenModificationDialog = (equipmentId, equipmentType) => {
-        console.log(
-            'HELLO from handleOpenModificationDialog ',
-            equipmentId,
-            equipmentType
-        );
-
         setEquipmentToModify({ equipmentId, equipmentType });
         setEditDialogOpen(true);
         closeEquipmentMenu();
