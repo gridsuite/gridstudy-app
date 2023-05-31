@@ -148,6 +148,7 @@ export const ResultViewTab = ({
             <div className={classes.div}>
                 <Tabs
                     value={tabIndex}
+                    variant="scrollable"
                     onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
                 >
                     <Tab
