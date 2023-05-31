@@ -109,15 +109,15 @@ const ModifyEquipmentItem = ({
             className={classes.menuItem}
             onClick={() =>
                 handleOpenModificationDialog(
-                    getFeederTypeFromEquipmentType(equipmentType),
-                    equipmentId
+                    equipmentId,
+                    getFeederTypeFromEquipmentType(equipmentType)
                 )
             }
             selected={false}
             disabled={isNodeReadOnly(currentNode)}
         >
             <ListItemIcon>
-                <DeleteIcon />
+                <EditIcon />
             </ListItemIcon>
 
             <ListItemText
@@ -370,8 +370,6 @@ const BaseEquipmentMenu = ({
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
                     </NestedMenuItem>
-
-                    {/* here */}
                     <NestedMenuItem
                         label={intl.formatMessage({ id: 'ModifyFromMenu' })}
                         parentMenuOpen={true}
@@ -382,18 +380,21 @@ const BaseEquipmentMenu = ({
                             equipmentType={equipments.substations}
                             equipmentId={equipment.substationId}
                             itemText={equipmentSubstationNameOrId}
-                            handleOpenModificationDialog={handleOpenModificationDialog}
-                            />
+                            handleOpenModificationDialog={
+                                handleOpenModificationDialog
+                            }
+                        />
                         {/* menus for the voltage level */}
                         <ModifyEquipmentItem
                             key={equipment.id}
                             equipmentType={equipments.voltageLevels}
                             equipmentId={equipment.id}
                             itemText={getNameOrId(equipment)}
-                            handleOpenModificationDialog={handleOpenModificationDialog}
-                            />
+                            handleOpenModificationDialog={
+                                handleOpenModificationDialog
+                            }
+                        />
                     </NestedMenuItem>
-                    {/* here */}
                 </>
             )}
         </>

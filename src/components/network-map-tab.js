@@ -158,35 +158,18 @@ export const NetworkMapTab = ({
 
     const classes = useStyles();
     const currentNodeRef = useRef(null);
-
     const [updatedLines, setUpdatedLines] = useState([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
     const [equipmentToModify, setEquipmentToModify] = useState(null);
-
-    //BEGIN =======================
-
-    // TODO this is not complete.
-    // We should clean Clipboard on notifications when another user edit
-    // a modification on a public study which is in the clipboard.
-    // We don't have precision on notifications to do this for now.
-
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
- 
+
     const closeModificationDialog = () => {
         setEquipmentToModify();
         setEditDialogOpen(false);
     };
 
     function renderModificationDialog() {
-        // return adapt(SubstationModificationDialog);
-        console.log(
-            'from render ',
-            equipments.substations,
-            equipmentToModify.equipmentId,
-            '__',
-            EQUIPMENT_TYPES.SUBSTATION.type
-        );
-        switch (equipmentToModify.equipmentId) {
+        switch (equipmentToModify.equipmentType) {
             case EQUIPMENT_TYPES.SUBSTATION.type:
                 return (
                     <SubstationModificationDialog
@@ -196,7 +179,7 @@ export const NetworkMapTab = ({
                         isUpdate={false}
                         editDataFetchStatus={FetchStatus.IDLE}
                         onClose={() => closeModificationDialog()}
-                        defaultIdValue={equipmentToModify.equipmentType}
+                        defaultIdValue={equipmentToModify.equipmentId}
                     />
                 );
             case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
@@ -204,15 +187,14 @@ export const NetworkMapTab = ({
                     <VoltageLevelModificationDialog
                         open={true}
                         editData={{
-                            equipmentId: equipmentToModify.equipmentType,
-                            equipmentType: equipmentToModify.equipmentId,
+                            equipmentId: equipmentToModify.equipmentId,
+                            equipmentType: equipmentToModify.equipmentType,
                             // Other editData properties...
                         }}
                         studyUuid={studyUuid}
                         isUpdate={false}
                         currentNode={currentNode}
                         onClose={() => closeModificationDialog()}
-                        defaultIdValue={equipmentToModify.equipmentType}
                     />
                 );
             default:
