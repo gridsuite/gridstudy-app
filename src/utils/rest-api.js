@@ -3319,7 +3319,8 @@ export function generationDispatch(
     lossCoefficient,
     defaultOutageRate,
     generatorsWithoutOutage,
-    generatorsWithFixedActivePower
+    generatorsWithFixedActivePower,
+    generatorsFrequencyReserve
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
@@ -3327,6 +3328,7 @@ export function generationDispatch(
         defaultOutageRate: defaultOutageRate,
         generatorsWithoutOutage: generatorsWithoutOutage,
         generatorsWithFixedSupply: generatorsWithFixedActivePower,
+        generatorsFrequencyReserve: generatorsFrequencyReserve,
     });
 
     let generationDispatchUrl =
