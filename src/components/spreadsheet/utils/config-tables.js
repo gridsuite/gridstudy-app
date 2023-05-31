@@ -20,10 +20,6 @@ const generateTapPositions = (params) => {
         : [];
 };
 
-const nominalVoltage = (network, voltageLevelId) => {
-    return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
-};
-
 const applyFluxConvention = (convention, val) => {
     if (convention === FluxConventions.TARGET && val !== undefined) {
         return -val;
@@ -124,7 +120,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -132,7 +128,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -204,7 +200,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -212,7 +208,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -391,7 +387,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -399,7 +395,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -407,7 +403,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide3',
                 field: 'nominalVoltage3',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -771,7 +767,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -987,7 +983,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1069,7 +1065,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1125,7 +1121,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1190,7 +1186,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1357,7 +1353,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1426,7 +1422,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1509,7 +1505,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) => 'toChangeAfterBackendUpdate',
+                valueGetter: (params) => 'toChangeAfterBackendUpdate', //TODO: need update from backend to receive this data directly
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
