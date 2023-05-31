@@ -14,11 +14,14 @@ export const useEquipments = (equipmentType) => {
 
     useEffect(() => {
         if (equipments == null) {
-            equipmentType.type.fetchers[0](studyUuid, currentNode.id).then(
-                (result) => {
-                    dispatch(loadEquipments(equipmentType.resource, result));
-                }
-            );
+            Promise.all(
+                equipmentType.type.fetchers.map((fetcher) =>
+                    fetcher(studyUuid, currentNode.id)
+                )
+            ).then((results) => {
+                const equipments = [].concat(...results);
+                dispatch(loadEquipments(equipmentType.resource, equipments));
+            });
         }
     }, [equipmentType, equipments, studyUuid, currentNode.id, dispatch]);
 

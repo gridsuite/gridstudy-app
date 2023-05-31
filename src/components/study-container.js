@@ -66,7 +66,6 @@ import {
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
-import { equipments } from './network/network-equipments';
 import {
     BUILD_STATUS,
     MAX_NUMBER_OF_IMPACTED_SUBSTATIONS,
@@ -255,8 +254,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const userName = useSelector((state) => state.user.profile.sub);
     const paramsLoaded = useSelector((state) => state[PARAMS_LOADED]);
-    const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
-        useState(undefined);
 
     const [errorMessage, setErrorMessage] = useState(undefined);
 
@@ -646,7 +643,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         }
-    }, [studyUpdatedForce, studyUuid, dispatch]);
+    }, [studyUpdatedForce, currentNode?.id, studyUuid, dispatch]);
 
     //handles map automatic mode network reload
     useEffect(() => {
@@ -671,8 +668,7 @@ export function StudyContainer({ view, onChangeTab }) {
             return;
         }
         dispatch(resetEquipments());
-        //loadNetwork(previousCurrentNode); // loadNetwork(false) only at app startup, otherwise slds are force closed
-    }, [/*loadNetwork,*/ currentNode, wsConnected, dispatch]);
+    }, [currentNode, wsConnected, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -683,7 +679,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(resetEquipmentsPostLoadflow());
             }
         }
-        // Note: studyUuid, and loadNetwork don't change
     }, [studyUpdatedForce, dispatch]);
 
     useEffect(() => {
@@ -776,9 +771,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     return (
         <WaitingLoader
-            errMessage={
-                studyErrorMessage || networkLoadingFailMessage || errorMessage
-            }
+            errMessage={studyErrorMessage || errorMessage}
             loading={studyPending || !paramsLoaded} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >

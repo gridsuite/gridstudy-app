@@ -26,7 +26,6 @@ import {
     LINE_FULL_PATH,
     LINE_PARALLEL_PATH,
     LOAD_GEO_DATA_SUCCESS,
-    NETWORK_EQUIPMENT_LOADED,
     OPEN_STUDY,
     SELECT_THEME,
     USE_NAME,
@@ -160,16 +159,7 @@ const initialSpreadsheetNetworkState = {
     vscConverterStations: null,
     shuntCompensators: null,
     staticVarCompensators: null,
-    // lazyLoaders: new Map(),
-    // voltageLevelsByNominalVoltage: new Map(),
-    // voltageLevelsById: new Map(),
     voltageLevels: null,
-    // substationsById: new Map(),
-    // linesById: new Map(),
-    // twoWindingsTransformersById: new Map(),
-    // threeWindingsTransformersById: new Map(),
-    // generatorsById: new Map(),
-    // nominalVoltages: null,
 };
 
 const initialState = {
