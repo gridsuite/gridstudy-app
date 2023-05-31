@@ -8,7 +8,7 @@
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
     ENERGY_SOURCE,
-    EQUIPMENT_ID,
+    //EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     MARGINAL_COST,
@@ -35,37 +35,37 @@ import {
     getEnergySourceLabel,
 } from 'components/network/constants';
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import {
-    fetchEquipmentsIds,
+    //fetchEquipmentsIds,
     fetchVoltageLevelsIdAndTopology,
 } from 'utils/rest-api';
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-import { useWatch } from 'react-hook-form';
+// import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+// import { useWatch } from 'react-hook-form';
 
 const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
-    onEquipmentIdChange,
+    //onEquipmentIdChange,
     generatorToModify,
     updatePreviousReactiveCapabilityCurveTable,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [equipmentOptions, setEquipmentOptions] = useState([]);
+    // [equipmentOptions, setEquipmentOptions] = useState([]); // TODO CHARLY remove this
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
 
-    const watchEquipmentId = useWatch({
-        name: EQUIPMENT_ID,
-    });
+    // const watchEquipmentId = useWatch({ // TODO CHARLY remove this
+    //     name: EQUIPMENT_ID,
+    // });
 
-    useEffect(() => {
-        onEquipmentIdChange(watchEquipmentId);
-    }, [watchEquipmentId, onEquipmentIdChange]);
+    // useEffect(() => {
+    //     onEquipmentIdChange(watchEquipmentId);
+    // }, [watchEquipmentId, onEquipmentIdChange]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -76,15 +76,15 @@ const GeneratorModificationForm = ({
                     );
                 }
             );
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                undefined,
-                'GENERATOR',
-                true
-            ).then((values) => {
-                setEquipmentOptions(values.sort());
-            });
+            // fetchEquipmentsIds( // TODO CHARLY remove this
+            //     studyUuid,
+            //     currentNodeUuid,
+            //     undefined,
+            //     'GENERATOR',
+            //     true
+            // ).then((values) => {
+            //     setEquipmentOptions(values.sort());
+            // });
         }
     }, [studyUuid, currentNodeUuid]);
 
@@ -96,20 +96,20 @@ const GeneratorModificationForm = ({
               id: energySourceLabelId,
           })
         : undefined;
-    const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
+    //const areIdsEqual = useCallback((val1, val2) => val1 === val2, []); // TODO CHARLY remove this
 
-    const generatorIdField = (
-        <AutocompleteInput
-            allowNewValue
-            forcePopupIcon
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            options={equipmentOptions}
-            formProps={{ ...filledTextField }}
-            size={'small'}
-            isOptionEqualToValue={areIdsEqual}
-        />
-    );
+    // const generatorIdField = (
+    //     <AutocompleteInput
+    //         allowNewValue
+    //         forcePopupIcon
+    //         name={EQUIPMENT_ID}
+    //         label={'ID'}
+    //         options={equipmentOptions}
+    //         formProps={{ ...filledTextField }}
+    //         size={'small'}
+    //         isOptionEqualToValue={areIdsEqual}
+    //     />
+    // );
 
     const generatorNameField = (
         <TextInput
@@ -236,7 +236,7 @@ const GeneratorModificationForm = ({
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(generatorIdField, 4)}
+                {/*{gridItem(generatorIdField, 4)}*/}
                 {gridItem(generatorNameField, 4)}
                 {gridItem(energySourceField, 4)}
             </Grid>

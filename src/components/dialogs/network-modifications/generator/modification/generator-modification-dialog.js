@@ -16,7 +16,6 @@ import {
     DROOP,
     ENERGY_SOURCE,
     EQUIPMENT,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     FREQUENCY_REGULATION,
@@ -63,6 +62,7 @@ import {
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 
 const GeneratorModificationDialog = ({
     editData,
@@ -75,6 +75,7 @@ const GeneratorModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [generatorToModify, setGeneratorToModify] = useState();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
@@ -98,7 +99,6 @@ const GeneratorModificationDialog = ({
     };
     const emptyFormData = useMemo(
         () => ({
-            [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             [ENERGY_SOURCE]: null,
             [MAXIMUM_ACTIVE_POWER]: null,
@@ -114,7 +114,7 @@ const GeneratorModificationDialog = ({
             ...getSetPointsEmptyFormData(true),
             ...getReactiveLimitsEmptyFormData(true),
         }),
-        [defaultIdValue]
+        []
     );
 
     const formSchema = useMemo(
@@ -123,7 +123,6 @@ const GeneratorModificationDialog = ({
                 .object()
                 .shape(
                     {
-                        [EQUIPMENT_ID]: yup.string().nullable().required(),
                         [EQUIPMENT_NAME]: yup.string(),
                         [ENERGY_SOURCE]: yup.string().nullable(),
                         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
@@ -176,7 +175,6 @@ const GeneratorModificationDialog = ({
     const fromEditDataToFormValues = useCallback(
         (editData) => {
             reset({
-                [EQUIPMENT_ID]: editData?.equipmentId,
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                 [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
                 [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
@@ -275,10 +273,9 @@ const GeneratorModificationDialog = ({
                           [Q_MAX_P]: null,
                       }))
                     : [getRowEmptyFormData(), getRowEmptyFormData()];
-            // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
+            // resets all fields except REACTIVE_CAPABILITY_CURVE_TABLE
             setValuesAndEmptyOthers(
                 {
-                    [EQUIPMENT_ID]: equipmentId,
                     [REACTIVE_CAPABILITY_CURVE_TABLE]:
                         reactiveCapabilityCurvePoints,
                     [REACTIVE_CAPABILITY_CURVE_CHOICE]:
@@ -317,10 +314,8 @@ const GeneratorModificationDialog = ({
                             // which would empty the form instead of displaying data of existing form
                             const previousReactiveCapabilityCurveTable =
                                 value.reactiveCapabilityCurvePoints;
-                            if (
-                                editData?.equipmentId !==
-                                getValues(`${EQUIPMENT_ID}`)
-                            ) {
+                            if (editData?.equipmentId !== selectedId) {
+                                // TODO CHARLY update this obsolete test, we shouldn't have editData?.equipmentId
                                 emptyFormAndFormatReactiveCapabilityCurveTable(
                                     value,
                                     equipmentId
@@ -379,13 +374,20 @@ const GeneratorModificationDialog = ({
         [
             studyUuid,
             currentNodeUuid,
-            editData?.equipmentId,
+            editData?.equipmentId, // TODO CHARLY remove this
+            selectedId,
             getValues,
             emptyFormAndFormatReactiveCapabilityCurveTable,
             setValue,
             setValuesAndEmptyOthers,
         ]
     );
+
+    useEffect(() => {
+        if (selectedId) {
+            onEquipmentIdChange(selectedId); // TODO CHARLY clean/rename/reorganize this ?
+        }
+    }, [selectedId, onEquipmentIdChange]);
 
     const calculateCurvePointsToStore = useCallback(
         (reactiveCapabilityCurve) => {
@@ -476,7 +478,7 @@ const GeneratorModificationDialog = ({
             modifyGenerator(
                 studyUuid,
                 currentNodeUuid,
-                generator[EQUIPMENT_ID],
+                selectedId,
                 sanitizeString(generator[EQUIPMENT_NAME]),
                 generator[ENERGY_SOURCE],
                 generator[MINIMUM_ACTIVE_POWER],
@@ -530,6 +532,7 @@ const GeneratorModificationDialog = ({
             });
         },
         [
+            selectedId,
             generatorToModify,
             getPreviousRegulationType,
             calculateCurvePointsToStore,
@@ -572,10 +575,17 @@ const GeneratorModificationDialog = ({
                 }
                 {...dialogProps}
             >
+                <EquipmentIdSelector
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    selectedId={selectedId}
+                    setSelectedId={setSelectedId}
+                    equipmentType={'GENERATOR'}
+                />
+
                 <GeneratorModificationForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    onEquipmentIdChange={onEquipmentIdChange}
                     generatorToModify={generatorToModify}
                     updatePreviousReactiveCapabilityCurveTable={
                         updatePreviousReactiveCapabilityCurveTable
