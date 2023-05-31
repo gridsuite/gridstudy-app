@@ -302,8 +302,6 @@ const TableWrapper = (props) => {
         TABLES_DEFINITION_INDEXES.get(tabIndex)
     );
 
-    console.log('TEST EQUIPMENT', testEquipments);
-
     const getRows = useCallback(
         (index) => {
             if (props.disabled || !props.network) {

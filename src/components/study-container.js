@@ -45,6 +45,7 @@ import {
     isNetworkEquipmentsFetched,
     updateEquipments,
     deleteEquipment,
+    resetEquipments,
 } from '../redux/actions';
 import Network from './network/network';
 import WaitingLoader from './utils/waiting-loader';
@@ -714,8 +715,9 @@ export function StudyContainer({ view, onChangeTab }) {
         ) {
             return;
         }
+        dispatch(resetEquipments());
         loadNetwork(previousCurrentNode); // loadNetwork(false) only at app startup, otherwise slds are force closed
-    }, [loadNetwork, currentNode, wsConnected]);
+    }, [loadNetwork, currentNode, wsConnected, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
