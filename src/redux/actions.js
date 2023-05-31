@@ -26,21 +26,6 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 
-export const NETWORK_EQUIPMENT_FETCHED = 'NETWORK_EQUIPMENT_FETCHED';
-
-export function isNetworkEquipmentsFetched(fetched) {
-    return {
-        type: NETWORK_EQUIPMENT_FETCHED,
-        networkEquipmentsFetched: fetched,
-    };
-}
-
-export const NETWORK_CREATED = 'NETWORK_CREATED';
-
-export function networkCreated(network) {
-    return { type: NETWORK_CREATED, network: network };
-}
-
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 
 export function loadEquipments(equipmentType, equipments) {
@@ -78,6 +63,14 @@ export function resetEquipments() {
     };
 }
 
+export const RESET_EQUIPMENTS_POST_LOADFLOW = 'RESET_EQUIPMENTS_POST_LOADFLOW';
+
+export function resetEquipmentsPostLoadflow() {
+    return {
+        type: RESET_EQUIPMENTS_POST_LOADFLOW,
+    };
+}
+
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
 export function mapEquipmentsCreated(
@@ -92,16 +85,6 @@ export function mapEquipmentsCreated(
         newLines: newLines,
         newSubstations: newSubstations,
         newHvdcLines: newHvdcLines,
-    };
-}
-
-export const NETWORK_EQUIPMENT_LOADED = 'NETWORK_EQUIPMENT_LOADED';
-
-export function networkEquipmentLoaded(equipmentsName, values) {
-    return {
-        type: NETWORK_EQUIPMENT_LOADED,
-        equipmentsName: equipmentsName,
-        values: values,
     };
 }
 

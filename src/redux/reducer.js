@@ -26,7 +26,6 @@ import {
     LINE_FULL_PATH,
     LINE_PARALLEL_PATH,
     LOAD_GEO_DATA_SUCCESS,
-    NETWORK_CREATED,
     NETWORK_EQUIPMENT_LOADED,
     OPEN_STUDY,
     SELECT_THEME,
@@ -82,7 +81,6 @@ import {
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     STOP_DIAGRAM_BLINK,
-    NETWORK_EQUIPMENT_FETCHED,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     SELECTION_FOR_COPY,
     LIMIT_REDUCTION,
@@ -90,6 +88,7 @@ import {
     UPDATE_EQUIPMENTS,
     DELETE_EQUIPMENT,
     RESET_EQUIPMENTS,
+    RESET_EQUIPMENTS_POST_LOADFLOW,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -182,7 +181,6 @@ const initialState = {
         copyType: null,
         allChildrenIds: null,
     },
-    network: null,
     mapEquipments: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
@@ -213,7 +211,6 @@ const initialState = {
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
-    networkEquipmentsFetched: false, // indicate if network equipments are fetched
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
@@ -234,17 +231,8 @@ export const reducer = createReducer(initialState, {
 
     [CLOSE_STUDY]: (state) => {
         state.studyUuid = null;
-        state.network = null;
         state.geoData = null;
         state.networkModificationTreeModel = null;
-    },
-
-    [NETWORK_CREATED]: (state, action) => {
-        state.network = action.network;
-    },
-
-    [NETWORK_EQUIPMENT_FETCHED]: (state, action) => {
-        state.networkEquipmentsFetched = action.networkEquipmentsFetched;
     },
 
     [MAP_EQUIPMENTS_CREATED]: (state, action) => {
@@ -268,13 +256,6 @@ export const reducer = createReducer(initialState, {
             newMapEquipments.completeHvdcLinesInfos();
         }
         state.mapEquipments = newMapEquipments;
-    },
-
-    [NETWORK_EQUIPMENT_LOADED]: (state, action) => {
-        state.network = state.network.newSharedForUpdate(
-            action.equipmentsName,
-            action.values
-        );
     },
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
@@ -989,6 +970,14 @@ export const reducer = createReducer(initialState, {
     },
     [RESET_EQUIPMENTS]: (state) => {
         state.spreadsheetNetwork = { ...initialSpreadsheetNetworkState };
+    },
+    [RESET_EQUIPMENTS_POST_LOADFLOW]: (state) => {
+        state.spreadsheetNetwork = {
+            ...initialSpreadsheetNetworkState,
+            substations: state.spreadsheetNetwork.substations,
+            voltageLevels: state.spreadsheetNetwork.voltageLevels,
+            hvdcLines: state.spreadsheetNetwork.hvdcLines,
+        };
     },
 });
 

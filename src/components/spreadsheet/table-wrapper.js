@@ -14,7 +14,6 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import Network from '../network/network';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Grid, Alert } from '@mui/material';
 import {
@@ -110,10 +109,6 @@ const TableWrapper = (props) => {
     );
     const allReorderedTableDefinitionIndexes = useSelector(
         (state) => state.allReorderedTableDefinitionIndexes
-    );
-
-    const equipmentFetched = useSelector(
-        (state) => state.networkEquipmentsFetched
     );
 
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
@@ -304,7 +299,7 @@ const TableWrapper = (props) => {
 
     const getRows = useCallback(
         (index) => {
-            if (props.disabled || !props.network) {
+            if (props.disabled) {
                 return [];
             }
             const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
@@ -321,7 +316,7 @@ const TableWrapper = (props) => {
             //the method returns a new array so that the table component detects its data changed thus rerendering its rows
             return datasourceRows;
         },
-        [testEquipments, props.disabled, props.network]
+        [testEquipments, props.disabled]
     );
 
     useEffect(() => {
@@ -719,7 +714,6 @@ const TableWrapper = (props) => {
                         fetched={!isFetching}
                         scrollToIndex={scrollToIndex}
                         visible={props.visible}
-                        network={props.network}
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}
@@ -738,7 +732,6 @@ const TableWrapper = (props) => {
 };
 
 TableWrapper.defaultProps = {
-    network: null,
     studyUuid: '',
     currentNode: null,
     equipmentId: null,
@@ -749,7 +742,6 @@ TableWrapper.defaultProps = {
 };
 
 TableWrapper.propTypes = {
-    network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     equipmentId: PropTypes.string,

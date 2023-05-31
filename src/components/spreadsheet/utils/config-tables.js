@@ -72,7 +72,6 @@ export const TABLES_DEFINITIONS = {
         resource: equipments.voltageLevels,
         type: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
         modifiableEquipmentType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
-        getter: (network) => network.getVoltageLevels(),
         columns: [
             {
                 id: 'ID',
@@ -125,11 +124,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId1
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -137,11 +132,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId2
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -213,11 +204,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId1
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -225,11 +212,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId2
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -408,11 +391,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId1
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -420,11 +399,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId2
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -432,11 +407,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide3',
                 field: 'nominalVoltage3',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId3
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -800,11 +771,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1020,11 +987,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1106,11 +1069,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1166,11 +1125,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1235,11 +1190,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1406,11 +1357,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1479,11 +1426,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1566,11 +1509,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
+                valueGetter: (params) => 'toChangeAfterBackendUpdate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,

@@ -36,18 +36,16 @@ import {
 import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
-    networkCreated,
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
     setDeletedEquipments,
     setUpdatedSubstationsIds,
-    isNetworkEquipmentsFetched,
     updateEquipments,
     deleteEquipment,
     resetEquipments,
+    resetEquipmentsPostLoadflow,
 } from '../redux/actions';
-import Network from './network/network';
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
@@ -255,7 +253,6 @@ export function StudyContainer({ view, onChangeTab }) {
     // using a ref because this is not used for rendering, it is used in the websocket onMessage()
     const studyParentDirectoriesUuidsRef = useRef([]);
 
-    const network = useSelector((state) => state.network);
     const userName = useSelector((state) => state.user.profile.sub);
     const paramsLoaded = useSelector((state) => state[PARAMS_LOADED]);
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
@@ -515,11 +512,6 @@ export function StudyContainer({ view, onChangeTab }) {
         };
     }, [dispatch, fetchStudyPath]);
 
-    const displayNetworkLoadingFailMessage = useCallback((error) => {
-        console.error(error.message);
-        setNetworkLoadingFailMessage(error.message);
-    }, []);
-
     const loadTree = useCallback(() => {
         console.info(
             `Loading network modification tree of study '${studyUuid}'...`
@@ -599,7 +591,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }
 
     useEffect(() => {
-        if (network && studyUpdatedForce.eventData.headers) {
+        if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
@@ -654,44 +646,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         }
-    }, [studyUpdatedForce, network, studyUuid, dispatch]);
-
-    const loadNetwork = useCallback(
-        (isUpdate) => {
-            if (!isNodeBuilt(currentNode) || !studyUuid) {
-                return;
-            }
-            console.info(`Loading network of study '${studyUuid}'...`);
-
-            if (isUpdate) {
-                // After a load flow, network has to be recreated.
-                // In order to avoid glitches during sld (this force closes all slds) and map rendering,
-                // lines and substations have to be prefetched and set before network creation event is dispatched
-                // Network creation event is dispatched directly in the network constructor
-                new Network(
-                    studyUuid,
-                    currentNodeRef, // we use currentNodeRef instead of currentNode to check if the node has changed while we fetch data
-                    displayNetworkLoadingFailMessage,
-                    dispatch,
-                    {
-                        equipments: [equipments.lines, equipments.substations],
-                    }
-                );
-            } else {
-                const network = new Network(
-                    studyUuid,
-                    currentNodeRef,
-                    displayNetworkLoadingFailMessage,
-                    dispatch
-                );
-                // For initial network loading, no need to initialize lines and substations at first,
-                // lazy loading will do the job (no glitches to avoid)
-                dispatch(isNetworkEquipmentsFetched(true));
-                dispatch(networkCreated(network));
-            }
-        },
-        [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
-    );
+    }, [studyUpdatedForce, studyUuid, dispatch]);
 
     //handles map automatic mode network reload
     useEffect(() => {
@@ -716,8 +671,8 @@ export function StudyContainer({ view, onChangeTab }) {
             return;
         }
         dispatch(resetEquipments());
-        loadNetwork(previousCurrentNode); // loadNetwork(false) only at app startup, otherwise slds are force closed
-    }, [loadNetwork, currentNode, wsConnected, dispatch]);
+        //loadNetwork(previousCurrentNode); // loadNetwork(false) only at app startup, otherwise slds are force closed
+    }, [/*loadNetwork,*/ currentNode, wsConnected, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -725,12 +680,11 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'loadflow'
             ) {
-                //TODO reload data more intelligently
-                loadNetwork(true);
+                dispatch(resetEquipmentsPostLoadflow());
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, loadNetwork, dispatch]);
+    }, [studyUpdatedForce, dispatch]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
@@ -830,7 +784,6 @@ export function StudyContainer({ view, onChangeTab }) {
         >
             <StudyPane
                 studyUuid={studyUuid}
-                network={network}
                 currentNode={currentNode}
                 view={view}
                 onChangeTab={onChangeTab}

@@ -83,7 +83,6 @@ export const StudyView = {
 
 const StudyPane = ({
     studyUuid,
-    network,
     currentNode,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -137,12 +136,9 @@ const StudyPane = ({
 
     const openVoltageLevel = useCallback(
         (vlId) => {
-            if (!network) {
-                return;
-            }
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         },
-        [network, openDiagramView]
+        [openDiagramView]
     );
 
     function showInSpreadsheet(equipment) {
@@ -270,7 +266,6 @@ const StudyPane = ({
 
                             <DiagramPane
                                 studyUuid={studyUuid}
-                                network={network}
                                 isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
                                 loadFlowStatus={getLoadFlowRunningStatus(
@@ -293,7 +288,6 @@ const StudyPane = ({
         return (
             <Paper className={clsx('singlestretch-child', classes.table)}>
                 <TableWrapper
-                    network={network}
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     equipmentId={tableEquipment.id}
