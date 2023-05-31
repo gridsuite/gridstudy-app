@@ -44,6 +44,7 @@ import {
     setUpdatedSubstationsIds,
     isNetworkEquipmentsFetched,
     updateEquipments,
+    deleteEquipment,
 } from '../redux/actions';
 import Network from './network/network';
 import WaitingLoader from './utils/waiting-loader';
@@ -620,9 +621,11 @@ export function StudyContainer({ view, onChangeTab }) {
                                 deletedEquipment?.equipmentType,
                                 ' from the network'
                             );
-                            network.removeEquipment(
-                                deletedEquipment?.equipmentType,
-                                deletedEquipment?.equipmentId
+                            dispatch(
+                                deleteEquipment(
+                                    deletedEquipment?.equipmentType,
+                                    deletedEquipment?.equipmentId
+                                )
                             );
                         }
                     });

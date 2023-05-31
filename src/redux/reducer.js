@@ -15,7 +15,7 @@ import {
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
 } from '@gridsuite/commons-ui';
-
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     CENTER_LABEL,
     CLOSE_STUDY,
@@ -88,6 +88,8 @@ import {
     LIMIT_REDUCTION,
     LOAD_EQUIPMENTS,
     UPDATE_EQUIPMENTS,
+    DELETE_EQUIPMENT,
+    RESET_EQUIPMENTS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -145,7 +147,7 @@ const paramsInitialState = {
     [PARAMS_LOADED]: false,
 };
 
-const initialNetworkState = {
+const initialSpreadsheetNetworkState = {
     substations: null,
     lines: null,
     twoWindingsTransformers: null,
@@ -212,7 +214,7 @@ const initialState = {
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     networkEquipmentsFetched: false, // indicate if network equipments are fetched
-    spreadsheetNetwork: { ...initialNetworkState },
+    spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -958,7 +960,96 @@ export const reducer = createReducer(initialState, {
             }
         }
     },
+    [DELETE_EQUIPMENT]: (state, action) => {
+        const equipmentToDeleteId = action.equipmentId;
+        const equipmentToDeleteType = fromEquipmentTypeToSpreadsheetNetworkType(
+            action.equipmentType
+        );
+
+        const currentEquipments =
+            state.spreadsheetNetwork[equipmentToDeleteType];
+        if (currentEquipments != null) {
+            // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
+            if (action.equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type) {
+                const currentSubstations = state.spreadsheetNetwork.substations;
+                if (currentSubstations != null) {
+                    state.spreadsheetNetwork.substations =
+                        updateSubstationAfterVLDeletion(
+                            currentSubstations,
+                            equipmentToDeleteId
+                        );
+                }
+            }
+
+            state.spreadsheetNetwork[equipmentToDeleteType] = deleteEquipment(
+                currentEquipments,
+                equipmentToDeleteId
+            );
+        }
+    },
+    [RESET_EQUIPMENTS]: (state) => {
+        state.spreadsheetNetwork = { ...initialSpreadsheetNetworkState };
+    },
 });
+
+function updateSubstationAfterVLDeletion(currentSubstations, VLToDeleteId) {
+    const substationToUpdateIndex = currentSubstations.findIndex((sub) =>
+        sub.voltageLevels.some((vl) => vl.id === VLToDeleteId)
+    );
+    if (substationToUpdateIndex >= 0) {
+        currentSubstations[substationToUpdateIndex].voltageLevels =
+            currentSubstations[substationToUpdateIndex].voltageLevels.filter(
+                (vl) => vl.id !== VLToDeleteId
+            );
+    }
+
+    return currentSubstations;
+}
+
+function fromEquipmentTypeToSpreadsheetNetworkType(equipmentType) {
+    switch (equipmentType) {
+        case EQUIPMENT_TYPES.LINE.type:
+            return 'lines';
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
+            return 'twoWindingsTransformers';
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type:
+            return 'threeWindingsTransformers';
+        case EQUIPMENT_TYPES.GENERATOR.type:
+            return 'generators';
+        case EQUIPMENT_TYPES.LOAD.type:
+            return 'loads';
+        case EQUIPMENT_TYPES.BATTERY.type:
+            return 'batteries';
+        case EQUIPMENT_TYPES.DANGLING_LINE.type:
+            return 'danglingLines';
+        case EQUIPMENT_TYPES.HVDC_LINE.type:
+            return 'hvdcLines';
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type:
+            return 'lccConverterStations';
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type:
+            return 'vscConverterStations';
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type:
+            return 'shuntCompensators';
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type:
+            return 'staticVarCompensators';
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+            return 'voltageLevels';
+        case EQUIPMENT_TYPES.SUBSTATION.type:
+            return 'substations';
+        default:
+            return;
+    }
+}
+
+function deleteEquipment(currentEquipments, equipmentToDeleteId) {
+    const equipmentToDeleteIndex = currentEquipments.findIndex(
+        (eq) => eq.id === equipmentToDeleteId
+    );
+    if (equipmentToDeleteIndex >= 0) {
+        currentEquipments.splice(equipmentToDeleteIndex, 1);
+    }
+    return currentEquipments;
+}
 
 function updateSubstationsAndVoltageLevels(
     currentSubstations,

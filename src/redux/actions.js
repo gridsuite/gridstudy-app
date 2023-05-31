@@ -60,6 +60,24 @@ export function updateEquipments(equipments) {
     };
 }
 
+export const DELETE_EQUIPMENT = 'DELETE_EQUIPMENT';
+
+export function deleteEquipment(equipmentType, equipmentId) {
+    return {
+        type: DELETE_EQUIPMENT,
+        equipmentId: equipmentId,
+        equipmentType: equipmentType,
+    };
+}
+
+export const RESET_EQUIPMENTS = 'RESET_EQUIPMENTS';
+
+export function resetEquipments() {
+    return {
+        type: RESET_EQUIPMENTS,
+    };
+}
+
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
 export function mapEquipmentsCreated(
