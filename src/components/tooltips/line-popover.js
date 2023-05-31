@@ -56,6 +56,8 @@ const LinePopover = ({
             fetchLine(studyUuid, currentNode.id, lineId).then((value) => {
                 setLineInfo(value);
             });
+        } else {
+            setLineInfo(null);
         }
     }, [lineId, currentNode.id, studyUuid, lineInfos]);
 
