@@ -43,7 +43,9 @@ import {
     ADD_LOADFLOW_NOTIF,
     RESET_LOADFLOW_NOTIF,
     ADD_SA_NOTIF,
+    ADD_VOLTAGE_INIT_NOTIF,
     RESET_SA_NOTIF,
+    RESET_VOLTAGE_INIT_NOTIF,
     ADD_SENSI_NOTIF,
     RESET_SENSI_NOTIF,
     COMPONENT_LIBRARY,
@@ -164,6 +166,7 @@ const initialState = {
     studyUpdated: { force: 0, eventData: {} },
     loadflowNotif: false,
     saNotif: false,
+    voltageInitNotif: false,
     sensiNotif: false,
     shortCircuitNotif: false,
     dynamicSimulationNotif: false,
@@ -505,6 +508,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_SA_NOTIF]: (state) => {
         state.saNotif = false;
+    },
+
+    [ADD_VOLTAGE_INIT_NOTIF]: (state) => {
+        state.voltageInitNotif = true;
+    },
+
+    [RESET_VOLTAGE_INIT_NOTIF]: (state) => {
+        state.voltageInitNotif = false;
     },
 
     [ADD_SENSI_NOTIF]: (state) => {
