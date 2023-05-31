@@ -720,6 +720,8 @@
     "PermanentCurrentLimitText2": "Permanent current limit 2",
 
     "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
+    "ModifyTwoWindingsTransformer": "Modify a 2 windings transformer",
+    "TwoWindingsTransformerModificationError": "Error while modifying a 2 windings transformer",
     "TwoWindingsTransformerCharacteristicsTab": "Characteristics",
     "TwoWindingsTransformerRatioTapChangerTab": "Ratio tap changer",
     "TwoWindingsTransformerPhaseTapChangerTab": "Phase tap changer",

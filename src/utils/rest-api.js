@@ -2579,6 +2579,62 @@ export function createTwoWindingsTransformer(
     });
 }
 
+export function modifyTwoWindingsTransformer(
+    studyUuid,
+    currentNodeUuid,
+    twoWindingsTransformerId,
+    twoWindingsTransformerName,
+    seriesResistance,
+    seriesReactance,
+    magnetizingConductance,
+    magnetizingSusceptance,
+    ratedS,
+    ratedVoltage1,
+    ratedVoltage2,
+    currentLimit1,
+    currentLimit2,
+    isUpdate,
+    modificationUuid
+) {
+    let modifyTwoWindingsTransformerUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyTwoWindingsTransformerUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating two windings transformer modification');
+    } else {
+        console.info('Creating two windings transformer modification');
+    }
+
+    return backendFetchText(modifyTwoWindingsTransformerUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+            equipmentId: twoWindingsTransformerId,
+            equipmentName: toModificationOperation(twoWindingsTransformerName),
+            seriesResistance: toModificationOperation(seriesResistance),
+            seriesReactance: toModificationOperation(seriesReactance),
+            magnetizingConductance: toModificationOperation(
+                magnetizingConductance
+            ),
+            magnetizingSusceptance: toModificationOperation(
+                magnetizingSusceptance
+            ),
+            ratedS: toModificationOperation(ratedS),
+            ratedVoltage1: toModificationOperation(ratedVoltage1),
+            ratedVoltage2: toModificationOperation(ratedVoltage2),
+            currentLimits1: currentLimit1,
+            currentLimits2: currentLimit2,
+        }),
+    });
+}
+
 export function createSubstation(
     studyUuid,
     currentNodeUuid,
