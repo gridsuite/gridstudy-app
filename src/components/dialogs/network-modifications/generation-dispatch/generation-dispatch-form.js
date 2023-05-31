@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import DirectoryItemsInput from 'components/utils/rhf-inputs/directory-items-input';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
@@ -22,10 +23,16 @@ import {
 import { elementType } from '@gridsuite/commons-ui';
 import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
+import FrequencyReservePane from './frequency-reserve-pane';
 
 export const useStyles = makeStyles((theme) => ({
     padding: {
+        paddingTop: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+    },
+    padding2: {
         paddingTop: theme.spacing(2),
+        paddingLeft: theme.spacing(2),
     },
 }));
 
@@ -93,9 +100,24 @@ const GenerationDispatchForm = ({ currentNode, studyUuid }) => {
                 {gridItem(generatorsWithFixedActivePowerField, 6)}
             </Grid>
             <GridSection title="ReduceMaxP" />
-            <Grid container spacing={2} alignItems="center">
-                {gridItem(defaultOutageRateField, 4)}
-                {gridItem(generatorsWithoutOutageField, 6)}
+            <Grid
+                container
+                direction="column"
+                spacing={2}
+                alignItems="start"
+                className={classes.padding}
+            >
+                <Grid
+                    container
+                    direction="row"
+                    spacing={2}
+                    alignItems="start"
+                    className={classes.padding2}
+                >
+                    {gridItem(defaultOutageRateField, 4)}
+                    {gridItem(generatorsWithoutOutageField, 6)}
+                </Grid>
+                <FrequencyReservePane />
             </Grid>
         </>
     );
