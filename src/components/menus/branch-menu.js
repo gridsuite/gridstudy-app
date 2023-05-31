@@ -78,11 +78,11 @@ const withBranchMenu =
 
         const getEquipmentTranslation = useCallback((equipmentType) => {
             switch (equipmentType) {
-                case EQUIPMENT_TYPES.LINE.name:
+                case EQUIPMENT_TYPES.LINE.type:
                     return 'Line';
-                case EQUIPMENT_TYPES.HVDC_LINE.name:
+                case EQUIPMENT_TYPES.HVDC_LINE.type:
                     return 'HvdcLine';
-                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name:
+                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
                     return '2WTransformer';
                 default:
                     break;
@@ -91,11 +91,11 @@ const withBranchMenu =
 
         const getRealEquipmentType = useCallback((equipmentType) => {
             switch (equipmentType) {
-                case EQUIPMENT_TYPES.LINE.name:
+                case EQUIPMENT_TYPES.LINE.type:
                     return EQUIPMENT_TYPES.LINE.type;
-                case EQUIPMENT_TYPES.HVDC_LINE.name:
+                case EQUIPMENT_TYPES.HVDC_LINE.type:
                     return EQUIPMENT_TYPES.HVDC_LINE.type;
-                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name:
+                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
                     return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
                 default:
                     break;
@@ -208,7 +208,7 @@ const withBranchMenu =
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
                 />
-                {equipmentType === EQUIPMENT_TYPES.LINE.name && (
+                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleLockout()}
@@ -233,7 +233,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.name && (
+                {equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleTrip()}
@@ -258,7 +258,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === EQUIPMENT_TYPES.LINE.name && (
+                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
@@ -294,7 +294,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === EQUIPMENT_TYPES.LINE.name && (
+                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
@@ -330,7 +330,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === EQUIPMENT_TYPES.LINE.name && (
+                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleSwitchOn()}
@@ -356,7 +356,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.name && (
+                {equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() =>

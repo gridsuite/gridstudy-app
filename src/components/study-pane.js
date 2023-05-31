@@ -149,7 +149,7 @@ const StudyPane = ({
             return;
         }
         network.useEquipment(EQUIPMENT_TYPES.SUBSTATION.name);
-        network.useEquipment(EQUIPMENT_TYPES.LINE.name);
+        network.useEquipment(EQUIPMENT_TYPES.LINE.type);
     }, [network]);
 
     function showInSpreadsheet(equipment) {

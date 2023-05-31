@@ -188,7 +188,7 @@ export default class Network {
         this.lines = this.updateEquipments(
             this.lines,
             lines,
-            EQUIPMENT_TYPES.LINE.name
+            EQUIPMENT_TYPES.LINE.type
         );
 
         // add more infos
@@ -206,7 +206,7 @@ export default class Network {
         this.twoWindingsTransformers = this.updateEquipments(
             this.twoWindingsTransformers,
             twoWindingsTransformers,
-            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name
+            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
         );
 
         // add more infos
@@ -222,7 +222,7 @@ export default class Network {
         this.threeWindingsTransformers = this.updateEquipments(
             this.threeWindingsTransformers,
             threeWindingsTransformers,
-            EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.name
+            EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type
         );
 
         // add more infos
@@ -251,7 +251,7 @@ export default class Network {
         this.batteries = this.updateEquipments(
             this.batteries,
             batteries,
-            EQUIPMENT_TYPES.BATTERY.name
+            EQUIPMENT_TYPES.BATTERY.type
         );
     }
 
@@ -259,7 +259,7 @@ export default class Network {
         this.loads = this.updateEquipments(
             this.loads,
             loads,
-            EQUIPMENT_TYPES.LOAD.name
+            EQUIPMENT_TYPES.LOAD.type
         );
     }
 
@@ -267,7 +267,7 @@ export default class Network {
         this.danglingLines = this.updateEquipments(
             this.danglingLines,
             danglingLines,
-            EQUIPMENT_TYPES.DANGLING_LINE.name
+            EQUIPMENT_TYPES.DANGLING_LINE.type
         );
     }
 
@@ -275,7 +275,7 @@ export default class Network {
         this.shuntCompensators = this.updateEquipments(
             this.shuntCompensators,
             shuntCompensators,
-            EQUIPMENT_TYPES.SHUNT_COMPENSATOR.name
+            EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type
         );
     }
 
@@ -283,7 +283,7 @@ export default class Network {
         this.staticVarCompensators = this.updateEquipments(
             this.staticVarCompensators,
             staticVarCompensators,
-            EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.name
+            EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type
         );
     }
 
@@ -291,7 +291,7 @@ export default class Network {
         this.hvdcLines = this.updateEquipments(
             this.hvdcLines,
             hvdcLines,
-            EQUIPMENT_TYPES.HVDC_LINE.name
+            EQUIPMENT_TYPES.HVDC_LINE.type
         );
     }
 
@@ -299,7 +299,7 @@ export default class Network {
         this.lccConverterStations = this.updateEquipments(
             this.lccConverterStations,
             lccConverterStations,
-            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.name
+            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type
         );
     }
 
@@ -307,7 +307,7 @@ export default class Network {
         this.vscConverterStations = this.updateEquipments(
             this.vscConverterStations,
             vscConverterStations,
-            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.name
+            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type
         );
     }
 
@@ -403,16 +403,16 @@ export default class Network {
             case EQUIPMENT_TYPES.SUBSTATION.name:
                 this.completeSubstationsInfos();
                 break;
-            case EQUIPMENT_TYPES.LINE.name:
+            case EQUIPMENT_TYPES.LINE.type:
                 this.completeLinesInfos();
                 break;
             case EQUIPMENT_TYPES.GENERATOR.name:
                 this.completeGeneratorsInfos();
                 break;
-            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name:
+            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
                 this.completeTwoWindingsTransformersInfos();
                 break;
-            case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.name:
+            case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type:
                 this.completeThreeWindingsTransformersInfos();
                 break;
             default:

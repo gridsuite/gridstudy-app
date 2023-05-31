@@ -153,9 +153,9 @@ function SingleLineDiagramContent(props) {
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
-            (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE.name ||
+            (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE.type ||
                 equipmentMenu.equipmentType ===
-                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name) && (
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type) && (
                 <MenuBranch
                     id={equipmentMenu.equipmentId}
                     equipmentType={equipmentMenu.equipmentType}
@@ -205,7 +205,7 @@ function SingleLineDiagramContent(props) {
                         defaultIdValue={equipmentToModify.equipmentId}
                     />
                 );
-            case EQUIPMENT_TYPES.LOAD.name:
+            case EQUIPMENT_TYPES.LOAD.type:
                 return (
                     <LoadModificationDialog
                         open={true}
@@ -364,32 +364,32 @@ function SingleLineDiagramContent(props) {
                 style={{ height: '100%' }}
             />
             {displayBranchMenu()}
-            {displayMenu(EQUIPMENT_TYPES.LOAD.name, 'load-menus')}
-            {displayMenu(EQUIPMENT_TYPES.BATTERY.name, 'battery-menus')}
+            {displayMenu(EQUIPMENT_TYPES.LOAD.type, 'load-menus')}
+            {displayMenu(EQUIPMENT_TYPES.BATTERY.type, 'battery-menus')}
             {displayMenu(
-                EQUIPMENT_TYPES.DANGLING_LINE.name,
+                EQUIPMENT_TYPES.DANGLING_LINE.type,
                 'dangling-line-menus'
             )}
             {displayMenu(EQUIPMENT_TYPES.GENERATOR.name, 'generator-menus')}
             {displayMenu(
-                EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.name,
+                EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
                 'static-var-compensator-menus'
             )}
             {displayMenu(
-                EQUIPMENT_TYPES.SHUNT_COMPENSATOR.name,
+                EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
                 'shunt-compensator-menus'
             )}
             {displayMenu(
-                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.name,
+                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
                 'three-windings-transformer-menus'
             )}
-            {displayMenu(EQUIPMENT_TYPES.HVDC_LINE.name, 'hvdc-line-menus')}
+            {displayMenu(EQUIPMENT_TYPES.HVDC_LINE.type, 'hvdc-line-menus')}
             {displayMenu(
-                EQUIPMENT_TYPES.LCC_CONVERTER_STATION.name,
+                EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
                 'lcc-converter-station-menus'
             )}
             {displayMenu(
-                EQUIPMENT_TYPES.VSC_CONVERTER_STATION.name,
+                EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
                 'vsc-converter-station-menus'
             )}
             {equipmentToModify &&

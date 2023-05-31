@@ -175,13 +175,13 @@ const BaseEquipmentMenu = ({
     );
 
     const equipmentsWithBranch = [
-        EQUIPMENT_TYPES.LINE.name,
-        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.name,
+        EQUIPMENT_TYPES.LINE.type,
+        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
     ];
     const equipmentsNotDeletable = [
-        EQUIPMENT_TYPES.LCC_CONVERTER_STATION.name,
-        EQUIPMENT_TYPES.VSC_CONVERTER_STATION.name,
-        EQUIPMENT_TYPES.HVDC_LINE.name,
+        EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
+        EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+        EQUIPMENT_TYPES.HVDC_LINE.type,
     ];
 
     useEffect(() => {
@@ -241,7 +241,7 @@ const BaseEquipmentMenu = ({
                 )}
             {/* menus for equipment generator and load */}
             {(equipmentType === EQUIPMENT_TYPES.GENERATOR.name ||
-                equipmentType === EQUIPMENT_TYPES.LOAD.name) && (
+                equipmentType === EQUIPMENT_TYPES.LOAD.type) && (
                 <ItemViewInForm
                     equipmentId={equipmentId}
                     equipmentType={equipmentType}
