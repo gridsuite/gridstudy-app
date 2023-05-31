@@ -49,12 +49,15 @@ const getGeneratorsFiltersSchema = (id) => ({
 const getGeneratorsFrequencyReserveSchema = (id) => ({
     [id]: yup.array().of(
         yup.object().shape({
-            [GENERATORS_FILTERS]: yup.array().of(
-                yup.object().shape({
-                    [ID]: yup.string().required(),
-                    [NAME]: yup.string().required(),
-                })
-            ),
+            [GENERATORS_FILTERS]: yup
+                .array()
+                .of(
+                    yup.object().shape({
+                        [ID]: yup.string().required(),
+                        [NAME]: yup.string().required(),
+                    })
+                )
+                .min(1),
             [FREQUENCY_RESERVE]: yup
                 .number()
                 .nullable()
