@@ -26,7 +26,6 @@ const TwoWindingsTransformerModificationDialogTabs = ({
     tabIndex,
     tabIndexesWithError,
     setTabIndex,
-    setDialogWidth,
 }) => {
     const classes = useStyles();
 
@@ -63,14 +62,12 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                     className={getTabClass(
                         TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB
                     )}
-                    onClick={() => setDialogWidth('xl')}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
                     className={getTabClass(
                         TwoWindingsTransformerModificationDialogTab.LIMITS_TAB
                     )}
-                    onClick={() => setDialogWidth('xl')}
                 />
             </Tabs>
         </Grid>

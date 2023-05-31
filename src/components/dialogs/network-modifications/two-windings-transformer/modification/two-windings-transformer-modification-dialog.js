@@ -87,7 +87,6 @@ const TwoWindingsTransformerModificationDialog = ({
         TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB
     );
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
-    const [dialogWidth, setDialogWidth] = useState('xl');
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState(null);
 
@@ -305,16 +304,19 @@ const TwoWindingsTransformerModificationDialog = ({
                 tabIndex={tabIndex}
                 tabIndexesWithError={tabIndexesWithError}
                 setTabIndex={setTabIndex}
-                setDialogWidth={setDialogWidth}
             />
         </Grid>
     );
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <FormProvider
+            removeOptional={true}
+            validationSchema={formSchema}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
-                maxWidth={dialogWidth}
+                maxWidth={'md'}
                 titleId="ModifyTwoWindingsTransformer"
                 aria-labelledby="dialog-modify-two-windings-transformer"
                 subtitle={headerAndTabs}
@@ -343,7 +345,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 >
                     <TwoWindingsTransformerCharacteristicsPane
                         twtToModify={twtToModify}
-                        clearableFields
+                        modification
                     />
                 </Box>
 

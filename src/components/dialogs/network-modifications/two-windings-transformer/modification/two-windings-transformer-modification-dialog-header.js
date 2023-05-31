@@ -46,7 +46,7 @@ const TwoWindingsTransformerModificationDialogHeader = ({
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
-            name={`${EQUIPMENT_ID}`}
+            name={EQUIPMENT_ID}
             label="ID"
             options={equipmentOptions}
             getOptionLabel={getObjectId}
@@ -58,7 +58,7 @@ const TwoWindingsTransformerModificationDialogHeader = ({
 
     const twoWindingsTransformerNameField = (
         <TextInput
-            name={`${EQUIPMENT_NAME}`}
+            name={EQUIPMENT_NAME}
             label="Name"
             formProps={filledTextField}
             previousValue={equipmentToModify?.name}
@@ -68,8 +68,8 @@ const TwoWindingsTransformerModificationDialogHeader = ({
 
     return (
         <Grid container item spacing={2}>
-            {gridItem(twoWindingsTransformerIdField, 4)}
-            {gridItem(twoWindingsTransformerNameField, 4)}
+            {gridItem(twoWindingsTransformerIdField)}
+            {gridItem(twoWindingsTransformerNameField)}
         </Grid>
     );
 };
