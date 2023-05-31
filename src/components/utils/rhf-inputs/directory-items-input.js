@@ -31,7 +31,7 @@ const DirectoryItemsInput = ({
     equipmentTypes, // Mostly used for filters, it allows the user to get elements of specific equipment only
     itemFilter, // Used to further filter the results displayed according to specific requirement
     titleId, // title of directory item selector dialogue
-    disableErrorMessage,
+    hideErrorMessage,
 }) => {
     const classes = useStyles();
     const { snackError } = useSnackMessage();
@@ -130,7 +130,7 @@ const DirectoryItemsInput = ({
                     </Grid>
                 </Grid>
             </FormControl>
-            {!disableErrorMessage && (
+            {!hideErrorMessage && (
                 <ErrorInput name={name} InputField={MidFormError} />
             )}
             <DirectoryItemSelector

@@ -118,7 +118,7 @@ function EditableTableCell({
                     equipmentTypes={column.equipmentTypes}
                     elementType={column.elementType}
                     titleId={column.titleId}
-                    disableErrorMessage={true}
+                    hideErrorMessage={true}
                 />
             )}
         </TableCell>

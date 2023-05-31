@@ -25,7 +25,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
     const columnsDefinition = useMemo(() => {
         return [
             {
-                label: 'GeneratorsFilters',
+                label: 'GeneratorFilter',
                 dataKey: GENERATORS_FILTERS,
                 initialValue: [],
                 editable: true,

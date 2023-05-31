@@ -925,7 +925,7 @@
     "DefaultOutageRate": "Default outage rate",
     "GeneratorsWithoutOutage": "Generators without outage simulation",
     "GeneratorsWithFixedActivePower": "Generators with fixed active power",
-    "GeneratorsFilters": "GENERATOR FILTER",
+    "GeneratorFilter": "GENERATOR FILTER",
     "FrequencyReserve": "FREQUENCY RESERVE (%)",
     "GeneratorsFiltersFrequencyReserveToolTip": "User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry",
     "ReplacingLine": "Replacing line",
