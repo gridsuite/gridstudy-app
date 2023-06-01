@@ -9,7 +9,6 @@ import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
-    FetchStatus,
     deleteEquipment,
     fetchLinePositions,
     fetchSubstationPositions,
@@ -174,12 +173,13 @@ export const NetworkMapTab = ({
                 return (
                     <SubstationModificationDialog
                         open={true}
+                        editData={{
+                            equipmentId: equipmentToModify.equipmentId,
+                        }}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        isUpdate={false}
-                        editDataFetchStatus={FetchStatus.IDLE}
+                        isUpdate={true}
                         onClose={() => closeModificationDialog()}
-                        defaultIdValue={equipmentToModify.equipmentId}
                     />
                 );
             case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
@@ -188,10 +188,9 @@ export const NetworkMapTab = ({
                         open={true}
                         editData={{
                             equipmentId: equipmentToModify.equipmentId,
-                            equipmentType: equipmentToModify.equipmentType,
                         }}
                         studyUuid={studyUuid}
-                        isUpdate={false}
+                        isUpdate={true}
                         currentNode={currentNode}
                         onClose={() => closeModificationDialog()}
                     />
