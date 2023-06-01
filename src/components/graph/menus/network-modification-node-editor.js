@@ -16,7 +16,7 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import NetworkModificationDialog from 'components/dialogs/network-modifications-dialog';
+import NetworkModificationMenu from 'components/graph/menus/network-modifications-menu';
 import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
 import {
@@ -241,12 +241,12 @@ const NetworkModificationNodeEditor = () => {
                 },
                 SHUNT_COMPENSATOR_CREATION: {
                     id: 'SHUNT_COMPENSATOR_CREATION',
-                    label: 'SHUNT_COMPENSATOR',
+                    label: 'ShuntCompensator',
                     dialog: () => adapt(ShuntCompensatorCreationDialog),
                 },
                 LINE_CREATION: {
                     id: 'LINE_CREATION',
-                    label: 'OverloadedLine',
+                    label: 'LINE',
                     dialog: () => adapt(LineCreationDialog),
                 },
                 TWO_WINDINGS_TRANSFORMER_CREATION: {
@@ -280,7 +280,7 @@ const NetworkModificationNodeEditor = () => {
                     dialog: () => adapt(GeneratorModificationDialog),
                 },
                 LINE_MODIFICATION: {
-                    label: 'OverloadedLine',
+                    label: 'LINE',
                     dialog: () => adapt(LineModificationDialog),
                 },
                 VOLTAGE_LEVEL_MODIFICATION: {
@@ -483,7 +483,7 @@ const NetworkModificationNodeEditor = () => {
         studyUpdatedForce,
     ]);
 
-    const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
+    const [openNetworkModificationsMenu, setopenNetworkModificationsMenu] =
         useState(false);
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -491,11 +491,11 @@ const NetworkModificationNodeEditor = () => {
     const classes = useStyles();
 
     const openNetworkModificationConfiguration = useCallback(() => {
-        setOpenNetworkModificationsDialog(true);
+        setopenNetworkModificationsMenu(true);
     }, []);
 
     const closeNetworkModificationConfiguration = () => {
-        setOpenNetworkModificationsDialog(false);
+        setopenNetworkModificationsMenu(false);
         setEditData(undefined);
         setEditDataFetchStatus(FetchStatus.IDLE);
     };
@@ -635,6 +635,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const onOpenDialog = (id) => {
+        setopenNetworkModificationsMenu(false);
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
@@ -890,8 +891,8 @@ const NetworkModificationNodeEditor = () => {
                 <AddIcon />
             </Fab>
 
-            <NetworkModificationDialog
-                open={openNetworkModificationsDialog}
+            <NetworkModificationMenu
+                open={openNetworkModificationsMenu}
                 onClose={closeNetworkModificationConfiguration}
                 currentNodeUuid={currentNode?.id}
                 onOpenDialog={onOpenDialog}
