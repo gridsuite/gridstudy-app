@@ -490,7 +490,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
         },
         [studyUuid, intl, defaultValue, snackError]
     );
-    const debounced = useDebounce(validName, 700);
+    const debouncedValidName = useDebounce(validName, 700);
 
     useEffect(() => {
         if (checking === undefined) {
@@ -516,8 +516,8 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
         setAdornment(undefined);
         setChecking(true);
         setError(undefined);
-        debounced(name);
-    }, [studyUuid, name, debounced, triggerReset]);
+        debouncedValidName(name);
+    }, [studyUuid, name, debouncedValidName, triggerReset]);
 
     return [error, field, isValidName, name];
 };

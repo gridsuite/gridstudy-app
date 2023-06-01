@@ -8,10 +8,10 @@
 import { useEffect, useMemo } from 'react';
 import { debounce } from '@mui/material/utils';
 
-const useDebounce = (callback, delay) => {
+const useDebounce = (func, delay) => {
     const debouncedChangeHandler = useMemo(
-        () => debounce(callback, delay),
-        [callback, delay]
+        () => debounce(func, delay),
+        [func, delay]
     );
 
     // Stop the invocation of the debounced function after unmounting
