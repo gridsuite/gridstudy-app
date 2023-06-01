@@ -254,7 +254,6 @@ const CreateNodeMenu = ({
 
     const renderMenuItems = useCallback(
         (nodeMenuItems) => {
-            console.log('SBO recusive', nodeMenuItems);
             return Object.values(nodeMenuItems).map((item) => {
                 if (activeNode?.type === 'ROOT' && !item.onRoot) {
                     return undefined; // do not show this item in menu
