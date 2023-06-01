@@ -5,14 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Grid, TextField, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Typography from '@mui/material/Typography';
-import { isValidPercentage } from '../percentage-area/percentage-area-utils';
-import { isFloatNumber } from '../../utils/inputs/input-hooks';
+import {
+    isPositiveFloatNumber,
+    isValidPercentage,
+} from '../../../utils/config-params';
 
 export const SecurityAnalysisParameters = ({
     hideParameters,
@@ -27,6 +29,7 @@ export const SecurityAnalysisParameters = ({
         resetProvider,
         params,
         updateParameters,
+        resetParameters,
     ] = parametersBackend;
 
     const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
@@ -34,8 +37,9 @@ export const SecurityAnalysisParameters = ({
     const updateProviderCallback = useCallback(handleUpdateProvider, [
         updateProvider,
     ]);
-
+    console.log(' params : ', params);
     const [fieldsValues, setFieldsValues] = useState({
+        //todo:  to be replaced with params
         flowProportionalThreshold: params?.flowProportionalThreshold, //  '0.1',
         lowVoltageProportionalThreshold:
             params?.lowVoltageProportionalThreshold, // '0.0',
@@ -46,7 +50,6 @@ export const SecurityAnalysisParameters = ({
     });
     const handleValueChanged = (e, verifyFunction) => {
         if (verifyFunction(e.target.value)) {
-            console.log(' value: ', e.target.value);
             setFieldsValues((prevState) => ({
                 ...prevState,
                 [e.target.name]: e.target.value,
@@ -54,9 +57,11 @@ export const SecurityAnalysisParameters = ({
         }
     };
     const callBack = () => {
-        console.log(' all params: ', { ...fieldsValues });
         updateParameters({ ...fieldsValues });
     };
+    useEffect(() => {
+        setFieldsValues({ ...params });
+    }, [params]);
 
     const {
         flowProportionalThreshold,
@@ -65,14 +70,25 @@ export const SecurityAnalysisParameters = ({
         highVoltageProportionalThreshold,
         highVoltageAbsoluteThreshold,
     } = fieldsValues;
-    console.log(' fieldsValues: ', fieldsValues);
-    console.log(' providers: ', providers);
     // DynaFlow is not supported at the moment for security analysis
     // TODO: remove this when DynaFlow is supported
     const securityAnalysisiProvider = Object.fromEntries(
         Object.entries(providers).filter(([key]) => !key.includes('DynaFlow'))
     );
 
+    const resetSAParametersAndProvider = useCallback(() => {
+        resetParameters();
+        resetProvider();
+    }, [resetParameters, resetProvider]);
+
+    const info =
+        "Cette section permet de paramétrer le niveau d'aggravation à partir duquel les contraintes calculées en N réapparaissent en N-k.</br>" +
+        '\n' +
+        "L'aggravation de contrainte en intensité est déterminée uniquement en pourcentage de la valeur calculée en N pour les ouvrages en contrainte. Par exemple, si l'aggravation en pourcentage correspond à 10 A alors la contrainte en N réapparaitra en N-k pour une augmentation d'intensité de plus de 10 A par rapport à la valeur calculée en N.</br>" +
+        '\n' +
+        "L'aggravation de contrainte en tension basse peut être calculée en pourcentage ou en définie en valeur absolue par rapport à la valeur calculée en N. La valeur prise en compte sera la plus conservative des deux. Par exemple, si l'aggravation en pourcentage correspond à 1 kV et celle renseignée en absolu est de 2 kV, alors la contrainte en tension basse réapparaitra en N-k pour une chute de tension de plus de 1 kV par rapport à la valeur calculée en N.</br>" +
+        '\n' +
+        "L'aggravation de contrainte en tension haute peut être calculée en pourcentage ou en définie en valeur absolue par rapport à la valeur calculée en N. La valeur prise en compte sera la plus conservative des deux. Par exemple, si l'aggravation en pourcentage correspond à 1 kV et celle renseignée en absolu est de 2 kV, alors la contrainte en tension haute réapparaitra en N-k pour une élévation de tension de plus de 1 kV par rapport à la valeur calculée en N.</br>";
     return (
         <>
             <Grid
@@ -88,16 +104,24 @@ export const SecurityAnalysisParameters = ({
                     callback={updateProviderCallback}
                 />
 
-                <Grid className={classes.text}>
+                <Grid className={classes.textContainer}>
                     <Grid item xs={8} className={classes.text}>
                         <Typography>Masquage des contraintes en N-K</Typography>
-                        <Tooltip title="Delete">
+                        <Tooltip
+                            className={classes.tooltip}
+                            title={
+                                <div
+                                    dangerouslySetInnerHTML={{ __html: info }}
+                                />
+                            }
+                            placement="left-start"
+                        >
                             <InfoIcon />
                         </Tooltip>
                     </Grid>
                 </Grid>
 
-                <Grid className={classes.maxWidthItem}>
+                <Grid className={classes.singleItem}>
                     <Grid item xs={4} className={classes.parameterName}>
                         <Typography>Intensité</Typography>
                     </Grid>
@@ -119,7 +143,12 @@ export const SecurityAnalysisParameters = ({
                             }
                         />
                     </Grid>
-                    <Tooltip title="Delete">
+                    <Tooltip
+                        title={
+                            <div dangerouslySetInnerHTML={{ __html: info }} />
+                        }
+                        placement="left-start"
+                    >
                         <InfoIcon />
                     </Tooltip>
                 </Grid>
@@ -150,7 +179,7 @@ export const SecurityAnalysisParameters = ({
                         item
                         container
                         xs={4}
-                        className={classes.multipleTextField}
+                        className={classes.multipleTextField1}
                     >
                         <TextField
                             fullWidth
@@ -160,11 +189,16 @@ export const SecurityAnalysisParameters = ({
                             name="lowVoltageAbsoluteThreshold"
                             onBlur={callBack}
                             onChange={(e) =>
-                                handleValueChanged(e, isFloatNumber)
+                                handleValueChanged(e, isPositiveFloatNumber)
                             }
                         />
                     </Grid>
-                    <Tooltip title="Delete">
+                    <Tooltip
+                        title={
+                            <div dangerouslySetInnerHTML={{ __html: info }} />
+                        }
+                        placement="left-start"
+                    >
                         <InfoIcon />
                     </Tooltip>
                 </Grid>
@@ -195,7 +229,7 @@ export const SecurityAnalysisParameters = ({
                         item
                         container
                         xs={4}
-                        className={classes.multipleTextField}
+                        className={classes.multipleTextField1}
                     >
                         <TextField
                             fullWidth
@@ -205,11 +239,16 @@ export const SecurityAnalysisParameters = ({
                             name="highVoltageAbsoluteThreshold"
                             onBlur={callBack}
                             onChange={(e) =>
-                                handleValueChanged(e, isFloatNumber)
+                                handleValueChanged(e, isPositiveFloatNumber)
                             }
                         />
                     </Grid>
-                    <Tooltip title="Delete">
+                    <Tooltip
+                        title={
+                            <div dangerouslySetInnerHTML={{ __html: info }} />
+                        }
+                        placement="left-start"
+                    >
                         <InfoIcon />
                     </Tooltip>
                 </Grid>
@@ -221,7 +260,7 @@ export const SecurityAnalysisParameters = ({
                 maxWidth="md"
             >
                 <LabelledButton
-                    callback={resetProvider}
+                    callback={resetSAParametersAndProvider}
                     label="resetToDefault"
                 />
                 <CloseButton

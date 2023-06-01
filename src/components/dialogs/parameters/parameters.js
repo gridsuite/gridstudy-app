@@ -161,7 +161,7 @@ export const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
-    maxWidthItem: {
+    singleItem: {
         display: 'flex',
         flex: 1,
         alignItems: 'center',
@@ -170,15 +170,18 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(1),
     },
     multipleTextField: {
-        fontWeight: 'bold',
-        //marginTop: theme.spacing(1),
-        marginRight: theme.spacing(1),
         marginLeft: theme.spacing(3),
+    },
+    multipleTextField1: {
+        marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(2),
     },
     singleTextField: {
         display: 'flex',
-        //marginTop: theme.spacing(1),
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(2),
+        marginLeft: theme.spacing(1),
+    },
+    tooltip: {
         marginLeft: theme.spacing(1),
     },
     text: {
@@ -186,6 +189,10 @@ export const useStyles = makeStyles((theme) => ({
         flex: '-moz-available',
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
+    },
+    textContainer: {
+        display: 'flex',
+        flex: '-moz-available',
     },
 }));
 

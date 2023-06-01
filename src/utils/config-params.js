@@ -35,3 +35,10 @@ export function getAppName(paramName) {
         ? COMMON_APP_NAME
         : APP_NAME;
 }
+
+export const isValidPercentage = (val) => {
+    return /^(100|\d*)([.,]?\d?\d?$)/.test(val);
+};
+export const isPositiveFloatNumber = (val) => {
+    return /^(?:[1-9]\d*|0)?(?:\.\d+)?$/.test(val);
+};
