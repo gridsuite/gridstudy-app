@@ -12,9 +12,144 @@ import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Typography from '@mui/material/Typography';
 import {
-    isPositiveFloatNumber,
-    isValidPercentage,
+    PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from '../../../utils/config-params';
+import { useIntl } from 'react-intl';
+
+const SecurityAnalysisFields = ({
+    label,
+    firstField,
+    secondField,
+    tooltipInfo,
+    initValue,
+    callback,
+    isSingleField,
+}) => {
+    const classes = useStyles();
+    const [values, setValues] = useState(initValue);
+
+    useEffect(() => {
+        setValues(initValue);
+    }, [initValue]);
+
+    const checkValue = useCallback((e, allowedRE, isPercentage) => {
+        const outputTransformToString = (value) => {
+            return value?.replace(',', '.') || '';
+        };
+        const newValue = e.target.value;
+        const isValid = allowedRE.exec(newValue);
+        const isAllValid = isPercentage ? isValid && newValue <= 100 : isValid;
+        if (isAllValid || newValue === '') {
+            setValues((prevState) => ({
+                ...prevState,
+                [e.target.name]: outputTransformToString(newValue),
+            }));
+        }
+    }, []);
+    const checkPerPercentageValue = useCallback(
+        (e) => {
+            const percentageRE = /^\d*[.,]?\d?\d?$/;
+            checkValue(e, percentageRE, true);
+        },
+        [checkValue]
+    );
+    const checkDoubleValue = useCallback(
+        (e) => {
+            const doubleRE = /^\d*[.,]?\d?\d?$/;
+            checkValue(e, doubleRE);
+        },
+        [checkValue]
+    );
+
+    const updateValue = useCallback(
+        (e) => {
+            const name = e.target.name;
+            const value = e.target.value;
+            // if the field is left empty then show the initial value.
+            if (value === '') {
+                setValues((prevState) => ({
+                    ...prevState,
+                    [e.target.name]: initValue[name],
+                }));
+            } else if (initValue[name] !== value) {
+                const f = parseFloat(value);
+                if (!isNaN(f)) {
+                    callback(values);
+                }
+            }
+        },
+        [initValue, callback, values]
+    );
+
+    return (
+        <Grid className={isSingleField ? classes.singleItem : classes.item}>
+            <Grid item xs={4} className={classes.parameterName}>
+                <Typography>{label}</Typography>
+            </Grid>
+            {!isSingleField && (
+                <>
+                    <Grid
+                        item
+                        container
+                        xs={4}
+                        className={classes.firstTextField}
+                    >
+                        <TextField
+                            fullWidth
+                            sx={{ input: { textAlign: 'right' } }}
+                            value={values[firstField?.name]}
+                            label={firstField?.label}
+                            name={firstField?.name}
+                            onBlur={updateValue}
+                            onChange={checkPerPercentageValue}
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        container
+                        xs={4}
+                        className={classes.secondTextField}
+                    >
+                        <TextField
+                            fullWidth
+                            sx={{ input: { textAlign: 'right' } }}
+                            value={values[secondField?.name]}
+                            label={secondField?.label}
+                            name={secondField?.name}
+                            onBlur={updateValue}
+                            onChange={checkDoubleValue}
+                        />
+                    </Grid>
+                </>
+            )}
+            {isSingleField && (
+                <Grid item container xs={8} className={classes.singleTextField}>
+                    <TextField
+                        fullWidth
+                        sx={{ input: { textAlign: 'right' } }}
+                        value={values[firstField?.name]}
+                        name={firstField?.name}
+                        label={firstField?.label}
+                        onBlur={updateValue}
+                        onChange={checkPerPercentageValue}
+                    />
+                </Grid>
+            )}
+            <Tooltip
+                title={
+                    <div dangerouslySetInnerHTML={{ __html: tooltipInfo }} />
+                }
+                placement="left-start"
+            >
+                <InfoIcon />
+            </Tooltip>
+        </Grid>
+    );
+};
 
 export const SecurityAnalysisParameters = ({
     hideParameters,
@@ -37,41 +172,14 @@ export const SecurityAnalysisParameters = ({
     const updateProviderCallback = useCallback(handleUpdateProvider, [
         updateProvider,
     ]);
-    console.log(' params : ', params);
-    const [fieldsValues, setFieldsValues] = useState({
-        //todo:  to be replaced with params
-        flowProportionalThreshold: params?.flowProportionalThreshold, //  '0.1',
-        lowVoltageProportionalThreshold:
-            params?.lowVoltageProportionalThreshold, // '0.0',
-        lowVoltageAbsoluteThreshold: params?.lowVoltageAbsoluteThreshold, // '0.0',
-        highVoltageProportionalThreshold:
-            params?.highVoltageProportionalThreshold, // '0.0',
-        highVoltageAbsoluteThreshold: params?.highVoltageAbsoluteThreshold, //'0.0',
-    });
-    const handleValueChanged = (e, verifyFunction) => {
-        if (verifyFunction(e.target.value)) {
-            setFieldsValues((prevState) => ({
-                ...prevState,
-                [e.target.name]: e.target.value,
-            }));
-        }
-    };
-    const callBack = () => {
-        updateParameters({ ...fieldsValues });
-    };
-    useEffect(() => {
-        setFieldsValues({ ...params });
-    }, [params]);
+    const intl = useIntl();
 
-    const {
-        flowProportionalThreshold,
-        lowVoltageAbsoluteThreshold,
-        lowVoltageProportionalThreshold,
-        highVoltageProportionalThreshold,
-        highVoltageAbsoluteThreshold,
-    } = fieldsValues;
-    // DynaFlow is not supported at the moment for security analysis
+    const callBack = (data) => {
+        updateParameters({ ...data });
+    };
+
     // TODO: remove this when DynaFlow is supported
+    // DynaFlow is not supported at the moment for security analysis
     const securityAnalysisiProvider = Object.fromEntries(
         Object.entries(providers).filter(([key]) => !key.includes('DynaFlow'))
     );
@@ -81,14 +189,61 @@ export const SecurityAnalysisParameters = ({
         resetProvider();
     }, [resetParameters, resetProvider]);
 
-    const info =
-        "Cette section permet de paramétrer le niveau d'aggravation à partir duquel les contraintes calculées en N réapparaissent en N-k.</br>" +
-        '\n' +
-        "L'aggravation de contrainte en intensité est déterminée uniquement en pourcentage de la valeur calculée en N pour les ouvrages en contrainte. Par exemple, si l'aggravation en pourcentage correspond à 10 A alors la contrainte en N réapparaitra en N-k pour une augmentation d'intensité de plus de 10 A par rapport à la valeur calculée en N.</br>" +
-        '\n' +
-        "L'aggravation de contrainte en tension basse peut être calculée en pourcentage ou en définie en valeur absolue par rapport à la valeur calculée en N. La valeur prise en compte sera la plus conservative des deux. Par exemple, si l'aggravation en pourcentage correspond à 1 kV et celle renseignée en absolu est de 2 kV, alors la contrainte en tension basse réapparaitra en N-k pour une chute de tension de plus de 1 kV par rapport à la valeur calculée en N.</br>" +
-        '\n' +
-        "L'aggravation de contrainte en tension haute peut être calculée en pourcentage ou en définie en valeur absolue par rapport à la valeur calculée en N. La valeur prise en compte sera la plus conservative des deux. Par exemple, si l'aggravation en pourcentage correspond à 1 kV et celle renseignée en absolu est de 2 kV, alors la contrainte en tension haute réapparaitra en N-k pour une élévation de tension de plus de 1 kV par rapport à la valeur calculée en N.</br>";
+    // create fields with the proper data
+    const fieldsToShow = [
+        {
+            label: intl.formatMessage({
+                id: 'securityAnalysis.current',
+            }),
+            firstField: {
+                name: PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
+                label: '%',
+            },
+            tooltipInfo: intl.formatMessage({
+                id: 'securityAnalysis.toolTip',
+            }),
+            initValue: params,
+            callback: callBack,
+            isSingleField: true,
+        },
+        {
+            label: intl.formatMessage({
+                id: 'securityAnalysis.lowVoltage',
+            }),
+            firstField: {
+                name: PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
+                label: '%',
+            },
+            secondField: {
+                label: 'kv',
+                name: PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
+            },
+            tooltipInfo: intl.formatMessage({
+                id: 'securityAnalysis.toolTip',
+            }),
+            initValue: params,
+            callback: callBack,
+        },
+        {
+            label: intl.formatMessage({
+                id: 'securityAnalysis.highVoltage',
+            }),
+            firstField: {
+                name: PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
+                label: '%',
+            },
+            secondField: {
+                label: 'kv',
+                name: PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
+            },
+            tooltipInfo: intl.formatMessage({
+                id: 'securityAnalysis.toolTip',
+            }),
+            initValue: params,
+            callback: callBack,
+        },
+    ];
+
     return (
         <>
             <Grid
@@ -106,12 +261,20 @@ export const SecurityAnalysisParameters = ({
 
                 <Grid className={classes.textContainer}>
                     <Grid item xs={8} className={classes.text}>
-                        <Typography>Masquage des contraintes en N-K</Typography>
+                        <Typography>
+                            {intl.formatMessage({
+                                id: 'securityAnalysis.violationsHiding',
+                            })}
+                        </Typography>
                         <Tooltip
                             className={classes.tooltip}
                             title={
                                 <div
-                                    dangerouslySetInnerHTML={{ __html: info }}
+                                    dangerouslySetInnerHTML={{
+                                        __html: intl.formatMessage({
+                                            id: 'securityAnalysis.toolTip',
+                                        }),
+                                    }}
                                 />
                             }
                             placement="left-start"
@@ -121,137 +284,11 @@ export const SecurityAnalysisParameters = ({
                     </Grid>
                 </Grid>
 
-                <Grid className={classes.singleItem}>
-                    <Grid item xs={4} className={classes.parameterName}>
-                        <Typography>Intensité</Typography>
-                    </Grid>
-                    <Grid
-                        item
-                        container
-                        xs={8}
-                        className={classes.singleTextField}
-                    >
-                        <TextField
-                            fullWidth
-                            sx={{ input: { textAlign: 'right' } }}
-                            value={flowProportionalThreshold}
-                            name="flowProportionalThreshold"
-                            label={'%'}
-                            onBlur={callBack}
-                            onChange={(e) =>
-                                handleValueChanged(e, isValidPercentage)
-                            }
-                        />
-                    </Grid>
-                    <Tooltip
-                        title={
-                            <div dangerouslySetInnerHTML={{ __html: info }} />
-                        }
-                        placement="left-start"
-                    >
-                        <InfoIcon />
-                    </Tooltip>
-                </Grid>
-
-                <Grid className={classes.item}>
-                    <Grid item xs={4} className={classes.parameterName}>
-                        <Typography>Tension basse</Typography>
-                    </Grid>
-                    <Grid
-                        item
-                        container
-                        xs={4}
-                        className={classes.multipleTextField}
-                    >
-                        <TextField
-                            fullWidth
-                            sx={{ input: { textAlign: 'right' } }}
-                            value={lowVoltageProportionalThreshold}
-                            label={'%'}
-                            name="lowVoltageProportionalThreshold"
-                            onBlur={callBack}
-                            onChange={(e) =>
-                                handleValueChanged(e, isValidPercentage)
-                            }
-                        />
-                    </Grid>
-                    <Grid
-                        item
-                        container
-                        xs={4}
-                        className={classes.multipleTextField1}
-                    >
-                        <TextField
-                            fullWidth
-                            sx={{ input: { textAlign: 'right' } }}
-                            value={lowVoltageAbsoluteThreshold}
-                            label={'kv'}
-                            name="lowVoltageAbsoluteThreshold"
-                            onBlur={callBack}
-                            onChange={(e) =>
-                                handleValueChanged(e, isPositiveFloatNumber)
-                            }
-                        />
-                    </Grid>
-                    <Tooltip
-                        title={
-                            <div dangerouslySetInnerHTML={{ __html: info }} />
-                        }
-                        placement="left-start"
-                    >
-                        <InfoIcon />
-                    </Tooltip>
-                </Grid>
-
-                <Grid className={classes.item}>
-                    <Grid item xs={4} className={classes.parameterName}>
-                        <Typography>Tension haute</Typography>
-                    </Grid>
-                    <Grid
-                        item
-                        container
-                        xs={4}
-                        className={classes.multipleTextField}
-                    >
-                        <TextField
-                            fullWidth
-                            sx={{ input: { textAlign: 'right' } }}
-                            value={highVoltageProportionalThreshold}
-                            label={'%'}
-                            name="highVoltageProportionalThreshold"
-                            onBlur={callBack}
-                            onChange={(e) =>
-                                handleValueChanged(e, isValidPercentage)
-                            }
-                        />
-                    </Grid>
-                    <Grid
-                        item
-                        container
-                        xs={4}
-                        className={classes.multipleTextField1}
-                    >
-                        <TextField
-                            fullWidth
-                            sx={{ input: { textAlign: 'right' } }}
-                            value={highVoltageAbsoluteThreshold}
-                            label={'kv'}
-                            name="highVoltageAbsoluteThreshold"
-                            onBlur={callBack}
-                            onChange={(e) =>
-                                handleValueChanged(e, isPositiveFloatNumber)
-                            }
-                        />
-                    </Grid>
-                    <Tooltip
-                        title={
-                            <div dangerouslySetInnerHTML={{ __html: info }} />
-                        }
-                        placement="left-start"
-                    >
-                        <InfoIcon />
-                    </Tooltip>
-                </Grid>
+                {fieldsToShow?.map((item) => {
+                    return (
+                        <SecurityAnalysisFields key={item.label} {...item} />
+                    );
+                })}
             </Grid>
             <LineSeparator />
             <Grid

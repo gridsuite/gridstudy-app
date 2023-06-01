@@ -163,16 +163,16 @@ export const useStyles = makeStyles((theme) => ({
     },
     singleItem: {
         display: 'flex',
-        flex: 1,
+        flex: 0.97,
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
-    multipleTextField: {
+    firstTextField: {
         marginLeft: theme.spacing(3),
     },
-    multipleTextField1: {
+    secondTextField: {
         marginLeft: theme.spacing(3),
         marginRight: theme.spacing(2),
     },
