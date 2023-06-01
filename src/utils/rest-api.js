@@ -13,7 +13,7 @@ export function fetchAppsAndUrls() {
         .then((res) => res.json())
         .then((res) => {
             return fetch(
-                res.appsMetadataServerUrl + '/apps-metadata.json'
+                `${res.appsMetadataServerUrl}/apps-metadata.json`
             ).then((response) => {
                 return response.json();
             });
@@ -47,7 +47,7 @@ export function getToken() {
     return state.user.id_token;
 }
 
-function parseError(text) {
+export function parseError(text) {
     try {
         return JSON.parse(text);
     } catch (err) {
@@ -62,7 +62,7 @@ export const FetchStatus = {
     RUNNING: 'RUNNING',
 };
 
-function handleError(response) {
+export function handleError(response) {
     return response.text().then((text) => {
         const errorName = 'HttpResponseError : ';
         let error;
@@ -87,7 +87,7 @@ function handleError(response) {
     });
 }
 
-function prepareRequest(init, token) {
+export function prepareRequest(init, token) {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
             `Argument 2 of backendFetch is not an object ${typeof init}`
@@ -100,7 +100,7 @@ function prepareRequest(init, token) {
     return initCopy;
 }
 
-function safeFetch(url, initCopy) {
+export function safeFetch(url, initCopy) {
     return fetch(url, initCopy).then((response) =>
         response.ok ? response : handleError(response)
     );
