@@ -55,7 +55,6 @@ export const FREQUENCY_REGULATION = 'frequencyRegulation';
 export const DROOP = 'droop';
 export const TRANSFORMER_REACTANCE = 'transformerReactance';
 export const PLANNED_ACTIVE_POWER_SET_POINT = 'plannedActivePowerSetPoint';
-export const STARTUP_COST = 'startupCost';
 export const MARGINAL_COST = 'marginalCost';
 export const PLANNED_OUTAGE_RATE = 'plannedOutageRate';
 export const FORCED_OUTAGE_RATE = 'forcedOutageRate';

@@ -17,7 +17,6 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
-    STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
 } from 'components/utils/field-constants';
@@ -197,15 +196,6 @@ const GeneratorModificationForm = ({
         />
     );
 
-    const startupCostField = (
-        <FloatInput
-            name={STARTUP_COST}
-            label={'StartupCost'}
-            previousValue={generatorToModify?.startupCost}
-            clearable={true}
-        />
-    );
-
     const marginalCostField = (
         <FloatInput
             name={MARGINAL_COST}
@@ -283,13 +273,10 @@ const GeneratorModificationForm = ({
             </Grid>
 
             {/* Cost of start part */}
-            <GridSection title="Startup" />
+            <GridSection title="GenerationDispatch" />
             <Grid container spacing={2}>
                 {gridItem(plannedActivePowerSetPointField, 4)}
-                <Grid container item spacing={2}>
-                    {gridItem(startupCostField, 4)}
-                    {gridItem(marginalCostField, 4)}
-                </Grid>
+                {gridItem(marginalCostField, 4)}
                 <Grid container item spacing={2}>
                     {gridItem(plannedOutageRateField, 4)}
                     {gridItem(forcedOutageRateField, 4)}
