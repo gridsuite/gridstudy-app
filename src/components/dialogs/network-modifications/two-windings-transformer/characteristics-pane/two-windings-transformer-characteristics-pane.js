@@ -26,6 +26,7 @@ import {
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
 } from 'components/utils/field-constants';
+import { unitToMicroUnit } from '../../../../../utils/rounding';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
@@ -68,7 +69,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             name={`${id}.${MAGNETIZING_CONDUCTANCE}`}
             label="MagnetizingConductance"
             adornment={MicroSusceptanceAdornment}
-            previousValue={twtToModify?.g}
+            previousValue={unitToMicroUnit(twtToModify?.g)}
             clearable={modification}
         />
     );
@@ -78,7 +79,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             name={`${id}.${MAGNETIZING_SUSCEPTANCE}`}
             label="MagnetizingSusceptance"
             adornment={MicroSusceptanceAdornment}
-            previousValue={twtToModify?.b}
+            previousValue={unitToMicroUnit(twtToModify?.b)}
             clearable={modification}
         />
     );
