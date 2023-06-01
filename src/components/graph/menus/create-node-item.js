@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -9,7 +16,7 @@ import PropTypes from 'prop-types';
 const useStyles = makeStyles((theme) => ({
     menuItem: {
         // NestedMenu item manages only label prop of string type
-        // It fix paddings itself then we must force this padding
+        // It set paddings itself then we must force this padding
         // to justify menu items texts
         paddingLeft: '12px',
     },
