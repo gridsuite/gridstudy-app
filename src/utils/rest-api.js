@@ -14,6 +14,7 @@ import {
 } from '../components/network/constants';
 import { MODIFICATION_TYPES } from '../components/utils/modification-type';
 import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
+import { toModificationOperation } from '../components/utils/utils';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -2121,13 +2122,6 @@ export function modifyLoad(
         }),
     });
 }
-
-function toModificationOperation(value) {
-    return value === 0 || value === false || value
-        ? { value: value, op: 'SET' }
-        : null;
-}
-
 export function modifyGenerator(
     studyUuid,
     currentNodeUuid,
@@ -2617,18 +2611,14 @@ export function modifyTwoWindingsTransformer(
         body: JSON.stringify({
             type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
             equipmentId: twoWindingsTransformerId,
-            equipmentName: toModificationOperation(twoWindingsTransformerName),
-            seriesResistance: toModificationOperation(seriesResistance),
-            seriesReactance: toModificationOperation(seriesReactance),
-            magnetizingConductance: toModificationOperation(
-                magnetizingConductance
-            ),
-            magnetizingSusceptance: toModificationOperation(
-                magnetizingSusceptance
-            ),
-            ratedS: toModificationOperation(ratedS),
-            ratedVoltage1: toModificationOperation(ratedVoltage1),
-            ratedVoltage2: toModificationOperation(ratedVoltage2),
+            equipmentName: twoWindingsTransformerName,
+            seriesResistance: seriesResistance,
+            seriesReactance: seriesReactance,
+            magnetizingConductance: magnetizingConductance,
+            magnetizingSusceptance: magnetizingSusceptance,
+            ratedS: ratedS,
+            ratedVoltage1: ratedVoltage1,
+            ratedVoltage2: ratedVoltage2,
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
         }),

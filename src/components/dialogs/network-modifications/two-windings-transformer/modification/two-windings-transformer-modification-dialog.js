@@ -50,6 +50,7 @@ import {
 } from 'components/utils/field-constants.js';
 import LimitsPane from '../../../limits/limits-pane';
 import {
+    addModificationTypeToTemporaryLimits,
     getLimitsEmptyFormData,
     getLimitsFormData,
     getLimitsValidationSchema,
@@ -57,7 +58,10 @@ import {
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
-import { formatTemporaryLimits } from '../../../../utils/utils';
+import {
+    formatTemporaryLimits,
+    toModificationOperation,
+} from '../../../../utils/utils';
 
 export const TwoWindingsTransformerModificationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -137,10 +141,14 @@ const TwoWindingsTransformerModificationDialog = ({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        twt.currentLimits1?.temporaryLimits
+                        formatTemporaryLimits(
+                            twt.currentLimits1?.temporaryLimits
+                        )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        twt.currentLimits2?.temporaryLimits
+                        formatTemporaryLimits(
+                            twt.currentLimits2?.temporaryLimits
+                        )
                     ),
                 }),
             });
@@ -161,15 +169,25 @@ const TwoWindingsTransformerModificationDialog = ({
 
             const currentLimits1 = {
                 permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
-                temporaryLimits: sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
+                temporaryLimits: addModificationTypeToTemporaryLimits(
+                    sanitizeLimitNames(
+                        limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
+                    ),
+                    twtToModify?.currentLimits1?.temporaryLimits,
+                    editData?.currentLimits1?.temporaryLimits,
+                    currentNode
                 ),
             };
 
             const currentLimits2 = {
                 permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                temporaryLimits: sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
+                temporaryLimits: addModificationTypeToTemporaryLimits(
+                    sanitizeLimitNames(
+                        limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
+                    ),
+                    twtToModify?.currentLimits2?.temporaryLimits,
+                    editData?.currentLimits2?.temporaryLimits,
+                    currentNode
                 ),
             };
 
@@ -177,17 +195,21 @@ const TwoWindingsTransformerModificationDialog = ({
                 studyUuid,
                 currentNodeUuid,
                 twt[EQUIPMENT_ID],
-                sanitizeString(twt[EQUIPMENT_NAME]),
-                characteristics[SERIES_RESISTANCE],
-                characteristics[SERIES_REACTANCE],
-                microUnitToUnit(characteristics[MAGNETIZING_CONDUCTANCE]),
-                microUnitToUnit(characteristics[MAGNETIZING_SUSCEPTANCE]),
-                characteristics[RATED_S],
-                characteristics[RATED_VOLTAGE_1],
-                characteristics[RATED_VOLTAGE_2],
+                toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
+                toModificationOperation(characteristics[SERIES_RESISTANCE]),
+                toModificationOperation(characteristics[SERIES_REACTANCE]),
+                toModificationOperation(
+                    microUnitToUnit(characteristics[MAGNETIZING_CONDUCTANCE])
+                ),
+                toModificationOperation(
+                    microUnitToUnit(characteristics[MAGNETIZING_SUSCEPTANCE])
+                ),
+                toModificationOperation(characteristics[RATED_S]),
+                toModificationOperation(characteristics[RATED_VOLTAGE_1]),
+                toModificationOperation(characteristics[RATED_VOLTAGE_2]),
                 currentLimits1,
                 currentLimits2,
-                editData ? true : false,
+                !!editData,
                 editData?.uuid
             ).catch((error) => {
                 snackError({
@@ -196,7 +218,14 @@ const TwoWindingsTransformerModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [
+            studyUuid,
+            currentNode,
+            currentNodeUuid,
+            snackError,
+            editData,
+            twtToModify,
+        ]
     );
 
     const onValidationError = (errors) => {
