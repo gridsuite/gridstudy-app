@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
@@ -3318,7 +3319,8 @@ export function generationDispatch(
     lossCoefficient,
     defaultOutageRate,
     generatorsWithoutOutage,
-    generatorsWithFixedActivePower
+    generatorsWithFixedActivePower,
+    generatorsFrequencyReserve
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
@@ -3326,6 +3328,7 @@ export function generationDispatch(
         defaultOutageRate: defaultOutageRate,
         generatorsWithoutOutage: generatorsWithoutOutage,
         generatorsWithFixedSupply: generatorsWithFixedActivePower,
+        generatorsFrequencyReserve: generatorsFrequencyReserve,
     });
 
     let generationDispatchUrl =
