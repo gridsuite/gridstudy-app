@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { sortDiagrams } from './diagram-utils';
+import { makeDiagramSorter } from './diagram-utils';
 
 test('diagram-common.sortDiagrams', () => {
     const diagramStates = [
@@ -24,7 +24,7 @@ test('diagram-common.sortDiagrams', () => {
         { id: 3, align: 'left' },
         { id: 4, align: 'right' },
         { id: 0, align: 'hello world' },
-    ].sort(sortDiagrams(diagramStates));
+    ].sort(makeDiagramSorter(diagramStates));
 
     expect(table.length).toBe(7);
     expect(table[0].align).toBe('left');

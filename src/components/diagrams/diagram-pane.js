@@ -40,7 +40,7 @@ import {
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
     NoSvg,
 } from './diagram-common';
-import { sortDiagrams } from './diagram-utils';
+import { makeDiagramSorter } from './diagram-utils';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
@@ -686,7 +686,7 @@ export function DiagramPane({
         .filter((view) =>
             [ViewState.OPENED, ViewState.PINNED].includes(view.state)
         )
-        .sort(sortDiagrams(diagramStates));
+        .sort(makeDiagramSorter(diagramStates));
     const minimizedDiagrams = views.filter((view) =>
         [ViewState.MINIMIZED].includes(view.state)
     );

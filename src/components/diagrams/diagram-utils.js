@@ -39,16 +39,10 @@ const sortByIndex = (a, b, diagramStates) => {
 };
 
 /**
- * Array sorting function based on two values : first, the alignment, then, the index
+ * Create an array sorting function based on two values : first, the alignment, then, the index
  * @param diagramStates the diagrams array of the redux store
  * @returns {(function(*, *): (*))|*} new array sorting function based on diagramStates
  */
-export const sortDiagrams = (diagramStates) => {
-    return (a, b) => {
-        if (a?.align !== b?.align) {
-            return sortByAlign(a, b);
-        } else {
-            return sortByIndex(a, b, diagramStates);
-        }
-    };
+export const makeDiagramSorter = (diagramStates) => {
+    return (a, b) => sortByAlign(a, b) || sortByIndex(a, b, diagramStates);
 };
