@@ -15,7 +15,7 @@ import {
     EQUIPMENT_TYPES,
 } from '../../components/utils/equipment-types';
 
-function fetchNetworkElementsInfos(
+export function fetchNetworkElementsInfos(
     studyUuid,
     currentNodeUuid,
     substationsIds,
