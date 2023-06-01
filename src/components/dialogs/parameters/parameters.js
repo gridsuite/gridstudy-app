@@ -154,11 +154,6 @@ export const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const FluxConventions = {
-    IIDM: 'iidm',
-    TARGET: 'target',
-};
-
 export const LabelledButton = ({ callback, label, name }) => {
     return (
         <Button onClick={callback} className={name}>
