@@ -275,7 +275,7 @@ export const useParametersBackend = (
         ]
     );
 
-    const delayedUpdateParameter = useDebounce(updateParameter, 1000);
+    const debounced = useDebounce(updateParameter, 1000);
 
     const resetParameters = useCallback(
         (callBack) => {
@@ -393,7 +393,7 @@ export const useParametersBackend = (
         updateProvider,
         resetProvider,
         params,
-        delayedUpdateParameter,
+        debounced,
         resetParameters,
         specificParamsDescription,
     ];

@@ -60,7 +60,7 @@ export const useSearchMatchingEquipments = (
         ]
     );
 
-    const delayedSearchMatchingEquipments = useDebounce(
+    const debounced = useDebounce(
         searchMatchingEquipments,
         SEARCH_FETCH_TIMEOUT_MILLIS
     );
@@ -69,5 +69,5 @@ export const useSearchMatchingEquipments = (
         setEquipmentsFound([]);
     }, [equipmentType]);
 
-    return [delayedSearchMatchingEquipments, equipmentsFound];
+    return [debounced, equipmentsFound];
 };
