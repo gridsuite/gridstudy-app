@@ -383,7 +383,7 @@ const SpecificLoadFlowParameters = ({
                             currentProvider
                         ],
                     }}
-                    showSeparator={true}
+                    showSeparator
                     onChange={onChange}
                 />
             )}
