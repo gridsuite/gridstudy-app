@@ -35,7 +35,6 @@ import {
     SELECT_COMPUTED_LANGUAGE,
     SET_PARAMS_LOADED,
     STUDY_UPDATED,
-    DISPLAY_OVERLOAD_TABLE,
     MAP_MANUAL_REFRESH,
     SUBSTATION_LAYOUT,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
@@ -44,7 +43,9 @@ import {
     ADD_LOADFLOW_NOTIF,
     RESET_LOADFLOW_NOTIF,
     ADD_SA_NOTIF,
+    ADD_VOLTAGE_INIT_NOTIF,
     RESET_SA_NOTIF,
+    RESET_VOLTAGE_INIT_NOTIF,
     ADD_SENSI_NOTIF,
     RESET_SENSI_NOTIF,
     COMPONENT_LIBRARY,
@@ -86,6 +87,7 @@ import {
     NETWORK_EQUIPMENT_FETCHED,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     SELECTION_FOR_COPY,
+    LIMIT_REDUCTION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -98,9 +100,9 @@ import { TABLES_COLUMNS_NAMES_JSON } from '../components/spreadsheet/utils/confi
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
-    PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_LANGUAGE,
+    PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -128,8 +130,8 @@ const paramsInitialState = {
     [PARAM_USE_NAME]: true,
     [PARAM_LINE_FULL_PATH]: true,
     [PARAM_LINE_PARALLEL_PATH]: true,
+    [PARAM_LIMIT_REDUCTION]: 100,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
-    [PARAM_DISPLAY_OVERLOAD_TABLE]: false,
     [PARAM_MAP_MANUAL_REFRESH]: false,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
@@ -164,6 +166,7 @@ const initialState = {
     studyUpdated: { force: 0, eventData: {} },
     loadflowNotif: false,
     saNotif: false,
+    voltageInitNotif: false,
     sensiNotif: false,
     shortCircuitNotif: false,
     dynamicSimulationNotif: false,
@@ -323,6 +326,20 @@ export const reducer = createReducer(initialState, {
             let newModel =
                 state.networkModificationTreeModel.newSharedForUpdate();
 
+            //we assume all the deleted nodes are contiguous, so the new parent selected will be the nearest upstream node.
+            //in the future, if the deleted nodes are no longer contiguous we will need another implementation
+            const nextCurrentNodeUuid = newModel.treeNodes
+                .filter((node) =>
+                    action.networkModificationTreeNodes.includes(node.id)
+                )
+                .map((node) => node.data.parentNodeUuid)
+                .find(
+                    (parentNodeUuid) =>
+                        !action.networkModificationTreeNodes.includes(
+                            parentNodeUuid
+                        )
+                );
+
             newModel.removeNodes(action.networkModificationTreeNodes);
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
@@ -333,12 +350,7 @@ export const reducer = createReducer(initialState, {
                     state.currentTreeNode?.id
                 )
             ) {
-                // TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
-                // If tomorrow we need to delete multiple nodes, we need to check that the parentNode here isn't in the action.networkModificationTreeNodes list
-                synchCurrentTreeNode(
-                    state,
-                    state.currentTreeNode?.data?.parentNodeUuid
-                );
+                synchCurrentTreeNode(state, nextCurrentNodeUuid);
             } // check if parent node of the current node is in the nodes deleted list
             else if (
                 action.networkModificationTreeNodes.includes(
@@ -436,6 +448,10 @@ export const reducer = createReducer(initialState, {
         state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
     },
 
+    [LIMIT_REDUCTION]: (state, action) => {
+        state[PARAM_LIMIT_REDUCTION] = action[PARAM_LIMIT_REDUCTION];
+    },
+
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
         state[PARAM_LINE_FLOW_ALERT_THRESHOLD] =
             action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
@@ -460,11 +476,6 @@ export const reducer = createReducer(initialState, {
     [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
         state.showAuthenticationRouterLogin =
             action.showAuthenticationRouterLogin;
-    },
-
-    [DISPLAY_OVERLOAD_TABLE]: (state, action) => {
-        state[PARAM_DISPLAY_OVERLOAD_TABLE] =
-            action[PARAM_DISPLAY_OVERLOAD_TABLE];
     },
 
     [MAP_MANUAL_REFRESH]: (state, action) => {
@@ -497,6 +508,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_SA_NOTIF]: (state) => {
         state.saNotif = false;
+    },
+
+    [ADD_VOLTAGE_INIT_NOTIF]: (state) => {
+        state.voltageInitNotif = true;
+    },
+
+    [RESET_VOLTAGE_INIT_NOTIF]: (state) => {
+        state.voltageInitNotif = false;
     },
 
     [ADD_SENSI_NOTIF]: (state) => {

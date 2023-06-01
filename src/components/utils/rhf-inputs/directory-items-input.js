@@ -20,7 +20,7 @@ import { useController, useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import ErrorInput from './error-inputs/error-input';
 import MidFormError from './error-inputs/mid-form-error';
-import { ReadOnlyInput } from './read-only-input';
+import { RawReadOnlyInput } from './read-only/raw-read-only-input';
 import { NAME } from '../field-constants';
 import { isFieldRequired } from '../utils';
 
@@ -31,6 +31,7 @@ const DirectoryItemsInput = ({
     equipmentTypes, // Mostly used for filters, it allows the user to get elements of specific equipment only
     itemFilter, // Used to further filter the results displayed according to specific requirement
     titleId, // title of directory item selector dialogue
+    hideErrorMessage,
 }) => {
     const classes = useStyles();
     const { snackError } = useSnackMessage();
@@ -60,9 +61,7 @@ const DirectoryItemsInput = ({
                 // check if element is already present
                 if (
                     getValues(name).find(
-                        (v) =>
-                            v?.specificMetadata?.id ===
-                            otherElementAttributes.id
+                        (v) => v?.id === otherElementAttributes.id
                     ) !== undefined
                 ) {
                     snackError({
@@ -86,7 +85,7 @@ const DirectoryItemsInput = ({
                 })}
                 error={!!error?.message}
             >
-                {elements?.length === 0 && (
+                {elements?.length === 0 && label && (
                     <FieldLabel
                         label={label}
                         optional={
@@ -108,7 +107,7 @@ const DirectoryItemsInput = ({
                                 label={
                                     <OverflowableText
                                         text={
-                                            <ReadOnlyInput
+                                            <RawReadOnlyInput
                                                 name={`${name}.${index}.${NAME}`}
                                             />
                                         }
@@ -131,7 +130,9 @@ const DirectoryItemsInput = ({
                     </Grid>
                 </Grid>
             </FormControl>
-            <ErrorInput name={name} InputField={MidFormError} />
+            {!hideErrorMessage && (
+                <ErrorInput name={name} InputField={MidFormError} />
+            )}
             <DirectoryItemSelector
                 open={directoryItemSelectorOpen}
                 onClose={addElements}

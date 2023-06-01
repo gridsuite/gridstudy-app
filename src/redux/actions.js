@@ -8,8 +8,8 @@
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
-    PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LANGUAGE,
+    PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -276,19 +276,19 @@ export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
     };
 }
 
+export const LIMIT_REDUCTION = 'LIMIT_REDUCTION';
+
+export function selectLimitReduction(limitReduction) {
+    return {
+        type: LIMIT_REDUCTION,
+        [PARAM_LIMIT_REDUCTION]: limitReduction,
+    };
+}
+
 export const STUDY_UPDATED = 'STUDY_UPDATED';
 
 export function studyUpdated(eventData) {
     return { type: STUDY_UPDATED, eventData };
-}
-
-export const DISPLAY_OVERLOAD_TABLE = 'DISPLAY_OVERLOAD_TABLE';
-
-export function selectDisplayOverloadTableState(displayOverloadTable) {
-    return {
-        type: DISPLAY_OVERLOAD_TABLE,
-        [PARAM_DISPLAY_OVERLOAD_TABLE]: displayOverloadTable,
-    };
 }
 
 export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
@@ -330,6 +330,18 @@ export const RESET_SA_NOTIF = 'RESET_SA_NOTIF';
 
 export function resetSANotif() {
     return { type: RESET_SA_NOTIF };
+}
+
+export const ADD_VOLTAGE_INIT_NOTIF = 'ADD_VOLTAGE_INIT_NOTIF';
+
+export function addVoltageInitNotif() {
+    return { type: ADD_VOLTAGE_INIT_NOTIF };
+}
+
+export const RESET_VOLTAGE_INIT_NOTIF = 'RESET_VOLTAGE_INIT_NOTIF';
+
+export function resetVoltageInitNotif() {
+    return { type: RESET_VOLTAGE_INIT_NOTIF };
 }
 
 export const ADD_SENSI_NOTIF = 'ADD_SENSI_NOTIF';

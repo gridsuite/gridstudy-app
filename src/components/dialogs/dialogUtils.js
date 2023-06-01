@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -111,6 +111,10 @@ export const MVAPowerAdornment = {
 export const VoltageAdornment = {
     position: 'end',
     text: 'kV',
+};
+export const KilometerAdornment = {
+    position: 'end',
+    text: 'km',
 };
 export const filledTextField = {
     variant: 'filled',
@@ -246,12 +250,14 @@ export function LineSeparator() {
     );
 }
 
-export const LabelledSilder = ({
+export const LabelledSlider = ({
     value,
     label,
     disabled,
     onCommitCallback,
     marks,
+    minValue = 0,
+    maxValue = 100,
 }) => {
     const [sliderValue, setSliderValue] = useState(value);
 
@@ -272,8 +278,8 @@ export const LabelledSilder = ({
             </Grid>
             <Grid item container xs={5} className={classes.controlItem}>
                 <Slider
-                    min={0}
-                    max={100}
+                    min={minValue}
+                    max={maxValue}
                     valueLabelDisplay="auto"
                     onChange={handleValueChanged}
                     onChangeCommitted={onCommitCallback}

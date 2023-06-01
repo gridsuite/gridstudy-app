@@ -19,6 +19,8 @@ import {
     stopSensitivityAnalysis,
     stopShortCircuitAnalysis,
     stopDynamicSimulation,
+    startVoltageInit,
+    stopVoltageInit,
 } from '../utils/rest-api';
 import { RunningStatus } from './utils/running-status';
 
@@ -29,6 +31,7 @@ import {
     addSensiNotif,
     addShortCircuitNotif,
     addDynamicSimulationNotif,
+    addVoltageInitNotif,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -47,6 +50,7 @@ export function RunButtonContainer({
     sensiStatus,
     shortCircuitStatus,
     dynamicSimulationStatus,
+    voltageInitStatus,
     setIsComputationRunning,
     runnable,
     disabled,
@@ -60,6 +64,8 @@ export function RunButtonContainer({
         useState(shortCircuitStatus);
     const [dynamicSimulationStatusState, setDynamicSimulationStatusState] =
         useState(dynamicSimulationStatus);
+    const [voltageInitStatusState, setVoltageInitStatusState] =
+        useState(voltageInitStatus);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -85,6 +91,8 @@ export function RunButtonContainer({
     const [ranShortCircuit, setRanShortCircuit] = useState(false);
 
     const [ranDynamicSimulation, setRanDynamicSimulation] = useState(false);
+
+    const [ranVoltageInit, setRanVoltageInit] = useState(false);
 
     const intl = useIntl();
 
@@ -128,6 +136,12 @@ export function RunButtonContainer({
                 'dynamicSimulationResult'
         ) {
             dispatch(addDynamicSimulationNotif());
+        } else if (
+            ranVoltageInit &&
+            studyUpdatedForce?.eventData?.headers?.updateType ===
+                'voltageInitResult'
+        ) {
+            dispatch(addVoltageInitNotif());
         }
     }, [
         dispatch,
@@ -137,11 +151,13 @@ export function RunButtonContainer({
         ranSensi,
         ranShortCircuit,
         ranDynamicSimulation,
+        ranVoltageInit,
         loadFlowStatus,
         sensiStatus,
         shortCircuitStatus,
         dynamicSimulationStatus,
         securityAnalysisStatus,
+        voltageInitStatus,
     ]);
 
     useEffect(() => {
@@ -150,11 +166,13 @@ export function RunButtonContainer({
         setSensiStatusState(sensiStatus);
         setShortCircuitStatusState(shortCircuitStatus);
         setDynamicSimulationStatusState(dynamicSimulationStatus);
+        setVoltageInitStatusState(voltageInitStatus);
     }, [
         loadFlowStatus,
         sensiStatus,
         shortCircuitStatus,
         dynamicSimulationStatus,
+        voltageInitStatus,
         securityAnalysisStatus,
         currentNode,
     ]);
@@ -177,6 +195,10 @@ export function RunButtonContainer({
             } else if (action === runnable.DYNAMIC_SIMULATION) {
                 setDynamicSimulationStatusState(RunningStatus.IDLE);
                 stopDynamicSimulation(studyUuid, currentNode?.id);
+                setComputationStopped(!computationStopped);
+            } else if (action === runnable.VOLTAGE_INIT) {
+                setVoltageInitStatusState(RunningStatus.IDLE);
+                stopVoltageInit(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -261,6 +283,17 @@ export function RunButtonContainer({
                         headerId: 'startShortCircuitError',
                     });
                 });
+        } else if (action === runnable.VOLTAGE_INIT) {
+            setVoltageInitStatusState(RunningStatus.RUNNING);
+            startVoltageInit(studyUuid, currentNode?.id)
+                .then(setRanVoltageInit(true))
+                .catch((error) => {
+                    setVoltageInitStatusState(RunningStatus.FAILED);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'startVoltageInitError',
+                    });
+                });
         } else if (action === runnable.DYNAMIC_SIMULATION) {
             checkDynamicSimulationParameters(studyUuid)
                 .then((isValid) => {
@@ -302,6 +335,8 @@ export function RunButtonContainer({
                 return shortCircuitStatusState;
             } else if (runnableType === runnable.DYNAMIC_SIMULATION) {
                 return dynamicSimulationStatusState;
+            } else if (runnableType === runnable.VOLTAGE_INIT) {
+                return voltageInitStatusState;
             }
         },
         [
@@ -310,27 +345,33 @@ export function RunButtonContainer({
             runnable.SENSITIVITY_ANALYSIS,
             runnable.SHORT_CIRCUIT_ANALYSIS,
             runnable.DYNAMIC_SIMULATION,
+            runnable.VOLTAGE_INIT,
             loadFlowStatusState,
             securityAnalysisStatusState,
             sensiStatusState,
             shortCircuitStatusState,
             dynamicSimulationStatusState,
+            voltageInitStatusState,
         ]
     );
 
-    const getRunningText = (runnableName, runnableStatus) => {
+    const getRunningText = (runnableName) => {
         return runnableName;
     };
 
     const runnables = useMemo(() => {
-        let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];
+        let runnables = [
+            runnable.LOADFLOW,
+            runnable.SECURITY_ANALYSIS,
+            runnable.SENSITIVITY_ANALYSIS,
+        ];
         if (enableDeveloperMode) {
             // SHORTCIRCUIT is currently a dev feature
             runnables.push(runnable.SHORT_CIRCUIT_ANALYSIS);
-            // SENSI is currently a dev feature
-            runnables.push(runnable.SENSITIVITY_ANALYSIS);
             // DYNAMICSIMULATION is currently a dev feature
             runnables.push(runnable.DYNAMIC_SIMULATION);
+            // VOLTAGEINIT is currently a dev feature
+            runnables.push(runnable.VOLTAGE_INIT);
         }
         return runnables;
     }, [runnable, enableDeveloperMode]);
@@ -405,4 +446,5 @@ RunButtonContainer.propTypes = {
     computationStopped: PropTypes.bool,
     disabled: PropTypes.bool,
     dynamicSimulationStatus: PropTypes.string,
+    voltageInitStatus: PropTypes.string,
 };
