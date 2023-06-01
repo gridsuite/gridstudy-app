@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -252,6 +252,30 @@ const CreateNodeMenu = ({
         },
     };
 
+    const renderMenuItems = useCallback(
+        (nodeMenuItems) => {
+            return Object.values(nodeMenuItems).map((item) => {
+                if (activeNode?.type === 'ROOT' && !item.onRoot) {
+                    return undefined; // do not show this item in menu
+                }
+                if (item.subMenuItems === undefined) {
+                    return <NodeMenuItem key={item.id} item={item} />;
+                }
+                return (
+                    <NestedMenuItem
+                        key={item.id}
+                        label={intl.formatMessage({ id: item.id })}
+                        parentMenuOpen={true}
+                        disabled={item.disabled}
+                    >
+                        {renderMenuItems(item.subMenuItems)}
+                    </NestedMenuItem>
+                );
+            });
+        },
+        [intl, activeNode?.type]
+    );
+
     return (
         <Menu
             anchorReference="anchorPosition"
@@ -264,37 +288,7 @@ const CreateNodeMenu = ({
             open={true}
             onClose={handleClose}
         >
-            {Object.values(NODE_MENU_ITEMS).map((item) => {
-                const hasSubMenuItem = item.subMenuItems !== undefined;
-                return (
-                    (activeNode?.type !== 'ROOT' || item.onRoot) && (
-                        <div key={item.id}>
-                            {!hasSubMenuItem && <NodeMenuItem item={item} />}
-
-                            {hasSubMenuItem && (
-                                <NestedMenuItem
-                                    label={intl.formatMessage({
-                                        id: item.id,
-                                    })}
-                                    parentMenuOpen={true}
-                                    disabled={item.disabled}
-                                >
-                                    {Object.values(item.subMenuItems).map(
-                                        (subItem) => {
-                                            return (
-                                                <NodeMenuItem
-                                                    key={subItem.id}
-                                                    item={subItem}
-                                                />
-                                            );
-                                        }
-                                    )}
-                                </NestedMenuItem>
-                            )}
-                        </div>
-                    )
-                );
-            })}
+            {renderMenuItems(NODE_MENU_ITEMS)}
         </Menu>
     );
 };
