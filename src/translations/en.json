@@ -326,6 +326,7 @@
     "descLfHvdcAcEmulation": "Enable AC emulation on HVDC lines: ",
     "descLfDistributedSlack": "Enable balancing: ",
     "descLfDcUseTransformerRatio": "Use transformation ratio in DC mode: ",
+    "descLfDcPowerFactor": "DC power factor (cos phi): ",
     "descLfBalanceType": "Balance type proportional to: ",
     "descLfBalanceTypeGenP": "generation P",
     "descLfBalanceTypeGenPMax": "generation P max",
