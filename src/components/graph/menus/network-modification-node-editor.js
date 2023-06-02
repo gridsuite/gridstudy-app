@@ -32,7 +32,7 @@ import { useParams } from 'react-router-dom';
 import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import LineCreationDialog from 'components/dialogs/network-modifications/line/creation/line-creation-dialog';
-import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer-creation/creation/two-windings-transformer-creation-dialog';
+import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator-creation/shunt-compensator-creation-dialog';
 import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog.js';
 import AddIcon from '@mui/icons-material/Add';
@@ -65,6 +65,7 @@ import VoltageLevelModificationDialog from 'components/dialogs/network-modificat
 import { UPDATE_TYPE } from 'components/network/constants';
 import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
+import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -262,6 +263,11 @@ const NetworkModificationNodeEditor = () => {
         TWO_WINDINGS_TRANSFORMER_CREATION: {
             label: 'CreateTwoWindingsTransformer',
             dialog: () => adapt(TwoWindingsTransformerCreationDialog),
+            icon: <AddIcon />,
+        },
+        TWO_WINDINGS_TRANSFORMER_MODIFICATION: {
+            label: 'ModifyTwoWindingsTransformer',
+            dialog: () => adapt(TwoWindingsTransformerModificationDialog),
             icon: <AddIcon />,
         },
         SUBSTATION_CREATION: {

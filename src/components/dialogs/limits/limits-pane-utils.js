@@ -7,17 +7,19 @@
 
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import {
-    LIMITS,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
+    LIMITS,
     PERMANENT_LIMIT,
-    TEMPORARY_LIMITS,
-    TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
+    TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
+    TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import { areArrayElementsUnique } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
+import { isNodeBuilt } from '../../graph/util/model-functions';
 
 const temporaryLimitsTableValidationSchema = () => ({
     [PERMANENT_LIMIT]: yup
@@ -103,3 +105,57 @@ export const getLimitsFormData = (
         },
     },
 });
+
+export const sanitizeLimitNames = (temporaryLimitList) =>
+    temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
+        ...temporaryLimit,
+        name: sanitizeString(name),
+    }));
+
+export const addModificationTypeToTemporaryLimits = (
+    temporaryLimits,
+    temporaryLimitsToModify,
+    currentModifiedTemporaryLimits,
+    currentNode
+) => {
+    return temporaryLimits.map((limit) => {
+        const limitWithSameName = temporaryLimitsToModify?.find(
+            (limitToModify) => limitToModify.name === limit.name
+        );
+        if (limitWithSameName) {
+            const currentLimitWithSameName =
+                currentModifiedTemporaryLimits?.find(
+                    (limitToModify) =>
+                        limitToModify?.name === limitWithSameName?.name
+                );
+            if (
+                (currentLimitWithSameName?.modificationType ===
+                    TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
+                    isNodeBuilt(currentNode)) ||
+                currentLimitWithSameName?.modificationType ===
+                    TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+            ) {
+                return {
+                    ...limit,
+                    modificationType: currentLimitWithSameName.modificationType,
+                };
+            } else {
+                return limitWithSameName.value === limit.value
+                    ? {
+                          ...limit,
+                          modificationType: null,
+                      }
+                    : {
+                          ...limit,
+                          modificationType:
+                              TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED,
+                      };
+            }
+        } else {
+            return {
+                ...limit,
+                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED,
+            };
+        }
+    });
+};
