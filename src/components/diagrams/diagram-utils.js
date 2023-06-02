@@ -30,11 +30,18 @@ const sortByAlign = (a, b) => {
  * Sort by the order (index) of the objects inside diagramStates.
  * So we keep the same order as in the redux store.
  * We use the id of the objects to identify their index.
+ * PS : we have to check the svgType type too because the ID is not unique
  */
 const sortByIndex = (a, b, diagramStates) => {
     return (
-        diagramStates.findIndex((diagramState) => diagramState.id === a?.id) -
-        diagramStates.findIndex((diagramState) => diagramState.id === b?.id)
+        diagramStates.findIndex(
+            (diagramState) =>
+                diagramState.id === a?.id && diagramState.svgType === a?.svgType
+        ) -
+        diagramStates.findIndex(
+            (diagramState) =>
+                diagramState.id === b?.id && diagramState.svgType === b?.svgType
+        )
     );
 };
 
