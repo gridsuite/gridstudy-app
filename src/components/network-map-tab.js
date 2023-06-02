@@ -159,8 +159,8 @@ export const NetworkMapTab = ({
     const currentNodeRef = useRef(null);
     const [updatedLines, setUpdatedLines] = useState([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
-    const [equipmentToModify, setEquipmentToModify] = useState(null);
-    const [editDialogOpen, setEditDialogOpen] = useState(undefined);
+    const [equipmentToModify, setEquipmentToModify] = useState();
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
 
     const closeModificationDialog = () => {
         setEquipmentToModify();
@@ -173,12 +173,10 @@ export const NetworkMapTab = ({
                 return (
                     <SubstationModificationDialog
                         open={true}
-                        editData={{
-                            equipmentId: equipmentToModify.equipmentId,
-                        }}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         isUpdate={true}
+                        defaultIdValue={equipmentToModify.equipmentId}
                         onClose={() => closeModificationDialog()}
                     />
                 );
@@ -186,17 +184,15 @@ export const NetworkMapTab = ({
                 return (
                     <VoltageLevelModificationDialog
                         open={true}
-                        editData={{
-                            equipmentId: equipmentToModify.equipmentId,
-                        }}
                         studyUuid={studyUuid}
-                        isUpdate={true}
                         currentNode={currentNode}
+                        isUpdate={true}
+                        defaultIdValue={equipmentToModify.equipmentId}
                         onClose={() => closeModificationDialog()}
                     />
                 );
             default:
-                return <></>;
+                break;
         }
     }
     const handleOpenModificationDialog = (equipmentId, equipmentType) => {
