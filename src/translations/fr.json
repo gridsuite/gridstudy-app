@@ -729,6 +729,8 @@
     "PermanentCurrentLimitText2": "IST 2",
 
     "CreateTwoWindingsTransformer": "Créer un transformateur à 2 enroulements",
+    "ModifyTwoWindingsTransformer": "Modifier un transformateur à 2 enroulements",
+    "TwoWindingsTransformerModificationError": "Erreur lors de la modification d'un transformateur à 2 enroulement",
     "TwoWindingsTransformerCharacteristicsTab": "Caractéristiques",
     "TwoWindingsTransformerRatioTapChangerTab": "Régleur",
     "TwoWindingsTransformerPhaseTapChangerTab": "Déphaseur",
