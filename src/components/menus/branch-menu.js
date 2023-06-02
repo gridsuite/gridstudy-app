@@ -38,13 +38,10 @@ import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-comm
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
-        padding: '0px',
-        margin: '7px',
-    },
-    listItemText: {
-        fontSize: 12,
-        padding: '0px',
-        margin: '4px',
+        // NestedMenu item manages only label prop of string type
+        // It fix paddings itself then we must force this padding
+        // to justify menu items texts
+        paddingLeft: '12px',
     },
 }));
 
@@ -213,7 +210,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
@@ -238,7 +234,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
@@ -264,7 +259,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage(
@@ -300,7 +294,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage(
@@ -336,7 +329,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
@@ -363,7 +355,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
