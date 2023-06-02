@@ -81,6 +81,7 @@ const getPropertiesFromModification = (properties) => {
 /**
  * Dialog to modify a substation in the network
  * @param editData the data to edit
+ * @param defaultIdValue the default substation id
  * @param currentNode The node we are currently working on
  * @param studyUuid the study we are currently working on
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -89,6 +90,7 @@ const getPropertiesFromModification = (properties) => {
  */
 const SubstationModificationDialog = ({
     editData,
+    defaultIdValue,
     currentNode,
     studyUuid,
     isUpdate,
@@ -102,12 +104,12 @@ const SubstationModificationDialog = ({
 
     const emptyFormData = useMemo(
         () => ({
-            [EQUIPMENT_ID]: null,
+            [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             [COUNTRY]: null,
             [ADDITIONAL_PROPERTIES]: null,
         }),
-        []
+        [defaultIdValue]
     );
 
     const formMethods = useForm({
