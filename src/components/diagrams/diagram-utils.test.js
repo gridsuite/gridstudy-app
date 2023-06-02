@@ -42,3 +42,30 @@ test('diagram-common.sortDiagrams', () => {
     expect(table[6]?.align).not.toBe('left');
     expect(table[6]?.align).not.toBe('right');
 });
+
+test('diagram-common.sortDiagrams.missingAligns', () => {
+    const diagramStates = [
+        { id: 4 }, // align: undefined  => "first undefined"
+        { id: 3 }, // align: LEFT       => "first left"
+        { id: 2 }, // align: LEFT       => "second left"
+        { id: 1 }, // align: RIGHT      => "right"
+        { id: 0 }, // align: LEFT       => "third left"
+        { id: 5 }, // align: undefined  => "second undefined"
+    ];
+
+    const table = [
+        { id: 1, align: 'right', name: 'right' },
+        { id: 2, align: 'left', name: 'second left' },
+        { id: 3, align: 'left', name: 'first left' },
+        { id: 5, name: 'second undefined' },
+        { id: 4, name: 'first undefined' },
+        { id: 0, align: 'left', name: 'third left' },
+    ].sort(makeDiagramSorter(diagramStates));
+
+    expect(table[0].name).toBe('first left');
+    expect(table[1].name).toBe('second left');
+    expect(table[2].name).toBe('third left');
+    expect(table[3].name).toBe('right');
+    expect(table[4].name).toBe('first undefined');
+    expect(table[5].name).toBe('second undefined');
+});
