@@ -148,6 +148,13 @@
     "BusId": "Bus ID",
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
+    "VoltageInitOptimalReactivePowerFlow" : "Optimal Reactive Power Flow",
+    "VoltageLimits" : "Voltage limits",
+    "VoltageLevelFilter" : "Voltage level filter",
+    "LowVoltageLimitAdjustment" : "Low voltage limit adjustment",
+    "HighVoltageLimitAdjustment" : "High voltage limit adjustment",
+    "VoltageLevelFilterTooltip" : "User entries are applied one after another starting at the top of the list. If a voltage level is included in more than one filter, an entry can therefore be replaced by a subsequent entry",
+    "FilterInputMinError" : "You must pick at least one filter",
 
     "SelectAll": "Select all",
     "UnselectAll": "Unselect all",

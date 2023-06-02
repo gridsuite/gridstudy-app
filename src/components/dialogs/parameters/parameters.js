@@ -62,6 +62,10 @@ import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import {
+    useGetVoltageInitParameters,
+    VoltageInitParameters,
+} from './voltageinit/voltage-init-parameters';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -428,6 +432,7 @@ const TAB_VALUES = {
     shortCircuitParamsTabValue: 'ShortCircuit',
     dynamicSimulationParamsTabValue: 'DynamicSimulation',
     advancedParamsTabValue: 'Advanced',
+    voltageInitParamsTabValue: 'VoltageInit',
 };
 
 const Parameters = ({ user, isParametersOpen, hideParameters }) => {
@@ -470,6 +475,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
+
+    const useVoltageInitParameters = useGetVoltageInitParameters();
 
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
@@ -533,10 +540,21 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         <Tab
                             disabled={!studyUuid}
                             label={
-                                <FormattedMessage id="SensitivityAnalysis" />
+                                <FormattedMessage id="VoltageInitOptimalReactivePowerFlow" />
                             }
-                            value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
+                            value={TAB_VALUES.voltageInitParamsTabValue}
                         />
+                        {enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={
+                                    <FormattedMessage id="SensitivityAnalysis" />
+                                }
+                                value={
+                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
+                                }
+                            />
+                        )}
                         {enableDeveloperMode && (
                             <Tab
                                 disabled={!studyUuid}
@@ -615,6 +633,22 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     hideParameters={hideParameters}
                                     parametersBackend={
                                         sensitivityAnalysisParametersBackend
+                                    }
+                                    index={TAB_VALUES.voltageInitParamsTabValue}
+                                />
+                            )}
+                        </TabPanel>
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.voltageInitParamsTabValue}
+                            keepState
+                        >
+                            {studyUuid && (
+                                <VoltageInitParameters
+                                    user={user}
+                                    hideParameters={hideParameters}
+                                    useVoltageInitParameters={
+                                        useVoltageInitParameters
                                     }
                                 />
                             )}
