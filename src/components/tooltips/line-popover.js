@@ -36,7 +36,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
+const LinePopover = ({
+    studyUuid,
+    lineInfos,
+    anchorEl,
+    lineId,
+    loadFlowStatus,
+}) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [lineInfo, setLineInfo] = useState(null);
     const intl = useIntl();
@@ -44,14 +50,16 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
     const [localAnchorEl, setLocalAnchorEl] = useState(null);
 
     useEffect(() => {
-        if (lineId !== '') {
+        if (lineInfos) {
+            setLineInfo(lineInfos);
+        } else if (lineId && lineId !== '') {
             fetchLine(studyUuid, currentNode.id, lineId).then((value) => {
                 setLineInfo(value);
             });
         } else {
             setLineInfo(null);
         }
-    }, [lineId, currentNode.id, studyUuid]);
+    }, [lineId, currentNode.id, studyUuid, lineInfos]);
 
     const handlePopoverClose = () => {
         setLineInfo(null);
