@@ -79,15 +79,6 @@ const ExportDialog = ({
             });
         }
     }, []);
-    const paramsComponent = (
-        <FlatParameters
-            paramsAsArray={metasAsArray}
-            initValues={currentParameters}
-            onChange={onChange}
-            variant="standard"
-        />
-    );
-
     const handleExportClick = () => {
         if (selectedFormat) {
             const downloadUrl = getExportUrl(
@@ -190,7 +181,14 @@ const ExportDialog = ({
                 </FormControl>
             </DialogTitle>
             <DialogContent>
-                <Collapse in={unfolded}>{paramsComponent}</Collapse>
+                <Collapse in={unfolded}>
+                    <FlatParameters
+                        paramsAsArray={metasAsArray}
+                        initValues={currentParameters}
+                        onChange={onChange}
+                        variant="standard"
+                    />
+                </Collapse>
                 {exportStudyErr !== '' && (
                     <Alert severity="error">{exportStudyErr}</Alert>
                 )}
