@@ -255,7 +255,7 @@ function PagedSensitivityResult({
             }
         }
         next.userRowsPerPage = userRowsPerPage;
-        next.version = next.indexer?.version;
+        next.version = version;
         next.fetcher = () => {
             const selector = {
                 isJustBefore: nOrNkIndex === 0,
