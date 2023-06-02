@@ -22,7 +22,7 @@ import ListItemText from '@mui/material/ListItemText';
  * @param dialogs the list of dialog
  * @param position
  */
-const NetworkModificationMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
+const NetworkModificationsMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
     //const classes = useStyles();
     const intl = useIntl();
 
@@ -69,11 +69,11 @@ const NetworkModificationMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
     );
 };
 
-NetworkModificationMenu.propTypes = {
+NetworkModificationsMenu.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onOpenDialog: PropTypes.func.isRequired,
     dialogs: PropTypes.array,
 };
 
-export default NetworkModificationMenu;
+export default NetworkModificationsMenu;

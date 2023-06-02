@@ -16,7 +16,7 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import NetworkModificationMenu from 'components/graph/menus/network-modifications-menu';
+import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
 import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
 import {
@@ -891,7 +891,7 @@ const NetworkModificationNodeEditor = () => {
                 <AddIcon />
             </Fab>
 
-            <NetworkModificationMenu
+            <NetworkModificationsMenu
                 open={openNetworkModificationsMenu}
                 onClose={closeNetworkModificationConfiguration}
                 currentNodeUuid={currentNode?.id}
