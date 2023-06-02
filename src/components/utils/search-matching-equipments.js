@@ -8,10 +8,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { searchEquipmentsInfos } from '../../utils/rest-api';
 import { getEquipmentsInfosForSearchBar } from '@gridsuite/commons-ui';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 import { SEARCH_FETCH_TIMEOUT_MILLIS } from '../../utils/UIconstants';
 import { useNameOrId } from './equipmentInfosHandler';
-import useDebounce from '../../utils/use-debounce';
 
 export const useSearchMatchingEquipments = (
     studyUuid,

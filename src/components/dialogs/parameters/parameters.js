@@ -44,7 +44,7 @@ import {
     getLoadFlowSpecificParametersDescription,
 } from '../../../utils/rest-api';
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 
 import {
     SingleLineDiagramParameters,
@@ -62,7 +62,6 @@ import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
-import useDebounce from '../../../utils/use-debounce';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (

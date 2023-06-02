@@ -38,7 +38,11 @@ import {
     toIntValue,
     useStyles,
 } from '../../dialogs/dialogUtils';
-import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    useSnackMessage,
+    OverflowableText,
+    useDebounce,
+} from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import {
@@ -51,7 +55,6 @@ import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
 import clsx from 'clsx';
-import useDebounce from '../../../utils/use-debounce';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
