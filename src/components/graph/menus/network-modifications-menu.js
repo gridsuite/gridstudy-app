@@ -23,7 +23,6 @@ import ListItemText from '@mui/material/ListItemText';
  * @param position
  */
 const NetworkModificationsMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
-    //const classes = useStyles();
     const intl = useIntl();
 
     const handleClose = () => {
