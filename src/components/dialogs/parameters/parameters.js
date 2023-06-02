@@ -544,17 +544,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             }
                             value={TAB_VALUES.voltageInitParamsTabValue}
                         />
-                        {enableDeveloperMode && (
-                            <Tab
-                                disabled={!studyUuid}
-                                label={
-                                    <FormattedMessage id="SensitivityAnalysis" />
-                                }
-                                value={
-                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
-                                }
-                            />
-                        )}
+                        <Tab
+                            disabled={!studyUuid}
+                            label={
+                                <FormattedMessage id="SensitivityAnalysis" />
+                            }
+                            value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
+                        />
                         {enableDeveloperMode && (
                             <Tab
                                 disabled={!studyUuid}
@@ -634,7 +630,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     parametersBackend={
                                         sensitivityAnalysisParametersBackend
                                     }
-                                    index={TAB_VALUES.voltageInitParamsTabValue}
                                 />
                             )}
                         </TabPanel>
