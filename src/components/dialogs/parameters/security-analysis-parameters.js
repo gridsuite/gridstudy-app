@@ -86,7 +86,11 @@ const SecurityAnalysisFields = ({
     );
 
     return (
-        <Grid className={isSingleField ? classes.singleItem : classes.item}>
+        <Grid
+            className={
+                isSingleField ? classes.singleItem : classes.multipleItems
+            }
+        >
             <Grid item xs={4} className={classes.parameterName}>
                 <Typography>{label}</Typography>
             </Grid>

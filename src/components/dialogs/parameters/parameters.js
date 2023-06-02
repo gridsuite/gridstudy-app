@@ -154,16 +154,9 @@ export const useStyles = makeStyles((theme) => ({
         paddingBottom: theme.spacing(1),
         flexGrow: 1,
     },
-    item: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
     singleItem: {
         display: 'flex',
-        flex: 0.97,
+        flex: 'inherit',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
@@ -193,6 +186,14 @@ export const useStyles = makeStyles((theme) => ({
     textContainer: {
         display: 'flex',
         flex: '-moz-available',
+    },
+    multipleItems: {
+        display: 'flex',
+        flex: 'inherit',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
     },
 }));
 
