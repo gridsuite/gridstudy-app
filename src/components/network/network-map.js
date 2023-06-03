@@ -33,6 +33,8 @@ import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
+import { fetchMapBoxToken } from 'utils/rest-api';
+import LinePopover from '.././tooltips/line-popover';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -49,14 +51,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const MAPBOX_TOKEN =
+const FALLBACK_MAPBOX_TOKEN =
     'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
-
 const SUBSTATION_LAYER_PREFIX = 'substationLayer';
 const LINE_LAYER_PREFIX = 'lineLayer';
 const LABEL_SIZE = 12;
 
 const NetworkMap = (props) => {
+    const [mapBoxToken, setMapBoxToken] = useState();
     const [labelsVisible, setLabelsVisible] = useState(false);
     const [showLineFlow, setShowLineFlow] = useState(true);
     const [deck, setDeck] = useState(null);
@@ -105,7 +107,17 @@ const NetworkMap = (props) => {
         ];
     }, [props.mapEquipments?.hvdcLines, props.mapEquipments?.lines]);
 
+    const studyUuid = useSelector((state) => state.studyUuid);
+
     const classes = useStyles();
+
+    const divRef = useRef();
+
+    useEffect(() => {
+        fetchMapBoxToken().then((token) =>
+            setMapBoxToken(token || FALLBACK_MAPBOX_TOKEN)
+        );
+    }, []);
 
     useEffect(() => {
         if (centerOnSubstation === null) {
@@ -240,8 +252,10 @@ const NetworkMap = (props) => {
 
     function renderTooltip() {
         return (
-            tooltip && (
+            tooltip &&
+            tooltip.visible && (
                 <div
+                    ref={divRef}
                     style={{
                         position: 'absolute',
                         color: theme.palette.text.primary,
@@ -251,7 +265,13 @@ const NetworkMap = (props) => {
                         top: tooltip.pointerY,
                     }}
                 >
-                    {tooltip.message}
+                    <LinePopover
+                        studyUuid={studyUuid}
+                        lineInfos={tooltip.lineInfos}
+                        anchorEl={divRef.current}
+                        lineId={tooltip.lineId}
+                        loadFlowStatus={props.loadFlowStatus}
+                    />
                 </div>
             )
         );
@@ -393,9 +413,11 @@ const NetworkMap = (props) => {
                     if (object) {
                         setCursorType('pointer');
                         setTooltip({
-                            message: getNameOrId(object),
+                            lineId: getNameOrId(object),
                             pointerX: x,
                             pointerY: y,
+                            lineInfos: object,
+                            visible: true,
                         });
                     } else {
                         setCursorType('grab');
@@ -460,13 +482,15 @@ const NetworkMap = (props) => {
                         </div>
                     )}
 
-                <StaticMap
-                    mapStyle={theme.mapboxStyle}
-                    preventStyleDiffing={true}
-                    mapboxApiAccessToken={MAPBOX_TOKEN}
-                >
-                    {renderTooltip()}
-                </StaticMap>
+                {mapBoxToken && (
+                    <StaticMap
+                        mapStyle={theme.mapboxStyle}
+                        preventStyleDiffing={true}
+                        mapboxApiAccessToken={mapBoxToken}
+                    >
+                        {renderTooltip()}
+                    </StaticMap>
+                )}
                 <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
             </DeckGL>
         </>
