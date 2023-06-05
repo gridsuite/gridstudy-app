@@ -251,10 +251,7 @@ const VoltageLimitsParameters = ({ useVoltageInitParameters }) => {
                 <Button onClick={clear}>
                     <FormattedMessage id="resetToDefault" />
                 </Button>
-                <SubmitButton
-                    onClick={handleSubmit(onSubmit, undefined)}
-                    disabled={false}
-                />
+                <SubmitButton onClick={handleSubmit(onSubmit)} />
             </DialogActions>
         </FormProvider>
     );
