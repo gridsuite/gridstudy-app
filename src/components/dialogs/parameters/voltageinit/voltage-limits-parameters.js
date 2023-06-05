@@ -22,9 +22,8 @@ import {
     SELECTED,
     VOLTAGE_LIMITS,
 } from 'components/utils/field-constants';
-import DirectoryItemsInput from 'components/utils/rhf-inputs/directory-items-input';
 import { useCallback, useEffect, useMemo } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import {
@@ -33,18 +32,48 @@ import {
 } from 'utils/rest-api';
 import InfoIcon from '@mui/icons-material/Info';
 import { VoltageAdornment } from 'components/dialogs/dialogUtils';
+import yup from 'components/utils/yup-config';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-const VoltageLimitsParameters = ({
-    control,
-    reset,
-    emptyFormData,
-    useVoltageInitParameters,
-}) => {
+const formSchema = yup
+    .object()
+    .shape({
+        [VOLTAGE_LIMITS]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [FILTERS]: yup
+                        .array()
+                        .of(
+                            yup.object().shape({
+                                [ID]: yup.string().required(),
+                                [NAME]: yup.string().required(),
+                            })
+                        )
+                        .min(1, 'FilterInputMinError'),
+                    [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
+                    [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
+                })
+            )
+            .required(),
+    })
+    .required();
+
+const VoltageLimitsParameters = ({ useVoltageInitParameters }) => {
     const intl = useIntl();
 
-    const [voltageInitParams, setVoltageInitParams] = useVoltageInitParameters;
+    const emptyFormData = useMemo(() => {
+        return {
+            [VOLTAGE_LIMITS]: [],
+        };
+    }, []);
+    const formMethods = useForm({
+        defaultValues: emptyFormData,
+        resolver: yupResolver(formSchema),
+    });
+    const { reset, control, handleSubmit } = formMethods;
 
-    const { handleSubmit } = useFormContext();
+    const [voltageInitParams, setVoltageInitParams] = useVoltageInitParameters;
 
     const useFieldArrayOutput = useFieldArray({
         name: `${VOLTAGE_LIMITS}`,
@@ -162,7 +191,6 @@ const VoltageLimitsParameters = ({
 
     const onSubmit = useCallback(
         (newParams) => {
-            console.log(formatNewParams(newParams.voltageLimits));
             updateVoltageInitParameters(
                 studyUuid,
                 formatNewParams(newParams.voltageLimits)
@@ -208,7 +236,7 @@ const VoltageLimitsParameters = ({
     }, [emptyFormData, reset, resetVoltageInitParameters]);
 
     return (
-        <>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <DndTable
                 arrayFormName={`${VOLTAGE_LIMITS}`}
                 columnsDefinition={COLUMNS_DEFINITIONS}
@@ -228,7 +256,7 @@ const VoltageLimitsParameters = ({
                     disabled={false}
                 />
             </DialogActions>
-        </>
+        </FormProvider>
     );
 };
 

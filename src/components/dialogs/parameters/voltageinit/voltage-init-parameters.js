@@ -6,19 +6,8 @@
  */
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { Tabs, Tab, Grid } from '@mui/material';
-import {
-    FILTERS,
-    HIGH_VOLTAGE_LIMIT,
-    ID,
-    LOW_VOLTAGE_LIMIT,
-    NAME,
-    VOLTAGE_LIMITS,
-} from 'components/utils/field-constants';
-import yup from 'components/utils/yup-config';
-import { useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { getVoltageInitParameters } from 'utils/rest-api';
@@ -50,47 +39,9 @@ const TAB_VALUES = {
     voltageLimitsParamsTabValue: 'VoltageLimits',
 };
 
-const formSchema = yup
-    .object()
-    .shape({
-        [VOLTAGE_LIMITS]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [FILTERS]: yup
-                        .array()
-                        .of(
-                            yup.object().shape({
-                                [ID]: yup.string().required(),
-                                [NAME]: yup.string().required(),
-                            })
-                        )
-                        .min(1, 'FilterInputMinError'),
-                    [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
-                    [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
-                })
-            )
-            .required(),
-    })
-    .required();
-
 export const VoltageInitParameters = ({ useVoltageInitParameters }) => {
     const classes = useStyles();
-
-    const [tabValue, setTabValue] = useState(
-        TAB_VALUES.voltageLimitsParamsTabValue
-    );
-
-    const emptyFormData = {
-        [VOLTAGE_LIMITS]: [],
-    };
-
-    const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
-    });
-
-    const { reset, control } = formMethods;
+    const tabValue = useMemo(() => TAB_VALUES.voltageLimitsParamsTabValue, []);
 
     return (
         <>
@@ -110,19 +61,9 @@ export const VoltageInitParameters = ({ useVoltageInitParameters }) => {
                         value={tabValue}
                         index={TAB_VALUES.voltageLimitsParamsTabValue}
                     >
-                        <FormProvider
-                            validationSchema={formSchema}
-                            {...formMethods}
-                        >
-                            <VoltageLimitsParameters
-                                control={control}
-                                reset={reset}
-                                emptyFormData={emptyFormData}
-                                useVoltageInitParameters={
-                                    useVoltageInitParameters
-                                }
-                            />
-                        </FormProvider>
+                        <VoltageLimitsParameters
+                            useVoltageInitParameters={useVoltageInitParameters}
+                        />
                     </TabPanel>
                 </Grid>
             </Grid>
