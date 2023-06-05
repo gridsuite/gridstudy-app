@@ -122,21 +122,16 @@ export const addModificationTypeToTemporaryLimits = (
     currentNode
 ) => {
     return temporaryLimits.map((limit) => {
-        const formattedTemporaryLimitsToModify = formatTemporaryLimits(
+        const limitWithSameName = formatTemporaryLimits(
             temporaryLimitsToModify
-        );
-        const formattedCurrentModifiedTemporaryLimits = formatTemporaryLimits(
-            currentModifiedTemporaryLimits
-        );
-        const limitWithSameName = formattedTemporaryLimitsToModify?.find(
-            (limitToModify) => limitToModify.name === limit.name
-        );
+        )?.find((limitToModify) => limitToModify.name === limit.name);
         if (limitWithSameName) {
-            const currentLimitWithSameName =
-                formattedCurrentModifiedTemporaryLimits?.find(
-                    (limitToModify) =>
-                        limitToModify?.name === limitWithSameName?.name
-                );
+            const currentLimitWithSameName = formatTemporaryLimits(
+                currentModifiedTemporaryLimits
+            )?.find(
+                (limitToModify) =>
+                    limitToModify?.name === limitWithSameName?.name
+            );
             if (
                 (currentLimitWithSameName?.modificationType ===
                     TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
