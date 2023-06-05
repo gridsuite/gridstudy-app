@@ -524,21 +524,27 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         resetProvider();
     }, [resetParameters, resetProvider]);
 
+    const resetLfParameters = useCallback(() => {
+        resetParameters();
+    }, [resetParameters]);
+
     return (
         <>
-            <Grid
-                container
-                className={classes.scrollableGrid}
-                key="lfParameters"
-            >
+            <Grid container spacing={1} padding={1}>
                 <DropDown
                     value={provider}
                     label="Provider"
                     values={providers}
                     callback={updateLfProviderCallback}
                 />
+            </Grid>
+            <Grid
+                container
+                className={classes.scrollableGrid}
+                key="lfParameters"
+            >
+                <LineSeparator />
                 <Grid container spacing={1} paddingTop={1}>
-                    <LineSeparator />
                     <LabelledSlider
                         value={Number(limitReductionParam)}
                         label="LimitReduction"
@@ -577,6 +583,10 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 <LabelledButton
                     callback={resetLfParametersAndLfProvider}
                     label="resetToDefault"
+                />
+                <LabelledButton
+                    callback={resetLfParameters}
+                    label="resetProviderValuesToDefault"
                 />
                 <CloseButton
                     hideParameters={hideParameters}

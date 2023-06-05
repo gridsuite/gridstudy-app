@@ -310,7 +310,8 @@
     "descLfUniformValues": "Uniform values",
     "descLfPreviousValues": "Previous values",
     "descLfDcValues": "DC Values",
-    "resetToDefault": "default values",
+    "resetToDefault": "Reset All",
+    "resetProviderValuesToDefault": "Reset provider default values",
     "showAdvancedParameters": "Advanced settings",
     "showSpecificParameters": "Specific settings",
 
