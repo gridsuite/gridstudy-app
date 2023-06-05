@@ -160,11 +160,11 @@ export const NetworkMapTab = ({
     const [updatedLines, setUpdatedLines] = useState([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
     const [equipmentToModify, setEquipmentToModify] = useState();
-    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [modificationDialogOpen, setModificationDialogOpen] = useState(false);
 
     const closeModificationDialog = () => {
         setEquipmentToModify();
-        setEditDialogOpen(false);
+        setModificationDialogOpen(false);
     };
 
     function renderModificationDialog() {
@@ -197,7 +197,7 @@ export const NetworkMapTab = ({
     }
     const handleOpenModificationDialog = (equipmentId, equipmentType) => {
         setEquipmentToModify({ equipmentId, equipmentType });
-        setEditDialogOpen(true);
+        setModificationDialogOpen(true);
         closeEquipmentMenu();
     };
     function withEquipment(Menu, props) {
@@ -908,7 +908,7 @@ export const NetworkMapTab = ({
             </div>
             {renderMap()}
             {renderEquipmentMenu()}
-            {editDialogOpen && renderModificationDialog()}
+            {modificationDialogOpen && renderModificationDialog()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
