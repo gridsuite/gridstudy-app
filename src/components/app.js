@@ -27,9 +27,9 @@ import {
     selectComponentLibrary,
     selectComputedLanguage,
     selectDiagonalLabelState,
-    selectDisplayOverloadTableState,
     selectFavoriteContingencyLists,
     selectLanguage,
+    selectLimitReduction,
     selectLineFlowAlertThreshold,
     selectLineFlowColorMode,
     selectLineFlowMode,
@@ -68,7 +68,6 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
-    PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_LANGUAGE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -82,6 +81,7 @@ import {
     PARAM_FLUX_CONVENTION,
     PARAM_MAP_MANUAL_REFRESH,
     PARAM_DEVELOPER_MODE,
+    PARAM_LIMIT_REDUCTION,
 } from '../utils/config-params';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -160,6 +160,9 @@ const App = () => {
                             selectDiagonalLabelState(param.value === 'true')
                         );
                         break;
+                    case PARAM_LIMIT_REDUCTION:
+                        dispatch(selectLimitReduction(param.value));
+                        break;
                     case PARAM_LINE_FLOW_ALERT_THRESHOLD:
                         dispatch(selectLineFlowAlertThreshold(param.value));
                         break;
@@ -192,13 +195,6 @@ const App = () => {
                         break;
                     case PARAM_COMPONENT_LIBRARY:
                         dispatch(selectComponentLibrary(param.value));
-                        break;
-                    case PARAM_DISPLAY_OVERLOAD_TABLE:
-                        dispatch(
-                            selectDisplayOverloadTableState(
-                                param.value === 'true'
-                            )
-                        );
                         break;
                     case PARAM_MAP_MANUAL_REFRESH:
                         dispatch(

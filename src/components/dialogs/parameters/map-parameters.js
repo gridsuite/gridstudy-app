@@ -15,13 +15,12 @@ import {
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
-    PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../utils/config-params';
 import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
 import { useStyles } from './parameters';
-import { LabelledSilder, LineSeparator } from '../dialogUtils';
+import { LabelledSlider, LineSeparator } from '../dialogUtils';
 
 export const MapParameters = ({ hideParameters }) => {
     const classes = useStyles();
@@ -41,17 +40,11 @@ export const MapParameters = ({ hideParameters }) => {
     const [lineFlowAlertThresholdLocal, handleChangeLineFlowAlertThreshold] =
         useParameterState(PARAM_LINE_FLOW_ALERT_THRESHOLD);
 
-    const [displayOverloadTableLocal, handleChangeDisplayOverloadTable] =
-        useParameterState(PARAM_DISPLAY_OVERLOAD_TABLE);
-
     const [mapManualRefreshLocal, handleChangeMapManualRefresh] =
         useParameterState(PARAM_MAP_MANUAL_REFRESH);
 
     const [disabledFlowAlertThreshold, setDisabledFlowAlertThreshold] =
-        useState(
-            lineFlowColorModeLocal === 'nominalVoltage' &&
-                !displayOverloadTableLocal
-        );
+        useState(lineFlowColorModeLocal === 'nominalVoltage');
 
     const alertThresholdMarks = [
         {
@@ -66,10 +59,9 @@ export const MapParameters = ({ hideParameters }) => {
 
     useEffect(() => {
         setDisabledFlowAlertThreshold(
-            lineFlowColorModeLocal === 'nominalVoltage' &&
-                !displayOverloadTableLocal
+            lineFlowColorModeLocal === 'nominalVoltage'
         );
-    }, [lineFlowColorModeLocal, displayOverloadTableLocal]);
+    }, [lineFlowColorModeLocal]);
 
     return (
         <>
@@ -148,7 +140,7 @@ export const MapParameters = ({ hideParameters }) => {
                     </Select>
                 </Grid>
                 <LineSeparator />
-                <LabelledSilder
+                <LabelledSlider
                     value={Number(lineFlowAlertThresholdLocal)}
                     label="AlertThresholdLabel"
                     disabled={disabledFlowAlertThreshold}
@@ -156,16 +148,6 @@ export const MapParameters = ({ hideParameters }) => {
                         handleChangeLineFlowAlertThreshold(value);
                     }}
                     marks={alertThresholdMarks}
-                />
-                <LineSeparator />
-                <SwitchWithLabel
-                    value={displayOverloadTableLocal}
-                    label="displayOverloadTable"
-                    callback={() => {
-                        handleChangeDisplayOverloadTable(
-                            !displayOverloadTableLocal
-                        );
-                    }}
                 />
                 <LineSeparator />
                 <SwitchWithLabel

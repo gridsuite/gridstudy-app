@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
@@ -16,6 +17,7 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../components/utils/equipment-types';
+import { toModificationOperation } from '../components/utils/utils';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -479,21 +481,6 @@ export function fetchVoltageLevelsListInfos(
     );
 }
 
-export function fetchVoltageLevelsEquipments(
-    studyUuid,
-    currentNodeUuid,
-    substationsIds
-) {
-    return fetchEquipments(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        'Voltage-levels-equipments',
-        'voltage-levels-equipments',
-        true
-    );
-}
-
 export function fetchTwoWindingsTransformers(
     studyUuid,
     currentNodeUuid,
@@ -749,6 +736,38 @@ export function fetchNetworkElementsInfos(
     return backendFetchJson(fetchElementsUrl);
 }
 
+export function fetchNetworkElementInfos(
+    studyUuid,
+    currentNodeUuid,
+    elementType,
+    infoType,
+    elementId,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+    urlSearchParams.append('elementType', elementType);
+    urlSearchParams.append('infoType', infoType);
+
+    const fetchElementsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network/elements/' +
+        encodeURIComponent(elementId) +
+        '?' +
+        urlSearchParams.toString();
+    console.debug(fetchElementsUrl);
+
+    return backendFetchJson(fetchElementsUrl);
+}
+
 export function fetchVoltageLevelEquipments(
     studyUuid,
     currentNodeUuid,
@@ -857,51 +876,19 @@ export function fetchEquipmentInfos(
     return backendFetchJson(fetchEquipmentInfosUrl);
 }
 
-export function fetchOverloadedLines(
+export function fetchCurrentLimitViolations(
     studyUuid,
     currentNodeUuid,
     limitReduction
 ) {
     console.info(
-        `Fetching overloaded lines (with limit reduction ${limitReduction}) ...`
+        `Fetching current limit violations (with limit reduction ${limitReduction}) ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/overloaded-lines?limitReduction=' +
+        '/current-limit-violations?limitReduction=' +
         limitReduction.toString();
     return backendFetchJson(url);
-}
-
-export function fetchNetworkElementInfos(
-    studyUuid,
-    currentNodeUuid,
-    elementType,
-    infoType,
-    elementId,
-    inUpstreamBuiltParentNode
-) {
-    console.info(
-        `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
-    urlSearchParams.append('elementType', elementType);
-    urlSearchParams.append('infoType', infoType);
-
-    const fetchElementsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network/elements/' +
-        encodeURIComponent(elementId) +
-        '?' +
-        urlSearchParams.toString();
-    console.debug(fetchElementsUrl);
-
-    return backendFetchJson(fetchElementsUrl);
 }
 
 export function fetchBusesForVoltageLevel(
@@ -1280,6 +1267,53 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
+// --- Voltage init API - BEGIN
+export function startVoltageInit(studyUuid, currentNodeUuid) {
+    console.info(
+        `Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const startVoltageInitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/run';
+    console.debug(startVoltageInitUrl);
+    return backendFetch(startVoltageInitUrl, { method: 'put' });
+}
+
+export function stopVoltageInit(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopVoltageInitUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/stop';
+    console.debug(stopVoltageInitUrl);
+    return backendFetch(stopVoltageInitUrl, { method: 'put' });
+}
+
+export function fetchVoltageInitStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching voltage init status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/status';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchVoltageInitResult(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/voltage-init/result';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+// --- Voltage init API - END
+
 // --- Dynamic simulation API - BEGIN
 export function getDynamicMappings(studyUuid) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);
@@ -1412,6 +1446,18 @@ function getDynamicSimulationUrl() {
     return PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES + '/v1/';
 }
 
+export function fetchDynamicSimulationModels(studyUuid, nodeUuid) {
+    console.info(
+        `Fetching dynamic simulation models on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/dynamic-simulation/models';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function fetchDynamicSimulationProviders() {
     console.info('fetch dynamic simulation providers');
     const url = getDynamicSimulationUrl() + 'providers';
@@ -1460,7 +1506,10 @@ export function fetchDynamicSimulationParameters(studyUuid) {
     const mappingsPromise = getDynamicMappings(studyUuid);
 
     return Promise.all([parametersPromise, mappingsPromise]).then(
-        ([parameters, mappings]) => ({ ...parameters, mappings })
+        ([parameters, mappings]) => ({
+            ...parameters,
+            mappings,
+        })
     );
 }
 
@@ -1468,6 +1517,7 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
     console.info('set dynamic simulation parameters');
     const url = getStudyUrl(studyUuid) + '/dynamic-simulation/parameters';
     console.debug(url);
+
     return backendFetch(url, {
         method: 'POST',
         headers: {
@@ -1834,6 +1884,15 @@ export function fetchAppsAndUrls() {
         });
 }
 
+export function fetchMapBoxToken() {
+    console.info(`Fetching MapBoxToken...`);
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return res.mapBoxToken;
+        });
+}
+
 export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     console.info('Creating groovy script (request network change)');
     const changeUrl =
@@ -2101,13 +2160,6 @@ export function modifyLoad(
         }),
     });
 }
-
-function toModificationOperation(value) {
-    return value === 0 || value === false || value
-        ? { value: value, op: 'SET' }
-        : null;
-}
-
 export function modifyGenerator(
     studyUuid,
     currentNodeUuid,
@@ -2555,6 +2607,58 @@ export function createTwoWindingsTransformer(
             connectionDirection2: connectionDirection2,
             connectionPosition1: connectionPosition1,
             connectionPosition2: connectionPosition2,
+        }),
+    });
+}
+
+export function modifyTwoWindingsTransformer(
+    studyUuid,
+    currentNodeUuid,
+    twoWindingsTransformerId,
+    twoWindingsTransformerName,
+    seriesResistance,
+    seriesReactance,
+    magnetizingConductance,
+    magnetizingSusceptance,
+    ratedS,
+    ratedVoltage1,
+    ratedVoltage2,
+    currentLimit1,
+    currentLimit2,
+    isUpdate,
+    modificationUuid
+) {
+    let modifyTwoWindingsTransformerUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyTwoWindingsTransformerUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating two windings transformer modification');
+    } else {
+        console.info('Creating two windings transformer modification');
+    }
+
+    return backendFetchText(modifyTwoWindingsTransformerUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+            equipmentId: twoWindingsTransformerId,
+            equipmentName: twoWindingsTransformerName,
+            seriesResistance: seriesResistance,
+            seriesReactance: seriesReactance,
+            magnetizingConductance: magnetizingConductance,
+            magnetizingSusceptance: magnetizingSusceptance,
+            ratedS: ratedS,
+            ratedVoltage1: ratedVoltage1,
+            ratedVoltage2: ratedVoltage2,
+            currentLimits1: currentLimit1,
+            currentLimits2: currentLimit2,
         }),
     });
 }
@@ -3258,11 +3362,19 @@ export function generationDispatch(
     studyUuid,
     currentNodeUuid,
     modificationUuid,
-    lossCoefficient
+    lossCoefficient,
+    defaultOutageRate,
+    generatorsWithoutOutage,
+    generatorsWithFixedActivePower,
+    generatorsFrequencyReserve
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
-        lossCoefficient,
+        lossCoefficient: lossCoefficient,
+        defaultOutageRate: defaultOutageRate,
+        generatorsWithoutOutage: generatorsWithoutOutage,
+        generatorsWithFixedSupply: generatorsWithFixedActivePower,
+        generatorsFrequencyReserve: generatorsFrequencyReserve,
     });
 
     let generationDispatchUrl =

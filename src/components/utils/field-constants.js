@@ -210,3 +210,10 @@ export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
 
 // generation dispatch
 export const LOSS_COEFFICIENT = 'lossCoefficient';
+export const DEFAULT_OUTAGE_RATE = 'defaultOutageRate';
+export const GENERATORS_WITHOUT_OUTAGE = 'generatorsWithoutOutage';
+export const GENERATORS_WITH_FIXED_ACTIVE_POWER =
+    'generatorsWithFixedActivePower';
+export const GENERATORS_FREQUENCY_RESERVES = 'generatorsFrequencyReserve';
+export const GENERATORS_FILTERS = 'generatorsFilters';
+export const FREQUENCY_RESERVE = 'frequencyReserve';
