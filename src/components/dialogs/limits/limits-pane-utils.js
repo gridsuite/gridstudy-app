@@ -17,7 +17,10 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import { areArrayElementsUnique } from 'components/utils/utils';
+import {
+    areArrayElementsUnique,
+    formatTemporaryLimits,
+} from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 
@@ -119,15 +122,16 @@ export const addModificationTypeToTemporaryLimits = (
     currentNode
 ) => {
     return temporaryLimits.map((limit) => {
-        const limitWithSameName = temporaryLimitsToModify?.find(
-            (limitToModify) => limitToModify.name === limit.name
-        );
+        const limitWithSameName = formatTemporaryLimits(
+            temporaryLimitsToModify
+        )?.find((limitToModify) => limitToModify.name === limit.name);
         if (limitWithSameName) {
-            const currentLimitWithSameName =
-                currentModifiedTemporaryLimits?.find(
-                    (limitToModify) =>
-                        limitToModify?.name === limitWithSameName?.name
-                );
+            const currentLimitWithSameName = formatTemporaryLimits(
+                currentModifiedTemporaryLimits
+            )?.find(
+                (limitToModify) =>
+                    limitToModify?.name === limitWithSameName?.name
+            );
             if (
                 (currentLimitWithSameName?.modificationType ===
                     TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&

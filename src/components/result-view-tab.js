@@ -154,26 +154,26 @@ export const ResultViewTab = ({
                 >
                     <Tab
                         label={intl.formatMessage({
-                            id: 'loadFlowResults',
+                            id: 'LoadFlow',
                         })}
                         disabled={disabled}
                     />
                     <Tab
                         label={intl.formatMessage({
-                            id: 'securityAnalysisResults',
+                            id: 'SecurityAnalysis',
                         })}
                         disabled={disabled}
                     />
                     <Tab
                         label={intl.formatMessage({
-                            id: 'sensitivityAnalysisResults',
+                            id: 'SensitivityAnalysis',
                         })}
                         disabled={disabled}
                     />
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'ShortCircuitAnalysisResults',
+                                id: 'ShortCircuitAnalysis',
                             })}
                             disabled={disabled}
                         />
@@ -181,7 +181,7 @@ export const ResultViewTab = ({
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'DynamicSimulationResults',
+                                id: 'DynamicSimulation',
                             })}
                             disabled={disabled}
                         />
@@ -189,7 +189,7 @@ export const ResultViewTab = ({
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'VoltageInitResults',
+                                id: 'VoltageInit',
                             })}
                             disabled={disabled}
                         />
