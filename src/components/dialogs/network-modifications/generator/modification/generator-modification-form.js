@@ -44,8 +44,6 @@ import {
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-// import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-// import { useWatch } from 'react-hook-form';
 
 const GeneratorModificationForm = ({
     studyUuid,
