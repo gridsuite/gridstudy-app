@@ -67,7 +67,7 @@ import { FetchStatus } from 'utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
-} from '../../../utils/equipment-types';
+} from '../../../../utils/equipment-types';
 
 const GeneratorModificationDialog = ({
     editData,
