@@ -481,21 +481,6 @@ export function fetchVoltageLevelsListInfos(
     );
 }
 
-export function fetchVoltageLevelsEquipments(
-    studyUuid,
-    currentNodeUuid,
-    substationsIds
-) {
-    return fetchEquipments(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        'Voltage-levels-equipments',
-        'voltage-levels-equipments',
-        true
-    );
-}
-
 export function fetchTwoWindingsTransformers(
     studyUuid,
     currentNodeUuid,
@@ -742,6 +727,38 @@ export function fetchNetworkElementsInfos(
     return backendFetchJson(fetchElementsUrl);
 }
 
+export function fetchNetworkElementInfos(
+    studyUuid,
+    currentNodeUuid,
+    elementType,
+    infoType,
+    elementId,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+    urlSearchParams.append('elementType', elementType);
+    urlSearchParams.append('infoType', infoType);
+
+    const fetchElementsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network/elements/' +
+        encodeURIComponent(elementId) +
+        '?' +
+        urlSearchParams.toString();
+    console.debug(fetchElementsUrl);
+
+    return backendFetchJson(fetchElementsUrl);
+}
+
 export function fetchVoltageLevelEquipments(
     studyUuid,
     currentNodeUuid,
@@ -863,38 +880,6 @@ export function fetchCurrentLimitViolations(
         '/current-limit-violations?limitReduction=' +
         limitReduction.toString();
     return backendFetchJson(url);
-}
-
-export function fetchNetworkElementInfos(
-    studyUuid,
-    currentNodeUuid,
-    elementType,
-    infoType,
-    elementId,
-    inUpstreamBuiltParentNode
-) {
-    console.info(
-        `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
-    urlSearchParams.append('elementType', elementType);
-    urlSearchParams.append('infoType', infoType);
-
-    const fetchElementsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network/elements/' +
-        encodeURIComponent(elementId) +
-        '?' +
-        urlSearchParams.toString();
-    console.debug(fetchElementsUrl);
-
-    return backendFetchJson(fetchElementsUrl);
 }
 
 export function fetchBusesForVoltageLevel(

@@ -44,7 +44,7 @@ const LineSplitWithVoltageLevelForm = ({
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNode.id).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a?.id?.localeCompare(b?.id))

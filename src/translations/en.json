@@ -688,6 +688,7 @@
     "CouplingOmnibusBetweenSameBusbar": "Forbidden to have a Coupler between the same bus bar section",
     "VoltageLevelModificationError": "Error while modifying a voltage level",
     "TopologyNotRetrieved": "The voltage level topology could not be retrieved",
+    "BusBarSectionsCopyingNotSupported" : "Copying bus bar sections is not supported for this voltage level : values were set to their default",
 
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",
     "LineToSplit": "Existing line",

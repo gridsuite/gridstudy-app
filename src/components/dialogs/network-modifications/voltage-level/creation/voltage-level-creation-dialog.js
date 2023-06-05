@@ -168,9 +168,9 @@ const VoltageLevelCreationDialog = ({
                           }))
                         : [],
             });
-            if (voltageLevel.isRetrievedTopology === false) {
+            if (!voltageLevel.isRetrievedTopology) {
                 snackWarning({
-                    messageId: 'TopologyNotRetrieved',
+                    messageId: 'BusBarSectionsCopyingNotSupported',
                 });
             }
         },

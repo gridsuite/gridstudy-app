@@ -688,6 +688,7 @@
     "CouplingOmnibusBetweenSameBusbar": "Couplage/omnibus interdit entre le même SJB",
     "VoltageLevelModificationError": "Erreur lors de la modification d'un poste",
     "TopologyNotRetrieved": "La topologie du poste n'a pas pu être récupérée",
+    "BusBarSectionsCopyingNotSupported" : "La copie des sections de jeux de barres n'est pas supportée pour ce poste : des valeurs par défaut ont été renseignées",
 
     "LineSplitWithVoltageLevel": "Créer une coupure",
     "LineToSplit": "Liaison coupée",
