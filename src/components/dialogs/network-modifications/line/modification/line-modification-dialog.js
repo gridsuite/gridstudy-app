@@ -5,6 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -22,8 +29,10 @@ import {
     SHUNT_SUSCEPTANCE_1,
     SHUNT_SUSCEPTANCE_2,
     TEMPORARY_LIMITS,
+    TOTAL_REACTANCE,
+    TOTAL_RESISTANCE,
+    TOTAL_SUSCEPTANCE,
 } from 'components/utils/field-constants';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
     fetchNetworkElementInfos,
@@ -53,6 +62,7 @@ import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
@@ -90,6 +100,8 @@ const LineModificationDialog = ({
     const [tabIndex, setTabIndex] = useState(
         LineCreationDialogTab.CHARACTERISTICS_TAB
     );
+    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] =
+        useState(false);
 
     const emptyFormData = useMemo(
         () => ({
@@ -123,7 +135,12 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues } = formMethods;
+    const editDataRef = useRef(editData);
+    useEffect(() => {
+        editDataRef.current = editData;
+    }, [editData]);
+
+    const { reset, getValues, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (line) => {
@@ -315,6 +332,33 @@ const LineModificationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
+    const handleCloseLineTypesCatalogDialog = () => {
+        setOpenLineTypesCatalogDialog(false);
+    };
+
+    const handleLineSegmentsBuildSubmit = (data) => {
+        setValue(
+            `${CHARACTERISTICS}.${SERIES_RESISTANCE}`,
+            data[TOTAL_RESISTANCE],
+            { shouldDirty: true }
+        );
+        setValue(
+            `${CHARACTERISTICS}.${SERIES_REACTANCE}`,
+            data[TOTAL_REACTANCE],
+            { shouldDirty: true }
+        );
+        setValue(
+            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_1}`,
+            data[TOTAL_SUSCEPTANCE] / 2,
+            { shouldDirty: true }
+        );
+        setValue(
+            `${CHARACTERISTICS}.${SHUNT_SUSCEPTANCE_2}`,
+            data[TOTAL_SUSCEPTANCE] / 2,
+            { shouldDirty: true }
+        );
+    };
+
     const headerAndTabs = (
         <LineModificationDialogHeader
             studyUuid={studyUuid}
@@ -354,6 +398,7 @@ const LineModificationDialog = ({
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
+                onOpenCatalogDialog={() => setOpenLineTypesCatalogDialog(true)}
                 {...dialogProps}
             >
                 <LineModificationDialogTabs
@@ -362,6 +407,11 @@ const LineModificationDialog = ({
                     lineToModify={lineToModify}
                     modifiedLine={editData}
                     tabIndex={tabIndex}
+                />
+                <LineTypeSegmentDialog
+                    open={isOpenLineTypesCatalogDialog}
+                    onClose={handleCloseLineTypesCatalogDialog}
+                    onSave={handleLineSegmentsBuildSubmit}
                 />
             </ModificationDialog>
         </FormProvider>
