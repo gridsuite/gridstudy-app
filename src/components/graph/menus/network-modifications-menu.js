@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import { NestedMenuItem } from 'mui-nested-menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
+import NodeMenuItem from "./create-node-item";
 
 /**
  * Menu to select network modification to create
@@ -31,32 +32,50 @@ const NetworkModificationsMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
                 onClose={onClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
-                {Object.entries(dialogs).map(([id, values]) => (
-                    <NestedMenuItem
-                        key={id}
-                        parentMenuOpen={true}
-                        label={intl.formatMessage({ id: values.label })}
-                    >
-                        {Object.entries(values.subItems).map(
-                            ([subItemId, subItemValue]) => (
-                                <MenuItem
-                                    key={subItemId}
-                                    onClick={() => onOpenDialog(subItemId)}
-                                >
-                                    <ListItemText
-                                        primary={
-                                            <Typography noWrap>
-                                                {intl.formatMessage({
-                                                    id: subItemValue.label,
-                                                })}
-                                            </Typography>
-                                        }
-                                    />
-                                </MenuItem>
-                            )
-                        )}
-                    </NestedMenuItem>
-                ))}
+                {dialogs.map((dialog) =>
+                    dialog.subItems !== null ? (
+                        <NestedMenuItem
+                            key={dialog.id}
+                            parentMenuOpen={true}
+                            label={intl.formatMessage({ id: dialog.label })}
+                        >
+                            {Object.entries(dialog.subItems).map(
+                                ([subItemId, subItemValue]) => (
+                                    <MenuItem
+                                        key={subItemId}
+                                        onClick={() => onOpenDialog(subItemId)}
+                                    >
+                                        <ListItemText
+                                            primary={
+                                                <Typography noWrap>
+                                                    {intl.formatMessage({
+                                                        id: subItemValue.label,
+                                                    })}
+                                                </Typography>
+                                            }
+                                        />
+                                    </MenuItem>
+                                )
+                            )}
+                        </NestedMenuItem>
+                    ) : (
+                        <NodeMenuItem key={dialog.id} item={{id: dialog.label, action: () => onOpenDialog(dialog.id), disabled: false}} />
+                        // <MenuItem
+                        //     key={dialog.id}
+                        //     onClick={() => onOpenDialog(dialog.id)}
+                        // >
+                        //     <ListItemText
+                        //         primary={
+                        //             <Typography noWrap>
+                        //                 {intl.formatMessage({
+                        //                     id: dialog.label,
+                        //                 })}
+                        //             </Typography>
+                        //         }
+                        //     />
+                        // </MenuItem>
+                    )
+                )}
             </Menu>
         </>
     );

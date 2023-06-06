@@ -223,8 +223,8 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    const dialogs = [
-        {
+    const dialogs = {
+        CREATE: {
             id: 'CREATE',
             label: 'Create',
             dialog: null,
@@ -266,7 +266,7 @@ const NetworkModificationNodeEditor = () => {
                 },
             },
         },
-        {
+        EDIT: {
             id: 'EDIT',
             label: 'edit',
             dialog: null,
@@ -293,18 +293,19 @@ const NetworkModificationNodeEditor = () => {
                 },
             },
         },
-        {
-            id: 'DELETE',
+        DELETE: {
+            id: 'EQUIPMENT_DELETION',
             label: 'DeleteContingencyList',
-            dialog: null,
-            subItems: {
-                EQUIPMENT_DELETION: {
-                    label: 'Equipment',
-                    dialog: () => adapt(EquipmentDeletionDialog),
-                },
-            },
+            dialog: () => adapt(EquipmentDeletionDialog),
+            // subItems: {
+            //     EQUIPMENT_DELETION: {
+            //         label: 'Equipment',
+            //         dialog: () => adapt(EquipmentDeletionDialog),
+            //     },
+            // },
+            subItems: null,
         },
-        {
+        ATTACHING_SPLITTING_LINES: {
             id: 'ATTACHING_SPLITTING_LINES',
             label: 'AttachingAndSplittingLines',
             dialog: null,
@@ -331,7 +332,7 @@ const NetworkModificationNodeEditor = () => {
                 },
             },
         },
-        {
+        GENERATION_AND_LOAD: {
             id: 'GENERATION_AND_LOAD',
             label: 'GenerationAndLoad',
             dialog: null,
@@ -350,13 +351,12 @@ const NetworkModificationNodeEditor = () => {
                 },
             },
         },
-    ];
+    };
+
 
     const subItemDialogsList = Object.values(
-        Object.values(dialogs).map((dialog) => dialog.subItems)
-    ).reduce((result, current) => {
-        return { ...result, ...current };
-    }, {});
+        Object.values(dialogs).map((dialog) => dialog.subItems !== null ? Object.values(dialog.subItems).map(el => el) : dialog)
+    )
 
     const fillNotification = useCallback(
         (study, messageId) => {
@@ -645,7 +645,10 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const renderDialog = () => {
-        return subItemDialogsList[editDialogOpen].dialog();
+        console.log("subItemDialogsList zezeaze")
+        console.log(subItemDialogsList)
+        console.log(editDialogOpen)
+        return subItemDialogsList.find(dialog=> dialog.id === editDialogOpen).dialog();
     };
 
     const commit = useCallback(
