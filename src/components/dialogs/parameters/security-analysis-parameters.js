@@ -110,6 +110,7 @@ const SecurityAnalysisFields = ({
                             name={firstField?.name}
                             onBlur={updateValue}
                             onChange={checkPerPercentageValue}
+                            size="small"
                         />
                     </Grid>
                     <Grid
@@ -126,6 +127,7 @@ const SecurityAnalysisFields = ({
                             name={secondField?.name}
                             onBlur={updateValue}
                             onChange={checkDoubleValue}
+                            size="small"
                         />
                     </Grid>
                 </>
@@ -140,6 +142,7 @@ const SecurityAnalysisFields = ({
                         label={firstField?.label}
                         onBlur={updateValue}
                         onChange={checkPerPercentageValue}
+                        size="small"
                     />
                 </Grid>
             )}
@@ -263,7 +266,11 @@ export const SecurityAnalysisParameters = ({
                     callback={updateProviderCallback}
                 />
 
-                <Grid className={classes.textContainer}>
+                <Grid
+                    spacing={1}
+                    paddingBottom={1}
+                    className={classes.textContainer}
+                >
                     <Grid item xs={8} className={classes.text}>
                         <Typography>
                             {intl.formatMessage({
