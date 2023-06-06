@@ -14,6 +14,7 @@ import {
 } from '../components/network/constants';
 import { MODIFICATION_TYPES } from '../components/utils/modification-type';
 import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
+import { toModificationOperation } from '../components/utils/utils';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -2121,13 +2122,6 @@ export function modifyLoad(
         }),
     });
 }
-
-function toModificationOperation(value) {
-    return value === 0 || value === false || value
-        ? { value: value, op: 'SET' }
-        : null;
-}
-
 export function modifyGenerator(
     studyUuid,
     currentNodeUuid,
@@ -2575,6 +2569,58 @@ export function createTwoWindingsTransformer(
             connectionDirection2: connectionDirection2,
             connectionPosition1: connectionPosition1,
             connectionPosition2: connectionPosition2,
+        }),
+    });
+}
+
+export function modifyTwoWindingsTransformer(
+    studyUuid,
+    currentNodeUuid,
+    twoWindingsTransformerId,
+    twoWindingsTransformerName,
+    seriesResistance,
+    seriesReactance,
+    magnetizingConductance,
+    magnetizingSusceptance,
+    ratedS,
+    ratedVoltage1,
+    ratedVoltage2,
+    currentLimit1,
+    currentLimit2,
+    isUpdate,
+    modificationUuid
+) {
+    let modifyTwoWindingsTransformerUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyTwoWindingsTransformerUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating two windings transformer modification');
+    } else {
+        console.info('Creating two windings transformer modification');
+    }
+
+    return backendFetchText(modifyTwoWindingsTransformerUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+            equipmentId: twoWindingsTransformerId,
+            equipmentName: twoWindingsTransformerName,
+            seriesResistance: seriesResistance,
+            seriesReactance: seriesReactance,
+            magnetizingConductance: magnetizingConductance,
+            magnetizingSusceptance: magnetizingSusceptance,
+            ratedS: ratedS,
+            ratedVoltage1: ratedVoltage1,
+            ratedVoltage2: ratedVoltage2,
+            currentLimits1: currentLimit1,
+            currentLimits2: currentLimit2,
         }),
     });
 }
@@ -3319,7 +3365,8 @@ export function generationDispatch(
     lossCoefficient,
     defaultOutageRate,
     generatorsWithoutOutage,
-    generatorsWithFixedActivePower
+    generatorsWithFixedActivePower,
+    generatorsFrequencyReserve
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
@@ -3327,6 +3374,7 @@ export function generationDispatch(
         defaultOutageRate: defaultOutageRate,
         generatorsWithoutOutage: generatorsWithoutOutage,
         generatorsWithFixedSupply: generatorsWithFixedActivePower,
+        generatorsFrequencyReserve: generatorsFrequencyReserve,
     });
 
     let generationDispatchUrl =
