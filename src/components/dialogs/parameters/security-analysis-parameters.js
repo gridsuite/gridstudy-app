@@ -212,7 +212,9 @@ export const SecurityAnalysisParameters = ({
         Object.entries(values)?.forEach(([key, value]) => {
             result = {
                 ...result,
-                [key]: parseFloat(value * 100)?.toFixed(2),
+                [key]: isProportionalSAParam(key)
+                    ? parseFloat(value * 100)?.toFixed(2)
+                    : parseFloat(value)?.toFixed(2),
             };
         });
         return result;
