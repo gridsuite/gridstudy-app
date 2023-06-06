@@ -223,140 +223,150 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    const dialogs = {
-        CREATE: {
+    const dialogs = [
+        {
             id: 'CREATE',
             label: 'Create',
             dialog: null,
-            subItems: {
-                LOAD_CREATION: {
+            subItems: [
+                {
                     id: 'LOAD_CREATION',
                     label: 'LOAD',
                     dialog: () => adapt(LoadCreationDialog),
                 },
-                GENERATOR_CREATION: {
+                {
                     id: 'GENERATOR_CREATION',
                     label: 'GENERATOR',
                     dialog: () => adapt(GeneratorCreationDialog),
                 },
-                SHUNT_COMPENSATOR_CREATION: {
+                {
                     id: 'SHUNT_COMPENSATOR_CREATION',
                     label: 'ShuntCompensator',
                     dialog: () => adapt(ShuntCompensatorCreationDialog),
                 },
-                LINE_CREATION: {
+                {
                     id: 'LINE_CREATION',
                     label: 'LINE',
                     dialog: () => adapt(LineCreationDialog),
                 },
-                TWO_WINDINGS_TRANSFORMER_CREATION: {
+                {
                     id: 'TWO_WINDINGS_TRANSFORMER_CREATION',
                     label: 'TWO_WINDINGS_TRANSFORMER',
                     dialog: () => adapt(TwoWindingsTransformerCreationDialog),
                 },
-                VOLTAGE_LEVEL_CREATION: {
+                {
                     id: 'VOLTAGE_LEVEL_CREATION',
                     label: 'VOLTAGE_LEVEL',
                     dialog: () => adapt(VoltageLevelCreationDialog),
                 },
-                SUBSTATION_CREATION: {
+                {
                     id: 'SUBSTATION_CREATION',
                     label: 'SUBSTATION',
                     dialog: () => adapt(SubstationCreationDialog),
                 },
-            },
+            ],
         },
-        EDIT: {
+        {
             id: 'EDIT',
             label: 'edit',
             dialog: null,
-            subItems: {
-                LOAD_MODIFICATION: {
+            subItems: [
+                {
+                    id: 'LOAD_MODIFICATION',
                     label: 'LOAD',
                     dialog: () => adapt(LoadModificationDialog),
                 },
-                GENERATOR_MODIFICATION: {
+                {
+                    id: 'GENERATOR_MODIFICATION',
                     label: 'GENERATOR',
                     dialog: () => adapt(GeneratorModificationDialog),
                 },
-                LINE_MODIFICATION: {
+                {
+                    id: 'LINE_MODIFICATION',
                     label: 'LINE',
                     dialog: () => adapt(LineModificationDialog),
                 },
-                VOLTAGE_LEVEL_MODIFICATION: {
+                {
+                    id: 'VOLTAGE_LEVEL_MODIFICATION',
                     label: 'VoltageLevel',
                     dialog: () => adapt(VoltageLevelModificationDialog),
                 },
-                SUBSTATION_MODIFICATION: {
+                {
+                    id: 'SUBSTATION_MODIFICATION',
                     label: 'SUBSTATION',
                     dialog: () => adapt(SubstationModificationDialog),
                 },
-            },
+            ],
         },
-        DELETE: {
+        {
             id: 'EQUIPMENT_DELETION',
             label: 'DeleteContingencyList',
             dialog: () => adapt(EquipmentDeletionDialog),
-            // subItems: {
-            //     EQUIPMENT_DELETION: {
-            //         label: 'Equipment',
-            //         dialog: () => adapt(EquipmentDeletionDialog),
-            //     },
-            // },
             subItems: null,
         },
-        ATTACHING_SPLITTING_LINES: {
+        {
             id: 'ATTACHING_SPLITTING_LINES',
             label: 'AttachingAndSplittingLines',
             dialog: null,
-            subItems: {
-                LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
+            subItems: [
+                {
+                    id: 'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
                     label: 'LineSplitWithVoltageLevel',
                     dialog: () => adapt(LineSplitWithVoltageLevelDialog),
                 },
-                LINE_ATTACH_TO_VOLTAGE_LEVEL: {
+                {
+                    id: 'LINE_ATTACH_TO_VOLTAGE_LEVEL',
                     label: 'LineAttachToVoltageLevel',
                     dialog: () => adapt(LineAttachToVoltageLevelDialog),
                 },
-                LINES_ATTACH_TO_SPLIT_LINES: {
+                {
+                    id: 'LINES_ATTACH_TO_SPLIT_LINES',
                     label: 'LinesAttachToSplitLines',
                     dialog: () => adapt(LinesAttachToSplitLinesDialog),
                 },
-                DELETE_VOLTAGE_LEVEL_ON_LINE: {
+                {
+                    id: 'DELETE_VOLTAGE_LEVEL_ON_LINE',
                     label: 'DeleteVoltageLevelOnLine',
                     dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
                 },
-                DELETE_ATTACHING_LINE: {
+                {
+                    id: 'DELETE_ATTACHING_LINE',
                     label: 'DeleteAttachingLine',
                     dialog: () => adapt(DeleteAttachingLineDialog),
                 },
-            },
+            ],
         },
-        GENERATION_AND_LOAD: {
+        {
             id: 'GENERATION_AND_LOAD',
             label: 'GenerationAndLoad',
             dialog: null,
-            subItems: {
-                GENERATOR_SCALING: {
+            subItems: [
+                {
+                    id: 'GENERATOR_SCALING',
                     label: 'GeneratorScaling',
                     dialog: () => adapt(GeneratorScalingDialog),
                 },
-                LOAD_SCALING: {
+                {
+                    id: 'LOAD_SCALING',
                     label: 'LoadScaling',
                     dialog: () => adapt(LoadScalingDialog),
                 },
-                GENERATION_DISPATCH: {
+                {
+                    id: 'GENERATION_DISPATCH',
                     label: 'GenerationDispatch',
                     dialog: () => adapt(GenerationDispatchDialog),
                 },
-            },
+            ],
         },
-    };
+    ];
 
-
-    const subItemDialogsList = Object.values(
-        Object.values(dialogs).map((dialog) => dialog.subItems !== null ? Object.values(dialog.subItems).map(el => el) : dialog)
-    )
+    const subItemDialogsList = dialogs.reduce(
+        (actions, currentDialog) =>
+            currentDialog.subItems !== null
+                ? [...actions, ...currentDialog.subItems]
+                : [...actions, currentDialog],
+        []
+    );
 
     const fillNotification = useCallback(
         (study, messageId) => {
@@ -645,10 +655,9 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const renderDialog = () => {
-        console.log("subItemDialogsList zezeaze")
-        console.log(subItemDialogsList)
-        console.log(editDialogOpen)
-        return subItemDialogsList.find(dialog=> dialog.id === editDialogOpen).dialog();
+        return subItemDialogsList
+            .find((dialog) => dialog.id === editDialogOpen)
+            .dialog();
     };
 
     const commit = useCallback(
