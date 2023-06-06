@@ -22,8 +22,12 @@ import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
-import { fetchSubstation, fetchVoltageLevel } from '../../utils/rest-api';
+import { fetchNetworkElementInfos } from '../../utils/rest-api';
 import { isNodeReadOnly } from '../graph/util/model-functions';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -173,12 +177,22 @@ const BaseEquipmentMenu = ({
             if (!studyUuid || !currentNode) {
                 return Promise.reject('no study or node selected');
             } else if (equipmentType === equipments.substations) {
-                return fetchSubstation(studyUuid, currentNode.id, equipmentId);
-            } else if (equipmentType === equipments.voltageLevels) {
-                return fetchVoltageLevel(
+                return fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
-                    equipmentId
+                    EQUIPMENT_TYPES.SUBSTATION.type,
+                    EQUIPMENT_INFOS_TYPES.LIST.type,
+                    equipmentId,
+                    true
+                );
+            } else if (equipmentType === equipments.voltageLevels) {
+                return fetchNetworkElementInfos(
+                    studyUuid,
+                    currentNode.id,
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                    EQUIPMENT_INFOS_TYPES.LIST.type,
+                    equipmentId,
+                    true
                 );
             } else {
                 return Promise.reject('not a substation or a voltage level');
