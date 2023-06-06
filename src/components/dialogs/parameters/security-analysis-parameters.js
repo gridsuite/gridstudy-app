@@ -12,6 +12,7 @@ import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Typography from '@mui/material/Typography';
 import {
+    isProportionalSAParam,
     PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
@@ -64,6 +65,19 @@ const SecurityAnalysisFields = ({
         [checkValue, positiveDoubleValue]
     );
 
+    const prepareDataToSend = useCallback((values) => {
+        let result = {};
+        Object.entries(values)?.forEach(([key, value]) => {
+            result = {
+                ...result,
+                [key]: isProportionalSAParam(key)
+                    ? parseFloat(value / 100)?.toFixed(2)
+                    : value,
+            };
+        });
+        return result;
+    }, []);
+
     const updateValue = useCallback(
         (e) => {
             const name = e.target.name;
@@ -77,11 +91,12 @@ const SecurityAnalysisFields = ({
             } else if (initValue[name] !== value) {
                 const f = parseFloat(value);
                 if (!isNaN(f)) {
-                    callback(values);
+                    const formatedData = prepareDataToSend(values);
+                    callback(formatedData);
                 }
             }
         },
-        [initValue, callback, values]
+        [initValue, callback, values, prepareDataToSend]
     );
 
     return (
@@ -192,7 +207,16 @@ export const SecurityAnalysisParameters = ({
         resetParameters();
         resetProvider();
     }, [resetParameters, resetProvider]);
-
+    const formatedData = useCallback((values) => {
+        let result = {};
+        Object.entries(values)?.forEach(([key, value]) => {
+            result = {
+                ...result,
+                [key]: parseFloat(value * 100)?.toFixed(2),
+            };
+        });
+        return result;
+    }, []);
     // create fields with the proper data
     const fieldsToShow = [
         {
@@ -204,7 +228,7 @@ export const SecurityAnalysisParameters = ({
                 label: '%',
             },
             tooltipInfoId: 'securityAnalysis.toolTip.current',
-            initValue: params,
+            initValue: formatedData(params),
             callback: callBack,
             isSingleField: true,
         },
@@ -221,7 +245,7 @@ export const SecurityAnalysisParameters = ({
                 name: PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
             },
             tooltipInfoId: 'securityAnalysis.toolTip.lowVoltage',
-            initValue: params,
+            initValue: formatedData(params),
             callback: callBack,
         },
         {
@@ -237,7 +261,7 @@ export const SecurityAnalysisParameters = ({
                 name: PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
             },
             tooltipInfoId: 'securityAnalysis.toolTip.highVoltage',
-            initValue: params,
+            initValue: formatedData(params),
             callback: callBack,
         },
     ];
