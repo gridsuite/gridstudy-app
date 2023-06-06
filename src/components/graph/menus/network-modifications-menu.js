@@ -24,18 +24,12 @@ import ListItemText from '@mui/material/ListItemText';
  */
 const NetworkModificationsMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
     const intl = useIntl();
-
-    const handleClose = () => {
-        onClose();
-    };
-
     return (
         <>
             <Menu
                 open={open}
-                onClose={handleClose}
+                onClose={onClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 {Object.entries(dialogs).map(([id, values]) => (
                     <NestedMenuItem

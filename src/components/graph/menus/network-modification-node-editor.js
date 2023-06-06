@@ -223,8 +223,8 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    const dialogs = {
-        CREATE: {
+    const dialogs = [
+        {
             id: 'CREATE',
             label: 'Create',
             dialog: null,
@@ -266,7 +266,7 @@ const NetworkModificationNodeEditor = () => {
                 },
             },
         },
-        EDIT: {
+        {
             id: 'EDIT',
             label: 'edit',
             dialog: null,
@@ -293,7 +293,7 @@ const NetworkModificationNodeEditor = () => {
                 },
             },
         },
-        DELETE: {
+        {
             id: 'DELETE',
             label: 'DeleteContingencyList',
             dialog: null,
@@ -304,7 +304,7 @@ const NetworkModificationNodeEditor = () => {
                 },
             },
         },
-        ATTACHING_SPLITTING_LINES: {
+        {
             id: 'ATTACHING_SPLITTING_LINES',
             label: 'AttachingAndSplittingLines',
             dialog: null,
@@ -331,7 +331,7 @@ const NetworkModificationNodeEditor = () => {
                 },
             },
         },
-        GENERATION_AND_LOAD: {
+        {
             id: 'GENERATION_AND_LOAD',
             label: 'GenerationAndLoad',
             dialog: null,
@@ -350,7 +350,7 @@ const NetworkModificationNodeEditor = () => {
                 },
             },
         },
-    };
+    ];
 
     const subItemDialogsList = Object.values(
         Object.values(dialogs).map((dialog) => dialog.subItems)
