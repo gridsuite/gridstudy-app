@@ -9,12 +9,12 @@ import Grid from '@mui/material/Grid';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 
-import { filledTextField, gridItem, GridSection } from '../../dialogUtils';
+import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
 
 import TextInput from 'components/utils/rhf-inputs/text-input';
-import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
-import { CharacteristicsForm } from './characteristics-pane/characteristics-form';
+import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 
 const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);

@@ -26,7 +26,7 @@ import {
 } from '../../../dialogUtils';
 
 // this component needs to be isolated to avoid too many rerenders
-export const CharacteristicsForm = () => {
+export const CharacteristicsForm = ({previousValues}) => {
     const QatNominalVField = (
         <FloatInput
             name={Q_AT_NOMINAL_V}

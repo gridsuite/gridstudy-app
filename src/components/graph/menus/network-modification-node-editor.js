@@ -33,7 +33,7 @@ import LoadCreationDialog from 'components/dialogs/network-modifications/load/cr
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import LineCreationDialog from 'components/dialogs/network-modifications/line/creation/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
-import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator-creation/shunt-compensator-creation-dialog';
+import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
 import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog.js';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -66,6 +66,8 @@ import { UPDATE_TYPE } from 'components/network/constants';
 import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import ShuntCompensatorModificationDialog
+    from "../../dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog";
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -248,6 +250,11 @@ const NetworkModificationNodeEditor = () => {
         SHUNT_COMPENSATOR_CREATION: {
             label: 'CreateShuntCompensator',
             dialog: () => adapt(ShuntCompensatorCreationDialog),
+            icon: <AddIcon />,
+        },
+        SHUNT_COMPENSATOR_MODIFICATION: {
+            label: 'ModifyShuntCompensator',
+            dialog: () => adapt(ShuntCompensatorModificationDialog),
             icon: <AddIcon />,
         },
         LINE_CREATION: {
