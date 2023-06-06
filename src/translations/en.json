@@ -141,7 +141,6 @@
     "Network": "Network",
     "SecurityAnalysis": "Security analysis",
     "VoltageInit": "Voltage profile initialization",
-    "VoltageInitResults" : "Voltage profile initialization results",
     "Indicators": "Indicators",
     "ReactiveSlacks": "Reactive slacks",
     "Slack": "Slack (MVar)",
@@ -249,7 +248,6 @@
     "getVariablesFiltersListError": "Can't fetch simulated variables lists",
     "getBranchFiltersListError": "Can't fetch supervised branches filters lists",
     "FiltersListsSelection": "Filters lists selection",
-    "sensitivityAnalysisResults": "Sensitivity analysis results",
     "sensitivityAnalysisError": "An error occured when executing sensitivity analysis",
     "SensitivityInDeltaMW": "Sensitivity on branches in ΔMW",
     "SensitivityInDeltaA": "Sensitivity on branches in ΔA",
@@ -269,7 +267,6 @@
 
     "ShortCircuitAnalysis": "Short circuit analysis",
     "ShortCircuitAnalysisParameters": "Short circuit analysis parameters",
-    "ShortCircuitAnalysisResults": "Short circuit analysis results",
     "startShortCircuitError": "An error occurred while starting the short circuit analysis",
     "ShortCircuitAnalysisError": "An error occured when executing short circuit analysis",
     "IDNode": "ID bus",
@@ -313,7 +310,8 @@
     "descLfUniformValues": "Uniform values",
     "descLfPreviousValues": "Previous values",
     "descLfDcValues": "DC Values",
-    "resetToDefault": "default values",
+    "resetToDefault": "Reset All",
+    "resetProviderValuesToDefault": "Reset provider default values",
     "showAdvancedParameters": "Advanced settings",
     "showSpecificParameters": "Specific settings",
 
@@ -341,9 +339,7 @@
     "descTransient": "Transient",
     "descSubTransient": "Sub-transient",
 
-    "securityAnalysisResults": "Security analysis results",
     "securityAnalysisError": "An error occurred while executing the security analysis",
-    "loadFlowResults": "Loadflow results",
     "startLoadFlowError": "An error occurred while starting the load flow",
     "LoadFlowResultsConstraints": "Violations",
     "LoadFlowResultsStatus": "Status",
