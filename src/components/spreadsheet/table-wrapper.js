@@ -46,7 +46,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
-import { useEquipments } from 'components/network/use-equipments';
+import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -293,23 +293,16 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const { equipments, isFetching } = useEquipments(
+    const { equipments, isFetching } = useSpreadsheetEquipments(
         TABLES_DEFINITION_INDEXES.get(tabIndex)
     );
 
     const getRows = useCallback(() => {
-        if (props.disabled) {
+        if (props.disabled || !equipments) {
             return [];
         }
 
-        const datasourceRows = equipments;
-
-        if (!datasourceRows) {
-            return [];
-        }
-
-        //the method returns a new array so that the table component detects its data changed thus rerendering its rows
-        return datasourceRows;
+        return equipments;
     }, [equipments, props.disabled]);
 
     useEffect(() => {

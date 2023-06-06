@@ -912,10 +912,12 @@ export const reducer = createReducer(initialState, {
     [UPDATE_EQUIPMENTS]: (state, action) => {
         // for now, this action receives an object containing all equipments from a substation
         // it will be modified when the notifications received after a network modification will be more precise
-        const updatedEquipements = action.equipments;
+        const updatedEquipments = action.equipments;
 
-        for (const [equipmentType, equipmentList] of Object.entries(
-            updatedEquipements
+        // equipmentType : type of equipment updated
+        // equipments : list of updated equipments of type <equipmentType>
+        for (const [equipmentType, equipments] of Object.entries(
+            updatedEquipments
         )) {
             const currentEquipment = state.spreadsheetNetwork[equipmentType];
 
@@ -927,7 +929,7 @@ export const reducer = createReducer(initialState, {
                         updateSubstationsAndVoltageLevels(
                             state.spreadsheetNetwork.substations,
                             state.spreadsheetNetwork.voltageLevels,
-                            equipmentList
+                            equipments
                         );
 
                     state.spreadsheetNetwork.substations = updatedSubtations;
@@ -936,7 +938,7 @@ export const reducer = createReducer(initialState, {
                 } else {
                     state.spreadsheetNetwork[equipmentType] = updateEquipments(
                         currentEquipment,
-                        equipmentList
+                        equipments
                     );
                 }
             }
@@ -1069,8 +1071,8 @@ function updateSubstationsAndVoltageLevels(
     return [currentSubstations, currentVoltageLevels];
 }
 
-function updateEquipments(currentEquipments, newOrUpdatedEquipements) {
-    newOrUpdatedEquipements.forEach((equipment) => {
+function updateEquipments(currentEquipments, newOrUpdatedEquipments) {
+    newOrUpdatedEquipments.forEach((equipment) => {
         const existingEquipmentIndex = currentEquipments.findIndex(
             (equip) => equip.id === equipment.id
         );
