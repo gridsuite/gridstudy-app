@@ -18,13 +18,13 @@ import {
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from '../../../utils/config-params';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const SecurityAnalysisFields = ({
     label,
     firstField,
     secondField,
-    tooltipInfo,
+    tooltipInfoId,
     initValue,
     callback,
     isSingleField,
@@ -147,9 +147,7 @@ const SecurityAnalysisFields = ({
                 </Grid>
             )}
             <Tooltip
-                title={
-                    <div dangerouslySetInnerHTML={{ __html: tooltipInfo }} />
-                }
+                title={<FormattedMessage id={tooltipInfoId} />}
                 placement="left-start"
             >
                 <InfoIcon />
@@ -206,9 +204,7 @@ export const SecurityAnalysisParameters = ({
                 name: PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
                 label: '%',
             },
-            tooltipInfo: intl.formatMessage({
-                id: 'securityAnalysis.toolTip',
-            }),
+            tooltipInfoId: 'securityAnalysis.toolTip.current',
             initValue: params,
             callback: callBack,
             isSingleField: true,
@@ -225,9 +221,7 @@ export const SecurityAnalysisParameters = ({
                 label: 'kv',
                 name: PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
             },
-            tooltipInfo: intl.formatMessage({
-                id: 'securityAnalysis.toolTip',
-            }),
+            tooltipInfoId: 'securityAnalysis.toolTip.lowVoltage',
             initValue: params,
             callback: callBack,
         },
@@ -243,9 +237,7 @@ export const SecurityAnalysisParameters = ({
                 label: 'kv',
                 name: PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
             },
-            tooltipInfo: intl.formatMessage({
-                id: 'securityAnalysis.toolTip',
-            }),
+            tooltipInfoId: 'securityAnalysis.toolTip.highVoltage',
             initValue: params,
             callback: callBack,
         },
@@ -267,6 +259,7 @@ export const SecurityAnalysisParameters = ({
                 />
 
                 <Grid
+                    container
                     spacing={1}
                     paddingBottom={1}
                     className={classes.textContainer}
@@ -280,12 +273,10 @@ export const SecurityAnalysisParameters = ({
                         <Tooltip
                             className={classes.tooltip}
                             title={
-                                <div
-                                    dangerouslySetInnerHTML={{
-                                        __html: intl.formatMessage({
-                                            id: 'securityAnalysis.toolTip',
-                                        }),
-                                    }}
+                                <FormattedMessage
+                                    id={
+                                        'securityAnalysis.toolTip.violationsHiding'
+                                    }
                                 />
                             }
                             placement="left-start"
