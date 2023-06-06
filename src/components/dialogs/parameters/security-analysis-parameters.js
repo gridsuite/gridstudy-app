@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid, TextField, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
@@ -31,6 +31,7 @@ const SecurityAnalysisFields = ({
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(initValue);
+    const positiveDoubleValue = useMemo(() => /^\d*[.,]?\d?\d?$/, []);
 
     useEffect(() => {
         setValues(initValue);
@@ -40,7 +41,7 @@ const SecurityAnalysisFields = ({
         const outputTransformToString = (value) => {
             return value?.replace(',', '.') || '';
         };
-        const newValue = e.target.value;
+        const newValue = outputTransformToString(e.target.value);
         const isValid = allowedRE.exec(newValue);
         const isAllValid = isPercentage ? isValid && newValue <= 100 : isValid;
         if (isAllValid || newValue === '') {
@@ -52,17 +53,15 @@ const SecurityAnalysisFields = ({
     }, []);
     const checkPerPercentageValue = useCallback(
         (e) => {
-            const percentageRE = /^\d*[.,]?\d?\d?$/;
-            checkValue(e, percentageRE, true);
+            checkValue(e, positiveDoubleValue, true);
         },
-        [checkValue]
+        [checkValue, positiveDoubleValue]
     );
     const checkDoubleValue = useCallback(
         (e) => {
-            const doubleRE = /^\d*[.,]?\d?\d?$/;
-            checkValue(e, doubleRE);
+            checkValue(e, positiveDoubleValue, false);
         },
-        [checkValue]
+        [checkValue, positiveDoubleValue]
     );
 
     const updateValue = useCallback(
@@ -185,7 +184,7 @@ export const SecurityAnalysisParameters = ({
 
     // TODO: remove this when DynaFlow is supported
     // DynaFlow is not supported at the moment for security analysis
-    const securityAnalysisiProvider = Object.fromEntries(
+    const securityAnalysisProvider = Object.fromEntries(
         Object.entries(providers).filter(([key]) => !key.includes('DynaFlow'))
     );
 
@@ -254,7 +253,7 @@ export const SecurityAnalysisParameters = ({
                 <DropDown
                     value={provider}
                     label="Provider"
-                    values={securityAnalysisiProvider}
+                    values={securityAnalysisProvider}
                     callback={updateProviderCallback}
                 />
 
