@@ -493,7 +493,7 @@ const NetworkModificationNodeEditor = () => {
         studyUpdatedForce,
     ]);
 
-    const [openNetworkModificationsMenu, setopenNetworkModificationsMenu] =
+    const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] =
         useState(false);
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -501,11 +501,11 @@ const NetworkModificationNodeEditor = () => {
     const classes = useStyles();
 
     const openNetworkModificationConfiguration = useCallback(() => {
-        setopenNetworkModificationsMenu(true);
+        setOpenNetworkModificationsMenu(true);
     }, []);
 
     const closeNetworkModificationConfiguration = () => {
-        setopenNetworkModificationsMenu(false);
+        setOpenNetworkModificationsMenu(false);
         setEditData(undefined);
         setEditDataFetchStatus(FetchStatus.IDLE);
     };
@@ -645,7 +645,7 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const onOpenDialog = (id) => {
-        setopenNetworkModificationsMenu(false);
+        setOpenNetworkModificationsMenu(false);
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
