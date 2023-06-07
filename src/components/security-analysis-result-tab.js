@@ -73,6 +73,11 @@ export const SecurityAnalysisResultTab = ({
                     })
                     .finally(() => {
                         if (!vlId) {
+                            console.error(
+                                "Impossible to open the SLD for equipment ID '" +
+                                    row.subjectId +
+                                    "'"
+                            );
                             snackError({
                                 messageId: 'NetworkElementNotFound',
                                 messageValues: { elementId: row.subjectId },

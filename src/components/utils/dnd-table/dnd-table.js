@@ -102,6 +102,10 @@ function EditableTableCell({
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     previousValue={previousValue}
                     valueModified={valueModified}
+                    adornment={column?.adornment}
+                    style={{
+                        textAlign: column?.textAlign,
+                    }}
                     {...props}
                 />
             )}

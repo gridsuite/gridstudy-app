@@ -167,7 +167,7 @@ const VoltageLevelCreationDialog = ({
                           }))
                         : [],
             });
-            if (!voltageLevel.isRetrievedTopology) {
+            if (!voltageLevel.isRetrievedBusbarSections) {
                 snackWarning({
                     messageId: 'BusBarSectionsCopyingNotSupported',
                 });
