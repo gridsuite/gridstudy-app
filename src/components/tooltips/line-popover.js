@@ -22,10 +22,14 @@ import {
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { fetchLine } from '../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
 import makeStyles from '@mui/styles/makeStyles';
+import { fetchNetworkElementInfos } from 'utils/rest-api';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     tableCells: {
@@ -36,7 +40,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
+const LinePopover = ({
+    studyUuid,
+    lineInfos,
+    anchorEl,
+    lineId,
+    loadFlowStatus,
+}) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [lineInfo, setLineInfo] = useState(null);
     const intl = useIntl();
@@ -44,14 +54,23 @@ const LinePopover = ({ studyUuid, anchorEl, lineId, loadFlowStatus }) => {
     const [localAnchorEl, setLocalAnchorEl] = useState(null);
 
     useEffect(() => {
-        if (lineId !== '') {
-            fetchLine(studyUuid, currentNode.id, lineId).then((value) => {
+        if (lineInfos) {
+            setLineInfo(lineInfos);
+        } else if (lineId && lineId !== '') {
+            fetchNetworkElementInfos(
+                studyUuid,
+                currentNode.id,
+                EQUIPMENT_TYPES.LINE.type,
+                EQUIPMENT_INFOS_TYPES.MAP.type,
+                lineId,
+                true
+            ).then((value) => {
                 setLineInfo(value);
             });
         } else {
             setLineInfo(null);
         }
-    }, [lineId, currentNode.id, studyUuid]);
+    }, [lineId, currentNode.id, studyUuid, lineInfos]);
 
     const handlePopoverClose = () => {
         setLineInfo(null);

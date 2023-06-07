@@ -34,8 +34,8 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 /**
  * Dialog to create a load in the network
@@ -129,6 +129,7 @@ const LoadCreationDialog = ({
         equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.LOAD.type,
     });
 
     useEffect(() => {

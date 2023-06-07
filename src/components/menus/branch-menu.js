@@ -23,7 +23,7 @@ import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import {
     energiseBranchEnd,
-    fetchEquipmentInfos,
+    fetchNetworkElementInfos,
     lockoutBranch,
     switchOnBranch,
     tripBranch,
@@ -35,16 +35,17 @@ import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
-        padding: '0px',
-        margin: '7px',
-    },
-    listItemText: {
-        fontSize: 12,
-        padding: '0px',
-        margin: '4px',
+        // NestedMenu item manages only label prop of string type
+        // It fix paddings itself then we must force this padding
+        // to justify menu items texts
+        paddingLeft: '12px',
     },
 }));
 
@@ -86,24 +87,24 @@ const withBranchMenu =
             }
         }, []);
 
-        const getEquipmentPath = useCallback((equipmentType) => {
+        const getRealEquipmentType = useCallback((equipmentType) => {
             switch (equipmentType) {
                 case equipments.lines:
-                    return 'lines';
+                    return EQUIPMENT_TYPES.LINE.type;
                 case equipments.hvdcLines:
-                    return 'hvdc-lines';
+                    return EQUIPMENT_TYPES.HVDC_LINE.type;
                 case equipments.twoWindingsTransformers:
-                    return '2-windings-transformers';
+                    return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
                 default:
                     break;
             }
         }, []);
         useEffect(() => {
-            const equipmentPath = getEquipmentPath(equipmentType);
-            fetchEquipmentInfos(
+            fetchNetworkElementInfos(
                 studyUuid,
                 currentNode?.id,
-                equipmentPath,
+                getRealEquipmentType(equipmentType),
+                EQUIPMENT_INFOS_TYPES.LIST.type,
                 id,
                 false
             ).then((value) => {
@@ -111,7 +112,13 @@ const withBranchMenu =
                     setBranch(value);
                 }
             });
-        }, [studyUuid, currentNode?.id, equipmentType, id, getEquipmentPath]);
+        }, [
+            studyUuid,
+            currentNode?.id,
+            equipmentType,
+            id,
+            getRealEquipmentType,
+        ]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -213,7 +220,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
@@ -238,7 +244,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
@@ -264,7 +269,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage(
@@ -300,7 +304,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage(
@@ -336,7 +339,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
@@ -363,7 +365,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({

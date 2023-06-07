@@ -39,7 +39,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import {
     fetchEquipmentsIds,
-    fetchVoltageLevelsIdAndTopology,
+    fetchVoltageLevelsListInfos,
 } from 'utils/rest-api';
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
@@ -69,7 +69,7 @@ const GeneratorModificationForm = ({
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))
