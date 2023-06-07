@@ -702,7 +702,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 hideParameters={hideParameters}
                             />
                         </TabPanel>
-                        )
                     </Grid>
                 </Container>
             </DialogContent>
