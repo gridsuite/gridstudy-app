@@ -127,7 +127,11 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
 
     return (
         <>
-            <Grid container spacing={1} padding={1}>
+            <Grid
+                container
+                key="dsParameters"
+                className={classes.scrollableGrid}
+            >
                 {providers && provider && (
                     <DropDown
                         value={provider}
@@ -142,12 +146,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                         callback={handleUpdateProvider}
                     />
                 )}
-            </Grid>
-            <Grid
-                container
-                key="dsParameters"
-                className={classes.scrollableGrid}
-            >
+
                 <Grid container paddingTop={1}>
                     <LineSeparator />
                 </Grid>
@@ -282,7 +281,6 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                     callback={handleResetParametersAndProvider}
                     label="resetToDefault"
                 />
-                <LabelledButton label="resetProviderValuesToDefault" />
                 <CloseButton
                     hideParameters={hideParameters}
                     className={classes.button}

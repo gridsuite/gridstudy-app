@@ -25,7 +25,11 @@ import {
 } from 'components/utils/field-constants';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { fetchEquipmentInfos, FetchStatus, modifyLine } from 'utils/rest-api';
+import {
+    fetchNetworkElementInfos,
+    FetchStatus,
+    modifyLine,
+} from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import yup from 'components/utils/yup-config';
@@ -49,6 +53,10 @@ import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -223,10 +231,11 @@ const LineModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchEquipmentInfos(
+                fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    'lines',
+                    EQUIPMENT_TYPES.LINE.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )

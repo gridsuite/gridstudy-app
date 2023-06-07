@@ -407,6 +407,7 @@
 
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
+    "ModifyFromMenu": "Modifier",
 
     "LockoutLine": "Consigner la ligne",
     "TripLine": "Déclencher la ligne",
@@ -683,6 +684,8 @@
     "DuplicateId": "Identifiant non unique",
     "CouplingOmnibusBetweenSameBusbar": "Couplage/omnibus interdit entre le même SJB",
     "VoltageLevelModificationError": "Erreur lors de la modification d'un poste",
+    "TopologyNotRetrieved": "La topologie du poste n'a pas pu être récupérée",
+    "BusBarSectionsCopyingNotSupported" : "La copie des sections de jeux de barres n'est pas supportée pour ce poste : des valeurs par défaut ont été renseignées",
 
     "LineSplitWithVoltageLevel": "Créer une coupure",
     "LineToSplit": "Liaison coupée",
@@ -969,6 +972,7 @@
 
     "SubstationNotFound": "Ce site n'existe pas dans ce réseau",
     "VoltageLevelNotFound": "Ce poste n'existe pas dans ce réseau",
+    "NetworkElementNotFound": "L'élément de réseau \"{elementId}\" n'existe pas",
 
     "CatalogButtonTooltip": "Ouvrir le catalogue",
     "LineTypesCatalogDialogTitle": "Définir les segments de ligne",
