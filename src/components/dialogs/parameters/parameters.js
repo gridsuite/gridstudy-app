@@ -635,21 +635,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 />
                             )}
                         </TabPanel>
-                        <TabPanel
-                            value={tabValue}
-                            index={TAB_VALUES.voltageInitParamsTabValue}
-                            keepState
-                        >
-                            {studyUuid && (
-                                <VoltageInitParameters
-                                    user={user}
-                                    hideParameters={hideParameters}
-                                    useVoltageInitParameters={
-                                        useVoltageInitParameters
-                                    }
-                                />
-                            )}
-                        </TabPanel>
                         {
                             //To be removed when ShortCircuit is not in developer mode only.
                             enableDeveloperMode && (
@@ -694,14 +679,30 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             enableDeveloperMode && (
                                 <TabPanel
                                     value={tabValue}
-                                    index={TAB_VALUES.advancedParamsTabValue}
+                                    index={TAB_VALUES.voltageInitParamsTabValue}
+                                    keepState
                                 >
-                                    <NetworkParameters
-                                        hideParameters={hideParameters}
-                                    />
+                                    {studyUuid && (
+                                        <VoltageInitParameters
+                                            user={user}
+                                            hideParameters={hideParameters}
+                                            useVoltageInitParameters={
+                                                useVoltageInitParameters
+                                            }
+                                        />
+                                    )}
                                 </TabPanel>
                             )
                         }
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.advancedParamsTabValue}
+                        >
+                            <NetworkParameters
+                                hideParameters={hideParameters}
+                            />
+                        </TabPanel>
+                        )
                     </Grid>
                 </Container>
             </DialogContent>
