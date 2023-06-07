@@ -31,8 +31,6 @@ import { unitToMicroUnit } from '../../../../../utils/rounding';
 const useStyles = makeStyles((theme) => ({
     h3: {
         marginTop: 0,
-        marginBottom: 0,
-        paddingBottom: 1,
     },
 }));
 
@@ -118,7 +116,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
         <>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <h3>
+                    <h3 className={classes.h3}>
                         <FormattedMessage id="Characteristics" />
                     </h3>
                 </Grid>
