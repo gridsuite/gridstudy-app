@@ -9,10 +9,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
-import Typography from '@mui/material/Typography';
 import { NestedMenuItem } from 'mui-nested-menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemText from '@mui/material/ListItemText';
 import NodeMenuItem from './create-node-item';
 
 /**
@@ -38,20 +35,14 @@ const NetworkModificationsMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
                         label={intl.formatMessage({ id: dialog.label })}
                     >
                         {dialog.subItems.map((subItem) => (
-                            <MenuItem
+                            <NodeMenuItem
                                 key={subItem.id}
-                                onClick={() => onOpenDialog(subItem.id)}
-                            >
-                                <ListItemText
-                                    primary={
-                                        <Typography noWrap>
-                                            {intl.formatMessage({
-                                                id: subItem.label,
-                                            })}
-                                        </Typography>
-                                    }
-                                />
-                            </MenuItem>
+                                item={{
+                                    id: subItem.label,
+                                    action: () => onOpenDialog(subItem.id),
+                                    disabled: false,
+                                }}
+                            />
                         ))}
                     </NestedMenuItem>
                 ) : (
