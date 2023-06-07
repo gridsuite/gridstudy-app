@@ -906,7 +906,6 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationsMenu
                 open={openNetworkModificationsMenu}
                 onClose={closeNetworkModificationConfiguration}
-                currentNodeUuid={currentNode?.id}
                 onOpenDialog={onOpenDialog}
                 dialogs={dialogs}
             />
