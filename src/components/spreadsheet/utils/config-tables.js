@@ -285,7 +285,11 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger.tapPosition = params.newValue;
+                    params.data.ratioTapChanger = {
+                        ...params.data.ratioTapChanger,
+                        tapPosition: params.newValue,
+                    };
+
                     return params;
                 },
                 cellEditor: 'agSelectCellEditor',
@@ -326,7 +330,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger.tapPosition = params.newValue;
+                    params.data.phaseTapChanger = {
+                        ...params.data.phaseTapChanger,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 cellEditor: 'agSelectCellEditor',
@@ -494,7 +501,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger1?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger1.tapPosition = params.newValue;
+                    params.data.ratioTapChanger1 = {
+                        ...params.data.ratioTapChanger1,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -540,7 +550,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger2?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger2.tapPosition = params.newValue;
+                    params.data.ratioTapChanger2 = {
+                        ...params.data.ratioTapChanger2,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -586,7 +599,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger3?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger3.tapPosition = params.newValue;
+                    params.data.ratioTapChanger3 = {
+                        ...params.data.ratioTapChanger3,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -623,7 +639,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger1?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger1.tapPosition = params.newValue;
+                    params.data.phaseTapChanger1 = {
+                        ...params.data.phaseTapChanger1,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -669,7 +688,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger2?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger2.tapPosition = params.newValue;
+                    params.data.phaseTapChanger2 = {
+                        ...params.data.phaseTapChanger2,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -715,7 +737,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger3?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger3.tapPosition = params.newValue;
+                    params.data.phaseTapChanger3 = {
+                        ...params.data.phaseTapChanger3,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
