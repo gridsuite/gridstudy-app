@@ -39,7 +39,10 @@ const TAB_VALUES = {
     voltageLimitsParamsTabValue: 'VoltageLimits',
 };
 
-export const VoltageInitParameters = ({ useVoltageInitParameters }) => {
+export const VoltageInitParameters = ({
+    hideParameters,
+    useVoltageInitParameters,
+}) => {
     const classes = useStyles();
     const tabValue = useMemo(() => TAB_VALUES.voltageLimitsParamsTabValue, []);
 
@@ -62,6 +65,7 @@ export const VoltageInitParameters = ({ useVoltageInitParameters }) => {
                         index={TAB_VALUES.voltageLimitsParamsTabValue}
                     >
                         <VoltageLimitsParameters
+                            hideParameters={hideParameters}
                             useVoltageInitParameters={useVoltageInitParameters}
                         />
                     </TabPanel>

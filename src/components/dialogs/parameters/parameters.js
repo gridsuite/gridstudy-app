@@ -562,13 +562,15 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 }
                             />
                         )}
-                        <Tab
-                            disabled={!studyUuid}
-                            label={
-                                <FormattedMessage id="VoltageInitOptimalReactivePowerFlow" />
-                            }
-                            value={TAB_VALUES.voltageInitParamsTabValue}
-                        />
+                        {enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={
+                                    <FormattedMessage id="VoltageInitOptimalReactivePowerFlow" />
+                                }
+                                value={TAB_VALUES.voltageInitParamsTabValue}
+                            />
+                        )}
                         <Tab
                             label={<FormattedMessage id="Advanced" />}
                             value={TAB_VALUES.advancedParamsTabValue}

@@ -34,6 +34,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import { VoltageAdornment } from 'components/dialogs/dialogUtils';
 import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { CloseButton, useStyles } from '../parameters';
 
 const formSchema = yup
     .object()
@@ -59,7 +60,11 @@ const formSchema = yup
     })
     .required();
 
-const VoltageLimitsParameters = ({ useVoltageInitParameters }) => {
+const VoltageLimitsParameters = ({
+    hideParameters,
+    useVoltageInitParameters,
+}) => {
+    const classes = useStyles();
     const intl = useIntl();
 
     const emptyFormData = useMemo(() => {
@@ -252,6 +257,10 @@ const VoltageLimitsParameters = ({ useVoltageInitParameters }) => {
                     <FormattedMessage id="resetToDefault" />
                 </Button>
                 <SubmitButton onClick={handleSubmit(onSubmit)} />
+                <CloseButton
+                    hideParameters={hideParameters}
+                    className={classes.button}
+                />
             </DialogActions>
         </FormProvider>
     );

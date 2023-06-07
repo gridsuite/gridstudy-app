@@ -96,24 +96,22 @@ export const TableNumericalInput = ({
             }}
             InputProps={{
                 endAdornment: (
-                    <>
-                        <InputAdornment position="end">
-                            {transformedValue && adornment?.text}
-                            {/** we add the clear button only if the previous value is different from the current value **/}
-                            {clearable && (
-                                <IconButton
-                                    onClick={handleClearValue}
-                                    style={{
-                                        visibility: clearable
-                                            ? 'visible'
-                                            : 'hidden',
-                                    }}
-                                >
-                                    <ClearIcon />
-                                </IconButton>
-                            )}
-                        </InputAdornment>
-                    </>
+                    <InputAdornment position="end">
+                        {transformedValue && adornment?.text}
+                        {/** we add the clear button only if the previous value is different from the current value **/}
+                        {clearable && (
+                            <IconButton
+                                onClick={handleClearValue}
+                                style={{
+                                    visibility: clearable
+                                        ? 'visible'
+                                        : 'hidden',
+                                }}
+                            >
+                                <ClearIcon />
+                            </IconButton>
+                        )}
+                    </InputAdornment>
                 ),
                 disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
             }}
