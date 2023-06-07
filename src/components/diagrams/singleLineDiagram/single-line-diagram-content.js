@@ -58,6 +58,7 @@ function SingleLineDiagramContent(props) {
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [linePopoverAnchorEl, setLinePopoverAnchorEl] = useState(null);
     const [lineHoveredId, setLineHoveredId] = useState('');
+    const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -73,14 +74,16 @@ function SingleLineDiagramContent(props) {
     };
 
     const handleTogglePopover = useCallback(
-        (shouldDisplay, currentTarget, lineId) => {
+        (shouldDisplay, currentTarget, equipmentId, equipmentType) => {
             setShouldDisplayTooltip(shouldDisplay);
             if (shouldDisplay) {
-                setLineHoveredId(lineId);
+                setLineHoveredId(equipmentId);
                 setLinePopoverAnchorEl(currentTarget);
+                setHoveredEquipmentType(equipmentType);
             } else {
                 setLineHoveredId('');
                 setLinePopoverAnchorEl(null);
+                setHoveredEquipmentType('');
             }
         },
         [setShouldDisplayTooltip]
@@ -218,6 +221,7 @@ function SingleLineDiagramContent(props) {
             <LinePopover
                 studyUuid={studyUuid}
                 anchorEl={linePopoverAnchorEl}
+                equipmentType={hoveredEquipmentType}
                 lineId={lineHoveredId}
                 loadFlowStatus={props.loadFlowStatus}
             />

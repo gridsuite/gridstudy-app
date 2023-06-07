@@ -773,6 +773,20 @@ export function fetchSubstation(studyUuid, currentNodeUuid, equipmentId) {
     );
 }
 
+export function fetchTwoWindingsTransformer(
+    studyUuid,
+    currentNodeUuid,
+    equipmentId
+) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        currentNodeUuid,
+        '2-windings-transformers',
+        equipmentId,
+        true
+    );
+}
+
 export function fetchLine(studyUuid, currentNodeUuid, equipmentId) {
     return fetchEquipmentInfos(
         studyUuid,

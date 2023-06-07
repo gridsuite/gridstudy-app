@@ -22,7 +22,7 @@ import {
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { fetchLine } from '../../utils/rest-api';
+import { fetchLine, fetchTwoWindingsTransformer } from '../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
 import makeStyles from '@mui/styles/makeStyles';
@@ -41,6 +41,7 @@ const LinePopover = ({
     lineInfos,
     anchorEl,
     lineId,
+    equipmentType,
     loadFlowStatus,
 }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
@@ -53,9 +54,19 @@ const LinePopover = ({
         if (lineInfos) {
             setLineInfo(lineInfos);
         } else if (lineId && lineId !== '') {
-            fetchLine(studyUuid, currentNode.id, lineId).then((value) => {
-                setLineInfo(value);
-            });
+            if (equipmentType === 'LINE') {
+                fetchLine(studyUuid, currentNode.id, lineId).then((value) => {
+                    setLineInfo(value);
+                });
+            } else {
+                fetchTwoWindingsTransformer(
+                    studyUuid,
+                    currentNode.id,
+                    lineId
+                ).then((value) => {
+                    setLineInfo(value);
+                });
+            }
         } else {
             setLineInfo(null);
         }
