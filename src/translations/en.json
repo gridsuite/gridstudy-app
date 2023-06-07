@@ -414,7 +414,8 @@
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
-
+    "ModifyFromMenu": "Modify",
+    
     "LockoutLine": "Lock out the line",
     "TripLine": "Trip the line",
     "EnergiseOnOneEndLine": "Energise on one end ({substation})",
@@ -690,6 +691,8 @@
     "DuplicateId": "Duplicate id",
     "CouplingOmnibusBetweenSameBusbar": "Forbidden to have a Coupler between the same bus bar section",
     "VoltageLevelModificationError": "Error while modifying a voltage level",
+    "TopologyNotRetrieved": "The voltage level topology could not be retrieved",
+    "BusBarSectionsCopyingNotSupported" : "Copying bus bar sections is not supported for this voltage level : values were set to their default",
 
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",
     "LineToSplit": "Existing line",
@@ -954,6 +957,7 @@
 
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
+    "NetworkElementNotFound": "The network element \"{elementId}\" does not exist",
 
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",

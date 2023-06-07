@@ -41,7 +41,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
     createLine,
-    fetchVoltageLevelsIdAndTopology,
+    fetchVoltageLevelsListInfos,
     FetchStatus,
 } from 'utils/rest-api';
 
@@ -269,11 +269,12 @@ const LineCreationDialog = ({
         equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.LINE.type,
     });
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))
