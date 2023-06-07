@@ -18,6 +18,7 @@
     "network_modifications/LINE_CREATION": "Création de la ligne {computedLabel}",
     "network_modifications/LINE_MODIFICATION": "Modification de la ligne {computedLabel}",
     "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "Création du transformateur à 2 enroulements {computedLabel}",
+    "network_modifications/TWO_WINDINGS_TRANSFORMER_MODIFICATION": "Modification du transformateur à 2 enroulements {computedLabel}",
     "network_modifications/BRANCH_STATUS_MODIFICATION": "{action, select, TRIP {Déclenchement de {computedLabel}} LOCKOUT {Consignation de {computedLabel}} ENERGISE_END_ONE {Mise sous tension à vide de {computedLabel} depuis {energizedEnd}} ENERGISE_END_TWO {Mise sous tension à vide de {computedLabel} depuis {energizedEnd}} SWITCH_ON {Mise en service de {computedLabel}} other {Modification du statut de la branche {computedLabel}}}",
     "network_modifications/SHUNT_COMPENSATOR_CREATION": "Création d'un moyen de compensation {computedLabel}",
     "network_modifications/GENERATOR_SCALING": "Création d'une variation du plan de production {computedLabel}",

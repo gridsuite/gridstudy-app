@@ -133,9 +133,9 @@ const GeneratorModificationDialog = ({
                             .when([MAXIMUM_ACTIVE_POWER], {
                                 is: (maximumActivePower) =>
                                     maximumActivePower != null,
-                                then: (schema, maximumActivePower) =>
+                                then: (schema) =>
                                     schema.max(
-                                        maximumActivePower,
+                                        yup.ref(MAXIMUM_ACTIVE_POWER),
                                         'MinActivePowerLessThanMaxActivePower'
                                     ),
                             }),

@@ -154,34 +154,26 @@ export const ResultViewTab = ({
                 >
                     <Tab
                         label={intl.formatMessage({
-                            id: 'loadFlowResults',
+                            id: 'LoadFlow',
                         })}
                         disabled={disabled}
                     />
                     <Tab
                         label={intl.formatMessage({
-                            id: 'securityAnalysisResults',
+                            id: 'SecurityAnalysis',
+                        })}
+                        disabled={disabled}
+                    />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'SensitivityAnalysis',
                         })}
                         disabled={disabled}
                     />
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'ShortCircuitAnalysisResults',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'sensitivityAnalysisResults',
-                        })}
-                        disabled={disabled}
-                    />
-                    {enableDeveloperMode && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'DynamicSimulationResults',
+                                id: 'ShortCircuitAnalysis',
                             })}
                             disabled={disabled}
                         />
@@ -189,7 +181,15 @@ export const ResultViewTab = ({
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'VoltageInitResults',
+                                id: 'DynamicSimulation',
+                            })}
+                            disabled={disabled}
+                        />
+                    )}
+                    {enableDeveloperMode && (
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'VoltageInit',
                             })}
                             disabled={disabled}
                         />
@@ -214,13 +214,13 @@ export const ResultViewTab = ({
                 className={classes.tabPanel}
                 selected={tabIndex === 2 && !disabled}
             >
-                {renderShortCircuitAnalysisResult()}
+                {renderSensitivityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
                 selected={tabIndex === 3 && !disabled}
             >
-                {renderSensitivityAnalysisResult()}
+                {renderShortCircuitAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
