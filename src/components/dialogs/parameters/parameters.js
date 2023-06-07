@@ -689,14 +689,19 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 </TabPanel>
                             )
                         }
-                        <TabPanel
-                            value={tabValue}
-                            index={TAB_VALUES.advancedParamsTabValue}
-                        >
-                            <NetworkParameters
-                                hideParameters={hideParameters}
-                            />
-                        </TabPanel>
+                        {
+                            //To be removed when DynamicSimulation is not in developer mode only.
+                            enableDeveloperMode && (
+                                <TabPanel
+                                    value={tabValue}
+                                    index={TAB_VALUES.advancedParamsTabValue}
+                                >
+                                    <NetworkParameters
+                                        hideParameters={hideParameters}
+                                    />
+                                </TabPanel>
+                            )
+                        }
                     </Grid>
                 </Container>
             </DialogContent>
