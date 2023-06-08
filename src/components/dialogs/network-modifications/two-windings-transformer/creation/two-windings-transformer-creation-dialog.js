@@ -51,13 +51,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
     createTwoWindingsTransformer,
-    fetchVoltageLevelsIdAndTopology,
     FetchStatus,
+    fetchVoltageLevelsListInfos,
 } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
-import { filledTextField, gridItem, sanitizeString } from '../../dialogUtils';
-import EquipmentSearchDialog from '../../equipment-search-dialog';
-import { useFormSearchCopy } from '../../form-search-copy-hook';
+import { sanitizeString } from '../../../dialogUtils';
+import EquipmentSearchDialog from '../../../equipment-search-dialog';
+import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import {
     FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
@@ -67,8 +67,8 @@ import {
     UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../commons/modificationDialog';
-import { getConnectivityFormData } from '../../connectivity/connectivity-form-utils';
+import ModificationDialog from '../../../commons/modificationDialog';
+import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import PhaseTapChangerPane from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
@@ -82,15 +82,13 @@ import {
     getRatioTapChangerValidationSchema,
 } from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import TwoWindingsTransformerCreationDialogTabs from './two-windings-transformer-creation-dialog-tabs';
-import TwoWindingsTransformerPane from './two-windings-transformer-pane/two-windings-transformer-pane';
+import TwoWindingsTransformerCreationCharacteristicsPane from './characteristics-pane/two-windings-transformer-creation-characteristics-pane';
 import {
     getTwoWindingsTransformerEmptyFormData,
     getTwoWindingsTransformerFormData,
     getTwoWindingsTransformerValidationSchema,
-} from './two-windings-transformer-pane/two-windings-transformer-pane-utils';
+} from './characteristics-pane/two-windings-transformer-creation-characteristics-pane-utils';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
-import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
@@ -98,13 +96,14 @@ import {
     PERMANENT_LIMIT,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants.js';
-import LimitsPane from '../../limits/limits-pane';
+import LimitsPane from '../../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
     getLimitsFormData,
     getLimitsValidationSchema,
-} from '../../limits/limits-pane-utils';
+} from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -117,6 +116,8 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
  */
 
 const emptyFormData = {
+    [EQUIPMENT_ID]: '',
+    [EQUIPMENT_NAME]: '',
     ...getTwoWindingsTransformerEmptyFormData(),
     ...getLimitsEmptyFormData(),
     ...getRatioTapChangerEmptyFormData(),
@@ -126,6 +127,8 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
+        [EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_NAME]: yup.string(),
         ...getTwoWindingsTransformerValidationSchema(),
         ...getLimitsValidationSchema(),
         ...getRatioTapChangerValidationSchema(),
@@ -222,9 +225,9 @@ const TwoWindingsTransformerCreationDialog = ({
     const fromEditDataToFormValues = useCallback(
         (twt) => {
             reset({
+                [EQUIPMENT_ID]: twt.equipmentId,
+                [EQUIPMENT_NAME]: twt.equipmentName,
                 ...getTwoWindingsTransformerFormData({
-                    equipmentId: twt.equipmentId,
-                    equipmentName: twt.equipmentName,
                     seriesResistance: twt.seriesResistance,
                     seriesReactance: twt.seriesReactance,
                     magnetizingConductance: unitToMicroUnit(
@@ -344,9 +347,9 @@ const TwoWindingsTransformerCreationDialog = ({
     const fromSearchCopyToFormValues = useCallback(
         (twt) => {
             reset({
+                [EQUIPMENT_ID]: twt.id + '(1)',
+                [EQUIPMENT_NAME]: twt.name ?? '',
                 ...getTwoWindingsTransformerFormData({
-                    equipmentId: twt.id + '(1)',
-                    equipmentName: twt.name ?? '',
                     seriesResistance: twt.r,
                     seriesReactance: twt.x,
                     magnetizingConductance: unitToMicroUnit(twt.g),
@@ -481,7 +484,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))
@@ -497,44 +500,9 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const ratioTapChangerEnabledField = (
-        <SwitchInput
-            name={`${RATIO_TAP_CHANGER}.${ENABLED}`}
-            label="ConfigureRatioTapChanger"
-        />
-    );
-
-    const phaseTapChangerEnabledField = (
-        <SwitchInput
-            name={`${PHASE_TAP_CHANGER}.${ENABLED}`}
-            label="ConfigurePhaseTapChanger"
-        />
-    );
-
-    const twoWindingsTransformerIdField = (
-        <TextInput
-            name={`${CHARACTERISTICS}.${EQUIPMENT_ID}`}
-            label="ID"
-            formProps={filledTextField}
-        />
-    );
-
-    const twoWindingsTransformerNameField = (
-        <TextInput
-            name={`${CHARACTERISTICS}.${EQUIPMENT_NAME}`}
-            label="Name"
-            formProps={filledTextField}
-        />
-    );
-
     const headerAndTabs = (
         <Grid container spacing={2}>
-            <Grid container item spacing={2}>
-                {gridItem(twoWindingsTransformerIdField, 4)}
-                {gridItem(twoWindingsTransformerNameField, 4)}
-                {gridItem(ratioTapChangerEnabledField, 2)}
-                {gridItem(phaseTapChangerEnabledField, 2)}
-            </Grid>
+            <TwoWindingsTransformerCreationDialogHeader />
             <TwoWindingsTransformerCreationDialogTabs
                 tabIndex={tabIndex}
                 tabIndexesWithError={tabIndexesWithError}
@@ -664,7 +632,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                     regulatingTerminalId: computeRegulatingTerminalId(
                         ratioTapChangerFormValues,
-                        characteristics[EQUIPMENT_ID]
+                        twt[EQUIPMENT_ID]
                     ),
                     regulatingTerminalType: computeRegulatingTerminalType(
                         ratioTapChangerFormValues
@@ -690,7 +658,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                     regulatingTerminalId: computeRegulatingTerminalId(
                         phaseTapChangerFormValues,
-                        characteristics[EQUIPMENT_ID]
+                        twt[EQUIPMENT_ID]
                     ),
                     regulatingTerminalType: computeRegulatingTerminalType(
                         phaseTapChangerFormValues
@@ -707,8 +675,8 @@ const TwoWindingsTransformerCreationDialog = ({
             createTwoWindingsTransformer(
                 studyUuid,
                 currentNodeUuid,
-                characteristics[EQUIPMENT_ID],
-                sanitizeString(characteristics[EQUIPMENT_NAME]),
+                twt[EQUIPMENT_ID],
+                sanitizeString(twt[EQUIPMENT_NAME]),
                 characteristics[SERIES_RESISTANCE],
                 characteristics[SERIES_REACTANCE],
                 characteristics[MAGNETIZING_CONDUCTANCE],
@@ -815,7 +783,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     }
                     p={1}
                 >
-                    <TwoWindingsTransformerPane
+                    <TwoWindingsTransformerCreationCharacteristicsPane
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         voltageLevelOptions={voltageLevelOptions}

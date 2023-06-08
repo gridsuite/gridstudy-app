@@ -31,6 +31,7 @@ import {
     addSensiNotif,
     addShortCircuitNotif,
     addDynamicSimulationNotif,
+    addVoltageInitNotif,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -91,6 +92,8 @@ export function RunButtonContainer({
 
     const [ranDynamicSimulation, setRanDynamicSimulation] = useState(false);
 
+    const [ranVoltageInit, setRanVoltageInit] = useState(false);
+
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
@@ -133,6 +136,12 @@ export function RunButtonContainer({
                 'dynamicSimulationResult'
         ) {
             dispatch(addDynamicSimulationNotif());
+        } else if (
+            ranVoltageInit &&
+            studyUpdatedForce?.eventData?.headers?.updateType ===
+                'voltageInitResult'
+        ) {
+            dispatch(addVoltageInitNotif());
         }
     }, [
         dispatch,
@@ -142,11 +151,13 @@ export function RunButtonContainer({
         ranSensi,
         ranShortCircuit,
         ranDynamicSimulation,
+        ranVoltageInit,
         loadFlowStatus,
         sensiStatus,
         shortCircuitStatus,
         dynamicSimulationStatus,
         securityAnalysisStatus,
+        voltageInitStatus,
     ]);
 
     useEffect(() => {
@@ -274,13 +285,15 @@ export function RunButtonContainer({
                 });
         } else if (action === runnable.VOLTAGE_INIT) {
             setVoltageInitStatusState(RunningStatus.RUNNING);
-            startVoltageInit(studyUuid, currentNode?.id).catch((error) => {
-                setVoltageInitStatusState(RunningStatus.FAILED);
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'startVoltageInitError',
+            startVoltageInit(studyUuid, currentNode?.id)
+                .then(setRanVoltageInit(true))
+                .catch((error) => {
+                    setVoltageInitStatusState(RunningStatus.FAILED);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'startVoltageInitError',
+                    });
                 });
-            });
         } else if (action === runnable.DYNAMIC_SIMULATION) {
             checkDynamicSimulationParameters(studyUuid)
                 .then((isValid) => {
@@ -342,17 +355,19 @@ export function RunButtonContainer({
         ]
     );
 
-    const getRunningText = (runnableName, runnableStatus) => {
+    const getRunningText = (runnableName) => {
         return runnableName;
     };
 
     const runnables = useMemo(() => {
-        let runnables = [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS];
+        let runnables = [
+            runnable.LOADFLOW,
+            runnable.SECURITY_ANALYSIS,
+            runnable.SENSITIVITY_ANALYSIS,
+        ];
         if (enableDeveloperMode) {
             // SHORTCIRCUIT is currently a dev feature
             runnables.push(runnable.SHORT_CIRCUIT_ANALYSIS);
-            // SENSI is currently a dev feature
-            runnables.push(runnable.SENSITIVITY_ANALYSIS);
             // DYNAMICSIMULATION is currently a dev feature
             runnables.push(runnable.DYNAMIC_SIMULATION);
             // VOLTAGEINIT is currently a dev feature

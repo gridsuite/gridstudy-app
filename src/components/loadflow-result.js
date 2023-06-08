@@ -49,11 +49,12 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const classes = useStyles();
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState(0);
-    const [overloadedLines, setOverloadedLines] = useState(null);
+    const [overloadedEquipments, setOverloadedEquipments] = useState(null);
 
     const limitReductionParam = useSelector((state) =>
         Number(state[PARAM_LIMIT_REDUCTION])
     );
+    const loadflowNotif = useSelector((state) => state.loadflowNotif);
 
     useEffect(() => {
         const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
@@ -77,40 +78,44 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 ? intl.formatMessage({ id: 'PermanentLimitName' })
                 : limitName;
         };
-        const makeData = (overloadedLine) => {
+        const makeData = (overloadedEquipment) => {
             return {
                 overload: (
-                    (overloadedLine.value / overloadedLine.limit) *
+                    (overloadedEquipment.value / overloadedEquipment.limit) *
                     100
                 ).toFixed(1),
-                name: overloadedLine.subjectId,
-                intensity: overloadedLine.value,
+                name: overloadedEquipment.subjectId,
+                intensity: overloadedEquipment.value,
                 acceptableDuration: convertDuration(
-                    overloadedLine.acceptableDuration
+                    overloadedEquipment.acceptableDuration
                 ),
-                limit: overloadedLine.limit,
-                limitName: convertLimitName(overloadedLine.limitName),
-                side: convertSide(overloadedLine.side),
+                limit: overloadedEquipment.limit,
+                limitName: convertLimitName(overloadedEquipment.limitName),
+                side: convertSide(overloadedEquipment.side),
             };
         };
-        fetchCurrentLimitViolations(
-            studyUuid,
-            nodeUuid,
-            limitReductionParam / 100.0
-        )
-            .then((overloadedLines) => {
-                const sortedLines = overloadedLines
-                    .map((overloadedLine) => makeData(overloadedLine))
-                    .sort((a, b) => b.overload - a.overload);
-                setOverloadedLines(sortedLines);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ErrFetchCurrentLimitViolationsMsg',
+        if (result) {
+            fetchCurrentLimitViolations(
+                studyUuid,
+                nodeUuid,
+                limitReductionParam / 100.0
+            )
+                .then((overloadedEquipments) => {
+                    const sortedLines = overloadedEquipments
+                        .map((overloadedEquipment) =>
+                            makeData(overloadedEquipment)
+                        )
+                        .sort((a, b) => b.overload - a.overload);
+                    setOverloadedEquipments(sortedLines);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'ErrFetchCurrentLimitViolationsMsg',
+                    });
                 });
-            });
-    }, [studyUuid, nodeUuid, limitReductionParam, intl, snackError]);
+        }
+    }, [studyUuid, nodeUuid, intl, snackError, limitReductionParam, result]);
 
     function StatusCellRender(cellData) {
         const status = cellData.rowData[cellData.dataKey];
@@ -201,11 +206,13 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         return (
             <Paper className={classes.tablePaper}>
                 <VirtualizedTable
-                    rows={overloadedLines}
+                    rows={overloadedEquipments}
                     sortable={true}
                     columns={[
                         {
-                            label: intl.formatMessage({ id: 'OverloadedLine' }),
+                            label: intl.formatMessage({
+                                id: 'OverloadedEquipment',
+                            }),
                             dataKey: 'name',
                             numeric: false,
                         },
@@ -239,7 +246,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                             fractionDigits: 1,
                         },
                         {
-                            label: intl.formatMessage({ id: 'LineLoad' }),
+                            label: intl.formatMessage({
+                                id: 'EquipmentOverload',
+                            }),
                             dataKey: 'overload',
                             numeric: true,
                             fractionDigits: 0,
@@ -280,10 +289,14 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     </div>
                 </div>
                 {tabIndex === 0 &&
-                    overloadedLines &&
+                    overloadedEquipments &&
+                    loadflowNotif &&
                     result &&
                     renderLoadFlowConstraints()}
-                {tabIndex === 1 && result && renderLoadFlowResult()}
+                {tabIndex === 1 &&
+                    loadflowNotif &&
+                    result &&
+                    renderLoadFlowResult()}
             </>
         );
     }

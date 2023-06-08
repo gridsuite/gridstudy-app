@@ -35,10 +35,13 @@ import { resetMapReloaded } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from './study-container';
+import SubstationModificationDialog from './dialogs/network-modifications/substation/modification/substation-modification-dialog';
+import VoltageLevelModificationDialog from './dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 
 const INITIAL_POSITION = [0, 0];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     divNominalVoltageFilter: {
         position: 'absolute',
         right: 10,
@@ -154,10 +157,49 @@ export const NetworkMapTab = ({
 
     const classes = useStyles();
     const currentNodeRef = useRef(null);
-
     const [updatedLines, setUpdatedLines] = useState([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
+    const [equipmentToModify, setEquipmentToModify] = useState();
+    const [modificationDialogOpen, setModificationDialogOpen] = useState(false);
 
+    const closeModificationDialog = () => {
+        setEquipmentToModify();
+        setModificationDialogOpen(false);
+    };
+
+    function renderModificationDialog() {
+        switch (equipmentToModify.equipmentType) {
+            case EQUIPMENT_TYPES.SUBSTATION.type:
+                return (
+                    <SubstationModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        isUpdate={true}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        onClose={() => closeModificationDialog()}
+                    />
+                );
+            case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+                return (
+                    <VoltageLevelModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        isUpdate={true}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        onClose={() => closeModificationDialog()}
+                    />
+                );
+            default:
+                break;
+        }
+    }
+    const handleOpenModificationDialog = (equipmentId, equipmentType) => {
+        setEquipmentToModify({ equipmentId, equipmentType });
+        setModificationDialogOpen(true);
+        closeEquipmentMenu();
+    };
     function withEquipment(Menu, props) {
         return (
             <Menu
@@ -166,6 +208,7 @@ export const NetworkMapTab = ({
                 handleClose={closeEquipmentMenu}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
                 handleDeleteEquipment={handleDeleteEquipment}
+                handleOpenModificationDialog={handleOpenModificationDialog}
                 {...props}
             />
         );
@@ -865,6 +908,7 @@ export const NetworkMapTab = ({
             </div>
             {renderMap()}
             {renderEquipmentMenu()}
+            {modificationDialogOpen && renderModificationDialog()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}

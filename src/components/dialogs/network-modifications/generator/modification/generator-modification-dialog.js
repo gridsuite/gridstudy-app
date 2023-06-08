@@ -117,7 +117,7 @@ const GeneratorModificationDialog = ({
         [defaultIdValue]
     );
 
-    const schema = useMemo(
+    const formSchema = useMemo(
         () =>
             yup
                 .object()
@@ -133,9 +133,9 @@ const GeneratorModificationDialog = ({
                             .when([MAXIMUM_ACTIVE_POWER], {
                                 is: (maximumActivePower) =>
                                     maximumActivePower != null,
-                                then: (schema, maximumActivePower) =>
+                                then: (schema) =>
                                     schema.max(
-                                        maximumActivePower,
+                                        yup.ref(MAXIMUM_ACTIVE_POWER),
                                         'MinActivePowerLessThanMaxActivePower'
                                     ),
                             }),
@@ -168,7 +168,7 @@ const GeneratorModificationDialog = ({
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
     const { reset, getValues, setValue } = formMethods;
@@ -552,7 +552,7 @@ const GeneratorModificationDialog = ({
 
     return (
         <FormProvider
-            validationSchema={schema}
+            validationSchema={formSchema}
             removeOptional={true}
             {...formMethods}
         >
