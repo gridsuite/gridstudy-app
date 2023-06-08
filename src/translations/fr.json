@@ -272,6 +272,7 @@
     "ValRefInkV": "Tension de référence (kV)",
     "DeltaInkV": "Sensibilité (ΔkV / ΔkV)",
 
+    "LoadFlowError": "Une erreur est survenue lors de l'exécution du calcul de répartition",
     "ShortCircuitAnalysis": "Analyse de court-circuit",
     "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
     "startShortCircuitError": "Une erreur est survenue lors du lancement de l'analyse de court-circuit",

@@ -118,7 +118,7 @@ const LoadFlowResult = ({ result, status, studyUuid, nodeUuid }) => {
     }, [studyUuid, nodeUuid, intl, snackError, limitReductionParam, result]);
 
     function StatusCellRender(cellData) {
-        const color = status === 'CONVERGED' ? classes.succeed : classes.fail;
+        const color = status === 'SUCCEED' ? classes.succeed : classes.fail;
         return (
             <TableCell
                 component={'div'}

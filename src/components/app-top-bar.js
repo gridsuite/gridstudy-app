@@ -246,7 +246,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         'voltageInit_status',
         'voltageInit_failed',
     ];
-    const [loadFlowInfosNode] = useNodeData(
+    const [loadFlowStatusNode] = useNodeData(
         studyUuid,
         currentNode?.id,
         fetchLoadFlowStatus,
@@ -316,23 +316,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     }, [user]);
 
     useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            loadFlowInfosNode?.loadFlowStatus !== 'NOT_DONE' &&
-            loadFlowInfosNode?.loadFlowResult != null
-        ) {
+        if (isNodeBuilt(currentNode) && loadFlowStatusNode === 'COMPLETED') {
             dispatch(addLoadflowNotif());
         } else {
             dispatch(resetLoadflowNotif());
         }
-    }, [
-        currentNode,
-        dispatch,
-        loadFlowInfosNode?.loadFlowResult,
-        loadFlowInfosNode?.loadFlowStatus,
-        tabIndex,
-        user,
-    ]);
+    }, [currentNode, dispatch, loadFlowStatusNode, tabIndex, user]);
 
     useEffect(() => {
         if (
@@ -367,6 +356,14 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             dispatch(resetShortCircuitNotif());
         }
     }, [currentNode, dispatch, shortCircuitAnalysisStatusNode, tabIndex, user]);
+
+    useEffect(() => {
+        if (isNodeBuilt(currentNode) && loadFlowStatusNode === 'COMPLETED') {
+            dispatch(addShortCircuitNotif());
+        } else {
+            dispatch(resetShortCircuitNotif());
+        }
+    }, [currentNode, dispatch, loadFlowStatusNode, tabIndex, user]);
 
     useEffect(() => {
         if (

@@ -272,6 +272,7 @@
     "ValRefInkV": "Reference voltage (kV)",
     "DeltaInkV": "Sensitivity (ΔkV / ΔkV)",
 
+    "LoadFlowError": "An error occured when executing loadflow",
     "ShortCircuitAnalysis": "Short circuit analysis",
     "ShortCircuitAnalysisParameters": "Short circuit analysis parameters",
     "startShortCircuitError": "An error occurred while starting the short circuit analysis",

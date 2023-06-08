@@ -9,7 +9,6 @@ import clsx from 'clsx';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
-import LoadFlowResult from './loadflow-result';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import React, { useEffect, useState } from 'react';

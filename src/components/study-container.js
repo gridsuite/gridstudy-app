@@ -19,7 +19,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
     connectNotificationsWebsocket,
-    fetchLoadFlowInfos,
     fetchNetworkModificationTree,
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
@@ -207,7 +206,7 @@ function usePrevious(value) {
     return ref.current;
 }
 
-const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
+const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
     'securityAnalysis_failed',
@@ -337,6 +336,12 @@ export function StudyContainer({ view, onChangeTab }) {
             const userId = eventData.headers[USER_HEADER];
             if (userId !== userName) {
                 return;
+            }
+            if (updateTypeHeader === 'loadflow_failed') {
+                snackError({
+                    headerId: 'LoadFlowError',
+                    messageTxt: errorMessage,
+                });
             }
             if (updateTypeHeader === 'buildFailed') {
                 snackError({
