@@ -23,15 +23,13 @@ import {
     SHUNT_SUSCEPTANCE_2,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { fetchEquipmentInfos, FetchStatus, modifyLine } from 'utils/rest-api';
+import {
+    fetchNetworkElementInfos,
+    FetchStatus,
+    modifyLine,
+} from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import yup from 'components/utils/yup-config';
@@ -55,6 +53,10 @@ import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -121,11 +123,6 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const editDataRef = useRef(editData);
-    useEffect(() => {
-        editDataRef.current = editData;
-    }, [editData]);
-
     const { reset, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
@@ -169,8 +166,8 @@ const LineModificationDialog = ({
     );
 
     useEffect(() => {
-        if (editDataRef.current) {
-            fromEditDataToFormValues(editDataRef.current);
+        if (editData) {
+            fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
 
@@ -196,7 +193,7 @@ const LineModificationDialog = ({
                         limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
                     ),
                     lineToModify?.currentLimits1?.temporaryLimits,
-                    editDataRef.current?.currentLimits1?.temporaryLimits,
+                    editData?.currentLimits1?.temporaryLimits,
                     currentNode
                 ),
                 addModificationTypeToTemporaryLimits(
@@ -204,11 +201,11 @@ const LineModificationDialog = ({
                         limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
                     ),
                     lineToModify?.currentLimits2?.temporaryLimits,
-                    editDataRef.current?.currentLimits2?.temporaryLimits,
+                    editData?.currentLimits2?.temporaryLimits,
                     currentNode
                 ),
-                !!editDataRef.current,
-                editDataRef.current?.uuid
+                !!editData,
+                editData?.uuid
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -216,7 +213,14 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [studyUuid, currentNode, currentNodeUuid, lineToModify, snackError]
+        [
+            studyUuid,
+            currentNodeUuid,
+            lineToModify,
+            editData,
+            currentNode,
+            snackError,
+        ]
     );
 
     const clear = useCallback(() => {
@@ -227,10 +231,11 @@ const LineModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchEquipmentInfos(
+                fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    'lines',
+                    EQUIPMENT_TYPES.LINE.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )
@@ -238,7 +243,7 @@ const LineModificationDialog = ({
                         if (line) {
                             setLineToModify(line);
                             if (
-                                editDataRef.current?.equipmentId !==
+                                editData?.equipmentId !==
                                 getValues(`${EQUIPMENT_ID}`)
                             ) {
                                 reset(
@@ -263,6 +268,8 @@ const LineModificationDialog = ({
                                     }),
                                     { keepDefaultValues: true }
                                 );
+                            } else {
+                                fromEditDataToFormValues(editData);
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -273,12 +280,18 @@ const LineModificationDialog = ({
                     });
             } else {
                 setLineToModify(null);
-                //we set the editDataRef to null to avoid to have the old editData when we clear the form
-                editDataRef.current = null;
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, getValues, reset, emptyFormData]
+        [
+            studyUuid,
+            currentNodeUuid,
+            editData,
+            getValues,
+            reset,
+            fromEditDataToFormValues,
+            emptyFormData,
+        ]
     );
 
     const onValidationError = (errors) => {
@@ -347,7 +360,7 @@ const LineModificationDialog = ({
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     lineToModify={lineToModify}
-                    modifiedLine={editDataRef.current}
+                    modifiedLine={editData}
                     tabIndex={tabIndex}
                 />
             </ModificationDialog>

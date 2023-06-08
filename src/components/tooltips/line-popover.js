@@ -22,10 +22,14 @@ import {
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { fetchLine } from '../../utils/rest-api';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
 import makeStyles from '@mui/styles/makeStyles';
+import { fetchNetworkElementInfos } from 'utils/rest-api';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     tableCells: {
@@ -53,7 +57,14 @@ const LinePopover = ({
         if (lineInfos) {
             setLineInfo(lineInfos);
         } else if (lineId && lineId !== '') {
-            fetchLine(studyUuid, currentNode.id, lineId).then((value) => {
+            fetchNetworkElementInfos(
+                studyUuid,
+                currentNode.id,
+                EQUIPMENT_TYPES.LINE.type,
+                EQUIPMENT_INFOS_TYPES.MAP.type,
+                lineId,
+                true
+            ).then((value) => {
                 setLineInfo(value);
             });
         } else {

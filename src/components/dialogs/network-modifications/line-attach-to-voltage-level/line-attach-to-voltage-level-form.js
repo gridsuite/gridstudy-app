@@ -20,7 +20,7 @@ import { gridItem, GridSection } from '../../dialogUtils';
 
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
-import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
+import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import { Box, Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -60,7 +60,7 @@ const LineAttachToVoltageLevelForm = ({
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a?.id?.localeCompare(b?.id))

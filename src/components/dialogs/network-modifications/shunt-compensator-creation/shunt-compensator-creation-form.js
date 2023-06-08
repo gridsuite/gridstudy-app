@@ -13,7 +13,7 @@ import { filledTextField, gridItem, GridSection } from '../../dialogUtils';
 
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
-import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
+import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import { CharacteristicsForm } from './characteristics-pane/characteristics-form';
 
 const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
@@ -21,7 +21,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNode?.id).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNode.id).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a?.id?.localeCompare(b?.id))

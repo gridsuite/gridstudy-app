@@ -270,12 +270,7 @@ export const SecurityAnalysisParameters = ({
 
     return (
         <>
-            <Grid
-                container
-                key="secuAnalysisProvider"
-                className={classes.scrollableGrid}
-                spacing={1}
-            >
+            <Grid container spacing={1} padding={1}>
                 <DropDown
                     value={provider}
                     label="Provider"
@@ -317,6 +312,12 @@ export const SecurityAnalysisParameters = ({
                     );
                 })}
             </Grid>
+            <Grid
+                container
+                key="secuAnalysisProvider"
+                className={classes.scrollableGrid}
+                spacing={1}
+            ></Grid>
             <LineSeparator />
             <Grid
                 container
@@ -327,6 +328,7 @@ export const SecurityAnalysisParameters = ({
                     callback={resetSAParametersAndProvider}
                     label="resetToDefault"
                 />
+                <LabelledButton label="resetProviderValuesToDefault" />
                 <CloseButton
                     hideParameters={hideParameters}
                     className={classes.button}
