@@ -11,14 +11,15 @@ import {
     CURRENT_LIMITS_2,
     LIMITS,
     PERMANENT_LIMIT,
-    TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
+    TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useMemo } from 'react';
-import { useFieldArray } from 'react-hook-form';
+import React, { useCallback, useMemo } from 'react';
+import { useFieldArray, useFormContext } from 'react-hook-form';
 import makeStyles from '@mui/styles/makeStyles';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import {
@@ -27,6 +28,7 @@ import {
     GridSection,
 } from 'components/dialogs/dialogUtils';
 import DndTable from 'components/utils/dnd-table/dnd-table';
+import { isNodeBuilt } from '../../graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
@@ -36,15 +38,14 @@ const useStyles = makeStyles((theme) => ({
 
 const LimitsPane = ({
     id = LIMITS,
+    currentNode,
     equipmentToModify,
     modifiedEquipment,
-    disableTableCell,
     clearableFields,
-    getTemporaryLimitPreviousValue,
-    isTemporaryLimitModified,
 }) => {
     const intl = useIntl();
     const classes = useStyles();
+    const { getValues } = useFormContext();
 
     const columnsDefinition = useMemo(() => {
         return [
@@ -91,6 +92,120 @@ const LimitsPane = ({
         return newRowData;
     }, [columnsDefinition]);
     const createLimitRows = () => [newRowData];
+
+    const temporaryLimitHasPreviousValue = useCallback(
+        (rowIndex, arrayFormName, temporaryLimits) => {
+            return temporaryLimits
+                ?.map(({ name }) => name)
+                .includes(getValues(arrayFormName)[rowIndex]?.name);
+        },
+        [getValues]
+    );
+
+    const findTemporaryLimit = useCallback(
+        (rowIndex, arrayFormName, temporaryLimits) => {
+            return temporaryLimits?.find(
+                (e) => e.name === getValues(arrayFormName)[rowIndex]?.name
+            );
+        },
+        [getValues]
+    );
+
+    const disableTableCell = useCallback(
+        (
+            rowIndex,
+            column,
+            arrayFormName,
+            temporaryLimits,
+            modifiedTemporaryLimits
+        ) => {
+            // If the temporary limit is added, all fields are editable
+            // otherwise, only the value field is editable
+            return modifiedTemporaryLimits &&
+                findTemporaryLimit(
+                    rowIndex,
+                    arrayFormName,
+                    modifiedTemporaryLimits
+                )?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+                ? false
+                : temporaryLimitHasPreviousValue(
+                      rowIndex,
+                      arrayFormName,
+                      temporaryLimits
+                  ) && column.dataKey !== TEMPORARY_LIMIT_VALUE;
+        },
+        [findTemporaryLimit, temporaryLimitHasPreviousValue]
+    );
+
+    const shouldReturnPreviousValue = useCallback(
+        (rowIndex, column, arrayFormName, temporaryLimits, modifiedValues) => {
+            return (
+                (temporaryLimitHasPreviousValue(
+                    rowIndex,
+                    arrayFormName,
+                    temporaryLimits
+                ) &&
+                    column.dataKey === TEMPORARY_LIMIT_VALUE) ||
+                findTemporaryLimit(rowIndex, arrayFormName, modifiedValues)
+                    ?.modificationType ===
+                    TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+            );
+        },
+        [findTemporaryLimit, temporaryLimitHasPreviousValue]
+    );
+
+    const getTemporaryLimitPreviousValue = useCallback(
+        (rowIndex, column, arrayFormName, temporaryLimits, modifiedValues) => {
+            if (
+                shouldReturnPreviousValue(
+                    rowIndex,
+                    column,
+                    arrayFormName,
+                    temporaryLimits,
+                    modifiedValues
+                )
+            ) {
+                const temporaryLimit = findTemporaryLimit(
+                    rowIndex,
+                    arrayFormName,
+                    temporaryLimits
+                );
+                if (temporaryLimit === undefined) {
+                    return undefined;
+                }
+                if (column.dataKey === TEMPORARY_LIMIT_VALUE) {
+                    return temporaryLimit?.value ?? Number.MAX_VALUE;
+                } else if (column.dataKey === TEMPORARY_LIMIT_DURATION) {
+                    return (
+                        temporaryLimit?.acceptableDuration ?? Number.MAX_VALUE
+                    );
+                }
+            } else {
+                return undefined;
+            }
+        },
+        [findTemporaryLimit, shouldReturnPreviousValue]
+    );
+
+    const isTemporaryLimitModified = useCallback(
+        (rowIndex, arrayFormName, modifiedValues) => {
+            const temporaryLimit = findTemporaryLimit(
+                rowIndex,
+                arrayFormName,
+                modifiedValues
+            );
+            if (
+                temporaryLimit?.modificationType ===
+                    TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
+                !isNodeBuilt(currentNode)
+            ) {
+                return false;
+            } else {
+                return temporaryLimit?.modificationType !== undefined;
+            }
+        },
+        [currentNode, findTemporaryLimit]
+    );
 
     const permanentCurrentLimit1Field = (
         <FloatInput
