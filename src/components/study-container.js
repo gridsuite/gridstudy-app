@@ -266,7 +266,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const currentNodeRef = useRef();
 
-    const [loadFlowInfos] = useNodeData(
+    const [loadFlowStatus] = useNodeData(
         studyUuid,
         currentNode?.id,
         fetchLoadFlowStatus,
@@ -818,7 +818,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 currentNode={currentNode}
                 view={view}
                 onChangeTab={onChangeTab}
-                loadFlowInfos={loadFlowInfos}
+                loadFlowStatus={loadFlowStatus}
                 securityAnalysisStatus={securityAnalysisStatus}
                 sensiStatus={sensiStatus}
                 shortCircuitStatus={shortCircuitStatus}

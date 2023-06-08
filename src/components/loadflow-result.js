@@ -23,7 +23,7 @@ import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
 import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 
-const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
+const LoadFlowResult = ({ result, status, studyUuid, nodeUuid }) => {
     const useStyles = makeStyles((theme) => ({
         tablePaper: {
             flexGrow: 1,
@@ -118,7 +118,6 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     }, [studyUuid, nodeUuid, intl, snackError, limitReductionParam, result]);
 
     function StatusCellRender(cellData) {
-        const status = cellData.rowData[cellData.dataKey];
         const color = status === 'CONVERGED' ? classes.succeed : classes.fail;
         return (
             <TableCell

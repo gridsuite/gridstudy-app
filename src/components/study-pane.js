@@ -85,7 +85,7 @@ const StudyPane = ({
     studyUuid,
     network,
     currentNode,
-    loadFlowInfos,
+    loadFlowStatus,
     securityAnalysisStatus,
     sensiStatus,
     shortCircuitStatus,
@@ -256,9 +256,7 @@ const StudyPane = ({
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    loadFlowStatus={getLoadFlowRunningStatus(
-                                        loadFlowInfos?.loadFlowStatus
-                                    )}
+                                    loadFlowStatus={loadFlowStatus}
                                     securityAnalysisStatus={
                                         securityAnalysisStatus
                                     }
@@ -281,9 +279,7 @@ const StudyPane = ({
                                 network={network}
                                 isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
-                                loadFlowStatus={getLoadFlowRunningStatus(
-                                    loadFlowInfos?.loadFlowStatus
-                                )}
+                                loadFlowStatus={loadFlowStatus}
                                 currentNode={currentNode}
                                 visible={
                                     props.view === StudyView.MAP &&
@@ -307,9 +303,7 @@ const StudyPane = ({
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
-                    loadFlowStatus={getLoadFlowRunningStatus(
-                        loadFlowInfos?.loadFlowStatus
-                    )}
+                    loadFlowStatus={loadFlowStatus}
                     disabled={disabled}
                     visible={props.view === StudyView.SPREADSHEET}
                 />
@@ -344,7 +338,7 @@ const StudyPane = ({
                 <ResultViewTab
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    loadFlowInfos={loadFlowInfos}
+                    loadFlowInfos={loadFlowStatus}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
                 />

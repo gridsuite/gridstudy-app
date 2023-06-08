@@ -23,6 +23,7 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
+import { LoadFlowResultTab } from './loadflow-result-tab';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -72,8 +73,7 @@ export const ResultViewTab = ({
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.table}>
-                <LoadFlowResult
-                    result={loadFlowInfos?.loadFlowResult}
+                <LoadFlowResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                 />
