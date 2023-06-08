@@ -438,12 +438,17 @@ const SpecificLoadFlowParameters = ({
             const deltaMap = makeDeltaMap(defaultValues, nextCurrentParameters);
 
             const toSend = { ...lfParams };
-            getObjectWithoutNanValues(deltaMap);
 
+            getObjectWithoutNanValues(deltaMap);
+            const formattedData = { ...deltaMap };
+            Object.keys(formattedData)?.forEach((key) => {
+                formattedData[key] =
+                    formattedData[key] === '' ? null : formattedData[key];
+            });
             const oldSpecifics = toSend['specificParametersPerProvider'];
             toSend['specificParametersPerProvider'] = {
                 ...oldSpecifics,
-                [currentProvider]: deltaMap ?? {},
+                [currentProvider]: formattedData ?? {},
             };
 
             commitLFParameter(toSend);
