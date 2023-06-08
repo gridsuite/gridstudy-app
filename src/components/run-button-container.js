@@ -21,6 +21,7 @@ import {
     stopDynamicSimulation,
     startVoltageInit,
     stopVoltageInit,
+    stopLoadFlow,
 } from '../utils/rest-api';
 import { RunningStatus } from './utils/running-status';
 
@@ -180,27 +181,36 @@ export function RunButtonContainer({
     const ACTION_ON_RUNNABLES = {
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (action) => {
-            if (action === runnable.SECURITY_ANALYSIS) {
-                setSecurityAnalysisStatusState(RunningStatus.IDLE);
-                stopSecurityAnalysis(studyUuid, currentNode?.id);
-                setComputationStopped(!computationStopped);
-            } else if (action === runnable.SENSITIVITY_ANALYSIS) {
-                setSensiStatusState(RunningStatus.IDLE);
-                stopSensitivityAnalysis(studyUuid, currentNode?.id);
-                setComputationStopped(!computationStopped);
-            } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
-                setShortCircuitStatusState(RunningStatus.IDLE);
-                stopShortCircuitAnalysis(studyUuid, currentNode?.id);
-                setComputationStopped(!computationStopped);
-            } else if (action === runnable.DYNAMIC_SIMULATION) {
-                setDynamicSimulationStatusState(RunningStatus.IDLE);
-                stopDynamicSimulation(studyUuid, currentNode?.id);
-                setComputationStopped(!computationStopped);
-            } else if (action === runnable.VOLTAGE_INIT) {
-                setVoltageInitStatusState(RunningStatus.IDLE);
-                stopVoltageInit(studyUuid, currentNode?.id);
-                setComputationStopped(!computationStopped);
+            switch (action) {
+                case runnable.LOADFLOW:
+                    setLoadFlowStatusState(RunningStatus.IDLE);
+                    stopLoadFlow(studyUuid, currentNode?.id);
+                    break;
+                case runnable.SECURITY_ANALYSIS:
+                    setSecurityAnalysisStatusState(RunningStatus.IDLE);
+                    stopSecurityAnalysis(studyUuid, currentNode?.id);
+                    break;
+                case runnable.SENSITIVITY_ANALYSIS:
+                    setSensiStatusState(RunningStatus.IDLE);
+                    stopSensitivityAnalysis(studyUuid, currentNode?.id);
+                    break;
+                case runnable.SHORT_CIRCUIT_ANALYSIS:
+                    setShortCircuitStatusState(RunningStatus.IDLE);
+                    stopShortCircuitAnalysis(studyUuid, currentNode?.id);
+                    break;
+                case runnable.DYNAMIC_SIMULATION:
+                    setDynamicSimulationStatusState(RunningStatus.IDLE);
+                    stopDynamicSimulation(studyUuid, currentNode?.id);
+                    break;
+                case runnable.VOLTAGE_INIT:
+                    setVoltageInitStatusState(RunningStatus.IDLE);
+                    stopVoltageInit(studyUuid, currentNode?.id);
+                    break;
+                default:
+                    // optional: handle the case where action is not recognized
+                    break;
             }
+            setComputationStopped(!computationStopped);
         },
     };
 

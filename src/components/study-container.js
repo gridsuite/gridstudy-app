@@ -31,6 +31,7 @@ import {
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
     fetchVoltageInitStatus,
+    fetchLoadFlowStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -60,6 +61,7 @@ import {
     getDynamicSimulationRunningStatus,
     getVoltageInitRunningStatus,
     RunningStatus,
+    getLoadFlowRunningStatus,
 } from './utils/running-status';
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
@@ -267,8 +269,10 @@ export function StudyContainer({ view, onChangeTab }) {
     const [loadFlowInfos] = useNodeData(
         studyUuid,
         currentNode?.id,
-        fetchLoadFlowInfos,
-        loadFlowStatusInvalidations
+        fetchLoadFlowStatus,
+        loadFlowStatusInvalidations,
+        RunningStatus.IDLE,
+        getLoadFlowRunningStatus
     );
 
     const [securityAnalysisStatus] = useNodeData(

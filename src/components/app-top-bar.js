@@ -30,13 +30,13 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import {
     fetchAppsAndUrls,
-    fetchLoadFlowInfos,
     fetchSecurityAnalysisStatus,
     fetchSensitivityAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
     fetchNetworkElementInfos,
     fetchVoltageInitStatus,
+    fetchLoadFlowStatus,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
@@ -249,7 +249,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [loadFlowInfosNode] = useNodeData(
         studyUuid,
         currentNode?.id,
-        fetchLoadFlowInfos,
+        fetchLoadFlowStatus,
         loadFlowStatusInvalidations
     );
 
