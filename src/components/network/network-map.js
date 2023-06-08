@@ -61,7 +61,6 @@ const NetworkMap = (props) => {
     const [mapBoxToken, setMapBoxToken] = useState();
     const [labelsVisible, setLabelsVisible] = useState(false);
     const [showLineFlow, setShowLineFlow] = useState(true);
-    const [showTooltip, setShowTooltip] = useState(true);
     const [deck, setDeck] = useState(null);
     const [centered, setCentered] = useState({
         lastCenteredSubstation: null,
@@ -246,7 +245,7 @@ const NetworkMap = (props) => {
             ) {
                 setLabelsVisible(false);
             }
-            setShowTooltip(info.viewState.zoom >= props.tooltipZoomThreshold);
+
             setShowLineFlow(info.viewState.zoom >= props.arrowsZoomThreshold);
         }
     }
@@ -418,7 +417,7 @@ const NetworkMap = (props) => {
                             pointerX: x,
                             pointerY: y,
                             lineInfos: object,
-                            visible: showTooltip,
+                            visible: true,
                         });
                     } else {
                         setCursorType('grab');
@@ -489,7 +488,7 @@ const NetworkMap = (props) => {
                         preventStyleDiffing={true}
                         mapboxApiAccessToken={mapBoxToken}
                     >
-                        {showTooltip && renderTooltip()}
+                        {renderTooltip()}
                     </StaticMap>
                 )}
                 <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
@@ -527,7 +526,6 @@ NetworkMap.propTypes = {
     filteredNominalVoltages: PropTypes.array,
     labelsZoomThreshold: PropTypes.number.isRequired,
     arrowsZoomThreshold: PropTypes.number.isRequired,
-    tooltipZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
