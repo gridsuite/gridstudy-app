@@ -278,10 +278,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                             state: state,
                             name: nadTitle,
                             fetchSvg: () =>
-                                fetchSvgData(
-                                    svgUrl,
-                                    DiagramType.NETWORK_AREA_DIAGRAM
-                                ),
+                                createNetworkAreaDiagramView(ids, state, depth), // here 'name' and 'substationsIds' can change so we can't use fetchSvgData
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
                             substationIds: substationsIds,
