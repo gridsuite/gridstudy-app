@@ -228,7 +228,6 @@ const NetworkModificationNodeEditor = () => {
         {
             id: 'CREATE',
             label: 'Create',
-            dialog: null,
             subItems: [
                 {
                     id: 'LOAD_CREATION',
@@ -270,7 +269,6 @@ const NetworkModificationNodeEditor = () => {
         {
             id: 'EDIT',
             label: 'edit',
-            dialog: null,
             subItems: [
                 {
                     id: 'LOAD_MODIFICATION',
@@ -297,18 +295,22 @@ const NetworkModificationNodeEditor = () => {
                     label: 'SUBSTATION',
                     dialog: () => adapt(SubstationModificationDialog),
                 },
+                {
+                    id: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
+                    label: 'TWO_WINDINGS_TRANSFORMER',
+                    dialog: () =>
+                        adapt(TwoWindingsTransformerModificationDialog),
+                },
             ],
         },
         {
             id: 'EQUIPMENT_DELETION',
             label: 'DeleteContingencyList',
             dialog: () => adapt(EquipmentDeletionDialog),
-            subItems: null,
         },
         {
             id: 'ATTACHING_SPLITTING_LINES',
             label: 'AttachingAndSplittingLines',
-            dialog: null,
             subItems: [
                 {
                     id: 'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
@@ -340,7 +342,6 @@ const NetworkModificationNodeEditor = () => {
         {
             id: 'GENERATION_AND_LOAD',
             label: 'GenerationAndLoad',
-            dialog: null,
             subItems: [
                 {
                     id: 'GENERATOR_SCALING',
@@ -363,9 +364,9 @@ const NetworkModificationNodeEditor = () => {
 
     const subItemDialogsList = dialogs.reduce(
         (actions, currentDialog) =>
-            currentDialog.subItems !== null
-                ? [...actions, ...currentDialog.subItems]
-                : [...actions, currentDialog],
+            currentDialog.subItems === undefined
+                ? [...actions, currentDialog]
+                : [...actions, ...currentDialog.subItems],
         []
     );
 

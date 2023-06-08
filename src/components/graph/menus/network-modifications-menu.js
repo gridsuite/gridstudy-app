@@ -21,41 +21,36 @@ import NodeMenuItem from './create-node-item';
  */
 const NetworkModificationsMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
     const intl = useIntl();
+    const renderMenuItems = (menuDialogs) => {
+        return menuDialogs.map((dialog) => {
+            return dialog.subItems === undefined ? (
+                <NodeMenuItem
+                    key={dialog.id}
+                    item={{
+                        id: dialog.label,
+                        action: () => onOpenDialog(dialog.id),
+                        disabled: false,
+                    }}
+                />
+            ) : (
+                <NestedMenuItem
+                    key={dialog.id}
+                    parentMenuOpen={true}
+                    label={intl.formatMessage({ id: dialog.label })}
+                >
+                    {renderMenuItems(dialog.subItems)}
+                </NestedMenuItem>
+            );
+        });
+    };
+
     return (
         <Menu
             open={open}
             onClose={onClose}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
-            {dialogs.map((dialog) =>
-                dialog.subItems !== null ? (
-                    <NestedMenuItem
-                        key={dialog.id}
-                        parentMenuOpen={true}
-                        label={intl.formatMessage({ id: dialog.label })}
-                    >
-                        {dialog.subItems.map((subItem) => (
-                            <NodeMenuItem
-                                key={subItem.id}
-                                item={{
-                                    id: subItem.label,
-                                    action: () => onOpenDialog(subItem.id),
-                                    disabled: false,
-                                }}
-                            />
-                        ))}
-                    </NestedMenuItem>
-                ) : (
-                    <NodeMenuItem
-                        key={dialog.id}
-                        item={{
-                            id: dialog.label,
-                            action: () => onOpenDialog(dialog.id),
-                            disabled: false,
-                        }}
-                    />
-                )
-            )}
+            <>{renderMenuItems(dialogs)}</>
         </Menu>
     );
 };
