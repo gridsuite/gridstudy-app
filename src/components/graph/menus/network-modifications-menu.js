@@ -11,6 +11,7 @@ import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import { NestedMenuItem } from 'mui-nested-menu';
 import NodeMenuItem from './create-node-item';
+import MenuList from '@mui/material/MenuList';
 
 /**
  * Menu to select network modification to create
@@ -18,16 +19,22 @@ import NodeMenuItem from './create-node-item';
  * @param {EventListener} onClose Event to close the dialog
  * @param onOpenDialog handle the opening of dialogs
  * @param dialogs the list of dialog
+ * @param anchorEl anchorEl of fab Button
  */
-const NetworkModificationsMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
+const NetworkModificationsMenu = ({
+    open,
+    onClose,
+    onOpenDialog,
+    dialogs,
+    anchorEl,
+}) => {
     const intl = useIntl();
     const renderMenuItems = (menuDialogs) => {
         return menuDialogs.map((dialog) => {
             return (
-                <>
+                <MenuList key={dialog.id}>
                     {dialog.subItems === undefined ? (
                         <NodeMenuItem
-                            key={dialog.id}
                             item={{
                                 id: dialog.label,
                                 action: () => onOpenDialog(dialog.id),
@@ -36,14 +43,13 @@ const NetworkModificationsMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
                         />
                     ) : (
                         <NestedMenuItem
-                            key={dialog.id}
                             parentMenuOpen={true}
                             label={intl.formatMessage({ id: dialog.label })}
                         >
                             {renderMenuItems(dialog.subItems)}
                         </NestedMenuItem>
                     )}
-                </>
+                </MenuList>
             );
         });
     };
@@ -52,7 +58,15 @@ const NetworkModificationsMenu = ({ open, onClose, onOpenDialog, dialogs }) => {
         <Menu
             open={open}
             onClose={onClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+            }}
+            transformOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
         >
             {renderMenuItems(dialogs)}
         </Menu>
@@ -64,6 +78,7 @@ NetworkModificationsMenu.propTypes = {
     onClose: PropTypes.func.isRequired,
     onOpenDialog: PropTypes.func.isRequired,
     dialogs: PropTypes.array,
+    anchorEl: PropTypes.object,
 };
 
 export default NetworkModificationsMenu;

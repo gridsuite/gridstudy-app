@@ -177,6 +177,7 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const cleanClipboard = useCallback(() => {
         if (copiedModifications.length <= 0) {
@@ -502,14 +503,16 @@ const NetworkModificationNodeEditor = () => {
 
     const classes = useStyles();
 
-    const openNetworkModificationConfiguration = useCallback(() => {
+    const openNetworkModificationConfiguration = useCallback((event) => {
         setOpenNetworkModificationsMenu(true);
+        setAnchorEl(event.currentTarget);
     }, []);
 
     const closeNetworkModificationConfiguration = () => {
         setOpenNetworkModificationsMenu(false);
         setEditData(undefined);
         setEditDataFetchStatus(FetchStatus.IDLE);
+        setAnchorEl(null);
     };
 
     const doDeleteModification = useCallback(() => {
@@ -910,6 +913,7 @@ const NetworkModificationNodeEditor = () => {
                 onClose={closeNetworkModificationConfiguration}
                 onOpenDialog={onOpenDialog}
                 dialogs={dialogs}
+                anchorEl={anchorEl}
             />
             {editDialogOpen && renderDialog()}
         </>
