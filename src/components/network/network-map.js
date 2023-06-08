@@ -506,7 +506,7 @@ NetworkMap.defaultProps = {
     filteredNominalVoltages: null,
     labelsZoomThreshold: 9,
     arrowsZoomThreshold: 7,
-    tooltipZoomThreshold: 5,
+    tooltipZoomThreshold: 6,
     initialZoom: 5,
     initialPosition: [0, 0],
     lineFullPath: true,
