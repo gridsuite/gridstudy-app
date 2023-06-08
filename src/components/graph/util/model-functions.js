@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,8 +23,8 @@ export function convertNodetoReactFlowModelNode(node, parentNodeUuid) {
             parentNodeUuid: parentNodeUuid,
             label: node.name,
             description: node.description,
-            buildStatusGlobal: node.buildStatusGlobal,
-            buildStatusLocal: node.buildStatusLocal,
+            buildStatusGlobal: node.nodeBuildStatus?.buildStatusGlobal,
+            buildStatusLocal: node.nodeBuildStatus?.buildStatusLocal,
             readOnly: node.readOnly,
         },
     };

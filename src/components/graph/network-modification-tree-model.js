@@ -137,8 +137,8 @@ export default class NetworkModificationTreeModel {
                 this.treeNodes[indexModifiedNode].data = {
                     ...this.treeNodes[indexModifiedNode].data,
                     label: node.name,
-                    buildStatusGlobal: node.buildStatusGlobal,
-                    buildStatusLocal: node.buildStatusLocal,
+                    buildStatusGlobal: node.nodeBuildStatus?.buildStatusGlobal,
+                    buildStatusLocal: node.nodeBuildStatus?.buildStatusLocal,
                     readOnly: node.readOnly,
                 };
             }
