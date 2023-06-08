@@ -160,7 +160,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     singleItem: {
         display: 'flex',
-        flex: 'inherit',
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
@@ -193,7 +193,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     multipleItems: {
         display: 'flex',
-        flex: 'inherit',
+        flex: '-moz-max-content',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
