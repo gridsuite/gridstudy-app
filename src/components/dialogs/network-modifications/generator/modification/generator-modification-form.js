@@ -8,7 +8,6 @@
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
     ENERGY_SOURCE,
-    //EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     MARGINAL_COST,
@@ -37,33 +36,22 @@ import {
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import {
-    fetchEquipmentsIds,
-    fetchVoltageLevelsListInfos,
-} from 'utils/rest-api';
+import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { TextField } from '@mui/material';
 
 const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
-    //onEquipmentIdChange,
     generatorToModify,
     updatePreviousReactiveCapabilityCurveTable,
+    equipmentId,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    // [equipmentOptions, setEquipmentOptions] = useState([]); // TODO CHARLY remove this
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-
-    // const watchEquipmentId = useWatch({ // TODO CHARLY remove this
-    //     name: EQUIPMENT_ID,
-    // });
-
-    // useEffect(() => {
-    //     onEquipmentIdChange(watchEquipmentId);
-    // }, [watchEquipmentId, onEquipmentIdChange]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -74,15 +62,6 @@ const GeneratorModificationForm = ({
                     );
                 }
             );
-            // fetchEquipmentsIds( // TODO CHARLY remove this
-            //     studyUuid,
-            //     currentNodeUuid,
-            //     undefined,
-            //     'GENERATOR',
-            //     true
-            // ).then((values) => {
-            //     setEquipmentOptions(values.sort());
-            // });
         }
     }, [studyUuid, currentNodeUuid]);
 
@@ -94,20 +73,20 @@ const GeneratorModificationForm = ({
               id: energySourceLabelId,
           })
         : undefined;
-    //const areIdsEqual = useCallback((val1, val2) => val1 === val2, []); // TODO CHARLY remove this
 
-    // const generatorIdField = (
-    //     <AutocompleteInput
-    //         allowNewValue
-    //         forcePopupIcon
-    //         name={EQUIPMENT_ID}
-    //         label={'ID'}
-    //         options={equipmentOptions}
-    //         formProps={{ ...filledTextField }}
-    //         size={'small'}
-    //         isOptionEqualToValue={areIdsEqual}
-    //     />
-    // );
+    const equipmentIdField = (
+        <TextField
+            size="small"
+            fullWidth
+            label={'ID'}
+            value={equipmentId}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+            {...filledTextField}
+        />
+    );
 
     const generatorNameField = (
         <TextInput
@@ -234,7 +213,7 @@ const GeneratorModificationForm = ({
     return (
         <>
             <Grid container spacing={2}>
-                {/*{gridItem(generatorIdField, 4)}*/}
+                {gridItem(equipmentIdField, 4)}
                 {gridItem(generatorNameField, 4)}
                 {gridItem(energySourceField, 4)}
             </Grid>

@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -44,7 +44,7 @@ import {
 } from 'components/utils/field-constants';
 
 import { fetchEquipmentInfos, modifyGenerator } from 'utils/rest-api';
-import { sanitizeString } from '../../../dialogUtils';
+import { filledTextField, sanitizeString } from '../../../dialogUtils';
 import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import {
@@ -64,9 +64,10 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { FetchStatus } from 'utils/rest-api';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 
+// TODO CHARLY quand on limite la bande passante et qu'on édit une modif, on a bien le truc bleu de loading. Si par contre on créé une modif, on ne l'a pas.
 const GeneratorModificationDialog = ({
-    editData,
-    defaultIdValue,
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
     studyUuid,
     isUpdate,
@@ -174,6 +175,9 @@ const GeneratorModificationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
             reset({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                 [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
@@ -263,6 +267,7 @@ const GeneratorModificationDialog = ({
     };
 
     const emptyFormAndFormatReactiveCapabilityCurveTable = useCallback(
+        // TODO CHARLY semble obsolete ?
         (value, equipmentId) => {
             //creating empty table depending on existing generator
             const reactiveCapabilityCurvePoints =
@@ -315,7 +320,7 @@ const GeneratorModificationDialog = ({
                             const previousReactiveCapabilityCurveTable =
                                 value.reactiveCapabilityCurvePoints;
                             if (editData?.equipmentId !== selectedId) {
-                                // TODO CHARLY update this obsolete test, we shouldn't have editData?.equipmentId
+                                // TODO CHARLY update this obsolete test, we shouldn't have editData?.equipmentId // EDIT ? Or maybe ?
                                 emptyFormAndFormatReactiveCapabilityCurveTable(
                                     value,
                                     equipmentId
@@ -374,7 +379,7 @@ const GeneratorModificationDialog = ({
         [
             studyUuid,
             currentNodeUuid,
-            editData?.equipmentId, // TODO CHARLY remove this
+            editData?.equipmentId, // TODO CHARLY remove this // EDIT or maybe not ?
             selectedId,
             getValues,
             emptyFormAndFormatReactiveCapabilityCurveTable,
@@ -575,22 +580,29 @@ const GeneratorModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                <EquipmentIdSelector
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    selectedId={selectedId}
-                    setSelectedId={setSelectedId}
-                    equipmentType={'GENERATOR'}
-                />
+                {(selectedId === null || selectedId === undefined) && ( // TODO CHARLY améliorer ces tests
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        selectedId={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={'GENERATOR'}
+                        formProps={{ ...filledTextField }}
+                    />
+                )}
 
-                <GeneratorModificationForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    generatorToModify={generatorToModify}
-                    updatePreviousReactiveCapabilityCurveTable={
-                        updatePreviousReactiveCapabilityCurveTable
-                    }
-                />
+                {selectedId !== null &&
+                    selectedId !== undefined && ( // TODO CHARLY améliorer ces tests
+                        <GeneratorModificationForm
+                            studyUuid={studyUuid}
+                            currentNode={currentNode}
+                            equipmentId={selectedId}
+                            generatorToModify={generatorToModify}
+                            updatePreviousReactiveCapabilityCurveTable={
+                                updatePreviousReactiveCapabilityCurveTable
+                            }
+                        />
+                    )}
             </ModificationDialog>
         </FormProvider>
     );

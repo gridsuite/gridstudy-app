@@ -38,9 +38,15 @@ export const EquipmentIdSelector = ({
         });
     }, [studyUuid, currentNodeUuid, equipmentType]);
 
-    const handleChange = (newId) => {
-        if (newId && equipmentOptions.includes(newId)) {
+    const handleChange = (newId, reason) => {
+        console.error('REASON', reason, newId); // TODO CHARLY remove this
+        if (
+            newId &&
+            (equipmentOptions.includes(newId) || reason === 'createOption') // TODO CHARLY voir si on a vraiment besoin de tester sur includes
+        ) {
             setSelectedId(newId);
+        } else if (reason === 'clear') {
+            setSelectedId(null);
         }
     };
 
@@ -48,17 +54,17 @@ export const EquipmentIdSelector = ({
         <Autocomplete
             value={selectedId}
             freeSolo
+            size="small"
             autoComplete={true}
             blurOnSelect={true}
             autoSelect={false}
-            onChange={(_, data) => handleChange(data)}
-            onInputChange={(_, data) => handleChange(data)}
+            onChange={(_, data, reason) => handleChange(data, reason)}
+            onInputChange={(_, data, reason) => handleChange(data, reason)}
             options={equipmentOptions}
             renderInput={({ inputProps, ...rest }) => (
                 <TextField
                     label={FieldLabel({
                         label: 'ID',
-                        optional: !props?.disabled,
                     })}
                     FormHelperTextProps={{
                         className: classes.helperText,
