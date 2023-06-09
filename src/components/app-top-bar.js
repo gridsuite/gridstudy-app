@@ -35,7 +35,7 @@ import {
     fetchSensitivityAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
-    fetchVoltageLevel,
+    fetchNetworkElementInfos,
     fetchVoltageInitStatus,
 } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
@@ -66,7 +66,10 @@ import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagrams/diagram-common';
-import { EQUIPMENT_TYPES } from './utils/equipment-types';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from './utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -109,13 +112,15 @@ const CustomSuffixRenderer = ({ props, element }) => {
             if (element.type === EQUIPMENT_TYPES.SUBSTATION.type) {
                 substationIdPromise = Promise.resolve(element.id);
             } else {
-                substationIdPromise = fetchVoltageLevel(
+                substationIdPromise = fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
-                    element.id
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                    EQUIPMENT_INFOS_TYPES.LIST.type,
+                    element.id,
+                    true
                 ).then((vl) => vl.substationId);
             }
-
             substationIdPromise.then((substationId) => {
                 dispatch(centerOnSubstation(substationId));
                 props.onClose && props.onClose();
