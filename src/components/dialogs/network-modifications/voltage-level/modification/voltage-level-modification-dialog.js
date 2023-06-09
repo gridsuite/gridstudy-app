@@ -23,13 +23,17 @@ import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
+    fetchNetworkElementInfos,
     FetchStatus,
-    fetchVoltageLevel,
     modifyVoltageLevel,
 } from 'utils/rest-api';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 
 const formSchema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().required(),
@@ -103,7 +107,14 @@ const VoltageLevelModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId)
+                fetchNetworkElementInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
+                    equipmentId,
+                    true
+                )
                     .then((voltageLevel) => {
                         if (voltageLevel) {
                             //We convert values of low short circuit current limit and high short circuit current limit from A to KA

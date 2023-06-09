@@ -7,9 +7,9 @@
 
 import { mapEquipmentsCreated } from '../../redux/actions';
 import {
-    fetchMapHvdcLines,
-    fetchMapLines,
-    fetchMapSubstations,
+    fetchHvdcLinesMapInfos,
+    fetchLinesMapInfos,
+    fetchSubstationsMapInfos,
 } from '../../utils/rest-api';
 import { equipments } from './network-equipments';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
@@ -42,7 +42,7 @@ export default class MapEquipments {
     intlRef = undefined;
 
     initEquipments(studyUuid, currentNodeUuid) {
-        fetchMapSubstations(studyUuid, currentNodeUuid, undefined, false)
+        fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.dispatch(
                     mapEquipmentsCreated(this, undefined, val, undefined)
@@ -58,7 +58,7 @@ export default class MapEquipments {
                     );
                 }
             });
-        fetchMapLines(studyUuid, currentNodeUuid, undefined, false)
+        fetchLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.dispatch(
                     mapEquipmentsCreated(this, val, undefined, undefined)
@@ -74,7 +74,7 @@ export default class MapEquipments {
                     );
                 }
             });
-        fetchMapHvdcLines(studyUuid, currentNodeUuid, undefined, false)
+        fetchHvdcLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.dispatch(
                     mapEquipmentsCreated(this, undefined, undefined, val)
@@ -118,20 +118,23 @@ export default class MapEquipments {
                 ? undefined
                 : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
 
-        const updatedSubstations = fetchMapSubstations(
+        const updatedSubstations = fetchSubstationsMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch
+            substationsIdsToFetch,
+            true
         );
-        const updatedLines = fetchMapLines(
+        const updatedLines = fetchLinesMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch
+            substationsIdsToFetch,
+            true
         );
-        const updatedHvdcLines = fetchMapHvdcLines(
+        const updatedHvdcLines = fetchHvdcLinesMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch
+            substationsIdsToFetch,
+            true
         );
         updatedSubstations.catch((error) => {
             console.error(error.message);

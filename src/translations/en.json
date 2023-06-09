@@ -147,6 +147,13 @@
     "BusId": "Bus ID",
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
+    "VoltageInitOptimalReactivePowerFlow" : "Optimal Reactive Power Flow",
+    "VoltageLimits" : "Voltage limits",
+    "VoltageLevelFilter" : "Voltage level filter",
+    "LowVoltageLimitAdjustment" : "Low voltage limit adjustment",
+    "HighVoltageLimitAdjustment" : "High voltage limit adjustment",
+    "VoltageLevelFilterTooltip" : "User entries are applied one after another starting at the top of the list. If a voltage level is included in more than one filter, an entry can therefore be replaced by a subsequent entry",
+    "FilterInputMinError" : "You must pick at least one filter",
 
     "SelectAll": "Select all",
     "UnselectAll": "Unselect all",
@@ -684,6 +691,8 @@
     "DuplicateId": "Duplicate id",
     "CouplingOmnibusBetweenSameBusbar": "Forbidden to have a Coupler between the same bus bar section",
     "VoltageLevelModificationError": "Error while modifying a voltage level",
+    "TopologyNotRetrieved": "The voltage level topology could not be retrieved",
+    "BusBarSectionsCopyingNotSupported" : "Copying bus bar sections is not supported for this voltage level : values were set to their default",
 
     "LineSplitWithVoltageLevel": "Create a voltage level on a line",
     "LineToSplit": "Existing line",
@@ -948,6 +957,7 @@
 
     "SubstationNotFound": "This substation does not exist in this network",
     "VoltageLevelNotFound": "This voltage level does not exist in this network",
+    "NetworkElementNotFound": "The network element \"{elementId}\" does not exist",
 
     "CatalogButtonTooltip": "Open catalog",
     "LineTypesCatalogDialogTitle": "Define line segments",

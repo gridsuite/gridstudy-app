@@ -13,14 +13,14 @@ import {
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
     REPLACING_LINE_1_ID,
-    REPLACING_LINE_2_ID,
     REPLACING_LINE_1_NAME,
+    REPLACING_LINE_2_ID,
     REPLACING_LINE_2_NAME,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 import {
     fetchEquipmentsIds,
-    fetchVoltageLevelsIdAndTopology,
+    fetchVoltageLevelsListInfos,
 } from 'utils/rest-api';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
 import TextInput from 'components/utils/rhf-inputs/text-input';
@@ -33,7 +33,7 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))
