@@ -37,7 +37,7 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
-import LinePopover from '../../tooltips/line-popover';
+import EquipmentPopover from '../../tooltips/equipment-popover';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -56,8 +56,9 @@ function SingleLineDiagramContent(props) {
     const { openDiagramView } = useDiagram();
     const [equipmentToModify, setEquipmentToModify] = useState();
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
-    const [linePopoverAnchorEl, setLinePopoverAnchorEl] = useState(null);
-    const [lineHoveredId, setLineHoveredId] = useState('');
+    const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] =
+        useState(null);
+    const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
 
     /**
@@ -77,12 +78,12 @@ function SingleLineDiagramContent(props) {
         (shouldDisplay, currentTarget, equipmentId, equipmentType) => {
             setShouldDisplayTooltip(shouldDisplay);
             if (shouldDisplay) {
-                setLineHoveredId(equipmentId);
-                setLinePopoverAnchorEl(currentTarget);
+                setHoveredEquipmentId(equipmentId);
+                setEquipmentPopoverAnchorEl(currentTarget);
                 setHoveredEquipmentType(equipmentType);
             } else {
-                setLineHoveredId('');
-                setLinePopoverAnchorEl(null);
+                setHoveredEquipmentId('');
+                setEquipmentPopoverAnchorEl(null);
                 setHoveredEquipmentType('');
             }
         },
@@ -218,11 +219,11 @@ function SingleLineDiagramContent(props) {
 
     const displayTooltip = () => {
         return (
-            <LinePopover
+            <EquipmentPopover
                 studyUuid={studyUuid}
-                anchorEl={linePopoverAnchorEl}
+                anchorEl={equipmentPopoverAnchorEl}
                 equipmentType={hoveredEquipmentType}
-                lineId={lineHoveredId}
+                equipmentId={hoveredEquipmentId}
                 loadFlowStatus={props.loadFlowStatus}
             />
         );

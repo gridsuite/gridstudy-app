@@ -22,14 +22,11 @@ import {
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import { fetchNetworkElementInfos } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
 import makeStyles from '@mui/styles/makeStyles';
-import { fetchNetworkElementInfos } from 'utils/rest-api';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     tableCells: {
@@ -40,41 +37,41 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LinePopover = ({
+const EquipmentPopover = ({
     studyUuid,
-    lineInfos,
+    equipmentInfos,
     anchorEl,
-    lineId,
+    equipmentId,
     equipmentType,
     loadFlowStatus,
 }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const [lineInfo, setLineInfo] = useState(null);
+    const [equipmentInfo, setEquipmentInfo] = useState(null);
     const intl = useIntl();
     const classes = useStyles();
     const [localAnchorEl, setLocalAnchorEl] = useState(null);
 
     useEffect(() => {
-        if (lineInfos) {
-            setLineInfo(lineInfos);
-        } else if (lineId && lineId !== '') {
+        if (equipmentInfos) {
+            setEquipmentInfo(equipmentInfos);
+        } else if (equipmentId && equipmentId !== '') {
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNode.id,
                 equipmentType,
                 EQUIPMENT_INFOS_TYPES.MAP.type,
-                lineId,
+                equipmentId,
                 true
             ).then((value) => {
-                setLineInfo(value);
+                setEquipmentInfo(value);
             });
         } else {
-            setLineInfo(null);
+            setEquipmentInfo(null);
         }
-    }, [lineId, currentNode.id, studyUuid, lineInfos]);
+    }, [equipmentId, equipmentType, equipmentInfos, currentNode.id, studyUuid]);
 
     const handlePopoverClose = () => {
-        setLineInfo(null);
+        setEquipmentInfo(null);
     };
 
     //When multiple rerender happens on the svg the anchorEl can be already removed from the dom
@@ -127,9 +124,9 @@ const LinePopover = ({
                                     {checkValue(
                                         Math.round(
                                             side === '1'
-                                                ? (lineInfo.i1 * 100) /
+                                                ? (equipmentInfo.i1 * 100) /
                                                       currentLimits.permanentLimit
-                                                : (lineInfo.i2 * 100) /
+                                                : (equipmentInfo.i2 * 100) /
                                                       currentLimits.permanentLimit
                                         )
                                     )}
@@ -137,8 +134,8 @@ const LinePopover = ({
                                 <TableCell className={classes.tableCells}>
                                     {checkValue(
                                         side === '1'
-                                            ? lineInfo.voltageLevelId1
-                                            : lineInfo.voltageLevelId2
+                                            ? equipmentInfo.voltageLevelId1
+                                            : equipmentInfo.voltageLevelId2
                                     )}
                                 </TableCell>
                             </TableRow>
@@ -179,14 +176,14 @@ const LinePopover = ({
                                                 {side === '1'
                                                     ? checkValue(
                                                           Math.round(
-                                                              (lineInfo.i1 *
+                                                              (equipmentInfo.i1 *
                                                                   100) /
                                                                   temporaryLimit.value
                                                           )
                                                       )
                                                     : checkValue(
                                                           Math.round(
-                                                              (lineInfo.i2 *
+                                                              (equipmentInfo.i2 *
                                                                   100) /
                                                                   temporaryLimit.value
                                                           )
@@ -197,8 +194,8 @@ const LinePopover = ({
                                             >
                                                 {checkValue(
                                                     side === '1'
-                                                        ? lineInfo.voltageLevelId1
-                                                        : lineInfo.voltageLevelId2
+                                                        ? equipmentInfo.voltageLevelId1
+                                                        : equipmentInfo.voltageLevelId2
                                                 )}
                                             </TableCell>
                                         </TableRow>
@@ -230,13 +227,13 @@ const LinePopover = ({
                     open={Boolean(localAnchorEl)}
                     disableRestoreFocus
                 >
-                    {lineInfo === null && (
+                    {equipmentInfo === null && (
                         <Box height={2} minWidth={100}>
                             <LinearProgress />
                         </Box>
                     )}
 
-                    {lineInfo !== null && (
+                    {equipmentInfo !== null && (
                         <Grid
                             container
                             rowSpacing={2}
@@ -247,7 +244,7 @@ const LinePopover = ({
                             <>
                                 <Grid item>
                                     <Typography variant="caption">
-                                        {lineId}
+                                        {equipmentId}
                                     </Typography>
                                 </Grid>
 
@@ -274,7 +271,7 @@ const LinePopover = ({
                                                         }
                                                     >
                                                         {checkValue(
-                                                            lineInfo.voltageLevelId1
+                                                            equipmentInfo.voltageLevelId1
                                                         )}
                                                     </TableCell>
                                                     <TableCell
@@ -283,7 +280,7 @@ const LinePopover = ({
                                                         }
                                                     >
                                                         {checkValue(
-                                                            lineInfo.voltageLevelId2
+                                                            equipmentInfo.voltageLevelId2
                                                         )}
                                                     </TableCell>
                                                 </TableRow>
@@ -313,7 +310,7 @@ const LinePopover = ({
                                                     >
                                                         {checkValue(
                                                             Math.round(
-                                                                lineInfo.i1
+                                                                equipmentInfo.i1
                                                             )
                                                         )}
                                                     </TableCell>
@@ -331,7 +328,7 @@ const LinePopover = ({
                                                     >
                                                         {checkValue(
                                                             Math.round(
-                                                                lineInfo.i2
+                                                                equipmentInfo.i2
                                                             )
                                                         )}
                                                     </TableCell>
@@ -389,11 +386,11 @@ const LinePopover = ({
                                             </TableHead>
                                             <TableBody>
                                                 {generateRows(
-                                                    lineInfo.currentLimits1,
+                                                    equipmentInfo.currentLimits1,
                                                     '1'
                                                 )}
                                                 {generateRows(
-                                                    lineInfo.currentLimits2,
+                                                    equipmentInfo.currentLimits2,
                                                     '2'
                                                 )}
                                             </TableBody>
@@ -409,11 +406,13 @@ const LinePopover = ({
     );
 };
 
-LinePopover.propTypes = {
+EquipmentPopover.propTypes = {
     studyUuid: PropTypes.string,
+    equipmentInfos: PropTypes.object,
     anchorEl: PropTypes.any,
-    lineId: PropTypes.string,
+    equipmentId: PropTypes.string,
+    equipmentType: PropTypes.string,
     loadFlowStatus: PropTypes.any,
 };
 
-export default LinePopover;
+export default EquipmentPopover;

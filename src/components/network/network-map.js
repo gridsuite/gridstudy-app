@@ -34,7 +34,8 @@ import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { fetchMapBoxToken } from 'utils/rest-api';
-import LinePopover from '.././tooltips/line-popover';
+import EquipmentPopover from '.././tooltips/equipment-popover';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -265,11 +266,12 @@ const NetworkMap = (props) => {
                         top: tooltip.pointerY,
                     }}
                 >
-                    <LinePopover
+                    <EquipmentPopover
                         studyUuid={studyUuid}
-                        lineInfos={tooltip.lineInfos}
+                        equipmentInfos={tooltip.lineInfos}
                         anchorEl={divRef.current}
-                        lineId={tooltip.lineId}
+                        equipmentId={tooltip.lineId}
+                        equipmentType={EQUIPMENT_TYPES.LINE.type}
                         loadFlowStatus={props.loadFlowStatus}
                     />
                 </div>
