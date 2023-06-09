@@ -39,11 +39,7 @@ export const EquipmentIdSelector = ({
     }, [studyUuid, currentNodeUuid, equipmentType]);
 
     const handleChange = (newId, reason) => {
-        console.error('REASON', reason, newId); // TODO CHARLY remove this
-        if (
-            newId &&
-            (equipmentOptions.includes(newId) || reason === 'createOption') // TODO CHARLY voir si on a vraiment besoin de tester sur includes
-        ) {
+        if (newId && (reason === 'createOption' || reason === 'selectOption')) {
             setSelectedId(newId);
         } else if (reason === 'clear') {
             setSelectedId(null);
