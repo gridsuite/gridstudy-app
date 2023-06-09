@@ -12,7 +12,6 @@ import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Typography from '@mui/material/Typography';
 import {
-    isProportionalSAParam,
     PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
@@ -65,19 +64,6 @@ const SecurityAnalysisFields = ({
         [checkValue, positiveDoubleValue]
     );
 
-    const prepareDataToSend = useCallback((values) => {
-        let result = {};
-        Object.entries(values)?.forEach(([key, value]) => {
-            result = {
-                ...result,
-                [key]: isProportionalSAParam(key)
-                    ? parseFloat(value / 100)?.toFixed(2)
-                    : value,
-            };
-        });
-        return result;
-    }, []);
-
     const updateValue = useCallback(
         (e) => {
             const name = e.target.name;
@@ -91,12 +77,11 @@ const SecurityAnalysisFields = ({
             } else if (initValue[name] !== value) {
                 const f = parseFloat(value);
                 if (!isNaN(f)) {
-                    const formatedData = prepareDataToSend(values);
-                    callback(formatedData);
+                    callback(values);
                 }
             }
         },
-        [initValue, callback, values, prepareDataToSend]
+        [initValue, callback, values]
     );
 
     return (
@@ -207,18 +192,10 @@ export const SecurityAnalysisParameters = ({
         resetParameters();
         resetProvider();
     }, [resetParameters, resetProvider]);
-    const formatedData = useCallback((values) => {
-        let result = {};
-        Object.entries(values)?.forEach(([key, value]) => {
-            result = {
-                ...result,
-                [key]: isProportionalSAParam(key)
-                    ? parseFloat(value * 100)?.toFixed(2)
-                    : parseFloat(value)?.toFixed(2),
-            };
-        });
-        return result;
-    }, []);
+
+    const resetSAParameters = useCallback(() => {
+        resetParameters();
+    }, [resetParameters]);
     // create fields with the proper data
     const fieldsToShow = [
         {
@@ -230,7 +207,7 @@ export const SecurityAnalysisParameters = ({
                 label: '%',
             },
             tooltipInfoId: 'securityAnalysis.toolTip.current',
-            initValue: formatedData(params),
+            initValue: params,
             callback: callBack,
             isSingleField: true,
         },
@@ -247,7 +224,7 @@ export const SecurityAnalysisParameters = ({
                 name: PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
             },
             tooltipInfoId: 'securityAnalysis.toolTip.lowVoltage',
-            initValue: formatedData(params),
+            initValue: params,
             callback: callBack,
         },
         {
@@ -263,7 +240,7 @@ export const SecurityAnalysisParameters = ({
                 name: PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
             },
             tooltipInfoId: 'securityAnalysis.toolTip.highVoltage',
-            initValue: formatedData(params),
+            initValue: params,
             callback: callBack,
         },
     ];
@@ -328,7 +305,10 @@ export const SecurityAnalysisParameters = ({
                     callback={resetSAParametersAndProvider}
                     label="resetToDefault"
                 />
-                <LabelledButton label="resetProviderValuesToDefault" />
+                <LabelledButton
+                    label="resetProviderValuesToDefault"
+                    callback={resetSAParameters}
+                />
                 <CloseButton
                     hideParameters={hideParameters}
                     className={classes.button}
