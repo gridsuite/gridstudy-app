@@ -225,7 +225,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
-    const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
+    const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
     const securityAnalysisStatusInvalidations = [
         'securityAnalysis_status',
         'securityAnalysis_failed',
