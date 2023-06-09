@@ -1,10 +1,12 @@
 {
     "compilerOptions": {
+        "outDir": "build",
         "baseUrl": "src",
         "allowJs": true,
         "target": "es6",
-        "jsx": "react",
-        "strict": false,
+        "jsx": "react-jsx",
+        "strict": true,
+        "moduleResolution": "node"
     },
     "include": ["src"]
 }
