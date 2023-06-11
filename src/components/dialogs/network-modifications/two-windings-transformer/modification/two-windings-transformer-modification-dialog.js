@@ -79,6 +79,7 @@ export const TwoWindingsTransformerModificationDialogTab = {
  */
 const TwoWindingsTransformerModificationDialog = ({
     studyUuid,
+    defaultIdValue,
     currentNode,
     isUpdate,
     editData,
@@ -96,12 +97,12 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const emptyFormData = useMemo(() => {
         return {
-            [EQUIPMENT_ID]: '',
+            [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             ...getCharacteristicsEmptyFormData(),
             ...getLimitsEmptyFormData(),
         };
-    }, []);
+    }, [defaultIdValue]);
 
     const formSchema = yup
         .object()
