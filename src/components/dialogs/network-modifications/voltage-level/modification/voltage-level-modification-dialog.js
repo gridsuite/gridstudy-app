@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
     EQUIPMENT_ID,
@@ -23,24 +23,17 @@ import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
+    fetchNetworkElementInfos,
     FetchStatus,
-    fetchVoltageLevel,
     modifyVoltageLevel,
 } from 'utils/rest-api';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
-
-const emptyFormData = {
-    [EQUIPMENT_ID]: '',
-    [EQUIPMENT_NAME]: '',
-    [SUBSTATION_ID]: null,
-    [NOMINAL_VOLTAGE]: null,
-    [LOW_VOLTAGE_LIMIT]: null,
-    [HIGH_VOLTAGE_LIMIT]: null,
-    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
-    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
-};
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 
 const formSchema = yup.object().shape({
     [EQUIPMENT_ID]: yup.string().required(),
@@ -55,6 +48,7 @@ const formSchema = yup.object().shape({
 
 const VoltageLevelModificationDialog = ({
     editData,
+    defaultIdValue,
     currentNode,
     studyUuid,
     isUpdate,
@@ -65,6 +59,20 @@ const VoltageLevelModificationDialog = ({
     const { snackError } = useSnackMessage();
     const [voltageLevelInfos, setVoltageLevelInfos] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
+
+    const emptyFormData = useMemo(
+        () => ({
+            [EQUIPMENT_ID]: defaultIdValue ?? null,
+            [EQUIPMENT_NAME]: '',
+            [SUBSTATION_ID]: null,
+            [NOMINAL_VOLTAGE]: null,
+            [LOW_VOLTAGE_LIMIT]: null,
+            [HIGH_VOLTAGE_LIMIT]: null,
+            [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
+            [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
+        }),
+        [defaultIdValue]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -99,7 +107,14 @@ const VoltageLevelModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId)
+                fetchNetworkElementInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
+                    equipmentId,
+                    true
+                )
                     .then((voltageLevel) => {
                         if (voltageLevel) {
                             //We convert values of low short circuit current limit and high short circuit current limit from A to KA
@@ -126,7 +141,7 @@ const VoltageLevelModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, reset, setValue]
+        [studyUuid, currentNodeUuid, setValue, reset, emptyFormData]
     );
 
     const onSubmit = useCallback(
@@ -141,7 +156,7 @@ const VoltageLevelModificationDialog = ({
                 voltageLevel[HIGH_VOLTAGE_LIMIT],
                 kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
                 kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
-                isUpdate,
+                !!editData,
                 editData?.uuid
             ).catch((error) => {
                 snackError({
@@ -150,12 +165,12 @@ const VoltageLevelModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError, isUpdate]
+        [editData, studyUuid, currentNodeUuid, snackError]
     );
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-    }, [reset]);
+    }, [emptyFormData, reset]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:

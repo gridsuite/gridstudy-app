@@ -22,8 +22,12 @@ import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
-import { fetchSubstation, fetchVoltageLevel } from '../../utils/rest-api';
+import { fetchNetworkElementInfos } from '../../utils/rest-api';
 import { isNodeReadOnly } from '../graph/util/model-functions';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -90,6 +94,38 @@ const DeleteEquipmentItem = ({
         </MenuItem>
     );
 };
+const ModifyEquipmentItem = ({
+    equipmentType,
+    equipmentId,
+    itemText,
+    handleOpenModificationDialog,
+}) => {
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const classes = useStyles();
+
+    return (
+        <MenuItem
+            className={classes.menuItem}
+            onClick={() =>
+                handleOpenModificationDialog(
+                    equipmentId,
+                    getFeederTypeFromEquipmentType(equipmentType)
+                )
+            }
+            selected={false}
+            disabled={isNodeReadOnly(currentNode)}
+        >
+            <ListItemIcon>
+                <EditIcon />
+            </ListItemIcon>
+
+            <ListItemText
+                className={classes.listItemText}
+                primary={<Typography noWrap>{itemText}</Typography>}
+            />
+        </MenuItem>
+    );
+};
 
 const ItemViewInForm = ({
     equipmentType,
@@ -141,12 +177,22 @@ const BaseEquipmentMenu = ({
             if (!studyUuid || !currentNode) {
                 return Promise.reject('no study or node selected');
             } else if (equipmentType === equipments.substations) {
-                return fetchSubstation(studyUuid, currentNode.id, equipmentId);
-            } else if (equipmentType === equipments.voltageLevels) {
-                return fetchVoltageLevel(
+                return fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
-                    equipmentId
+                    EQUIPMENT_TYPES.SUBSTATION.type,
+                    EQUIPMENT_INFOS_TYPES.LIST.type,
+                    equipmentId,
+                    true
+                );
+            } else if (equipmentType === equipments.voltageLevels) {
+                return fetchNetworkElementInfos(
+                    studyUuid,
+                    currentNode.id,
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                    EQUIPMENT_INFOS_TYPES.LIST.type,
+                    equipmentId,
+                    true
                 );
             } else {
                 return Promise.reject('not a substation or a voltage level');
@@ -284,6 +330,34 @@ const BaseEquipmentMenu = ({
                             />
                         ))}
                     </NestedMenuItem>
+                    <NestedMenuItem
+                        label={intl.formatMessage({ id: 'ModifyFromMenu' })}
+                        parentMenuOpen={true}
+                    >
+                        {/* menus for the substation */}
+                        <ModifyEquipmentItem
+                            key={equipment.id}
+                            equipmentType={equipmentType}
+                            equipmentId={equipment.id}
+                            itemText={getNameOrId(equipment)}
+                            handleOpenModificationDialog={
+                                handleOpenModificationDialog
+                            }
+                        />
+                        {/* menus for the voltage level */}
+                        {equipment.voltageLevels.map((voltageLevel) => (
+                            // menus for all voltage levels in the substation
+                            <ModifyEquipmentItem
+                                key={voltageLevel.id}
+                                equipmentType={equipments.voltageLevels}
+                                equipmentId={voltageLevel.id}
+                                itemText={getNameOrId(voltageLevel)}
+                                handleOpenModificationDialog={
+                                    handleOpenModificationDialog
+                                }
+                            />
+                        ))}
+                    </NestedMenuItem>
                 </>
             )}
 
@@ -330,6 +404,31 @@ const BaseEquipmentMenu = ({
                             equipmentId={equipment.id}
                             itemText={getNameOrId(equipment)}
                             handleDeleteEquipment={handleDeleteEquipment}
+                        />
+                    </NestedMenuItem>
+                    <NestedMenuItem
+                        label={intl.formatMessage({ id: 'ModifyFromMenu' })}
+                        parentMenuOpen={true}
+                    >
+                        {/* menus for the substation */}
+                        <ModifyEquipmentItem
+                            key={equipment.substationId}
+                            equipmentType={equipments.substations}
+                            equipmentId={equipment.substationId}
+                            itemText={equipmentSubstationNameOrId}
+                            handleOpenModificationDialog={
+                                handleOpenModificationDialog
+                            }
+                        />
+                        {/* menus for the voltage level */}
+                        <ModifyEquipmentItem
+                            key={equipment.id}
+                            equipmentType={equipments.voltageLevels}
+                            equipmentId={equipment.id}
+                            itemText={getNameOrId(equipment)}
+                            handleOpenModificationDialog={
+                                handleOpenModificationDialog
+                            }
                         />
                     </NestedMenuItem>
                 </>
