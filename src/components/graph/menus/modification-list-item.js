@@ -112,47 +112,9 @@ export const ModificationListItem = ({
         if (!studyUuid || !currentNode || !modif) {
             return;
         }
-        let energizeEndPromise;
-        if (
-            modif.type === 'BRANCH_STATUS_MODIFICATION' &&
-            (modif.action === 'ENERGISE_END_ONE' ||
-                modif.action === 'ENERGISE_END_TWO')
-        ) {
-            let voltageLevelId;
-            let voltageLevelName;
-            if (modif.action === 'ENERGISE_END_ONE') {
-                voltageLevelId = 'voltageLevelId1';
-                voltageLevelName = 'voltageLevelName1';
-            } else if (modif.action === 'ENERGISE_END_TWO') {
-                voltageLevelId = 'voltageLevelId2';
-                voltageLevelName = 'voltageLevelName2';
-            }
-            //TODO supposed to be temporary, we shouldn't fetch back-end to create a label
-            energizeEndPromise = fetchNetworkElementInfos(
-                studyUuid,
-                currentNode.id,
-                EQUIPMENT_TYPES.LINE.type,
-                EQUIPMENT_INFOS_TYPES.LIST.type,
-                modif.equipmentId,
-                false
-            )
-                .then((line) => {
-                    return line[voltageLevelName] ?? line[voltageLevelId];
-                })
-                .catch(() => {
-                    console.error(
-                        'Could not fetch line with ID ' + modif.equipmentId
-                    );
-                    return null;
-                });
-        } else {
-            energizeEndPromise = Promise.resolve(null);
-        }
-        energizeEndPromise.then((energizedEnd) => {
-            setComputedValues({
-                energizedEnd: energizedEnd,
-                computedLabel: <strong>{getComputedLabel()}</strong>,
-            });
+        setComputedValues({
+            energizedEnd: modif.energizedVoltageLevelId,
+            computedLabel: <strong>{getComputedLabel()}</strong>,
         });
     }, [modif, studyUuid, currentNode, getComputedLabel]);
 

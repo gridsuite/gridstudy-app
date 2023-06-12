@@ -171,7 +171,7 @@ const withBranchMenu =
             energiseBranchEnd(
                 studyUuid,
                 currentNode?.id,
-                branch.id,
+                branch,
                 side
             ).catch((error) => {
                 handleError(error, 'UnableToEnergiseOnOneEnd');
