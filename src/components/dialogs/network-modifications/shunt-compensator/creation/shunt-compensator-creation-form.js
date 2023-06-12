@@ -16,7 +16,6 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 
-
 const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
