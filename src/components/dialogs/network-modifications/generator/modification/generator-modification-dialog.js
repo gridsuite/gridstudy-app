@@ -44,7 +44,7 @@ import {
 } from 'components/utils/field-constants';
 
 import { fetchEquipmentInfos, modifyGenerator } from 'utils/rest-api';
-import { filledTextField, sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialogUtils';
 import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import {
@@ -580,29 +580,28 @@ const GeneratorModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                {(selectedId === null || selectedId === undefined) && ( // TODO CHARLY améliorer ces tests
+                {selectedId == null && (
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         selectedId={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={'GENERATOR'}
-                        formProps={{ ...filledTextField }}
+                        addFiller
+                        fillerHeight={14}
                     />
                 )}
-
-                {selectedId !== null &&
-                    selectedId !== undefined && ( // TODO CHARLY améliorer ces tests
-                        <GeneratorModificationForm
-                            studyUuid={studyUuid}
-                            currentNode={currentNode}
-                            equipmentId={selectedId}
-                            generatorToModify={generatorToModify}
-                            updatePreviousReactiveCapabilityCurveTable={
-                                updatePreviousReactiveCapabilityCurveTable
-                            }
-                        />
-                    )}
+                {selectedId != null && (
+                    <GeneratorModificationForm
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        equipmentId={selectedId}
+                        generatorToModify={generatorToModify}
+                        updatePreviousReactiveCapabilityCurveTable={
+                            updatePreviousReactiveCapabilityCurveTable
+                        }
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );

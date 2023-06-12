@@ -984,5 +984,7 @@
     "lineTypes.category.aerial": "Overhead power lines",
     "lineTypes.category.underground": "Underground cables",
     "lineTypes.insulator": "Insulator",
-    "lineTypes.screen": "Screen"
+    "lineTypes.screen": "Screen",
+
+    "idSelector.idNeeded": "Please select an ID"
 }

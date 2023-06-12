@@ -7,10 +7,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from '../../../utils/rest-api';
-import { gridItem, useStyles } from '../dialogUtils';
+import { filledTextField, gridItem, useStyles } from '../dialogUtils';
 import { Autocomplete, TextField } from '@mui/material';
 import { FieldLabel } from '../../utils/inputs/hooks-helpers';
 import Grid from '@mui/material/Grid';
+import { FormFiller } from '../commons/formFiller';
 
 export const EquipmentIdSelector = ({
     studyUuid,
@@ -20,6 +21,9 @@ export const EquipmentIdSelector = ({
     equipmentType,
     formProps,
     readOnly = false,
+    addFiller = false,
+    fillerHeight = 1,
+    fillerMessageId = 'idSelector.idNeeded',
     ...props
 }) => {
     const classes = useStyles();
@@ -51,9 +55,10 @@ export const EquipmentIdSelector = ({
             value={selectedId}
             freeSolo
             size="small"
-            autoComplete={true}
-            blurOnSelect={true}
+            autoComplete
+            blurOnSelect
             autoSelect={false}
+            forcePopupIcon
             onChange={(_, data, reason) => handleChange(data, reason)}
             onInputChange={(_, data, reason) => handleChange(data, reason)}
             options={equipmentOptions}
@@ -66,7 +71,8 @@ export const EquipmentIdSelector = ({
                         className: classes.helperText,
                     }}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
-                    {...formProps}
+                    autoFocus
+                    {...filledTextField}
                     {...rest}
                 />
             )}
@@ -75,8 +81,13 @@ export const EquipmentIdSelector = ({
     );
 
     return (
-        <Grid container spacing={2}>
-            {gridItem(equipmentIdField, 4)}
-        </Grid>
+        <>
+            <Grid container spacing={2}>
+                {gridItem(equipmentIdField, 4)}
+            </Grid>
+            {addFiller && (
+                <FormFiller messageId={fillerMessageId} height={fillerHeight} />
+            )}
+        </>
     );
 };

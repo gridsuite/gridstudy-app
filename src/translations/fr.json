@@ -1006,5 +1006,7 @@
     "lineTypes.category.aerial": "Lignes aériennes",
     "lineTypes.category.underground": "Câbles souterrains",
     "lineTypes.insulator": "Isolant",
-    "lineTypes.screen": "Écran"
+    "lineTypes.screen": "Écran",
+
+    "idSelector.idNeeded": "Veuillez sélectionner un ID"
 }
