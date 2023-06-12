@@ -82,7 +82,6 @@ const ShuntCompensatorModificationForm = ({
                 {gridItem(shuntCompensatorIdField, 4)}
                 {gridItem(shuntCompensatorNameField, 4)}
             </Grid>
-            <GridSection title="Connectivity" />
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
                 {gridItem(characteristicsForm, 12)}

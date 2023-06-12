@@ -46,7 +46,7 @@ const formSchema = yup
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
-        ...getCharacteristicsFormValidationSchema(),
+        ...getCharacteristicsFormValidationSchema(true),
     })
     .required();
 

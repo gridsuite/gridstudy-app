@@ -15,17 +15,17 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
-const characteristicsValidationSchema = () => ({
+const characteristicsValidationSchema = (isModification) => ({
     [CHARACTERISTICS_CHOICE]: yup.string().required(),
     [SUSCEPTANCE_PER_SECTION]: yup
         .number()
         .nullable()
         .when([CHARACTERISTICS_CHOICE], {
-            is: CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+            is: CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && !isModification,
             then: (schema) => schema.required(),
         }),
     [SHUNT_COMPENSATOR_TYPE]: yup.string().when([CHARACTERISTICS_CHOICE], {
-        is: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+        is: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && !isModification,
         then: (schema) =>
             schema
                 .oneOf([
@@ -38,7 +38,7 @@ const characteristicsValidationSchema = () => ({
         .number()
         .nullable()
         .when([CHARACTERISTICS_CHOICE], {
-            is: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+            is: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && !isModification,
             then: (schema) =>
                 schema
                     .min(
@@ -48,8 +48,10 @@ const characteristicsValidationSchema = () => ({
                     .required(),
         }),
 });
-export const getCharacteristicsFormValidationSchema = () => {
-    return characteristicsValidationSchema();
+export const getCharacteristicsFormValidationSchema = (
+    isModification = false
+) => {
+    return characteristicsValidationSchema(isModification);
 };
 
 const characteristicsEmptyFormData = () => ({
