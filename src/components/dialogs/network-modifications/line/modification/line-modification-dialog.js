@@ -8,10 +8,12 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    CHARACTERISTICS,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    LIMITS,
     PERMANENT_LIMIT,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
@@ -19,20 +21,15 @@ import {
     SHUNT_CONDUCTANCE_2,
     SHUNT_SUSCEPTANCE_1,
     SHUNT_SUSCEPTANCE_2,
-    CHARACTERISTICS,
-    LIMITS,
     TEMPORARY_LIMITS,
-    TEMPORARY_LIMIT_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { fetchEquipmentInfos, FetchStatus, modifyLine } from 'utils/rest-api';
+import {
+    fetchNetworkElementInfos,
+    FetchStatus,
+    modifyLine,
+} from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import yup from 'components/utils/yup-config';
@@ -40,21 +37,26 @@ import ModificationDialog from '../../../commons/modificationDialog';
 
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import {
+    addModificationTypeToTemporaryLimits,
     getLimitsEmptyFormData,
     getLimitsFormData,
     getLimitsValidationSchema,
+    sanitizeLimitNames,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
     getCharacteristicsValidationSchema,
     getCharacteristicsWithOutConnectivityFormData,
 } from '../characteristics-pane/line-characteristics-pane-utils';
-import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import LineModificationDialogTabs from './line-modification-dialog-tabs';
 import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -121,68 +123,6 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const sanitizeLimitNames = (temporaryLimitList) =>
-        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
-            ...temporaryLimit,
-            name: sanitizeString(name),
-        }));
-
-    const addModificationTypeToTemporaryLimits = useCallback(
-        (
-            temporaryLimits,
-            temporaryLimitsToModify,
-            currentModifiedTemporaryLimits
-        ) =>
-            temporaryLimits.map((limit) => {
-                const limitWithSameName = temporaryLimitsToModify?.find(
-                    (limitToModify) => limitToModify.name === limit.name
-                );
-                if (limitWithSameName) {
-                    const currentLimitWithSameName =
-                        currentModifiedTemporaryLimits?.find(
-                            (limitToModify) =>
-                                limitToModify?.name === limitWithSameName?.name
-                        );
-                    if (
-                        (currentLimitWithSameName?.modificationType ===
-                            TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
-                            isNodeBuilt(currentNode)) ||
-                        currentLimitWithSameName?.modificationType ===
-                            TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
-                    ) {
-                        return {
-                            ...limit,
-                            modificationType:
-                                currentLimitWithSameName.modificationType,
-                        };
-                    } else {
-                        return limitWithSameName.value === limit.value
-                            ? {
-                                  ...limit,
-                                  modificationType: null,
-                              }
-                            : {
-                                  ...limit,
-                                  modificationType:
-                                      TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED,
-                              };
-                    }
-                } else {
-                    return {
-                        ...limit,
-                        modificationType:
-                            TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED,
-                    };
-                }
-            }),
-        [currentNode]
-    );
-
-    const editDataRef = useRef(editData);
-    useEffect(() => {
-        editDataRef.current = editData;
-    }, [editData]);
-
     const { reset, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
@@ -226,8 +166,8 @@ const LineModificationDialog = ({
     );
 
     useEffect(() => {
-        if (editDataRef.current) {
-            fromEditDataToFormValues(editDataRef.current);
+        if (editData) {
+            fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
 
@@ -253,17 +193,19 @@ const LineModificationDialog = ({
                         limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
                     ),
                     lineToModify?.currentLimits1?.temporaryLimits,
-                    editDataRef.current?.currentLimits1?.temporaryLimits
+                    editData?.currentLimits1?.temporaryLimits,
+                    currentNode
                 ),
                 addModificationTypeToTemporaryLimits(
                     sanitizeLimitNames(
                         limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
                     ),
                     lineToModify?.currentLimits2?.temporaryLimits,
-                    editDataRef.current?.currentLimits2?.temporaryLimits
+                    editData?.currentLimits2?.temporaryLimits,
+                    currentNode
                 ),
-                !!editDataRef.current,
-                editDataRef.current?.uuid
+                !!editData,
+                editData?.uuid
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -274,8 +216,9 @@ const LineModificationDialog = ({
         [
             studyUuid,
             currentNodeUuid,
-            addModificationTypeToTemporaryLimits,
             lineToModify,
+            editData,
+            currentNode,
             snackError,
         ]
     );
@@ -288,10 +231,11 @@ const LineModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchEquipmentInfos(
+                fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    'lines',
+                    EQUIPMENT_TYPES.LINE.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )
@@ -299,7 +243,7 @@ const LineModificationDialog = ({
                         if (line) {
                             setLineToModify(line);
                             if (
-                                editDataRef.current?.equipmentId !==
+                                editData?.equipmentId !==
                                 getValues(`${EQUIPMENT_ID}`)
                             ) {
                                 reset(
@@ -324,6 +268,8 @@ const LineModificationDialog = ({
                                     }),
                                     { keepDefaultValues: true }
                                 );
+                            } else {
+                                fromEditDataToFormValues(editData);
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -334,12 +280,18 @@ const LineModificationDialog = ({
                     });
             } else {
                 setLineToModify(null);
-                //we set the editDataRef to null to avoid to have the old editData when we clear the form
-                editDataRef.current = null;
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, getValues, reset, emptyFormData]
+        [
+            studyUuid,
+            currentNodeUuid,
+            editData,
+            getValues,
+            reset,
+            fromEditDataToFormValues,
+            emptyFormData,
+        ]
     );
 
     const onValidationError = (errors) => {
@@ -408,7 +360,7 @@ const LineModificationDialog = ({
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     lineToModify={lineToModify}
-                    modifiedLine={editDataRef.current}
+                    modifiedLine={editData}
                     tabIndex={tabIndex}
                 />
             </ModificationDialog>

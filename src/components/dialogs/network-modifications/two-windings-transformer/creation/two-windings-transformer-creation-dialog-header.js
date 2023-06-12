@@ -7,7 +7,6 @@
 
 import { Grid } from '@mui/material';
 import {
-    CHARACTERISTICS,
     ENABLED,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -22,7 +21,7 @@ import SwitchInput from '../../../../utils/rhf-inputs/booleans/switch-input';
 const TwoWindingsTransformerCreationDialogHeader = () => {
     const twoWindingsTransformerIdField = (
         <TextInput
-            name={`${CHARACTERISTICS}.${EQUIPMENT_ID}`}
+            name={`${EQUIPMENT_ID}`}
             label="ID"
             formProps={filledTextField}
         />
@@ -30,7 +29,7 @@ const TwoWindingsTransformerCreationDialogHeader = () => {
 
     const twoWindingsTransformerNameField = (
         <TextInput
-            name={`${CHARACTERISTICS}.${EQUIPMENT_NAME}`}
+            name={`${EQUIPMENT_NAME}`}
             label="Name"
             formProps={filledTextField}
         />

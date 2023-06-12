@@ -40,6 +40,7 @@ import {
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
     NoSvg,
 } from './diagram-common';
+import { makeDiagramSorter } from './diagram-utils';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
@@ -50,7 +51,6 @@ import { SLD_DISPLAY_MODE } from '../network/constants';
 import clsx from 'clsx';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
-import { sortByAlign } from '../utils/sort-functions';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -278,10 +278,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                             state: state,
                             name: nadTitle,
                             fetchSvg: () =>
-                                fetchSvgData(
-                                    svgUrl,
-                                    DiagramType.NETWORK_AREA_DIAGRAM
-                                ),
+                                createNetworkAreaDiagramView(ids, state, depth), // here 'name' and 'substationsIds' can change so we can't use fetchSvgData
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
                             substationIds: substationsIds,
@@ -416,9 +413,7 @@ export function DiagramPane({
             if (diagramsToAdd?.length) {
                 // First we add the empty diagrams in the views
                 setViews((views) => {
-                    const updatedViews = views
-                        .concat(diagramsToAdd)
-                        .sort(sortByAlign);
+                    const updatedViews = views.concat(diagramsToAdd);
                     return updatedViews;
                 });
 
@@ -494,6 +489,8 @@ export function DiagramPane({
             // First we add the empty diagram in the views
             setViews((views) => {
                 const newDiagram = {
+                    id: networkAreaIds[0],
+                    ids: networkAreaIds,
                     name: intl.formatMessage(
                         { id: 'LoadingOf' },
                         { value: networkAreaIds.toString() }
@@ -505,14 +502,12 @@ export function DiagramPane({
                 };
                 const updatedViews = views.slice();
                 // if we already have a NAD, we replace it but keep the same object to avoid resizing
-                if (
-                    views.find(
-                        (view) =>
-                            view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                    )
-                ) {
-                    updatedViews[views.length - 1] = {
-                        ...updatedViews[views.length - 1], // trick to avoid resizing
+                const nadViewId = views.findIndex(
+                    (view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                );
+                if (nadViewId >= 0) {
+                    updatedViews[nadViewId] = {
+                        ...updatedViews[nadViewId], // trick to avoid resizing
                         ...newDiagram,
                     };
                 }
@@ -532,9 +527,12 @@ export function DiagramPane({
             }).then((networkAreaDiagramView) => {
                 setViews((views) => {
                     const updatedViews = views.slice();
-                    // the NAD is always in last position
-                    updatedViews[updatedViews.length - 1] = {
-                        ...updatedViews[updatedViews.length - 1],
+                    const nadViewId = views.findIndex(
+                        (view) =>
+                            view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                    );
+                    updatedViews[nadViewId] = {
+                        ...updatedViews[nadViewId],
                         ...networkAreaDiagramView,
                         loadingState: false,
                     };
@@ -685,7 +683,7 @@ export function DiagramPane({
         .filter((view) =>
             [ViewState.OPENED, ViewState.PINNED].includes(view.state)
         )
-        .sort(sortByAlign);
+        .sort(makeDiagramSorter(diagramStates));
     const minimizedDiagrams = views.filter((view) =>
         [ViewState.MINIMIZED].includes(view.state)
     );
@@ -719,12 +717,16 @@ export function DiagramPane({
     const updateDiagramsByIds = useCallback(
         (ids, fromScratch) => {
             if (ids?.length) {
+                // we remove duplicates (because of NAD)
+                let uniqueIds = ids.filter(
+                    (id, index) => ids.indexOf(id) === index
+                );
                 // Before we get the results, we set loadingState = true
                 setViews((views) => {
                     const updatedViews = views.slice();
                     for (let i = 0; i < views.length; i++) {
                         const currentView = views[i];
-                        if (ids.includes(currentView.id)) {
+                        if (uniqueIds.includes(currentView.id)) {
                             updatedViews[i] = {
                                 ...updatedViews[i],
                                 loadingState: true,
@@ -736,7 +738,7 @@ export function DiagramPane({
                 // Then we add the data once we have it
                 for (let i = 0; i < viewsRef.current.length; i++) {
                     const currentView = viewsRef.current[i];
-                    if (ids.includes(currentView.id)) {
+                    if (uniqueIds.includes(currentView.id)) {
                         let updatedDiagramPromise;
                         if (fromScratch) {
                             updatedDiagramPromise = createView(currentView);
@@ -767,25 +769,20 @@ export function DiagramPane({
         let idsToUpdate = viewsRef.current
             .filter(
                 (diagramView) =>
+                    !diagramView.loadingState && // no need to reload if it's already loading
                     diagramView.nodeId === currentNodeRef.current?.id
             )
             .map((diagramView) => diagramView.id);
         if (idsToUpdate?.length) {
-            // we remove duplicates (because of NAD)
-            idsToUpdate = idsToUpdate.filter(
-                (id, index) => idsToUpdate.indexOf(id) === index
-            );
             updateDiagramsByIds(idsToUpdate, false);
         }
     }, [updateDiagramsByIds]);
 
     // When the current node change, we reset all the diagrams
     useEffect(() => {
-        let allDiagramIds = viewsRef.current.map((view) => view.id);
-        // we remove duplicates (because of NAD)
-        allDiagramIds = allDiagramIds.filter(
-            (id, index) => allDiagramIds.indexOf(id) === index
-        );
+        let allDiagramIds = viewsRef.current
+            .filter((view) => !view.loadingState) // no need to reload if it's already loading
+            .map((view) => view.id);
         updateDiagramsByIds(allDiagramIds, true);
     }, [currentNode, updateDiagramsByIds]);
 

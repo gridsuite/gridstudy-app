@@ -22,8 +22,9 @@ import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
+import { VoltageInitResultTab } from './voltage-init-result-tab';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     div: {
         display: 'flex',
     },
@@ -49,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
  * @param currentNode : object current node
  * @param loadFlowInfos : object result of load flow
  * @param openVoltageLevelDiagram : function
+ * @param disabled
  * @returns {JSX.Element}
  * @constructor
  */
@@ -86,6 +88,17 @@ export const ResultViewTab = ({
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
+                />
+            </Paper>
+        );
+    }
+
+    function renderVoltageInitResult() {
+        return (
+            <Paper className={classes.table}>
+                <VoltageInitResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
                 />
             </Paper>
         );
@@ -136,24 +149,31 @@ export const ResultViewTab = ({
             <div className={classes.div}>
                 <Tabs
                     value={tabIndex}
+                    variant="scrollable"
                     onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
                 >
                     <Tab
                         label={intl.formatMessage({
-                            id: 'loadFlowResults',
+                            id: 'LoadFlow',
                         })}
                         disabled={disabled}
                     />
                     <Tab
                         label={intl.formatMessage({
-                            id: 'securityAnalysisResults',
+                            id: 'SecurityAnalysis',
+                        })}
+                        disabled={disabled}
+                    />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'SensitivityAnalysis',
                         })}
                         disabled={disabled}
                     />
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'ShortCircuitAnalysisResults',
+                                id: 'ShortCircuitAnalysis',
                             })}
                             disabled={disabled}
                         />
@@ -161,7 +181,7 @@ export const ResultViewTab = ({
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'sensitivityAnalysisResults',
+                                id: 'DynamicSimulation',
                             })}
                             disabled={disabled}
                         />
@@ -169,7 +189,7 @@ export const ResultViewTab = ({
                     {enableDeveloperMode && (
                         <Tab
                             label={intl.formatMessage({
-                                id: 'DynamicSimulationResults',
+                                id: 'VoltageInit',
                             })}
                             disabled={disabled}
                         />
@@ -194,19 +214,25 @@ export const ResultViewTab = ({
                 className={classes.tabPanel}
                 selected={tabIndex === 2 && !disabled}
             >
-                {renderShortCircuitAnalysisResult()}
+                {renderSensitivityAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
                 selected={tabIndex === 3 && !disabled}
             >
-                {renderSensitivityAnalysisResult()}
+                {renderShortCircuitAnalysisResult()}
             </TabPanelLazy>
             <TabPanelLazy
                 className={classes.tabPanel}
                 selected={tabIndex === 4 && !disabled}
             >
                 {renderDynamicSimulationResult()}
+            </TabPanelLazy>
+            <TabPanelLazy
+                className={classes.tabPanel}
+                selected={tabIndex === 5 && !disabled}
+            >
+                {renderVoltageInitResult()}
             </TabPanelLazy>
         </Paper>
     );

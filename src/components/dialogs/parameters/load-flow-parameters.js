@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, Autocomplete, TextField, Chip, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -69,6 +69,79 @@ const CountrySelector = ({ value, label, callback }) => {
                             />
                         ))
                     }
+                />
+            </Grid>
+        </>
+    );
+};
+
+const DoubleEditor = ({
+    initValue,
+    label,
+    callback,
+    ge = undefined,
+    gt = undefined,
+    le = undefined,
+    lt = undefined,
+}) => {
+    const classes = useStyles();
+    const [value, setValue] = useState(initValue);
+    const [doubleError, setDoubleError] = useState(false);
+
+    useEffect(() => {
+        setValue(initValue);
+    }, [initValue]);
+
+    const updateValue = useCallback(() => {
+        if (doubleError) {
+            setValue(initValue);
+            setDoubleError(false);
+        } else if (initValue !== value) {
+            const f = parseFloat(value);
+            if (!isNaN(f)) {
+                callback(value);
+            }
+        }
+    }, [value, initValue, callback, doubleError]);
+
+    const checkValue = useCallback(
+        (newValue) => {
+            const FloatRE = /^-?\d*[.,]?\d*$/;
+            const outputTransformFloatString = (value) => {
+                return value?.replace(',', '.') || '';
+            };
+            const m = FloatRE.exec(newValue);
+            if (m) {
+                const f = parseFloat(newValue);
+                setDoubleError(
+                    isNaN(f) ||
+                        (gt !== undefined && f <= gt) ||
+                        (ge !== undefined && f < ge) ||
+                        (lt !== undefined && f >= lt) ||
+                        (le !== undefined && f > le)
+                );
+                setValue(outputTransformFloatString(newValue));
+            }
+        },
+        [ge, gt, le, lt]
+    );
+
+    return (
+        <>
+            <Grid item xs={8} className={classes.parameterName}>
+                <FormattedMessage id={label} />
+            </Grid>
+            <Grid item container xs={4} className={classes.controlItem}>
+                <TextField
+                    fullWidth
+                    size="small"
+                    sx={{ input: { textAlign: 'right' } }}
+                    value={value}
+                    onBlur={updateValue}
+                    onChange={(e) => {
+                        checkValue(e.target.value);
+                    }}
+                    error={doubleError}
                 />
             </Grid>
         </>
@@ -164,6 +237,18 @@ function makeComponentFor(
                 }}
             />
         );
+    } else if (defParam.type === TYPES.double) {
+        return (
+            <DoubleEditor
+                initValue={value}
+                label={defParam.description}
+                gt={defParam.gt}
+                ge={defParam.ge}
+                lt={defParam.lt}
+                le={defParam.le}
+                callback={updateValues}
+            />
+        );
     }
 }
 
@@ -171,6 +256,7 @@ const TYPES = {
     enum: 'Enum',
     bool: 'Bool',
     countries: 'Countries',
+    double: 'Double',
 };
 
 const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
@@ -285,6 +371,12 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
             type: TYPES.bool,
             description: 'descLfDcUseTransformerRatio',
         },
+        dcPowerFactor: {
+            type: TYPES.double,
+            description: 'descLfDcPowerFactor',
+            gt: 0.0, // cosphi in ]0..1]
+            le: 1.0,
+        },
     };
 
     return (
@@ -318,13 +410,13 @@ const SpecificLoadFlowParameters = ({
         return extractDefaultMap(specificParamsDescription);
     }, [specificParamsDescription]);
 
-    // change object's NaN values into null
+    // change object's NaN values into empty string
     const getObjectWithoutNanValues = useCallback((initialObject) => {
         initialObject &&
             Object.keys(initialObject)?.map(
                 (key) =>
                     (initialObject[key] = Number.isNaN(initialObject[key])
-                        ? null
+                        ? ''
                         : initialObject[key])
             );
     }, []);
@@ -346,12 +438,17 @@ const SpecificLoadFlowParameters = ({
             const deltaMap = makeDeltaMap(defaultValues, nextCurrentParameters);
 
             const toSend = { ...lfParams };
-            getObjectWithoutNanValues(deltaMap);
 
+            getObjectWithoutNanValues(deltaMap);
+            const formattedData = { ...deltaMap };
+            Object.keys(formattedData)?.forEach((key) => {
+                formattedData[key] =
+                    formattedData[key] === '' ? null : formattedData[key];
+            });
             const oldSpecifics = toSend['specificParametersPerProvider'];
             toSend['specificParametersPerProvider'] = {
                 ...oldSpecifics,
-                [currentProvider]: deltaMap ?? {},
+                [currentProvider]: formattedData ?? {},
             };
 
             commitLFParameter(toSend);
@@ -432,21 +529,27 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         resetProvider();
     }, [resetParameters, resetProvider]);
 
+    const resetLfParameters = useCallback(() => {
+        resetParameters();
+    }, [resetParameters]);
+
     return (
         <>
-            <Grid
-                container
-                className={classes.scrollableGrid}
-                key="lfParameters"
-            >
+            <Grid container spacing={1} padding={1}>
                 <DropDown
                     value={provider}
                     label="Provider"
                     values={providers}
                     callback={updateLfProviderCallback}
                 />
+            </Grid>
+            <Grid
+                container
+                className={classes.scrollableGrid}
+                key="lfParameters"
+            >
+                <LineSeparator />
                 <Grid container spacing={1} paddingTop={1}>
-                    <LineSeparator />
                     <LabelledSlider
                         value={Number(limitReductionParam)}
                         label="LimitReduction"
@@ -485,6 +588,10 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 <LabelledButton
                     callback={resetLfParametersAndLfProvider}
                     label="resetToDefault"
+                />
+                <LabelledButton
+                    callback={resetLfParameters}
+                    label="resetProviderValuesToDefault"
                 />
                 <CloseButton
                     hideParameters={hideParameters}
