@@ -12,13 +12,34 @@ import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Typography from '@mui/material/Typography';
 import {
+    isProportionalSAParam,
     PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from '../../../utils/config-params';
+import { roundToDefaultPrecision } from '../../../utils/rounding';
+
 import { FormattedMessage, useIntl } from 'react-intl';
+
+const formatValues = (values, isDivision) => {
+    let result = {};
+    if (!values) {
+        return result;
+    }
+    Object.entries(values)?.forEach(([key, value]) => {
+        result = {
+            ...result,
+            [key]: isProportionalSAParam(key)
+                ? roundToDefaultPrecision(
+                      isDivision ? value / 100 : value * 100
+                  )
+                : value,
+        };
+    });
+    return result;
+};
 
 const SecurityAnalysisFields = ({
     label,
@@ -64,6 +85,11 @@ const SecurityAnalysisFields = ({
         [checkValue, positiveDoubleValue]
     );
 
+    const formatedValues = useCallback(
+        (values) => formatValues(values, true),
+        []
+    );
+
     const updateValue = useCallback(
         (e) => {
             const name = e.target.name;
@@ -77,11 +103,11 @@ const SecurityAnalysisFields = ({
             } else if (initValue[name] !== value) {
                 const f = parseFloat(value);
                 if (!isNaN(f)) {
-                    callback(values);
+                    callback(formatedValues(values));
                 }
             }
         },
-        [initValue, callback, values]
+        [initValue, callback, values, formatedValues]
     );
 
     return (
@@ -196,6 +222,7 @@ export const SecurityAnalysisParameters = ({
     const resetSAParameters = useCallback(() => {
         resetParameters();
     }, [resetParameters]);
+
     // create fields with the proper data
     const fieldsToShow = [
         {
@@ -207,7 +234,7 @@ export const SecurityAnalysisParameters = ({
                 label: '%',
             },
             tooltipInfoId: 'securityAnalysis.toolTip.current',
-            initValue: params,
+            initValue: formatValues(params, false),
             callback: callBack,
             isSingleField: true,
         },
@@ -224,7 +251,7 @@ export const SecurityAnalysisParameters = ({
                 name: PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
             },
             tooltipInfoId: 'securityAnalysis.toolTip.lowVoltage',
-            initValue: params,
+            initValue: formatValues(params, false),
             callback: callBack,
         },
         {
@@ -240,7 +267,7 @@ export const SecurityAnalysisParameters = ({
                 name: PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
             },
             tooltipInfoId: 'securityAnalysis.toolTip.highVoltage',
-            initValue: params,
+            initValue: formatValues(params, false),
             callback: callBack,
         },
     ];
