@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import { gridItem } from '../dialogUtils';
 import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box } from '@mui/system';
@@ -18,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 'small',
         fontStyle: 'italic',
         color: theme.palette.text.secondary,
-        backgroundColor: theme.palette.action.hover,
+        backgroundColor: theme.formFiller.background,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -31,7 +30,14 @@ export const FormFiller = ({ messageId = null, size = 12, height = 1 }) => {
 
     return (
         <Grid container spacing={2}>
-            {gridItem(
+            <Grid
+                item
+                xs={size}
+                align={'start'}
+                sx={{
+                    marginTop: theme.spacing(2),
+                }}
+            >
                 <Box
                     className={classes.filler}
                     sx={{
@@ -39,9 +45,8 @@ export const FormFiller = ({ messageId = null, size = 12, height = 1 }) => {
                     }}
                 >
                     {messageId && <FormattedMessage id={messageId} />}
-                </Box>,
-                size
-            )}
+                </Box>
+            </Grid>
         </Grid>
     );
 };

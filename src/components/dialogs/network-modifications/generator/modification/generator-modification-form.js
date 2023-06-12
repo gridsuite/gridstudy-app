@@ -74,7 +74,7 @@ const GeneratorModificationForm = ({
           })
         : undefined;
 
-    const equipmentIdField = (
+    const generatorIdField = (
         <TextField
             size="small"
             fullWidth
@@ -213,7 +213,7 @@ const GeneratorModificationForm = ({
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(equipmentIdField, 4)}
+                {gridItem(generatorIdField, 4)}
                 {gridItem(generatorNameField, 4)}
                 {gridItem(energySourceField, 4)}
             </Grid>

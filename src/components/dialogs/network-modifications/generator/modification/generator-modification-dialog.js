@@ -588,7 +588,7 @@ const GeneratorModificationDialog = ({
                         setSelectedId={setSelectedId}
                         equipmentType={'GENERATOR'}
                         addFiller
-                        fillerHeight={14}
+                        fillerHeight={17}
                     />
                 )}
                 {selectedId != null && (
