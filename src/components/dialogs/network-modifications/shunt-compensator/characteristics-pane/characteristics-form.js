@@ -7,40 +7,58 @@
 
 import Grid from '@mui/material/Grid';
 import {
+    CHARACTERISTICS_CHOICE,
+    CHARACTERISTICS_CHOICES,
     Q_AT_NOMINAL_V,
     SHUNT_COMPENSATOR_TYPE,
     SHUNT_COMPENSATOR_TYPES,
     SUSCEPTANCE_PER_SECTION,
-    CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
 } from 'components/utils/field-constants';
 import { Box } from '@mui/material';
 import { useWatch } from 'react-hook-form';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import EnumInput from 'components/utils/rhf-inputs/enum-input';
 import RadioInput from 'components/utils/rhf-inputs/radio-input';
 import {
-    SusceptanceAdornment,
-    ReactivePowerAdornment,
     gridItem,
+    ReactivePowerAdornment,
+    SusceptanceAdornment,
 } from '../../../dialogUtils';
+import SelectInput from '../../../../utils/rhf-inputs/select-input';
+import { useMemo } from 'react';
+import { useIntl } from 'react-intl';
 
 // this component needs to be isolated to avoid too many rerenders
-export const CharacteristicsForm = ({previousValues}) => {
+export const CharacteristicsForm = ({ previousValues }) => {
+    const intl = useIntl();
     const QatNominalVField = (
         <FloatInput
             name={Q_AT_NOMINAL_V}
             label={'QatNominalV'}
             adornment={ReactivePowerAdornment}
+            previousValue={previousValues?.qatNominalV}
         />
     );
 
+    const previousHuntCompensatorType = useMemo(
+        () =>
+            previousValues?.bperSection
+                ? intl.formatMessage({
+                      id:
+                          previousValues.bperSection > 0
+                              ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.label
+                              : SHUNT_COMPENSATOR_TYPES.REACTOR.label,
+                  })
+                : '',
+        [previousValues?.bperSection, intl]
+    );
+
     const shuntCompensatorTypeField = (
-        <EnumInput
+        <SelectInput
             options={Object.values(SHUNT_COMPENSATOR_TYPES)}
             name={SHUNT_COMPENSATOR_TYPE}
             label={'Type'}
             size={'small'}
+            previousValue={previousHuntCompensatorType}
         />
     );
 
@@ -49,6 +67,7 @@ export const CharacteristicsForm = ({previousValues}) => {
             name={SUSCEPTANCE_PER_SECTION}
             label={'ShuntSusceptancePerSection'}
             adornment={SusceptanceAdornment}
+            previousValue={previousValues?.bperSection}
         />
     );
 

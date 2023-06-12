@@ -542,6 +542,7 @@
     "LineCreationError": "Error while creating line",
     "LineModificationError": "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
+    "ShuntCompensatorModificationError": "Error while modifying shunt compensator",
 
     "CreateGenerator": "Create generator",
     "ModifyGenerator": "Modify generator",

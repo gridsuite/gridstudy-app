@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import React, { useEffect, useState } from 'react';
 import TextInput from '../../../../utils/rhf-inputs/text-input';
@@ -10,9 +17,22 @@ import Grid from '@mui/material/Grid';
 import AutocompleteInput from '../../../../utils/rhf-inputs/autocomplete-input';
 import { areIdsEqual, getObjectId } from '../../../../utils/utils';
 import { fetchEquipmentsIds } from '../../../../../utils/rest-api';
+import { useWatch } from 'react-hook-form';
 
-const ShuntCompensatorModificationForm = ({ studyUuid, currentNodeUuid }) => {
+const ShuntCompensatorModificationForm = ({
+    studyUuid,
+    currentNodeUuid,
+    onEquipmentIdChange,
+    shuntCompensatorInfos,
+}) => {
     const [shuntCompensatorOptions, setShuntCompensatorOptions] = useState([]);
+    const watchShuntCompensatorId = useWatch({
+        name: `${EQUIPMENT_ID}`,
+    });
+
+    useEffect(() => {
+        onEquipmentIdChange(watchShuntCompensatorId);
+    }, [watchShuntCompensatorId, onEquipmentIdChange]);
 
     useEffect(() => {
         fetchEquipmentsIds(
@@ -26,7 +46,7 @@ const ShuntCompensatorModificationForm = ({ studyUuid, currentNodeUuid }) => {
                 values.sort((a, b) => a.localeCompare(b))
             );
         });
-    });
+    }, [studyUuid, currentNodeUuid]);
 
     const shuntCompensatorIdField = (
         <AutocompleteInput
@@ -48,10 +68,13 @@ const ShuntCompensatorModificationForm = ({ studyUuid, currentNodeUuid }) => {
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
+            previousValue={shuntCompensatorInfos?.name}
         />
     );
 
-    const characteristicsForm = <CharacteristicsForm />;
+    const characteristicsForm = (
+        <CharacteristicsForm previousValues={shuntCompensatorInfos} />
+    );
 
     return (
         <>

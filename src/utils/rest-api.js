@@ -2397,13 +2397,10 @@ export function modifyShuntCompensator(
     currentNodeUuid,
     shuntCompensatorId,
     shuntCompensatorName,
-    maximumNumberOfSections,
-    currentNumberOfSections,
-    identicalSections,
     susceptancePerSection,
     qAtNominalV,
     shuntCompensatorType,
-    connectivity,
+    voltageLevelId,
     isUpdate,
     modificationUuid
 ) {
@@ -2428,18 +2425,12 @@ export function modifyShuntCompensator(
             type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
             equipmentId: shuntCompensatorId,
             equipmentName: toModificationOperation(shuntCompensatorName),
-            maximumNumberOfSections: toModificationOperation(
-                maximumNumberOfSections
-            ),
-            currentNumberOfSections: toModificationOperation(
-                currentNumberOfSections
-            ),
-            isIdenticalSection: toModificationOperation(identicalSections),
             susceptancePerSection: toModificationOperation(
                 susceptancePerSection
             ),
             qAtNominalV: toModificationOperation(qAtNominalV),
             shuntCompensatorType: toModificationOperation(shuntCompensatorType),
+            voltageLevelId: toModificationOperation(voltageLevelId),
         }),
     });
 }

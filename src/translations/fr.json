@@ -542,6 +542,7 @@
     "LineCreationError": "Erreur lors de la création d'une ligne",
     "LineModificationError": "Erreur lors de la modification d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
+    "ShuntCompensatorModificationError": "Erreur lors de la modification d'un moyen de compensation",
 
     "CreateGenerator": "Créer un groupe",
     "ModifyGenerator": "Modifier un groupe",
