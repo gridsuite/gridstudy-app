@@ -2438,8 +2438,6 @@ export function modifyShuntCompensator(
         console.info('Creating shunt compensator modification');
     }
 
-    console.log('q ta nominal v ', toModificationOperation(qAtNominalV));
-
     return backendFetchText(modificationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {

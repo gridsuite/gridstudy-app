@@ -76,12 +76,13 @@ const ShuntCompensatorModificationDialog = ({
         (shuntCompensator) => {
             reset({
                 [EQUIPMENT_ID]: shuntCompensator.equipmentId,
-                [EQUIPMENT_NAME]: shuntCompensator.equipmentName ?? '',
+                [EQUIPMENT_NAME]: shuntCompensator?.equipmentName?.value ?? '',
                 ...getCharacteristicsFormData({
                     susceptancePerSection:
-                        shuntCompensator.susceptancePerSection,
-                    qAtNominalV: shuntCompensator.qAtNominalV,
-                    shuntCompensatorType: shuntCompensator.shuntCompensatorType,
+                        shuntCompensator.susceptancePerSection?.value,
+                    qAtNominalV: shuntCompensator?.qAtNominalV?.value,
+                    shuntCompensatorType:
+                        shuntCompensator.shuntCompensatorType?.value,
                 }),
             });
         },
@@ -117,11 +118,6 @@ const ShuntCompensatorModificationDialog = ({
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
-                            console.log(
-                                'shuntCompensator : ',
-                                shuntCompensator
-                            );
-
                             setShuntCompensatorInfos(shuntCompensator);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                         }
