@@ -168,14 +168,11 @@ const withBranchMenu =
 
         function handleEnergise(side) {
             startModification();
-            energiseBranchEnd(
-                studyUuid,
-                currentNode?.id,
-                branch,
-                side
-            ).catch((error) => {
-                handleError(error, 'UnableToEnergiseOnOneEnd');
-            });
+            energiseBranchEnd(studyUuid, currentNode?.id, branch, side).catch(
+                (error) => {
+                    handleError(error, 'UnableToEnergiseOnOneEnd');
+                }
+            );
         }
 
         function handleSwitchOn() {

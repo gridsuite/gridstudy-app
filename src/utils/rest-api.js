@@ -1993,7 +1993,10 @@ function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
         body: JSON.stringify({
             type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
             equipmentId: branch.id,
-            energizedVoltageLevelId: action === BRANCH_STATUS_ACTION.ENERGISE_END_ONE ? branch.voltageLevelId1 : branch.voltageLevelId2,
+            energizedVoltageLevelId:
+                action === BRANCH_STATUS_ACTION.ENERGISE_END_ONE
+                    ? branch.voltageLevelId1
+                    : branch.voltageLevelId2,
             action: action,
         }),
     });
