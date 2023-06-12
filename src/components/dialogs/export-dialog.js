@@ -105,6 +105,7 @@ const ExportDialog = ({
     };
 
     const handleClose = () => {
+        setCurrentParameters({})
         setExportStudyErr('');
         setSelectedFormat('');
         setLoading(false);
