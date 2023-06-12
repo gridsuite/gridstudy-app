@@ -1303,6 +1303,29 @@ export function fetchVoltageInitResult(studyUuid, currentNodeUuid) {
     console.debug(url);
     return backendFetchJson(url);
 }
+
+export function updateVoltageInitParameters(studyUuid, newParams) {
+    console.info('set voltage init parameters');
+    const url = getStudyUrl(studyUuid) + '/voltage-init/parameters';
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
+}
+
+export function getVoltageInitParameters(studyUuid) {
+    console.info('get voltage init parameters');
+    const getVoltageInitParams =
+        getStudyUrl(studyUuid) + '/voltage-init/parameters';
+    console.debug(getVoltageInitParams);
+    return backendFetchJson(getVoltageInitParams);
+}
 // --- Voltage init API - END
 
 // --- Dynamic simulation API - BEGIN
