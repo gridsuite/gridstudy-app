@@ -21,11 +21,15 @@ const characteristicsValidationSchema = (isModification) => ({
         .number()
         .nullable()
         .when([CHARACTERISTICS_CHOICE], {
-            is: CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && !isModification,
+            is: (characteristicsChoice) =>
+                characteristicsChoice ===
+                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && !isModification,
             then: (schema) => schema.required(),
         }),
     [SHUNT_COMPENSATOR_TYPE]: yup.string().when([CHARACTERISTICS_CHOICE], {
-        is: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && !isModification,
+        is: (characteristicsChoice) =>
+            characteristicsChoice ===
+                CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && !isModification,
         then: (schema) =>
             schema
                 .oneOf([
@@ -38,7 +42,10 @@ const characteristicsValidationSchema = (isModification) => ({
         .number()
         .nullable()
         .when([CHARACTERISTICS_CHOICE], {
-            is: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && !isModification,
+            is: (characteristicsChoice) =>
+                characteristicsChoice ===
+                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
+                !isModification,
             then: (schema) =>
                 schema
                     .min(
