@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import {
     Collapse,
     Dialog,
@@ -19,7 +18,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
@@ -28,7 +27,7 @@ import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
 import IconButton from '@mui/material/IconButton';
-import { useImportExportParams } from '@gridsuite/commons-ui';
+import { FlatParameters } from '@gridsuite/commons-ui';
 
 /**
  * Dialog to export the network case
@@ -69,13 +68,17 @@ const ExportDialog = ({
 
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
     const metasAsArray = formatWithParameter?.parameters || [];
-    const [currentParameters, paramsComponent] = useImportExportParams(
-        metasAsArray,
-        null,
-        null,
-        'standard'
-    );
-
+    const [currentParameters, setCurrentParameters] = useState({});
+    const onChange = useCallback((paramName, value, isEdit) => {
+        if (!isEdit) {
+            setCurrentParameters((prevCurrentParameters) => {
+                return {
+                    ...prevCurrentParameters,
+                    ...{ [paramName]: value },
+                };
+            });
+        }
+    }, []);
     const handleExportClick = () => {
         if (selectedFormat) {
             const downloadUrl = getExportUrl(
@@ -102,6 +105,7 @@ const ExportDialog = ({
     };
 
     const handleClose = () => {
+        setCurrentParameters({});
         setExportStudyErr('');
         setSelectedFormat('');
         setLoading(false);
@@ -178,7 +182,14 @@ const ExportDialog = ({
                 </FormControl>
             </DialogTitle>
             <DialogContent>
-                <Collapse in={unfolded}>{paramsComponent}</Collapse>
+                <Collapse in={unfolded}>
+                    <FlatParameters
+                        paramsAsArray={metasAsArray}
+                        initValues={currentParameters}
+                        onChange={onChange}
+                        variant="standard"
+                    />
+                </Collapse>
                 {exportStudyErr !== '' && (
                     <Alert severity="error">{exportStudyErr}</Alert>
                 )}
