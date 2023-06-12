@@ -421,6 +421,8 @@
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none",
+    "FilterData": "Filter",
+    "NoResults": "No results",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
@@ -1011,5 +1013,14 @@
     "AttachingAndSplittingLines": "Attaching and splitting lines",
     "GenerationAndLoad": "Generation and load",
     "idSelector.idNeeded": "Please select an ID",
-    "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet"
+    "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
+
+    "SensitivityAnalysisResultsError": "An error occured while fetching sensitivity results",
+
+    "muiTablePaginationLabelRowsPerPage": "Rows per Page: ",
+    "muiTablePaginationOfLabel": "of",
+    "muiTablePaginationPrevious": "Go to the previous page",
+    "muiTablePaginationNext": "Go to the next page",
+    "muiTablePaginationFirst": "Go to the first page",
+    "muiTablePaginationLast": "Go to the last page"
 }
