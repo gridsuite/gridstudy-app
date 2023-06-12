@@ -18,25 +18,52 @@ import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { EDIT_COLUMN } from './config-tables';
 
-const refreshEditingCell = (params) => {
-    const rowNode = params.api.getPinnedTopRow(0);
+const refreshEditingCell = (gridApi) => {
+    const rowNode = gridApi.getPinnedTopRow(0);
     if (rowNode) {
         const refreshConfig = {
             rowNodes: [rowNode],
             columns: [EDIT_COLUMN],
             force: true,
         };
-        params.api.getCellEditorInstances().forEach((cellEditor) => {
+        gridApi.getCellEditorInstances().forEach((cellEditor) => {
             if (cellEditor.refreshValidation) {
                 cellEditor.refreshValidation();
             }
         });
-        params.api.refreshCells(refreshConfig);
+        gridApi.refreshCells(refreshConfig);
     }
 };
 
+const checkCrossValidationRequiredOn = (gridApi, colDef) => {
+    const dependencyEditor = gridApi
+        .getCellEditorInstances()
+        .filter((editor) =>
+            typeof editor.getField !== 'undefined'
+                ? editor.getField() ===
+                  colDef.crossValidation.requiredOn.dependencyColumn
+                : undefined
+        );
+
+    return dependencyEditor.length > 0
+        ? dependencyEditor[0].getValue() !==
+              colDef.crossValidation.requiredOn.columnValue
+        : false;
+};
+
 export const NumericalField = forwardRef(
-    ({ defaultValue, minExpression, maxExpression, ...props }, ref) => {
+    (
+        {
+            defaultValue,
+            minExpression,
+            maxExpression,
+            gridContext,
+            data,
+            colDef,
+            gridApi,
+        },
+        ref
+    ) => {
         const [error, setError] = useState(false);
         const intl = useIntl();
 
@@ -45,63 +72,68 @@ export const NumericalField = forwardRef(
             if (!isNaN(minExpression)) {
                 return minExpression;
             }
-            if (props.context.dynamicValidation[minExpression]) {
-                return props.context.dynamicValidation[minExpression];
+            if (gridContext.dynamicValidation[minExpression]) {
+                return gridContext.dynamicValidation[minExpression];
             }
-            return props.data[minExpression];
-        }, [minExpression, props.context.dynamicValidation, props.data]);
+            return data[minExpression];
+        }, [minExpression, gridContext.dynamicValidation, data]);
 
         const getMax = useCallback(() => {
             if (!isNaN(maxExpression)) {
                 return maxExpression;
             }
-            if (props.context.dynamicValidation[maxExpression]) {
-                return props.context.dynamicValidation[maxExpression];
+            if (gridContext.dynamicValidation[maxExpression]) {
+                return gridContext.dynamicValidation[maxExpression];
             }
-            return props.data[maxExpression];
-        }, [maxExpression, props.context.dynamicValidation, props.data]);
+            return data[maxExpression];
+        }, [maxExpression, gridContext.dynamicValidation, data]);
 
         const [minValue, setMinValue] = useState(getMin());
         const [maxValue, setMaxValue] = useState(getMax());
         const [value, setValue] = useState(defaultValue);
 
         useEffect(() => {
-            refreshEditingCell(props);
-        }, [props, value]);
+            refreshEditingCell(gridApi);
+        }, [gridApi, value]);
 
-        const isValid = useCallback((val, minVal, maxVal) => {
-            if (isNaN(val)) {
-                return false;
-            }
-            let valFloat = parseFloat(val);
-            if (isNaN(valFloat)) {
-                return false;
-            }
-            return (
-                (minVal === undefined || valFloat >= minVal) &&
-                (maxVal === undefined || valFloat <= maxVal)
-            );
-        }, []);
+        const isValid = useCallback(
+            (val, minVal, maxVal) => {
+                if (!val && colDef.crossValidation?.requiredOn) {
+                    const isConditionFulfiled = checkCrossValidationRequiredOn(
+                        gridApi,
+                        colDef
+                    );
+                    if (isConditionFulfiled) {
+                        return true;
+                    }
+                }
+                if (isNaN(val)) {
+                    return false;
+                }
+                let valFloat = parseFloat(val);
+                if (isNaN(valFloat)) {
+                    return false;
+                }
+                return (
+                    (minVal === undefined || valFloat >= minVal) &&
+                    (maxVal === undefined || valFloat <= maxVal)
+                );
+            },
+            [colDef, gridApi]
+        );
 
         const validateChange = useCallback(() => {
-            const updatedErrors = { ...props.context.editErrors };
+            const updatedErrors = { ...gridContext.editErrors };
             if (isValid(value, minValue, maxValue)) {
                 setError(false);
-                delete updatedErrors[props.colDef.field];
-                props.context.editErrors = updatedErrors;
+                delete updatedErrors[colDef.field];
+                gridContext.editErrors = updatedErrors;
             } else {
                 setError(true);
-                updatedErrors[props.colDef.field] = true;
-                props.context.editErrors = updatedErrors;
+                updatedErrors[colDef.field] = true;
+                gridContext.editErrors = updatedErrors;
             }
-        }, [
-            props.colDef.field,
-            props.context,
-            minValue,
-            maxValue,
-            value,
-            isValid,
-        ]);
+        }, [colDef.field, gridContext, minValue, maxValue, value, isValid]);
 
         useImperativeHandle(
             ref,
@@ -110,6 +142,9 @@ export const NumericalField = forwardRef(
                     getValue: () => {
                         return value;
                     },
+                    getField: () => {
+                        return colDef.field;
+                    },
                     refreshValidation: () => {
                         setMaxValue(getMax());
                         setMinValue(getMin());
@@ -117,23 +152,23 @@ export const NumericalField = forwardRef(
                     },
                 };
             },
-            [getMax, getMin, validateChange, value]
+            [getMax, getMin, colDef.field, validateChange, value]
         );
 
         const validateEvent = useCallback(
             (ev) => {
                 const newVal = ev.target.value;
                 setValue(newVal);
-                props.context.dynamicValidation[props.colDef.field] =
+                gridContext.dynamicValidation[colDef.field] =
                     parseFloat(newVal);
             },
-            [props]
+            [colDef.field, gridContext.dynamicValidation]
         );
 
         function renderNumericText() {
             return (
                 <TextField
-                    value={value}
+                    value={value || ''}
                     onChange={validateEvent}
                     error={error}
                     type={'number'}
@@ -186,7 +221,7 @@ export const NumericalField = forwardRef(
 );
 
 export const BooleanListField = forwardRef(
-    ({ defaultValue, ...props }, ref) => {
+    ({ defaultValue, gridContext, colDef, gridApi }, ref) => {
         const intl = useIntl();
         const [value, setValue] = useState(defaultValue);
 
@@ -197,29 +232,35 @@ export const BooleanListField = forwardRef(
                     getValue: () => {
                         return value;
                     },
+                    getField: () => {
+                        return colDef.field;
+                    },
                 };
             },
-            [value]
+            [colDef.field, value]
         );
 
         const validateChange = useCallback(
             (ev) => {
                 const val = ev.target.value;
                 setValue(val);
-                if (props.colDef.resetColumnsInError) {
-                    const updatedErrors = { ...props.context.editErrors };
+                if (colDef.resetColumnsInError) {
+                    const updatedErrors = { ...gridContext.editErrors };
 
-                    props.colDef.resetColumnsInError.forEach((column) => {
+                    colDef.resetColumnsInError.forEach((column) => {
                         if (Boolean(val) === column.value) {
                             delete updatedErrors[column.dependencyColumn];
                         }
                     });
-                    props.context.editErrors = updatedErrors;
+                    gridContext.editErrors = updatedErrors;
                 }
-                refreshEditingCell(props);
             },
-            [props]
+            [colDef.resetColumnsInError, gridContext]
         );
+
+        useEffect(() => {
+            refreshEditingCell(gridApi);
+        }, [gridApi, value]);
 
         return (
             <Select
@@ -229,10 +270,10 @@ export const BooleanListField = forwardRef(
                 margin={'none'}
                 style={{ width: '100%' }}
             >
-                <MenuItem value={1} key={props.colDef.field + '_1'}>
+                <MenuItem value={1} key={colDef.field + '_1'}>
                     <em>{intl.formatMessage({ id: 'true' })}</em>
                 </MenuItem>
-                <MenuItem value={0} key={props.colDef.field + '_0'}>
+                <MenuItem value={0} key={colDef.field + '_0'}>
                     <em>{intl.formatMessage({ id: 'false' })}</em>
                 </MenuItem>
             </Select>
