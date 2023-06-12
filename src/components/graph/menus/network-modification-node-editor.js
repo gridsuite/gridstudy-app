@@ -22,7 +22,6 @@ import { ModificationListItem } from './modification-list-item';
 import {
     Checkbox,
     CircularProgress,
-    Fab,
     Toolbar,
     Tooltip,
     Typography,
@@ -836,6 +835,15 @@ const NetworkModificationNodeEditor = () => {
                 />
                 <div className={classes.filler} />
                 <IconButton
+                    className={classes.toolbarIcon}
+                    color="primary"
+                    size="small"
+                    onClick={openNetworkModificationConfiguration}
+                    disabled={isAnyNodeBuilding}
+                >
+                    <AddIcon />
+                </IconButton>
+                <IconButton
                     onClick={doCutModifications}
                     size={'small'}
                     className={classes.toolbarIcon}
@@ -898,15 +906,6 @@ const NetworkModificationNodeEditor = () => {
             {renderPaneSubtitle()}
 
             {renderNetworkModificationsList()}
-            <Fab
-                className={classes.addButton}
-                color="primary"
-                size="medium"
-                onClick={openNetworkModificationConfiguration}
-                disabled={isAnyNodeBuilding}
-            >
-                <AddIcon />
-            </Fab>
 
             <NetworkModificationsMenu
                 open={openNetworkModificationsMenu}

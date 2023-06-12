@@ -11,7 +11,6 @@ import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import { NestedMenuItem } from 'mui-nested-menu';
 import NodeMenuItem from './create-node-item';
-import MenuList from '@mui/material/MenuList';
 
 /**
  * Menu to select network modification to create
@@ -32,7 +31,7 @@ const NetworkModificationsMenu = ({
     const renderMenuItems = (menuDialogs) => {
         return menuDialogs.map((dialog) => {
             return (
-                <MenuList key={dialog.id}>
+                <div key={dialog.id}>
                     {dialog.subItems === undefined ? (
                         <NodeMenuItem
                             item={{
@@ -49,7 +48,7 @@ const NetworkModificationsMenu = ({
                             {renderMenuItems(dialog.subItems)}
                         </NestedMenuItem>
                     )}
-                </MenuList>
+                </div>
             );
         });
     };
@@ -60,12 +59,12 @@ const NetworkModificationsMenu = ({
             onClose={onClose}
             anchorEl={anchorEl}
             anchorOrigin={{
-                vertical: 'top',
+                vertical: 'bottom',
                 horizontal: 'right',
             }}
             transformOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
+                vertical: 'top',
+                horizontal: 'right',
             }}
         >
             {renderMenuItems(dialogs)}
