@@ -16,14 +16,14 @@ import ChildMenuItem from './create-child-menu-item';
  * Menu to select network modification to create
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param onOpenDialog handle the opening of dialogs
+ * @param onItemClick handle the click on menu Items
  * @param menuDefinition the definition of nested menu
  * @param anchorEl anchorEl of fab Button
  */
 const NetworkModificationsMenu = ({
     open,
     onClose,
-    onOpenDialog,
+    onItemClick,
     menuDefinition,
     anchorEl,
 }) => {
@@ -35,7 +35,7 @@ const NetworkModificationsMenu = ({
                     key={menuItem.id}
                     item={{
                         id: menuItem.label,
-                        action: () => onOpenDialog(menuItem.id),
+                        action: () => onItemClick(menuItem.id),
                         disabled: false,
                     }}
                 />
@@ -58,7 +58,7 @@ const NetworkModificationsMenu = ({
             anchorEl={anchorEl}
             anchorOrigin={{
                 vertical: 'bottom',
-                horizontal: 'right',
+                horizontal: 'left',
             }}
             transformOrigin={{
                 vertical: 'top',
@@ -73,7 +73,7 @@ const NetworkModificationsMenu = ({
 NetworkModificationsMenu.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    onOpenDialog: PropTypes.func.isRequired,
+    onItemClick: PropTypes.func.isRequired,
     menuDefinition: PropTypes.array,
     anchorEl: PropTypes.object,
 };

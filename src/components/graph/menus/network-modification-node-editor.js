@@ -170,7 +170,7 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
+    const buttonAddRef = useRef();
 
     const cleanClipboard = useCallback(() => {
         if (copiedModifications.length <= 0) {
@@ -356,11 +356,11 @@ const NetworkModificationNodeEditor = () => {
         },
     ];
 
-    const subItemDialogsList = menuDefinition.reduce(
-        (actions, currentDialog) =>
-            currentDialog.subItems === undefined
-                ? [...actions, currentDialog]
-                : [...actions, ...currentDialog.subItems],
+    const subMenuItemsList = menuDefinition.reduce(
+        (actions, currentMenuItem) =>
+            currentMenuItem.subItems === undefined
+                ? [...actions, currentMenuItem]
+                : [...actions, ...currentMenuItem.subItems],
         []
     );
 
@@ -496,16 +496,14 @@ const NetworkModificationNodeEditor = () => {
 
     const classes = useStyles();
 
-    const openNetworkModificationConfiguration = useCallback((event) => {
+    const openNetworkModificationConfiguration = useCallback(() => {
         setOpenNetworkModificationsMenu(true);
-        setAnchorEl(event.currentTarget);
     }, []);
 
     const closeNetworkModificationConfiguration = () => {
         setOpenNetworkModificationsMenu(false);
         setEditData(undefined);
         setEditDataFetchStatus(FetchStatus.IDLE);
-        setAnchorEl(null);
     };
 
     const doDeleteModification = useCallback(() => {
@@ -642,7 +640,7 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
-    const onOpenDialog = (id) => {
+    const onItemClick = (id) => {
         setOpenNetworkModificationsMenu(false);
         setEditDialogOpen(id);
         setIsUpdate(false);
@@ -653,8 +651,8 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const renderDialog = () => {
-        return subItemDialogsList
-            .find((dialog) => dialog.id === editDialogOpen)
+        return subMenuItemsList
+            .find((menuItem) => menuItem.id === editDialogOpen)
             .action();
     };
 
@@ -831,6 +829,7 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     className={classes.toolbarIcon}
                     size="small"
+                    ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
                     disabled={isAnyNodeBuilding}
                 >
@@ -903,8 +902,8 @@ const NetworkModificationNodeEditor = () => {
             <NetworkModificationsMenu
                 open={openNetworkModificationsMenu}
                 onClose={closeNetworkModificationConfiguration}
-                onOpenDialog={onOpenDialog}
-                anchorEl={anchorEl}
+                onItemClick={onItemClick}
+                anchorEl={buttonAddRef.current}
                 menuDefinition={menuDefinition}
             />
             {editDialogOpen && renderDialog()}
