@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -10,45 +10,43 @@ import PropTypes from 'prop-types';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import { NestedMenuItem } from 'mui-nested-menu';
-import NodeMenuItem from './create-node-item';
+import ChildMenuItem from './create-child-menu-item';
 
 /**
  * Menu to select network modification to create
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param onOpenDialog handle the opening of dialogs
- * @param dialogs the list of dialog
+ * @param menuDefinition the definition of nested menu
  * @param anchorEl anchorEl of fab Button
  */
 const NetworkModificationsMenu = ({
     open,
     onClose,
     onOpenDialog,
-    dialogs,
+    menuDefinition,
     anchorEl,
 }) => {
     const intl = useIntl();
-    const renderMenuItems = (menuDialogs) => {
-        return menuDialogs.map((dialog) => {
-            return (
-                <div key={dialog.id}>
-                    {dialog.subItems === undefined ? (
-                        <NodeMenuItem
-                            item={{
-                                id: dialog.label,
-                                action: () => onOpenDialog(dialog.id),
-                                disabled: false,
-                            }}
-                        />
-                    ) : (
-                        <NestedMenuItem
-                            parentMenuOpen={true}
-                            label={intl.formatMessage({ id: dialog.label })}
-                        >
-                            {renderMenuItems(dialog.subItems)}
-                        </NestedMenuItem>
-                    )}
-                </div>
+    const renderMenuItems = (menuItems) => {
+        return menuItems.map((menuItem) => {
+            return menuItem.subItems === undefined ? (
+                <ChildMenuItem
+                    key={menuItem.id}
+                    item={{
+                        id: menuItem.label,
+                        action: () => onOpenDialog(menuItem.id),
+                        disabled: false,
+                    }}
+                />
+            ) : (
+                <NestedMenuItem
+                    key={menuItem.id}
+                    parentMenuOpen={true}
+                    label={intl.formatMessage({ id: menuItem.label })}
+                >
+                    {renderMenuItems(menuItem.subItems)}
+                </NestedMenuItem>
             );
         });
     };
@@ -64,10 +62,10 @@ const NetworkModificationsMenu = ({
             }}
             transformOrigin={{
                 vertical: 'top',
-                horizontal: 'right',
+                horizontal: 'left',
             }}
         >
-            {renderMenuItems(dialogs)}
+            <div>{renderMenuItems(menuDefinition)}</div>
         </Menu>
     );
 };
@@ -76,7 +74,7 @@ NetworkModificationsMenu.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onOpenDialog: PropTypes.func.isRequired,
-    dialogs: PropTypes.array,
+    menuDefinition: PropTypes.array,
     anchorEl: PropTypes.object,
 };
 

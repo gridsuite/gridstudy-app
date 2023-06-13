@@ -218,7 +218,7 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    const dialogs = [
+    const menuDefinition = [
         {
             id: 'CREATE',
             label: 'Create',
@@ -226,37 +226,37 @@ const NetworkModificationNodeEditor = () => {
                 {
                     id: 'LOAD_CREATION',
                     label: 'LOAD',
-                    dialog: () => adapt(LoadCreationDialog),
+                    action: () => adapt(LoadCreationDialog),
                 },
                 {
                     id: 'GENERATOR_CREATION',
                     label: 'GENERATOR',
-                    dialog: () => adapt(GeneratorCreationDialog),
+                    action: () => adapt(GeneratorCreationDialog),
                 },
                 {
                     id: 'SHUNT_COMPENSATOR_CREATION',
                     label: 'ShuntCompensator',
-                    dialog: () => adapt(ShuntCompensatorCreationDialog),
+                    action: () => adapt(ShuntCompensatorCreationDialog),
                 },
                 {
                     id: 'LINE_CREATION',
                     label: 'LINE',
-                    dialog: () => adapt(LineCreationDialog),
+                    action: () => adapt(LineCreationDialog),
                 },
                 {
                     id: 'TWO_WINDINGS_TRANSFORMER_CREATION',
                     label: 'TWO_WINDINGS_TRANSFORMER',
-                    dialog: () => adapt(TwoWindingsTransformerCreationDialog),
+                    action: () => adapt(TwoWindingsTransformerCreationDialog),
                 },
                 {
                     id: 'VOLTAGE_LEVEL_CREATION',
                     label: 'VOLTAGE_LEVEL',
-                    dialog: () => adapt(VoltageLevelCreationDialog),
+                    action: () => adapt(VoltageLevelCreationDialog),
                 },
                 {
                     id: 'SUBSTATION_CREATION',
                     label: 'SUBSTATION',
-                    dialog: () => adapt(SubstationCreationDialog),
+                    action: () => adapt(SubstationCreationDialog),
                 },
             ],
         },
@@ -267,32 +267,32 @@ const NetworkModificationNodeEditor = () => {
                 {
                     id: 'LOAD_MODIFICATION',
                     label: 'LOAD',
-                    dialog: () => adapt(LoadModificationDialog),
+                    action: () => adapt(LoadModificationDialog),
                 },
                 {
                     id: 'GENERATOR_MODIFICATION',
                     label: 'GENERATOR',
-                    dialog: () => adapt(GeneratorModificationDialog),
+                    action: () => adapt(GeneratorModificationDialog),
                 },
                 {
                     id: 'LINE_MODIFICATION',
                     label: 'LINE',
-                    dialog: () => adapt(LineModificationDialog),
+                    action: () => adapt(LineModificationDialog),
                 },
                 {
                     id: 'VOLTAGE_LEVEL_MODIFICATION',
                     label: 'VoltageLevel',
-                    dialog: () => adapt(VoltageLevelModificationDialog),
+                    action: () => adapt(VoltageLevelModificationDialog),
                 },
                 {
                     id: 'SUBSTATION_MODIFICATION',
                     label: 'SUBSTATION',
-                    dialog: () => adapt(SubstationModificationDialog),
+                    action: () => adapt(SubstationModificationDialog),
                 },
                 {
                     id: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
                     label: 'TWO_WINDINGS_TRANSFORMER',
-                    dialog: () =>
+                    action: () =>
                         adapt(TwoWindingsTransformerModificationDialog),
                 },
             ],
@@ -300,7 +300,7 @@ const NetworkModificationNodeEditor = () => {
         {
             id: 'EQUIPMENT_DELETION',
             label: 'DeleteContingencyList',
-            dialog: () => adapt(EquipmentDeletionDialog),
+            action: () => adapt(EquipmentDeletionDialog),
         },
         {
             id: 'ATTACHING_SPLITTING_LINES',
@@ -309,27 +309,27 @@ const NetworkModificationNodeEditor = () => {
                 {
                     id: 'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
                     label: 'LineSplitWithVoltageLevel',
-                    dialog: () => adapt(LineSplitWithVoltageLevelDialog),
+                    action: () => adapt(LineSplitWithVoltageLevelDialog),
                 },
                 {
                     id: 'LINE_ATTACH_TO_VOLTAGE_LEVEL',
                     label: 'LineAttachToVoltageLevel',
-                    dialog: () => adapt(LineAttachToVoltageLevelDialog),
+                    action: () => adapt(LineAttachToVoltageLevelDialog),
                 },
                 {
                     id: 'LINES_ATTACH_TO_SPLIT_LINES',
                     label: 'LinesAttachToSplitLines',
-                    dialog: () => adapt(LinesAttachToSplitLinesDialog),
+                    action: () => adapt(LinesAttachToSplitLinesDialog),
                 },
                 {
                     id: 'DELETE_VOLTAGE_LEVEL_ON_LINE',
                     label: 'DeleteVoltageLevelOnLine',
-                    dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
+                    action: () => adapt(DeleteVoltageLevelOnLineDialog),
                 },
                 {
                     id: 'DELETE_ATTACHING_LINE',
                     label: 'DeleteAttachingLine',
-                    dialog: () => adapt(DeleteAttachingLineDialog),
+                    action: () => adapt(DeleteAttachingLineDialog),
                 },
             ],
         },
@@ -340,23 +340,23 @@ const NetworkModificationNodeEditor = () => {
                 {
                     id: 'GENERATOR_SCALING',
                     label: 'GeneratorScaling',
-                    dialog: () => adapt(GeneratorScalingDialog),
+                    action: () => adapt(GeneratorScalingDialog),
                 },
                 {
                     id: 'LOAD_SCALING',
                     label: 'LoadScaling',
-                    dialog: () => adapt(LoadScalingDialog),
+                    action: () => adapt(LoadScalingDialog),
                 },
                 {
                     id: 'GENERATION_DISPATCH',
                     label: 'GenerationDispatch',
-                    dialog: () => adapt(GenerationDispatchDialog),
+                    action: () => adapt(GenerationDispatchDialog),
                 },
             ],
         },
     ];
 
-    const subItemDialogsList = dialogs.reduce(
+    const subItemDialogsList = menuDefinition.reduce(
         (actions, currentDialog) =>
             currentDialog.subItems === undefined
                 ? [...actions, currentDialog]
@@ -655,7 +655,7 @@ const NetworkModificationNodeEditor = () => {
     const renderDialog = () => {
         return subItemDialogsList
             .find((dialog) => dialog.id === editDialogOpen)
-            .dialog();
+            .action();
     };
 
     const commit = useCallback(
@@ -904,8 +904,8 @@ const NetworkModificationNodeEditor = () => {
                 open={openNetworkModificationsMenu}
                 onClose={closeNetworkModificationConfiguration}
                 onOpenDialog={onOpenDialog}
-                dialogs={dialogs}
                 anchorEl={anchorEl}
+                menuDefinition={menuDefinition}
             />
             {editDialogOpen && renderDialog()}
         </>
