@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React, { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -34,8 +35,9 @@ import { useTheme } from '@mui/material/styles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-import GeneratorModificationDialog from 'components/dialogs/generator/modification/generator-modification-dialog';
-import LoadModificationDialog from '../../dialogs/load/modification/load-modification-dialog';
+import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
+import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
+import LinePopover from '../../tooltips/line-popover';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -53,6 +55,9 @@ function SingleLineDiagramContent(props) {
     const [errorMessage, setErrorMessage] = useState('');
     const { openDiagramView } = useDiagram();
     const [equipmentToModify, setEquipmentToModify] = useState();
+    const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
+    const [linePopoverAnchorEl, setLinePopoverAnchorEl] = useState(null);
+    const [lineHoveredId, setLineHoveredId] = useState('');
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -66,6 +71,20 @@ function SingleLineDiagramContent(props) {
     const closeModificationDialog = () => {
         setEquipmentToModify();
     };
+
+    const handleTogglePopover = useCallback(
+        (shouldDisplay, currentTarget, lineId) => {
+            setShouldDisplayTooltip(shouldDisplay);
+            if (shouldDisplay) {
+                setLineHoveredId(lineId);
+                setLinePopoverAnchorEl(currentTarget);
+            } else {
+                setLineHoveredId('');
+                setLinePopoverAnchorEl(null);
+            }
+        },
+        [setShouldDisplayTooltip]
+    );
 
     const handleBreakerClick = useCallback(
         (breakerId, newSwitchState, switchElement) => {
@@ -109,6 +128,7 @@ function SingleLineDiagramContent(props) {
 
     const showEquipmentMenu = useCallback(
         (equipmentId, equipmentType, svgId, x, y) => {
+            handleTogglePopover(false, null, null);
             setEquipmentMenu({
                 position: [x, y],
                 equipmentId: equipmentId,
@@ -117,7 +137,7 @@ function SingleLineDiagramContent(props) {
                 display: true,
             });
         },
-        []
+        [handleTogglePopover]
     );
 
     const closeEquipmentMenu = useCallback(() => {
@@ -193,6 +213,17 @@ function SingleLineDiagramContent(props) {
         );
     };
 
+    const displayTooltip = () => {
+        return (
+            <LinePopover
+                studyUuid={studyUuid}
+                anchorEl={linePopoverAnchorEl}
+                lineId={lineHoveredId}
+                loadFlowStatus={props.loadFlowStatus}
+            />
+        );
+    };
+
     const displayModificationDialog = (equipmentType) => {
         switch (equipmentType) {
             case equipments.generators:
@@ -262,7 +293,10 @@ function SingleLineDiagramContent(props) {
                 isReadyForInteraction ? showEquipmentMenu : null,
 
                 // arrows color
-                theme.palette.background.paper
+                theme.palette.background.paper,
+
+                // Toggle popover
+                handleTogglePopover
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
@@ -325,6 +359,7 @@ function SingleLineDiagramContent(props) {
         handleBreakerClick,
         handleNextVoltageLevelClick,
         diagramSizeSetter,
+        handleTogglePopover,
     ]);
 
     // When the loading is finished, we always reset these two states
@@ -363,6 +398,7 @@ function SingleLineDiagramContent(props) {
                 )}
                 style={{ height: '100%' }}
             />
+            {shouldDisplayTooltip && displayTooltip()}
             {displayBranchMenu()}
             {displayMenu(equipments.loads, 'load-menus')}
             {displayMenu(equipments.batteries, 'battery-menus')}

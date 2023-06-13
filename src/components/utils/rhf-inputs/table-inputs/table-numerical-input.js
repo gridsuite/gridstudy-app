@@ -16,6 +16,8 @@ export const TableNumericalInput = ({
     style,
     inputProps,
     previousValue,
+    valueModified,
+    adornment,
     ...props
 }) => {
     const { trigger } = useFormContext();
@@ -80,9 +82,12 @@ export const TableNumericalInput = ({
                 style: {
                     fontSize: 'small',
                     color:
-                        previousValue && previousValue === value
+                        previousValue &&
+                        previousValue === value &&
+                        !valueModified
                             ? 'grey'
                             : null, // grey out the value if it is the same as the previous one
+                    textAlign: style?.textAlign ?? 'left',
                 },
                 inputMode: 'numeric',
                 pattern: '[0-9]*',
@@ -92,9 +97,17 @@ export const TableNumericalInput = ({
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">
+                        {transformedValue && adornment?.text}
                         {/** we add the clear button only if the previous value is different from the current value **/}
                         {clearable && (
-                            <IconButton onClick={handleClearValue}>
+                            <IconButton
+                                onClick={handleClearValue}
+                                style={{
+                                    visibility: clearable
+                                        ? 'visible'
+                                        : 'hidden',
+                                }}
+                            >
                                 <ClearIcon />
                             </IconButton>
                         )}
