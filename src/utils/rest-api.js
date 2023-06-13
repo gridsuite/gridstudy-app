@@ -492,7 +492,7 @@ export function fetchTwoWindingsTransformers(
         substationsIds,
         EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
         EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        false
     );
 }
 
@@ -507,7 +507,7 @@ export function fetchThreeWindingsTransformers(
         substationsIds,
         EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
         EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        false
     );
 }
 
@@ -518,7 +518,7 @@ export function fetchGenerators(studyUuid, currentNodeUuid, substationsIds) {
         substationsIds,
         EQUIPMENT_TYPES.GENERATOR.type,
         EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        false
     );
 }
 
@@ -540,7 +540,7 @@ export function fetchDanglingLines(studyUuid, currentNodeUuid, substationsIds) {
         substationsIds,
         EQUIPMENT_TYPES.DANGLING_LINE.type,
         EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        false
     );
 }
 
@@ -551,7 +551,7 @@ export function fetchBatteries(studyUuid, currentNodeUuid, substationsIds) {
         substationsIds,
         EQUIPMENT_TYPES.BATTERY.type,
         EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        false
     );
 }
 
@@ -577,7 +577,7 @@ export function fetchLccConverterStations(
         substationsIds,
         EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
         EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        false
     );
 }
 
@@ -592,7 +592,7 @@ export function fetchVscConverterStations(
         substationsIds,
         EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
         EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        false
     );
 }
 
@@ -607,7 +607,7 @@ export function fetchShuntCompensators(
         substationsIds,
         EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
         EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        false
     );
 }
 
@@ -622,7 +622,7 @@ export function fetchStaticVarCompensators(
         substationsIds,
         EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
         EQUIPMENT_INFOS_TYPES.TAB.type,
-        true
+        false
     );
 }
 
