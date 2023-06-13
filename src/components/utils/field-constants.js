@@ -218,7 +218,15 @@ export const GENERATORS_FREQUENCY_RESERVES = 'generatorsFrequencyReserve';
 export const GENERATORS_FILTERS = 'generatorsFilters';
 export const FREQUENCY_RESERVE = 'frequencyReserve';
 
+// voltage init
 export const VOLTAGE_LIMITS = 'voltageLimits';
+export const EQUIPMENTS_SELECTION = 'equipmentsSelection';
+export const FIXED_GENERATORS = 'fixedGenerators';
+export const VARIABLE_TRANSFORMERS = 'variableTransformers';
+export const VARIABLE_SHUNT_COMPENSATORS = 'VariableShuntCompensators';
+
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
+
+

@@ -208,7 +208,7 @@ const VoltageLimitsParameters = ({
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'DeleteVoltageLevelOnLineError',
+                        headerId: 'VoltageInitParametersError',
                     });
                 });
         },

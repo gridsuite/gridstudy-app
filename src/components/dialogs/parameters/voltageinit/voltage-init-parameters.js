@@ -7,12 +7,13 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Tabs, Tab, Grid } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { getVoltageInitParameters } from 'utils/rest-api';
 import { useStyles, TabPanel } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
+import EquipmentsSelectionParameters from './equipments-selection-parameters';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -37,6 +38,7 @@ export const useGetVoltageInitParameters = () => {
 
 const TAB_VALUES = {
     voltageLimitsParamsTabValue: 'VoltageLimits',
+    equipmentsSelectionParamsTabValue: 'EquipmentsSelection',
 };
 
 export const VoltageInitParameters = ({
@@ -44,7 +46,14 @@ export const VoltageInitParameters = ({
     useVoltageInitParameters,
 }) => {
     const classes = useStyles();
-    const tabValue = useMemo(() => TAB_VALUES.voltageLimitsParamsTabValue, []);
+
+    const [tabValue, setTabValue] = useState(
+        TAB_VALUES.voltageLimitsParamsTabValue
+    );
+
+    const handleTabChange = useCallback((event, newValue) => {
+        setTabValue(newValue);
+    }, []);
 
     return (
         <>
@@ -54,21 +63,46 @@ export const VoltageInitParameters = ({
                 className={classes.scrollableGrid}
             >
                 <Grid item maxWidth="md" width="100%">
-                    <Tabs value={tabValue} variant="scrollable">
+                    <Tabs
+                        value={tabValue}
+                        variant="scrollable"
+                        onChange={handleTabChange}
+                    >
                         <Tab
                             label={<FormattedMessage id="VoltageLimits" />}
                             value={TAB_VALUES.voltageLimitsParamsTabValue}
                         />
-                    </Tabs>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.voltageLimitsParamsTabValue}
-                    >
-                        <VoltageLimitsParameters
-                            hideParameters={hideParameters}
-                            useVoltageInitParameters={useVoltageInitParameters}
+                        <Tab
+                            label={
+                                <FormattedMessage id="EquipmentsSelection" />
+                            }
+                            value={TAB_VALUES.equipmentsSelectionParamsTabValue}
                         />
-                    </TabPanel>
+                    </Tabs>
+                    <Grid container>
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.voltageLimitsParamsTabValue}
+                        >
+                            <VoltageLimitsParameters
+                                hideParameters={hideParameters}
+                                useVoltageInitParameters={
+                                    useVoltageInitParameters
+                                }
+                            />
+                        </TabPanel>
+                        <TabPanel
+                            value={tabValue}
+                            index={TAB_VALUES.equipmentsSelectionParamsTabValue}
+                        >
+                            <EquipmentsSelectionParameters
+                                hideParameters={hideParameters}
+                                useVoltageInitParameters={
+                                    useVoltageInitParameters
+                                }
+                            />
+                        </TabPanel>
+                    </Grid>
                 </Grid>
             </Grid>
         </>
