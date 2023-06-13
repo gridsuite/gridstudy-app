@@ -78,12 +78,6 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: theme.spacing(0),
         flexGrow: 1,
     },
-    addButton: {
-        position: 'absolute',
-        bottom: theme.spacing(-1.5),
-        right: 0,
-        margin: theme.spacing(3),
-    },
     modificationsTitle: {
         display: 'flex',
         alignItems: 'center',
