@@ -44,7 +44,7 @@ import {
     getLoadFlowSpecificParametersDescription,
 } from '../../../utils/rest-api';
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 
 import {
     SingleLineDiagramParameters,
@@ -213,6 +213,24 @@ export const useParametersBackend = (
     const [specificParamsDescription, setSpecificParamsDescription] =
         useState(null);
 
+    const backendUpdateParametersCb = useCallback(
+        (studyUuid, newParams, oldParams) => {
+            backendUpdateParameters(studyUuid, newParams).catch((error) => {
+                setParams(oldParams);
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'update' + type + 'ParametersError',
+                });
+            });
+        },
+        [backendUpdateParameters, snackError, type]
+    );
+
+    const debouncedBackendUpdateParameters = useDebounce(
+        backendUpdateParametersCb,
+        1000
+    );
+
     const updateProvider = useCallback(
         (newProvider) => {
             backendUpdateProvider(studyUuid, newProvider)
@@ -254,22 +272,18 @@ export const useParametersBackend = (
             if (backendUpdateParameters) {
                 let oldParams = { ...params };
                 setParams(newParams);
-                backendUpdateParameters(studyUuid, newParams).catch((error) => {
-                    setParams(oldParams);
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'update' + type + 'ParametersError',
-                    });
-                });
+                debouncedBackendUpdateParameters(
+                    studyUuid,
+                    newParams,
+                    oldParams
+                );
             }
         },
         [
-            type,
+            debouncedBackendUpdateParameters,
             backendUpdateParameters,
             params,
-            snackError,
             studyUuid,
-            setParams,
         ]
     );
 
@@ -406,10 +420,9 @@ export function useParameterState(paramName) {
         setParamLocalState(paramGlobalState);
     }, [paramGlobalState]);
 
-    const handleChangeParamLocalState = useCallback(
-        (value) => {
-            setParamLocalState(value);
-            updateConfigParameter(paramName, value).catch((error) => {
+    const backendupdateConfigParameterCb = useCallback(
+        (studyUuid, newParams) => {
+            updateConfigParameter(studyUuid, newParams).catch((error) => {
                 setParamLocalState(paramGlobalState);
                 snackError({
                     messageTxt: error.message,
@@ -417,7 +430,20 @@ export function useParameterState(paramName) {
                 });
             });
         },
-        [paramName, setParamLocalState, paramGlobalState, snackError]
+        [paramGlobalState, snackError]
+    );
+
+    const debouncedBackendupdateConfigParameterCb = useDebounce(
+        backendupdateConfigParameterCb,
+        1000
+    );
+
+    const handleChangeParamLocalState = useCallback(
+        (value) => {
+            setParamLocalState(value);
+            debouncedBackendupdateConfigParameterCb(paramName, value);
+        },
+        [debouncedBackendupdateConfigParameterCb, paramName]
     );
 
     return [paramLocalState, handleChangeParamLocalState];
