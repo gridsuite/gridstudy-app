@@ -550,6 +550,9 @@
     "LineModificationError": "Erreur lors de la modification d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
 
+    "CreateBattery": "Créer une batterie",
+    "ModifyBattery": "Modifier une batterie",
+
     "CreateGenerator": "Créer un groupe",
     "ModifyGenerator": "Modifier un groupe",
     "On": "Activé",

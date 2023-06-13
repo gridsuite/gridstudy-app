@@ -2082,6 +2082,64 @@ export function generatorScaling(
             : response.text().then((text) => Promise.reject(text))
     );
 }
+export function createBattery(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    connectionName,
+    connectionDirection,
+    connectionPosition,
+    activePowerSetpoint,
+    reactivePowerSetpoint,
+    minActivePower,
+    maxActivePower,
+    maximumReactivePower,
+    minimumReactivePower,
+    frequencyRegulation,
+    droop,
+    isUpdate = false,
+    modificationUuid
+) {
+    let createBatteryUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating battery creation');
+    } else {
+        console.info('Creating battery creation');
+    }
+
+    return backendFetchText(createBatteryUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.BATTERY_CREATION.type,
+            equipmentId: id,
+            equipmentName: name,
+            voltageLevelId: voltageLevelId,
+            busOrBusbarSectionId: busOrBusbarSectionId,
+            connectionName: connectionName,
+            connectionDirection: connectionDirection,
+            connectionPosition: connectionPosition,
+            activePowerSetpoint: activePowerSetpoint,
+            reactivePowerSetpoint: reactivePowerSetpoint,
+            minActivePower: minActivePower,
+            maxActivePower: maxActivePower,
+            maximumReactivePower: maximumReactivePower,
+            minimumReactivePower: minimumReactivePower,
+            participate: frequencyRegulation,
+            droop: droop,
+        }),
+    });
+}
 
 export function createLoad(
     studyUuid,
