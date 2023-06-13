@@ -566,7 +566,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             <Tab
                                 disabled={!studyUuid}
                                 label={
-                                    <FormattedMessage id="VoltageInitOptimalReactivePowerFlow" />
+                                    <FormattedMessage id="VoltageInit" />
                                 }
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />

@@ -27,13 +27,12 @@ import {
     FILTERS,
     FILTER_ID,
     FILTER_NAME,
-    HIGH_VOLTAGE_LIMIT,
     ID,
-    LOW_VOLTAGE_LIMIT,
     NAME,
-    PRIORITY,
-    SELECTED,
-    EQUIPMENTS_SELECTION, VOLTAGE_LIMITS, FIXED_GENERATORS, VARIABLE_SHUNT_COMPENSATORS, VARIABLE_TRANSFORMERS
+    EQUIPMENTS_SELECTION,
+    FIXED_GENERATORS,
+    VARIABLE_SHUNT_COMPENSATORS,
+    VARIABLE_TRANSFORMERS,
 } from 'components/utils/field-constants';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
@@ -43,8 +42,6 @@ import {
     getVoltageInitParameters,
     updateVoltageInitParameters,
 } from 'utils/rest-api';
-import InfoIcon from '@mui/icons-material/Info';
-import { VoltageAdornment } from 'components/dialogs/dialogUtils';
 import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { CloseButton, useStyles } from '../parameters';
@@ -57,7 +54,7 @@ const formSchema = yup
             .array()
             .of(
                 yup.object().shape({
-                    [FILTERS]: yup
+                    [FIXED_GENERATORS]: yup
                         .array()
                         .of(
                             yup.object().shape({
@@ -66,8 +63,24 @@ const formSchema = yup
                             })
                         )
                         .min(1, 'FilterInputMinError'),
-                    [LOW_VOLTAGE_LIMIT]: yup.number().nullable(),
-                    [HIGH_VOLTAGE_LIMIT]: yup.number().nullable(),
+                    [VARIABLE_TRANSFORMERS]: yup
+                        .array()
+                        .of(
+                            yup.object().shape({
+                                [ID]: yup.string().required(),
+                                [NAME]: yup.string().required(),
+                            })
+                        )
+                        .min(1, 'FilterInputMinError'),
+                    [VARIABLE_SHUNT_COMPENSATORS]: yup
+                        .array()
+                        .of(
+                            yup.object().shape({
+                                [ID]: yup.string().required(),
+                                [NAME]: yup.string().required(),
+                            })
+                        )
+                        .min(1, 'FilterInputMinError'),
                 })
             )
             .required(),
@@ -79,18 +92,19 @@ const EquipmentsSelectionParameters = ({
     useVoltageInitParameters,
 }) => {
     const classes = useStyles();
-    const intl = useIntl();
 
     const emptyFormData = useMemo(() => {
         return {
-            [EQUIPMENTS_SELECTION]: [],
+            [FIXED_GENERATORS]: [],
+            [VARIABLE_TRANSFORMERS]: [],
+            [VARIABLE_SHUNT_COMPENSATORS]: [],
         };
     }, []);
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, control, handleSubmit } = formMethods;
+    const { reset, handleSubmit } = formMethods;
 
     const [voltageInitParams, setVoltageInitParams] = useVoltageInitParameters;
 
@@ -103,11 +117,11 @@ const EquipmentsSelectionParameters = ({
             console.info('newParams', newParams)
             updateVoltageInitParameters(
                 studyUuid,
-                formatNewParams(newParams.equipmentsSelection)
+                formatNewParams(newParams)
             )
                 .then(() => {
                     setVoltageInitParams(
-                        formatNewParams(newParams.equipmentsSelection)
+                        formatNewParams(newParams)
                     );
                 })
                 .catch((error) => {
@@ -145,19 +159,25 @@ const EquipmentsSelectionParameters = ({
             reset({
                 [EQUIPMENTS_SELECTION]: equipmentsSelection.map((filters) => {
                     return {
-                        [FIXED_GENERATORS]: filters[FIXED_GENERATORS].map((filter) => {
+                        [FIXED_GENERATORS]: filters[FIXED_GENERATORS].map(
+                            (filter) => {
+                                return {
+                                    [ID]: filter[FILTER_ID],
+                                    [NAME]: filter[FILTER_NAME],
+                                };
+                            }
+                        ),
+                        [VARIABLE_TRANSFORMERS]: filters[
+                            VARIABLE_TRANSFORMERS
+                        ].map((filter) => {
                             return {
                                 [ID]: filter[FILTER_ID],
                                 [NAME]: filter[FILTER_NAME],
                             };
                         }),
-                        [VARIABLE_TRANSFORMERS]: filters[VARIABLE_TRANSFORMERS].map((filter) => {
-                            return {
-                                [ID]: filter[FILTER_ID],
-                                [NAME]: filter[FILTER_NAME],
-                            };
-                        }),
-                        [VARIABLE_SHUNT_COMPENSATORS]: filters[VARIABLE_SHUNT_COMPENSATORS].map((filter) => {
+                        [VARIABLE_SHUNT_COMPENSATORS]: filters[
+                            VARIABLE_SHUNT_COMPENSATORS
+                        ].map((filter) => {
                             return {
                                 [ID]: filter[FILTER_ID],
                                 [NAME]: filter[FILTER_NAME],
@@ -171,7 +191,8 @@ const EquipmentsSelectionParameters = ({
     );
 
     const formatNewParams = useCallback((equipmentsSelection) => {
-        return {
+        console.info('equipmentsSelection', equipmentsSelection)
+        const elem = {
             [EQUIPMENTS_SELECTION]: equipmentsSelection.map((filters) => {
                 return {
                     [FIXED_GENERATORS]: filters[FILTERS].map((filter) => {
@@ -186,20 +207,26 @@ const EquipmentsSelectionParameters = ({
                             [FILTER_NAME]: filter[NAME],
                         };
                     }),
-                    [VARIABLE_SHUNT_COMPENSATORS]: filters[FILTERS].map((filter) => {
-                        return {
-                            [FILTER_ID]: filter[ID],
-                            [FILTER_NAME]: filter[NAME],
-                        };
-                    }),
+                    [VARIABLE_SHUNT_COMPENSATORS]: filters[FILTERS].map(
+                        (filter) => {
+                            return {
+                                [FILTER_ID]: filter[ID],
+                                [FILTER_NAME]: filter[NAME],
+                            };
+                        }
+                    ),
                 };
+        console.info('elem', elem)
+        return elem;
             }),
         };
     }, []);
 
     useEffect(() => {
         if (voltageInitParams?.equipmentsSelection) {
-            fromEquipmentsSelectionDataToFormValues(voltageInitParams.equipmentsSelection);
+            fromEquipmentsSelectionDataToFormValues(
+                voltageInitParams.equipmentsSelection
+            );
         }
     }, [fromEquipmentsSelectionDataToFormValues, voltageInitParams]);
 
