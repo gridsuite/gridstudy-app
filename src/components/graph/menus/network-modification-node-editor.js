@@ -836,7 +836,6 @@ const NetworkModificationNodeEditor = () => {
                 <div className={classes.filler} />
                 <IconButton
                     className={classes.toolbarIcon}
-                    color="primary"
                     size="small"
                     onClick={openNetworkModificationConfiguration}
                     disabled={isAnyNodeBuilding}
