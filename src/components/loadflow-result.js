@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@mui/material/Paper';
-import VirtualizedTable from './utils/virtualized-table';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import { TableCell } from '@mui/material';
@@ -22,6 +21,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
 import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
+import { CustomAGGrid } from './dialogs/custom-aggrid';
 
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const useStyles = makeStyles((theme) => ({
@@ -118,7 +118,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     }, [studyUuid, nodeUuid, intl, snackError, limitReductionParam, result]);
 
     function StatusCellRender(cellData) {
-        const status = cellData.rowData[cellData.dataKey];
+        const status = cellData.value;
         const color = status === 'CONVERGED' ? classes.succeed : classes.fail;
         return (
             <TableCell
@@ -137,9 +137,48 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             </TableCell>
         );
     }
+    const loadFlowConstraintscolumns = [
+        {
+            headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
+            field: 'name',
+            numeric: false,
+        },
+        {
+            headerName: intl.formatMessage({ id: 'LimitName' }),
+            field: 'limitName',
+            numeric: false,
+        },
+        {
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
+            numeric: true,
+        },
+        {
+            headerName: intl.formatMessage({ id: 'LimitAcceptableDuration' }),
+            field: 'acceptableDuration',
+            numeric: false,
+        },
+        {
+            headerName: intl.formatMessage({ id: 'Limit' }),
+            field: 'limit',
+            valueFormatter: (params) => params.value.toFixed(1),
+        },
+        {
+            headerName: intl.formatMessage({ id: 'Intensity' }),
+            field: 'intensity',
+            numeric: true,
+            valueFormatter: (params) => params.value.toFixed(1),
+        },
+        {
+            headerName: intl.formatMessage({ id: 'EquipmentOverload' }),
+            field: 'overload',
+            numeric: true,
+            valueFormatter: (params) => `${Math.round(params.value)}%`,
+        },
+    ];
 
     function NumberRenderer(cellData) {
-        const value = cellData.rowData[cellData.dataKey];
+        const value = cellData.data[cellData.colDef.field];
         return (
             <TableCell
                 component={'div'}
@@ -150,53 +189,63 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             </TableCell>
         );
     }
+    const defaultColDef = useMemo(
+        () => ({
+            filter: true,
+            sortable: true,
+            resizable: true,
+            lockPinned: true,
+            wrapHeaderText: true,
+            autoHeaderHeight: true,
+        }),
+        []
+    );
+    const loadFlowResultcolumns = [
+        {
+            headerName: intl.formatMessage({
+                id: 'connectedComponentNum',
+            }),
+            field: 'connectedComponentNum',
+        },
+        {
+            headerName: intl.formatMessage({
+                id: 'synchronousComponentNum',
+            }),
+            field: 'synchronousComponentNum',
+        },
+        {
+            headerName: intl.formatMessage({ id: 'status' }),
+            field: 'status',
+            cellRenderer: StatusCellRender,
+        },
+        {
+            headerName: intl.formatMessage({
+                id: 'iterationCount',
+            }),
+            field: 'iterationCount',
+        },
+        {
+            headerName: intl.formatMessage({
+                id: 'slackBusId',
+            }),
+            field: 'slackBusId',
+        },
+        {
+            headerName: intl.formatMessage({
+                id: 'slackBusActivePowerMismatch',
+            }),
+            field: 'slackBusActivePowerMismatch',
+            cellRenderer: NumberRenderer,
+        },
+    ];
 
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.tablePaper}>
-                <VirtualizedTable
-                    rows={result.componentResults}
-                    sortable={true}
-                    columns={[
-                        {
-                            label: intl.formatMessage({
-                                id: 'connectedComponentNum',
-                            }),
-                            dataKey: 'connectedComponentNum',
-                        },
-                        {
-                            label: intl.formatMessage({
-                                id: 'synchronousComponentNum',
-                            }),
-                            dataKey: 'synchronousComponentNum',
-                        },
-                        {
-                            label: intl.formatMessage({
-                                id: 'status',
-                            }),
-                            dataKey: 'status',
-                            cellRenderer: StatusCellRender,
-                        },
-                        {
-                            label: intl.formatMessage({
-                                id: 'iterationCount',
-                            }),
-                            dataKey: 'iterationCount',
-                        },
-                        {
-                            label: intl.formatMessage({
-                                id: 'slackBusId',
-                            }),
-                            dataKey: 'slackBusId',
-                        },
-                        {
-                            label: intl.formatMessage({
-                                id: 'slackBusActivePowerMismatch',
-                            }),
-                            dataKey: 'slackBusActivePowerMismatch',
-                            cellRenderer: NumberRenderer,
-                        },
-                    ]}
+                <CustomAGGrid
+                    rowData={result.componentResults}
+                    defaultColDef={defaultColDef}
+                    columnDefs={loadFlowResultcolumns}
                 />
             </Paper>
         );
@@ -205,56 +254,11 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     function renderLoadFlowConstraints() {
         return (
             <Paper className={classes.tablePaper}>
-                <VirtualizedTable
-                    rows={overloadedEquipments}
-                    sortable={true}
-                    columns={[
-                        {
-                            label: intl.formatMessage({
-                                id: 'OverloadedEquipment',
-                            }),
-                            dataKey: 'name',
-                            numeric: false,
-                        },
-                        {
-                            label: intl.formatMessage({ id: 'LimitName' }),
-                            dataKey: 'limitName',
-                            numeric: false,
-                        },
-                        {
-                            label: intl.formatMessage({ id: 'LimitSide' }),
-                            dataKey: 'side',
-                            numeric: true,
-                        },
-                        {
-                            label: intl.formatMessage({
-                                id: 'LimitAcceptableDuration',
-                            }),
-                            dataKey: 'acceptableDuration',
-                            numeric: false,
-                        },
-                        {
-                            label: intl.formatMessage({ id: 'Limit' }),
-                            dataKey: 'limit',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            label: intl.formatMessage({ id: 'Intensity' }),
-                            dataKey: 'intensity',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            label: intl.formatMessage({
-                                id: 'EquipmentOverload',
-                            }),
-                            dataKey: 'overload',
-                            numeric: true,
-                            fractionDigits: 0,
-                            unit: '%',
-                        },
-                    ]}
+                <CustomAGGrid
+                    rowData={overloadedEquipments}
+                    defaultColDef={defaultColDef}
+                    columnDefs={loadFlowConstraintscolumns}
+                    shouldHidePinnedHeaderRightBorder={false}
                 />
             </Paper>
         );
