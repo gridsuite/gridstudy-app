@@ -660,38 +660,15 @@ export function searchEquipmentsInfos(
 }
 
 export function fetchAllEquipments(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        'All',
-        'all'
-    );
-}
-
-export function fetchEquipments(
-    studyUuid,
-    currentNodeUuid,
-    substationsIds,
-    equipmentType,
-    equipmentPath,
-    inUpstreamBuiltParentNode
-) {
     console.info(
-        `Fetching equipments '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+        `Fetching all equipments of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
     );
     let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
+    urlSearchParams.append('inUpstreamBuiltParentNode', false);
 
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/' +
-        equipmentPath +
+        '/network-map/all' +
         '?' +
         getQueryParamsList(substationsIds, 'substationId') +
         urlSearchParams.toString();
@@ -836,39 +813,14 @@ export function fetchLineOrTransformer(
     currentNodeUuid,
     equipmentId
 ) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        'branch-or-3wt',
-        equipmentId,
-        true
-    );
-}
-
-export function fetchEquipmentInfos(
-    studyUuid,
-    currentNodeUuid,
-    equipmentPath,
-    equipmentId,
-    inUpstreamBuiltParentNode
-) {
     console.info(
-        `Fetching specific equipment '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching specific equipment '${equipmentId}' of type branch-or-3wt of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
-
     let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
-
+    urlSearchParams.append('inUpstreamBuiltParentNode', true);
     const fetchEquipmentInfosUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/' +
-        equipmentPath +
-        '/' +
+        '/network-map/branch-or-3wt/' +
         encodeURIComponent(equipmentId) +
         '?' +
         urlSearchParams.toString();
