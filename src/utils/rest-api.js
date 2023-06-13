@@ -517,8 +517,7 @@ export function fetchGenerators(studyUuid, currentNodeUuid, substationsIds) {
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.GENERATOR.type,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        false
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -539,8 +538,7 @@ export function fetchDanglingLines(studyUuid, currentNodeUuid, substationsIds) {
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.DANGLING_LINE.type,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        false
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -550,8 +548,7 @@ export function fetchBatteries(studyUuid, currentNodeUuid, substationsIds) {
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.BATTERY.type,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        false
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -576,8 +573,7 @@ export function fetchLccConverterStations(
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        false
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -591,8 +587,7 @@ export function fetchVscConverterStations(
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        false
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -606,8 +601,7 @@ export function fetchShuntCompensators(
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        false
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -621,8 +615,7 @@ export function fetchStaticVarCompensators(
         currentNodeUuid,
         substationsIds,
         EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
-        EQUIPMENT_INFOS_TYPES.TAB.type,
-        false
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
