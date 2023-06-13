@@ -9,16 +9,9 @@ import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     Box,
     Button,
-    Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle,
     Grid,
-    IconButton,
-    LinearProgress,
-    MenuItem,
-    Select,
-    Tooltip,
     Typography,
 } from '@mui/material';
 import SubmitButton from 'components/dialogs/commons/submitButton';
@@ -104,7 +97,7 @@ const EquipmentsSelectionParameters = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, handleSubmit } = formMethods;
+    const { reset, control, handleSubmit } = formMethods;
 
     const [voltageInitParams, setVoltageInitParams] = useVoltageInitParameters;
 
@@ -114,15 +107,10 @@ const EquipmentsSelectionParameters = ({
 
     const onSubmit = useCallback(
         (newParams) => {
-            console.info('newParams', newParams)
-            updateVoltageInitParameters(
-                studyUuid,
-                formatNewParams(newParams)
-            )
+            console.info('newParams', newParams);
+            updateVoltageInitParameters(studyUuid, formatNewParams(newParams))
                 .then(() => {
-                    setVoltageInitParams(
-                        formatNewParams(newParams)
-                    );
+                    setVoltageInitParams(formatNewParams(newParams));
                 })
                 .catch((error) => {
                     snackError({
@@ -191,8 +179,8 @@ const EquipmentsSelectionParameters = ({
     );
 
     const formatNewParams = useCallback((equipmentsSelection) => {
-        console.info('equipmentsSelection', equipmentsSelection)
-        const elem = {
+        console.info('equipmentsSelection', equipmentsSelection);
+        return {
             [EQUIPMENTS_SELECTION]: equipmentsSelection.map((filters) => {
                 return {
                     [FIXED_GENERATORS]: filters[FILTERS].map((filter) => {
@@ -216,8 +204,6 @@ const EquipmentsSelectionParameters = ({
                         }
                     ),
                 };
-        console.info('elem', elem)
-        return elem;
             }),
         };
     }, []);
