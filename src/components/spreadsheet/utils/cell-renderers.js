@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const BooleanCellRenderer = (props) => {
-    const isChecked = props.value;
+    const isChecked = Boolean(props.value);
     return (
         <div>
             {isChecked !== undefined && (
