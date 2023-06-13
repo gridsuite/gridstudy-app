@@ -131,7 +131,9 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
                 {gridItem(activePowerField, 4)}
                 {gridItem(reactivePowerField, 4)}
             </Grid>
-            <FrequencyRegulation />
+            <Grid container spacing={2} paddingTop={2}>
+                <FrequencyRegulation />
+            </Grid>
         </>
     );
 };

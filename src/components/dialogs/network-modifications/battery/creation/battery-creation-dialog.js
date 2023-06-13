@@ -33,6 +33,8 @@ import {
     MINIMUM_ACTIVE_POWER,
     FREQUENCY_REGULATION,
     DROOP,
+    REACTIVE_CAPABILITY_CURVE_TABLE,
+    REACTIVE_CAPABILITY_CURVE_CHOICE,
 } from 'components/utils/field-constants';
 import {
     getConnectivityWithPositionEmptyFormData,
@@ -171,6 +173,8 @@ const BatteryCreationDialog = ({
 
     const onSubmit = useCallback(
         (battery) => {
+            const isReactiveCapabilityCurveOn =
+                battery[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             createBattery(
                 studyUuid,
                 currentNodeUuid,
@@ -184,8 +188,16 @@ const BatteryCreationDialog = ({
                 battery[CONNECTIVITY]?.[CONNECTION_POSITION],
                 battery[MINIMUM_ACTIVE_POWER],
                 battery[MAXIMUM_ACTIVE_POWER],
-                battery[ACTIVE_POWER_SET_POINT],
-                battery[REACTIVE_POWER_SET_POINT],
+                isReactiveCapabilityCurveOn,
+                isReactiveCapabilityCurveOn
+                    ? null
+                    : battery[MINIMUM_REACTIVE_POWER],
+                isReactiveCapabilityCurveOn
+                    ? null
+                    : battery[MAXIMUM_REACTIVE_POWER],
+                isReactiveCapabilityCurveOn
+                    ? battery[REACTIVE_CAPABILITY_CURVE_TABLE]
+                    : null,
                 battery[ACTIVE_POWER],
                 battery[REACTIVE_POWER],
                 battery[FREQUENCY_REGULATION],
