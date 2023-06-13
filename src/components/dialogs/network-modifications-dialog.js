@@ -101,7 +101,7 @@ NetworkModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onOpenDialog: PropTypes.func.isRequired,
-    dialogs: PropTypes.array,
+    dialogs: PropTypes.object,
 };
 
 export default NetworkModificationDialog;
