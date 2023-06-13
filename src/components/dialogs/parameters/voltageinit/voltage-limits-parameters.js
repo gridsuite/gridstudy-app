@@ -196,8 +196,6 @@ const VoltageLimitsParameters = ({
 
     const onSubmit = useCallback(
         (newParams) => {
-            console.info('newParams', newParams)
-            console.info('formatNewParams(newParams.voltageLimits)', formatNewParams(newParams.voltageLimits))
             updateVoltageInitParameters(
                 studyUuid,
                 formatNewParams(newParams.voltageLimits)

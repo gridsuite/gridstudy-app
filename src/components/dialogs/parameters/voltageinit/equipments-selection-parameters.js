@@ -43,40 +43,24 @@ import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENTS_SELECTION]: yup
-            .array()
-            .of(
-                yup.object().shape({
-                    [FIXED_GENERATORS]: yup
-                        .array()
-                        .of(
-                            yup.object().shape({
-                                [ID]: yup.string().required(),
-                                [NAME]: yup.string().required(),
-                            })
-                        )
-                        .min(1, 'FilterInputMinError'),
-                    [VARIABLE_TRANSFORMERS]: yup
-                        .array()
-                        .of(
-                            yup.object().shape({
-                                [ID]: yup.string().required(),
-                                [NAME]: yup.string().required(),
-                            })
-                        )
-                        .min(1, 'FilterInputMinError'),
-                    [VARIABLE_SHUNT_COMPENSATORS]: yup
-                        .array()
-                        .of(
-                            yup.object().shape({
-                                [ID]: yup.string().required(),
-                                [NAME]: yup.string().required(),
-                            })
-                        )
-                        .min(1, 'FilterInputMinError'),
-                })
-            )
-            .required(),
+        [FIXED_GENERATORS]: yup.array().of(
+            yup.object().shape({
+                [ID]: yup.string().required(),
+                [NAME]: yup.string().required(),
+            })
+        ),
+        [VARIABLE_TRANSFORMERS]: yup.array().of(
+            yup.object().shape({
+                [ID]: yup.string().required(),
+                [NAME]: yup.string().required(),
+            })
+        ),
+        [VARIABLE_SHUNT_COMPENSATORS]: yup.array().of(
+            yup.object().shape({
+                [ID]: yup.string().required(),
+                [NAME]: yup.string().required(),
+            })
+        ),
     })
     .required();
 
@@ -107,7 +91,6 @@ const EquipmentsSelectionParameters = ({
 
     const onSubmit = useCallback(
         (newParams) => {
-            console.info('newParams', newParams);
             updateVoltageInitParameters(studyUuid, formatNewParams(newParams))
                 .then(() => {
                     setVoltageInitParams(formatNewParams(newParams));
@@ -145,66 +128,65 @@ const EquipmentsSelectionParameters = ({
     const fromEquipmentsSelectionDataToFormValues = useCallback(
         (equipmentsSelection) => {
             reset({
-                [EQUIPMENTS_SELECTION]: equipmentsSelection.map((filters) => {
-                    return {
-                        [FIXED_GENERATORS]: filters[FIXED_GENERATORS].map(
-                            (filter) => {
-                                return {
-                                    [ID]: filter[FILTER_ID],
-                                    [NAME]: filter[FILTER_NAME],
-                                };
-                            }
-                        ),
-                        [VARIABLE_TRANSFORMERS]: filters[
-                            VARIABLE_TRANSFORMERS
-                        ].map((filter) => {
-                            return {
-                                [ID]: filter[FILTER_ID],
-                                [NAME]: filter[FILTER_NAME],
-                            };
-                        }),
-                        [VARIABLE_SHUNT_COMPENSATORS]: filters[
-                            VARIABLE_SHUNT_COMPENSATORS
-                        ].map((filter) => {
-                            return {
-                                [ID]: filter[FILTER_ID],
-                                [NAME]: filter[FILTER_NAME],
-                            };
-                        }),
-                    };
-                }),
+                [EQUIPMENTS_SELECTION]: {
+                    [FIXED_GENERATORS]: equipmentsSelection[
+                        FIXED_GENERATORS
+                    ].map((filter) => {
+                        return {
+                            [ID]: filter[FILTER_ID],
+                            [NAME]: filter[FILTER_NAME],
+                        };
+                    }),
+                    [VARIABLE_TRANSFORMERS]: equipmentsSelection[
+                        VARIABLE_TRANSFORMERS
+                    ].map((filter) => {
+                        return {
+                            [ID]: filter[FILTER_ID],
+                            [NAME]: filter[FILTER_NAME],
+                        };
+                    }),
+                    [VARIABLE_SHUNT_COMPENSATORS]: equipmentsSelection[
+                        VARIABLE_SHUNT_COMPENSATORS
+                    ].map((filter) => {
+                        return {
+                            [ID]: filter[FILTER_ID],
+                            [NAME]: filter[FILTER_NAME],
+                        };
+                    }),
+                },
             });
         },
         [reset]
     );
 
     const formatNewParams = useCallback((equipmentsSelection) => {
-        console.info('equipmentsSelection', equipmentsSelection);
         return {
-            [EQUIPMENTS_SELECTION]: equipmentsSelection.map((filters) => {
-                return {
-                    [FIXED_GENERATORS]: filters[FILTERS].map((filter) => {
+            [EQUIPMENTS_SELECTION]: {
+                [FIXED_GENERATORS]: equipmentsSelection[FIXED_GENERATORS].map(
+                    (filter) => {
                         return {
                             [FILTER_ID]: filter[ID],
                             [FILTER_NAME]: filter[NAME],
                         };
-                    }),
-                    [VARIABLE_TRANSFORMERS]: filters[FILTERS].map((filter) => {
-                        return {
-                            [FILTER_ID]: filter[ID],
-                            [FILTER_NAME]: filter[NAME],
-                        };
-                    }),
-                    [VARIABLE_SHUNT_COMPENSATORS]: filters[FILTERS].map(
-                        (filter) => {
-                            return {
-                                [FILTER_ID]: filter[ID],
-                                [FILTER_NAME]: filter[NAME],
-                            };
-                        }
-                    ),
-                };
-            }),
+                    }
+                ),
+                [VARIABLE_TRANSFORMERS]: equipmentsSelection[
+                    VARIABLE_TRANSFORMERS
+                ].map((filter) => {
+                    return {
+                        [FILTER_ID]: filter[ID],
+                        [FILTER_NAME]: filter[NAME],
+                    };
+                }),
+                [VARIABLE_SHUNT_COMPENSATORS]: equipmentsSelection[
+                    VARIABLE_SHUNT_COMPENSATORS
+                ].map((filter) => {
+                    return {
+                        [FILTER_ID]: filter[ID],
+                        [FILTER_NAME]: filter[NAME],
+                    };
+                }),
+            },
         };
     }, []);
 
@@ -234,7 +216,7 @@ const EquipmentsSelectionParameters = ({
                     </Grid>
                     <Grid item xs={4} className={classes.controlItem}>
                         <DirectoryItemsInput
-                            name={'FixedGenerators'}
+                            name={FIXED_GENERATORS}
                             equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
                             elementType={elementType.FILTER}
                             titleId={'FixedGenerators'}
@@ -252,7 +234,7 @@ const EquipmentsSelectionParameters = ({
                     </Grid>
                     <Grid item xs={4} className={classes.controlItem}>
                         <DirectoryItemsInput
-                            name={'VariableTransformers'}
+                            name={VARIABLE_TRANSFORMERS}
                             equipmentTypes={[
                                 EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
                                 EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
@@ -275,7 +257,7 @@ const EquipmentsSelectionParameters = ({
                     </Grid>
                     <Grid item xs={4} className={classes.controlItem}>
                         <DirectoryItemsInput
-                            name={'VariableShuntCompensators'}
+                            name={VARIABLE_SHUNT_COMPENSATORS}
                             equipmentTypes={[
                                 EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
                             ]}

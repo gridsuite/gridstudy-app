@@ -223,7 +223,7 @@ export const VOLTAGE_LIMITS = 'voltageLimits';
 export const EQUIPMENTS_SELECTION = 'equipmentsSelection';
 export const FIXED_GENERATORS = 'fixedGenerators';
 export const VARIABLE_TRANSFORMERS = 'variableTransformers';
-export const VARIABLE_SHUNT_COMPENSATORS = 'VariableShuntCompensators';
+export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
 
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
