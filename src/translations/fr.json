@@ -153,7 +153,7 @@
     "HighVoltageLimitAdjustment" : "Modification limite haute",
     "VoltageLevelFilterTooltip" : "Les saisies sont appliquées dans l'ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si un poste est inclus dans plusieurs filtres)",
     "FilterInputMinError" : "Vous devez sélectionner au moins un filtre",
-    "EquipmentsSelection": "Sélection ouvrages",
+    "EquipmentSelection": "Sélection ouvrages",
     "FixedGenerators": "Groupes fixes",
     "VariableTransformers": "Transformateurs variables",
     "VariableShuntCompensators": "MCS variables",

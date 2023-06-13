@@ -565,9 +565,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         {enableDeveloperMode && (
                             <Tab
                                 disabled={!studyUuid}
-                                label={
-                                    <FormattedMessage id="VoltageInit" />
-                                }
+                                label={<FormattedMessage id="VoltageInit" />}
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
                         )}
