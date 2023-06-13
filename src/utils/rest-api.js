@@ -1720,13 +1720,20 @@ export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
     });
 }
 
-export function copySubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+export function copySubtree(
+    sourceStudyId,
+    targetStudyId,
+    nodeToCopyUuid,
+    referenceNodeUuid
+) {
     const nodeCopyUrl =
         getStudyUrl(targetStudyId) +
         '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
         nodeToCopyUuid +
         '&referenceNodeUuid=' +
-        referenceNodeUuid;
+        referenceNodeUuid +
+        '&sourceStudyUuid=' +
+        sourceStudyId;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',

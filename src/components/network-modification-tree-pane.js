@@ -134,7 +134,7 @@ export const NetworkModificationTreePane = ({
                 dispatchSelectionForCopy(
                     event.data.sourceStudyId,
                     event.data.nodeId,
-                    CopyType.NODE_COPY
+                    event.data.copyType
                 );
             }
         };
@@ -413,6 +413,7 @@ export const NetworkModificationTreePane = ({
         broadcastChannel.postMessage({
             sourceStudyId: studyUuid,
             nodeId: nodeId,
+            copyType: CopyType.NODE_COPY,
         });
     };
 
@@ -533,7 +534,13 @@ export const NetworkModificationTreePane = ({
                 studyUuid +
                 ' selected for copy'
         );
+        isInitiatingCopyTab.current = true;
         dispatchSelectionForCopy(studyUuid, nodeId, CopyType.SUBTREE_COPY);
+        broadcastChannel.postMessage({
+            sourceStudyId: studyUuid,
+            nodeId: nodeId,
+            copyType: CopyType.SUBTREE_COPY,
+        });
     };
 
     const handleCutSubtree = (nodeId) => {
@@ -561,6 +568,7 @@ export const NetworkModificationTreePane = ({
                 CopyType.SUBTREE_COPY === selectionForCopyRef.current.copyType
             ) {
                 copySubtree(
+                    selectionForCopyRef.current.sourceStudyId,
                     studyUuid,
                     selectionForCopyRef.current.nodeId,
                     referenceNodeId

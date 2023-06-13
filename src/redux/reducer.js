@@ -598,6 +598,7 @@ export const reducer = createReducer(initialState, {
     [SELECTION_FOR_COPY]: (state, action) => {
         const selectionForCopy = action.selectionForCopy;
         if (
+            selectionForCopy.sourceStudyId === state.studyUuid &&
             selectionForCopy.nodeId &&
             (selectionForCopy.copyType === CopyType.SUBTREE_COPY ||
                 selectionForCopy.copyType === CopyType.SUBTREE_CUT)
