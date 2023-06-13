@@ -3373,3 +3373,24 @@ export function getLineTypesCatalog() {
         '/v1/network-modifications/catalog/line_types';
     return backendFetchJson(url);
 }
+
+export function getSecurityAnalysisParameters(studyUuid) {
+    console.info('get security analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function setSecurityAnalysisParameters(studyUuid, newParams) {
+    console.info('set security analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
+}
