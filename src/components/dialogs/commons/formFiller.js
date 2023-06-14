@@ -9,14 +9,10 @@ import React from 'react';
 import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
 import { Box } from '@mui/system';
-import { FormattedMessage } from 'react-intl';
 import { useTheme } from '@mui/material/styles';
 
 const useStyles = makeStyles((theme) => ({
     filler: {
-        fontSize: 'small',
-        fontStyle: 'italic',
-        color: theme.palette.text.secondary,
         backgroundColor: theme.formFiller.background,
         display: 'flex',
         justifyContent: 'center',
@@ -24,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const FormFiller = ({ messageId = null, size = 12, height = 1 }) => {
+export const FormFiller = ({ size = 12, height = 1, children }) => {
     const classes = useStyles();
     const theme = useTheme();
 
@@ -44,7 +40,7 @@ export const FormFiller = ({ messageId = null, size = 12, height = 1 }) => {
                         height: theme.spacing(7 * height),
                     }}
                 >
-                    {messageId && <FormattedMessage id={messageId} />}
+                    {children}
                 </Box>
             </Grid>
         </Grid>

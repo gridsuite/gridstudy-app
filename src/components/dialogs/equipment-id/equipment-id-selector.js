@@ -7,21 +7,37 @@
 
 import React, { useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from '../../../utils/rest-api';
-import { filledTextField, gridItem, useStyles } from '../dialogUtils';
+import { filledTextField, gridItem } from '../dialogUtils';
 import { Autocomplete, TextField } from '@mui/material';
 import { FieldLabel } from '../../utils/inputs/hooks-helpers';
 import Grid from '@mui/material/Grid';
 import { FormFiller } from '../commons/formFiller';
+import CircularProgress from '@mui/material/CircularProgress';
+import makeStyles from '@mui/styles/makeStyles';
+import { Box } from '@mui/system';
+import { FormattedMessage } from 'react-intl';
+import clsx from 'clsx';
+
+const useStyles = makeStyles((theme) => ({
+    message: {
+        fontSize: 'small',
+        fontStyle: 'italic',
+        color: theme.palette.text.secondary,
+    },
+    hidden: {
+        color: 'rgba(0,0,0,0)',
+        width: 0,
+    },
+}));
 
 export const EquipmentIdSelector = ({
     studyUuid,
     currentNode,
-    selectedId,
+    defaultValue,
     setSelectedId,
     equipmentType,
     formProps,
     readOnly = false,
-    addFiller = false,
     fillerHeight = 1,
     fillerMessageId = 'idSelector.idNeeded',
     ...props
@@ -29,6 +45,7 @@ export const EquipmentIdSelector = ({
     const classes = useStyles();
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
+    const [selectedValue, setSelectedValue] = useState(null);
 
     useEffect(() => {
         fetchEquipmentsIds(
@@ -42,17 +59,24 @@ export const EquipmentIdSelector = ({
         });
     }, [studyUuid, currentNodeUuid, equipmentType]);
 
+    // We go through this effect to force a rerender and display the loading icon.
+    useEffect(() => {
+        if (selectedValue) {
+            setSelectedId(selectedValue);
+        }
+    }, [selectedValue, setSelectedId]);
+
     const handleChange = (newId, reason) => {
         if (newId && (reason === 'createOption' || reason === 'selectOption')) {
-            setSelectedId(newId);
+            setSelectedValue(newId);
         } else if (reason === 'clear') {
-            setSelectedId(null);
+            setSelectedValue(null);
         }
     };
 
     const equipmentIdField = (
         <Autocomplete
-            value={selectedId}
+            value={defaultValue}
             freeSolo
             size="small"
             autoComplete
@@ -85,9 +109,18 @@ export const EquipmentIdSelector = ({
             <Grid container spacing={2}>
                 {gridItem(equipmentIdField, 4)}
             </Grid>
-            {addFiller && (
-                <FormFiller messageId={fillerMessageId} height={fillerHeight} />
-            )}
+            <FormFiller height={fillerHeight}>
+                {fillerMessageId && !selectedValue && (
+                    <Box className={classes.message}>
+                        <FormattedMessage id={fillerMessageId} />
+                    </Box>
+                )}
+                <CircularProgress
+                    // We keep the circular progress rendered but hidden to prevent an incomplete
+                    // rendering when we set the choosen ID in the parent component.
+                    className={clsx({ [classes.hidden]: !selectedValue })}
+                />
+            </FormFiller>
         </>
     );
 };

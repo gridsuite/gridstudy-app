@@ -64,7 +64,6 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import { FetchStatus } from 'utils/rest-api';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 
-// TODO CHARLY quand on limite la bande passante et qu'on édit une modif, on a bien le truc bleu de loading. Si par contre on créé une modif, on ne l'a pas.
 const GeneratorModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
@@ -584,10 +583,9 @@ const GeneratorModificationDialog = ({
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        selectedId={selectedId}
+                        defaultValue={selectedId}
                         setSelectedId={setSelectedId}
                         equipmentType={'GENERATOR'}
-                        addFiller
                         fillerHeight={17}
                     />
                 )}
