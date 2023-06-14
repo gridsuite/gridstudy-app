@@ -59,7 +59,7 @@ const EquipmentPopover = ({
                 studyUuid,
                 currentNode.id,
                 equipmentType,
-                EQUIPMENT_INFOS_TYPES.MAP.type,
+                EQUIPMENT_INFOS_TYPES.TOOLTIP.type,
                 equipmentId,
                 true
             ).then((value) => {
