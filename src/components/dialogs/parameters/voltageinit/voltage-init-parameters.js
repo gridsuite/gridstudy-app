@@ -176,7 +176,7 @@ export const VoltageInitParameters = ({
             [EQUIPMENT_SELECTION]: {
                 [FIXED_GENERATORS]: newParams.equipmentSelection[
                     FIXED_GENERATORS
-                ].map((filter) => {
+                ]?.map((filter) => {
                     return {
                         [FILTER_ID]: filter[ID],
                         [FILTER_NAME]: filter[NAME],
@@ -184,7 +184,7 @@ export const VoltageInitParameters = ({
                 }),
                 [VARIABLE_TRANSFORMERS]: newParams.equipmentSelection[
                     VARIABLE_TRANSFORMERS
-                ].map((filter) => {
+                ]?.map((filter) => {
                     return {
                         [FILTER_ID]: filter[ID],
                         [FILTER_NAME]: filter[NAME],
@@ -192,7 +192,7 @@ export const VoltageInitParameters = ({
                 }),
                 [VARIABLE_SHUNT_COMPENSATORS]: newParams.equipmentSelection[
                     VARIABLE_SHUNT_COMPENSATORS
-                ].map((filter) => {
+                ]?.map((filter) => {
                     return {
                         [FILTER_ID]: filter[ID],
                         [FILTER_NAME]: filter[NAME],
@@ -244,7 +244,7 @@ export const VoltageInitParameters = ({
                     : {
                           [FIXED_GENERATORS]: parameters.equipmentSelection[
                               FIXED_GENERATORS
-                          ].map((filter) => {
+                          ]?.map((filter) => {
                               return {
                                   [ID]: filter[FILTER_ID],
                                   [NAME]: filter[FILTER_NAME],
@@ -253,7 +253,7 @@ export const VoltageInitParameters = ({
                           [VARIABLE_TRANSFORMERS]:
                               parameters.equipmentSelection[
                                   VARIABLE_TRANSFORMERS
-                              ].map((filter) => {
+                              ]?.map((filter) => {
                                   return {
                                       [ID]: filter[FILTER_ID],
                                       [NAME]: filter[FILTER_NAME],
@@ -262,7 +262,7 @@ export const VoltageInitParameters = ({
                           [VARIABLE_SHUNT_COMPENSATORS]:
                               parameters.equipmentSelection[
                                   VARIABLE_SHUNT_COMPENSATORS
-                              ].map((filter) => {
+                              ]?.map((filter) => {
                                   return {
                                       [ID]: filter[FILTER_ID],
                                       [NAME]: filter[FILTER_NAME],
@@ -275,23 +275,21 @@ export const VoltageInitParameters = ({
     );
 
     useEffect(() => {
-        // if (voltageInitParams?.voltageLimits) {
-        //     fromVoltageInitParamsDataToFormValues(voltageInitParams.voltageLimits);
-        // }
         if (voltageInitParams) {
             fromVoltageInitParamsDataToFormValues(voltageInitParams);
         }
     }, [fromVoltageInitParamsDataToFormValues, voltageInitParams]);
 
     const clear = useCallback(() => {
-        if (tabValue === TAB_VALUES.voltageLimitsParamsTabValue) {
-            reset(emptyFormData[VOLTAGE_LIMITS]);
-        } else if (tabValue === TAB_VALUES.equipmentSelectionParamsTabValue) {
-            reset(emptyFormData[EQUIPMENT_SELECTION]);
-        }
-        // reset(emptyFormData);
+        //TODO reset all or only one tab ?
+        // if (tabValue === TAB_VALUES.voltageLimitsParamsTabValue) {
+        //     reset(emptyFormData[VOLTAGE_LIMITS]);
+        // } else if (tabValue === TAB_VALUES.equipmentSelectionParamsTabValue) {
+        //     reset(emptyFormData[EQUIPMENT_SELECTION]);
+        // }
+        reset(emptyFormData);
         resetVoltageInitParameters();
-    }, [emptyFormData, reset, resetVoltageInitParameters, tabValue]);
+    }, [emptyFormData, reset, resetVoltageInitParameters]);
 
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>

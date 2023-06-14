@@ -12,7 +12,7 @@ import {
     EQUIPMENT_SELECTION,
     FIXED_GENERATORS,
     VARIABLE_SHUNT_COMPENSATORS,
-    VARIABLE_TRANSFORMERS
+    VARIABLE_TRANSFORMERS,
 } from 'components/utils/field-constants';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -21,45 +21,6 @@ import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input
 
 const EquipmentSelectionParameters = () => {
     const classes = useStyles();
-
-    // const formatNewParams = useCallback((equipmentSelection) => {
-    //     return {
-    //         [EQUIPMENT_SELECTION]: {
-    //             [FIXED_GENERATORS]: equipmentSelection[FIXED_GENERATORS].map(
-    //                 (filter) => {
-    //                     return {
-    //                         [FILTER_ID]: filter[ID],
-    //                         [FILTER_NAME]: filter[NAME],
-    //                     };
-    //                 }
-    //             ),
-    //             [VARIABLE_TRANSFORMERS]: equipmentSelection[
-    //                 VARIABLE_TRANSFORMERS
-    //             ].map((filter) => {
-    //                 return {
-    //                     [FILTER_ID]: filter[ID],
-    //                     [FILTER_NAME]: filter[NAME],
-    //                 };
-    //             }),
-    //             [VARIABLE_SHUNT_COMPENSATORS]: equipmentSelection[
-    //                 VARIABLE_SHUNT_COMPENSATORS
-    //             ].map((filter) => {
-    //                 return {
-    //                     [FILTER_ID]: filter[ID],
-    //                     [FILTER_NAME]: filter[NAME],
-    //                 };
-    //             }),
-    //         },
-    //     };
-    // }, []);
-
-    // useEffect(() => {
-    //     if (voltageInitParams?.equipmentSelection) {
-    //         fromEquipmentSelectionDataToFormValues(
-    //             voltageInitParams.equipmentSelection
-    //         );
-    //     }
-    // }, [fromEquipmentSelectionDataToFormValues, voltageInitParams]);
 
     return (
         <DialogContent>
@@ -73,7 +34,7 @@ const EquipmentSelectionParameters = () => {
                 </Grid>
                 <Grid item xs={4} className={classes.controlItem}>
                     <DirectoryItemsInput
-                        name={FIXED_GENERATORS}
+                        name={`${EQUIPMENT_SELECTION}.${FIXED_GENERATORS}`}
                         equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
                         elementType={elementType.FILTER}
                         titleId={'FixedGenerators'}
@@ -91,7 +52,7 @@ const EquipmentSelectionParameters = () => {
                 </Grid>
                 <Grid item xs={4} className={classes.controlItem}>
                     <DirectoryItemsInput
-                        name={VARIABLE_TRANSFORMERS}
+                        name={`${EQUIPMENT_SELECTION}.${VARIABLE_TRANSFORMERS}`}
                         equipmentTypes={[
                             EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
                             EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
@@ -114,7 +75,7 @@ const EquipmentSelectionParameters = () => {
                 </Grid>
                 <Grid item xs={4} className={classes.controlItem}>
                     <DirectoryItemsInput
-                        name={VARIABLE_SHUNT_COMPENSATORS}
+                        name={`${EQUIPMENT_SELECTION}.${VARIABLE_SHUNT_COMPENSATORS}`}
                         equipmentTypes={[
                             EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
                         ]}

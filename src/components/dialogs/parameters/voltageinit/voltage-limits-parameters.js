@@ -81,32 +81,6 @@ const VoltageLimitsParameters = ({ control }) => {
         }));
     }, [intl, VoltageLevelFilterTooltip]);
 
-    // const fromVoltageLimitsDataToFormValues = useCallback(
-    //     (voltageLimits) => {
-    //         reset({
-    //             [VOLTAGE_LIMITS]: voltageLimits.map((voltageLimit) => {
-    //                 return {
-    //                     [FILTERS]: voltageLimit[FILTERS].map((filter) => {
-    //                         return {
-    //                             [ID]: filter[FILTER_ID],
-    //                             [NAME]: filter[FILTER_NAME],
-    //                         };
-    //                     }),
-    //                     [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT],
-    //                     [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
-    //                 };
-    //             }),
-    //         });
-    //     },
-    //     [reset]
-    // );
-    //
-    // useEffect(() => {
-    //     if (voltageInitParams?.voltageLimits) {
-    //         fromVoltageLimitsDataToFormValues(voltageInitParams.voltageLimits);
-    //     }
-    // }, [fromVoltageLimitsDataToFormValues, voltageInitParams]);
-
     const newRowData = useMemo(() => {
         const newRowData = {};
         newRowData[SELECTED] = false;
@@ -116,45 +90,6 @@ const VoltageLimitsParameters = ({ control }) => {
         return newRowData;
     }, [COLUMNS_DEFINITIONS]);
     const createVoltageLimitRows = () => [newRowData];
-
-    // const formatNewParams = useCallback((voltageLimits) => {
-    //     return {
-    //         [VOLTAGE_LIMITS]: voltageLimits.map((voltageLimit) => {
-    //             return {
-    //                 [PRIORITY]: voltageLimits.indexOf(voltageLimit),
-    //                 [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT] ?? 0,
-    //                 [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT] ?? 0,
-    //                 [FILTERS]: voltageLimit[FILTERS].map((filter) => {
-    //                     return {
-    //                         [FILTER_ID]: filter[ID],
-    //                         [FILTER_NAME]: filter[NAME],
-    //                     };
-    //                 }),
-    //             };
-    //         }),
-    //     };
-    // }, []);
-    //
-    // const onSubmit = useCallback(
-    //     (newParams) => {
-    //         updateVoltageInitParameters(
-    //             studyUuid,
-    //             formatNewParams(newParams.voltageLimits)
-    //         )
-    //             .then(() => {
-    //                 setVoltageInitParams(
-    //                     formatNewParams(newParams.voltageLimits)
-    //                 );
-    //             })
-    //             .catch((error) => {
-    //                 snackError({
-    //                     messageTxt: error.message,
-    //                     headerId: 'VoltageInitParametersError',
-    //                 });
-    //             });
-    //     },
-    //     [formatNewParams, setVoltageInitParams, snackError, studyUuid]
-    // );
 
     return (
         <DndTable
