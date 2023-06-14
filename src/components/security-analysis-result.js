@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -15,6 +15,8 @@ import Select from '@mui/material/Select';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
 import { useSelector } from 'react-redux';
+import { CustomAGGrid } from './dialogs/custom-aggrid';
+import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -67,6 +69,52 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 : undefined);
     }
 
+    const columns = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'Equipment' }),
+                field: 'subjectId',
+                sort: DEFAULT_SORT_ORDER,
+                filter: 'agTextColumnFilter',
+                width: 400,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitType' }),
+                field: 'limitType',
+                filter: 'agTextColumnFilter',
+                width: 400,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Limit' }),
+                field: 'limit',
+                valueFormatter: (params) => params.data?.limit?.toFixed(1),
+                width: 400,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Value' }),
+                field: 'value',
+                valueFormatter: (params) => params.data?.value?.toFixed(1),
+                width: 400,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Loading' }),
+                field: 'loading',
+                valueFormatter: (params) => params.data?.loading?.toFixed(1),
+                width: 400,
+            },
+        ];
+    }, [intl]);
+
+    const defaultColDef = useMemo(
+        () => ({
+            sortable: true,
+            resizable: true,
+            wrapHeaderText: true,
+            autoHeaderHeight: true,
+        }),
+        []
+    );
+
     function renderTableN(preContingencyResult) {
         // extend data with loading
         const rows =
@@ -85,42 +133,10 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             );
 
         return (
-            <VirtualizedTable
-                rows={rows}
-                sortable={true}
-                columns={[
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Equipment' }),
-                        dataKey: 'subjectId',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LimitType' }),
-                        dataKey: 'limitType',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Limit' }),
-                        dataKey: 'limit',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Value' }),
-                        dataKey: 'value',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Loading' }),
-                        dataKey: 'loading',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                ]}
+            <CustomAGGrid
+                rowData={rows}
+                columnDefs={columns}
+                defaultColDef={defaultColDef}
             />
         );
     }
