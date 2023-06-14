@@ -527,6 +527,7 @@
     "warnDuplicateModificationMsg": "Number of modifications not copied :",
     "errDeleteModificationMsg": "Network modifications deletion error",
     "DeleteEquipment": "Delete equipment",
+    "LCCConverterStationShuntCompensators": "Shunt compensators related to the LCC",
     "Type": "Type",
     "SUBSTATION": "Substation",
     "VOLTAGE_LEVEL": "Voltage Level",
@@ -549,6 +550,7 @@
     "LineCreationError": "Error while creating line",
     "LineModificationError": "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
+    "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
 
     "CreateGenerator": "Create generator",
     "ModifyGenerator": "Modify generator",

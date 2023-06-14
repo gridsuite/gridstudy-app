@@ -561,6 +561,40 @@ export function fetchHvdcLines(studyUuid, currentNodeUuid, substationsIds) {
     );
 }
 
+export function fetchHvdcLinesWithShuntCompensators(
+    studyUuid,
+    currentNodeUuid
+) {
+    console.info(
+        `Fetching HVDC Lines with Shunt Compensators of study '${studyUuid}' and node '${currentNodeUuid}'...`
+    );
+
+    const fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map' +
+        '/hvdc-lines';
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
+}
+
+export function fetchHvdcLineWithShuntCompensators(
+    studyUuid,
+    currentNodeUuid,
+    hvdcLineId
+) {
+    console.info(
+        `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' and node '${currentNodeUuid}'...`
+    );
+    const fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map' +
+        '/hvdc-lines/' +
+        hvdcLineId +
+        '/shunt-compensators';
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
+}
+
 export function fetchLccConverterStations(
     studyUuid,
     currentNodeUuid,
@@ -3174,6 +3208,9 @@ export function deleteEquipment(
     currentNodeUuid,
     equipmentType,
     equipmentId,
+    hvdcWithLCC,
+    mcsOnSide1,
+    mcsOnSide2,
     modificationUuid
 ) {
     let deleteEquipmentUrl =
@@ -3197,6 +3234,9 @@ export function deleteEquipment(
             type: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
             equipmentId: equipmentId,
             equipmentType: equipmentType,
+            hvdcWithLCC: hvdcWithLCC,
+            mcsOnSide1: mcsOnSide1,
+            mcsOnSide2: mcsOnSide2,
         }),
     });
 }

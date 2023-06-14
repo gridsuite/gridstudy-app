@@ -222,3 +222,8 @@ export const VOLTAGE_LIMITS = 'voltageLimits';
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
+
+// HVDC deletion
+export const HVDC_WITH_LCC = 'hvdcWithLcc';
+export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
+export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';

@@ -35,3 +35,5 @@ export function ReadOnlyInput({ name, isNumerical = false }) {
         />
     );
 }
+
+export default ReadOnlyInput;
