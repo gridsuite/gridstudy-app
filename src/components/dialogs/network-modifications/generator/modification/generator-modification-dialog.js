@@ -268,34 +268,6 @@ const GeneratorModificationDialog = ({
         });
     };
 
-    const emptyFormAndFormatReactiveCapabilityCurveTable = useCallback(
-        // TODO CHARLY semble obsolete ?
-        (value, equipmentId) => {
-            //creating empty table depending on existing generator
-            const reactiveCapabilityCurvePoints =
-                value?.reactiveCapabilityCurvePoints
-                    ? value?.reactiveCapabilityCurvePoints.map((val) => ({
-                          [P]: null,
-                          [Q_MIN_P]: null,
-                          [Q_MAX_P]: null,
-                      }))
-                    : [getRowEmptyFormData(), getRowEmptyFormData()];
-            // resets all fields except REACTIVE_CAPABILITY_CURVE_TABLE
-            setValuesAndEmptyOthers(
-                {
-                    [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                        reactiveCapabilityCurvePoints,
-                    [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                        value?.minMaxReactiveLimits != null
-                            ? 'MINMAX'
-                            : 'CURVE',
-                },
-                true
-            );
-        },
-        [setValuesAndEmptyOthers]
-    );
-
     const insertEmptyRowAtSecondToLastIndex = (table) => {
         table.splice(table.length - 1, 0, {
             [P]: null,
@@ -322,43 +294,33 @@ const GeneratorModificationDialog = ({
                             // which would empty the form instead of displaying data of existing form
                             const previousReactiveCapabilityCurveTable =
                                 value.reactiveCapabilityCurvePoints;
-                            if (editData?.equipmentId !== selectedId) {
-                                // TODO CHARLY update this obsolete test, we shouldn't have editData?.equipmentId // EDIT ? Or maybe ?
-                                emptyFormAndFormatReactiveCapabilityCurveTable(
-                                    value,
-                                    equipmentId
-                                );
-                            } else {
-                                // on first render, we need to adjust the UI for the reactive capability curve table
-                                // we need to check if the generator we fetch has reactive capability curve table
-                                if (previousReactiveCapabilityCurveTable) {
-                                    const currentReactiveCapabilityCurveTable =
-                                        getValues(
-                                            REACTIVE_CAPABILITY_CURVE_TABLE
-                                        );
+                            // on first render, we need to adjust the UI for the reactive capability curve table
+                            // we need to check if the generator we fetch has reactive capability curve table
+                            if (previousReactiveCapabilityCurveTable) {
+                                const currentReactiveCapabilityCurveTable =
+                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
 
-                                    const sizeDiff =
-                                        previousReactiveCapabilityCurveTable.length -
-                                        currentReactiveCapabilityCurveTable.length;
+                                const sizeDiff =
+                                    previousReactiveCapabilityCurveTable.length -
+                                    currentReactiveCapabilityCurveTable.length;
 
-                                    // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
-                                    if (sizeDiff > 0) {
-                                        for (let i = 0; i < sizeDiff; i++) {
-                                            insertEmptyRowAtSecondToLastIndex(
-                                                currentReactiveCapabilityCurveTable
-                                            );
-                                        }
-                                        setValue(
-                                            REACTIVE_CAPABILITY_CURVE_TABLE,
+                                // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
+                                if (sizeDiff > 0) {
+                                    for (let i = 0; i < sizeDiff; i++) {
+                                        insertEmptyRowAtSecondToLastIndex(
                                             currentReactiveCapabilityCurveTable
                                         );
-                                    } else if (sizeDiff < 0) {
-                                        // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
-                                        for (let i = 0; i > sizeDiff; i--) {
-                                            insertEmptyRowAtSecondToLastIndex(
-                                                previousReactiveCapabilityCurveTable
-                                            );
-                                        }
+                                    }
+                                    setValue(
+                                        REACTIVE_CAPABILITY_CURVE_TABLE,
+                                        currentReactiveCapabilityCurveTable
+                                    );
+                                } else if (sizeDiff < 0) {
+                                    // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
+                                    for (let i = 0; i > sizeDiff; i--) {
+                                        insertEmptyRowAtSecondToLastIndex(
+                                            previousReactiveCapabilityCurveTable
+                                        );
                                     }
                                 }
                             }
@@ -382,10 +344,7 @@ const GeneratorModificationDialog = ({
         [
             studyUuid,
             currentNodeUuid,
-            editData?.equipmentId, // TODO CHARLY remove this // EDIT or maybe not ?
-            selectedId,
             getValues,
-            emptyFormAndFormatReactiveCapabilityCurveTable,
             setValue,
             setValuesAndEmptyOthers,
         ]
@@ -393,7 +352,7 @@ const GeneratorModificationDialog = ({
 
     useEffect(() => {
         if (selectedId) {
-            onEquipmentIdChange(selectedId); // TODO CHARLY clean/rename/reorganize this ?
+            onEquipmentIdChange(selectedId);
         }
     }, [selectedId, onEquipmentIdChange]);
 
