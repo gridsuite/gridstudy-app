@@ -13,7 +13,7 @@ import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
 import { NestedMenuItem } from 'mui-nested-menu';
-import NodeMenuItem from './create-node-item';
+import ChildMenuItem from './create-child-menu-item';
 
 const CreateNodeMenu = ({
     position,
@@ -259,7 +259,7 @@ const CreateNodeMenu = ({
                     return undefined; // do not show this item in menu
                 }
                 if (item.subMenuItems === undefined) {
-                    return <NodeMenuItem key={item.id} item={item} />;
+                    return <ChildMenuItem key={item.id} item={item} />;
                 }
                 return (
                     <NestedMenuItem
