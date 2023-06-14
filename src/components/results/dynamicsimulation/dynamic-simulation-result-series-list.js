@@ -7,9 +7,10 @@
 
 import PropTypes from 'prop-types';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
-import { debounce, Grid, List, ListSubheader, Typography } from '@mui/material';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Grid, List, ListSubheader, Typography } from '@mui/material';
+import { memo, useCallback, useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -63,14 +64,8 @@ const DynamicSimulationResultSeriesList = ({
         [handleToggle]
     );
 
-    const delayedOnLeftAxisSelected = useMemo(
-        () => debounce(onLeftAxisSelected, 500),
-        [onLeftAxisSelected]
-    );
-    const delayedOnRightAxisSelected = useMemo(
-        () => debounce(onRightAxisSelected, 500),
-        [onRightAxisSelected]
-    );
+    const delayedOnLeftAxisSelected = useDebounce(onLeftAxisSelected, 500);
+    const delayedOnRightAxisSelected = useDebounce(onRightAxisSelected, 500);
 
     useEffect(() => {
         // propagate changes
