@@ -157,6 +157,8 @@ const NetworkModificationNodeEditor = () => {
     const [toggleSelectAll, setToggleSelectAll] = useState();
     const [copiedModifications, setCopiedModifications] = useState([]);
     const [copyInfos, setCopyInfos] = useState(null);
+    const copyInfosRef = useRef();
+    copyInfosRef.current = copyInfos;
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -173,15 +175,16 @@ const NetworkModificationNodeEditor = () => {
     const buttonAddRef = useRef();
 
     const cleanClipboard = useCallback(() => {
-        if (copiedModifications.length <= 0) {
-            return;
-        }
         setCopyInfos(null);
-        setCopiedModifications([]);
-        snackInfo({
-            messageId: 'CopiedModificationInvalidationMessage',
+        setCopiedModifications((old) => {
+            if (old.length > 0) {
+                snackInfo({
+                    messageId: 'CopiedModificationInvalidationMessage',
+                });
+            }
+            return [];
         });
-    }, [snackInfo, copiedModifications]);
+    }, [snackInfo]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -449,6 +452,21 @@ const NetworkModificationNodeEditor = () => {
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeDeleted'
+            ) {
+                if (
+                    copyInfosRef.current &&
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) =>
+                            nodeId === copyInfosRef.current.originNodeUuid
+                    )
+                ) {
+                    // Must clean modifications clipboard if the origin Node is removed
+                    cleanClipboard();
+                }
+            }
+            if (
                 currentNodeIdRef.current !==
                 studyUpdatedForce.eventData.headers['parentNode']
             ) {
@@ -487,6 +505,7 @@ const NetworkModificationNodeEditor = () => {
         dofetchNetworkModifications,
         manageNotification,
         studyUpdatedForce,
+        cleanClipboard,
     ]);
 
     const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] =
@@ -562,8 +581,11 @@ const NetworkModificationNodeEditor = () => {
 
     const doCopyModifications = useCallback(() => {
         setCopiedModifications(selectedModificationsIds());
-        setCopyInfos({ copyType: CopyType.COPY });
-    }, [selectedModificationsIds]);
+        setCopyInfos({
+            copyType: CopyType.COPY,
+            originNodeUuid: currentNode.id,
+        });
+    }, [currentNode?.id, selectedModificationsIds]);
 
     const doPasteModifications = useCallback(() => {
         if (copyInfos.copyType === CopyType.MOVE) {
