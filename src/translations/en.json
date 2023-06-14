@@ -147,6 +147,7 @@
     "BusId": "Bus ID",
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
+    "voltageInitError": "An error occurred while excuting the voltage profile initialization",
     "VoltageInitOptimalReactivePowerFlow" : "Optimal Reactive Power Flow",
     "VoltageLimits" : "Voltage limits",
     "VoltageLevelFilter" : "Voltage level filter",
