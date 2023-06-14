@@ -121,8 +121,6 @@ const LineCreationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const equipmentPath = 'lines';
-
     const [tabIndex, setTabIndex] = useState(
         LineCreationDialogTab.CHARACTERISTICS_TAB
     );
@@ -266,7 +264,6 @@ const LineCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.LINE.type,
