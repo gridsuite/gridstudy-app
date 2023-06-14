@@ -11,7 +11,6 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ACTIVE_POWER,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
     REACTIVE_POWER,
@@ -24,6 +23,8 @@ import { sanitizeString } from '../../../dialogUtils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
 /**
  * Dialog to create a load in the network
@@ -39,7 +40,6 @@ import LoadModificationForm from './load-modification-form';
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_ID]: yup.string().nullable().required(),
         [EQUIPMENT_NAME]: yup.string(),
         [LOAD_TYPE]: yup.string().nullable(),
         [ACTIVE_POWER]: yup.number().nullable(),
@@ -48,8 +48,8 @@ const formSchema = yup
     .required();
 
 const LoadModificationDialog = ({
-    editData,
-    defaultIdValue,
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
     studyUuid,
     isUpdate,
@@ -58,17 +58,17 @@ const LoadModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     const emptyFormData = useMemo(
         () => ({
-            [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             [LOAD_TYPE]: null,
             [ACTIVE_POWER]: null,
             [REACTIVE_POWER]: null,
         }),
-        [defaultIdValue]
+        []
     );
 
     const formMethods = useForm({
@@ -79,13 +79,15 @@ const LoadModificationDialog = ({
     const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (load) => {
+        (editData) => {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
             reset({
-                [EQUIPMENT_ID]: load.equipmentId,
-                [EQUIPMENT_NAME]: load.equipmentName?.value ?? '',
-                [LOAD_TYPE]: load.loadType?.value ?? null,
-                [ACTIVE_POWER]: load.activePower?.value ?? null,
-                [REACTIVE_POWER]: load.reactivePower?.value ?? null,
+                [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
+                [LOAD_TYPE]: editData.loadType?.value ?? null,
+                [ACTIVE_POWER]: editData.activePower?.value ?? null,
+                [REACTIVE_POWER]: editData.reactivePower?.value ?? null,
             });
         },
         [reset]
@@ -102,7 +104,7 @@ const LoadModificationDialog = ({
             modifyLoad(
                 studyUuid,
                 currentNodeUuid,
-                load?.equipmentId,
+                selectedId,
                 sanitizeString(load?.equipmentName),
                 load?.loadType,
                 load?.activePower,
@@ -118,7 +120,7 @@ const LoadModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [selectedId, editData, studyUuid, currentNodeUuid, snackError]
     );
 
     const clear = useCallback(() => {
@@ -156,11 +158,24 @@ const LoadModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                <LoadModificationForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                    setDataFetchStatus={setDataFetchStatus}
-                />
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EQUIPMENT_TYPES.LOAD.type}
+                        fillerHeight={2}
+                    />
+                )}
+                {selectedId != null && (
+                    <LoadModificationForm
+                        currentNode={currentNode}
+                        studyUuid={studyUuid}
+                        setDataFetchStatus={setDataFetchStatus}
+                        equipmentId={selectedId}
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );
