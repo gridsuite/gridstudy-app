@@ -1672,19 +1672,19 @@ export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
 }
 
 export function copySubtree(
-    sourceStudyId,
-    targetStudyId,
+    sourceStudyUuid,
+    targetStudyUuid,
     nodeToCopyUuid,
     referenceNodeUuid
 ) {
     const nodeCopyUrl =
-        getStudyUrl(targetStudyId) +
+        getStudyUrl(targetStudyUuid) +
         '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
         nodeToCopyUuid +
         '&referenceNodeUuid=' +
         referenceNodeUuid +
         '&sourceStudyUuid=' +
-        sourceStudyId;
+        sourceStudyUuid;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
