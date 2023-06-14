@@ -145,6 +145,7 @@ export function useNodeData(
         if (!studyUuid || !nodeUuid) {
             return;
         }
+
         const isUpdateForUs = isWorthUpdate(
             studyUpdatedForce,
             fetcher,
@@ -372,9 +373,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     headerId: 'dynamicSimulationError',
                 });
             }
-            if (updateTypeHeader === 'voltageinit_failed') {
+            if (updateTypeHeader === 'voltageInit_failed') {
                 snackError({
                     headerId: 'voltageInitError',
+                    messageTxt: errorMessage,
                 });
             }
         },
