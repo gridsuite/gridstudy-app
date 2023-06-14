@@ -308,6 +308,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     });
             } else {
                 setTwtToModify(null);
+                emptyFormData[EQUIPMENT_ID] = null; // force it to null when reset because of defaultIdValue
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
