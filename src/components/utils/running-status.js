@@ -12,6 +12,15 @@ export const RunningStatus = {
     RUNNING: 'RUNNING',
 };
 
+export const RunButtonType = {
+    LOADFLOW: 'LOADFLOW',
+    SECURITY_ANALYSIS: 'SECURITY_ANALYSIS',
+    SENSI: 'SENSI',
+    SHORTCIRCUIT: 'SHORTCIRCUIT',
+    DYNAMIC_SIMULATION: 'DYNAMIC_SIMULATION',
+    VOLTAGE_INIT: 'VOLTAGE_INIT',
+};
+
 export function getLoadFlowRunningStatus(status) {
     switch (status) {
         case 'CONVERGED':

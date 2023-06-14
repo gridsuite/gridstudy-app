@@ -86,11 +86,6 @@ const StudyPane = ({
     network,
     currentNode,
     loadFlowInfos,
-    securityAnalysisStatus,
-    sensiStatus,
-    shortCircuitStatus,
-    dynamicSimulationStatus,
-    voltageInitStatus,
     runnable,
     setErrorMessage,
     ...props
@@ -259,15 +254,6 @@ const StudyPane = ({
                                     loadFlowStatus={getLoadFlowRunningStatus(
                                         loadFlowInfos?.loadFlowStatus
                                     )}
-                                    securityAnalysisStatus={
-                                        securityAnalysisStatus
-                                    }
-                                    sensiStatus={sensiStatus}
-                                    shortCircuitStatus={shortCircuitStatus}
-                                    dynamicSimulationStatus={
-                                        dynamicSimulationStatus
-                                    }
-                                    voltageInitStatus={voltageInitStatus}
                                     setIsComputationRunning={
                                         setIsComputationRunning
                                     }
@@ -375,7 +361,6 @@ StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
     onChangeTab: PropTypes.func,
-    dynamicSimulationStatus: PropTypes.string,
 };
 
 export default StudyPane;
