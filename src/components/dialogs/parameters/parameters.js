@@ -42,6 +42,8 @@ import {
     setLoadFlowProvider,
     setLoadFlowParameters,
     getLoadFlowSpecificParametersDescription,
+    getSecurityAnalysisParameters,
+    setSecurityAnalysisParameters,
 } from '../../../utils/rest-api';
 
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
@@ -155,6 +157,47 @@ export const useStyles = makeStyles((theme) => ({
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(1),
         flexGrow: 1,
+    },
+    singleItem: {
+        display: 'flex',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
+    firstTextField: {
+        marginLeft: theme.spacing(3),
+    },
+    secondTextField: {
+        marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(2),
+    },
+    singleTextField: {
+        display: 'flex',
+        marginRight: theme.spacing(2),
+        marginLeft: theme.spacing(1),
+    },
+    tooltip: {
+        marginLeft: theme.spacing(1),
+    },
+    text: {
+        display: 'flex',
+        flex: '-moz-available',
+        marginBottom: theme.spacing(1),
+        marginTop: theme.spacing(1),
+    },
+    textContainer: {
+        display: 'flex',
+        flex: '-moz-available',
+    },
+    multipleItems: {
+        display: 'flex',
+        flex: '-moz-max-content',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
     },
 }));
 
@@ -488,7 +531,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         fetchSecurityAnalysisProviders,
         fetchSecurityAnalysisProvider,
         fetchDefaultSecurityAnalysisProvider,
-        updateSecurityAnalysisProvider
+        updateSecurityAnalysisProvider,
+        getSecurityAnalysisParameters,
+        setSecurityAnalysisParameters
     );
 
     const sensitivityAnalysisParametersBackend = useParametersBackend(
