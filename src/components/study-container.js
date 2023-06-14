@@ -42,6 +42,7 @@ import {
     setDeletedEquipments,
     setUpdatedSubstationsIds,
     isNetworkEquipmentsFetched,
+    setRunButtonStatus,
 } from '../redux/actions';
 import Network from './network/network';
 import WaitingLoader from './utils/waiting-loader';
@@ -61,6 +62,7 @@ import {
     getVoltageInitRunningStatus,
     RunningStatus,
     getLoadFlowRunningStatus,
+    RunButtonType,
 } from './utils/running-status';
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
@@ -114,7 +116,8 @@ export function useNodeData(
     fetcher,
     invalidations,
     defaultValue,
-    resultConversion
+    resultConversion,
+    runButtonType
 ) {
     const [result, setResult] = useState(defaultValue);
     const [isPending, setIsPending] = useState(false);
@@ -122,6 +125,7 @@ export function useNodeData(
     const nodeUuidRef = useRef();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const lastUpdateRef = useRef();
+    const dispatch = useDispatch();
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
@@ -130,15 +134,39 @@ export function useNodeData(
         fetcher(studyUuid, nodeUuid)
             .then((res) => {
                 if (nodeUuidRef.current === nodeUuid) {
-                    setResult(resultConversion ? resultConversion(res) : res);
+                    if (!runButtonType) {
+                        setResult(
+                            resultConversion ? resultConversion(res) : res
+                        );
+                    } else {
+                        dispatch(
+                            setRunButtonStatus(
+                                runButtonType,
+                                resultConversion ? resultConversion(res) : res
+                            )
+                        );
+                    }
                 }
             })
             .catch((err) => {
                 setErrorMessage(err.message);
-                setResult(RunningStatus.FAILED);
+                if (!runButtonType) {
+                    setResult(RunningStatus.FAILED);
+                } else {
+                    dispatch(
+                        setRunButtonStatus(runButtonType, RunningStatus.FAILED)
+                    );
+                }
             })
             .finally(() => setIsPending(false));
-    }, [nodeUuid, fetcher, studyUuid, resultConversion]);
+    }, [
+        runButtonType,
+        nodeUuid,
+        fetcher,
+        studyUuid,
+        resultConversion,
+        dispatch,
+    ]);
 
     /* initial fetch and update */
     useEffect(() => {
@@ -275,49 +303,54 @@ export function StudyContainer({ view, onChangeTab }) {
         getLoadFlowRunningStatus
     );
 
-    const [securityAnalysisStatus] = useNodeData(
+    useNodeData(
         studyUuid,
         currentNode?.id,
         fetchSecurityAnalysisStatus,
         securityAnalysisStatusInvalidations,
         RunningStatus.IDLE,
-        getSecurityAnalysisRunningStatus
+        getSecurityAnalysisRunningStatus,
+        RunButtonType.SECURITY_ANALYSIS
     );
 
-    const [sensiStatus] = useNodeData(
+    useNodeData(
         studyUuid,
         currentNode?.id,
         fetchSensitivityAnalysisStatus,
         sensiStatusInvalidations,
         RunningStatus.IDLE,
-        getSensiRunningStatus
+        getSensiRunningStatus,
+        RunButtonType.SENSI
     );
 
-    const [shortCircuitStatus] = useNodeData(
+    useNodeData(
         studyUuid,
         currentNode?.id,
         fetchShortCircuitAnalysisStatus,
         shortCircuitStatusInvalidations,
         RunningStatus.IDLE,
-        getShortCircuitRunningStatus
+        getShortCircuitRunningStatus,
+        RunButtonType.SHORTCIRCUIT
     );
 
-    const [dynamicSimulationStatus] = useNodeData(
+    useNodeData(
         studyUuid,
         currentNode?.id,
         fetchDynamicSimulationStatus,
         dynamicSimulationStatusInvalidations,
         RunningStatus.IDLE,
-        getDynamicSimulationRunningStatus
+        getDynamicSimulationRunningStatus,
+        RunButtonType.DYNAMIC_SIMULATION
     );
 
-    const [voltageInitStatus] = useNodeData(
+    useNodeData(
         studyUuid,
         currentNode?.id,
         fetchVoltageInitStatus,
         voltageInitStatusInvalidations,
         RunningStatus.IDLE,
-        getVoltageInitRunningStatus
+        getVoltageInitRunningStatus,
+        RunButtonType.VOLTAGE_INIT
     );
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -826,11 +859,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 view={view}
                 onChangeTab={onChangeTab}
                 loadFlowStatus={loadFlowStatus}
-                securityAnalysisStatus={securityAnalysisStatus}
-                sensiStatus={sensiStatus}
-                shortCircuitStatus={shortCircuitStatus}
-                dynamicSimulationStatus={dynamicSimulationStatus}
-                voltageInitStatus={voltageInitStatus}
                 runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />

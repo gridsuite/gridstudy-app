@@ -88,6 +88,7 @@ import {
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     SELECTION_FOR_COPY,
     LIMIT_REDUCTION,
+    SET_RUN_BUTTON_STATUS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -123,6 +124,7 @@ import { loadDiagramStateFromSessionStorage } from './session-storage';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
+import { RunButtonType, RunningStatus } from 'components/utils/running-status';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -143,6 +145,15 @@ const paramsInitialState = {
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
+};
+
+const runButtonStatus = {
+    [RunButtonType.LOADFLOW]: RunningStatus.IDLE,
+    [RunButtonType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
+    [RunButtonType.SENSI]: RunningStatus.IDLE,
+    [RunButtonType.SHORTCIRCUIT]: RunningStatus.IDLE,
+    [RunButtonType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
+    [RunButtonType.VOLTAGE_INIT]: RunningStatus.IDLE,
 };
 
 const initialState = {
@@ -187,6 +198,7 @@ const initialState = {
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     networkEquipmentsFetched: false, // indicate if network equipments are fetched
+    runButtonStatus: { ...runButtonStatus },
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -903,6 +915,9 @@ export const reducer = createReducer(initialState, {
     },
     [NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS]: (state, action) => {
         state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
+    },
+    [SET_RUN_BUTTON_STATUS]: (state, action) => {
+        state.runButtonStatus[action.runButtonType] = action.runningStatus;
     },
 });
 

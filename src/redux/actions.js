@@ -635,3 +635,13 @@ export function setDeletedEquipments(deletedEquipments) {
         deletedEquipments: deletedEquipments,
     };
 }
+
+export const SET_RUN_BUTTON_STATUS = 'SET_RUN_BUTTON_STATUS';
+
+export function setRunButtonStatus(runButtonType, runningStatus) {
+    return {
+        type: SET_RUN_BUTTON_STATUS,
+        runButtonType: runButtonType,
+        runningStatus: runningStatus,
+    };
+}
