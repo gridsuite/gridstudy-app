@@ -9,7 +9,6 @@ import { elementType } from '@gridsuite/commons-ui';
 import { Box, DialogContent, Grid, Typography } from '@mui/material';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
-    EQUIPMENT_SELECTION,
     FIXED_GENERATORS,
     VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
@@ -34,7 +33,7 @@ const EquipmentSelectionParameters = () => {
                 </Grid>
                 <Grid item xs={4} className={classes.controlItem}>
                     <DirectoryItemsInput
-                        name={`${EQUIPMENT_SELECTION}.${FIXED_GENERATORS}`}
+                        name={FIXED_GENERATORS}
                         equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
                         elementType={elementType.FILTER}
                         titleId={'FixedGenerators'}
@@ -52,9 +51,8 @@ const EquipmentSelectionParameters = () => {
                 </Grid>
                 <Grid item xs={4} className={classes.controlItem}>
                     <DirectoryItemsInput
-                        name={`${EQUIPMENT_SELECTION}.${VARIABLE_TRANSFORMERS}`}
+                        name={VARIABLE_TRANSFORMERS}
                         equipmentTypes={[
-                            EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
                             EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
                         ]}
                         elementType={elementType.FILTER}
@@ -75,7 +73,7 @@ const EquipmentSelectionParameters = () => {
                 </Grid>
                 <Grid item xs={4} className={classes.controlItem}>
                     <DirectoryItemsInput
-                        name={`${EQUIPMENT_SELECTION}.${VARIABLE_SHUNT_COMPENSATORS}`}
+                        name={VARIABLE_SHUNT_COMPENSATORS}
                         equipmentTypes={[
                             EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
                         ]}

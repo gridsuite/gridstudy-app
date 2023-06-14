@@ -220,9 +220,8 @@ export const FREQUENCY_RESERVE = 'frequencyReserve';
 
 // voltage init
 export const VOLTAGE_LIMITS = 'voltageLimits';
-export const EQUIPMENT_SELECTION = 'equipmentSelection';
-export const FIXED_GENERATORS = 'fixedGenerators';
-export const VARIABLE_TRANSFORMERS = 'variableTransformers';
+export const FIXED_GENERATORS = 'constantQGenerators';
+export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
 export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
 
 export const PRIORITY = 'priority';
