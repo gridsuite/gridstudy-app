@@ -5,30 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import React, { useCallback } from 'react';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-
-import ListItemText from '@mui/material/ListItemText';
-import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
-
-const useStyles = makeStyles((theme) => ({
-    menuItem: {
-        padding: '0px',
-        margin: '7px',
-    },
-    listItemText: {
-        fontSize: 12,
-        padding: '0px',
-        margin: '4px',
-    },
-}));
+import { NestedMenuItem } from 'mui-nested-menu';
+import ChildMenuItem from './create-child-menu-item';
 
 const CreateNodeMenu = ({
     position,
@@ -47,7 +32,6 @@ const CreateNodeMenu = ({
     handleCopySubtree,
     handlePasteSubtree,
 }) => {
-    const classes = useStyles();
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const isModificationsInProgress = useSelector(
@@ -162,18 +146,24 @@ const CreateNodeMenu = ({
         },
         CREATE_MODIFICATION_NODE: {
             onRoot: true,
-            action: () => createNetworkModificationNode('CHILD'),
             id: 'createNetworkModificationNode',
-        },
-        INSERT_MODIFICATION_NODE_BEFORE: {
-            onRoot: false,
-            action: () => createNetworkModificationNode('BEFORE'),
-            id: 'insertNetworkModificationNodeAbove',
-        },
-        INSERT_MODIFICATION_NODE_AFTER: {
-            onRoot: true,
-            action: () => createNetworkModificationNode('AFTER'),
-            id: 'insertNetworkModificationNodeBelow',
+            subMenuItems: {
+                CREATE_MODIFICATION_NODE: {
+                    onRoot: true,
+                    action: () => createNetworkModificationNode('CHILD'),
+                    id: 'createNetworkModificationNodeInNewBranch',
+                },
+                INSERT_MODIFICATION_NODE_BEFORE: {
+                    onRoot: false,
+                    action: () => createNetworkModificationNode('BEFORE'),
+                    id: 'insertNetworkModificationNodeAbove',
+                },
+                INSERT_MODIFICATION_NODE_AFTER: {
+                    onRoot: true,
+                    action: () => createNetworkModificationNode('AFTER'),
+                    id: 'insertNetworkModificationNodeBelow',
+                },
+            },
         },
         COPY_MODIFICATION_NODE: {
             onRoot: false,
@@ -192,21 +182,28 @@ const CreateNodeMenu = ({
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
-            action: () => pasteNetworkModificationNode('CHILD'),
-            id: 'pasteNetworkModificationNodeOnNewBranch',
+            id: 'pasteNetworkModificationNode',
             disabled: !isNodePastingAllowed(),
-        },
-        PASTE_MODIFICATION_NODE_BEFORE: {
-            onRoot: false,
-            action: () => pasteNetworkModificationNode('BEFORE'),
-            id: 'pasteNetworkModificationNodeAbove',
-            disabled: !isNodePastingAllowed(),
-        },
-        PASTE_MODIFICATION_NODE_AFTER: {
-            onRoot: true,
-            action: () => pasteNetworkModificationNode('AFTER'),
-            id: 'pasteNetworkModificationNodeBelow',
-            disabled: !isNodePastingAllowed(),
+            subMenuItems: {
+                PASTE_MODIFICATION_NODE: {
+                    onRoot: true,
+                    action: () => pasteNetworkModificationNode('CHILD'),
+                    id: 'pasteNetworkModificationNodeInNewBranch',
+                    disabled: !isNodePastingAllowed(),
+                },
+                PASTE_MODIFICATION_NODE_BEFORE: {
+                    onRoot: false,
+                    action: () => pasteNetworkModificationNode('BEFORE'),
+                    id: 'pasteNetworkModificationNodeAbove',
+                    disabled: !isNodePastingAllowed(),
+                },
+                PASTE_MODIFICATION_NODE_AFTER: {
+                    onRoot: true,
+                    action: () => pasteNetworkModificationNode('AFTER'),
+                    id: 'pasteNetworkModificationNodeBelow',
+                    disabled: !isNodePastingAllowed(),
+                },
+            },
         },
         REMOVE_NODE: {
             onRoot: false,
@@ -255,6 +252,30 @@ const CreateNodeMenu = ({
         },
     };
 
+    const renderMenuItems = useCallback(
+        (nodeMenuItems) => {
+            return Object.values(nodeMenuItems).map((item) => {
+                if (activeNode?.type === 'ROOT' && !item.onRoot) {
+                    return undefined; // do not show this item in menu
+                }
+                if (item.subMenuItems === undefined) {
+                    return <ChildMenuItem key={item.id} item={item} />;
+                }
+                return (
+                    <NestedMenuItem
+                        key={item.id}
+                        label={intl.formatMessage({ id: item.id })}
+                        parentMenuOpen={true}
+                        disabled={item.disabled}
+                    >
+                        {renderMenuItems(item.subMenuItems)}
+                    </NestedMenuItem>
+                );
+            });
+        },
+        [intl, activeNode?.type]
+    );
+
     return (
         <Menu
             anchorReference="anchorPosition"
@@ -267,30 +288,7 @@ const CreateNodeMenu = ({
             open={true}
             onClose={handleClose}
         >
-            {Object.values(NODE_MENU_ITEMS).map((item) => {
-                return (
-                    (activeNode?.type !== 'ROOT' || item.onRoot) && (
-                        <MenuItem
-                            className={classes.menuItem}
-                            onClick={item.action}
-                            key={item.id}
-                            disabled={item.disabled}
-                        >
-                            <ListItemText
-                                key={item.id}
-                                className={classes.listItemText}
-                                primary={
-                                    <Typography noWrap>
-                                        {intl.formatMessage({
-                                            id: item.id,
-                                        })}
-                                    </Typography>
-                                }
-                            />
-                        </MenuItem>
-                    )
-                );
-            })}
+            {renderMenuItems(NODE_MENU_ITEMS)}
         </Menu>
     );
 };

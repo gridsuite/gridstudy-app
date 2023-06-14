@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+// TODO Replace by EQUIPMENT_TYPES
 export const equipments = {
     substations: 'substations',
     voltageLevels: 'voltageLevels',

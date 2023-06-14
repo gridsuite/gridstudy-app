@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, Autocomplete, TextField, Chip, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -19,14 +19,12 @@ import {
     useStyles,
 } from './parameters';
 import { LabelledSlider, LineSeparator } from '../dialogUtils';
-import {
-    FlatParameters,
-    extractDefaultMap,
-    makeDeltaMap,
-} from '@gridsuite/commons-ui';
+import { FlatParameters } from '@gridsuite/commons-ui';
 import { LocalizedCountries } from '../../utils/localized-countries-hook';
 import { PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
-
+// TO DO to remove with extractDefault Function
+const ListRE = /^\[(.*)]$/;
+const sepRE = /[, ]/;
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
     const { translate, countryCodes } = LocalizedCountries();
@@ -74,6 +72,163 @@ const CountrySelector = ({ value, label, callback }) => {
         </>
     );
 };
+
+const DoubleEditor = ({
+    initValue,
+    label,
+    callback,
+    ge = undefined,
+    gt = undefined,
+    le = undefined,
+    lt = undefined,
+}) => {
+    const classes = useStyles();
+    const [value, setValue] = useState(initValue);
+    const [doubleError, setDoubleError] = useState(false);
+
+    useEffect(() => {
+        setValue(initValue);
+    }, [initValue]);
+
+    const updateValue = useCallback(() => {
+        if (doubleError) {
+            setValue(initValue);
+            setDoubleError(false);
+        } else if (initValue !== value) {
+            const f = parseFloat(value);
+            if (!isNaN(f)) {
+                callback(value);
+            }
+        }
+    }, [value, initValue, callback, doubleError]);
+
+    const checkValue = useCallback(
+        (newValue) => {
+            const FloatRE = /^-?\d*[.,]?\d*$/;
+            const outputTransformFloatString = (value) => {
+                return value?.replace(',', '.') || '';
+            };
+            const m = FloatRE.exec(newValue);
+            if (m) {
+                const f = parseFloat(newValue);
+                setDoubleError(
+                    isNaN(f) ||
+                        (gt !== undefined && f <= gt) ||
+                        (ge !== undefined && f < ge) ||
+                        (lt !== undefined && f >= lt) ||
+                        (le !== undefined && f > le)
+                );
+                setValue(outputTransformFloatString(newValue));
+            }
+        },
+        [ge, gt, le, lt]
+    );
+
+    return (
+        <>
+            <Grid item xs={8} className={classes.parameterName}>
+                <FormattedMessage id={label} />
+            </Grid>
+            <Grid item container xs={4} className={classes.controlItem}>
+                <TextField
+                    fullWidth
+                    size="small"
+                    sx={{ input: { textAlign: 'right' } }}
+                    value={value}
+                    onBlur={updateValue}
+                    onChange={(e) => {
+                        checkValue(e.target.value);
+                    }}
+                    error={doubleError}
+                />
+            </Grid>
+        </>
+    );
+};
+
+// TODO this is not complete.
+// We should clean these functions: extractDefaultMap,makeDeltaMap, areEquivDeeply, extractDefault
+// FlatParameters contains this mechanism, we can optimize the process
+// We should refactor the code and remove these functions
+// These functions are added after removing useImportExportParams from commons-ui
+function extractDefaultMap(paramsAsArray) {
+    return Object.fromEntries(
+        paramsAsArray.map((paramDescription) => {
+            return [paramDescription.name, extractDefault(paramDescription)];
+        })
+    );
+}
+
+function makeDeltaMap(defaultMap, changingMap) {
+    if (!changingMap) {
+        return null;
+    }
+
+    const delta = {};
+
+    Object.entries(defaultMap).forEach(([k, v]) => {
+        const m = changingMap[k];
+        if (!areEquivDeeply(v, m)) {
+            delta[k] = m;
+        }
+    });
+
+    return Object.keys(delta).length ? delta : null;
+}
+
+function areEquivDeeply(a, b) {
+    if (a === b) {
+        return true;
+    }
+
+    const aIsArray = Array.isArray(a);
+    const bIsArray = Array.isArray(b);
+    if (aIsArray || bIsArray) {
+        if (aIsArray && bIsArray && a.length === b.length) {
+            let i = 0;
+            while (i < a.length && areEquivDeeply(a[i], b[i])) {
+                ++i;
+            }
+            if (i >= a.length) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    if (typeof a !== 'object' || typeof b !== 'object') {
+        return false;
+    }
+
+    return areEquivDeeply(Object.entries(a), Object.entries(b));
+}
+
+function extractDefault(paramDescription) {
+    const d = paramDescription.defaultValue;
+    if (paramDescription.type === 'BOOLEAN') {
+        return !!d;
+    }
+    if (paramDescription.type === 'DOUBLE') {
+        return d - 0.0;
+    }
+    if (paramDescription.type === 'INTEGER') {
+        return d - 0;
+    }
+    if (paramDescription.type === 'STRING_LIST') {
+        if (Array.isArray(d)) {
+            return d;
+        }
+        const mo = ListRE.exec(d);
+        if (mo?.length > 1) {
+            return mo[1]
+                .split(sepRE)
+                .map((s) => s.trim())
+                .filter((s) => !!s);
+        }
+        return [];
+    }
+    return d ?? null;
+}
 
 function makeComponentsFor(
     defParams,
@@ -164,6 +319,18 @@ function makeComponentFor(
                 }}
             />
         );
+    } else if (defParam.type === TYPES.double) {
+        return (
+            <DoubleEditor
+                initValue={value}
+                label={defParam.description}
+                gt={defParam.gt}
+                ge={defParam.ge}
+                lt={defParam.lt}
+                le={defParam.le}
+                callback={updateValues}
+            />
+        );
     }
 }
 
@@ -171,6 +338,7 @@ const TYPES = {
     enum: 'Enum',
     bool: 'Bool',
     countries: 'Countries',
+    double: 'Double',
 };
 
 const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
@@ -285,6 +453,12 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
             type: TYPES.bool,
             description: 'descLfDcUseTransformerRatio',
         },
+        dcPowerFactor: {
+            type: TYPES.double,
+            description: 'descLfDcPowerFactor',
+            gt: 0.0, // cosphi in ]0..1]
+            le: 1.0,
+        },
     };
 
     return (
@@ -318,6 +492,17 @@ const SpecificLoadFlowParameters = ({
         return extractDefaultMap(specificParamsDescription);
     }, [specificParamsDescription]);
 
+    // change object's NaN values into empty string
+    const getObjectWithoutNanValues = useCallback((initialObject) => {
+        initialObject &&
+            Object.keys(initialObject)?.map(
+                (key) =>
+                    (initialObject[key] = Number.isNaN(initialObject[key])
+                        ? ''
+                        : initialObject[key])
+            );
+    }, []);
+
     const onChange = useCallback(
         (paramName, value, isEdit) => {
             if (isEdit) {
@@ -331,17 +516,34 @@ const SpecificLoadFlowParameters = ({
                 ...prevCurrentParameters,
                 ...{ [paramName]: value },
             };
+
             const deltaMap = makeDeltaMap(defaultValues, nextCurrentParameters);
+
             const toSend = { ...lfParams };
+
+            getObjectWithoutNanValues(deltaMap);
+            const formattedData = { ...deltaMap };
+            Object.keys(formattedData)?.forEach((key) => {
+                formattedData[key] =
+                    formattedData[key] === '' ? null : formattedData[key];
+            });
             const oldSpecifics = toSend['specificParametersPerProvider'];
             toSend['specificParametersPerProvider'] = {
                 ...oldSpecifics,
-                [currentProvider]: deltaMap ?? {},
+                [currentProvider]: formattedData ?? {},
             };
+
             commitLFParameter(toSend);
         },
-        [commitLFParameter, currentProvider, defaultValues, lfParams]
+        [
+            commitLFParameter,
+            currentProvider,
+            defaultValues,
+            lfParams,
+            getObjectWithoutNanValues,
+        ]
     );
+    getObjectWithoutNanValues(defaultValues);
 
     return (
         <>
@@ -360,6 +562,7 @@ const SpecificLoadFlowParameters = ({
                             currentProvider
                         ],
                     }}
+                    showSeparator
                     onChange={onChange}
                 />
             )}
@@ -409,21 +612,27 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         resetProvider();
     }, [resetParameters, resetProvider]);
 
+    const resetLfParameters = useCallback(() => {
+        resetParameters();
+    }, [resetParameters]);
+
     return (
         <>
-            <Grid
-                container
-                className={classes.scrollableGrid}
-                key="lfParameters"
-            >
+            <Grid container spacing={1} padding={1}>
                 <DropDown
                     value={provider}
                     label="Provider"
                     values={providers}
                     callback={updateLfProviderCallback}
                 />
+            </Grid>
+            <Grid
+                container
+                className={classes.scrollableGrid}
+                key="lfParameters"
+            >
+                <LineSeparator />
                 <Grid container spacing={1} paddingTop={1}>
-                    <LineSeparator />
                     <LabelledSlider
                         value={Number(limitReductionParam)}
                         label="LimitReduction"
@@ -462,6 +671,10 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 <LabelledButton
                     callback={resetLfParametersAndLfProvider}
                     label="resetToDefault"
+                />
+                <LabelledButton
+                    callback={resetLfParameters}
+                    label="resetProviderValuesToDefault"
                 />
                 <CloseButton
                     hideParameters={hideParameters}

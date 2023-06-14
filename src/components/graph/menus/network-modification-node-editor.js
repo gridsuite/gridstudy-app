@@ -16,13 +16,12 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import NetworkModificationDialog from 'components/dialogs/network-modifications-dialog';
+import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
 import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
 import {
     Checkbox,
     CircularProgress,
-    Fab,
     Toolbar,
     Tooltip,
     Typography,
@@ -32,7 +31,7 @@ import { useParams } from 'react-router-dom';
 import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import LineCreationDialog from 'components/dialogs/network-modifications/line/creation/line-creation-dialog';
-import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
+import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
 import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator-creation/shunt-compensator-creation-dialog';
 import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog.js';
 import AddIcon from '@mui/icons-material/Add';
@@ -65,6 +64,7 @@ import VoltageLevelModificationDialog from 'components/dialogs/network-modificat
 import { UPDATE_TYPE } from 'components/network/constants';
 import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
+import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -77,12 +77,6 @@ const useStyles = makeStyles((theme) => ({
     list: {
         paddingTop: theme.spacing(0),
         flexGrow: 1,
-    },
-    addButton: {
-        position: 'absolute',
-        bottom: theme.spacing(-1.5),
-        right: 0,
-        margin: theme.spacing(3),
     },
     modificationsTitle: {
         display: 'flex',
@@ -163,6 +157,8 @@ const NetworkModificationNodeEditor = () => {
     const [toggleSelectAll, setToggleSelectAll] = useState();
     const [copiedModifications, setCopiedModifications] = useState([]);
     const [copyInfos, setCopyInfos] = useState(null);
+    const copyInfosRef = useRef();
+    copyInfosRef.current = copyInfos;
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -176,17 +172,19 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
+    const buttonAddRef = useRef();
 
     const cleanClipboard = useCallback(() => {
-        if (copiedModifications.length <= 0) {
-            return;
-        }
         setCopyInfos(null);
-        setCopiedModifications([]);
-        snackInfo({
-            messageId: 'CopiedModificationInvalidationMessage',
+        setCopiedModifications((old) => {
+            if (old.length > 0) {
+                snackInfo({
+                    messageId: 'CopiedModificationInvalidationMessage',
+                });
+            }
+            return [];
         });
-    }, [snackInfo, copiedModifications]);
+    }, [snackInfo]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -198,7 +196,7 @@ const NetworkModificationNodeEditor = () => {
         }
     };
 
-    const handleCloseDialog = (e, reason) => {
+    const handleCloseDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
@@ -223,114 +221,151 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    const dialogs = {
-        LOAD_CREATION: {
-            label: 'CreateLoad',
-            dialog: () => adapt(LoadCreationDialog),
-            icon: <AddIcon />,
+    const menuDefinition = [
+        {
+            id: 'CREATE',
+            label: 'Create',
+            subItems: [
+                {
+                    id: 'LOAD_CREATION',
+                    label: 'LOAD',
+                    action: () => adapt(LoadCreationDialog),
+                },
+                {
+                    id: 'GENERATOR_CREATION',
+                    label: 'GENERATOR',
+                    action: () => adapt(GeneratorCreationDialog),
+                },
+                {
+                    id: 'SHUNT_COMPENSATOR_CREATION',
+                    label: 'ShuntCompensator',
+                    action: () => adapt(ShuntCompensatorCreationDialog),
+                },
+                {
+                    id: 'LINE_CREATION',
+                    label: 'LINE',
+                    action: () => adapt(LineCreationDialog),
+                },
+                {
+                    id: 'TWO_WINDINGS_TRANSFORMER_CREATION',
+                    label: 'TWO_WINDINGS_TRANSFORMER',
+                    action: () => adapt(TwoWindingsTransformerCreationDialog),
+                },
+                {
+                    id: 'VOLTAGE_LEVEL_CREATION',
+                    label: 'VOLTAGE_LEVEL',
+                    action: () => adapt(VoltageLevelCreationDialog),
+                },
+                {
+                    id: 'SUBSTATION_CREATION',
+                    label: 'SUBSTATION',
+                    action: () => adapt(SubstationCreationDialog),
+                },
+            ],
         },
-        LOAD_MODIFICATION: {
-            label: 'ModifyLoad',
-            dialog: () => adapt(LoadModificationDialog),
-            icon: <AddIcon />,
+        {
+            id: 'EDIT',
+            label: 'edit',
+            subItems: [
+                {
+                    id: 'LOAD_MODIFICATION',
+                    label: 'LOAD',
+                    action: () => adapt(LoadModificationDialog),
+                },
+                {
+                    id: 'GENERATOR_MODIFICATION',
+                    label: 'GENERATOR',
+                    action: () => adapt(GeneratorModificationDialog),
+                },
+                {
+                    id: 'LINE_MODIFICATION',
+                    label: 'LINE',
+                    action: () => adapt(LineModificationDialog),
+                },
+                {
+                    id: 'VOLTAGE_LEVEL_MODIFICATION',
+                    label: 'VoltageLevel',
+                    action: () => adapt(VoltageLevelModificationDialog),
+                },
+                {
+                    id: 'SUBSTATION_MODIFICATION',
+                    label: 'SUBSTATION',
+                    action: () => adapt(SubstationModificationDialog),
+                },
+                {
+                    id: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
+                    label: 'TWO_WINDINGS_TRANSFORMER',
+                    action: () =>
+                        adapt(TwoWindingsTransformerModificationDialog),
+                },
+            ],
         },
-        GENERATOR_CREATION: {
-            label: 'CreateGenerator',
-            dialog: () => adapt(GeneratorCreationDialog),
-            icon: <AddIcon />,
+        {
+            id: 'EQUIPMENT_DELETION',
+            label: 'DeleteContingencyList',
+            action: () => adapt(EquipmentDeletionDialog),
         },
-        GENERATOR_MODIFICATION: {
-            label: 'ModifyGenerator',
-            dialog: () => adapt(GeneratorModificationDialog),
-            icon: <AddIcon />,
+        {
+            id: 'ATTACHING_SPLITTING_LINES',
+            label: 'AttachingAndSplittingLines',
+            subItems: [
+                {
+                    id: 'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
+                    label: 'LineSplitWithVoltageLevel',
+                    action: () => adapt(LineSplitWithVoltageLevelDialog),
+                },
+                {
+                    id: 'LINE_ATTACH_TO_VOLTAGE_LEVEL',
+                    label: 'LineAttachToVoltageLevel',
+                    action: () => adapt(LineAttachToVoltageLevelDialog),
+                },
+                {
+                    id: 'LINES_ATTACH_TO_SPLIT_LINES',
+                    label: 'LinesAttachToSplitLines',
+                    action: () => adapt(LinesAttachToSplitLinesDialog),
+                },
+                {
+                    id: 'DELETE_VOLTAGE_LEVEL_ON_LINE',
+                    label: 'DeleteVoltageLevelOnLine',
+                    action: () => adapt(DeleteVoltageLevelOnLineDialog),
+                },
+                {
+                    id: 'DELETE_ATTACHING_LINE',
+                    label: 'DeleteAttachingLine',
+                    action: () => adapt(DeleteAttachingLineDialog),
+                },
+            ],
         },
-        SHUNT_COMPENSATOR_CREATION: {
-            label: 'CreateShuntCompensator',
-            dialog: () => adapt(ShuntCompensatorCreationDialog),
-            icon: <AddIcon />,
+        {
+            id: 'GENERATION_AND_LOAD',
+            label: 'GenerationAndLoad',
+            subItems: [
+                {
+                    id: 'GENERATOR_SCALING',
+                    label: 'GeneratorScaling',
+                    action: () => adapt(GeneratorScalingDialog),
+                },
+                {
+                    id: 'LOAD_SCALING',
+                    label: 'LoadScaling',
+                    action: () => adapt(LoadScalingDialog),
+                },
+                {
+                    id: 'GENERATION_DISPATCH',
+                    label: 'GenerationDispatch',
+                    action: () => adapt(GenerationDispatchDialog),
+                },
+            ],
         },
-        LINE_CREATION: {
-            label: 'CreateLine',
-            dialog: () => adapt(LineCreationDialog),
-            icon: <AddIcon />,
-        },
-        LINE_MODIFICATION: {
-            label: 'ModifyLine',
-            dialog: () => adapt(LineModificationDialog),
-            icon: <AddIcon />,
-        },
-        TWO_WINDINGS_TRANSFORMER_CREATION: {
-            onlyDeveloperMode: true,
-            label: 'CreateTwoWindingsTransformer',
-            dialog: () => adapt(TwoWindingsTransformerCreationDialog),
-            icon: <AddIcon />,
-        },
-        SUBSTATION_CREATION: {
-            label: 'CreateSubstation',
-            dialog: () => adapt(SubstationCreationDialog),
-            icon: <AddIcon />,
-        },
-        SUBSTATION_MODIFICATION: {
-            label: 'ModifySubstation',
-            dialog: () => adapt(SubstationModificationDialog),
-            icon: <AddIcon />,
-        },
-        VOLTAGE_LEVEL_CREATION: {
-            label: 'CreateVoltageLevel',
-            dialog: () => adapt(VoltageLevelCreationDialog),
-            icon: <AddIcon />,
-        },
-        VOLTAGE_LEVEL_MODIFICATION: {
-            label: 'ModifyVoltageLevel',
-            dialog: () => adapt(VoltageLevelModificationDialog),
-            icon: <AddIcon />,
-        },
-        LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
-            label: 'LineSplitWithVoltageLevel',
-            dialog: () => adapt(LineSplitWithVoltageLevelDialog),
-            icon: <AddIcon />,
-        },
-        LINE_ATTACH_TO_VOLTAGE_LEVEL: {
-            label: 'LineAttachToVoltageLevel',
-            dialog: () => adapt(LineAttachToVoltageLevelDialog),
-            icon: <AddIcon />,
-        },
-        LINES_ATTACH_TO_SPLIT_LINES: {
-            label: 'LinesAttachToSplitLines',
-            dialog: () => adapt(LinesAttachToSplitLinesDialog),
-            icon: <AddIcon />,
-        },
-        GENERATOR_SCALING: {
-            label: 'GeneratorScaling',
-            dialog: () => adapt(GeneratorScalingDialog),
-            icon: <AddIcon />,
-        },
-        LOAD_SCALING: {
-            label: 'LoadScaling',
-            dialog: () => adapt(LoadScalingDialog),
-            icon: <AddIcon />,
-        },
-        DELETE_VOLTAGE_LEVEL_ON_LINE: {
-            label: 'DeleteVoltageLevelOnLine',
-            dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
-            icon: <AddIcon />,
-        },
-        DELETE_ATTACHING_LINE: {
-            label: 'DeleteAttachingLine',
-            dialog: () => adapt(DeleteAttachingLineDialog),
-            icon: <AddIcon />,
-        },
-        EQUIPMENT_DELETION: {
-            label: 'DeleteEquipment',
-            dialog: () => adapt(EquipmentDeletionDialog),
-            icon: <DeleteIcon />,
-        },
-        GENERATION_DISPATCH: {
-            label: 'GenerationDispatch',
-            dialog: () => adapt(GenerationDispatchDialog),
-            icon: <AddIcon />,
-        },
-    };
+    ];
+
+    const subMenuItemsList = menuDefinition.reduce(
+        (actions, currentMenuItem) =>
+            currentMenuItem.subItems === undefined
+                ? [...actions, currentMenuItem]
+                : [...actions, ...currentMenuItem.subItems],
+        []
+    );
 
     const fillNotification = useCallback(
         (study, messageId) => {
@@ -417,6 +452,21 @@ const NetworkModificationNodeEditor = () => {
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeDeleted'
+            ) {
+                if (
+                    copyInfosRef.current &&
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) =>
+                            nodeId === copyInfosRef.current.originNodeUuid
+                    )
+                ) {
+                    // Must clean modifications clipboard if the origin Node is removed
+                    cleanClipboard();
+                }
+            }
+            if (
                 currentNodeIdRef.current !==
                 studyUpdatedForce.eventData.headers['parentNode']
             ) {
@@ -455,9 +505,10 @@ const NetworkModificationNodeEditor = () => {
         dofetchNetworkModifications,
         manageNotification,
         studyUpdatedForce,
+        cleanClipboard,
     ]);
 
-    const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
+    const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] =
         useState(false);
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -465,11 +516,11 @@ const NetworkModificationNodeEditor = () => {
     const classes = useStyles();
 
     const openNetworkModificationConfiguration = useCallback(() => {
-        setOpenNetworkModificationsDialog(true);
+        setOpenNetworkModificationsMenu(true);
     }, []);
 
     const closeNetworkModificationConfiguration = () => {
-        setOpenNetworkModificationsDialog(false);
+        setOpenNetworkModificationsMenu(false);
         setEditData(undefined);
         setEditDataFetchStatus(FetchStatus.IDLE);
     };
@@ -530,8 +581,11 @@ const NetworkModificationNodeEditor = () => {
 
     const doCopyModifications = useCallback(() => {
         setCopiedModifications(selectedModificationsIds());
-        setCopyInfos({ copyType: CopyType.COPY });
-    }, [selectedModificationsIds]);
+        setCopyInfos({
+            copyType: CopyType.COPY,
+            originNodeUuid: currentNode.id,
+        });
+    }, [currentNode?.id, selectedModificationsIds]);
 
     const doPasteModifications = useCallback(() => {
         if (copyInfos.copyType === CopyType.MOVE) {
@@ -608,7 +662,8 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
-    const onOpenDialog = (id) => {
+    const onItemClick = (id) => {
+        setOpenNetworkModificationsMenu(false);
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
@@ -618,7 +673,9 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const renderDialog = () => {
-        return dialogs[editDialogOpen].dialog();
+        return subMenuItemsList
+            .find((menuItem) => menuItem.id === editDialogOpen)
+            .action();
     };
 
     const commit = useCallback(
@@ -792,6 +849,15 @@ const NetworkModificationNodeEditor = () => {
                 />
                 <div className={classes.filler} />
                 <IconButton
+                    className={classes.toolbarIcon}
+                    size="small"
+                    ref={buttonAddRef}
+                    onClick={openNetworkModificationConfiguration}
+                    disabled={isAnyNodeBuilding}
+                >
+                    <AddIcon />
+                </IconButton>
+                <IconButton
                     onClick={doCutModifications}
                     size={'small'}
                     className={classes.toolbarIcon}
@@ -854,22 +920,13 @@ const NetworkModificationNodeEditor = () => {
             {renderPaneSubtitle()}
 
             {renderNetworkModificationsList()}
-            <Fab
-                className={classes.addButton}
-                color="primary"
-                size="medium"
-                onClick={openNetworkModificationConfiguration}
-                disabled={isAnyNodeBuilding}
-            >
-                <AddIcon />
-            </Fab>
 
-            <NetworkModificationDialog
-                open={openNetworkModificationsDialog}
+            <NetworkModificationsMenu
+                open={openNetworkModificationsMenu}
                 onClose={closeNetworkModificationConfiguration}
-                currentNodeUuid={currentNode?.id}
-                onOpenDialog={onOpenDialog}
-                dialogs={dialogs}
+                onItemClick={onItemClick}
+                anchorEl={buttonAddRef.current}
+                menuDefinition={menuDefinition}
             />
             {editDialogOpen && renderDialog()}
         </>

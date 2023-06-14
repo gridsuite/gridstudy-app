@@ -19,7 +19,7 @@ import React, {
 import { Grid, Typography } from '@mui/material';
 import clsx from 'clsx';
 import CheckboxSelect from '../common/checkbox-select';
-import { EQUIPMENT_TYPES } from './equipment-filter';
+import { CURVE_EQUIPMENT_TYPES } from './equipment-filter';
 import CheckboxTreeview from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
@@ -98,11 +98,12 @@ const useStyles = makeStyles((theme) => ({
         border: 'solid',
         borderWidth: '.5px',
         borderColor: lighten(theme.palette.background.paper, 0.5),
+        overflow: 'auto',
     },
 }));
 
 const ModelFilter = forwardRef(
-    ({ equipmentType = EQUIPMENT_TYPES.LOAD }, ref) => {
+    ({ equipmentType = CURVE_EQUIPMENT_TYPES.LOAD }, ref) => {
         const studyUuid = useSelector((state) => state.studyUuid);
         const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -246,9 +247,7 @@ const ModelFilter = forwardRef(
                                 checkAll
                                 sx={{
                                     maxHeight: '460px',
-                                    maxWidth: '500px',
-                                    flexGrow: 1,
-                                    overflow: 'auto',
+                                    maxWidth: '50px',
                                 }}
                             />
                         </div>

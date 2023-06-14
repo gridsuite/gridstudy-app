@@ -59,8 +59,6 @@ const SubstationCreationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const equipmentPath = 'substations';
-
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -83,9 +81,9 @@ const SubstationCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.SUBSTATION.type,
     });
 
     useEffect(() => {

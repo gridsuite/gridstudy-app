@@ -7,15 +7,16 @@
 
 import { useIntl } from 'react-intl';
 import { useState } from 'react';
-import { fetchEquipmentInfos } from '../../utils/rest-api';
+import { fetchNetworkElementInfos } from '../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 
 export const useFormSearchCopy = ({
     studyUuid,
     currentNodeUuid,
-    equipmentPath,
     toFormValues,
     setFormValues,
+    elementType,
 }) => {
     const intl = useIntl();
 
@@ -25,13 +26,15 @@ export const useFormSearchCopy = ({
 
     const handleSelectionChange = (element) => {
         let msg;
-        return fetchEquipmentInfos(
+        const fetchElementPromise = fetchNetworkElementInfos(
             studyUuid,
             currentNodeUuid,
-            equipmentPath,
+            elementType,
+            EQUIPMENT_INFOS_TYPES.FORM.type,
             element.id,
             true
-        )
+        );
+        return fetchElementPromise
             .then((response) => {
                 const equipmentFormValues = toFormValues(response);
                 setFormValues(equipmentFormValues);

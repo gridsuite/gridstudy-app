@@ -39,13 +39,14 @@ import React, { useCallback, useEffect, useState } from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import {
     fetchEquipmentsIds,
-    fetchVoltageLevelsIdAndTopology,
+    fetchVoltageLevelsListInfos,
 } from 'utils/rest-api';
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
 const GeneratorModificationForm = ({
     studyUuid,
@@ -69,7 +70,7 @@ const GeneratorModificationForm = ({
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))
@@ -80,7 +81,7 @@ const GeneratorModificationForm = ({
                 studyUuid,
                 currentNodeUuid,
                 undefined,
-                'GENERATOR',
+                EQUIPMENT_TYPES.GENERATOR.type,
                 true
             ).then((values) => {
                 setEquipmentOptions(values.sort());

@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
@@ -12,7 +13,11 @@ import {
     BRANCH_SIDE,
 } from '../components/network/constants';
 import { MODIFICATION_TYPES } from '../components/utils/modification-type';
-import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../components/utils/equipment-types';
+import { toModificationOperation } from '../components/utils/utils';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/user-admin';
@@ -407,12 +412,12 @@ export function fetchSvg(svgUrl) {
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Substations',
-        'substations',
+        EQUIPMENT_TYPES.SUBSTATION.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
         true
     );
 }
@@ -440,53 +445,38 @@ export function fetchSubstationPositions(
 }
 
 export function fetchLines(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Lines',
-        'lines',
+        EQUIPMENT_TYPES.LINE.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
         true
     );
 }
 
 export function fetchVoltageLevels(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Voltage-levels',
-        'voltage-levels',
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
         true
     );
 }
 
-export function fetchVoltageLevelsIdAndTopology(
+export function fetchVoltageLevelsListInfos(
     studyUuid,
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Voltage-levels',
-        'voltage-levels-topology',
-        true
-    );
-}
-
-export function fetchVoltageLevelsEquipments(
-    studyUuid,
-    currentNodeUuid,
-    substationsIds
-) {
-    return fetchEquipments(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        'Voltage-levels-equipments',
-        'voltage-levels-equipments',
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+        EQUIPMENT_INFOS_TYPES.LIST.type,
         true
     );
 }
@@ -496,12 +486,13 @@ export function fetchTwoWindingsTransformers(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Two windings transformers',
-        '2-windings-transformers'
+        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        false
     );
 }
 
@@ -510,62 +501,65 @@ export function fetchThreeWindingsTransformers(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Three windings transformers',
-        '3-windings-transformers'
+        EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        false
     );
 }
 
 export function fetchGenerators(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Generators',
-        'generators'
+        EQUIPMENT_TYPES.GENERATOR.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
 export function fetchLoads(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Loads',
-        'loads'
+        EQUIPMENT_TYPES.LOAD.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 
 export function fetchDanglingLines(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Dangling lines',
-        'dangling-lines'
+        EQUIPMENT_TYPES.DANGLING_LINE.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
 export function fetchBatteries(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Batteries',
-        'batteries'
+        EQUIPMENT_TYPES.BATTERY.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
 export function fetchHvdcLines(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Hvdc lines',
-        'hvdc-lines'
+        EQUIPMENT_TYPES.HVDC_LINE.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        true
     );
 }
 
@@ -574,12 +568,12 @@ export function fetchLccConverterStations(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'LCC converter stations',
-        'lcc-converter-stations'
+        EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -588,12 +582,12 @@ export function fetchVscConverterStations(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'VSC converter stations',
-        'vsc-converter-stations'
+        EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -602,12 +596,12 @@ export function fetchShuntCompensators(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Shunt compensators',
-        'shunt-compensators'
+        EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -616,12 +610,12 @@ export function fetchStaticVarCompensators(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Static var compensators',
-        'static-var-compensators'
+        EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -659,25 +653,66 @@ export function searchEquipmentsInfos(
 }
 
 export function fetchAllEquipments(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        'All',
-        'all'
+    console.info(
+        `Fetching all equipments of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
     );
+
+    const fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map/all' +
+        '?' +
+        getQueryParamsList(substationsIds, 'substationId');
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
 }
 
-export function fetchEquipments(
+export function fetchNetworkElementsInfos(
     studyUuid,
     currentNodeUuid,
     substationsIds,
-    equipmentType,
-    equipmentPath,
+    elementType,
+    infoType,
     inUpstreamBuiltParentNode
 ) {
     console.info(
-        `Fetching equipments '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+    );
+
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+    if (substationsIds !== undefined && substationsIds.length > 0) {
+        substationsIds.forEach((id) =>
+            urlSearchParams.append('substationsIds', id)
+        );
+    }
+    urlSearchParams.append('elementType', elementType);
+    urlSearchParams.append('infoType', infoType);
+
+    const fetchElementsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network/elements' +
+        '?' +
+        urlSearchParams.toString();
+    console.debug(fetchElementsUrl);
+
+    return backendFetchJson(fetchElementsUrl);
+}
+
+export function fetchNetworkElementInfos(
+    studyUuid,
+    currentNodeUuid,
+    elementType,
+    infoType,
+    elementId,
+    inUpstreamBuiltParentNode
+) {
+    console.info(
+        `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
     let urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
@@ -686,16 +721,18 @@ export function fetchEquipments(
             inUpstreamBuiltParentNode
         );
     }
+    urlSearchParams.append('elementType', elementType);
+    urlSearchParams.append('infoType', infoType);
 
-    const fetchEquipmentsUrl =
+    const fetchElementsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/' +
-        equipmentPath +
+        '/network/elements/' +
+        encodeURIComponent(elementId) +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId') +
         urlSearchParams.toString();
-    console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
+    console.debug(fetchElementsUrl);
+
+    return backendFetchJson(fetchElementsUrl);
 }
 
 export function fetchVoltageLevelEquipments(
@@ -761,74 +798,19 @@ export function fetchEquipmentsIds(
     return backendFetchJson(fetchEquipmentsUrl);
 }
 
-export function fetchSubstation(studyUuid, currentNodeUuid, equipmentId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        'substations',
-        equipmentId,
-        true
-    );
-}
-
-export function fetchLine(studyUuid, currentNodeUuid, equipmentId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        'lines',
-        equipmentId,
-        true
-    );
-}
-
-export function fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        'voltage-levels',
-        equipmentId,
-        true
-    );
-}
-
 export function fetchLineOrTransformer(
     studyUuid,
     currentNodeUuid,
     equipmentId
 ) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        'branch-or-3wt',
-        equipmentId,
-        true
-    );
-}
-
-export function fetchEquipmentInfos(
-    studyUuid,
-    currentNodeUuid,
-    equipmentPath,
-    equipmentId,
-    inUpstreamBuiltParentNode
-) {
     console.info(
-        `Fetching specific equipment '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching specific equipment '${equipmentId}' of type branch-or-3wt of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
-
     let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
-
+    urlSearchParams.append('inUpstreamBuiltParentNode', true);
     const fetchEquipmentInfosUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/' +
-        equipmentPath +
-        '/' +
+        '/network-map/branch-or-3wt/' +
         encodeURIComponent(equipmentId) +
         '?' +
         urlSearchParams.toString();
@@ -1271,6 +1253,29 @@ export function fetchVoltageInitResult(studyUuid, currentNodeUuid) {
         '/voltage-init/result';
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function updateVoltageInitParameters(studyUuid, newParams) {
+    console.info('set voltage init parameters');
+    const url = getStudyUrl(studyUuid) + '/voltage-init/parameters';
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
+}
+
+export function getVoltageInitParameters(studyUuid) {
+    console.info('get voltage init parameters');
+    const getVoltageInitParams =
+        getStudyUrl(studyUuid) + '/voltage-init/parameters';
+    console.debug(getVoltageInitParams);
+    return backendFetchJson(getVoltageInitParams);
 }
 // --- Voltage init API - END
 
@@ -2120,13 +2125,6 @@ export function modifyLoad(
         }),
     });
 }
-
-function toModificationOperation(value) {
-    return value === 0 || value === false || value
-        ? { value: value, op: 'SET' }
-        : null;
-}
-
 export function modifyGenerator(
     studyUuid,
     currentNodeUuid,
@@ -2574,6 +2572,58 @@ export function createTwoWindingsTransformer(
             connectionDirection2: connectionDirection2,
             connectionPosition1: connectionPosition1,
             connectionPosition2: connectionPosition2,
+        }),
+    });
+}
+
+export function modifyTwoWindingsTransformer(
+    studyUuid,
+    currentNodeUuid,
+    twoWindingsTransformerId,
+    twoWindingsTransformerName,
+    seriesResistance,
+    seriesReactance,
+    magnetizingConductance,
+    magnetizingSusceptance,
+    ratedS,
+    ratedVoltage1,
+    ratedVoltage2,
+    currentLimit1,
+    currentLimit2,
+    isUpdate,
+    modificationUuid
+) {
+    let modifyTwoWindingsTransformerUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modifyTwoWindingsTransformerUrl +=
+            '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating two windings transformer modification');
+    } else {
+        console.info('Creating two windings transformer modification');
+    }
+
+    return backendFetchText(modifyTwoWindingsTransformerUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+            equipmentId: twoWindingsTransformerId,
+            equipmentName: twoWindingsTransformerName,
+            seriesResistance: seriesResistance,
+            seriesReactance: seriesReactance,
+            magnetizingConductance: magnetizingConductance,
+            magnetizingSusceptance: magnetizingSusceptance,
+            ratedS: ratedS,
+            ratedVoltage1: ratedVoltage1,
+            ratedVoltage2: ratedVoltage2,
+            currentLimits1: currentLimit1,
+            currentLimits2: currentLimit2,
         }),
     });
 }
@@ -3209,45 +3259,6 @@ export function getSensiDefaultResultsThreshold() {
     });
 }
 
-function fetchMapEquipment(
-    studyUuid,
-    currentNodeUuid,
-    substationsIds,
-    equipmentType,
-    equipmentPath,
-    inUpstreamBuiltParentNode
-) {
-    console.info(
-        `Fetching map ' + ${equipmentType} + ' data of study '${studyUuid}' and node '${currentNodeUuid}'...`
-    );
-    let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
-
-    const substationParams = getQueryParamsList(substationsIds, 'substationId');
-
-    let fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/' +
-        equipmentPath;
-
-    if (urlSearchParams.toString().length > 0 || substationParams.length > 0) {
-        fetchEquipmentsUrl += '?';
-        fetchEquipmentsUrl += urlSearchParams.toString();
-        fetchEquipmentsUrl +=
-            urlSearchParams.toString().length > 0 && substationParams.length > 0
-                ? '&' + substationParams
-                : substationParams;
-    }
-
-    console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
-}
-
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     console.info('Fetching elements metadata');
     const url =
@@ -3264,53 +3275,54 @@ export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     return backendFetchJson(url);
 }
 
-export function fetchMapSubstations(
+export function fetchSubstationsMapInfos(
     studyUuid,
     currentNodeUuid,
     substationsIds,
     inUpstreamBuiltParentNode
 ) {
-    return fetchMapEquipment(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'substations',
-        'map-substations',
+        EQUIPMENT_TYPES.SUBSTATION.type,
+        EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
 }
 
-export function fetchMapLines(
+export function fetchLinesMapInfos(
     studyUuid,
     currentNodeUuid,
     substationsIds,
     inUpstreamBuiltParentNode
 ) {
-    return fetchMapEquipment(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'lines',
-        'map-lines',
+        EQUIPMENT_TYPES.LINE.type,
+        EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
 }
 
-export function fetchMapHvdcLines(
+export function fetchHvdcLinesMapInfos(
     studyUuid,
     currentNodeUuid,
     substationsIds,
     inUpstreamBuiltParentNode
 ) {
-    return fetchMapEquipment(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'hvdc-lines',
-        'map-hvdc-lines',
+        EQUIPMENT_TYPES.HVDC_LINE.type,
+        EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
 }
+
 export function generationDispatch(
     studyUuid,
     currentNodeUuid,
@@ -3318,7 +3330,8 @@ export function generationDispatch(
     lossCoefficient,
     defaultOutageRate,
     generatorsWithoutOutage,
-    generatorsWithFixedActivePower
+    generatorsWithFixedActivePower,
+    generatorsFrequencyReserve
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
@@ -3326,6 +3339,7 @@ export function generationDispatch(
         defaultOutageRate: defaultOutageRate,
         generatorsWithoutOutage: generatorsWithoutOutage,
         generatorsWithFixedSupply: generatorsWithFixedActivePower,
+        generatorsFrequencyReserve: generatorsFrequencyReserve,
     });
 
     let generationDispatchUrl =
@@ -3355,4 +3369,25 @@ export function getLineTypesCatalog() {
         PREFIX_NETWORK_MODIFICATION_QUERIES +
         '/v1/network-modifications/catalog/line_types';
     return backendFetchJson(url);
+}
+
+export function getSecurityAnalysisParameters(studyUuid) {
+    console.info('get security analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function setSecurityAnalysisParameters(studyUuid, newParams) {
+    console.info('set security analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
 }

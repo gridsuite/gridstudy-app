@@ -24,13 +24,17 @@ import {
 } from 'components/utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
 import {
-    fetchEquipmentInfos,
+    fetchNetworkElementInfos,
     FetchStatus,
     modifySubstation,
 } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 
 const checkUniquePropertiesNames = (properties) => {
     const validValues = properties.filter((v) => v?.name);
@@ -81,6 +85,7 @@ const getPropertiesFromModification = (properties) => {
 /**
  * Dialog to modify a substation in the network
  * @param editData the data to edit
+ * @param defaultIdValue the default substation id
  * @param currentNode The node we are currently working on
  * @param studyUuid the study we are currently working on
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
@@ -89,6 +94,7 @@ const getPropertiesFromModification = (properties) => {
  */
 const SubstationModificationDialog = ({
     editData,
+    defaultIdValue,
     currentNode,
     studyUuid,
     isUpdate,
@@ -102,12 +108,12 @@ const SubstationModificationDialog = ({
 
     const emptyFormData = useMemo(
         () => ({
-            [EQUIPMENT_ID]: null,
+            [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             [COUNTRY]: null,
             [ADDITIONAL_PROPERTIES]: null,
         }),
-        []
+        [defaultIdValue]
     );
 
     const formMethods = useForm({
@@ -208,10 +214,11 @@ const SubstationModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchEquipmentInfos(
+                fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    'substations',
+                    EQUIPMENT_TYPES.SUBSTATION.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )

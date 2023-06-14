@@ -99,6 +99,12 @@ export const buildNewBusbarSections = (
     return newBusbarSections;
 };
 
+export function toModificationOperation(value) {
+    return value === 0 || value === false || value
+        ? { value: value, op: 'SET' }
+        : null;
+}
+
 export const formatTemporaryLimits = (temporaryLimits) =>
     temporaryLimits?.map((limit) => {
         return {

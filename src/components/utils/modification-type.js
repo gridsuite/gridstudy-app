@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 export const MODIFICATION_TYPES = {
     GROOVY_SCRIPT: {
         type: 'GROOVY_SCRIPT',
@@ -37,6 +44,9 @@ export const MODIFICATION_TYPES = {
     },
     TWO_WINDINGS_TRANSFORMER_CREATION: {
         type: 'TWO_WINDINGS_TRANSFORMER_CREATION',
+    },
+    TWO_WINDINGS_TRANSFORMER_MODIFICATION: {
+        type: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
     },
     EQUIPMENT_DELETION: {
         type: 'EQUIPMENT_DELETION',

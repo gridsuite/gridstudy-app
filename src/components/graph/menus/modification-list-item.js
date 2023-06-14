@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -15,8 +16,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { fetchLine } from '../../../utils/rest-api';
+import { fetchNetworkElementInfos } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../utils/equipment-types';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -123,10 +128,13 @@ export const ModificationListItem = ({
                 voltageLevelName = 'voltageLevelName2';
             }
             //TODO supposed to be temporary, we shouldn't fetch back-end to create a label
-            energizeEndPromise = fetchLine(
+            energizeEndPromise = fetchNetworkElementInfos(
                 studyUuid,
                 currentNode.id,
-                modif.equipmentId
+                EQUIPMENT_TYPES.LINE.type,
+                EQUIPMENT_INFOS_TYPES.LIST.type,
+                modif.equipmentId,
+                false
             )
                 .then((line) => {
                     return line[voltageLevelName] ?? line[voltageLevelId];

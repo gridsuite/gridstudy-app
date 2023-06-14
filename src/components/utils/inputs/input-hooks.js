@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,7 +38,11 @@ import {
     toIntValue,
     useStyles,
 } from '../../dialogs/dialogUtils';
-import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    useSnackMessage,
+    OverflowableText,
+    useDebounce,
+} from '@gridsuite/commons-ui';
 import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import {
@@ -451,7 +455,6 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     const { snackError } = useSnackMessage();
     const [isValidName, setIsValidName] = useState(false);
     const [error, setError] = useState();
-    const timer = useRef();
     const [checking, setChecking] = useState(undefined);
     const [adornment, setAdornment] = useState();
     const [name, field] = useSimpleTextValue({
@@ -490,6 +493,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
         },
         [studyUuid, intl, defaultValue, snackError]
     );
+    const debouncedValidName = useDebounce(validName, 700);
 
     useEffect(() => {
         if (checking === undefined) {
@@ -507,17 +511,16 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     }, [checking, isValidName]);
 
     useEffect(() => {
-        if (name === '' && !timer.current) {
+        if (name === '') {
             return;
         } // initial render
 
-        clearTimeout(timer.current);
         setIsValidName(false);
         setAdornment(undefined);
         setChecking(true);
         setError(undefined);
-        timer.current = setTimeout(() => validName(name), 700);
-    }, [studyUuid, name, validName, triggerReset]);
+        debouncedValidName(name);
+    }, [studyUuid, name, debouncedValidName, triggerReset]);
 
     return [error, field, isValidName, name];
 };
