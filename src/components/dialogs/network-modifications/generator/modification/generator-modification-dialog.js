@@ -42,8 +42,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-
-import { fetchEquipmentInfos, modifyGenerator } from 'utils/rest-api';
+import { fetchNetworkElementInfos, modifyGenerator } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
@@ -62,6 +61,10 @@ import {
 } from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 
 const GeneratorModificationDialog = ({
@@ -305,10 +308,11 @@ const GeneratorModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchEquipmentInfos(
+                fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    'generators',
+                    EQUIPMENT_TYPES.GENERATOR.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )
@@ -585,7 +589,7 @@ const GeneratorModificationDialog = ({
                         currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={'GENERATOR'}
+                        equipmentType={EQUIPMENT_TYPES.GENERATOR.type}
                         fillerHeight={17}
                     />
                 )}
