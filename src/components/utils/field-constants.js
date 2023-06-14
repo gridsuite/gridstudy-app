@@ -216,3 +216,8 @@ export const GENERATORS_WITH_FIXED_ACTIVE_POWER =
 export const GENERATORS_FREQUENCY_RESERVES = 'generatorsFrequencyReserve';
 export const GENERATORS_FILTERS = 'generatorsFilters';
 export const FREQUENCY_RESERVE = 'frequencyReserve';
+
+export const VOLTAGE_LIMITS = 'voltageLimits';
+export const PRIORITY = 'priority';
+export const FILTER_ID = 'filterId';
+export const FILTER_NAME = 'filterName';

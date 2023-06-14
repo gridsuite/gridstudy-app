@@ -125,7 +125,6 @@ const VoltageLevelCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError, snackWarning } = useSnackMessage();
-    const equipmentPath = 'voltage-levels';
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -168,10 +167,9 @@ const VoltageLevelCreationDialog = ({
                           }))
                         : [],
             });
-            if (voltageLevel.isPartiallyCopied) {
+            if (!voltageLevel.isRetrievedBusbarSections) {
                 snackWarning({
-                    messageTxt:
-                        'Copy was partially made, some fields were not copied',
+                    messageId: 'BusBarSectionsCopyingNotSupported',
                 });
             }
         },
@@ -181,9 +179,9 @@ const VoltageLevelCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromExternalDataToFormValues,
+        elementType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
     });
 
     useEffect(() => {

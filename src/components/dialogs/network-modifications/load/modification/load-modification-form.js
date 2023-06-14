@@ -26,13 +26,17 @@ import FloatInput from 'components/utils/rhf-inputs/float-input';
 import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useState } from 'react';
 import {
-    fetchEquipmentInfos,
     fetchEquipmentsIds,
+    fetchNetworkElementInfos,
     FetchStatus,
 } from 'utils/rest-api';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import { useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
 
 const LoadModificationForm = ({
     currentNode,
@@ -53,7 +57,7 @@ const LoadModificationForm = ({
             studyUuid,
             currentNodeUuid,
             undefined,
-            'LOAD',
+            EQUIPMENT_TYPES.LOAD.type,
             true
         ).then((values) => {
             setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
@@ -63,10 +67,11 @@ const LoadModificationForm = ({
     useEffect(() => {
         if (loadId) {
             setDataFetchStatus(FetchStatus.RUNNING);
-            fetchEquipmentInfos(
+            fetchNetworkElementInfos(
                 studyUuid,
                 currentNodeUuid,
-                'loads',
+                EQUIPMENT_TYPES.LOAD.type,
+                EQUIPMENT_INFOS_TYPES.FORM.type,
                 loadId,
                 true
             )

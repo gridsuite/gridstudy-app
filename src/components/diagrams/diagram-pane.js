@@ -40,6 +40,7 @@ import {
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
     NoSvg,
 } from './diagram-common';
+import { makeDiagramSorter } from './diagram-utils';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
@@ -50,7 +51,6 @@ import { SLD_DISPLAY_MODE } from '../network/constants';
 import clsx from 'clsx';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
-import { sortByAlign } from '../utils/sort-functions';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -278,10 +278,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                             state: state,
                             name: nadTitle,
                             fetchSvg: () =>
-                                fetchSvgData(
-                                    svgUrl,
-                                    DiagramType.NETWORK_AREA_DIAGRAM
-                                ),
+                                createNetworkAreaDiagramView(ids, state, depth), // here 'name' and 'substationsIds' can change so we can't use fetchSvgData
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
                             substationIds: substationsIds,
@@ -416,9 +413,7 @@ export function DiagramPane({
             if (diagramsToAdd?.length) {
                 // First we add the empty diagrams in the views
                 setViews((views) => {
-                    const updatedViews = views
-                        .concat(diagramsToAdd)
-                        .sort(sortByAlign);
+                    const updatedViews = views.concat(diagramsToAdd);
                     return updatedViews;
                 });
 
@@ -507,14 +502,12 @@ export function DiagramPane({
                 };
                 const updatedViews = views.slice();
                 // if we already have a NAD, we replace it but keep the same object to avoid resizing
-                if (
-                    views.find(
-                        (view) =>
-                            view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                    )
-                ) {
-                    updatedViews[views.length - 1] = {
-                        ...updatedViews[views.length - 1], // trick to avoid resizing
+                const nadViewId = views.findIndex(
+                    (view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                );
+                if (nadViewId >= 0) {
+                    updatedViews[nadViewId] = {
+                        ...updatedViews[nadViewId], // trick to avoid resizing
                         ...newDiagram,
                     };
                 }
@@ -534,9 +527,12 @@ export function DiagramPane({
             }).then((networkAreaDiagramView) => {
                 setViews((views) => {
                     const updatedViews = views.slice();
-                    // the NAD is always in last position
-                    updatedViews[updatedViews.length - 1] = {
-                        ...updatedViews[updatedViews.length - 1],
+                    const nadViewId = views.findIndex(
+                        (view) =>
+                            view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                    );
+                    updatedViews[nadViewId] = {
+                        ...updatedViews[nadViewId],
                         ...networkAreaDiagramView,
                         loadingState: false,
                     };
@@ -687,7 +683,7 @@ export function DiagramPane({
         .filter((view) =>
             [ViewState.OPENED, ViewState.PINNED].includes(view.state)
         )
-        .sort(sortByAlign);
+        .sort(makeDiagramSorter(diagramStates));
     const minimizedDiagrams = views.filter((view) =>
         [ViewState.MINIMIZED].includes(view.state)
     );

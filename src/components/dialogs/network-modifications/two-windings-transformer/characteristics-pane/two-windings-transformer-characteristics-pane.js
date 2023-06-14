@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -14,13 +14,10 @@ import {
     MVAPowerAdornment,
     OhmAdornment,
     VoltageAdornment,
-} from '../../../../dialogUtils';
+} from '../../../dialogUtils';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import {
     CHARACTERISTICS,
-    CONNECTIVITY_1,
-    CONNECTIVITY_2,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
     RATED_S,
@@ -29,29 +26,29 @@ import {
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
 } from 'components/utils/field-constants';
+import { unitToMicroUnit } from '../../../../../utils/rounding';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
         marginTop: 0,
-        marginBottom: 0,
-        paddingBottom: 1,
     },
 }));
 
-const TwoWindingsTransformerPane = ({
+const TwoWindingsTransformerCharacteristicsPane = ({
     id = CHARACTERISTICS,
-    studyUuid,
-    currentNode,
-    voltageLevelOptions,
+    twtToModify,
+    modification = false,
 }) => {
     const classes = useStyles();
+    const width = modification ? 12 : 8;
 
-    // CHARACTERISTICS TAP PANE
     const seriesResistanceField = (
         <FloatInput
             name={`${id}.${SERIES_RESISTANCE}`}
             label="SeriesResistanceText"
             adornment={OhmAdornment}
+            previousValue={twtToModify?.r}
+            clearable={modification}
         />
     );
 
@@ -60,6 +57,8 @@ const TwoWindingsTransformerPane = ({
             name={`${id}.${SERIES_REACTANCE}`}
             label="SeriesReactanceText"
             adornment={OhmAdornment}
+            previousValue={twtToModify?.x}
+            clearable={modification}
         />
     );
 
@@ -68,6 +67,8 @@ const TwoWindingsTransformerPane = ({
             name={`${id}.${MAGNETIZING_CONDUCTANCE}`}
             label="MagnetizingConductance"
             adornment={MicroSusceptanceAdornment}
+            previousValue={unitToMicroUnit(twtToModify?.g)}
+            clearable={modification}
         />
     );
 
@@ -76,6 +77,8 @@ const TwoWindingsTransformerPane = ({
             name={`${id}.${MAGNETIZING_SUSCEPTANCE}`}
             label="MagnetizingSusceptance"
             adornment={MicroSusceptanceAdornment}
+            previousValue={unitToMicroUnit(twtToModify?.b)}
+            clearable={modification}
         />
     );
 
@@ -84,6 +87,8 @@ const TwoWindingsTransformerPane = ({
             name={`${id}.${RATED_S}`}
             label="RatedNominalPowerText"
             adornment={MVAPowerAdornment}
+            previousValue={twtToModify?.ratedS}
+            clearable={modification}
         />
     );
 
@@ -92,6 +97,8 @@ const TwoWindingsTransformerPane = ({
             name={`${id}.${RATED_VOLTAGE_1}`}
             label="RatedVoltage"
             adornment={VoltageAdornment}
+            previousValue={twtToModify?.ratedU1}
+            clearable={modification}
         />
     );
 
@@ -100,26 +107,8 @@ const TwoWindingsTransformerPane = ({
             name={`${id}.${RATED_VOLTAGE_2}`}
             label="RatedVoltage"
             adornment={VoltageAdornment}
-        />
-    );
-
-    const connectivity1Field = (
-        <ConnectivityForm
-            id={`${id}.${CONNECTIVITY_1}`}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            voltageLevelOptions={voltageLevelOptions}
-            withPosition={true}
-        />
-    );
-
-    const connectivity2Field = (
-        <ConnectivityForm
-            id={`${id}.${CONNECTIVITY_2}`}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            voltageLevelOptions={voltageLevelOptions}
-            withPosition={true}
+            previousValue={twtToModify?.ratedU2}
+            clearable={modification}
         />
     );
 
@@ -128,53 +117,18 @@ const TwoWindingsTransformerPane = ({
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <h3 className={classes.h3}>
-                        <FormattedMessage id="Connectivity" />
-                    </h3>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                <Grid item xs={6}>
-                    <h4 className={classes.h4}>
-                        <FormattedMessage id="OriginSide" />
-                    </h4>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                <Grid item container direction="column">
-                    <Grid container direction="column" spacing={2}>
-                        {gridItem(connectivity1Field, 6)}
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                <Grid item xs={6}>
-                    <h4 className={classes.h4}>
-                        <FormattedMessage id="ExtremitySide" />
-                    </h4>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                <Grid item container>
-                    <Grid container direction="column" spacing={2}>
-                        {gridItem(connectivity2Field, 12)}
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h3>
                         <FormattedMessage id="Characteristics" />
                     </h3>
                 </Grid>
             </Grid>
-            <Grid container item spacing={2} xs={8}>
+            <Grid container item spacing={2} xs={width}>
                 {gridItem(seriesResistanceField)}
                 {gridItem(seriesReactanceField)}
                 {gridItem(magnetizingConductanceField)}
                 {gridItem(magnetizingSusceptanceField)}
                 {gridItem(ratedSField)}
             </Grid>
-            <Grid container item spacing={2} xs={8}>
+            <Grid container item spacing={2} xs={width}>
                 <Grid item xs={6}>
                     <h4 className={classes.h4}>
                         <FormattedMessage id="OriginSide" />
@@ -186,7 +140,7 @@ const TwoWindingsTransformerPane = ({
                     </h4>
                 </Grid>
             </Grid>
-            <Grid container item spacing={2} xs={8}>
+            <Grid container item spacing={2} xs={width}>
                 {gridItem(ratedVoltage1Field)}
                 {gridItem(ratedVoltage2Field)}
             </Grid>
@@ -194,4 +148,4 @@ const TwoWindingsTransformerPane = ({
     );
 };
 
-export default TwoWindingsTransformerPane;
+export default TwoWindingsTransformerCharacteristicsPane;
