@@ -265,7 +265,7 @@ const NetworkModificationNodeEditor = () => {
         },
         {
             id: 'EDIT',
-            label: 'edit',
+            label: 'ModifyFromMenu',
             subItems: [
                 {
                     id: 'LOAD_MODIFICATION',
@@ -288,15 +288,15 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(VoltageLevelModificationDialog),
                 },
                 {
-                    id: 'SUBSTATION_MODIFICATION',
-                    label: 'SUBSTATION',
-                    action: () => adapt(SubstationModificationDialog),
-                },
-                {
                     id: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
                     label: 'TWO_WINDINGS_TRANSFORMER',
                     action: () =>
                         adapt(TwoWindingsTransformerModificationDialog),
+                },
+                {
+                    id: 'SUBSTATION_MODIFICATION',
+                    label: 'SUBSTATION',
+                    action: () => adapt(SubstationModificationDialog),
                 },
             ],
         },
