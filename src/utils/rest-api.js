@@ -656,15 +656,12 @@ export function fetchAllEquipments(studyUuid, currentNodeUuid, substationsIds) {
     console.info(
         `Fetching all equipments of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
     );
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('inUpstreamBuiltParentNode', false);
 
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-map/all' +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId') +
-        urlSearchParams.toString();
+        getQueryParamsList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
 }
