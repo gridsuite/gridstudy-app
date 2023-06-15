@@ -8,10 +8,10 @@
 import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import SplitButton from './utils/split-button';
-import { RunningStatus } from './utils/running-status';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import { useParameterState } from './dialogs/parameters/parameters';
+import SplitButton from '../utils/split-button';
+import { RunningStatus } from '../utils/running-status';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { useParameterState } from '../dialogs/parameters/parameters';
 
 const RunButton = (props) => {
     const [selectedIndex, setSelectedIndex] = React.useState(0);

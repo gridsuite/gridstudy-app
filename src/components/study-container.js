@@ -158,7 +158,14 @@ export function useNodeData(
                 }
             })
             .finally(() => setIsPending(false));
-    }, [nodeUuid, fetcher, studyUuid, resultConversion]);
+    }, [
+        nodeUuid,
+        fetcher,
+        studyUuid,
+        resultConversion,
+        runButtonType,
+        dispatch,
+    ]);
 
     /* initial fetch and update */
     useEffect(() => {
