@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
 import { Button } from '@mui/material';
+import { useTheme } from '@mui/styles';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -46,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
 
 const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     const classes = useStyles();
+    const theme = useTheme();
 
     const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -258,7 +260,6 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         sortAndAddResults(result, currentSorting);
         return result;
     }
-    const gridRef = useRef();
 
     const SubjectIdRenderer = useCallback(
         (props) => {
@@ -275,68 +276,70 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         },
         [onClickNmKConstraint, classes.button]
     );
-    const columnsNmK = [
-        {
-            headerName: intl.formatMessage({ id: 'ContingencyId' }),
-            field: 'contingencyId',
-            width: 200,
-        },
-        {
-            headerName: intl.formatMessage({ id: 'ComputationStatus' }),
-            field: 'computationStatus',
-            width: 200,
-        },
-        {
-            headerName: intl.formatMessage({ id: 'Constraint' }),
-            field: 'subjectId',
-            cellRenderer: SubjectIdRenderer,
-            width: 200,
-        },
-        {
-            headerName: intl.formatMessage({ id: 'LimitType' }),
-            field: 'limitType',
-            width: 200,
-        },
-        {
-            width: 200,
-            headerName: intl.formatMessage({ id: 'LimitName' }),
-            field: 'limitName',
-        },
-        {
-            width: 90,
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
-        },
-        {
-            width: 160,
-            headerName: intl.formatMessage({
-                id: 'LimitAcceptableDuration',
-            }),
-            field: 'acceptableDuration',
-        },
-        {
-            width: 200,
-            headerName: intl.formatMessage({ id: 'Limit' }),
-            field: 'limit',
-            valueFormatter: (params) => params.data?.limit?.toFixed(1),
-        },
-        {
-            width: 200,
-            headerName: intl.formatMessage({ id: 'Value' }),
-            field: 'value',
-            valueFormatter: (params) => params.data?.value?.toFixed(1),
-        },
-        {
-            width: 200,
-            headerName: intl.formatMessage({ id: 'Loading' }),
-            field: 'loading',
-            valueFormatter: (params) => params.data?.loading?.toFixed(1),
-        },
-        {
-            field: 'linkedElementId',
-            hide: true,
-        },
-    ];
+    const columnsNmKContingencies = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'ContingencyId' }),
+                field: 'contingencyId',
+                width: 200,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'ComputationStatus' }),
+                field: 'computationStatus',
+                width: 200,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Constraint' }),
+                field: 'subjectId',
+                cellRenderer: SubjectIdRenderer,
+                width: 200,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitType' }),
+                field: 'limitType',
+                width: 200,
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'LimitName' }),
+                field: 'limitName',
+            },
+            {
+                width: 90,
+                headerName: intl.formatMessage({ id: 'LimitSide' }),
+                field: 'side',
+            },
+            {
+                width: 160,
+                headerName: intl.formatMessage({
+                    id: 'LimitAcceptableDuration',
+                }),
+                field: 'acceptableDuration',
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'Limit' }),
+                field: 'limit',
+                valueFormatter: (params) => params.data?.limit?.toFixed(1),
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'Value' }),
+                field: 'value',
+                valueFormatter: (params) => params.data?.value?.toFixed(1),
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'Loading' }),
+                field: 'loading',
+                valueFormatter: (params) => params.data?.loading?.toFixed(1),
+            },
+            {
+                field: 'linkedElementId',
+                hide: true,
+            },
+        ];
+    }, [intl, SubjectIdRenderer]);
 
     const groupPostSort = (sortedRows, idField, linkedElementId) => {
         const result = [];
@@ -364,17 +367,25 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             groupPostSort(rows, 'contingencyId', 'linkedElementId')
         );
     };
+    const getRowStyle = useCallback(
+        (params) => {
+            if (params?.data?.contingencyId) {
+                return {
+                    backgroundColor: theme.selectedRow.background,
+                };
+            }
+        },
+        [theme.selectedRow.background]
+    );
     function renderTableNmKContingencies(postContingencyResults) {
         const rows = flattenNmKresultsContingencies(postContingencyResults);
-        console.log(' rows to show :', JSON.stringify(rows));
         return (
             <CustomAGGrid
                 rowData={rows}
-                columnDefs={columnsNmK}
-                ref={gridRef}
+                columnDefs={columnsNmKContingencies}
                 postSortRows={handlePostSortRows}
                 defaultColDef={defaultColDef}
-                getRowId={(params) => params.data.row}
+                getRowStyle={getRowStyle}
             />
         );
     }
