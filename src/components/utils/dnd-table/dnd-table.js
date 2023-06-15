@@ -112,7 +112,6 @@ function EditableTableCell({
             {!column.numeric && !column.directoryItems && (
                 <TableTextInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    previousValue={previousValue}
                     {...props}
                 />
             )}
