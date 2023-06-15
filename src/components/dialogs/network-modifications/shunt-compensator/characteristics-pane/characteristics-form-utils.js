@@ -37,6 +37,7 @@ const characteristicsValidationSchema = (isModification) => ({
                     SHUNT_COMPENSATOR_TYPES.REACTOR.id,
                 ])
                 .required(),
+        otherwise: (schema) => schema.nullable(),
     }),
     [Q_AT_NOMINAL_V]: yup
         .number()

@@ -25,7 +25,7 @@ import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useCallback, useEffect, useState } from 'react';
 import {
-    fetchEquipmentInfos,
+    fetchNetworkElementInfos,
     FetchStatus,
     modifyShuntCompensator,
 } from '../../../../../utils/rest-api';
@@ -34,6 +34,10 @@ import ShuntCompensatorModificationForm from './shunt-compensator-modification-f
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialogUtils';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../../../utils/equipment-types';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -109,10 +113,11 @@ const ShuntCompensatorModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchEquipmentInfos(
+                fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    'shunt-compensators',
+                    EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )
@@ -176,7 +181,11 @@ const ShuntCompensatorModificationDialog = ({
     );
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <FormProvider
+            validationSchema={formSchema}
+            {...formMethods}
+            removeOptional={true}
+        >
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
