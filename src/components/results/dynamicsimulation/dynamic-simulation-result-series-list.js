@@ -10,7 +10,6 @@ import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-serie
 import { Grid, List, ListSubheader, Typography } from '@mui/material';
 import { memo, useCallback, useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
-import { useDebounce } from '@gridsuite/commons-ui';
 
 const useStyle = makeStyles((theme) => ({
     root: {
@@ -64,18 +63,15 @@ const DynamicSimulationResultSeriesList = ({
         [handleToggle]
     );
 
-    const delayedOnLeftAxisSelected = useDebounce(onLeftAxisSelected, 500);
-    const delayedOnRightAxisSelected = useDebounce(onRightAxisSelected, 500);
+    useEffect(() => {
+        // propagate changes
+        onLeftAxisSelected(index, leftAxisCheckedIndexes);
+    }, [leftAxisCheckedIndexes, index, onLeftAxisSelected]);
 
     useEffect(() => {
         // propagate changes
-        delayedOnLeftAxisSelected(index, leftAxisCheckedIndexes);
-    }, [leftAxisCheckedIndexes, index, delayedOnLeftAxisSelected]);
-
-    useEffect(() => {
-        // propagate changes
-        delayedOnRightAxisSelected(index, rightAxisCheckedIndexes);
-    }, [rightAxisCheckedIndexes, index, delayedOnRightAxisSelected]);
+        onRightAxisSelected(index, rightAxisCheckedIndexes);
+    }, [rightAxisCheckedIndexes, index, onRightAxisSelected]);
 
     const renderHeaders = () => {
         return (

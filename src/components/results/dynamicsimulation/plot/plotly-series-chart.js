@@ -20,13 +20,11 @@ const Plot = createPlotlyComponent(Plotly);
 const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
     // these states used for responsible
     const plotRef = useRef(null);
+    const debouncedResizeHandler = useDebounce((entries) => {
+        plotRef.current.resizeHandler();
+    }, 500);
     const resizeObserverRef = useRef(
-        new ResizeObserver(
-            useDebounce((entries) => {
-                plotRef.current.resizeHandler();
-            }),
-            500
-        )
+        new ResizeObserver(debouncedResizeHandler)
     );
 
     const [layout, setLayout] = useState(
