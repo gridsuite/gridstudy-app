@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@mui/material/Paper';
 import { useIntl } from 'react-intl';
@@ -22,7 +22,7 @@ import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
 import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
-
+import { useTheme } from '@mui/styles';
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const useStyles = makeStyles((theme) => ({
         tablePaper: {
@@ -46,6 +46,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     }));
 
     const intl = useIntl();
+    const theme = useTheme();
     const classes = useStyles();
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState(0);
@@ -244,13 +245,29 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             <Paper className={classes.tablePaper}>
                 <CustomAGGrid
                     rowData={result.componentResults}
-                    defaultColDef={defaultColDef}
                     columnDefs={loadFlowResultcolumns}
+                    defaultColDef={defaultColDef}
+                    onGridReady={onGridReady}
+                    getRowStyle={getRowStyle}
                 />
             </Paper>
         );
     }
-
+    const onGridReady = useCallback((params) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
+    const getRowStyle = useCallback(
+        (params) => {
+            if (params?.data?.elementId) {
+                return {
+                    backgroundColor: theme.selectedRow.background,
+                };
+            }
+        },
+        [theme.selectedRow.background]
+    );
     function renderLoadFlowConstraints() {
         return (
             <Paper className={classes.tablePaper}>
@@ -258,7 +275,8 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     rowData={overloadedEquipments}
                     defaultColDef={defaultColDef}
                     columnDefs={loadFlowConstraintscolumns}
-                    shouldHidePinnedHeaderRightBorder={false}
+                    onGridReady={onGridReady}
+                    getRowStyle={getRowStyle}
                 />
             </Paper>
         );
