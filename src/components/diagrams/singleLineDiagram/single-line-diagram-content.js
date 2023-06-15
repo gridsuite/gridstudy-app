@@ -177,7 +177,7 @@ function SingleLineDiagramContent(props) {
                 equipmentMenu.equipmentType ===
                     equipments.twoWindingsTransformers) && (
                 <MenuBranch
-                    id={equipmentMenu.equipmentId}
+                    equipment={{ id: equipmentMenu.equipmentId }}
                     equipmentType={equipmentMenu.equipmentType}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
@@ -202,7 +202,7 @@ function SingleLineDiagramContent(props) {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipmentType && (
                 <Menu
-                    id={equipmentMenu.equipmentId}
+                    equipment={{ id: equipmentMenu.equipmentId }}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}

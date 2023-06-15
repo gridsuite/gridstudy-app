@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 const withEquipmentMenu =
     (BaseMenu, menuId, equipmentType) =>
     ({
-        id,
+        equipment,
         position,
         handleClose,
         handleViewInSpreadsheet,
@@ -42,7 +42,7 @@ const withEquipmentMenu =
                 onClose={handleClose}
             >
                 <BaseMenu
-                    equipmentId={id}
+                    equipment={equipment}
                     equipmentType={equipmentType}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}

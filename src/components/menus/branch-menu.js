@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 const withBranchMenu =
     (BaseMenu) =>
     ({
-        id,
+        equipment,
         equipmentType,
         position,
         handleClose,
@@ -105,7 +105,7 @@ const withBranchMenu =
                 currentNode?.id,
                 getRealEquipmentType(equipmentType),
                 EQUIPMENT_INFOS_TYPES.LIST.type,
-                id,
+                equipment.id,
                 false
             ).then((value) => {
                 if (value) {
@@ -116,7 +116,7 @@ const withBranchMenu =
             studyUuid,
             currentNode?.id,
             equipmentType,
-            id,
+            equipment.id,
             getRealEquipmentType,
         ]);
 
@@ -198,7 +198,7 @@ const withBranchMenu =
                 onClose={handleClose}
             >
                 <BaseMenu
-                    equipmentId={id}
+                    equipment={equipment}
                     equipmentType={equipmentType}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
@@ -352,7 +352,7 @@ const withBranchMenu =
                         onClick={() =>
                             handleDeleteEquipment(
                                 getFeederTypeFromEquipmentType(equipmentType),
-                                id
+                                equipment.id
                             )
                         }
                         disabled={!isNodeEditable}
