@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNodeData } from './run-button/use-node-data';
+import { useNodeData } from './run-button/run-button-hooks';
 import { fetchLoadFlowResult } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import { RunButtonType } from './utils/running-status';

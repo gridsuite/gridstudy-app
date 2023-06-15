@@ -44,7 +44,8 @@ function isWorthUpdate(
     return false;
 }
 
-export function useNodeData(
+// this hook loads <runButtonType> state into redux, then keeps it updated according to notifications
+export function useRunButtonStatus(
     studyUuid,
     nodeUuid,
     fetcher,
@@ -52,9 +53,6 @@ export function useNodeData(
     resultConversion,
     runButtonType
 ) {
-    const [result, setResult] = useState();
-    const [isPending, setIsPending] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(undefined);
     const nodeUuidRef = useRef();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const lastUpdateRef = useRef();
@@ -62,36 +60,22 @@ export function useNodeData(
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
-        setIsPending(true);
-        setErrorMessage(undefined);
         fetcher(studyUuid, nodeUuid)
             .then((res) => {
                 if (nodeUuidRef.current === nodeUuid) {
-                    if (!runButtonType) {
-                        setResult(
-                            resultConversion ? resultConversion(res) : res
-                        );
-                    } else {
-                        dispatch(
-                            setRunButtonStatus(
-                                runButtonType,
-                                resultConversion ? resultConversion(res) : res
-                            )
-                        );
-                    }
-                }
-            })
-            .catch((err) => {
-                setErrorMessage(err.message);
-                if (!runButtonType) {
-                    setResult(RunningStatus.FAILED);
-                } else {
                     dispatch(
-                        setRunButtonStatus(runButtonType, RunningStatus.FAILED)
+                        setRunButtonStatus(
+                            runButtonType,
+                            resultConversion ? resultConversion(res) : res
+                        )
                     );
                 }
             })
-            .finally(() => setIsPending(false));
+            .catch(() => {
+                dispatch(
+                    setRunButtonStatus(runButtonType, RunningStatus.FAILED)
+                );
+            });
     }, [
         runButtonType,
         nodeUuid,
@@ -100,6 +84,65 @@ export function useNodeData(
         resultConversion,
         dispatch,
     ]);
+
+    /* initial fetch and update */
+    useEffect(() => {
+        if (!studyUuid || !nodeUuid) {
+            return;
+        }
+
+        const isUpdateForUs = isWorthUpdate(
+            studyUpdatedForce,
+            fetcher,
+            lastUpdateRef,
+            nodeUuidRef,
+            nodeUuid,
+            invalidations
+        );
+        lastUpdateRef.current = { studyUpdatedForce, fetcher };
+        if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
+            update();
+        }
+    }, [
+        update,
+        fetcher,
+        nodeUuid,
+        invalidations,
+        studyUpdatedForce,
+        studyUuid,
+    ]);
+}
+
+export function useNodeData(
+    studyUuid,
+    nodeUuid,
+    fetcher,
+    invalidations,
+    resultConversion
+) {
+    const [result, setResult] = useState();
+    const [isPending, setIsPending] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(undefined);
+    const nodeUuidRef = useRef();
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const lastUpdateRef = useRef();
+
+    const update = useCallback(() => {
+        nodeUuidRef.current = nodeUuid;
+        setIsPending(true);
+        setErrorMessage(undefined);
+        fetcher(studyUuid, nodeUuid)
+            .then((res) => {
+                if (nodeUuidRef.current === nodeUuid) {
+                    setResult(resultConversion ? resultConversion(res) : res);
+                }
+            })
+            .catch((err) => {
+                setErrorMessage(err.message);
+                setResult(RunningStatus.FAILED);
+            })
+            .finally(() => setIsPending(false));
+    }, [nodeUuid, fetcher, studyUuid, resultConversion]);
 
     /* initial fetch and update */
     useEffect(() => {

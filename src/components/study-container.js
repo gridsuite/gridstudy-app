@@ -46,7 +46,7 @@ import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { equipments } from './network/network-equipments';
 import { BUILD_STATUS } from './network/constants';
-import { useRunButtonStatus } from './run-button/use-run-button-status';
+import { useAllRunButtonStatus } from './run-button/use-all-run-button-status';
 
 function useStudy(studyUuidRequest) {
     const [studyUuid, setStudyUuid] = useState(undefined);
@@ -123,7 +123,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const currentNodeRef = useRef();
 
     // fetches run button status and keep them updated according to notifications
-    useRunButtonStatus(studyUuid, currentNode?.id);
+    useAllRunButtonStatus(studyUuid, currentNode?.id);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 

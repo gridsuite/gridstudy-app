@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import SensiParametersSelector from './dialogs/sensi/sensi-parameters-selector';
+import SensiParametersSelector from '../dialogs/sensi/sensi-parameters-selector';
 import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -22,10 +22,10 @@ import {
     startVoltageInit,
     stopVoltageInit,
     stopLoadFlow,
-} from '../utils/rest-api';
-import { RunButtonType, RunningStatus } from './utils/running-status';
+} from '../../utils/rest-api';
+import { RunButtonType, RunningStatus } from '../utils/running-status';
 
-import ContingencyListSelector from './dialogs/contingency-list-selector';
+import ContingencyListSelector from '../dialogs/contingency-list-selector';
 import {
     addLoadflowNotif,
     addSANotif,
@@ -34,15 +34,15 @@ import {
     addDynamicSimulationNotif,
     addVoltageInitNotif,
     setRunButtonStatus,
-} from '../redux/actions';
+} from '../../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import { useParameterState } from './dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { useParameterState } from '../dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
-} from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+} from '../dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 
 export function RunButtonContainer({
     studyUuid,

@@ -21,7 +21,7 @@ import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import makeStyles from '@mui/styles/makeStyles';
-import { RunButtonContainer } from './run-button-container';
+import { RunButtonContainer } from './run-button/run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';

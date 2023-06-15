@@ -1,4 +1,4 @@
-import { useNodeData } from './use-node-data';
+import { useRunButtonStatus } from './run-button-hooks';
 import {
     getSecurityAnalysisRunningStatus,
     getSensiRunningStatus,
@@ -40,8 +40,8 @@ const voltageInitStatusInvalidations = [
     'voltageInit_failed',
 ];
 
-export const useRunButtonStatus = (studyUuid, currentNodeUuid) => {
-    useNodeData(
+export const useAllRunButtonStatus = (studyUuid, currentNodeUuid) => {
+    useRunButtonStatus(
         studyUuid,
         currentNodeUuid,
         fetchLoadFlowStatus,
@@ -50,7 +50,7 @@ export const useRunButtonStatus = (studyUuid, currentNodeUuid) => {
         RunButtonType.LOADFLOW
     );
 
-    useNodeData(
+    useRunButtonStatus(
         studyUuid,
         currentNodeUuid,
         fetchSecurityAnalysisStatus,
@@ -59,7 +59,7 @@ export const useRunButtonStatus = (studyUuid, currentNodeUuid) => {
         RunButtonType.SECURITY_ANALYSIS
     );
 
-    useNodeData(
+    useRunButtonStatus(
         studyUuid,
         currentNodeUuid,
         fetchSensitivityAnalysisStatus,
@@ -68,7 +68,7 @@ export const useRunButtonStatus = (studyUuid, currentNodeUuid) => {
         RunButtonType.SENSI
     );
 
-    useNodeData(
+    useRunButtonStatus(
         studyUuid,
         currentNodeUuid,
         fetchShortCircuitAnalysisStatus,
@@ -77,7 +77,7 @@ export const useRunButtonStatus = (studyUuid, currentNodeUuid) => {
         RunButtonType.SHORTCIRCUIT
     );
 
-    useNodeData(
+    useRunButtonStatus(
         studyUuid,
         currentNodeUuid,
         fetchDynamicSimulationStatus,
@@ -86,7 +86,7 @@ export const useRunButtonStatus = (studyUuid, currentNodeUuid) => {
         RunButtonType.DYNAMIC_SIMULATION
     );
 
-    useNodeData(
+    useRunButtonStatus(
         studyUuid,
         currentNodeUuid,
         fetchVoltageInitStatus,
