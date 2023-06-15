@@ -265,7 +265,7 @@ const NetworkModificationNodeEditor = () => {
         },
         {
             id: 'EDIT',
-            label: 'edit',
+            label: 'ModifyFromMenu',
             subItems: [
                 {
                     id: 'LOAD_MODIFICATION',
@@ -283,6 +283,12 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(LineModificationDialog),
                 },
                 {
+                    id: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
+                    label: 'TWO_WINDINGS_TRANSFORMER',
+                    action: () =>
+                        adapt(TwoWindingsTransformerModificationDialog),
+                },
+                {
                     id: 'VOLTAGE_LEVEL_MODIFICATION',
                     label: 'VoltageLevel',
                     action: () => adapt(VoltageLevelModificationDialog),
@@ -291,12 +297,6 @@ const NetworkModificationNodeEditor = () => {
                     id: 'SUBSTATION_MODIFICATION',
                     label: 'SUBSTATION',
                     action: () => adapt(SubstationModificationDialog),
-                },
-                {
-                    id: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
-                    label: 'TWO_WINDINGS_TRANSFORMER',
-                    action: () =>
-                        adapt(TwoWindingsTransformerModificationDialog),
                 },
             ],
         },
@@ -850,7 +850,7 @@ const NetworkModificationNodeEditor = () => {
                 <div className={classes.filler} />
                 <IconButton
                     className={classes.toolbarIcon}
-                    size="small"
+                    size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
                     disabled={isAnyNodeBuilding}
