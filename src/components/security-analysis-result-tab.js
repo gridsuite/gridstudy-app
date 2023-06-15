@@ -36,7 +36,7 @@ export const SecurityAnalysisResultTab = ({
 
     function onClickNmKConstraint(row, column) {
         if (studyUuid && nodeUuid) {
-            if (column.dataKey === 'subjectId') {
+            if (column.field === 'subjectId') {
                 let vlId;
                 let substationId;
                 // TODO ideally we would have the type of the equipment but we don't, that's why we do these calls

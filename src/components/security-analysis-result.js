@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -17,6 +17,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
+import { Button } from '@mui/material';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -37,6 +38,9 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         right: theme.spacing(2),
         top: theme.spacing(1),
+    },
+    button: {
+        color: theme.link.color,
     },
 }));
 
@@ -172,6 +176,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                             loading: computeLoading(limitViolation),
                             side: limitViolation.side,
                             _group: index,
+                            linkedElementId:
+                                postContingencyResult.contingency.id,
                         });
                     }
                 );
@@ -252,85 +258,123 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         sortAndAddResults(result, currentSorting);
         return result;
     }
+    const gridRef = useRef();
 
+    const SubjectIdRenderer = useCallback(
+        (props) => {
+            const onClick = () => {
+                onClickNmKConstraint(props?.node?.data, props?.colDef);
+            };
+            if (props.value) {
+                return (
+                    <Button className={classes.button} onClick={onClick}>
+                        {props.value}
+                    </Button>
+                );
+            }
+        },
+        [onClickNmKConstraint, classes.button]
+    );
+    const columnsNmK = [
+        {
+            headerName: intl.formatMessage({ id: 'ContingencyId' }),
+            field: 'contingencyId',
+            width: 200,
+        },
+        {
+            headerName: intl.formatMessage({ id: 'ComputationStatus' }),
+            field: 'computationStatus',
+            width: 200,
+        },
+        {
+            headerName: intl.formatMessage({ id: 'Constraint' }),
+            field: 'subjectId',
+            cellRenderer: SubjectIdRenderer,
+            width: 200,
+        },
+        {
+            headerName: intl.formatMessage({ id: 'LimitType' }),
+            field: 'limitType',
+            width: 200,
+        },
+        {
+            width: 200,
+            headerName: intl.formatMessage({ id: 'LimitName' }),
+            field: 'limitName',
+        },
+        {
+            width: 90,
+            headerName: intl.formatMessage({ id: 'LimitSide' }),
+            field: 'side',
+        },
+        {
+            width: 160,
+            headerName: intl.formatMessage({
+                id: 'LimitAcceptableDuration',
+            }),
+            field: 'acceptableDuration',
+        },
+        {
+            width: 200,
+            headerName: intl.formatMessage({ id: 'Limit' }),
+            field: 'limit',
+            valueFormatter: (params) => params.data?.limit?.toFixed(1),
+        },
+        {
+            width: 200,
+            headerName: intl.formatMessage({ id: 'Value' }),
+            field: 'value',
+            valueFormatter: (params) => params.data?.value?.toFixed(1),
+        },
+        {
+            width: 200,
+            headerName: intl.formatMessage({ id: 'Loading' }),
+            field: 'loading',
+            valueFormatter: (params) => params.data?.loading?.toFixed(1),
+        },
+        {
+            field: 'linkedElementId',
+            hide: true,
+        },
+    ];
+
+    const groupPostSort = (sortedRows, idField, linkedElementId) => {
+        const result = [];
+        // get all id rows, they will form the groups parents
+        const idRows = sortedRows.filter((row) => row.data[idField] != null);
+        // for each of those groups ...
+        idRows.forEach((idRow) => {
+            //add group's parent to result first
+            result.push(idRow);
+            //then add all elements which belongs to this group
+            result.push(
+                ...sortedRows.filter(
+                    (row) => row.data[linkedElementId] === idRow.data[idField]
+                )
+            );
+        });
+
+        return result;
+    };
+
+    const handlePostSortRows = (params) => {
+        const rows = params.nodes;
+        return Object.assign(
+            rows,
+            groupPostSort(rows, 'contingencyId', 'linkedElementId')
+        );
+    };
     function renderTableNmKContingencies(postContingencyResults) {
         const rows = flattenNmKresultsContingencies(postContingencyResults);
+        console.log(' rows to show :', JSON.stringify(rows));
         return (
-            <VirtualizedTable
-                rows={rows}
-                onCellClick={onClickNmKConstraint}
-                sortable={true}
-                sort={(dataKey, reverse, isNumeric) =>
-                    sortResult(
-                        rows,
-                        new Set(['contingencyId', 'computationStatus']),
-                        dataKey,
-                        reverse,
-                        isNumeric
-                    )
-                }
-                columns={[
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ContingencyId' }),
-                        dataKey: 'contingencyId',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ComputationStatus' }),
-                        dataKey: 'computationStatus',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Constraint' }),
-                        dataKey: 'subjectId',
-                        clickable: true,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LimitType' }),
-                        dataKey: 'limitType',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LimitName' }),
-                        dataKey: 'limitName',
-                    },
-                    {
-                        width: 90,
-                        label: intl.formatMessage({ id: 'LimitSide' }),
-                        dataKey: 'side',
-                    },
-                    {
-                        width: 160,
-                        label: intl.formatMessage({
-                            id: 'LimitAcceptableDuration',
-                        }),
-                        dataKey: 'acceptableDuration',
-                        numeric: true,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Limit' }),
-                        dataKey: 'limit',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Value' }),
-                        dataKey: 'value',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Loading' }),
-                        dataKey: 'loading',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                ]}
+            <CustomAGGrid
+                rowData={rows}
+                columnDefs={columnsNmK}
+                ref={gridRef}
+                postSortRows={handlePostSortRows}
+                defaultColDef={defaultColDef}
+                getRowId={(params) => params.data.row}
             />
         );
     }
