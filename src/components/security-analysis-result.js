@@ -9,7 +9,6 @@ import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import VirtualizedTable from './utils/virtualized-table';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
 import makeStyles from '@mui/styles/makeStyles';
@@ -367,9 +366,28 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             groupPostSort(rows, 'contingencyId', 'linkedElementId')
         );
     };
+
+    const handlePostSortRows1 = (params) => {
+        const rows = params.nodes;
+        return Object.assign(
+            rows,
+            groupPostSort(rows, 'subjectId', 'linkedElementId')
+        );
+    };
     const getRowStyle = useCallback(
         (params) => {
             if (params?.data?.contingencyId) {
+                return {
+                    backgroundColor: theme.selectedRow.background,
+                };
+            }
+        },
+        [theme.selectedRow.background]
+    );
+
+    const getConstraintsRowStyle = useCallback(
+        (params) => {
+            if (params?.data?.subjectId) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
@@ -462,6 +480,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     acceptableDuration: contingency.acceptableDuration,
                     limitName: contingency.limitName,
                     _group: group,
+                    linkedElementId: subjectId,
                 });
             });
             group++;
@@ -470,85 +489,81 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         return rows;
     }
 
+    const nmKConstraintsColumns = useMemo(() => {
+        return [
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'Constraint' }),
+                field: 'subjectId',
+                cellRenderer: SubjectIdRenderer,
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'ContingencyId' }),
+                field: 'contingencyId',
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'ComputationStatus' }),
+                field: 'computationStatus',
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'LimitType' }),
+                field: 'limitType',
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'LimitName' }),
+                field: 'limitName',
+            },
+            {
+                width: 90,
+                headerName: intl.formatMessage({ id: 'LimitSide' }),
+                field: 'side',
+            },
+            {
+                width: 160,
+                headerName: intl.formatMessage({
+                    id: 'LimitAcceptableDuration',
+                }),
+                field: 'acceptableDuration',
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'Limit' }),
+                field: 'limit',
+                valueFormatter: (params) => params.data?.limit?.toFixed(1),
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'Value' }),
+                field: 'value',
+                valueFormatter: (params) => params.data?.value?.toFixed(1),
+            },
+            {
+                width: 200,
+                headerName: intl.formatMessage({ id: 'Loading' }),
+                field: 'loading',
+                valueFormatter: (params) => params.data?.loading?.toFixed(1),
+            },
+            {
+                field: 'linkedElementId',
+                hide: true,
+            },
+        ];
+    }, [intl, SubjectIdRenderer]);
+
     function renderTableNmKConstraints(postContingencyResults) {
         const rows = flattenNmKresultsConstraints(postContingencyResults);
-
+        console.log(' rows : ', JSON.stringify(rows));
         return (
-            <VirtualizedTable
-                rows={rows}
-                onCellClick={onClickNmKConstraint}
-                sortable={true}
-                sort={(dataKey, reverse, isNumeric) =>
-                    sortResult(
-                        rows,
-                        new Set(['subjectId']),
-                        dataKey,
-                        reverse,
-                        isNumeric
-                    )
-                }
-                columns={[
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Constraint' }),
-                        dataKey: 'subjectId',
-                        clickable: true,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ContingencyId' }),
-                        dataKey: 'contingencyId',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ComputationStatus' }),
-                        dataKey: 'computationStatus',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LimitType' }),
-                        dataKey: 'limitType',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LimitName' }),
-                        dataKey: 'limitName',
-                    },
-                    {
-                        width: 90,
-                        label: intl.formatMessage({ id: 'LimitSide' }),
-                        dataKey: 'side',
-                    },
-                    {
-                        width: 160,
-                        label: intl.formatMessage({
-                            id: 'LimitAcceptableDuration',
-                        }),
-                        dataKey: 'acceptableDuration',
-                        numeric: true,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Limit' }),
-                        dataKey: 'limit',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Value' }),
-                        dataKey: 'value',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Loading' }),
-                        dataKey: 'loading',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                ]}
+            <CustomAGGrid
+                rowData={rows}
+                columnDefs={nmKConstraintsColumns}
+                postSortRows={handlePostSortRows1}
+                defaultColDef={defaultColDef}
+                getRowStyle={getConstraintsRowStyle}
             />
         );
     }
