@@ -19,6 +19,7 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import {
@@ -58,6 +59,7 @@ const withBranchMenu =
         handleClose,
         handleViewInSpreadsheet,
         handleDeleteEquipment,
+        handleOpenModificationDialog,
         currentNode,
         studyUuid,
         modificationInProgress,
@@ -202,6 +204,7 @@ const withBranchMenu =
                     equipmentType={equipmentType}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
+                    handleOpenModificationDialog={handleOpenModificationDialog}
                 />
                 {equipmentType === equipments.lines && (
                     <MenuItem
@@ -372,6 +375,29 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
+                {equipmentType === equipments.twoWindingsTransformers && (
+                    <MenuItem
+                        className={classes.menuItem}
+                        onClick={() =>
+                            handleOpenModificationDialog(id, equipmentType)
+                        }
+                        disabled={!isNodeEditable}
+                    >
+                        <ListItemIcon>
+                            <EditIcon />
+                        </ListItemIcon>
+
+                        <ListItemText
+                            primary={
+                                <Typography noWrap>
+                                    {intl.formatMessage({
+                                        id: 'ModifyFromMenu',
+                                    })}
+                                </Typography>
+                            }
+                        />
+                    </MenuItem>
+                )}
             </Menu>
         );
     };
@@ -383,6 +409,7 @@ withBranchMenu.propTypes = {
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
     handleDeleteEquipment: PropTypes.func.isRequired,
+    handleOpenModificationDialog: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
     modificationInProgress: PropTypes.func,
