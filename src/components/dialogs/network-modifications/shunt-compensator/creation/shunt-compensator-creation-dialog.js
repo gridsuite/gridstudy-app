@@ -144,9 +144,9 @@ const ShuntCompensatorCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath: 'shunt-compensators',
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
     });
 
     useEffect(() => {

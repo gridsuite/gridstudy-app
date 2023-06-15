@@ -1008,5 +1008,17 @@
     "lineTypes.category.aerial": "Lignes aériennes",
     "lineTypes.category.underground": "Câbles souterrains",
     "lineTypes.insulator": "Isolant",
-    "lineTypes.screen": "Écran"
+    "lineTypes.screen": "Écran",
+    "securityAnalysis.violationsHiding": "Masquage des contraintes en N-k",
+    "securityAnalysis.current": "Intensité",
+    "securityAnalysis.lowVoltage": "Tension basse",
+    "securityAnalysis.highVoltage": "Tension haute",
+    "securityAnalysis.toolTip.violationsHiding": "Cette section permet de paramétrer le niveau d'aggravation à partir duquel les contraintes calculées en N réapparaissent en N-k.",
+    "securityAnalysis.toolTip.current": "L'aggravation de contrainte en intensité est déterminée uniquement en pourcentage de la valeur calculée en N pour les ouvrages en contrainte. Par exemple, si l'aggravation en pourcentage correspond à 10 A alors la contrainte en N réapparaitra en N-k pour une augmentation d'intensité de plus de 10 A par rapport à la valeur calculée en N.",
+    "securityAnalysis.toolTip.lowVoltage": "L'aggravation de contrainte en tension basse peut être calculée en pourcentage ou en définie en valeur absolue par rapport à la valeur calculée en N. La valeur prise en compte sera la plus conservative des deux. Par exemple, si l'aggravation en pourcentage correspond à 1 kV et celle renseignée en absolu est de 2 kV, alors la contrainte en tension basse réapparaitra en N-k pour une chute de tension de plus de 1 kV par rapport à la valeur calculée en N.",
+    "securityAnalysis.toolTip.highVoltage": "L'aggravation de contrainte en tension haute peut être calculée en pourcentage ou en définie en valeur absolue par rapport à la valeur calculée en N. La valeur prise en compte sera la plus conservative des deux. Par exemple, si l'aggravation en pourcentage correspond à 1 kV et celle renseignée en absolu est de 2 kV, alors la contrainte en tension haute réapparaitra en N-k pour une élévation de tension de plus de 1 kV par rapport à la valeur calculée en N.",
+    "Create": "Créer",
+    "ShuntCompensator": "Moyen de compensation statique",
+    "AttachingAndSplittingLines": "Piquage et coupure",
+    "GenerationAndLoad": "Production et consommation"
 }
