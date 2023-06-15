@@ -283,15 +283,15 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(LineModificationDialog),
                 },
                 {
-                    id: 'VOLTAGE_LEVEL_MODIFICATION',
-                    label: 'VoltageLevel',
-                    action: () => adapt(VoltageLevelModificationDialog),
-                },
-                {
                     id: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
                     label: 'TWO_WINDINGS_TRANSFORMER',
                     action: () =>
                         adapt(TwoWindingsTransformerModificationDialog),
+                },
+                {
+                    id: 'VOLTAGE_LEVEL_MODIFICATION',
+                    label: 'VoltageLevel',
+                    action: () => adapt(VoltageLevelModificationDialog),
                 },
                 {
                     id: 'SUBSTATION_MODIFICATION',
@@ -850,7 +850,7 @@ const NetworkModificationNodeEditor = () => {
                 <div className={classes.filler} />
                 <IconButton
                     className={classes.toolbarIcon}
-                    size="small"
+                    size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
                     disabled={isAnyNodeBuilding}
