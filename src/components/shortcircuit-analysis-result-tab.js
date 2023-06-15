@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNodeData } from './study-container';
+import { useNodeData } from './run-button/use-node-data';
 import { fetchShortCircuitAnalysisResult } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import ShortCircuitAnalysisResult from './shortcircuit-analysis-result';

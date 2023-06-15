@@ -14,17 +14,11 @@ import { PARAMS_LOADED } from '../utils/config-params';
 import {
     connectNotificationsWebsocket,
     fetchNetworkModificationTree,
-    fetchSecurityAnalysisStatus,
     fetchStudyExists,
     fetchPath,
     connectNotificationsWsUpdateDirectories,
     fetchCaseName,
-    fetchSensitivityAnalysisStatus,
     connectDeletedStudyNotificationsWebsocket,
-    fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
-    fetchVoltageInitStatus,
-    fetchLoadFlowStatus,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -36,7 +30,6 @@ import {
     setDeletedEquipments,
     setUpdatedSubstationsIds,
     isNetworkEquipmentsFetched,
-    setRunButtonStatus,
 } from '../redux/actions';
 import Network from './network/network';
 import WaitingLoader from './utils/waiting-loader';
@@ -48,147 +41,12 @@ import {
     isNodeRenamed,
     isSameNode,
 } from './graph/util/model-functions';
-import {
-    getSecurityAnalysisRunningStatus,
-    getSensiRunningStatus,
-    getShortCircuitRunningStatus,
-    getDynamicSimulationRunningStatus,
-    getVoltageInitRunningStatus,
-    RunningStatus,
-    getLoadFlowRunningStatus,
-    RunButtonType,
-} from './utils/running-status';
+
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { equipments } from './network/network-equipments';
 import { BUILD_STATUS } from './network/constants';
-
-function isWorthUpdate(
-    studyUpdatedForce,
-    fetcher,
-    lastUpdateRef,
-    nodeUuidRef,
-    nodeUuid,
-    invalidations
-) {
-    const headers = studyUpdatedForce?.eventData?.headers;
-    const updateType = headers?.[UPDATE_TYPE_HEADER];
-    const node = headers?.['node'];
-    const nodes = headers?.['nodes'];
-    if (nodeUuidRef.current !== nodeUuid) {
-        return true;
-    }
-    if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
-        return true;
-    }
-    if (
-        studyUpdatedForce &&
-        lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce
-    ) {
-        return false;
-    }
-    if (!updateType) {
-        return false;
-    }
-    if (invalidations.indexOf(updateType) <= -1) {
-        return false;
-    }
-    if (node === undefined && nodes === undefined) {
-        return true;
-    }
-    if (node === nodeUuid || nodes?.indexOf(nodeUuid) !== -1) {
-        return true;
-    }
-
-    return false;
-}
-
-export function useNodeData(
-    studyUuid,
-    nodeUuid,
-    fetcher,
-    invalidations,
-    resultConversion,
-    runButtonType
-) {
-    const [result, setResult] = useState();
-    const [isPending, setIsPending] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(undefined);
-    const nodeUuidRef = useRef();
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-    const lastUpdateRef = useRef();
-    const dispatch = useDispatch();
-
-    const update = useCallback(() => {
-        nodeUuidRef.current = nodeUuid;
-        setIsPending(true);
-        setErrorMessage(undefined);
-        fetcher(studyUuid, nodeUuid)
-            .then((res) => {
-                if (nodeUuidRef.current === nodeUuid) {
-                    if (!runButtonType) {
-                        setResult(
-                            resultConversion ? resultConversion(res) : res
-                        );
-                    } else {
-                        dispatch(
-                            setRunButtonStatus(
-                                runButtonType,
-                                resultConversion ? resultConversion(res) : res
-                            )
-                        );
-                    }
-                }
-            })
-            .catch((err) => {
-                setErrorMessage(err.message);
-                if (!runButtonType) {
-                    setResult(RunningStatus.FAILED);
-                } else {
-                    dispatch(
-                        setRunButtonStatus(runButtonType, RunningStatus.FAILED)
-                    );
-                }
-            })
-            .finally(() => setIsPending(false));
-    }, [
-        runButtonType,
-        nodeUuid,
-        fetcher,
-        studyUuid,
-        resultConversion,
-        dispatch,
-    ]);
-
-    /* initial fetch and update */
-    useEffect(() => {
-        if (!studyUuid || !nodeUuid) {
-            return;
-        }
-
-        const isUpdateForUs = isWorthUpdate(
-            studyUpdatedForce,
-            fetcher,
-            lastUpdateRef,
-            nodeUuidRef,
-            nodeUuid,
-            invalidations
-        );
-        lastUpdateRef.current = { studyUpdatedForce, fetcher };
-        if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
-            update();
-        }
-    }, [
-        update,
-        fetcher,
-        nodeUuid,
-        invalidations,
-        studyUpdatedForce,
-        studyUuid,
-    ]);
-
-    return [result, isPending, errorMessage, update];
-}
+import { useRunButtonStatus } from './run-button/use-run-button-status';
 
 function useStudy(studyUuidRequest) {
     const [studyUuid, setStudyUuid] = useState(undefined);
@@ -227,28 +85,6 @@ function usePrevious(value) {
     return ref.current;
 }
 
-const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
-const securityAnalysisStatusInvalidations = [
-    'securityAnalysis_status',
-    'securityAnalysis_failed',
-];
-const sensiStatusInvalidations = [
-    'sensitivityAnalysis_status',
-    'sensitivityAnalysis_failed',
-];
-const shortCircuitStatusInvalidations = [
-    'shortCircuitAnalysis_status',
-    'shortCircuitAnalysis_failed',
-];
-const dynamicSimulationStatusInvalidations = [
-    'dynamicSimulation_status',
-    'dynamicSimulation_failed',
-];
-const voltageInitStatusInvalidations = [
-    'voltageInit_status',
-    'voltageInit_failed',
-];
-
 export const UPDATE_TYPE_HEADER = 'updateType';
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
@@ -286,59 +122,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const currentNodeRef = useRef();
 
-    useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchLoadFlowStatus,
-        loadFlowStatusInvalidations,
-        getLoadFlowRunningStatus,
-        RunButtonType.LOADFLOW
-    );
-
-    useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSecurityAnalysisStatus,
-        securityAnalysisStatusInvalidations,
-        getSecurityAnalysisRunningStatus,
-        RunButtonType.SECURITY_ANALYSIS
-    );
-
-    useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSensitivityAnalysisStatus,
-        sensiStatusInvalidations,
-        getSensiRunningStatus,
-        RunButtonType.SENSI
-    );
-
-    useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchShortCircuitAnalysisStatus,
-        shortCircuitStatusInvalidations,
-        getShortCircuitRunningStatus,
-        RunButtonType.SHORTCIRCUIT
-    );
-
-    useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchDynamicSimulationStatus,
-        dynamicSimulationStatusInvalidations,
-        getDynamicSimulationRunningStatus,
-        RunButtonType.DYNAMIC_SIMULATION
-    );
-
-    useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchVoltageInitStatus,
-        voltageInitStatusInvalidations,
-        getVoltageInitRunningStatus,
-        RunButtonType.VOLTAGE_INIT
-    );
+    // fetches run button status and keep them updated according to notifications
+    useRunButtonStatus(studyUuid, currentNode?.id);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
