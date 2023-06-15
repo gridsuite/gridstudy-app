@@ -108,11 +108,10 @@ export function useNodeData(
     nodeUuid,
     fetcher,
     invalidations,
-    defaultValue,
     resultConversion,
     runButtonType
 ) {
-    const [result, setResult] = useState(defaultValue);
+    const [result, setResult] = useState();
     const [isPending, setIsPending] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
     const nodeUuidRef = useRef();
@@ -292,7 +291,6 @@ export function StudyContainer({ view, onChangeTab }) {
         currentNode?.id,
         fetchLoadFlowStatus,
         loadFlowStatusInvalidations,
-        RunningStatus.IDLE,
         getLoadFlowRunningStatus,
         RunButtonType.LOADFLOW
     );
@@ -302,7 +300,6 @@ export function StudyContainer({ view, onChangeTab }) {
         currentNode?.id,
         fetchSecurityAnalysisStatus,
         securityAnalysisStatusInvalidations,
-        RunningStatus.IDLE,
         getSecurityAnalysisRunningStatus,
         RunButtonType.SECURITY_ANALYSIS
     );
@@ -312,7 +309,6 @@ export function StudyContainer({ view, onChangeTab }) {
         currentNode?.id,
         fetchSensitivityAnalysisStatus,
         sensiStatusInvalidations,
-        RunningStatus.IDLE,
         getSensiRunningStatus,
         RunButtonType.SENSI
     );
@@ -322,7 +318,6 @@ export function StudyContainer({ view, onChangeTab }) {
         currentNode?.id,
         fetchShortCircuitAnalysisStatus,
         shortCircuitStatusInvalidations,
-        RunningStatus.IDLE,
         getShortCircuitRunningStatus,
         RunButtonType.SHORTCIRCUIT
     );
@@ -332,7 +327,6 @@ export function StudyContainer({ view, onChangeTab }) {
         currentNode?.id,
         fetchDynamicSimulationStatus,
         dynamicSimulationStatusInvalidations,
-        RunningStatus.IDLE,
         getDynamicSimulationRunningStatus,
         RunButtonType.DYNAMIC_SIMULATION
     );
@@ -342,7 +336,6 @@ export function StudyContainer({ view, onChangeTab }) {
         currentNode?.id,
         fetchVoltageInitStatus,
         voltageInitStatusInvalidations,
-        RunningStatus.IDLE,
         getVoltageInitRunningStatus,
         RunButtonType.VOLTAGE_INIT
     );
