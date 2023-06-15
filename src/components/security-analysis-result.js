@@ -37,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
     nmkResultSelect: {
         position: 'absolute',
         right: theme.spacing(2),
-        top: theme.spacing(1),
     },
     button: {
         color: theme.link.color,
@@ -185,79 +184,6 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             }
         });
         return rows;
-    }
-
-    /**
-     * sortResult : generate an array of index representing the rows sorted by key
-     * rows are grouped by their attribute _group, the first one is root, the other children, we assume that the rows
-     * are already grouped (next to each other)
-     *
-     * rows : rows to sort
-     * rootSet : Set of keys of the root row (if key is in root, we sort root lines, not the children inside
-     *           else we sort children for each root (and do not change order of root)
-     * key : sort key
-     * reverse : ascending or descending sort
-     * isNumeric : is the associated column numeric
-     * */
-    function sortResult(rows, rootSet, key, reverse, isNumeric) {
-        /* utility functions */
-        function sortAndAddResults(result, array) {
-            const compareValue = (a, b) => {
-                const mult = reverse ? 1 : -1;
-                if (a === undefined && b === undefined) {
-                    return 0;
-                }
-                if (b === undefined) {
-                    return -mult;
-                }
-                if (a === undefined) {
-                    return mult;
-                }
-                return isNumeric
-                    ? (Number(a) < Number(b) ? 1 : -1) * mult
-                    : ('' + a).localeCompare(b) * mult;
-            };
-
-            const getIndexes = (k) => [k.index].concat(k.indexes);
-            array
-                .sort((a, b) => compareValue(a.key, b.key))
-                .flatMap((k) => getIndexes(k))
-                .map((i) => result.push(i));
-        }
-
-        let currentSorting = [];
-        const addRowToSort = (key, index) => {
-            currentSorting.push({
-                key: key,
-                index: index,
-                indexes: [],
-            });
-        };
-
-        const rootSorting = rootSet.has(key);
-        let group = undefined;
-        let result = [];
-        /* now we sort */
-        rows.forEach((row, index) => {
-            if (group !== row._group) {
-                /* new set of lines */
-                if (!rootSorting) {
-                    sortAndAddResults(result, currentSorting); // add previous batch
-                    currentSorting = [];
-                    result.push(index); // add current row (we do not sort root)
-                } else {
-                    addRowToSort(row[key], index); // we sort root
-                }
-                group = row._group;
-            } else if (rootSorting) {
-                currentSorting[currentSorting.length - 1].indexes.push(index); // we don't want to lose children
-            } else {
-                addRowToSort(row[key], index); // children need sorting
-            }
-        });
-        /* add last group (if any) or all if root sorting */
-        sortAndAddResults(result, currentSorting);
-        return result;
     }
 
     const SubjectIdRenderer = useCallback(
@@ -556,7 +482,6 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
 
     function renderTableNmKConstraints(postContingencyResults) {
         const rows = flattenNmKresultsConstraints(postContingencyResults);
-        console.log(' rows : ', JSON.stringify(rows));
         return (
             <CustomAGGrid
                 rowData={rows}
