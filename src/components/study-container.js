@@ -6,13 +6,7 @@
  */
 
 import StudyPane from './study-pane';
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -64,7 +58,6 @@ import {
     getLoadFlowRunningStatus,
     RunButtonType,
 } from './utils/running-status';
-import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { equipments } from './network/network-equipments';
@@ -294,13 +287,14 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const currentNodeRef = useRef();
 
-    const [loadFlowStatus] = useNodeData(
+    useNodeData(
         studyUuid,
         currentNode?.id,
         fetchLoadFlowStatus,
         loadFlowStatusInvalidations,
         RunningStatus.IDLE,
-        getLoadFlowRunningStatus
+        getLoadFlowRunningStatus,
+        RunButtonType.LOADFLOW
     );
 
     useNodeData(
@@ -358,8 +352,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const [wsConnected, setWsConnected] = useState(false);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
-
-    const intl = useIntl();
 
     const wsRef = useRef();
 
@@ -823,27 +815,6 @@ export function StudyContainer({ view, onChangeTab }) {
         connectDeletedStudyNotifications,
     ]);
 
-    const runnable = useMemo(() => {
-        return {
-            LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
-            SECURITY_ANALYSIS: intl.formatMessage({
-                id: 'SecurityAnalysis',
-            }),
-            SENSITIVITY_ANALYSIS: intl.formatMessage({
-                id: 'SensitivityAnalysis',
-            }),
-            SHORT_CIRCUIT_ANALYSIS: intl.formatMessage({
-                id: 'ShortCircuitAnalysis',
-            }),
-            DYNAMIC_SIMULATION: intl.formatMessage({
-                id: 'DynamicSimulation',
-            }),
-            VOLTAGE_INIT: intl.formatMessage({
-                id: 'VoltageInit',
-            }),
-        };
-    }, [intl]);
-
     return (
         <WaitingLoader
             errMessage={
@@ -858,8 +829,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 currentNode={currentNode}
                 view={view}
                 onChangeTab={onChangeTab}
-                loadFlowStatus={loadFlowStatus}
-                runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />
         </WaitingLoader>

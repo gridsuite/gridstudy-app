@@ -72,9 +72,6 @@ export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
-    /* results*/
-    runnable,
-    loadFlowStatus,
     /* visual*/
     visible,
     lineFullPath,
@@ -863,7 +860,6 @@ export const NetworkMapTab = ({
             lineFlowMode={lineFlowMode}
             lineFlowColorMode={lineFlowColorMode}
             lineFlowAlertThreshold={lineFlowAlertThreshold}
-            loadFlowStatus={loadFlowStatus}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(equipment, x, y, equipments.lines)
@@ -912,9 +908,7 @@ export const NetworkMapTab = ({
                 <RunButtonContainer
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    loadFlowStatus={loadFlowStatus}
                     setIsComputationRunning={setIsComputationRunning}
-                    runnable={runnable}
                     disabled={disabled || isNodeReadOnly(currentNode)}
                 />
             </div>
@@ -929,7 +923,6 @@ NetworkMapTab.propTypes = {
     lineFlowMode: PropTypes.any,
     lineFlowColorMode: PropTypes.any,
     lineFlowAlertThreshold: PropTypes.number,
-    loadFlowStatus: PropTypes.string,
     view: PropTypes.any,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,

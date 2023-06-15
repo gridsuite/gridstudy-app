@@ -84,8 +84,6 @@ const StudyPane = ({
     studyUuid,
     network,
     currentNode,
-    loadFlowStatus,
-    runnable,
     setErrorMessage,
     ...props
 }) => {
@@ -250,11 +248,9 @@ const StudyPane = ({
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    loadFlowStatus={loadFlowStatus}
                                     setIsComputationRunning={
                                         setIsComputationRunning
                                     }
-                                    runnable={runnable}
                                     setErrorMessage={setErrorMessage}
                                 />
                             </div>
@@ -264,7 +260,6 @@ const StudyPane = ({
                                 network={network}
                                 isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
-                                loadFlowStatus={loadFlowStatus}
                                 currentNode={currentNode}
                                 visible={
                                     props.view === StudyView.MAP &&
@@ -288,7 +283,6 @@ const StudyPane = ({
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
-                    loadFlowStatus={loadFlowStatus}
                     disabled={disabled}
                     visible={props.view === StudyView.SPREADSHEET}
                 />
@@ -323,7 +317,6 @@ const StudyPane = ({
                 <ResultViewTab
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    loadFlowInfos={loadFlowStatus}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
                 />

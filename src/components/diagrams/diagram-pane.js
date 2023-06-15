@@ -56,6 +56,7 @@ import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
+import { RunButtonType } from 'components/utils/running-status';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -348,7 +349,6 @@ export function DiagramPane({
     studyUuid,
     isComputationRunning,
     showInSpreadsheet,
-    loadFlowStatus,
     currentNode,
     visible,
 }) {
@@ -363,6 +363,9 @@ export function DiagramPane({
     );
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const [diagramContentSizes, setDiagramContentSizes] = useState(new Map()); // When a diagram content gets its size from the backend, it will update this map of sizes.
+    const loadFlowStatus = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.LOADFLOW]
+    );
 
     useEffect(() => {
         syncDiagramStateWithSessionStorage(diagramStates, studyUuid);
@@ -1178,6 +1181,5 @@ DiagramPane.propTypes = {
     currentNode: PropTypes.object,
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
-    loadFlowStatus: PropTypes.any,
     visible: PropTypes.bool,
 };

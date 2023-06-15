@@ -47,13 +47,12 @@ import DynamicSimulationParametersSelector, {
 export function RunButtonContainer({
     studyUuid,
     currentNode,
-    loadFlowStatus,
     setIsComputationRunning,
-    runnable,
     disabled,
 }) {
-    const [loadFlowStatusState, setLoadFlowStatusState] =
-        useState(loadFlowStatus);
+    const loadFlowStatusState = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.LOADFLOW]
+    );
 
     const securityAnalysisStatusState = useSelector(
         (state) => state.runButtonStatus[RunButtonType.SECURITY_ANALYSIS]
@@ -110,6 +109,27 @@ export function RunButtonContainer({
         (state) => state.isModificationsInProgress
     );
 
+    const runnable = useMemo(() => {
+        return {
+            LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
+            SECURITY_ANALYSIS: intl.formatMessage({
+                id: 'SecurityAnalysis',
+            }),
+            SENSITIVITY_ANALYSIS: intl.formatMessage({
+                id: 'SensitivityAnalysis',
+            }),
+            SHORT_CIRCUIT_ANALYSIS: intl.formatMessage({
+                id: 'ShortCircuitAnalysis',
+            }),
+            DYNAMIC_SIMULATION: intl.formatMessage({
+                id: 'DynamicSimulation',
+            }),
+            VOLTAGE_INIT: intl.formatMessage({
+                id: 'VoltageInit',
+            }),
+        };
+    }, [intl]);
+
     useEffect(() => {
         if (
             ranLoadflow &&
@@ -156,61 +176,64 @@ export function RunButtonContainer({
         ranShortCircuit,
         ranDynamicSimulation,
         ranVoltageInit,
-        loadFlowStatus,
     ]);
-
-    useEffect(() => {
-        setLoadFlowStatusState(loadFlowStatus);
-    }, [loadFlowStatus, currentNode]);
 
     const ACTION_ON_RUNNABLES = {
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (action) => {
             switch (action) {
                 case runnable.LOADFLOW:
-                    setLoadFlowStatusState(RunningStatus.IDLE);
+                    dispatch(
+                        setRunButtonStatus(
+                            RunButtonType.LOADFLOW,
+                            RunningStatus.IDLE
+                        )
+                    );
                     stopLoadFlow(studyUuid, currentNode?.id);
                     break;
                 case runnable.SECURITY_ANALYSIS:
                     dispatch(
-                    setRunButtonStatus(
-                        RunButtonType.SECURITY_ANALYSIS,
-                        RunningStatus.IDLE
-                    )
-                );
+                        setRunButtonStatus(
+                            RunButtonType.SECURITY_ANALYSIS,
+                            RunningStatus.IDLE
+                        )
+                    );
                     stopSecurityAnalysis(studyUuid, currentNode?.id);
                     break;
                 case runnable.SENSITIVITY_ANALYSIS:
                     dispatch(
-                    setRunButtonStatus(RunButtonType.SENSI, RunningStatus.IDLE)
-                );
+                        setRunButtonStatus(
+                            RunButtonType.SENSI,
+                            RunningStatus.IDLE
+                        )
+                    );
                     stopSensitivityAnalysis(studyUuid, currentNode?.id);
                     break;
                 case runnable.SHORT_CIRCUIT_ANALYSIS:
                     dispatch(
-                    setRunButtonStatus(
-                        RunButtonType.SHORTCIRCUIT,
-                        RunningStatus.IDLE
-                    )
-                );
+                        setRunButtonStatus(
+                            RunButtonType.SHORTCIRCUIT,
+                            RunningStatus.IDLE
+                        )
+                    );
                     stopShortCircuitAnalysis(studyUuid, currentNode?.id);
                     break;
                 case runnable.DYNAMIC_SIMULATION:
-                     dispatch(
-                    setRunButtonStatus(
-                        RunButtonType.DYNAMIC_SIMULATION,
-                        RunningStatus.IDLE
-                    )
-                );
+                    dispatch(
+                        setRunButtonStatus(
+                            RunButtonType.DYNAMIC_SIMULATION,
+                            RunningStatus.IDLE
+                        )
+                    );
                     stopDynamicSimulation(studyUuid, currentNode?.id);
                     break;
                 case runnable.VOLTAGE_INIT:
-                   dispatch(
-                    setRunButtonStatus(
-                        RunButtonType.VOLTAGE_INIT,
-                        RunningStatus.IDLE
-                    )
-                );
+                    dispatch(
+                        setRunButtonStatus(
+                            RunButtonType.VOLTAGE_INIT,
+                            RunningStatus.IDLE
+                        )
+                    );
                     stopVoltageInit(studyUuid, currentNode?.id);
                     break;
                 default:
@@ -299,11 +322,21 @@ export function RunButtonContainer({
 
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
-            setLoadFlowStatusState(RunningStatus.RUNNING);
+            dispatch(
+                setRunButtonStatus(
+                    RunButtonType.LOADFLOW,
+                    RunningStatus.RUNNING
+                )
+            );
             startLoadFlow(studyUuid, currentNode?.id)
                 .then(setRanLoadflow(true))
                 .catch((error) => {
-                    setLoadFlowStatusState(RunningStatus.FAILED);
+                    dispatch(
+                        setRunButtonStatus(
+                            RunButtonType.LOADFLOW,
+                            RunningStatus.FAILED
+                        )
+                    );
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startLoadFlowError',
@@ -388,18 +421,21 @@ export function RunButtonContainer({
 
     const getRunningStatus = useCallback(
         (runnableType) => {
-            if (runnableType === runnable.LOADFLOW) {
-                return loadFlowStatusState;
-            } else if (runnableType === runnable.SECURITY_ANALYSIS) {
-                return securityAnalysisStatusState;
-            } else if (runnableType === runnable.SENSITIVITY_ANALYSIS) {
-                return sensiStatusState;
-            } else if (runnableType === runnable.SHORT_CIRCUIT_ANALYSIS) {
-                return shortCircuitStatusState;
-            } else if (runnableType === runnable.DYNAMIC_SIMULATION) {
-                return dynamicSimulationStatusState;
-            } else if (runnableType === runnable.VOLTAGE_INIT) {
-                return voltageInitStatusState;
+            switch (runnableType) {
+                case runnable.LOADFLOW:
+                    return loadFlowStatusState;
+                case runnable.SECURITY_ANALYSIS:
+                    return securityAnalysisStatusState;
+                case runnable.SENSITIVITY_ANALYSIS:
+                    return sensiStatusState;
+                case runnable.SHORT_CIRCUIT_ANALYSIS:
+                    return shortCircuitStatusState;
+                case runnable.DYNAMIC_SIMULATION:
+                    return dynamicSimulationStatusState;
+                case runnable.VOLTAGE_INIT:
+                    return voltageInitStatusState;
+                default:
+                    return null;
             }
         },
         [

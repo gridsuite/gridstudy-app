@@ -48,7 +48,6 @@ const useStyles = makeStyles(() => ({
  * control results views
  * @param studyUuid : string uuid of study
  * @param currentNode : object current node
- * @param loadFlowInfos : object result of load flow
  * @param openVoltageLevelDiagram : function
  * @param disabled
  * @returns {JSX.Element}
@@ -57,7 +56,6 @@ const useStyles = makeStyles(() => ({
 export const ResultViewTab = ({
     studyUuid,
     currentNode,
-    loadFlowInfos,
     openVoltageLevelDiagram,
     disabled,
 }) => {
@@ -238,7 +236,6 @@ export const ResultViewTab = ({
 };
 
 ResultViewTab.propTypes = {
-    loadFlowInfos: PropTypes.object,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,

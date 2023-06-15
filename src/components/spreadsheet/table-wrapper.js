@@ -35,7 +35,7 @@ import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
-import { RunningStatus } from '../utils/running-status';
+import { RunButtonType, RunningStatus } from '../utils/running-status';
 import {
     EditableCellRenderer,
     EditingCellRenderer,
@@ -115,6 +115,10 @@ const TableWrapper = (props) => {
         (state) => state.networkEquipmentsFetched
     );
 
+    const loadFlowStatus = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.LOADFLOW]
+    );
+
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
     const [
@@ -192,7 +196,7 @@ const TableWrapper = (props) => {
             if (column.numeric) {
                 //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
                 const isValueInvalid =
-                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                    loadFlowStatus !== RunningStatus.SUCCEED &&
                     column.canBeInvalidated;
 
                 column.cellRendererParams = {
@@ -218,7 +222,7 @@ const TableWrapper = (props) => {
 
             return column;
         },
-        [fluxConvention, intl, lockedColumnsNames, props.loadFlowStatus]
+        [fluxConvention, intl, lockedColumnsNames, loadFlowStatus]
     );
 
     const addEditColumn = useCallback(
@@ -742,7 +746,6 @@ TableWrapper.defaultProps = {
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
-    loadFlowStatus: RunningStatus.IDLE,
     disabled: false,
 };
 
@@ -753,7 +756,6 @@ TableWrapper.propTypes = {
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,
-    loadFlowStatus: PropTypes.any,
     disabled: PropTypes.bool,
 };
 

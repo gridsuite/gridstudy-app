@@ -24,7 +24,7 @@ import GeoData from './geo-data';
 import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
-import { RunningStatus } from '../utils/running-status';
+import { RunButtonType } from '../utils/running-status';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -83,6 +83,9 @@ const NetworkMap = (props) => {
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { getNameOrId } = useNameOrId();
+    const loadFlowStatus = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.LOADFLOW]
+    );
 
     const readyToDisplay =
         props.mapEquipments !== null &&
@@ -270,7 +273,7 @@ const NetworkMap = (props) => {
                         lineInfos={tooltip.lineInfos}
                         anchorEl={divRef.current}
                         lineId={tooltip.lineId}
-                        loadFlowStatus={props.loadFlowStatus}
+                        loadFlowStatus={loadFlowStatus}
                     />
                 </div>
             )
@@ -400,7 +403,7 @@ const NetworkMap = (props) => {
                 showLineFlow: props.visible && showLineFlow,
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
-                loadFlowStatus: props.loadFlowStatus,
+                loadFlowStatus: loadFlowStatus,
                 lineFullPath:
                     props.geoData.linePositionsById.size > 0 &&
                     props.lineFullPath,
@@ -513,7 +516,6 @@ NetworkMap.defaultProps = {
     lineFlowHidden: true,
     lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
     lineFlowAlertThreshold: 100,
-    loadFlowStatus: RunningStatus.IDLE,
     visible: true,
     displayOverlayLoader: false,
     disabled: false,
@@ -539,7 +541,6 @@ NetworkMap.propTypes = {
     lineFlowHidden: PropTypes.bool,
     lineFlowColorMode: PropTypes.oneOf(Object.values(LineFlowColorMode)),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
-    loadFlowStatus: PropTypes.oneOf(Object.values(RunningStatus)),
     visible: PropTypes.bool,
     updatedLines: PropTypes.array,
     displayOverlayLoader: PropTypes.bool,

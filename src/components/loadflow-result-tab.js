@@ -6,32 +6,23 @@
  */
 
 import { useNodeData } from './study-container';
-import { fetchLoadFlowResult, fetchLoadFlowStatus } from '../utils/rest-api';
+import { fetchLoadFlowResult } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
-import {
-    RunningStatus,
-    getLoadFlowRunningStatus,
-} from './utils/running-status';
+import { RunButtonType } from './utils/running-status';
 import LoadFlowResult from './loadflow-result';
+import { useSelector } from 'react-redux';
 
 const loadflowResultInvalidations = ['loadflowResult'];
-const loadflowStatusInvalidations = ['loadflowStatus'];
 
 export const LoadFlowResultTab = ({ studyUuid, nodeUuid }) => {
+    const loadflowStatus = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.LOADFLOW]
+    );
     const [loadflowResult, isWaiting] = useNodeData(
         studyUuid,
         nodeUuid,
         fetchLoadFlowResult,
         loadflowResultInvalidations
-    );
-
-    const [loadflowStatus] = useNodeData(
-        studyUuid,
-        nodeUuid,
-        fetchLoadFlowStatus,
-        loadflowStatusInvalidations,
-        RunningStatus.IDLE,
-        getLoadFlowRunningStatus
     );
 
     return (

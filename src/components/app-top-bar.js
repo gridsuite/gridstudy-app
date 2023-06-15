@@ -28,16 +28,7 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    fetchAppsAndUrls,
-    fetchSecurityAnalysisStatus,
-    fetchSensitivityAnalysisStatus,
-    fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
-    fetchNetworkElementInfos,
-    fetchVoltageInitStatus,
-    fetchLoadFlowStatus,
-} from '../utils/rest-api';
+import { fetchAppsAndUrls, fetchNetworkElementInfos } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
@@ -62,7 +53,6 @@ import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
-import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagrams/diagram-common';
@@ -70,6 +60,7 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
+import { RunButtonType } from './utils/running-status';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -225,67 +216,25 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
-    const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
-    const securityAnalysisStatusInvalidations = [
-        'securityAnalysis_status',
-        'securityAnalysis_failed',
-    ];
-    const sensitivityAnalysisStatusInvalidations = [
-        'sensitivityAnalysis_status',
-        'sensitivityAnalysis_failed',
-    ];
-    const shortCircuitAnalysisStatusInvalidations = [
-        'shortCircuitAnalysis_status',
-        'shortCircuitAnalysis_failed',
-    ];
-    const dynamicSimulationStatusInvalidations = [
-        'dynamicSimulation_status',
-        'dynamicSimulation_failed',
-    ];
-    const voltageInitStatusInvalidations = [
-        'voltageInit_status',
-        'voltageInit_failed',
-    ];
-    const [loadFlowStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchLoadFlowStatus,
-        loadFlowStatusInvalidations
+
+    const loadFlowStatusNode = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.LOADFLOW]
     );
 
-    const [securityAnalysisStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSecurityAnalysisStatus,
-        securityAnalysisStatusInvalidations
+    const securityAnalysisStatusNode = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.SECURITY_ANALYSIS]
     );
-
-    const [sensitivityAnalysisStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSensitivityAnalysisStatus,
-        sensitivityAnalysisStatusInvalidations
+    const sensitivityAnalysisStatusNode = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.SENSI]
     );
-
-    const [shortCircuitAnalysisStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchShortCircuitAnalysisStatus,
-        shortCircuitAnalysisStatusInvalidations
+    const shortCircuitAnalysisStatusNode = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.SHORTCIRCUIT]
     );
-
-    const [dynamicSimulationStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchDynamicSimulationStatus,
-        dynamicSimulationStatusInvalidations
+    const dynamicSimulationStatusNode = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.DYNAMIC_SIMULATION]
     );
-
-    const [voltageInitStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchVoltageInitStatus,
-        voltageInitStatusInvalidations
+    const voltageInitStatusNode = useSelector(
+        (state) => state.runButtonStatus[RunButtonType.VOLTAGE_INIT]
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
