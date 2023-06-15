@@ -38,7 +38,7 @@ export const EquipmentIdSelector = ({
     equipmentType,
     formProps,
     readOnly = false,
-    fillerHeight = 1,
+    fillerHeight,
     fillerMessageId = 'idSelector.idNeeded',
     ...props
 }) => {
@@ -109,7 +109,7 @@ export const EquipmentIdSelector = ({
             <Grid container spacing={2}>
                 {gridItem(equipmentIdField, 4)}
             </Grid>
-            <FormFiller height={fillerHeight}>
+            <FormFiller lineHeight={fillerHeight}>
                 {fillerMessageId && !selectedValue && (
                     <Box className={classes.message}>
                         <FormattedMessage id={fillerMessageId} />

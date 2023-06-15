@@ -79,15 +79,15 @@ const LoadModificationDialog = ({
     const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (editData) => {
-            if (editData?.equipmentId) {
-                setSelectedId(editData.equipmentId);
+        (load) => {
+            if (load?.equipmentId) {
+                setSelectedId(load.equipmentId);
             }
             reset({
-                [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
-                [LOAD_TYPE]: editData.loadType?.value ?? null,
-                [ACTIVE_POWER]: editData.activePower?.value ?? null,
-                [REACTIVE_POWER]: editData.reactivePower?.value ?? null,
+                [EQUIPMENT_NAME]: load.equipmentName?.value ?? '',
+                [LOAD_TYPE]: load.loadType?.value ?? null,
+                [ACTIVE_POWER]: load.activePower?.value ?? null,
+                [REACTIVE_POWER]: load.reactivePower?.value ?? null,
             });
         },
         [reset]

@@ -20,12 +20,20 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const FormFiller = ({ size = 12, height = 1, children }) => {
+export const FormFiller = ({
+    size = 12, // Default will take the whole row
+    lineHeight, // Filler's height : by default 100%, or if specified, equal to X times a generic row in the form.
+    children, // These elements will be centered in the filler
+}) => {
     const classes = useStyles();
     const theme = useTheme();
 
     return (
-        <Grid container spacing={2}>
+        <Grid
+            container
+            spacing={2}
+            sx={{ height: lineHeight ? undefined : 'calc(100% - 32px)' }}
+        >
             <Grid
                 item
                 xs={size}
@@ -37,7 +45,9 @@ export const FormFiller = ({ size = 12, height = 1, children }) => {
                 <Box
                     className={classes.filler}
                     sx={{
-                        height: theme.spacing(7 * height),
+                        height: lineHeight
+                            ? theme.spacing(7 * lineHeight)
+                            : '100%',
                     }}
                 >
                     {children}
