@@ -1604,7 +1604,7 @@ export function updateTreeNode(studyUuid, node) {
 }
 
 export function copyTreeNode(
-    sourceStudyId,
+    sourceStudyUuid,
     targetStudyId,
     nodeToCopyUuid,
     referenceNodeUuid,
@@ -1619,7 +1619,7 @@ export function copyTreeNode(
         '&referenceNodeUuid=' +
         referenceNodeUuid +
         '&sourceStudyUuid=' +
-        sourceStudyId;
+        sourceStudyUuid;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',

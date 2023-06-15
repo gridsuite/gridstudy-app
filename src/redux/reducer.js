@@ -149,7 +149,7 @@ const initialState = {
     studyUuid: null,
     currentTreeNode: null,
     selectionForCopy: {
-        sourceStudyId: null,
+        sourceStudyUuid: null,
         nodeId: null,
         copyType: null,
         allChildrenIds: null,
@@ -598,7 +598,7 @@ export const reducer = createReducer(initialState, {
     [SELECTION_FOR_COPY]: (state, action) => {
         const selectionForCopy = action.selectionForCopy;
         if (
-            selectionForCopy.sourceStudyId === state.studyUuid &&
+            selectionForCopy.sourceStudyUuid === state.studyUuid &&
             selectionForCopy.nodeId &&
             (selectionForCopy.copyType === CopyType.SUBTREE_COPY ||
                 selectionForCopy.copyType === CopyType.SUBTREE_CUT)
