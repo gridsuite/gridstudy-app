@@ -80,31 +80,31 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 field: 'subjectId',
                 sort: DEFAULT_SORT_ORDER,
                 filter: 'agTextColumnFilter',
-                width: 400,
+                width: 300,
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
                 filter: 'agTextColumnFilter',
-                width: 400,
+                width: 300,
             },
             {
                 headerName: intl.formatMessage({ id: 'Limit' }),
                 field: 'limit',
                 valueFormatter: (params) => params.data?.limit?.toFixed(1),
-                width: 400,
+                width: 300,
             },
             {
                 headerName: intl.formatMessage({ id: 'Value' }),
                 field: 'value',
                 valueFormatter: (params) => params.data?.value?.toFixed(1),
-                width: 400,
+                width: 300,
             },
             {
                 headerName: intl.formatMessage({ id: 'Loading' }),
                 field: 'loading',
                 valueFormatter: (params) => params.data?.loading?.toFixed(1),
-                width: 400,
+                width: 300,
             },
         ];
     }, [intl]);
@@ -154,19 +154,19 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 postContingencyResult.status !== 'CONVERGED'
             ) {
                 rows.push({
-                    contingencyIndex: index,
+                    //contingencyIndex: index,
                     contingencyId: postContingencyResult.contingency.id,
                     computationStatus: postContingencyResult.status,
                     violationCount:
                         postContingencyResult.limitViolationsResult
                             .limitViolations.length,
-                    _group: index,
-                    _root: true,
+                    //  _group: index,
+                    //  _root: true,
                 });
                 postContingencyResult.limitViolationsResult.limitViolations.forEach(
                     (limitViolation) => {
                         rows.push({
-                            contingencyIndex: index,
+                            //   contingencyIndex: index,
                             subjectId: limitViolation.subjectId,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
@@ -175,7 +175,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                             value: limitViolation.value,
                             loading: computeLoading(limitViolation),
                             side: limitViolation.side,
-                            _group: index,
+                            //     _group: index,
                             linkedElementId:
                                 postContingencyResult.contingency.id,
                         });
@@ -211,7 +211,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             {
                 headerName: intl.formatMessage({ id: 'ComputationStatus' }),
                 field: 'computationStatus',
-                width: 200,
+                width: 150,
             },
             {
                 headerName: intl.formatMessage({ id: 'Constraint' }),
@@ -222,10 +222,10 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
-                width: 200,
+                width: 150,
             },
             {
-                width: 200,
+                width: 150,
                 headerName: intl.formatMessage({ id: 'LimitName' }),
                 field: 'limitName',
             },
@@ -235,30 +235,32 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 field: 'side',
             },
             {
-                width: 160,
+                width: 150,
                 headerName: intl.formatMessage({
                     id: 'LimitAcceptableDuration',
                 }),
                 field: 'acceptableDuration',
             },
             {
-                width: 200,
+                width: 150,
                 headerName: intl.formatMessage({ id: 'Limit' }),
                 field: 'limit',
                 valueFormatter: (params) => params.data?.limit?.toFixed(1),
             },
             {
-                width: 200,
+                width: 150,
                 headerName: intl.formatMessage({ id: 'Value' }),
                 field: 'value',
                 valueFormatter: (params) => params.data?.value?.toFixed(1),
             },
             {
-                width: 200,
+                width: 150,
                 headerName: intl.formatMessage({ id: 'Loading' }),
                 field: 'loading',
                 valueFormatter: (params) => params.data?.loading?.toFixed(1),
             },
+            //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
+            //it is used for sorting actions
             {
                 field: 'linkedElementId',
                 hide: true,
@@ -266,13 +268,25 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         ];
     }, [intl, SubjectIdRenderer]);
 
-    const groupPostSort = (sortedRows, idField, linkedElementId) => {
+    const groupPostSort = (
+        sortedRows,
+        idField,
+        linkedElementId,
+        isContingency
+    ) => {
         const result = [];
-        // get all id rows, they will form the groups parents
+        //get all groups ids
         const idRows = sortedRows.filter((row) => row.data[idField] != null);
-        // for each of those groups ...
+        if (isContingency) {
+            //get all rows with no id group and add them at the beginning.
+            const unconvergerRows = sortedRows.filter(
+                (row) => !row.data[linkedElementId] && !row.data[idField]
+            );
+            result.push(...unconvergerRows);
+        }
+        //for each of those groups
         idRows.forEach((idRow) => {
-            //add group's parent to result first
+            //add group's parent first
             result.push(idRow);
             //then add all elements which belongs to this group
             result.push(
@@ -285,35 +299,25 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         return result;
     };
 
-    const handlePostSortRows = (params) => {
+    const handlePostSortRows = (params, isFromContingency) => {
         const rows = params.nodes;
         return Object.assign(
             rows,
-            groupPostSort(rows, 'contingencyId', 'linkedElementId')
+            groupPostSort(
+                rows,
+                isFromContingency ? 'contingencyId' : 'subjectId',
+                'linkedElementId',
+                !isFromContingency
+            )
         );
     };
 
-    const handlePostSortRows1 = (params) => {
-        const rows = params.nodes;
-        return Object.assign(
-            rows,
-            groupPostSort(rows, 'subjectId', 'linkedElementId')
-        );
-    };
     const getRowStyle = useCallback(
-        (params) => {
-            if (params?.data?.contingencyId) {
-                return {
-                    backgroundColor: theme.selectedRow.background,
-                };
-            }
-        },
-        [theme.selectedRow.background]
-    );
-
-    const getConstraintsRowStyle = useCallback(
-        (params) => {
-            if (params?.data?.subjectId) {
+        (params, isFromContingency) => {
+            if (
+                (isFromContingency && params?.data?.contingencyId) ||
+                (!isFromContingency && params?.data?.subjectId)
+            ) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
@@ -327,9 +331,9 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             <CustomAGGrid
                 rowData={rows}
                 columnDefs={columnsNmKContingencies}
-                postSortRows={handlePostSortRows}
+                postSortRows={(params) => handlePostSortRows(params, true)}
                 defaultColDef={defaultColDef}
-                getRowStyle={getRowStyle}
+                getRowStyle={(params) => getRowStyle(params, true)}
             />
         );
     }
@@ -385,12 +389,12 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             }
         });
 
-        let group = 0;
+        //let group = 0;
         mapConstraints.forEach((contingencies, subjectId) => {
             rows.push({
                 subjectId: subjectId,
-                _group: group,
-                _root: true,
+                //   _group: group,
+                //   _root: true,
             });
 
             contingencies.forEach((contingency) => {
@@ -405,11 +409,11 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     side: contingency.side,
                     acceptableDuration: contingency.acceptableDuration,
                     limitName: contingency.limitName,
-                    _group: group,
+                    //    _group: group,
                     linkedElementId: subjectId,
                 });
             });
-            group++;
+            //  group++;
         });
 
         return rows;
@@ -429,17 +433,17 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 field: 'contingencyId',
             },
             {
-                width: 200,
+                width: 150,
                 headerName: intl.formatMessage({ id: 'ComputationStatus' }),
                 field: 'computationStatus',
             },
             {
-                width: 200,
+                width: 150,
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
             },
             {
-                width: 200,
+                width: 150,
                 headerName: intl.formatMessage({ id: 'LimitName' }),
                 field: 'limitName',
             },
@@ -449,30 +453,32 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 field: 'side',
             },
             {
-                width: 160,
+                width: 150,
                 headerName: intl.formatMessage({
                     id: 'LimitAcceptableDuration',
                 }),
                 field: 'acceptableDuration',
             },
             {
-                width: 200,
+                width: 150,
                 headerName: intl.formatMessage({ id: 'Limit' }),
                 field: 'limit',
                 valueFormatter: (params) => params.data?.limit?.toFixed(1),
             },
             {
-                width: 200,
+                width: 150,
                 headerName: intl.formatMessage({ id: 'Value' }),
                 field: 'value',
                 valueFormatter: (params) => params.data?.value?.toFixed(1),
             },
             {
-                width: 200,
+                width: 150,
                 headerName: intl.formatMessage({ id: 'Loading' }),
                 field: 'loading',
                 valueFormatter: (params) => params.data?.loading?.toFixed(1),
             },
+            //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
+            //it is used for sorting actions
             {
                 field: 'linkedElementId',
                 hide: true,
@@ -486,9 +492,9 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             <CustomAGGrid
                 rowData={rows}
                 columnDefs={nmKConstraintsColumns}
-                postSortRows={handlePostSortRows1}
+                postSortRows={(params) => handlePostSortRows(params, false)}
                 defaultColDef={defaultColDef}
-                getRowStyle={getConstraintsRowStyle}
+                getRowStyle={(params) => getRowStyle(params, false)}
             />
         );
     }
