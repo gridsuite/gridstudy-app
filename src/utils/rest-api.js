@@ -1606,7 +1606,7 @@ export function updateTreeNode(studyUuid, node) {
 }
 
 export function copyTreeNode(
-    sourceStudyId,
+    sourceStudyUuid,
     targetStudyId,
     nodeToCopyUuid,
     referenceNodeUuid,
@@ -1621,7 +1621,7 @@ export function copyTreeNode(
         '&referenceNodeUuid=' +
         referenceNodeUuid +
         '&sourceStudyUuid=' +
-        sourceStudyId;
+        sourceStudyUuid;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
@@ -1673,13 +1673,20 @@ export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
     });
 }
 
-export function copySubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+export function copySubtree(
+    sourceStudyUuid,
+    targetStudyUuid,
+    nodeToCopyUuid,
+    referenceNodeUuid
+) {
     const nodeCopyUrl =
-        getStudyUrl(targetStudyId) +
+        getStudyUrl(targetStudyUuid) +
         '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
         nodeToCopyUuid +
         '&referenceNodeUuid=' +
-        referenceNodeUuid;
+        referenceNodeUuid +
+        '&sourceStudyUuid=' +
+        sourceStudyUuid;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
