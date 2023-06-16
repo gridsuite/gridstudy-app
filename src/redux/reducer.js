@@ -1049,10 +1049,12 @@ function updateSubstationsAndVoltageLevels(
     currentVoltageLevels,
     newOrUpdatedSubstations
 ) {
-    currentSubstations = updateEquipments(
+    const updatedSubstations = updateEquipments(
         currentSubstations,
         newOrUpdatedSubstations
     );
+
+    const updatedVoltageLevels = currentVoltageLevels;
 
     // if voltage levels are not loaded yet, we don't need to update them
     if (currentVoltageLevels != null) {
@@ -1063,13 +1065,13 @@ function updateSubstationsAndVoltageLevels(
             []
         );
 
-        currentVoltageLevels = updateEquipments(
+        updatedVoltageLevels = updateEquipments(
             currentVoltageLevels,
             newOrUpdatedVoltageLevels
         );
     }
 
-    return [currentSubstations, currentVoltageLevels];
+    return [updatedSubstations, updatedVoltageLevels];
 }
 
 function updateEquipments(currentEquipments, newOrUpdatedEquipments) {
