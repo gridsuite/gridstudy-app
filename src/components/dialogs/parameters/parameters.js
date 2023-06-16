@@ -199,6 +199,13 @@ export const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
+    tabWithError: {
+        '&.Mui-selected': { color: theme.palette.error.main },
+        color: theme.palette.error.main,
+    },
+    tabWithErrorIndicator: {
+        backgroundColor: theme.palette.error.main,
+    },
 }));
 
 export const LabelledButton = ({ callback, label, name }) => {

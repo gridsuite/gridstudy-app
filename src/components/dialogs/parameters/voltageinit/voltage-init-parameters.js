@@ -35,6 +35,7 @@ import {
     VOLTAGE_LIMITS,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
+import clsx from 'clsx';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -58,8 +59,8 @@ export const useGetVoltageInitParameters = () => {
 };
 
 const TAB_VALUES = {
-    voltageLimitsParamsTabValue: 'VoltageLimits',
-    equipmentSelectionParamsTabValue: 'EquipmentSelection',
+    voltageLimitsParamsTabValue: 'voltageLimits',
+    equipmentSelectionParamsTabValue: 'equipmentSelection',
 };
 
 const formSchema = yup.object().shape({
@@ -122,7 +123,7 @@ export const VoltageInitParameters = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, control, handleSubmit } = formMethods;
+    const { reset, handleSubmit } = formMethods;
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -263,6 +264,37 @@ export const VoltageInitParameters = ({
         }
     }, [fromVoltageInitParamsDataToFormValues, voltageInitParams]);
 
+    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const onValidationError = (errors) => {
+        let tabsInError = [];
+        if (errors?.[TAB_VALUES.voltageLimitsParamsTabValue] !== undefined) {
+            tabsInError.push(TAB_VALUES.voltageLimitsParamsTabValue);
+        }
+        if (errors?.[TAB_VALUES.equipmentSelectionParamsTabValue]) {
+            tabsInError.push(TAB_VALUES.equipmentSelectionParamsTabValue);
+        }
+        console.info('tabsInError', tabsInError);
+        setTabIndexesWithError(tabsInError);
+    };
+
+    const getTabIndicatorClass = useCallback(
+        (index) =>
+            tabIndexesWithError.includes(index)
+                ? {
+                      indicator: classes.tabWithErrorIndicator,
+                  }
+                : {},
+        [tabIndexesWithError, classes]
+    );
+
+    const getTabClass = useCallback(
+        (index) =>
+            clsx({
+                [classes.tabWithError]: tabIndexesWithError.includes(index),
+            }),
+        [tabIndexesWithError, classes]
+    );
+
     const clear = useCallback(() => {
         reset(emptyFormData);
         resetVoltageInitParameters();
@@ -280,14 +312,21 @@ export const VoltageInitParameters = ({
                         value={tabValue}
                         variant="scrollable"
                         onChange={handleTabChange}
+                        classes={getTabIndicatorClass(tabValue)}
                     >
                         <Tab
                             label={<FormattedMessage id="VoltageLimits" />}
                             value={TAB_VALUES.voltageLimitsParamsTabValue}
+                            className={getTabClass(
+                                TAB_VALUES.voltageLimitsParamsTabValue
+                            )}
                         />
                         <Tab
                             label={<FormattedMessage id="EquipmentSelection" />}
                             value={TAB_VALUES.equipmentSelectionParamsTabValue}
+                            className={getTabClass(
+                                TAB_VALUES.equipmentSelectionParamsTabValue
+                            )}
                         />
                     </Tabs>
                     <Grid container>
@@ -296,7 +335,6 @@ export const VoltageInitParameters = ({
                             index={TAB_VALUES.voltageLimitsParamsTabValue}
                         >
                             <VoltageLimitsParameters
-                                control={control}
                                 reset={reset}
                                 useVoltageInitParameters={
                                     useVoltageInitParameters
@@ -319,7 +357,9 @@ export const VoltageInitParameters = ({
                         <Button onClick={clear}>
                             <FormattedMessage id="resetToDefault" />
                         </Button>
-                        <SubmitButton onClick={handleSubmit(onSubmit)} />
+                        <SubmitButton
+                            onClick={handleSubmit(onSubmit, onValidationError)}
+                        />
                         <CloseButton
                             hideParameters={hideParameters}
                             className={classes.button}

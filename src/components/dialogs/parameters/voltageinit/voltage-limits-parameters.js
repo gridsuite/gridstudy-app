@@ -22,12 +22,11 @@ import { useIntl } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
 import { VoltageAdornment } from 'components/dialogs/dialogUtils';
 
-const VoltageLimitsParameters = ({ control }) => {
+const VoltageLimitsParameters = () => {
     const intl = useIntl();
 
     const useFieldArrayOutput = useFieldArray({
         name: `${VOLTAGE_LIMITS}`,
-        control: control,
     });
 
     const VoltageLevelFilterTooltip = useMemo(() => {
