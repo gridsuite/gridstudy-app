@@ -842,6 +842,10 @@ export const TABLES_DEFINITIONS = {
                     return {
                         maxExpression: 'maxP',
                         defaultValue: params.data.minP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -859,6 +863,10 @@ export const TABLES_DEFINITIONS = {
                     return {
                         minExpression: 'minP',
                         defaultValue: params.data.maxP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -882,6 +890,10 @@ export const TABLES_DEFINITIONS = {
                         minExpression: 'minP',
                         maxExpression: 'maxP',
                         defaultValue: params.data.targetP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 fractionDigits: 1,
@@ -899,11 +911,18 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.targetQ,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
-                editableCondition: {
-                    dependencyColumn: 'voltageRegulatorOn',
-                    columnValue: false,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'voltageRegulatorOn',
+                        //the following value is matched against the input of a boolean input, so 1 convey the following value : false
+                        columnValue: 0,
+                    },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -917,6 +936,9 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.voltageRegulatorOn | 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
                     };
                 },
                 resetColumnsInError: [
@@ -943,11 +965,18 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.targetV,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
-                editableCondition: {
-                    dependencyColumn: 'voltageRegulatorOn',
-                    columnValue: true,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'voltageRegulatorOn',
+                        //the following value is matched against the input of a boolean input, so 1 convey the following value : true
+                        columnValue: 1,
+                    },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1034,6 +1063,10 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.p0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1050,6 +1083,10 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.q0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,

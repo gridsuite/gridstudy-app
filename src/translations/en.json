@@ -147,6 +147,13 @@
     "BusId": "Bus ID",
     "VoltageInitStatus": "STATUS",
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
+    "VoltageInitOptimalReactivePowerFlow" : "Optimal Reactive Power Flow",
+    "VoltageLimits" : "Voltage limits",
+    "VoltageLevelFilter" : "Voltage level filter",
+    "LowVoltageLimitAdjustment" : "Low voltage limit adjustment",
+    "HighVoltageLimitAdjustment" : "High voltage limit adjustment",
+    "VoltageLevelFilterTooltip" : "User entries are applied one after another starting at the top of the list. If a voltage level is included in more than one filter, an entry can therefore be replaced by a subsequent entry",
+    "FilterInputMinError" : "You must pick at least one filter",
 
     "SelectAll": "Select all",
     "UnselectAll": "Unselect all",
@@ -408,7 +415,7 @@
     "ViewOnSpreadsheet": "View in spreadsheet",
     "DeleteFromMenu": "Delete",
     "ModifyFromMenu": "Modify",
-    
+
     "LockoutLine": "Lock out the line",
     "TripLine": "Trip the line",
     "EnergiseOnOneEndLine": "Energise on one end ({substation})",
@@ -977,5 +984,17 @@
     "lineTypes.category.aerial": "Overhead power lines",
     "lineTypes.category.underground": "Underground cables",
     "lineTypes.insulator": "Insulator",
-    "lineTypes.screen": "Screen"
+    "lineTypes.screen": "Screen",
+    "securityAnalysis.violationsHiding": "Post-contingency violations hiding",
+    "securityAnalysis.current": "Current",
+    "securityAnalysis.lowVoltage": "Low voltage",
+    "securityAnalysis.highVoltage": "High voltage",
+    "securityAnalysis.toolTip.violationsHiding": "This section configures thresholds to determine which violations that already exist in the pre-contingency state are redisplayed in the post-contingency state as aggravated violations.",
+    "securityAnalysis.toolTip.current": "For current violations, the value can only be proportional. For example, if the proportional value corresponds to 10 A, a 1000 A current preexisting violation will be displayed in the post-contingency state only if the new value is above 1010 A.",
+    "securityAnalysis.toolTip.lowVoltage": "For low voltage violations, the value of the threshold can be either proportional or absolute. If both values are defined, the smallest value is used. For example, if the proportional value corresponds to 1 kV and the absolute value is 2 kV, a 200 kV low voltage preexisting violation will be displayed in the post-contingency state only if the new value is below 199 kV.",
+    "securityAnalysis.toolTip.highVoltage": "For high voltage violations, the value of the threshold can be either proportional or absolute. If both values are defined, the smallest value is used. For example, if the proportional value corresponds to 1 kV and the absolute value is 2 kV, a 250 kV high voltage preexisting violation will be displayed in the post-contingency state only if the new value is above 251 kV.",
+    "Create": "Create",
+    "ShuntCompensator": "Shunt compensator",
+    "AttachingAndSplittingLines": "Attaching and splitting lines",
+    "GenerationAndLoad": "Generation and load"
 }
