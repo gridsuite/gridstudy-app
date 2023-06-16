@@ -23,8 +23,8 @@ const EquipmentSelectionParameters = () => {
 
     return (
         <DialogContent>
-            <Grid item container>
-                <Grid item xs={4}>
+            <Grid item container spacing={1} padding={1}>
+                <Grid item xs={5}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
                             <FormattedMessage id={'FixedGenerators'} />
@@ -41,8 +41,8 @@ const EquipmentSelectionParameters = () => {
                     />
                 </Grid>
             </Grid>
-            <Grid item container>
-                <Grid item xs={4}>
+            <Grid item container spacing={1} padding={1}>
+                <Grid item xs={5}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
                             <FormattedMessage id={'VariableTransformers'} />
@@ -61,8 +61,8 @@ const EquipmentSelectionParameters = () => {
                     />
                 </Grid>
             </Grid>
-            <Grid item container>
-                <Grid item xs={4}>
+            <Grid item container spacing={1} padding={1}>
+                <Grid item xs={5}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
                             <FormattedMessage

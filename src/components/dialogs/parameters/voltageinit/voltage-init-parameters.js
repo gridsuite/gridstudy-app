@@ -153,7 +153,6 @@ export const VoltageInitParameters = ({
     }, [studyUuid, emptyFormData, setVoltageInitParams, snackError]);
 
     const formatNewParams = useCallback((newParams) => {
-        console.info('newParams1111', newParams);
         return {
             [VOLTAGE_LIMITS]: newParams.voltageLimits.map((voltageLimit) => {
                 return {
@@ -195,7 +194,6 @@ export const VoltageInitParameters = ({
 
     const onSubmit = useCallback(
         (newParams) => {
-            console.info('newParams2222', newParams);
             updateVoltageInitParameters(studyUuid, formatNewParams(newParams))
                 .then(() => {
                     setVoltageInitParams(formatNewParams(newParams));
