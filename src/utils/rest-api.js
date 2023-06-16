@@ -1294,6 +1294,8 @@ export function updateVoltageInitParameters(studyUuid, newParams) {
     const url = getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(url);
 
+    console.info('newParams in rest API', newParams);
+
     return backendFetch(url, {
         method: 'POST',
         headers: {
