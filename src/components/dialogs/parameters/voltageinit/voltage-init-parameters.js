@@ -266,12 +266,6 @@ export const VoltageInitParameters = ({
     }, [fromVoltageInitParamsDataToFormValues, voltageInitParams]);
 
     const clear = useCallback(() => {
-        //TODO reset all or only one tab ?
-        // if (tabValue === TAB_VALUES.voltageLimitsParamsTabValue) {
-        //     reset(emptyFormData[VOLTAGE_LIMITS]);
-        // } else if (tabValue === TAB_VALUES.equipmentSelectionParamsTabValue) {
-        //     reset(emptyFormData[EQUIPMENT_SELECTION]);
-        // }
         reset(emptyFormData);
         resetVoltageInitParameters();
     }, [emptyFormData, reset, resetVoltageInitParameters]);
