@@ -1054,7 +1054,7 @@ function updateSubstationsAndVoltageLevels(
         newOrUpdatedSubstations
     );
 
-    const updatedVoltageLevels = currentVoltageLevels;
+    let updatedVoltageLevels = currentVoltageLevels;
 
     // if voltage levels are not loaded yet, we don't need to update them
     if (currentVoltageLevels != null) {

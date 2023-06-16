@@ -293,7 +293,7 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
+    const { equipments, errorMessage } = useSpreadsheetEquipments(
         TABLES_DEFINITION_INDEXES.get(tabIndex)
     );
 
@@ -698,7 +698,7 @@ const TableWrapper = (props) => {
                         rowData={rowData}
                         columnData={columnData}
                         topPinnedData={topPinnedData}
-                        fetched={!isFetching}
+                        fetched={equipments || errorMessage}
                         scrollToIndex={scrollToIndex}
                         visible={props.visible}
                         handleColumnDrag={handleColumnDrag}

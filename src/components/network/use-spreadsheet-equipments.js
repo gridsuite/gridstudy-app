@@ -11,7 +11,6 @@ export const useSpreadsheetEquipments = (equipmentType) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [errorMessage, setErrorMessage] = useState();
 
-    const isFetching = !equipments && !errorMessage;
     const shouldFetchEquipments = !equipments;
 
     useEffect(() => {
@@ -43,5 +42,5 @@ export const useSpreadsheetEquipments = (equipmentType) => {
         dispatch,
     ]);
 
-    return { equipments, errorMessage, isFetching };
+    return { equipments, errorMessage };
 };
