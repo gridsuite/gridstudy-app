@@ -486,12 +486,13 @@ export function fetchTwoWindingsTransformers(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Two windings transformers',
-        '2-windings-transformers'
+        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        false
     );
 }
 
@@ -500,22 +501,23 @@ export function fetchThreeWindingsTransformers(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Three windings transformers',
-        '3-windings-transformers'
+        EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type,
+        false
     );
 }
 
 export function fetchGenerators(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Generators',
-        'generators'
+        EQUIPMENT_TYPES.GENERATOR.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -531,22 +533,22 @@ export function fetchLoads(studyUuid, currentNodeUuid, substationsIds) {
 }
 
 export function fetchDanglingLines(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Dangling lines',
-        'dangling-lines'
+        EQUIPMENT_TYPES.DANGLING_LINE.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
 export function fetchBatteries(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Batteries',
-        'batteries'
+        EQUIPMENT_TYPES.BATTERY.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -600,12 +602,12 @@ export function fetchLccConverterStations(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'LCC converter stations',
-        'lcc-converter-stations'
+        EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -614,12 +616,12 @@ export function fetchVscConverterStations(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'VSC converter stations',
-        'vsc-converter-stations'
+        EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -628,12 +630,12 @@ export function fetchShuntCompensators(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Shunt compensators',
-        'shunt-compensators'
+        EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -642,12 +644,12 @@ export function fetchStaticVarCompensators(
     currentNodeUuid,
     substationsIds
 ) {
-    return fetchEquipments(
+    return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        'Static var compensators',
-        'static-var-compensators'
+        EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
+        EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
 
@@ -685,41 +687,15 @@ export function searchEquipmentsInfos(
 }
 
 export function fetchAllEquipments(studyUuid, currentNodeUuid, substationsIds) {
-    return fetchEquipments(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        'All',
-        'all'
-    );
-}
-
-export function fetchEquipments(
-    studyUuid,
-    currentNodeUuid,
-    substationsIds,
-    equipmentType,
-    equipmentPath,
-    inUpstreamBuiltParentNode
-) {
     console.info(
-        `Fetching equipments '${equipmentType}' of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+        `Fetching all equipments of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
     );
-    let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
 
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/' +
-        equipmentPath +
+        '/network-map/all' +
         '?' +
-        getQueryParamsList(substationsIds, 'substationId') +
-        urlSearchParams.toString();
+        getQueryParamsList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl);
 }
@@ -861,39 +837,14 @@ export function fetchLineOrTransformer(
     currentNodeUuid,
     equipmentId
 ) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        currentNodeUuid,
-        'branch-or-3wt',
-        equipmentId,
-        true
-    );
-}
-
-export function fetchEquipmentInfos(
-    studyUuid,
-    currentNodeUuid,
-    equipmentPath,
-    equipmentId,
-    inUpstreamBuiltParentNode
-) {
     console.info(
-        `Fetching specific equipment '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching specific equipment '${equipmentId}' of type branch-or-3wt of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
-
     let urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-    }
-
+    urlSearchParams.append('inUpstreamBuiltParentNode', true);
     const fetchEquipmentInfosUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/' +
-        equipmentPath +
-        '/' +
+        '/network-map/branch-or-3wt/' +
         encodeURIComponent(equipmentId) +
         '?' +
         urlSearchParams.toString();
@@ -1687,7 +1638,7 @@ export function updateTreeNode(studyUuid, node) {
 }
 
 export function copyTreeNode(
-    sourceStudyId,
+    sourceStudyUuid,
     targetStudyId,
     nodeToCopyUuid,
     referenceNodeUuid,
@@ -1702,7 +1653,7 @@ export function copyTreeNode(
         '&referenceNodeUuid=' +
         referenceNodeUuid +
         '&sourceStudyUuid=' +
-        sourceStudyId;
+        sourceStudyUuid;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
@@ -1754,13 +1705,20 @@ export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
     });
 }
 
-export function copySubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+export function copySubtree(
+    sourceStudyUuid,
+    targetStudyUuid,
+    nodeToCopyUuid,
+    referenceNodeUuid
+) {
     const nodeCopyUrl =
-        getStudyUrl(targetStudyId) +
+        getStudyUrl(targetStudyUuid) +
         '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
         nodeToCopyUuid +
         '&referenceNodeUuid=' +
-        referenceNodeUuid;
+        referenceNodeUuid +
+        '&sourceStudyUuid=' +
+        sourceStudyUuid;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
@@ -3458,4 +3416,25 @@ export function getLineTypesCatalog() {
         PREFIX_NETWORK_MODIFICATION_QUERIES +
         '/v1/network-modifications/catalog/line_types';
     return backendFetchJson(url);
+}
+
+export function getSecurityAnalysisParameters(studyUuid) {
+    console.info('get security analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function setSecurityAnalysisParameters(studyUuid, newParams) {
+    console.info('set security analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
 }
