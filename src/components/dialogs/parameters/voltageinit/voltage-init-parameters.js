@@ -198,6 +198,7 @@ export const VoltageInitParameters = ({
             updateVoltageInitParameters(studyUuid, formatNewParams(newParams))
                 .then(() => {
                     setVoltageInitParams(formatNewParams(newParams));
+                    onValidationError();
                 })
                 .catch((error) => {
                     snackError({
