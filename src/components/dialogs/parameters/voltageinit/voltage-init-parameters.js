@@ -274,7 +274,6 @@ export const VoltageInitParameters = ({
         if (errors?.[TAB_VALUES.equipmentSelectionParamsTabValue]) {
             tabsInError.push(TAB_VALUES.equipmentSelectionParamsTabValue);
         }
-        console.info('tabsInError', tabsInError);
         setTabIndexesWithError(tabsInError);
     };
 
