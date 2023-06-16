@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadEquipments } from 'redux/actions';
 
@@ -9,21 +9,39 @@ export const useSpreadsheetEquipments = (equipmentType) => {
     );
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const [errorMessage, setErrorMessage] = useState();
 
-    const isFetching = !equipments;
+    const isFetching = !equipments && !errorMessage;
+    const shouldFetchEquipments = !equipments;
 
     useEffect(() => {
-        if (!equipments) {
+        if (shouldFetchEquipments) {
+            setErrorMessage();
             Promise.all(
                 equipmentType.type.fetchers.map((fetcher) =>
                     fetcher(studyUuid, currentNode.id)
                 )
-            ).then((results) => {
-                const equipments = results.flat();
-                dispatch(loadEquipments(equipmentType.resource, equipments));
-            });
+            )
+                .then((results) => {
+                    const fetchedEquipments = results.flat();
+                    dispatch(
+                        loadEquipments(
+                            equipmentType.resource,
+                            fetchedEquipments
+                        )
+                    );
+                })
+                .catch((err) => {
+                    setErrorMessage(err);
+                });
         }
-    }, [equipmentType, equipments, studyUuid, currentNode.id, dispatch]);
+    }, [
+        equipmentType,
+        shouldFetchEquipments,
+        studyUuid,
+        currentNode.id,
+        dispatch,
+    ]);
 
-    return { equipments, isFetching };
+    return { equipments, errorMessage, isFetching };
 };

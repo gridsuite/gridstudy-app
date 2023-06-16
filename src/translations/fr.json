@@ -1018,5 +1018,6 @@
     "Create": "Créer",
     "ShuntCompensator": "Moyen de compensation statique",
     "AttachingAndSplittingLines": "Piquage et coupure",
-    "GenerationAndLoad": "Production et consommation"
+    "GenerationAndLoad": "Production et consommation",
+    "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages"
 }

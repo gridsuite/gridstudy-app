@@ -293,9 +293,18 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const { equipments, isFetching } = useSpreadsheetEquipments(
+    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
         TABLES_DEFINITION_INDEXES.get(tabIndex)
     );
+
+    useEffect(() => {
+        if (errorMessage) {
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'SpreadsheetFetchError',
+            });
+        }
+    }, [errorMessage, snackError]);
 
     const getRows = useCallback(() => {
         if (props.disabled || !equipments) {
