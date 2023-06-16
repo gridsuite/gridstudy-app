@@ -198,7 +198,6 @@ export const VoltageInitParameters = ({
             updateVoltageInitParameters(studyUuid, formatNewParams(newParams))
                 .then(() => {
                     setVoltageInitParams(formatNewParams(newParams));
-                    onValidationError();
                 })
                 .catch((error) => {
                     snackError({
@@ -206,6 +205,7 @@ export const VoltageInitParameters = ({
                         headerId: 'VoltageInitParametersError',
                     });
                 });
+            onValidationError();
         },
         [setVoltageInitParams, snackError, studyUuid, formatNewParams]
     );
@@ -299,6 +299,7 @@ export const VoltageInitParameters = ({
     const clear = useCallback(() => {
         reset(emptyFormData);
         resetVoltageInitParameters();
+        onValidationError();
     }, [emptyFormData, reset, resetVoltageInitParameters]);
 
     return (
