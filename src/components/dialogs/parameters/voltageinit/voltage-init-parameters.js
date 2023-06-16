@@ -212,7 +212,6 @@ export const VoltageInitParameters = ({
 
     const fromVoltageInitParamsDataToFormValues = useCallback(
         (parameters) => {
-            console.info('parameters', parameters);
             reset({
                 [VOLTAGE_LIMITS]: parameters.voltageLimits.map(
                     (voltageLimit) => {
