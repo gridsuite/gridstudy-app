@@ -75,6 +75,7 @@ export const LineCreationDialogTab = {
  */
 const LineModificationDialog = ({
     editData,
+    defaultIdValue,
     studyUuid,
     currentNode,
     displayConnectivity = false,
@@ -93,7 +94,7 @@ const LineModificationDialog = ({
 
     const emptyFormData = useMemo(
         () => ({
-            [EQUIPMENT_ID]: '',
+            [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             ...getCharacteristicsEmptyFormData(
                 CHARACTERISTICS,
@@ -101,7 +102,7 @@ const LineModificationDialog = ({
             ),
             ...getLimitsEmptyFormData(),
         }),
-        [displayConnectivity]
+        [displayConnectivity, defaultIdValue]
     );
 
     const formSchema = yup
@@ -280,6 +281,7 @@ const LineModificationDialog = ({
                     });
             } else {
                 setLineToModify(null);
+                emptyFormData[EQUIPMENT_ID] = null; // force it to null when reset because of defaultIdValue
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
