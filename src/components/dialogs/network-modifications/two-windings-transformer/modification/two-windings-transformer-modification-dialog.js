@@ -10,7 +10,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
     CHARACTERISTICS,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
@@ -21,7 +20,7 @@ import {
     SERIES_RESISTANCE,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
     fetchNetworkElementInfos,
@@ -66,6 +65,22 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+
+const emptyFormData = {
+    [EQUIPMENT_NAME]: '',
+    ...getCharacteristicsEmptyFormData(),
+    ...getLimitsEmptyFormData(),
+};
+
+const formSchema = yup
+    .object()
+    .shape({
+        [EQUIPMENT_NAME]: yup.string(),
+        ...getCharacteristicsValidationSchema(true),
+        ...getLimitsValidationSchema(),
+    })
+    .required();
 
 export const TwoWindingsTransformerModificationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -83,15 +98,16 @@ export const TwoWindingsTransformerModificationDialogTab = {
  */
 const TwoWindingsTransformerModificationDialog = ({
     studyUuid,
-    defaultIdValue,
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
     isUpdate,
-    editData,
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
     editDataFetchStatus,
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [tabIndex, setTabIndex] = useState(
         TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB
     );
@@ -99,35 +115,18 @@ const TwoWindingsTransformerModificationDialog = ({
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState(null);
 
-    const emptyFormData = useMemo(() => {
-        return {
-            [EQUIPMENT_ID]: defaultIdValue ?? null,
-            [EQUIPMENT_NAME]: '',
-            ...getCharacteristicsEmptyFormData(),
-            ...getLimitsEmptyFormData(),
-        };
-    }, [defaultIdValue]);
-
-    const formSchema = yup
-        .object()
-        .shape({
-            [EQUIPMENT_ID]: yup.string().required(),
-            [EQUIPMENT_NAME]: yup.string(),
-            ...getCharacteristicsValidationSchema(true),
-            ...getLimitsValidationSchema(),
-        })
-        .required();
-
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, getValues } = formMethods;
+    const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (twt) => {
+            if (twt?.equipmentId) {
+                setSelectedId(twt.equipmentId);
+            }
             reset({
-                [EQUIPMENT_ID]: twt.equipmentId,
                 [EQUIPMENT_NAME]: twt.equipmentName?.value,
                 ...getCharacteristicsFormData({
                     seriesResistance: twt.seriesResistance?.value,
@@ -199,7 +198,7 @@ const TwoWindingsTransformerModificationDialog = ({
             modifyTwoWindingsTransformer(
                 studyUuid,
                 currentNodeUuid,
-                twt[EQUIPMENT_ID],
+                selectedId,
                 toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
                 toModificationOperation(characteristics[SERIES_RESISTANCE]),
                 toModificationOperation(characteristics[SERIES_REACTANCE]),
@@ -227,6 +226,7 @@ const TwoWindingsTransformerModificationDialog = ({
             studyUuid,
             currentNode,
             currentNodeUuid,
+            selectedId,
             snackError,
             editData,
             twtToModify,
@@ -250,7 +250,7 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-    }, [reset, emptyFormData]);
+    }, [reset]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -275,10 +275,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     .then((twt) => {
                         if (twt) {
                             setTwtToModify(twt);
-                            if (
-                                editData?.equipmentId !==
-                                getValues(`${EQUIPMENT_ID}`)
-                            ) {
+                            if (editData?.equipmentId !== selectedId) {
                                 reset(
                                     (formValues) => ({
                                         ...formValues,
@@ -313,28 +310,30 @@ const TwoWindingsTransformerModificationDialog = ({
                     });
             } else {
                 setTwtToModify(null);
-                emptyFormData[EQUIPMENT_ID] = null; // force it to null when reset because of defaultIdValue
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
         [
             studyUuid,
             currentNodeUuid,
+            selectedId,
             editData,
-            getValues,
             reset,
-            emptyFormData,
             fromEditDataToFormValues,
         ]
     );
 
+    useEffect(() => {
+        if (selectedId) {
+            onEquipmentIdChange(selectedId);
+        }
+    }, [selectedId, onEquipmentIdChange]);
+
     const headerAndTabs = (
         <Grid container spacing={2}>
             <TwoWindingsTransformerModificationDialogHeader
-                studyUuid={studyUuid}
-                currentNode={currentNode}
-                onEquipmentIdChange={onEquipmentIdChange}
                 equipmentToModify={twtToModify}
+                equipmentId={selectedId}
             />
             <TwoWindingsTransformerModificationDialogTabs
                 tabIndex={tabIndex}
@@ -355,7 +354,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 maxWidth={'md'}
                 titleId="ModifyTwoWindingsTransformer"
                 aria-labelledby="dialog-modify-two-windings-transformer"
-                subtitle={headerAndTabs}
+                subtitle={selectedId != null ? headerAndTabs : undefined}
                 onClear={clear}
                 onSave={onSubmit}
                 onValidationError={onValidationError}
@@ -372,33 +371,48 @@ const TwoWindingsTransformerModificationDialog = ({
                 }}
                 {...dialogProps}
             >
-                <Box
-                    hidden={
-                        tabIndex !==
-                        TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB
-                    }
-                    p={1}
-                >
-                    <TwoWindingsTransformerCharacteristicsPane
-                        twtToModify={twtToModify}
-                        modification
-                    />
-                </Box>
-
-                <Box
-                    hidden={
-                        tabIndex !==
-                        TwoWindingsTransformerModificationDialogTab.LIMITS_TAB
-                    }
-                    p={1}
-                >
-                    <LimitsPane
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
                         currentNode={currentNode}
-                        equipmentToModify={twtToModify}
-                        modifiedEquipment={editData}
-                        clearableFields
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={
+                            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
+                        }
                     />
-                </Box>
+                )}
+                {selectedId != null && (
+                    <>
+                        <Box
+                            hidden={
+                                tabIndex !==
+                                TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB
+                            }
+                            p={1}
+                        >
+                            <TwoWindingsTransformerCharacteristicsPane
+                                twtToModify={twtToModify}
+                                modification
+                            />
+                        </Box>
+
+                        <Box
+                            hidden={
+                                tabIndex !==
+                                TwoWindingsTransformerModificationDialogTab.LIMITS_TAB
+                            }
+                            p={1}
+                        >
+                            <LimitsPane
+                                currentNode={currentNode}
+                                equipmentToModify={twtToModify}
+                                modifiedEquipment={editData}
+                                clearableFields
+                            />
+                        </Box>
+                    </>
+                )}
             </ModificationDialog>
         </FormProvider>
     );

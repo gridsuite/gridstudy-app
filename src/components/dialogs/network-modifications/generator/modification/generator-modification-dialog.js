@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -67,6 +67,64 @@ import {
 } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 
+const emptyFormData = {
+    [EQUIPMENT_NAME]: '',
+    [ENERGY_SOURCE]: null,
+    [MAXIMUM_ACTIVE_POWER]: null,
+    [MINIMUM_ACTIVE_POWER]: null,
+    [RATED_NOMINAL_POWER]: null,
+    [TRANSIENT_REACTANCE]: null,
+    [TRANSFORMER_REACTANCE]: null,
+    [PLANNED_ACTIVE_POWER_SET_POINT]: null,
+    [STARTUP_COST]: null,
+    [MARGINAL_COST]: null,
+    [PLANNED_OUTAGE_RATE]: null,
+    [FORCED_OUTAGE_RATE]: null,
+    ...getSetPointsEmptyFormData(true),
+    ...getReactiveLimitsEmptyFormData(true),
+};
+
+const formSchema = yup
+    .object()
+    .shape(
+        {
+            [EQUIPMENT_NAME]: yup.string(),
+            [ENERGY_SOURCE]: yup.string().nullable(),
+            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+            [MINIMUM_ACTIVE_POWER]: yup
+                .number()
+                .nullable()
+                .when([MAXIMUM_ACTIVE_POWER], {
+                    is: (maximumActivePower) => maximumActivePower != null,
+                    then: (schema) =>
+                        schema.max(
+                            yup.ref(MAXIMUM_ACTIVE_POWER),
+                            'MinActivePowerLessThanMaxActivePower'
+                        ),
+                }),
+            [RATED_NOMINAL_POWER]: yup.number().nullable(),
+            [TRANSIENT_REACTANCE]: yup.number().nullable(),
+            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+            [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+            [STARTUP_COST]: yup.number().nullable(),
+            [MARGINAL_COST]: yup.number().nullable(),
+            [PLANNED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, 'RealPercentage')
+                .max(1, 'RealPercentage'),
+            [FORCED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, 'RealPercentage')
+                .max(1, 'RealPercentage'),
+            ...getSetPointsSchema(true),
+            ...getReactiveLimitsSchema(true),
+        },
+        [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
+    )
+    .required();
+
 const GeneratorModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
@@ -100,73 +158,6 @@ const GeneratorModificationDialog = ({
         });
         return reactiveCapabilityCurvePoints;
     };
-    const emptyFormData = useMemo(
-        () => ({
-            [EQUIPMENT_NAME]: '',
-            [ENERGY_SOURCE]: null,
-            [MAXIMUM_ACTIVE_POWER]: null,
-            [MINIMUM_ACTIVE_POWER]: null,
-            [RATED_NOMINAL_POWER]: null,
-            [TRANSIENT_REACTANCE]: null,
-            [TRANSFORMER_REACTANCE]: null,
-            [PLANNED_ACTIVE_POWER_SET_POINT]: null,
-            [STARTUP_COST]: null,
-            [MARGINAL_COST]: null,
-            [PLANNED_OUTAGE_RATE]: null,
-            [FORCED_OUTAGE_RATE]: null,
-            ...getSetPointsEmptyFormData(true),
-            ...getReactiveLimitsEmptyFormData(true),
-        }),
-        []
-    );
-
-    const formSchema = useMemo(
-        () =>
-            yup
-                .object()
-                .shape(
-                    {
-                        [EQUIPMENT_NAME]: yup.string(),
-                        [ENERGY_SOURCE]: yup.string().nullable(),
-                        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
-                        [MINIMUM_ACTIVE_POWER]: yup
-                            .number()
-                            .nullable()
-                            .when([MAXIMUM_ACTIVE_POWER], {
-                                is: (maximumActivePower) =>
-                                    maximumActivePower != null,
-                                then: (schema) =>
-                                    schema.max(
-                                        yup.ref(MAXIMUM_ACTIVE_POWER),
-                                        'MinActivePowerLessThanMaxActivePower'
-                                    ),
-                            }),
-                        [RATED_NOMINAL_POWER]: yup.number().nullable(),
-                        [TRANSIENT_REACTANCE]: yup.number().nullable(),
-                        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-                        [PLANNED_ACTIVE_POWER_SET_POINT]: yup
-                            .number()
-                            .nullable(),
-                        [STARTUP_COST]: yup.number().nullable(),
-                        [MARGINAL_COST]: yup.number().nullable(),
-                        [PLANNED_OUTAGE_RATE]: yup
-                            .number()
-                            .nullable()
-                            .min(0, 'RealPercentage')
-                            .max(1, 'RealPercentage'),
-                        [FORCED_OUTAGE_RATE]: yup
-                            .number()
-                            .nullable()
-                            .min(0, 'RealPercentage')
-                            .max(1, 'RealPercentage'),
-                        ...getSetPointsSchema(true),
-                        ...getReactiveLimitsSchema(true),
-                    },
-                    [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
-                )
-                .required(),
-        []
-    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -251,7 +242,7 @@ const GeneratorModificationDialog = ({
                 { keepDefaultValues: keepDefaultValues }
             );
         },
-        [emptyFormData, reset]
+        [reset]
     );
 
     const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
