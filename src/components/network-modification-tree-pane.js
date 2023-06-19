@@ -86,7 +86,7 @@ export const CopyType = {
 };
 
 const noSelectionForCopy = {
-    sourceStudyId: null,
+    sourceStudyUuid: null,
     nodeId: null,
     copyType: null,
     allChilddrenIds: null,
@@ -104,10 +104,10 @@ export const NetworkModificationTreePane = ({
     const isInitiatingCopyTab = useRef(false);
 
     const dispatchSelectionForCopy = useCallback(
-        (sourceStudyId, nodeId, copyType) => {
+        (sourceStudyUuid, nodeId, copyType) => {
             dispatch(
                 setSelectionForCopy({
-                    sourceStudyId: sourceStudyId,
+                    sourceStudyUuid: sourceStudyUuid,
                     nodeId: nodeId,
                     copyType: copyType,
                 })
@@ -132,9 +132,9 @@ export const NetworkModificationTreePane = ({
                 });
             } else {
                 dispatchSelectionForCopy(
-                    event.data.sourceStudyId,
+                    event.data.sourceStudyUuid,
                     event.data.nodeId,
-                    CopyType.NODE_COPY
+                    event.data.copyType
                 );
             }
         };
@@ -412,8 +412,9 @@ export const NetworkModificationTreePane = ({
         isInitiatingCopyTab.current = true;
         dispatchSelectionForCopy(studyUuid, nodeId, CopyType.NODE_COPY);
         broadcastChannel.postMessage({
-            sourceStudyId: studyUuid,
+            sourceStudyUuid: studyUuid,
             nodeId: nodeId,
+            copyType: CopyType.NODE_COPY,
         });
     };
 
@@ -443,7 +444,7 @@ export const NetworkModificationTreePane = ({
                 CopyType.NODE_COPY === selectionForCopyRef.current.copyType
             ) {
                 copyTreeNode(
-                    selectionForCopyRef.current.sourceStudyId,
+                    selectionForCopyRef.current.sourceStudyUuid,
                     studyUuid,
                     selectionForCopyRef.current.nodeId,
                     referenceNodeId,
@@ -534,7 +535,13 @@ export const NetworkModificationTreePane = ({
                 studyUuid +
                 ' selected for copy'
         );
+        isInitiatingCopyTab.current = true;
         dispatchSelectionForCopy(studyUuid, nodeId, CopyType.SUBTREE_COPY);
+        broadcastChannel.postMessage({
+            sourceStudyUuid: studyUuid,
+            nodeId: nodeId,
+            copyType: CopyType.SUBTREE_COPY,
+        });
     };
 
     const handleCutSubtree = (nodeId) => {
@@ -562,6 +569,7 @@ export const NetworkModificationTreePane = ({
                 CopyType.SUBTREE_COPY === selectionForCopyRef.current.copyType
             ) {
                 copySubtree(
+                    selectionForCopyRef.current.sourceStudyUuid,
                     studyUuid,
                     selectionForCopyRef.current.nodeId,
                     referenceNodeId

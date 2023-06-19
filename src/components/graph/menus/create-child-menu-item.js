@@ -13,7 +13,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     menuItem: {
         // NestedMenu item manages only label prop of string type
         // It set paddings itself then we must force this padding
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const NodeMenuItem = ({ item }) => {
+const ChildMenuItem = ({ item }) => {
     const classes = useStyles();
 
     return (
@@ -42,7 +42,7 @@ const NodeMenuItem = ({ item }) => {
     );
 };
 
-NodeMenuItem.protoTypes = {
+ChildMenuItem.protoTypes = {
     item: PropTypes.object.isRequired,
 };
-export default NodeMenuItem;
+export default ChildMenuItem;

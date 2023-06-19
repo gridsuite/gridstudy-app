@@ -125,7 +125,6 @@ const VoltageLevelCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError, snackWarning } = useSnackMessage();
-    const equipmentPath = 'voltage-levels';
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -180,7 +179,6 @@ const VoltageLevelCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromExternalDataToFormValues,
         elementType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
