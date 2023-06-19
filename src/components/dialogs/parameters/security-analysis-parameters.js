@@ -22,6 +22,7 @@ import {
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 
 import { FormattedMessage, useIntl } from 'react-intl';
+import { inputAdornment } from './util/make-component-utils';
 
 const formatValues = (values, isDivision) => {
     let result = {};
@@ -131,11 +132,11 @@ const SecurityAnalysisFields = ({
                             fullWidth
                             sx={{ input: { textAlign: 'right' } }}
                             value={values[firstField?.name]}
-                            label={firstField?.label}
                             name={firstField?.name}
                             onBlur={updateValue}
                             onChange={checkPerPercentageValue}
                             size="small"
+                            InputProps={inputAdornment(firstField?.label)}
                         />
                     </Grid>
                     <Grid
@@ -148,11 +149,11 @@ const SecurityAnalysisFields = ({
                             fullWidth
                             sx={{ input: { textAlign: 'right' } }}
                             value={values[secondField?.name]}
-                            label={secondField?.label}
                             name={secondField?.name}
                             onBlur={updateValue}
                             onChange={checkDoubleValue}
                             size="small"
+                            InputProps={inputAdornment(secondField?.label)}
                         />
                     </Grid>
                 </>
@@ -164,10 +165,10 @@ const SecurityAnalysisFields = ({
                         sx={{ input: { textAlign: 'right' } }}
                         value={values[firstField?.name]}
                         name={firstField?.name}
-                        label={firstField?.label}
                         onBlur={updateValue}
                         onChange={checkPerPercentageValue}
                         size="small"
+                        InputProps={inputAdornment(firstField?.label)}
                     />
                 </Grid>
             )}
@@ -247,7 +248,7 @@ export const SecurityAnalysisParameters = ({
                 label: '%',
             },
             secondField: {
-                label: 'kv',
+                label: 'kV',
                 name: PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
             },
             tooltipInfoId: 'securityAnalysis.toolTip.lowVoltage',
@@ -263,7 +264,7 @@ export const SecurityAnalysisParameters = ({
                 label: '%',
             },
             secondField: {
-                label: 'kv',
+                label: 'kV',
                 name: PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
             },
             tooltipInfoId: 'securityAnalysis.toolTip.highVoltage',
