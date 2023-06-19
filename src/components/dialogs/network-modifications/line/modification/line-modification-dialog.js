@@ -390,7 +390,11 @@ const LineModificationDialog = ({
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
-                onOpenCatalogDialog={() => setOpenLineTypesCatalogDialog(true)}
+                onOpenCatalogDialog={
+                    selectedId != null
+                        ? () => setOpenLineTypesCatalogDialog(true)
+                        : undefined
+                }
                 {...dialogProps}
             >
                 {selectedId == null && (
