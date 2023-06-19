@@ -17,33 +17,29 @@ import {
     LinearProgress,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
+import { useButtonWithTooltip } from '../../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 
 /**
- * Generic Modification Dialog which manage basic common behaviors
+ * Common parts for the Modification Dialog
  * @param {String} titleId id for title translation
- * @param {EventListener} onClose Event to close the dialog
- * @param {CallbackEvent} onClear callback when the dialog needs to be cleared
- * @param {CallbackEvent} onSave callback when saving the modification
- * @param {Boolean} disabledSave to control disabled prop of the validate button
  * @param {Object} onOpenCatalogDialog Object managing catalog
  * @param {Object} searchCopy Object managing search equipments for copy
  * @param {ReactElement} subtitle subtitle component to put inside DialogTitle
- * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
  * @param {Boolean} isDataFetching props to display loading
+ * @param {ReactElement} submitButton submitButton to put in the dialog's footer
+ * @param {CallbackEvent} closeAndClear callback when the dialog needs to be closed and cleared
+ * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
  */
-const BasicModificationDialog = ({
+const ModificationDialogCommon = ({
     titleId,
-    onClose,
-    onClear,
-    onSave,
-    disabledSave = false,
     onOpenCatalogDialog,
     searchCopy,
     subtitle,
     isDataFetching = false,
+    submitButton,
+    closeAndClear,
     ...dialogProps
 }) => {
     const catalogButton = useButtonWithTooltip({
@@ -58,11 +54,6 @@ const BasicModificationDialog = ({
         icon: <FindInPageIcon />,
     });
 
-    const closeAndClear = (event, reason) => {
-        onClear();
-        onClose(event, reason);
-    };
-
     // For the global Parent Component, disable close with backdropClick
     // Then close the dialog for other reasons
     const handleClose = (event, reason) => {
@@ -75,12 +66,6 @@ const BasicModificationDialog = ({
         closeAndClear(event, 'cancelButtonClick');
     };
 
-    const handleSubmit = (event) => {
-        onSave();
-        // do not wait fetch response and close dialog, errors will be shown in snackbar.
-        closeAndClear(event, 'validateButtonClick');
-    };
-
     return (
         <Dialog
             onClose={handleClose}
@@ -89,37 +74,48 @@ const BasicModificationDialog = ({
         >
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
-                <Grid container justifyContent={'space-between'}>
-                    <Grid item xs={11}>
+                <Grid container spacing={2} justifyContent={'space-between'}>
+                    <Grid item xs={10}>
                         <FormattedMessage id={titleId} />
                     </Grid>
-                    {onOpenCatalogDialog && <Grid item> {catalogButton} </Grid>}
-                    {searchCopy && <Grid item> {copyEquipmentButton} </Grid>}
+                    <Grid
+                        item
+                        xs={2}
+                        container
+                        spacing={2}
+                        justifyContent={'right'}
+                    >
+                        {onOpenCatalogDialog && (
+                            <Grid item>{catalogButton}</Grid>
+                        )}
+                        {searchCopy && <Grid item>{copyEquipmentButton}</Grid>}
+                    </Grid>
+                    {subtitle && (
+                        <Grid item xs={12}>
+                            {subtitle}
+                        </Grid>
+                    )}
                 </Grid>
-                {subtitle}
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
                 <Button onClick={handleCancel}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleSubmit} disabled={disabledSave}>
-                    <FormattedMessage id="validate" />
-                </Button>
+                {submitButton}
             </DialogActions>
         </Dialog>
     );
 };
 
-BasicModificationDialog.propTypes = {
+ModificationDialogCommon.propTypes = {
     titleId: PropTypes.string.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onClear: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired,
-    disabledSave: PropTypes.bool,
+    onOpenCatalogDialog: PropTypes.object,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
     isDataFetching: PropTypes.bool,
+    submitButton: PropTypes.element,
+    closeAndClear: PropTypes.func.isRequired,
 };
 
-export default BasicModificationDialog;
+export default ModificationDialogCommon;
