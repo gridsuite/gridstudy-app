@@ -7,8 +7,8 @@
 
 import PropTypes from 'prop-types';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
-import { debounce, Grid, List, ListSubheader, Typography } from '@mui/material';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Grid, List, ListSubheader, Typography } from '@mui/material';
+import { memo, useCallback, useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 
 const useStyle = makeStyles((theme) => ({
@@ -63,24 +63,15 @@ const DynamicSimulationResultSeriesList = ({
         [handleToggle]
     );
 
-    const delayedOnLeftAxisSelected = useMemo(
-        () => debounce(onLeftAxisSelected, 500),
-        [onLeftAxisSelected]
-    );
-    const delayedOnRightAxisSelected = useMemo(
-        () => debounce(onRightAxisSelected, 500),
-        [onRightAxisSelected]
-    );
+    useEffect(() => {
+        // propagate changes
+        onLeftAxisSelected(index, leftAxisCheckedIndexes);
+    }, [leftAxisCheckedIndexes, index, onLeftAxisSelected]);
 
     useEffect(() => {
         // propagate changes
-        delayedOnLeftAxisSelected(index, leftAxisCheckedIndexes);
-    }, [leftAxisCheckedIndexes, index, delayedOnLeftAxisSelected]);
-
-    useEffect(() => {
-        // propagate changes
-        delayedOnRightAxisSelected(index, rightAxisCheckedIndexes);
-    }, [rightAxisCheckedIndexes, index, delayedOnRightAxisSelected]);
+        onRightAxisSelected(index, rightAxisCheckedIndexes);
+    }, [rightAxisCheckedIndexes, index, onRightAxisSelected]);
 
     const renderHeaders = () => {
         return (

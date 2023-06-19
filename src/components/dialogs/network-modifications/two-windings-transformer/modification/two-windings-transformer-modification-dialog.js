@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
-    fetchEquipmentInfos,
+    fetchNetworkElementInfos,
     FetchStatus,
     modifyTwoWindingsTransformer,
 } from 'utils/rest-api';
@@ -62,6 +62,10 @@ import {
     formatTemporaryLimits,
     toModificationOperation,
 } from '../../../../utils/utils';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../../../utils/equipment-types';
 
 export const TwoWindingsTransformerModificationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -79,6 +83,7 @@ export const TwoWindingsTransformerModificationDialogTab = {
  */
 const TwoWindingsTransformerModificationDialog = ({
     studyUuid,
+    defaultIdValue,
     currentNode,
     isUpdate,
     editData,
@@ -96,12 +101,12 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const emptyFormData = useMemo(() => {
         return {
-            [EQUIPMENT_ID]: '',
+            [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             ...getCharacteristicsEmptyFormData(),
             ...getLimitsEmptyFormData(),
         };
-    }, []);
+    }, [defaultIdValue]);
 
     const formSchema = yup
         .object()
@@ -259,10 +264,11 @@ const TwoWindingsTransformerModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchEquipmentInfos(
+                fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    '2-windings-transformers',
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
                 )
@@ -307,6 +313,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     });
             } else {
                 setTwtToModify(null);
+                emptyFormData[EQUIPMENT_ID] = null; // force it to null when reset because of defaultIdValue
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
