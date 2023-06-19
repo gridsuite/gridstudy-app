@@ -72,6 +72,7 @@ import {
 } from '../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -142,8 +143,6 @@ const GeneratorCreationDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    const equipmentPath = 'generators';
-
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -208,9 +207,9 @@ const GeneratorCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.GENERATOR.type,
     });
 
     useEffect(() => {
