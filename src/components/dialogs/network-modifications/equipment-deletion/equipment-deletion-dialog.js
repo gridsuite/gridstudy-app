@@ -90,7 +90,6 @@ const EquipmentDeletionDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
-            console.log('DBR fromEditDataToFormValues', editData);
             reset({
                 [TYPE]: EQUIPMENT_TYPES[editData.equipmentType],
                 [EQUIPMENT_ID]: editData.equipmentId,
@@ -110,21 +109,10 @@ const EquipmentDeletionDialog = ({
 
     const onSubmit = useCallback(
         (formData) => {
-            console.log('DBR submit', formData);
-            const equipmentType = formData[TYPE];
-            let mscIds =
-                formData[HVDC_WITH_LCC] === false
-                    ? []
-                    : formData[SHUNT_COMPENSATOR_SIDE_1].concat(
-                          formData[SHUNT_COMPENSATOR_SIDE_2]
-                      )
-                          .filter((m) => m[SELECTED])
-                          .map((m) => m[ID]);
-            console.log('DBR submit mscIds', mscIds);
             deleteEquipment(
                 studyUuid,
                 currentNodeUuid,
-                equipmentType.type,
+                formData[TYPE].type,
                 formData[EQUIPMENT_ID],
                 formData[HVDC_WITH_LCC],
                 formData[SHUNT_COMPENSATOR_SIDE_1],
@@ -172,22 +160,11 @@ const EquipmentDeletionDialog = ({
 
     const onEquipmentIdChange = useCallback(
         (equipmentId, equipmentType) => {
-            console.log('DBR onEquipmentIdChange editData', editData);
-            console.log('DBR onEquipmentIdChange id', equipmentId);
-            console.log('DBR onEquipmentIdChange type', equipmentType);
-            console.log(
-                'DBR onEquipmentIdChange test',
-                equipmentType === EQUIPMENT_TYPES.HVDC_LINE.type
-            );
-            if (editData && editData.equipmentId === equipmentId) {
-                return;
-            }
             if (
                 equipmentId &&
                 equipmentType === EQUIPMENT_TYPES.HVDC_LINE.type
             ) {
-                console.log('DBR onEquipmentIdChange IF');
-                // need a specific rest call to get MCS lists
+                // need a specific rest call to get related MCS lists
                 fetchHvdcLineWithShuntCompensators(
                     studyUuid,
                     currentNodeUuid,
@@ -211,7 +188,7 @@ const EquipmentDeletionDialog = ({
                 updateMcsList(null);
             }
         },
-        [studyUuid, currentNodeUuid, updateMcsList, snackError, editData]
+        [studyUuid, currentNodeUuid, updateMcsList, snackError]
     );
 
     return (
