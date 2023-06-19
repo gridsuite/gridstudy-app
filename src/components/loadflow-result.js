@@ -118,78 +118,96 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         }
     }, [studyUuid, nodeUuid, intl, snackError, limitReductionParam, result]);
 
-    function StatusCellRender(cellData) {
-        const status = cellData.value;
-        const color = status === 'CONVERGED' ? classes.succeed : classes.fail;
-        return (
-            <TableCell
-                component={'div'}
-                id={cellData.dataKey}
-                className={classes.cell}
-            >
-                <Grid container direction="row" spacing={4} alignItems="center">
-                    <Grid item xs={1}>
-                        <Lens fontSize={'medium'} className={color} />
-                    </Grid>
-                    <Grid item xs={1}>
-                        {status}
-                    </Grid>
-                </Grid>
-            </TableCell>
-        );
-    }
-    const loadFlowConstraintscolumns = [
-        {
-            headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
-            field: 'name',
-            numeric: false,
+    const NumberRenderer = useCallback(
+        (cellData) => {
+            const value = cellData.data[cellData.colDef.field];
+            return (
+                <TableCell
+                    component={'div'}
+                    id={cellData.dataKey}
+                    className={classes.cell}
+                >
+                    {!isNaN(value) ? value.toFixed(1) : ''}
+                </TableCell>
+            );
         },
-        {
-            headerName: intl.formatMessage({ id: 'LimitName' }),
-            field: 'limitName',
-            numeric: false,
-        },
-        {
-            headerName: intl.formatMessage({ id: 'LimitSide' }),
-            field: 'side',
-            numeric: true,
-        },
-        {
-            headerName: intl.formatMessage({ id: 'LimitAcceptableDuration' }),
-            field: 'acceptableDuration',
-            numeric: false,
-        },
-        {
-            headerName: intl.formatMessage({ id: 'Limit' }),
-            field: 'limit',
-            valueFormatter: (params) => params.value.toFixed(1),
-        },
-        {
-            headerName: intl.formatMessage({ id: 'Intensity' }),
-            field: 'intensity',
-            numeric: true,
-            valueFormatter: (params) => params.value.toFixed(1),
-        },
-        {
-            headerName: intl.formatMessage({ id: 'EquipmentOverload' }),
-            field: 'overload',
-            numeric: true,
-            valueFormatter: (params) => `${Math.round(params.value)}%`,
-        },
-    ];
+        [classes.cell]
+    );
 
-    function NumberRenderer(cellData) {
-        const value = cellData.data[cellData.colDef.field];
-        return (
-            <TableCell
-                component={'div'}
-                id={cellData.dataKey}
-                className={classes.cell}
-            >
-                {!isNaN(value) ? value.toFixed(1) : ''}
-            </TableCell>
-        );
-    }
+    const StatusCellRender = useCallback(
+        (cellData) => {
+            const status = cellData.value;
+            const color =
+                status === 'CONVERGED' ? classes.succeed : classes.fail;
+            return (
+                <TableCell
+                    component={'div'}
+                    id={cellData.dataKey}
+                    className={classes.cell}
+                >
+                    <Grid
+                        container
+                        direction="row"
+                        spacing={4}
+                        alignItems="center"
+                    >
+                        <Grid item xs={1}>
+                            <Lens fontSize={'medium'} className={color} />
+                        </Grid>
+                        <Grid item xs={1}>
+                            {status}
+                        </Grid>
+                    </Grid>
+                </TableCell>
+            );
+        },
+        [classes.cell, classes.fail, classes.succeed]
+    );
+
+    const loadFlowConstraintscolumns = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
+                field: 'name',
+                numeric: false,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitName' }),
+                field: 'limitName',
+                numeric: false,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitSide' }),
+                field: 'side',
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'LimitAcceptableDuration',
+                }),
+                field: 'acceptableDuration',
+                numeric: false,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Limit' }),
+                field: 'limit',
+                valueFormatter: (params) => params.value.toFixed(1),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Intensity' }),
+                field: 'intensity',
+                numeric: true,
+                valueFormatter: (params) => params.value.toFixed(1),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'EquipmentOverload' }),
+                field: 'overload',
+                numeric: true,
+                valueFormatter: (params) => `${Math.round(params.value)} %`,
+            },
+        ];
+    }, [intl]);
+
     const defaultColDef = useMemo(
         () => ({
             filter: true,
@@ -201,44 +219,47 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         }),
         []
     );
-    const loadFlowResultcolumns = [
-        {
-            headerName: intl.formatMessage({
-                id: 'connectedComponentNum',
-            }),
-            field: 'connectedComponentNum',
-        },
-        {
-            headerName: intl.formatMessage({
-                id: 'synchronousComponentNum',
-            }),
-            field: 'synchronousComponentNum',
-        },
-        {
-            headerName: intl.formatMessage({ id: 'status' }),
-            field: 'status',
-            cellRenderer: StatusCellRender,
-        },
-        {
-            headerName: intl.formatMessage({
-                id: 'iterationCount',
-            }),
-            field: 'iterationCount',
-        },
-        {
-            headerName: intl.formatMessage({
-                id: 'slackBusId',
-            }),
-            field: 'slackBusId',
-        },
-        {
-            headerName: intl.formatMessage({
-                id: 'slackBusActivePowerMismatch',
-            }),
-            field: 'slackBusActivePowerMismatch',
-            cellRenderer: NumberRenderer,
-        },
-    ];
+
+    const loadFlowResultcolumns = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({
+                    id: 'connectedComponentNum',
+                }),
+                field: 'connectedComponentNum',
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'synchronousComponentNum',
+                }),
+                field: 'synchronousComponentNum',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'status' }),
+                field: 'status',
+                cellRenderer: StatusCellRender,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'iterationCount',
+                }),
+                field: 'iterationCount',
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'slackBusId',
+                }),
+                field: 'slackBusId',
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'slackBusActivePowerMismatch',
+                }),
+                field: 'slackBusActivePowerMismatch',
+                cellRenderer: NumberRenderer,
+            },
+        ];
+    }, [intl, NumberRenderer, StatusCellRender]);
 
     function renderLoadFlowResult() {
         return (
