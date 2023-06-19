@@ -167,61 +167,58 @@ const GeneratorModificationDialog = ({
     const { reset, getValues, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (generator) => {
-            if (generator?.equipmentId) {
-                setSelectedId(generator.equipmentId);
+        (editData) => {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
             }
             reset({
-                [EQUIPMENT_NAME]: generator?.equipmentName?.value ?? '',
-                [ENERGY_SOURCE]: generator?.energySource?.value ?? null,
-                [MAXIMUM_ACTIVE_POWER]:
-                    generator?.maxActivePower?.value ?? null,
-                [MINIMUM_ACTIVE_POWER]:
-                    generator?.minActivePower?.value ?? null,
+                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
+                [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
+                [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
+                [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value ?? null,
                 [RATED_NOMINAL_POWER]:
-                    generator?.ratedNominalPower?.value ?? null,
+                    editData?.ratedNominalPower?.value ?? null,
                 [ACTIVE_POWER_SET_POINT]:
-                    generator?.activePowerSetpoint?.value ?? null,
+                    editData?.activePowerSetpoint?.value ?? null,
                 [VOLTAGE_REGULATION]:
-                    generator?.voltageRegulationOn?.value ?? null,
-                [VOLTAGE_SET_POINT]: generator?.voltageSetpoint?.value ?? null,
+                    editData?.voltageRegulationOn?.value ?? null,
+                [VOLTAGE_SET_POINT]: editData?.voltageSetpoint?.value ?? null,
                 [REACTIVE_POWER_SET_POINT]:
-                    generator?.reactivePowerSetpoint?.value ?? null,
+                    editData?.reactivePowerSetpoint?.value ?? null,
                 [PLANNED_ACTIVE_POWER_SET_POINT]:
-                    generator?.plannedActivePowerSetPoint?.value ?? null,
-                [STARTUP_COST]: generator?.startupCost?.value ?? null,
-                [MARGINAL_COST]: generator?.marginalCost?.value ?? null,
+                    editData?.plannedActivePowerSetPoint?.value ?? null,
+                [STARTUP_COST]: editData?.startupCost?.value ?? null,
+                [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
                 [PLANNED_OUTAGE_RATE]:
-                    generator?.plannedOutageRate?.value ?? null,
-                [FORCED_OUTAGE_RATE]:
-                    generator?.forcedOutageRate?.value ?? null,
-                [FREQUENCY_REGULATION]: generator?.participate?.value ?? null,
-                [DROOP]: generator?.droop?.value ?? null,
+                    editData?.plannedOutageRate?.value ?? null,
+                [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
+                [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
+                [DROOP]: editData?.droop?.value ?? null,
                 [TRANSIENT_REACTANCE]:
-                    generator?.transientReactance?.value ?? null,
+                    editData?.transientReactance?.value ?? null,
                 [TRANSFORMER_REACTANCE]:
-                    generator?.stepUpTransformerReactance?.value ?? null,
+                    editData?.stepUpTransformerReactance?.value ?? null,
                 [VOLTAGE_REGULATION_TYPE]:
-                    generator?.voltageRegulationType?.value ?? null,
+                    editData?.voltageRegulationType?.value ?? null,
                 [MINIMUM_REACTIVE_POWER]:
-                    generator?.minimumReactivePower?.value ?? null,
+                    editData?.minimumReactivePower?.value ?? null,
                 [MAXIMUM_REACTIVE_POWER]:
-                    generator?.maximumReactivePower?.value ?? null,
-                [Q_PERCENT]: generator?.qPercent?.value ?? null,
-                [REACTIVE_CAPABILITY_CURVE_CHOICE]: generator
+                    editData?.maximumReactivePower?.value ?? null,
+                [Q_PERCENT]: editData?.qPercent?.value ?? null,
+                [REACTIVE_CAPABILITY_CURVE_CHOICE]: editData
                     ?.reactiveCapabilityCurve?.value
                     ? 'CURVE'
                     : 'MINMAX',
                 [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                    generator?.reactiveCapabilityCurvePoints.length > 0
+                    editData?.reactiveCapabilityCurvePoints.length > 0
                         ? completeReactiveCapabilityCurvePointsData(
-                              generator?.reactiveCapabilityCurvePoints
+                              editData?.reactiveCapabilityCurvePoints
                           )
                         : [getRowEmptyFormData(), getRowEmptyFormData()],
                 ...getRegulatingTerminalFormData({
-                    equipmentId: generator?.regulatingTerminalId?.value,
-                    equipmentType: generator?.regulatingTerminalType?.value,
-                    voltageLevelId: generator?.regulatingTerminalVlId?.value,
+                    equipmentId: editData?.regulatingTerminalId?.value,
+                    equipmentType: editData?.regulatingTerminalType?.value,
+                    voltageLevelId: editData?.regulatingTerminalVlId?.value,
                 }),
             });
         },
