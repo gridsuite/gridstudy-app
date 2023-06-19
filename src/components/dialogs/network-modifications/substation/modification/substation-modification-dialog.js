@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -15,7 +15,6 @@ import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,
     DELETION_MARK,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     NAME,
     PREVIOUS_VALUE,
@@ -35,14 +34,20 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 
 const checkUniquePropertiesNames = (properties) => {
     const validValues = properties.filter((v) => v?.name);
     return validValues.length === new Set(validValues.map((v) => v.name)).size;
 };
 
+const emptyFormData = {
+    [EQUIPMENT_NAME]: '',
+    [COUNTRY]: null,
+    [ADDITIONAL_PROPERTIES]: null,
+};
+
 const formSchema = yup.object().shape({
-    [EQUIPMENT_ID]: yup.string().nullable().required(),
     [EQUIPMENT_NAME]: yup.string(),
     [COUNTRY]: yup.string().nullable(),
     [ADDITIONAL_PROPERTIES]: yup
@@ -93,8 +98,8 @@ const getPropertiesFromModification = (properties) => {
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const SubstationModificationDialog = ({
-    editData,
-    defaultIdValue,
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
     studyUuid,
     isUpdate,
@@ -103,18 +108,9 @@ const SubstationModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [substationToModify, setSubstationToModify] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-
-    const emptyFormData = useMemo(
-        () => ({
-            [EQUIPMENT_ID]: defaultIdValue ?? null,
-            [EQUIPMENT_NAME]: '',
-            [COUNTRY]: null,
-            [ADDITIONAL_PROPERTIES]: null,
-        }),
-        [defaultIdValue]
-    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -124,8 +120,10 @@ const SubstationModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
             reset({
-                [EQUIPMENT_ID]: editData.equipmentId,
                 [EQUIPMENT_NAME]: editData.equipmentName?.value ?? '',
                 [COUNTRY]: editData.substationCountry?.value ?? null,
                 [ADDITIONAL_PROPERTIES]: getPropertiesFromModification(
@@ -137,7 +135,7 @@ const SubstationModificationDialog = ({
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-    }, [reset, emptyFormData]);
+    }, [reset]);
 
     const createPropertyValuesFromExistingEquipement = (propKey, propValue) => {
         return {
@@ -242,22 +240,21 @@ const SubstationModificationDialog = ({
                     });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            reset,
-            getAdditionalProperties,
-            editData,
-            emptyFormData,
-        ]
+        [studyUuid, currentNodeUuid, reset, getAdditionalProperties, editData]
     );
+
+    useEffect(() => {
+        if (selectedId) {
+            onEquipmentIdChange(selectedId);
+        }
+    }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
         (substation) => {
             modifySubstation(
                 studyUuid,
                 currentNodeUuid,
-                substation[EQUIPMENT_ID],
+                selectedId,
                 sanitizeString(substation[EQUIPMENT_NAME]),
                 substation[COUNTRY],
                 !!editData,
@@ -272,7 +269,7 @@ const SubstationModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid, selectedId]
     );
 
     const open = useOpenShortWaitFetching({
@@ -306,12 +303,24 @@ const SubstationModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                <SubstationModificationForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                    substationToModify={substationToModify}
-                    onEquipmentIdChange={onEquipmentIdChange}
-                />
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EQUIPMENT_TYPES.SUBSTATION.type}
+                        fillerHeight={5}
+                    />
+                )}
+                {selectedId != null && (
+                    <SubstationModificationForm
+                        currentNode={currentNode}
+                        studyUuid={studyUuid}
+                        substationToModify={substationToModify}
+                        equipmentId={selectedId}
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );

@@ -16,7 +16,7 @@ import {
     REACTIVE_POWER,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { modifyLoad, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
@@ -24,18 +24,14 @@ import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
-/**
- * Dialog to create a load in the network
- * @param studyUuid the study we are currently working on
- * @param defaultIdValue the default load id
- * @param currentNode The node we are currently working on
- * @param editData the data to edit
- * @param isUpdate check if edition form
- * @param dialogProps props that are forwarded to the generic ModificationDialog component
- * @param editDataFetchStatus indicates the status of fetching EditData
- */
+const emptyFormData = {
+    [EQUIPMENT_NAME]: '',
+    [LOAD_TYPE]: null,
+    [ACTIVE_POWER]: null,
+    [REACTIVE_POWER]: null,
+};
 
 const formSchema = yup
     .object()
@@ -47,6 +43,16 @@ const formSchema = yup
     })
     .required();
 
+/**
+ * Dialog to create a load in the network
+ * @param studyUuid the study we are currently working on
+ * @param defaultIdValue the default load id
+ * @param currentNode The node we are currently working on
+ * @param editData the data to edit
+ * @param isUpdate check if edition form
+ * @param dialogProps props that are forwarded to the generic ModificationDialog component
+ * @param editDataFetchStatus indicates the status of fetching EditData
+ */
 const LoadModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
@@ -60,16 +66,6 @@ const LoadModificationDialog = ({
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-
-    const emptyFormData = useMemo(
-        () => ({
-            [EQUIPMENT_NAME]: '',
-            [LOAD_TYPE]: null,
-            [ACTIVE_POWER]: null,
-            [REACTIVE_POWER]: null,
-        }),
-        []
-    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -125,7 +121,7 @@ const LoadModificationDialog = ({
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-    }, [reset, emptyFormData]);
+    }, [reset]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:

@@ -7,10 +7,9 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
@@ -34,9 +33,19 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+
+const emptyFormData = {
+    [EQUIPMENT_NAME]: '',
+    [SUBSTATION_ID]: null,
+    [NOMINAL_VOLTAGE]: null,
+    [LOW_VOLTAGE_LIMIT]: null,
+    [HIGH_VOLTAGE_LIMIT]: null,
+    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
+    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
+};
 
 const formSchema = yup.object().shape({
-    [EQUIPMENT_ID]: yup.string().required(),
     [EQUIPMENT_NAME]: yup.string().nullable(),
     [SUBSTATION_ID]: yup.string().nullable(),
     [NOMINAL_VOLTAGE]: yup.number().nullable(),
@@ -47,8 +56,8 @@ const formSchema = yup.object().shape({
 });
 
 const VoltageLevelModificationDialog = ({
-    editData,
-    defaultIdValue,
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
     studyUuid,
     isUpdate,
@@ -57,22 +66,9 @@ const VoltageLevelModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [voltageLevelInfos, setVoltageLevelInfos] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-
-    const emptyFormData = useMemo(
-        () => ({
-            [EQUIPMENT_ID]: defaultIdValue ?? null,
-            [EQUIPMENT_NAME]: '',
-            [SUBSTATION_ID]: null,
-            [NOMINAL_VOLTAGE]: null,
-            [LOW_VOLTAGE_LIMIT]: null,
-            [HIGH_VOLTAGE_LIMIT]: null,
-            [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
-            [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
-        }),
-        [defaultIdValue]
-    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -83,9 +79,11 @@ const VoltageLevelModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
             reset(
                 {
-                    [EQUIPMENT_ID]: editData?.equipmentId ?? '',
                     [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                     [SUBSTATION_ID]: editData?.substationId?.value ?? null,
                     [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value ?? null,
@@ -141,15 +139,21 @@ const VoltageLevelModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, setValue, reset, emptyFormData]
+        [studyUuid, currentNodeUuid, setValue, reset]
     );
+
+    useEffect(() => {
+        if (selectedId) {
+            onEquipmentIdChange(selectedId);
+        }
+    }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
         (voltageLevel) => {
             modifyVoltageLevel(
                 studyUuid,
                 currentNodeUuid,
-                voltageLevel[EQUIPMENT_ID],
+                selectedId,
                 voltageLevel[EQUIPMENT_NAME],
                 voltageLevel[NOMINAL_VOLTAGE],
                 voltageLevel[LOW_VOLTAGE_LIMIT],
@@ -165,12 +169,12 @@ const VoltageLevelModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [editData, studyUuid, currentNodeUuid, selectedId, snackError]
     );
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-    }, [emptyFormData, reset]);
+    }, [reset]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -204,12 +208,24 @@ const VoltageLevelModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                <VoltageLevelModificationForm
-                    studyUuid={studyUuid}
-                    currentNodeUuid={currentNodeUuid}
-                    voltageLevelInfos={voltageLevelInfos}
-                    onEquipmentIdChange={onEquipmentIdChange}
-                />
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
+                        fillerHeight={4}
+                    />
+                )}
+                {selectedId != null && (
+                    <VoltageLevelModificationForm
+                        studyUuid={studyUuid}
+                        currentNodeUuid={currentNodeUuid}
+                        voltageLevelInfos={voltageLevelInfos}
+                        equipmentId={selectedId}
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );

@@ -8,9 +8,8 @@
 import React, { useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from 'utils/rest-api';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-import { areIdsEqual, getObjectId } from 'components/utils/utils';
+import { getObjectId } from 'components/utils/utils';
 import {
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
@@ -20,7 +19,6 @@ import {
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
 import TextInput from 'components/utils/rhf-inputs/text-input';
-import { useWatch } from 'react-hook-form';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import {
     filledTextField,
@@ -30,23 +28,15 @@ import {
     VoltageAdornment,
 } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
+import { TextField } from '@mui/material';
 
 const VoltageLevelModificationForm = ({
     studyUuid,
     currentNodeUuid,
     voltageLevelInfos,
-    onEquipmentIdChange,
+    equipmentId,
 }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const [substations, setSubstations] = useState([]);
-
-    const watchVoltageLevelId = useWatch({
-        name: `${EQUIPMENT_ID}`,
-    });
-
-    useEffect(() => {
-        onEquipmentIdChange(watchVoltageLevelId);
-    }, [watchVoltageLevelId, onEquipmentIdChange]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -59,33 +49,20 @@ const VoltageLevelModificationForm = ({
             ).then((values) => {
                 setSubstations(values.sort((a, b) => a.localeCompare(b)));
             });
-
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                undefined,
-                'VOLTAGE_LEVEL',
-                true
-            ).then((values) => {
-                setVoltageLevelOptions(
-                    values.sort((a, b) => a.localeCompare(b))
-                );
-            });
         }
     }, [studyUuid, currentNodeUuid]);
 
     const voltageLevelIdField = (
-        <AutocompleteInput
-            isOptionEqualToValue={areIdsEqual}
-            allowNewValue
-            forcePopupIcon
-            name={EQUIPMENT_ID}
+        <TextField
+            size="small"
+            fullWidth
             label={'ID'}
-            options={voltageLevelOptions}
-            getOptionLabel={getObjectId}
-            outputTransform={getObjectId}
-            size={'small'}
-            formProps={{ autoFocus: true, ...filledTextField }}
+            value={equipmentId}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+            {...filledTextField}
         />
     );
 

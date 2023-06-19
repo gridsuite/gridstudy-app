@@ -64,7 +64,7 @@ import {
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
-} from '../../../../utils/equipment-types';
+} from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 
 const emptyFormData = {
