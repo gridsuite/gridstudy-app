@@ -13,7 +13,7 @@ import React, {
     useState,
 } from 'react';
 import { CustomAGGrid } from '../custom-aggrid';
-import ModificationDialog from '../commons/modificationDialog';
+import BasicModificationDialog from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
@@ -325,8 +325,7 @@ const LineTypesCatalogSelectorDialog = ({
     );
 
     return (
-        <ModificationDialog
-            isReactHookForm={false}
+        <BasicModificationDialog
             fullWidth
             maxWidth="xl"
             onClose={onClose}
@@ -343,7 +342,7 @@ const LineTypesCatalogSelectorDialog = ({
             disabledSave={!selectedRow}
         >
             <div style={{ height: '100%' }}>{displayTable(tabIndex)}</div>
-        </ModificationDialog>
+        </BasicModificationDialog>
     );
 };
 

@@ -17,7 +17,7 @@ import {
     LinearProgress,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useButtonWithTooltip } from '../../../utils/inputs/input-hooks';
+import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 
@@ -32,7 +32,7 @@ import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
  * @param {CallbackEvent} closeAndClear callback when the dialog needs to be closed and cleared
  * @param {Array} dialogProps props that are forwarded to the MUI Dialog component
  */
-const ModificationDialogCommon = ({
+const ModificationDialogContent = ({
     titleId,
     onOpenCatalogDialog,
     searchCopy,
@@ -108,7 +108,7 @@ const ModificationDialogCommon = ({
     );
 };
 
-ModificationDialogCommon.propTypes = {
+ModificationDialogContent.propTypes = {
     titleId: PropTypes.string.isRequired,
     onOpenCatalogDialog: PropTypes.object,
     searchCopy: PropTypes.object,
@@ -118,4 +118,4 @@ ModificationDialogCommon.propTypes = {
     closeAndClear: PropTypes.func.isRequired,
 };
 
-export default ModificationDialogCommon;
+export default ModificationDialogContent;
