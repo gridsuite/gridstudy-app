@@ -553,11 +553,8 @@
     "LineCreationError": "Error while creating line",
     "LineModificationError": "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
-
-
-    "CreateBattery": "Create battery",
+    "CreateBattery": "Battery",
     "ModifyBattery": "Modify battery",
-
     "CreateGenerator": "Create generator",
     "ModifyGenerator": "Modify generator",
     "On": "On",

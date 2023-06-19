@@ -8,8 +8,8 @@
 export const EQUIPMENT_ID = 'equipmentId';
 export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
-export const ACTIVE_POWER = 'activePower';
-export const REACTIVE_POWER = 'reactivePower';
+export const ACTIVE_POWER = 'activePowerSetpoint';
+export const REACTIVE_POWER = 'reactivePowerSetpoint';
 
 export const CONNECTIVITY = 'connectivity';
 export const VOLTAGE_LEVEL = 'voltageLevel';

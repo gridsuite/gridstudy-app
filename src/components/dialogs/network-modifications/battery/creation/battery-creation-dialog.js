@@ -55,6 +55,8 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 import { getFrequencyRegulationSchema } from '../../generator/set-points/set-points-utils';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import PropTypes from 'prop-types';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -100,8 +102,6 @@ const BatteryCreationDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    const equipmentPath = 'generators';
-
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -114,8 +114,6 @@ const BatteryCreationDialog = ({
             [EQUIPMENT_NAME]: battery.name ?? '',
             [MAXIMUM_ACTIVE_POWER]: battery.maxP,
             [MINIMUM_ACTIVE_POWER]: battery.minP,
-            [ACTIVE_POWER_SET_POINT]: battery.targetP,
-            [REACTIVE_POWER_SET_POINT]: battery.targetQ,
             [ACTIVE_POWER]: battery.p0,
             [REACTIVE_POWER]: battery.q0,
             [FREQUENCY_REGULATION]: battery.participate,
@@ -130,15 +128,22 @@ const BatteryCreationDialog = ({
                 connectionDirection: battery.connectionDirection,
                 connectionName: battery.connectionName,
             }),
+            [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                battery.reactiveCapabilityCurvePoints,
+            [REACTIVE_CAPABILITY_CURVE_CHOICE]: battery?.minMaxReactiveLimits
+                ? 'MINMAX'
+                : 'CURVE',
+            [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
         });
     };
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.BATTERY.type,
     });
 
     useEffect(() => {
@@ -154,8 +159,6 @@ const BatteryCreationDialog = ({
                 [DROOP]: editData.droop,
                 [MINIMUM_REACTIVE_POWER]: editData?.minimumReactivePower,
                 [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower,
-                [ACTIVE_POWER]: editData?.activePower,
-                [REACTIVE_POWER]: editData?.reactivePower,
                 ...getConnectivityFormData({
                     voltageLevelId: editData.voltageLevelId,
                     busbarSectionId: editData.busOrBusbarSectionId,
@@ -163,6 +166,12 @@ const BatteryCreationDialog = ({
                     connectionName: editData.connectionName,
                     connectionPosition: editData.connectionPosition,
                 }),
+                [REACTIVE_CAPABILITY_CURVE_CHOICE]:
+                    editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
+                [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                    editData?.reactiveCapabilityCurve
+                        ? editData?.reactiveCapabilityCurvePoints
+                        : [{}, {}],
             });
         }
     }, [editData, reset]);
@@ -254,4 +263,11 @@ const BatteryCreationDialog = ({
     );
 };
 
+BatteryCreationDialog.propTypes = {
+    editData: PropTypes.object,
+    studyUuid: PropTypes.string,
+    currentNode: PropTypes.object,
+    isUpdate: PropTypes.bool,
+    editDataFetchStatus: PropTypes.string,
+};
 export default BatteryCreationDialog;
