@@ -102,14 +102,28 @@ const ModificationDialog = ({
         >
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
-                <Grid container justifyContent={'space-between'}>
-                    <Grid item xs={11}>
+                <Grid container spacing={2} justifyContent={'space-between'}>
+                    <Grid item xs={10}>
                         <FormattedMessage id={titleId} />
                     </Grid>
-                    {onOpenCatalogDialog && <Grid item> {catalogButton} </Grid>}
-                    {searchCopy && <Grid item> {copyEquipmentButton} </Grid>}
+                    <Grid
+                        item
+                        xs={2}
+                        container
+                        spacing={2}
+                        justifyContent={'right'}
+                    >
+                        {onOpenCatalogDialog && (
+                            <Grid item>{catalogButton}</Grid>
+                        )}
+                        {searchCopy && <Grid item>{copyEquipmentButton}</Grid>}
+                    </Grid>
+                    {subtitle && (
+                        <Grid item xs={12}>
+                            {subtitle}
+                        </Grid>
+                    )}
                 </Grid>
-                {subtitle}
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
             <DialogActions>
