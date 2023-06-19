@@ -28,7 +28,10 @@ import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 
 // this component needs to be isolated to avoid too many rerenders
-export const CharacteristicsForm = ({ previousValues }) => {
+export const CharacteristicsForm = ({
+    previousValues,
+    isModification = false,
+}) => {
     const intl = useIntl();
     const QatNominalVField = (
         <FloatInput
@@ -36,6 +39,7 @@ export const CharacteristicsForm = ({ previousValues }) => {
             label={'QatNominalV'}
             adornment={ReactivePowerAdornment}
             previousValue={previousValues?.qatNominalV}
+            clearable={isModification}
         />
     );
 
@@ -68,6 +72,7 @@ export const CharacteristicsForm = ({ previousValues }) => {
             label={'ShuntSusceptancePerSection'}
             adornment={SusceptanceAdornment}
             previousValue={previousValues?.bperSection}
+            clearable={isModification}
         />
     );
 

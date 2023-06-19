@@ -2413,7 +2413,7 @@ export function modifyShuntCompensator(
             ),
             qAtNominalV: toModificationOperation(qAtNominalV),
             shuntCompensatorType: toModificationOperation(shuntCompensatorType),
-            voltageLevelId: toModificationOperation(voltageLevelId),
+            voltageLevelId: voltageLevelId,
         }),
     });
 }

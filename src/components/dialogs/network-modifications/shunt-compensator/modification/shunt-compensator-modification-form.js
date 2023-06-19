@@ -69,11 +69,15 @@ const ShuntCompensatorModificationForm = ({
             label={'Name'}
             formProps={filledTextField}
             previousValue={shuntCompensatorInfos?.name}
+            clearable
         />
     );
 
     const characteristicsForm = (
-        <CharacteristicsForm previousValues={shuntCompensatorInfos} />
+        <CharacteristicsForm
+            previousValues={shuntCompensatorInfos}
+            isModification={true}
+        />
     );
 
     return (

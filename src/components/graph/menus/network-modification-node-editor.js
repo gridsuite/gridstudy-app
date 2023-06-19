@@ -280,7 +280,7 @@ const NetworkModificationNodeEditor = () => {
                 },
                 {
                     id: 'SHUNT_COMPENSATOR_MODIFICATION',
-                    label: 'SHUNT_COMPENSATOR',
+                    label: 'ShuntCompensator',
                     action: () => adapt(ShuntCompensatorModificationDialog),
                 },
                 {
