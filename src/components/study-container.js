@@ -18,16 +18,12 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
-    connectNotificationsWebsocket,
     fetchLoadFlowInfos,
     fetchNetworkModificationTree,
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
-    fetchPath,
-    connectNotificationsWsUpdateDirectories,
     fetchCaseName,
     fetchSensitivityAnalysisStatus,
-    connectDeletedStudyNotificationsWebsocket,
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
     fetchVoltageInitStatus,
@@ -66,6 +62,13 @@ import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import { equipments } from './network/network-equipments';
 import { BUILD_STATUS } from './network/constants';
+import { connectNotificationsWebsocket } from '../services/study-notification';
+import {
+    connectDeletedStudyNotificationsWebsocket,
+    connectNotificationsWsUpdateDirectories,
+} from '../services/directory-notification';
+
+import { fetchPath } from '../services/directory';
 
 function isWorthUpdate(
     studyUpdatedForce,
