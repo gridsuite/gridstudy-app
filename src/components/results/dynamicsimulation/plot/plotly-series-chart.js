@@ -12,7 +12,7 @@ import createPlotlyComponent from 'react-plotly.js/factory';
 import { baseColors, defaultLayout } from './plot-config';
 import { eventCenter, PlotEvents } from './plot-events';
 import { SeriesType } from './plot-types';
-import { debounce } from '@mui/material';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 // create own Plot by using Plotly in basic dist for the reason of big size in standard dist plotly.js
 const Plot = createPlotlyComponent(Plotly);
@@ -20,13 +20,11 @@ const Plot = createPlotlyComponent(Plotly);
 const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
     // these states used for responsible
     const plotRef = useRef(null);
+    const debouncedResizeHandler = useDebounce((entries) => {
+        plotRef.current.resizeHandler();
+    }, 500);
     const resizeObserverRef = useRef(
-        new ResizeObserver(
-            debounce((entries) => {
-                plotRef.current.resizeHandler();
-            }),
-            500
-        )
+        new ResizeObserver(debouncedResizeHandler)
     );
 
     const [layout, setLayout] = useState(
