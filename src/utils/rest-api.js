@@ -2156,7 +2156,6 @@ export function modifyGenerator(
     modificationId,
     qPercent,
     plannedActivePowerSetPoint,
-    startupCost,
     marginalCost,
     plannedOutageRate,
     forcedOutageRate,
@@ -2202,7 +2201,6 @@ export function modifyGenerator(
         plannedActivePowerSetPoint: toModificationOperation(
             plannedActivePowerSetPoint
         ),
-        startupCost: toModificationOperation(startupCost),
         marginalCost: toModificationOperation(marginalCost),
         plannedOutageRate: toModificationOperation(plannedOutageRate),
         forcedOutageRate: toModificationOperation(forcedOutageRate),
@@ -2251,7 +2249,6 @@ export function createGenerator(
     isUpdate = false,
     modificationUuid,
     plannedActivePowerSetPoint,
-    startupCost,
     marginalCost,
     plannedOutageRate,
     forcedOutageRate,
@@ -2303,7 +2300,6 @@ export function createGenerator(
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
             plannedActivePowerSetPoint: plannedActivePowerSetPoint,
-            startupCost: startupCost,
             marginalCost: marginalCost,
             plannedOutageRate: plannedOutageRate,
             forcedOutageRate: forcedOutageRate,
