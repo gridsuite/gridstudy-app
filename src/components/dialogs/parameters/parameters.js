@@ -183,13 +183,8 @@ export const useStyles = makeStyles((theme) => ({
     },
     text: {
         display: 'flex',
-        flex: '-moz-available',
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
-    },
-    textContainer: {
-        display: 'flex',
-        flex: '-moz-available',
     },
     multipleItems: {
         display: 'flex',

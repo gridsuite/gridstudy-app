@@ -283,12 +283,7 @@ export const SecurityAnalysisParameters = ({
                     callback={updateProviderCallback}
                 />
 
-                <Grid
-                    container
-                    spacing={1}
-                    paddingBottom={1}
-                    className={classes.textContainer}
-                >
+                <Grid container spacing={1} paddingBottom={1}>
                     <Grid item xs={8} className={classes.text}>
                         <Typography>
                             {intl.formatMessage({
