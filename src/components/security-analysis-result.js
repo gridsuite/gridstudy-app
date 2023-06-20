@@ -154,19 +154,15 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 postContingencyResult.status !== 'CONVERGED'
             ) {
                 rows.push({
-                    //contingencyIndex: index,
                     contingencyId: postContingencyResult.contingency.id,
                     computationStatus: postContingencyResult.status,
                     violationCount:
                         postContingencyResult.limitViolationsResult
                             .limitViolations.length,
-                    //  _group: index,
-                    //  _root: true,
                 });
                 postContingencyResult.limitViolationsResult.limitViolations.forEach(
                     (limitViolation) => {
                         rows.push({
-                            //   contingencyIndex: index,
                             subjectId: limitViolation.subjectId,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
@@ -175,7 +171,6 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                             value: limitViolation.value,
                             loading: computeLoading(limitViolation),
                             side: limitViolation.side,
-                            //     _group: index,
                             linkedElementId:
                                 postContingencyResult.contingency.id,
                         });
@@ -389,12 +384,9 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             }
         });
 
-        //let group = 0;
         mapConstraints.forEach((contingencies, subjectId) => {
             rows.push({
                 subjectId: subjectId,
-                //   _group: group,
-                //   _root: true,
             });
 
             contingencies.forEach((contingency) => {
@@ -409,11 +401,9 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     side: contingency.side,
                     acceptableDuration: contingency.acceptableDuration,
                     limitName: contingency.limitName,
-                    //    _group: group,
                     linkedElementId: subjectId,
                 });
             });
-            //  group++;
         });
 
         return rows;
