@@ -38,6 +38,7 @@ import { UPDATE_TYPE_HEADER } from './study-container';
 import SubstationModificationDialog from './dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import VoltageLevelModificationDialog from './dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
+import LineModificationDialog from './dialogs/network-modifications/line/modification/line-modification-dialog';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -188,6 +189,17 @@ export const NetworkMapTab = ({
                         currentNode={currentNode}
                         isUpdate={true}
                         defaultIdValue={equipmentToModify.equipmentId}
+                        onClose={() => closeModificationDialog()}
+                    />
+                );
+            case equipments.lines:
+                return (
+                    <LineModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        isUpdate={true}
                         onClose={() => closeModificationDialog()}
                     />
                 );
