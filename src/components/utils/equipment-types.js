@@ -27,6 +27,7 @@ export const EQUIPMENT_INFOS_TYPES = {
     MAP: { type: 'MAP' },
     FORM: { type: 'FORM' },
     TAB: { type: 'TAB' },
+    TOOLTIP: { type: 'TOOLTIP' },
 };
 
 export const EQUIPMENT_TYPES = {
