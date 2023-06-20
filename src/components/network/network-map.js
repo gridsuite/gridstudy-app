@@ -268,9 +268,9 @@ const NetworkMap = (props) => {
                 >
                     <EquipmentPopover
                         studyUuid={studyUuid}
-                        equipmentInfos={tooltip.lineInfos}
+                        equipmentInfos={tooltip.equipmentInfos}
                         anchorEl={divRef.current}
-                        equipmentId={tooltip.lineId}
+                        equipmentId={tooltip.equipmentId}
                         equipmentType={EQUIPMENT_TYPES.LINE.type}
                         loadFlowStatus={props.loadFlowStatus}
                     />
@@ -415,10 +415,10 @@ const NetworkMap = (props) => {
                     if (object) {
                         setCursorType('pointer');
                         setTooltip({
-                            lineId: getNameOrId(object),
+                            equipmentId: getNameOrId(object),
                             pointerX: x,
                             pointerY: y,
-                            lineInfos: object,
+                            equipmentInfos: object,
                             visible: true,
                         });
                     } else {
