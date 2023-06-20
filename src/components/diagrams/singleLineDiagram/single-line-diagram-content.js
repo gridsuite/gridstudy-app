@@ -38,6 +38,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import EquipmentPopover from '../../tooltips/equipment-popover';
+import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -187,6 +188,7 @@ function SingleLineDiagramContent(props) {
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
+                    handleOpenModificationDialog={handleOpenModificationDialog}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
@@ -249,6 +251,17 @@ function SingleLineDiagramContent(props) {
                         currentNode={currentNode}
                         onClose={() => closeModificationDialog()}
                         defaultIdValue={equipmentToModify.equipmentId}
+                    />
+                );
+            case equipments.twoWindingsTransformers:
+                return (
+                    <TwoWindingsTransformerModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        isUpdate={true}
+                        onClose={() => closeModificationDialog()}
                     />
                 );
             default:
