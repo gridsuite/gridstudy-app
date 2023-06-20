@@ -122,7 +122,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     function renderTableN(preContingencyResult) {
         // extend data with loading
         const rows =
-            preContingencyResult.limitViolationsResult.limitViolations.map(
+            preContingencyResult?.limitViolationsResult?.limitViolations?.map(
                 (limitViolation) => {
                     return {
                         subjectId: limitViolation.subjectId,
@@ -147,9 +147,9 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
 
     function flattenNmKresultsContingencies(postContingencyResults) {
         const rows = [];
-        postContingencyResults.forEach((postContingencyResult, index) => {
+        postContingencyResults?.forEach((postContingencyResult, index) => {
             if (
-                postContingencyResult.limitViolationsResult.limitViolations
+                postContingencyResult?.limitViolationsResult?.limitViolations
                     .length > 0 ||
                 postContingencyResult.status !== 'CONVERGED'
             ) {
@@ -160,7 +160,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                         postContingencyResult.limitViolationsResult
                             .limitViolations.length,
                 });
-                postContingencyResult.limitViolationsResult.limitViolations.forEach(
+                postContingencyResult?.limitViolationsResult?.limitViolations?.forEach(
                     (limitViolation) => {
                         rows.push({
                             subjectId: limitViolation.subjectId,
@@ -337,7 +337,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         const rows = [];
         let mapConstraints = new Map();
 
-        postContingencyResults.forEach((postContingencyResult, index) => {
+        postContingencyResults?.forEach((postContingencyResult, index) => {
             if (postContingencyResult.status !== 'CONVERGED') {
                 rows.push({
                     contingencyId: postContingencyResult.contingency.id,
@@ -349,7 +349,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 postContingencyResult.limitViolationsResult.limitViolations
                     .length > 0
             ) {
-                postContingencyResult.limitViolationsResult.limitViolations.forEach(
+                postContingencyResult?.limitViolationsResult?.limitViolations?.forEach(
                     (limitViolation) => {
                         let contingencies;
                         if (!mapConstraints.has(limitViolation.subjectId)) {
@@ -389,7 +389,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 subjectId: subjectId,
             });
 
-            contingencies.forEach((contingency) => {
+            contingencies?.forEach((contingency) => {
                 rows.push({
                     contingencyId: contingency.contingencyId,
                     computationStatus: contingency.computationStatus,
@@ -534,24 +534,24 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 </div>
                 <div style={{ flexGrow: 1 }}>
                     {saNotif &&
-                        result &&
+                        result?.preContingencyResult &&
                         tabIndex === 0 &&
-                        renderTableN(result.preContingencyResult)}
+                        renderTableN(result?.preContingencyResult)}
                     {saNotif &&
-                        result &&
+                        result?.postContingencyResults &&
                         tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
                         renderTableNmKContingencies(
-                            result.postContingencyResults
+                            result?.postContingencyResults
                         )}
                     {saNotif &&
-                        result &&
+                        result?.postContingencyResults &&
                         tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
                         renderTableNmKConstraints(
-                            result.postContingencyResults
+                            result?.postContingencyResults
                         )}
                 </div>
             </>
