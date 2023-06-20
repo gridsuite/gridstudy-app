@@ -156,3 +156,32 @@ export function calculateSusceptance(distance, linearCapacity) {
         Math.pow(10, 6)
     );
 }
+
+export const replaceAllNanDefaultValues = (arrayParams, oldValue, newValue) => {
+    return (
+        arrayParams &&
+        arrayParams.reduce((accumulator, current) => {
+            return [
+                ...accumulator,
+                {
+                    ...current,
+                    defaultValue:
+                        current.defaultValue === oldValue
+                            ? newValue
+                            : current.defaultValue,
+                },
+            ];
+        }, [])
+    );
+};
+
+export const flatObject = (obj, out) => {
+    Object.keys(obj).forEach((key) => {
+        if (typeof obj[key] == 'object') {
+            out = flatObject(obj[key], out);
+        } else {
+            out[key] = obj[key];
+        }
+    });
+    return out;
+};
