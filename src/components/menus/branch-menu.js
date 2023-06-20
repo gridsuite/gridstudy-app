@@ -380,7 +380,10 @@ const withBranchMenu =
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() =>
-                            handleOpenModificationDialog(id, equipmentType)
+                            handleOpenModificationDialog(
+                                equipment.id,
+                                equipmentType
+                            )
                         }
                         disabled={!isNodeEditable}
                     >
