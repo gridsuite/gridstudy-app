@@ -10,9 +10,7 @@ import PropTypes from 'prop-types';
 import Paper from '@mui/material/Paper';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
-import { TableCell } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import Grid from '@mui/material/Grid';
 import { green, red } from '@mui/material/colors';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -34,7 +32,6 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             textAlign: 'center',
             boxSizing: 'border-box',
             flex: 1,
-            height: '48px',
             cursor: 'initial',
         },
         succeed: {
@@ -122,13 +119,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         (cellData) => {
             const value = cellData.data[cellData.colDef.field];
             return (
-                <TableCell
-                    component={'div'}
-                    id={cellData.dataKey}
-                    className={classes.cell}
-                >
+                <div className={classes.cell}>
                     {!isNaN(value) ? value.toFixed(1) : ''}
-                </TableCell>
+                </div>
             );
         },
         [classes.cell]
@@ -140,25 +133,12 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             const color =
                 status === 'CONVERGED' ? classes.succeed : classes.fail;
             return (
-                <TableCell
-                    component={'div'}
-                    id={cellData.dataKey}
-                    className={classes.cell}
-                >
-                    <Grid
-                        container
-                        direction="row"
-                        spacing={4}
-                        alignItems="center"
-                    >
-                        <Grid item xs={1}>
-                            <Lens fontSize={'medium'} className={color} />
-                        </Grid>
-                        <Grid item xs={1}>
-                            {status}
-                        </Grid>
-                    </Grid>
-                </TableCell>
+                <div className={classes.cell}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Lens fontSize={'medium'} className={color} />
+                        <span style={{ marginLeft: '4px' }}>{status}</span>
+                    </div>
+                </div>
             );
         },
         [classes.cell, classes.fail, classes.succeed]
