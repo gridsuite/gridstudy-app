@@ -70,6 +70,7 @@ export const LineCreationDialogTab = {
 /**
  * Dialog to modify a line in the network
  * @param studyUuid the study we are currently working on
+ * @param defaultIdValue the default line id
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
  * @param displayConnectivity to display connectivity section or not
@@ -79,6 +80,7 @@ export const LineCreationDialogTab = {
  */
 const LineModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
     studyUuid,
     currentNode,
     displayConnectivity = false,
@@ -88,7 +90,7 @@ const LineModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-    const [selectedId, setSelectedId] = useState(null);
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState(null);

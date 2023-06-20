@@ -34,7 +34,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_POWER_SET_POINT,
-    STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
@@ -76,7 +75,6 @@ const emptyFormData = {
     [TRANSIENT_REACTANCE]: null,
     [TRANSFORMER_REACTANCE]: null,
     [PLANNED_ACTIVE_POWER_SET_POINT]: null,
-    [STARTUP_COST]: null,
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
@@ -106,7 +104,6 @@ const formSchema = yup
             [TRANSIENT_REACTANCE]: yup.number().nullable(),
             [TRANSFORMER_REACTANCE]: yup.number().nullable(),
             [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-            [STARTUP_COST]: yup.number().nullable(),
             [MARGINAL_COST]: yup.number().nullable(),
             [PLANNED_OUTAGE_RATE]: yup
                 .number()
@@ -187,7 +184,6 @@ const GeneratorModificationDialog = ({
                     editData?.reactivePowerSetpoint?.value ?? null,
                 [PLANNED_ACTIVE_POWER_SET_POINT]:
                     editData?.plannedActivePowerSetPoint?.value ?? null,
-                [STARTUP_COST]: editData?.startupCost?.value ?? null,
                 [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
                 [PLANNED_OUTAGE_RATE]:
                     editData?.plannedOutageRate?.value ?? null,
@@ -456,7 +452,6 @@ const GeneratorModificationDialog = ({
                     ? generator[Q_PERCENT]
                     : null,
                 generator[PLANNED_ACTIVE_POWER_SET_POINT],
-                generator[STARTUP_COST],
                 generator[MARGINAL_COST],
                 generator[PLANNED_OUTAGE_RATE],
                 generator[FORCED_OUTAGE_RATE],

@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Grid, InputAdornment } from '@mui/material';
 import IntegerInput from '../common/integer-input';
 import FloatInput from '../common/float-input';
 import TextInput from '../common/text-input';
 import { DropDown, SwitchWithLabel } from '../parameters';
 import { LineSeparator } from '../../dialogUtils';
+import React from 'react';
 
 // --- define render makers --- //
 export const makeRenderSwitchWithLabel =
@@ -108,3 +109,7 @@ export const makeComponentFor = (defParam, key, params, setter) => {
     const render = defParam.render ?? DEFAULT_RENDER[defParam.type];
     return render(defParam, key, params, setter, value);
 };
+
+export const inputAdornment = (content) => ({
+    endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
+});

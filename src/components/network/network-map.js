@@ -34,7 +34,8 @@ import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { fetchMapBoxToken } from 'utils/rest-api';
-import LinePopover from '.././tooltips/line-popover';
+import EquipmentPopover from '.././tooltips/equipment-popover';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -61,6 +62,7 @@ const NetworkMap = (props) => {
     const [mapBoxToken, setMapBoxToken] = useState();
     const [labelsVisible, setLabelsVisible] = useState(false);
     const [showLineFlow, setShowLineFlow] = useState(true);
+    const [showTooltip, setShowTooltip] = useState(true);
     const [deck, setDeck] = useState(null);
     const [centered, setCentered] = useState({
         lastCenteredSubstation: null,
@@ -245,7 +247,7 @@ const NetworkMap = (props) => {
             ) {
                 setLabelsVisible(false);
             }
-
+            setShowTooltip(info.viewState.zoom >= props.tooltipZoomThreshold);
             setShowLineFlow(info.viewState.zoom >= props.arrowsZoomThreshold);
         }
     }
@@ -265,11 +267,12 @@ const NetworkMap = (props) => {
                         top: tooltip.pointerY,
                     }}
                 >
-                    <LinePopover
+                    <EquipmentPopover
                         studyUuid={studyUuid}
-                        lineInfos={tooltip.lineInfos}
+                        equipmentInfos={tooltip.equipmentInfos}
                         anchorEl={divRef.current}
-                        lineId={tooltip.lineId}
+                        equipmentId={tooltip.equipmentId}
+                        equipmentType={EQUIPMENT_TYPES.LINE.type}
                         loadFlowStatus={props.loadFlowStatus}
                     />
                 </div>
@@ -413,11 +416,11 @@ const NetworkMap = (props) => {
                     if (object) {
                         setCursorType('pointer');
                         setTooltip({
-                            lineId: getNameOrId(object),
+                            equipmentId: getNameOrId(object),
                             pointerX: x,
                             pointerY: y,
-                            lineInfos: object,
-                            visible: true,
+                            equipmentInfos: object,
+                            visible: showTooltip,
                         });
                     } else {
                         setCursorType('grab');
@@ -488,7 +491,7 @@ const NetworkMap = (props) => {
                         preventStyleDiffing={true}
                         mapboxApiAccessToken={mapBoxToken}
                     >
-                        {renderTooltip()}
+                        {showTooltip && renderTooltip()}
                     </StaticMap>
                 )}
                 <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
@@ -505,6 +508,7 @@ NetworkMap.defaultProps = {
     filteredNominalVoltages: null,
     labelsZoomThreshold: 9,
     arrowsZoomThreshold: 7,
+    tooltipZoomThreshold: 7,
     initialZoom: 5,
     initialPosition: [0, 0],
     lineFullPath: true,
@@ -525,6 +529,7 @@ NetworkMap.propTypes = {
     filteredNominalVoltages: PropTypes.array,
     labelsZoomThreshold: PropTypes.number.isRequired,
     arrowsZoomThreshold: PropTypes.number.isRequired,
+    tooltipZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,

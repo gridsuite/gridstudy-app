@@ -90,6 +90,7 @@ export const TwoWindingsTransformerModificationDialogTab = {
 /**
  * Dialog to modify a two windings transformer in the network
  * @param studyUuid the study we are currently working on
+ * @param defaultIdValue the default two windings transformer id
  * @param currentNode The node we are currently working on
  * @param isUpdate check if edition form
  * @param editData the data to edit
