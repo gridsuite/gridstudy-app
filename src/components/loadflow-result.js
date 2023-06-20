@@ -268,6 +268,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     rowData={result.componentResults}
                     columnDefs={loadFlowResultcolumns}
                     defaultColDef={defaultColDef}
+                    enableCellTextSelection={true}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                 />
@@ -295,6 +296,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 <CustomAGGrid
                     rowData={overloadedEquipments}
                     defaultColDef={defaultColDef}
+                    enableCellTextSelection={true}
                     columnDefs={loadFlowConstraintscolumns}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
