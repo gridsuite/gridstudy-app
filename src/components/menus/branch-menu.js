@@ -378,7 +378,8 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === equipments.twoWindingsTransformers && (
+                {(equipmentType === equipments.twoWindingsTransformers ||
+                    equipmentType === equipments.lines) && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() =>
