@@ -154,6 +154,7 @@ const EquipmentDeletionDialog = ({
                 <DeleteEquipmentForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    editDataEquipmentId={editData?.equipmentId}
                 />
             </ModificationDialog>
         </FormProvider>

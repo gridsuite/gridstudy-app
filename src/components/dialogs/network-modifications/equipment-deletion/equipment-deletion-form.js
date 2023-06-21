@@ -6,7 +6,13 @@
  */
 
 import { Grid } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useIntl } from 'react-intl';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -31,9 +37,14 @@ import { fetchHvdcLineWithShuntCompensators } from '../../../../utils/rest-api';
 
 const richTypeEquals = (a, b) => a.type === b.type;
 
-const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
+const DeleteEquipmentForm = ({
+    studyUuid,
+    currentNode,
+    editDataEquipmentId,
+}) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const editedIdRef = useRef(null);
 
     const watchType = useWatch({
         name: TYPE,
@@ -107,6 +118,12 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
+            if (editDataEquipmentId && !editedIdRef.current) {
+                // In case of edition, dont dynamically change MCS lists on first render.
+                // Keep user data as it is stored in database (cf editData)
+                editedIdRef.current = editDataEquipmentId;
+                return;
+            }
             if (
                 watchEquipmentId &&
                 watchType?.type === EQUIPMENT_TYPES.HVDC_LINE.type
@@ -138,6 +155,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
         watchEquipmentId,
         updateMcsList,
         snackError,
+        editDataEquipmentId,
     ]);
 
     const handleChange = useCallback(() => {
