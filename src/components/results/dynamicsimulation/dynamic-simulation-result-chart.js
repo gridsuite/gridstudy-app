@@ -30,6 +30,7 @@ import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import ResponsiveGridLayout from './common/gridlayout/responsive-grid-layout';
 import { lighten } from '@mui/material/styles';
+import { useDebounce } from '@gridsuite/commons-ui';
 
 const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const useStyles = makeStyles((theme) => ({
@@ -180,6 +181,11 @@ const DynamicSimulationResultChart = ({
         [selectSeries]
     );
 
+    const debouncedHandleLeftAxisSelected = useDebounce(
+        handleLeftAxisSelected,
+        500
+    );
+
     const handleRightAxisSelected = useCallback(
         (index, selectedIndexes) => {
             selectSeries(selectedIndexes).then((selectedSeries) => {
@@ -191,6 +197,11 @@ const DynamicSimulationResultChart = ({
             });
         },
         [selectSeries]
+    );
+
+    const debouncedHandleRightAxisSelected = useDebounce(
+        handleRightAxisSelected,
+        500
     );
 
     const items = useMemo(() => {
@@ -520,10 +531,10 @@ const DynamicSimulationResultChart = ({
                                         items={items}
                                         headers={headers}
                                         onLeftAxisSelected={
-                                            handleLeftAxisSelected
+                                            debouncedHandleLeftAxisSelected
                                         }
                                         onRightAxisSelected={
-                                            handleRightAxisSelected
+                                            debouncedHandleRightAxisSelected
                                         }
                                     />
                                 </Visibility>

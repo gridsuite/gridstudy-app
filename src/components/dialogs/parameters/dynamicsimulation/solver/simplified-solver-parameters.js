@@ -6,8 +6,7 @@
  */
 
 import { makeComponentsFor, TYPES } from '../../util/make-component-utils';
-import { useCallback, useMemo } from 'react';
-import { debounce } from '@mui/material';
+import { useCallback } from 'react';
 
 const SimplifiedSolverParameters = ({
     simplifiedSolver,
@@ -55,17 +54,12 @@ const SimplifiedSolverParameters = ({
         [onUpdateSimplifiedSolver]
     );
 
-    const delayedHandleUpdateSimplifiedSolver = useMemo(
-        () => debounce(handleUpdateSimplifiedSolver, 500),
-        [handleUpdateSimplifiedSolver]
-    );
-
     return (
         <>
             {makeComponentsFor(
                 defParams,
                 simplifiedSolver,
-                delayedHandleUpdateSimplifiedSolver
+                handleUpdateSimplifiedSolver
             )}
         </>
     );

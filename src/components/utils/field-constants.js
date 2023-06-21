@@ -55,7 +55,6 @@ export const FREQUENCY_REGULATION = 'frequencyRegulation';
 export const DROOP = 'droop';
 export const TRANSFORMER_REACTANCE = 'transformerReactance';
 export const PLANNED_ACTIVE_POWER_SET_POINT = 'plannedActivePowerSetPoint';
-export const STARTUP_COST = 'startupCost';
 export const MARGINAL_COST = 'marginalCost';
 export const PLANNED_OUTAGE_RATE = 'plannedOutageRate';
 export const FORCED_OUTAGE_RATE = 'forcedOutageRate';
@@ -218,7 +217,12 @@ export const GENERATORS_FREQUENCY_RESERVES = 'generatorsFrequencyReserve';
 export const GENERATORS_FILTERS = 'generatorsFilters';
 export const FREQUENCY_RESERVE = 'frequencyReserve';
 
+// voltage init
 export const VOLTAGE_LIMITS = 'voltageLimits';
+export const FIXED_GENERATORS = 'constantQGenerators';
+export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
+export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
+
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';

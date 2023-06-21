@@ -1260,6 +1260,8 @@ export function updateVoltageInitParameters(studyUuid, newParams) {
     const url = getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(url);
 
+    console.info('newParams in rest API', newParams);
+
     return backendFetch(url, {
         method: 'POST',
         headers: {
@@ -1604,7 +1606,7 @@ export function updateTreeNode(studyUuid, node) {
 }
 
 export function copyTreeNode(
-    sourceStudyId,
+    sourceStudyUuid,
     targetStudyId,
     nodeToCopyUuid,
     referenceNodeUuid,
@@ -1619,7 +1621,7 @@ export function copyTreeNode(
         '&referenceNodeUuid=' +
         referenceNodeUuid +
         '&sourceStudyUuid=' +
-        sourceStudyId;
+        sourceStudyUuid;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
@@ -1671,13 +1673,20 @@ export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
     });
 }
 
-export function copySubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+export function copySubtree(
+    sourceStudyUuid,
+    targetStudyUuid,
+    nodeToCopyUuid,
+    referenceNodeUuid
+) {
     const nodeCopyUrl =
-        getStudyUrl(targetStudyId) +
+        getStudyUrl(targetStudyUuid) +
         '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
         nodeToCopyUuid +
         '&referenceNodeUuid=' +
-        referenceNodeUuid;
+        referenceNodeUuid +
+        '&sourceStudyUuid=' +
+        sourceStudyUuid;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
@@ -2143,7 +2152,6 @@ export function modifyGenerator(
     modificationId,
     qPercent,
     plannedActivePowerSetPoint,
-    startupCost,
     marginalCost,
     plannedOutageRate,
     forcedOutageRate,
@@ -2189,7 +2197,6 @@ export function modifyGenerator(
         plannedActivePowerSetPoint: toModificationOperation(
             plannedActivePowerSetPoint
         ),
-        startupCost: toModificationOperation(startupCost),
         marginalCost: toModificationOperation(marginalCost),
         plannedOutageRate: toModificationOperation(plannedOutageRate),
         forcedOutageRate: toModificationOperation(forcedOutageRate),
@@ -2238,7 +2245,6 @@ export function createGenerator(
     isUpdate = false,
     modificationUuid,
     plannedActivePowerSetPoint,
-    startupCost,
     marginalCost,
     plannedOutageRate,
     forcedOutageRate,
@@ -2290,7 +2296,6 @@ export function createGenerator(
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
             plannedActivePowerSetPoint: plannedActivePowerSetPoint,
-            startupCost: startupCost,
             marginalCost: marginalCost,
             plannedOutageRate: plannedOutageRate,
             forcedOutageRate: forcedOutageRate,
