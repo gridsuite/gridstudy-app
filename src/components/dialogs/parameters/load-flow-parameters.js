@@ -410,14 +410,12 @@ const SpecificLoadFlowParameters = ({
     const [specificCurrentParams, setSpecificCurrentParams] = useState({});
 
     useEffect(() => {
-        if (Object.keys(specificCurrentParams).length > 0) {
-            setSpecificCurrentParams((prevSpecificParams) => {
-                return {
-                    ...prevSpecificParams,
-                };
-            });
-        }
-    }, [specificCurrentParams, currentProvider]);
+        setSpecificCurrentParams((prevSpecificParams) => {
+            return {
+                ...prevSpecificParams,
+            };
+        });
+    }, [currentProvider]);
 
     useEffect(() => {
         const toSend = fusionSpecificWithOtherParams(
