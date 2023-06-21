@@ -11,8 +11,8 @@ import {
     EQUIPMENT_NAME,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    ACTIVE_POWER,
-    REACTIVE_POWER,
+    ACTIVE_POWER_SET_POINT,
+    REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
 import {
     ActivePowerAdornment,
@@ -84,18 +84,18 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
             adornment={ActivePowerAdornment}
         />
     );
-    const activePowerField = (
+    const activePowerSetPointField = (
         <FloatInput
-            name={ACTIVE_POWER}
+            name={ACTIVE_POWER_SET_POINT}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
             clearable
         />
     );
 
-    const reactivePowerField = (
+    const reactivePowerSetPointField = (
         <FloatInput
-            name={REACTIVE_POWER}
+            name={REACTIVE_POWER_SET_POINT}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
             clearable
@@ -128,8 +128,8 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
             {/* Set points part */}
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
-                {gridItem(activePowerField, 4)}
-                {gridItem(reactivePowerField, 4)}
+                {gridItem(activePowerSetPointField, 4)}
+                {gridItem(reactivePowerSetPointField, 4)}
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
                 <FrequencyRegulation />
