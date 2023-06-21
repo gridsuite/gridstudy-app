@@ -220,8 +220,6 @@ const VoltageLevelModificationDialog = ({
                 )}
                 {selectedId != null && (
                     <VoltageLevelModificationForm
-                        studyUuid={studyUuid}
-                        currentNodeUuid={currentNodeUuid}
                         voltageLevelInfos={voltageLevelInfos}
                         equipmentId={selectedId}
                     />

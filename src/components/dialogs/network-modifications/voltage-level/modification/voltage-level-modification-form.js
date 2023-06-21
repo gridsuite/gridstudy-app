@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
-import { fetchEquipmentsIds } from 'utils/rest-api';
+import React from 'react';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import { getObjectId } from 'components/utils/utils';
 import {
@@ -30,28 +29,7 @@ import {
 import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
 
-const VoltageLevelModificationForm = ({
-    studyUuid,
-    currentNodeUuid,
-    voltageLevelInfos,
-    equipmentId,
-}) => {
-    const [substations, setSubstations] = useState([]);
-
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                undefined,
-                'SUBSTATION',
-                true
-            ).then((values) => {
-                setSubstations(values.sort((a, b) => a.localeCompare(b)));
-            });
-        }
-    }, [studyUuid, currentNodeUuid]);
-
+const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
     const voltageLevelIdField = (
         <TextField
             size="small"
@@ -84,7 +62,10 @@ const VoltageLevelModificationForm = ({
             //setting null programatically when freesolo is enable wont empty the field
             name={SUBSTATION_ID}
             label="SUBSTATION"
-            options={substations}
+            // Because of a mui/material bug, the disabled attribute do not work properly.
+            // It should be fixed after v5.12.2. For the moment, instead of fetching the
+            // substation list to display in this AutocompleteInput, we only show the current substation.
+            options={[voltageLevelInfos?.substationId]}
             getOptionLabel={getObjectId}
             inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) => value}
