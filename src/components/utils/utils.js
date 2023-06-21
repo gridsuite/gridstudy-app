@@ -175,13 +175,21 @@ export const replaceAllNanDefaultValues = (arrayParams, oldValue, newValue) => {
     );
 };
 
-export const flatObject = (obj, out) => {
-    Object.keys(obj).forEach((key) => {
-        if (typeof obj[key] == 'object') {
-            out = flatObject(obj[key], out);
-        } else {
-            out[key] = obj[key];
+export const flatObject =(object)=>{
+
+    let result = {}
+
+    const recursiveFlatten = (obj)=>{
+        for (const key in obj){
+            if(typeof obj[key] === "object" &&
+                Array.isArray(obj[key]) ===false){
+                recursiveFlatten(obj[key])
+            }
+            else{
+                result ={...result, [key] : obj[key] }
+            }
         }
-    });
-    return out;
-};
+    }
+    recursiveFlatten(object);
+    return result;
+}
