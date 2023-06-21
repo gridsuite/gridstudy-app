@@ -146,7 +146,10 @@ const DoubleEditor = ({
 
 const fusionSpecificWithOtherParams = (allParams, specificParams) => {
     const commitParameters = allParams;
-    commitParameters['specificParametersPerProvider'] = { ...specificParams };
+    commitParameters['specificParametersPerProvider'] =
+        Object.keys(specificParams).length > 0
+            ? { ...specificParams }
+            : commitParameters['specificParametersPerProvider'];
     return commitParameters;
 };
 
@@ -405,14 +408,9 @@ const SpecificLoadFlowParameters = ({
     currentProvider,
     specificParamsDescription,
 }) => {
-    console.log({ lfParams });
-    console.log({ ...lfParams.specificParametersPerProvider });
-    console.log({ specificParamsDescription });
     const classes = useStyles();
     const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
-    const [specificCurrentParams, setSpecificCurrentParams] = useState(
-        flatObject(lfParams)
-    );
+    const [specificCurrentParams, setSpecificCurrentParams] = useState({});
 
     useEffect(() => {
         setSpecificCurrentParams((prevSpecificParams) => {
