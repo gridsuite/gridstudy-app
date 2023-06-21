@@ -20,6 +20,9 @@ import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
+import { useSelector } from 'react-redux';
+import Alert from '@mui/material/Alert';
+import { BUILD_STATUS } from '../../network/constants';
 
 /**
  * Common parts for the Modification Dialog
@@ -47,7 +50,9 @@ const ModificationDialogContent = ({
         handleClick: onOpenCatalogDialog,
         icon: <AutoStoriesOutlinedIcon />,
     });
-
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const isNodeNotBuilt =
+        currentNode?.data?.buildStatus === BUILD_STATUS.NOT_BUILT;
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: searchCopy?.handleOpenSearchDialog,
@@ -75,21 +80,30 @@ const ModificationDialogContent = ({
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container spacing={2} justifyContent={'space-between'}>
-                    <Grid item xs={10}>
+                    <Grid item xs={4}>
                         <FormattedMessage id={titleId} />
                     </Grid>
-                    <Grid
-                        item
-                        xs={2}
-                        container
-                        spacing={2}
-                        justifyContent={'right'}
-                    >
-                        {onOpenCatalogDialog && (
-                            <Grid item>{catalogButton}</Grid>
-                        )}
-                        {searchCopy && <Grid item>{copyEquipmentButton}</Grid>}
-                    </Grid>
+                    {!searchCopy && isNodeNotBuilt && (
+                        <Grid item xs={8}>
+                            <Alert severity={'warning'}>
+                                <FormattedMessage id="ModifyNodeNotBuiltWarningMsg" />
+                            </Alert>
+                        </Grid>
+                    )}
+                    {searchCopy && (
+                        <Grid
+                            item
+                            xs={1}
+                            container
+                            spacing={2}
+                            justifyContent={'right'}
+                        >
+                            {onOpenCatalogDialog && (
+                                <Grid item>{catalogButton}</Grid>
+                            )}
+                            <Grid item>{copyEquipmentButton}</Grid>
+                        </Grid>
+                    )}
                     {subtitle && (
                         <Grid item xs={12}>
                             {subtitle}
