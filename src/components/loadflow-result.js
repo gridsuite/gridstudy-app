@@ -14,7 +14,7 @@ import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { fetchCurrentLimitViolations } from '../utils/rest-api';
+import { fetchLimitViolations } from '../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
@@ -90,10 +90,11 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 limit: overloadedEquipment.limit,
                 limitName: convertLimitName(overloadedEquipment.limitName),
                 side: convertSide(overloadedEquipment.side),
+                limitType: overloadedEquipment.limitType,
             };
         };
         if (result) {
-            fetchCurrentLimitViolations(
+            fetchLimitViolations(
                 studyUuid,
                 nodeUuid,
                 limitReductionParam / 100.0
@@ -109,7 +110,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'ErrFetchCurrentLimitViolationsMsg',
+                        headerId: 'ErrFetchViolationsMsg',
                     });
                 });
         }
@@ -144,7 +145,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         [classes.cell, classes.fail, classes.succeed]
     );
 
-    const loadFlowConstraintscolumns = useMemo(() => {
+    const loadFlowCurrentViolationscolumns = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
@@ -241,6 +242,45 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         ];
     }, [intl, NumberRenderer, StatusCellRender]);
 
+    const renderLimitType = useCallback(
+        (limitType) => {
+            switch (limitType) {
+                case 'HIGH_VOLTAGE':
+                    return intl.formatMessage({ id: 'HIGH_VOLTAGE' });
+                case 'LOW_VOLTAGE':
+                    return intl.formatMessage({ id: 'LOW_VOLTAGE' });
+                default:
+                    return 'No';
+            }
+        },
+        [intl]
+    );
+    const loadFlowVoltageViolationscolumns = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'VoltageLevel' }),
+                field: 'name',
+                numeric: false,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Violation' }),
+                field: 'limitType',
+                valueFormatter: (params) => renderLimitType(params.value),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Limit' }),
+                field: 'limit',
+                valueFormatter: (params) => params.value.toFixed(1),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Value' }),
+                field: 'intensity',
+                numeric: true,
+                valueFormatter: (params) => params.value.toFixed(1),
+            },
+        ];
+    }, [intl, renderLimitType]);
+
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.tablePaper}>
@@ -270,21 +310,46 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         },
         [theme.selectedRow.background]
     );
-    function renderLoadFlowConstraints() {
+    const overloadedEquipmentsCurrentViolation =
+        overloadedEquipments &&
+        overloadedEquipments.filter(
+            (overloadedEquipment) => overloadedEquipment.limitType === 'CURRENT'
+        );
+    const overloadedEquipmentsVoltageViolation =
+        overloadedEquipments &&
+        overloadedEquipments.filter(
+            (overloadedEquipment) =>
+                overloadedEquipment.limitType === 'HIGH_VOLTAGE' ||
+                overloadedEquipment.limitType === 'LOW_VOLTAGE'
+        );
+    function renderLoadFlowCurrentViolations() {
         return (
             <Paper className={classes.tablePaper}>
                 <CustomAGGrid
-                    rowData={overloadedEquipments}
+                    rowData={overloadedEquipmentsCurrentViolation}
                     defaultColDef={defaultColDef}
                     enableCellTextSelection={true}
-                    columnDefs={loadFlowConstraintscolumns}
+                    columnDefs={loadFlowCurrentViolationscolumns}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                 />
             </Paper>
         );
     }
-
+    function renderLoadFlowVoltageViolations() {
+        return (
+            <Paper className={classes.tablePaper}>
+                <CustomAGGrid
+                    rowData={overloadedEquipmentsVoltageViolation}
+                    defaultColDef={defaultColDef}
+                    enableCellTextSelection={true}
+                    columnDefs={loadFlowVoltageViolationscolumns}
+                    onGridReady={onGridReady}
+                    getRowStyle={getRowStyle}
+                />
+            </Paper>
+        );
+    }
     function renderLoadFlowResultTabs() {
         return (
             <>
@@ -299,7 +364,14 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                             <Tab
                                 label={
                                     <FormattedMessage
-                                        id={'LoadFlowResultsConstraints'}
+                                        id={'LoadFlowResultsCurrentViolations'}
+                                    />
+                                }
+                            />
+                            <Tab
+                                label={
+                                    <FormattedMessage
+                                        id={'LoadFlowResultsVoltageViolations'}
                                     />
                                 }
                             />
@@ -317,8 +389,12 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     overloadedEquipments &&
                     loadflowNotif &&
                     result &&
-                    renderLoadFlowConstraints()}
+                    renderLoadFlowCurrentViolations()}
                 {tabIndex === 1 &&
+                    loadflowNotif &&
+                    result &&
+                    renderLoadFlowVoltageViolations()}
+                {tabIndex === 2 &&
                     loadflowNotif &&
                     result &&
                     renderLoadFlowResult()}

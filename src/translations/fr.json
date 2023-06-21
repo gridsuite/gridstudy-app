@@ -294,7 +294,7 @@
     "PermanentLimitName": "IST",
     "EquipmentOverload": "Charge",
     "LimitAcceptableDuration": "Durée",
-    "ErrFetchCurrentLimitViolationsMsg": "Une erreur est survenue lors la récupération des violations de contraintes en courant",
+    "ErrFetchViolationsMsg": "Une erreur est survenue lors la récupération des violations",
     "Value": "Valeur",
     "ContingencyId": "ID aléa",
     "ComputationStatus": "Statut",
@@ -348,7 +348,8 @@
 
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "startLoadFlowError": "Une erreur est survenue lors du lancement du load flow",
-    "LoadFlowResultsConstraints": "Contraintes",
+    "LoadFlowResultsCurrentViolations": "Contraintes de transit", 
+    "LoadFlowResultsVoltageViolations": "Contraintes de tension",
     "LoadFlowResultsStatus": "Statut",
 
     "connectedComponentNum": "Numéro de composante connexe",
@@ -516,6 +517,7 @@
     "ActivePowerText": "Puissance active",
     "ReactivePowerText": "Puissance réactive",
     "VoltageLevel": "Poste",
+    "Violation": "Contrainte",
     "BusBarBus": "SJB / nœud",
     "Setpoints": "Consignes",
     "Connectivity": "Connectivité",
