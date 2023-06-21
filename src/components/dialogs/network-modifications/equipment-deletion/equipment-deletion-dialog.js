@@ -19,11 +19,7 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
 import React, { useCallback, useEffect } from 'react';
-import {
-    deleteEquipment,
-    fetchHvdcLineWithShuntCompensators,
-    FetchStatus,
-} from 'utils/rest-api';
+import { deleteEquipment, FetchStatus } from 'utils/rest-api';
 import ModificationDialog from '../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
@@ -86,7 +82,7 @@ const EquipmentDeletionDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
+    const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
@@ -140,57 +136,6 @@ const EquipmentDeletionDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
-    const updateMcsList = useCallback(
-        (hvdcLineData) => {
-            const withLcc = hvdcLineData
-                ? hvdcLineData.hvdcType === 'LCC'
-                : false;
-            setValue(HVDC_WITH_LCC, withLcc);
-            setValue(
-                SHUNT_COMPENSATOR_SIDE_1,
-                withLcc ? hvdcLineData.mcsOnSide1 : []
-            );
-            setValue(
-                SHUNT_COMPENSATOR_SIDE_2,
-                withLcc ? hvdcLineData.mcsOnSide2 : []
-            );
-        },
-        [setValue]
-    );
-
-    const onEquipmentIdChange = useCallback(
-        (equipmentId, equipmentType) => {
-            if (
-                equipmentId &&
-                equipmentType === EQUIPMENT_TYPES.HVDC_LINE.type
-            ) {
-                // need a specific rest call to get related MCS lists
-                fetchHvdcLineWithShuntCompensators(
-                    studyUuid,
-                    currentNodeUuid,
-                    equipmentId
-                )
-                    .then((hvdcLineData) => {
-                        console.log(
-                            'DBR onEquipmentIdChange FETCH',
-                            hvdcLineData
-                        );
-                        updateMcsList(hvdcLineData);
-                    })
-                    .catch((error) => {
-                        updateMcsList(null);
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'HVDCLineConverterStationError',
-                        });
-                    });
-            } else {
-                updateMcsList(null);
-            }
-        },
-        [studyUuid, currentNodeUuid, updateMcsList, snackError]
-    );
-
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -209,7 +154,6 @@ const EquipmentDeletionDialog = ({
                 <DeleteEquipmentForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    onEquipmentIdChange={onEquipmentIdChange}
                 />
             </ModificationDialog>
         </FormProvider>

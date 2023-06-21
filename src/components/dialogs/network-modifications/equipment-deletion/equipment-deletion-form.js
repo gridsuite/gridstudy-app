@@ -27,14 +27,11 @@ import {
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import ShuntCompensatorSelectionForm from './shunt-compensator-selection-form';
+import { fetchHvdcLineWithShuntCompensators } from '../../../../utils/rest-api';
 
 const richTypeEquals = (a, b) => a.type === b.type;
 
-const DeleteEquipmentForm = ({
-    studyUuid,
-    currentNode,
-    onEquipmentIdChange,
-}) => {
+const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
@@ -48,10 +45,11 @@ const DeleteEquipmentForm = ({
         name: HVDC_WITH_LCC,
     });
 
-    const fieldArrayShuntCompensatorSide1 = useFieldArray({
+    // replace is mandatory to update a fieldArray (not setValue)
+    const { replace: replaceMcsList1, fields: mcsRows1 } = useFieldArray({
         name: SHUNT_COMPENSATOR_SIDE_1,
     });
-    const fieldArrayShuntCompensatorSide2 = useFieldArray({
+    const { replace: replaceMcsList2, fields: mcsRows2 } = useFieldArray({
         name: SHUNT_COMPENSATOR_SIDE_2,
     });
 
@@ -84,7 +82,6 @@ const DeleteEquipmentForm = ({
                 )
             )
                 .then((vals) => {
-                    console.log('DBR effect Fetchers', vals);
                     setEquipmentsOptions(vals.flat().sort(compareById));
                 })
                 .catch((error) => {
@@ -96,16 +93,51 @@ const DeleteEquipmentForm = ({
         }
     }, [studyUuid, currentNode?.id, watchType, snackError]);
 
+    const updateMcsList = useCallback(
+        (hvdcLineData) => {
+            const withLcc = hvdcLineData
+                ? hvdcLineData.hvdcType === 'LCC'
+                : false;
+            setValue(HVDC_WITH_LCC, withLcc);
+            replaceMcsList1(withLcc ? hvdcLineData.mcsOnSide1 : []);
+            replaceMcsList2(withLcc ? hvdcLineData.mcsOnSide2 : []);
+        },
+        [setValue, replaceMcsList1, replaceMcsList2]
+    );
+
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            onEquipmentIdChange(watchEquipmentId, watchType?.type);
+            if (
+                watchEquipmentId &&
+                watchType?.type === EQUIPMENT_TYPES.HVDC_LINE.type
+            ) {
+                // need a specific rest call to get related MCS lists
+                fetchHvdcLineWithShuntCompensators(
+                    studyUuid,
+                    currentNode?.id,
+                    watchEquipmentId
+                )
+                    .then((hvdcLineData) => {
+                        updateMcsList(hvdcLineData);
+                    })
+                    .catch((error) => {
+                        updateMcsList(null);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'HVDCLineConverterStationError',
+                        });
+                    });
+            } else {
+                updateMcsList(null);
+            }
         }
     }, [
         studyUuid,
         currentNode?.id,
-        watchType,
+        watchType.type,
         watchEquipmentId,
-        onEquipmentIdChange,
+        updateMcsList,
+        snackError,
     ]);
 
     const handleChange = useCallback(() => {
@@ -149,7 +181,7 @@ const DeleteEquipmentForm = ({
         <ShuntCompensatorSelectionForm
             title="Side1"
             arrayFormName={SHUNT_COMPENSATOR_SIDE_1}
-            useFieldArrayOutput={fieldArrayShuntCompensatorSide1}
+            mcsRows={mcsRows1}
         />
     );
 
@@ -157,7 +189,7 @@ const DeleteEquipmentForm = ({
         <ShuntCompensatorSelectionForm
             title="Side2"
             arrayFormName={SHUNT_COMPENSATOR_SIDE_2}
-            useFieldArrayOutput={fieldArrayShuntCompensatorSide2}
+            mcsRows={mcsRows2}
         />
     );
 

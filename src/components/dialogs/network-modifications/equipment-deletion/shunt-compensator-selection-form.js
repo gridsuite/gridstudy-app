@@ -13,13 +13,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-const ShuntCompensatorSelectionForm = ({
-    title,
-    arrayFormName,
-    useFieldArrayOutput,
-}) => {
-    const { fields: currentRows } = useFieldArrayOutput;
-
+const ShuntCompensatorSelectionForm = ({ title, arrayFormName, mcsRows }) => {
     return (
         <Grid item container spacing={1} direction="column">
             <Grid item>
@@ -27,15 +21,17 @@ const ShuntCompensatorSelectionForm = ({
                     <FormattedMessage id={title} />
                 </h4>
             </Grid>
-            {currentRows.map((rowId, index) => (
-                <Grid container spacing={1} alignItems="center">
+            {mcsRows.map((field, index) => (
+                <Grid container spacing={1} alignItems="center" key={field.id}>
                     <Grid item xs={1} align={'start'}>
                         <CheckboxInput
+                            key={field.id + 'SEL'}
                             name={`${arrayFormName}[${index}].${SELECTED}`}
                         />
                     </Grid>
                     <Grid item xs={11} align={'start'}>
                         <ReadOnlyInput
+                            key={field.id + 'ID'}
                             name={`${arrayFormName}[${index}].${ID}`}
                         />
                     </Grid>
