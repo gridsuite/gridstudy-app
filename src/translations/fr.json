@@ -1019,5 +1019,5 @@
     "ShuntCompensator": "Moyen de compensation statique",
     "AttachingAndSplittingLines": "Piquage et coupure",
     "GenerationAndLoad": "Production et consommation",
-    "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages"
+    "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages du tableur"
 }

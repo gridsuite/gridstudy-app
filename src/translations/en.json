@@ -997,6 +997,6 @@
     "ShuntCompensator": "Shunt compensator",
     "AttachingAndSplittingLines": "Attaching and splitting lines",
     "GenerationAndLoad": "Generation and load",
-    "SpreadsheetFetchError": "An error occurred while fetching equipments"
+    "SpreadsheetFetchError": "An error occurred while fetching equipments in spreadsheet"
 
 }
