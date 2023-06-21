@@ -417,7 +417,7 @@ const SpecificLoadFlowParameters = ({
                 };
             });
         }
-    }, [currentProvider]);
+    }, [specificCurrentParams, currentProvider]);
 
     useEffect(() => {
         const toSend = fusionSpecificWithOtherParams(
@@ -425,7 +425,7 @@ const SpecificLoadFlowParameters = ({
             specificCurrentParams
         );
         commitLFParameter(toSend);
-    }, [specificCurrentParams]);
+    }, [specificCurrentParams, commitLFParameter, lfParams]);
 
     const onChange = (paramName, value, isEdit) => {
         if (isEdit) {
