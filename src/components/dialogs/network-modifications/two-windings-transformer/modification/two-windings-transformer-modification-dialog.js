@@ -10,15 +10,30 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
     CHARACTERISTICS,
+    ENABLED,
+    EQUIPMENT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    ID,
+    LOAD_TAP_CHANGING_CAPABILITIES,
+    LOW_TAP_POSITION,
     MAGNETIZING_CONDUCTANCE,
     MAGNETIZING_SUSCEPTANCE,
     RATED_S,
     RATED_VOLTAGE_1,
     RATED_VOLTAGE_2,
+    RATIO_TAP_CHANGER,
+    REGULATION_MODE,
+    REGULATION_SIDE,
+    REGULATION_TYPE,
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
+    STEPS,
+    STEPS_TAP,
+    TAP_POSITION,
+    TARGET_DEADBAND,
+    TARGET_V,
+    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -26,11 +41,17 @@ import { FormProvider, useForm } from 'react-hook-form';
 import {
     fetchNetworkElementInfos,
     FetchStatus,
+    fetchVoltageLevelsListInfos,
     modifyTwoWindingsTransformer,
 } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
 import { sanitizeString } from '../../../dialogUtils';
-import { FORM_LOADING_DELAY } from 'components/network/constants';
+import {
+    FORM_LOADING_DELAY,
+    RATIO_REGULATION_MODES,
+    REGULATION_TYPES,
+    SIDE,
+} from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import TwoWindingsTransformerModificationDialogTabs from './two-windings-transformer-modification-dialog-tabs';
@@ -66,10 +87,17 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
+import RatioTapChangerPane from '../creation/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
+import {
+    getRatioTapChangerEmptyFormData,
+    getRatioTapChangerFormData,
+    getRatioTapChangerValidationSchema,
+} from '../creation/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 
 export const TwoWindingsTransformerModificationDialogTab = {
     CHARACTERISTICS_TAB: 0,
     LIMITS_TAB: 1,
+    RATIO_TAP_TAB: 2,
 };
 
 /**
@@ -98,6 +126,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState(null);
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     const emptyFormData = useMemo(() => {
         return {
@@ -105,6 +134,7 @@ const TwoWindingsTransformerModificationDialog = ({
             [EQUIPMENT_NAME]: '',
             ...getCharacteristicsEmptyFormData(),
             ...getLimitsEmptyFormData(),
+            ...getRatioTapChangerEmptyFormData(),
         };
     }, [defaultIdValue]);
 
@@ -115,6 +145,7 @@ const TwoWindingsTransformerModificationDialog = ({
             [EQUIPMENT_NAME]: yup.string(),
             ...getCharacteristicsValidationSchema(true),
             ...getLimitsValidationSchema(),
+            ...getRatioTapChangerValidationSchema(true),
         })
         .required();
 
@@ -123,6 +154,29 @@ const TwoWindingsTransformerModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
     const { reset, getValues } = formMethods;
+
+    const getRegulationTypeForEdit = (twt, tap) => {
+        return tap?.regulatingTerminalId != null
+            ? tap?.regulatingTerminalId === twt.equipmentId
+                ? REGULATION_TYPES.LOCAL.id
+                : REGULATION_TYPES.DISTANT.id
+            : null;
+    };
+
+    const getTapSideForEdit = (twt, tap) => {
+        return tap?.regulatingTerminalId === twt.equipmentId
+            ? tap?.regulatingTerminalVlId === twt?.voltageLevelId1
+                ? SIDE.SIDE1.id
+                : SIDE.SIDE2.id
+            : null;
+    };
+
+    const computeHighTapPosition = (steps) => {
+        const values = steps?.map((step) => step[STEPS_TAP]);
+        return Array.isArray(values) && values.length > 0
+            ? Math.max(...values)
+            : null;
+    };
 
     const fromEditDataToFormValues = useCallback(
         (twt) => {
@@ -156,16 +210,100 @@ const TwoWindingsTransformerModificationDialog = ({
                         )
                     ),
                 }),
+                ...getRatioTapChangerFormData({
+                    enabled:
+                        twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
+                    loadTapChangingCapabilities:
+                        twt?.[RATIO_TAP_CHANGER]?.[
+                            LOAD_TAP_CHANGING_CAPABILITIES
+                        ] ?? null,
+                    regulationMode: twt?.[RATIO_TAP_CHANGER]?.[REGULATION_MODE],
+                    regulationType: getRegulationTypeForEdit(
+                        twt,
+                        twt?.[RATIO_TAP_CHANGER]
+                    ),
+                    regulationSide: getTapSideForEdit(
+                        twt,
+                        twt?.[RATIO_TAP_CHANGER]
+                    ),
+                    targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
+                    targetDeadband: twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND],
+                    lowTapPosition:
+                        twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION],
+                    highTapPosition: computeHighTapPosition(
+                        twt?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ),
+                    tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
+                    steps: addSelectedFieldToRows(
+                        twt?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ),
+                    equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalId,
+                    equipmentType:
+                        twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalType,
+                    voltageLevelId:
+                        twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId,
+                }),
             });
         },
         [reset]
     );
 
     useEffect(() => {
+        if (studyUuid && currentNodeUuid) {
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a.id.localeCompare(b.id))
+                    );
+                }
+            );
+        }
+    }, [studyUuid, currentNodeUuid]);
+
+    useEffect(() => {
         if (editData) {
             fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
+
+    const computeRatioTapChangerRegulating = (ratioTapChangerFormValues) => {
+        return (
+            ratioTapChangerFormValues?.[REGULATION_MODE] ===
+            RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id
+        );
+    };
+
+    const computeRegulatingTerminalId = (tapChangerValue, currentTwtId) => {
+        if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
+            return currentTwtId;
+        } else {
+            return tapChangerValue?.[EQUIPMENT]?.id;
+        }
+    };
+
+    const computeTapTerminalVlId = (tapChangerValue, vlId1, vlId2) => {
+        if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
+            if (tapChangerValue?.[REGULATION_SIDE] === SIDE.SIDE1.id) {
+                return vlId1;
+            } else {
+                return vlId2;
+            }
+        } else {
+            return tapChangerValue?.[VOLTAGE_LEVEL]?.[ID];
+        }
+    };
+
+    const computeRegulatingTerminalType = (tapChangerValue) => {
+        if (tapChangerValue?.[EQUIPMENT]?.type) {
+            return tapChangerValue?.[EQUIPMENT]?.type;
+        }
+
+        if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
+            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
+        }
+
+        return undefined;
+    };
 
     const onSubmit = useCallback(
         (twt) => {
@@ -196,6 +334,33 @@ const TwoWindingsTransformerModificationDialog = ({
                 ),
             };
 
+            const enableRatioTapChanger = twt[RATIO_TAP_CHANGER]?.[ENABLED];
+
+            let ratioTap = undefined;
+            if (enableRatioTapChanger) {
+                const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
+                ratioTap = {
+                    regulating: ratioTapChangerFormValues?.[REGULATION_MODE]
+                        ? computeRatioTapChangerRegulating(
+                              ratioTapChangerFormValues
+                          )
+                        : null,
+                    regulatingTerminalId: computeRegulatingTerminalId(
+                        ratioTapChangerFormValues,
+                        twt[EQUIPMENT_ID]
+                    ),
+                    regulatingTerminalType: computeRegulatingTerminalType(
+                        ratioTapChangerFormValues
+                    ),
+                    regulatingTerminalVlId: computeTapTerminalVlId(
+                        ratioTapChangerFormValues,
+                        twt.voltageLevelId1,
+                        twt.voltageLevelId2
+                    ),
+                    ...ratioTapChangerFormValues,
+                };
+            }
+
             modifyTwoWindingsTransformer(
                 studyUuid,
                 currentNodeUuid,
@@ -214,6 +379,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 toModificationOperation(characteristics[RATED_VOLTAGE_2]),
                 currentLimits1,
                 currentLimits2,
+                ratioTap,
                 !!editData,
                 editData?.uuid
             ).catch((error) => {
@@ -243,6 +409,11 @@ const TwoWindingsTransformerModificationDialog = ({
         if (errors?.[LIMITS] !== undefined) {
             tabsInError.push(
                 TwoWindingsTransformerModificationDialogTab.LIMITS_TAB
+            );
+        }
+        if (errors?.[RATIO_TAP_CHANGER] !== undefined) {
+            tabsInError.push(
+                TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB
             );
         }
         setTabIndexesWithError(tabsInError);
@@ -298,6 +469,19 @@ const TwoWindingsTransformerModificationDialog = ({
                                                     )
                                                 ),
                                         }),
+                                        ...getRatioTapChangerFormData({
+                                            enabled:
+                                                twt?.[RATIO_TAP_CHANGER]?.[
+                                                    TAP_POSITION
+                                                ] !== undefined,
+                                            loadTapChangingCapabilities: null,
+                                            regulationSide: null,
+                                            steps: addSelectedFieldToRows(
+                                                twt?.[RATIO_TAP_CHANGER]?.[
+                                                    STEPS
+                                                ]
+                                            ),
+                                        }),
                                     }),
                                     { keepDefaultValues: true }
                                 );
@@ -352,7 +536,7 @@ const TwoWindingsTransformerModificationDialog = ({
         >
             <ModificationDialog
                 fullWidth
-                maxWidth={'md'}
+                maxWidth="xl"
                 titleId="ModifyTwoWindingsTransformer"
                 aria-labelledby="dialog-modify-two-windings-transformer"
                 subtitle={headerAndTabs}
@@ -397,6 +581,22 @@ const TwoWindingsTransformerModificationDialog = ({
                         equipmentToModify={twtToModify}
                         modifiedEquipment={editData}
                         clearableFields
+                    />
+                </Box>
+
+                <Box
+                    hidden={
+                        tabIndex !==
+                        TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB
+                    }
+                    p={1}
+                >
+                    <RatioTapChangerPane
+                        studyUuid={studyUuid}
+                        currentNodeUuid={currentNodeUuid}
+                        voltageLevelOptions={voltageLevelOptions}
+                        previousValues={twtToModify}
+                        isModification={true}
                     />
                 </Box>
             </ModificationDialog>

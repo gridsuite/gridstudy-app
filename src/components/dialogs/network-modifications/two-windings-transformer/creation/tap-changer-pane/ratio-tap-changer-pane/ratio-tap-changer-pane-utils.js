@@ -48,27 +48,33 @@ import {
     SIDE,
 } from 'components/network/constants';
 
-const ratioTapChangerValidationSchema = (id) => ({
+const ratioTapChangerValidationSchema = (modification, id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
-        [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().required(),
-        [REGULATION_MODE]: yup
-            .string()
-            .nullable()
-            .when([ENABLED], {
-                is: true,
-                then: (schema) => schema.required(),
-            }),
-        [REGULATION_TYPE]: yup
-            .string()
-            .nullable()
-            .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) =>
-                    enabled &&
-                    regulationMode ===
-                        RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id,
-                then: (schema) => schema.required(),
-            }),
+        [LOAD_TAP_CHANGING_CAPABILITIES]: modification
+            ? yup.bool().nullable()
+            : yup.bool().required(),
+        [REGULATION_MODE]: modification
+            ? yup.string().nullable()
+            : yup
+                  .string()
+                  .nullable()
+                  .when([ENABLED], {
+                      is: true,
+                      then: (schema) => schema.required(),
+                  }),
+        [REGULATION_TYPE]: modification
+            ? yup.string().nullable()
+            : yup
+                  .string()
+                  .nullable()
+                  .when([ENABLED, REGULATION_MODE], {
+                      is: (enabled, regulationMode) =>
+                          enabled &&
+                          regulationMode ===
+                              RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id,
+                      then: (schema) => schema.required(),
+                  }),
         [REGULATION_SIDE]: yup
             .string()
             .nullable()
@@ -177,8 +183,11 @@ const ratioTapChangerValidationSchema = (id) => ({
     }),
 });
 
-export const getRatioTapChangerValidationSchema = (id = RATIO_TAP_CHANGER) => {
-    return ratioTapChangerValidationSchema(id);
+export const getRatioTapChangerValidationSchema = (
+    modification,
+    id = RATIO_TAP_CHANGER
+) => {
+    return ratioTapChangerValidationSchema(modification, id);
 };
 
 const ratioTapChangerEmptyFormData = (id) => ({

@@ -20,7 +20,7 @@ import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../../dialogUtils';
 import { RATIO_TAP } from '../../two-windings-transformer-creation-dialog';
 
-const RatioTapChangerPaneSteps = ({ disabled }) => {
+const RatioTapChangerPaneSteps = ({ disabled, previousValues }) => {
     const intl = useIntl();
 
     const COLUMNS_DEFINITIONS = useMemo(() => {
@@ -34,30 +34,35 @@ const RatioTapChangerPaneSteps = ({ disabled }) => {
                 dataKey: STEPS_RESISTANCE,
                 initialValue: 0,
                 editable: true,
+                numeric: true,
             },
             {
                 label: 'DeltaReactance',
                 dataKey: STEPS_REACTANCE,
                 initialValue: 0,
                 editable: true,
+                numeric: true,
             },
             {
                 label: 'DeltaConductance',
                 dataKey: STEPS_CONDUCTANCE,
                 initialValue: 0,
                 editable: true,
+                numeric: true,
             },
             {
                 label: 'DeltaSusceptance',
                 dataKey: STEPS_SUSCEPTANCE,
                 initialValue: 0,
                 editable: true,
+                numeric: true,
             },
             {
                 label: 'Ratio',
                 dataKey: STEPS_RATIO,
                 initialValue: 1,
                 editable: true,
+                numeric: true,
             },
         ].map((column) => ({
             ...column,
@@ -129,6 +134,8 @@ const RatioTapChangerPaneSteps = ({ disabled }) => {
             importRuleMessageId="ImportRegulationRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
+            previousValues={previousValues}
+            modification={true}
         />
     );
 };

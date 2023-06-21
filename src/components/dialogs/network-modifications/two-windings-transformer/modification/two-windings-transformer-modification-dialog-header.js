@@ -6,7 +6,12 @@
  */
 
 import { Grid } from '@mui/material';
-import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
+import {
+    ENABLED,
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
+    RATIO_TAP_CHANGER,
+} from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 import { filledTextField, gridItem } from '../../../dialogUtils';
 import TextInput from 'components/utils/rhf-inputs/text-input';
@@ -14,6 +19,7 @@ import { fetchEquipmentsIds } from '../../../../../utils/rest-api';
 import AutocompleteInput from '../../../../utils/rhf-inputs/autocomplete-input';
 import { getObjectId } from '../../../../utils/utils';
 import { useWatch } from 'react-hook-form';
+import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
 
 const TwoWindingsTransformerModificationDialogHeader = ({
     studyUuid,
@@ -66,10 +72,18 @@ const TwoWindingsTransformerModificationDialogHeader = ({
         />
     );
 
+    const ratioTapChangerEnabledField = (
+        <SwitchInput
+            name={`${RATIO_TAP_CHANGER}.${ENABLED}`}
+            label="ConfigureRatioTapChanger"
+        />
+    );
+
     return (
         <Grid container item spacing={2}>
-            {gridItem(twoWindingsTransformerIdField)}
-            {gridItem(twoWindingsTransformerNameField)}
+            {gridItem(twoWindingsTransformerIdField, 4)}
+            {gridItem(twoWindingsTransformerNameField, 4)}
+            {gridItem(ratioTapChangerEnabledField, 2)}
         </Grid>
     );
 };

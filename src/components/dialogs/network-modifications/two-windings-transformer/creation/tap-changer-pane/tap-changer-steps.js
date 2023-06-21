@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
@@ -22,6 +22,11 @@ import {
     LOW_TAP_POSITION,
     SELECTED,
     STEPS,
+    STEPS_CONDUCTANCE,
+    STEPS_RATIO,
+    STEPS_REACTANCE,
+    STEPS_RESISTANCE,
+    STEPS_SUSCEPTANCE,
     STEPS_TAP,
     TAP_POSITION,
 } from 'components/utils/field-constants';
@@ -38,6 +43,8 @@ const TapChangerSteps = ({
     importRuleMessageId,
     handleImportRow,
     disabled,
+    previousValues,
+    modification,
 }) => {
     const intl = useIntl();
 
@@ -102,13 +109,14 @@ const TapChangerSteps = ({
     }
 
     const resetTapNumbers = useCallback(
-        (tapSteps) => {
+        (tapSteps, modification) => {
             const currentTapRows =
                 tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
 
-            const currentLowTapPosition = getValues(
-                `${tapChanger}.${LOW_TAP_POSITION}`
-            );
+            const currentLowTapPosition =
+                modification && !lowTapPosition
+                    ? previousValues?.[LOW_TAP_POSITION]
+                    : lowTapPosition;
 
             for (
                 let tapPosition = currentLowTapPosition, index = 0;
@@ -127,27 +135,50 @@ const TapChangerSteps = ({
                     : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
-        [tapChanger, getValues, setValue]
+        [getValues, tapChanger, previousValues, lowTapPosition, setValue]
     );
+
+    const adjustedStepsPreviousValues = useMemo(() => {
+        let adjustedTapSteps;
+        if (previousValues?.[STEPS]) {
+            adjustedTapSteps = previousValues[STEPS].map((step) => {
+                return {
+                    index: lowTapPosition
+                        ? step.index +
+                          (lowTapPosition - previousValues?.[LOW_TAP_POSITION])
+                        : step.index,
+                    r: step.r,
+                    x: step.x,
+                    b: step.b,
+                    g: step.g,
+                    rho: step.rho,
+                };
+            });
+        }
+        resetTapNumbers(null, modification);
+        return adjustedTapSteps;
+    }, [previousValues, resetTapNumbers, modification, lowTapPosition]);
 
     // Adjust high tap position when low tap position change + remove red if value fixed
     useEffect(() => {
         trigger(`${tapChanger}.${LOW_TAP_POSITION}`).then((result) => {
             if (result) {
-                resetTapNumbers(null);
+                resetTapNumbers(null, modification);
             }
         });
     }, [
         trigger,
         tapChanger,
-        lowTapPosition, // the only value supposed to change
+        lowTapPosition,
+        adjustedStepsPreviousValues,
         resetTapNumbers,
+        modification,
     ]);
 
     // when we detect a change in tapSteps (so when the size or the order of the list of rows change), we reset the tap fields
     useEffect(() => {
-        resetTapNumbers(tapSteps);
-    }, [tapSteps, resetTapNumbers]);
+        resetTapNumbers(tapSteps, modification);
+    }, [tapSteps, resetTapNumbers, modification]);
 
     const handleCreateTapRule = (lowTap, highTap) => {
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
@@ -171,6 +202,39 @@ const TapChangerSteps = ({
             }
         });
     }
+
+    const findTap = useCallback(
+        (rowIndex, arrayFormName, tapSteps) => {
+            return adjustedStepsPreviousValues?.find(
+                (e) => e.index === getValues(arrayFormName)[rowIndex]?.index
+            );
+        },
+        [adjustedStepsPreviousValues, getValues]
+    );
+
+    const getTapPreviousValue = useCallback(
+        (rowIndex, column, arrayFormName, tapSteps) => {
+            const temporaryLimit = findTap(rowIndex, arrayFormName, tapSteps);
+            if (temporaryLimit === undefined) {
+                return undefined;
+            }
+            switch (column.dataKey) {
+                case STEPS_RESISTANCE:
+                    return temporaryLimit?.r;
+                case STEPS_REACTANCE:
+                    return temporaryLimit?.x;
+                case STEPS_CONDUCTANCE:
+                    return temporaryLimit?.g;
+                case STEPS_SUSCEPTANCE:
+                    return temporaryLimit?.b;
+                case STEPS_RATIO:
+                    return temporaryLimit?.rho;
+                default:
+                    return undefined;
+            }
+        },
+        [findTap]
+    );
 
     const handleImportTapRule = (selectedFile, setFileParseError) => {
         Papa.parse(selectedFile, {
@@ -197,6 +261,13 @@ const TapChangerSteps = ({
         });
     };
 
+    const computeHighTapPosition = (steps) => {
+        const values = steps?.map((step) => step[STEPS_TAP]);
+        return Array.isArray(values) && values.length > 0
+            ? Math.max(...values)
+            : null;
+    };
+
     const lowTapPositionField = (
         <IntegerInput
             name={`${tapChanger}.${LOW_TAP_POSITION}`}
@@ -204,6 +275,7 @@ const TapChangerSteps = ({
             formProps={{
                 disabled: disabled,
             }}
+            previousValue={previousValues?.[LOW_TAP_POSITION]}
         />
     );
 
@@ -214,6 +286,7 @@ const TapChangerSteps = ({
             formProps={{
                 disabled: true,
             }}
+            previousValue={computeHighTapPosition(previousValues?.[STEPS])}
         />
     );
 
@@ -224,6 +297,7 @@ const TapChangerSteps = ({
             formProps={{
                 disabled: disabled,
             }}
+            previousValue={previousValues?.[TAP_POSITION]}
         />
     );
 
@@ -274,6 +348,8 @@ const TapChangerSteps = ({
                 handleUploadButton={handleImportTapRuleButton}
                 uploadButtonMessageId={importRuleMessageId}
                 disabled={disabled}
+                previousValues={adjustedStepsPreviousValues}
+                getPreviousValue={getTapPreviousValue}
             />
             <CreateRuleDialog
                 ruleType={ruleType}
