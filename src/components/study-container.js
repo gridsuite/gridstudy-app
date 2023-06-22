@@ -18,16 +18,12 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
-    connectNotificationsWebsocket,
     fetchLoadFlowInfos,
     fetchNetworkModificationTree,
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
-    fetchPath,
-    connectNotificationsWsUpdateDirectories,
     fetchCaseName,
     fetchSensitivityAnalysisStatus,
-    connectDeletedStudyNotificationsWebsocket,
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
     fetchVoltageInitStatus,
@@ -70,6 +66,13 @@ import {
     BUILD_STATUS,
     MAX_NUMBER_OF_IMPACTED_SUBSTATIONS,
 } from './network/constants';
+import { connectNotificationsWebsocket } from '../services/study-notification';
+import {
+    connectDeletedStudyNotificationsWebsocket,
+    connectNotificationsWsUpdateDirectories,
+} from '../services/directory-notification';
+
+import { fetchPath } from '../services/directory';
 
 function isWorthUpdate(
     studyUpdatedForce,
