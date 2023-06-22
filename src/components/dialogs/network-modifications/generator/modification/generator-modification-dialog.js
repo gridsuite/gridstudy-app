@@ -7,7 +7,7 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -16,7 +16,6 @@ import {
     DROOP,
     ENERGY_SOURCE,
     EQUIPMENT,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     FREQUENCY_REGULATION,
@@ -35,7 +34,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_POWER_SET_POINT,
-    STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
     VOLTAGE_LEVEL,
@@ -43,11 +41,9 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-
 import { fetchNetworkElementInfos, modifyGenerator } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { REGULATION_TYPES } from 'components/network/constants';
-
 import GeneratorModificationForm from './generator-modification-form';
 import {
     getSetPointsEmptyFormData,
@@ -67,11 +63,68 @@ import { FetchStatus } from 'utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
-} from '../../../../utils/equipment-types';
+} from 'components/utils/equipment-types';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+
+const emptyFormData = {
+    [EQUIPMENT_NAME]: '',
+    [ENERGY_SOURCE]: null,
+    [MAXIMUM_ACTIVE_POWER]: null,
+    [MINIMUM_ACTIVE_POWER]: null,
+    [RATED_NOMINAL_POWER]: null,
+    [TRANSIENT_REACTANCE]: null,
+    [TRANSFORMER_REACTANCE]: null,
+    [PLANNED_ACTIVE_POWER_SET_POINT]: null,
+    [MARGINAL_COST]: null,
+    [PLANNED_OUTAGE_RATE]: null,
+    [FORCED_OUTAGE_RATE]: null,
+    ...getSetPointsEmptyFormData(true),
+    ...getReactiveLimitsEmptyFormData(true),
+};
+
+const formSchema = yup
+    .object()
+    .shape(
+        {
+            [EQUIPMENT_NAME]: yup.string(),
+            [ENERGY_SOURCE]: yup.string().nullable(),
+            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+            [MINIMUM_ACTIVE_POWER]: yup
+                .number()
+                .nullable()
+                .when([MAXIMUM_ACTIVE_POWER], {
+                    is: (maximumActivePower) => maximumActivePower != null,
+                    then: (schema) =>
+                        schema.max(
+                            yup.ref(MAXIMUM_ACTIVE_POWER),
+                            'MinActivePowerLessThanMaxActivePower'
+                        ),
+                }),
+            [RATED_NOMINAL_POWER]: yup.number().nullable(),
+            [TRANSIENT_REACTANCE]: yup.number().nullable(),
+            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+            [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+            [MARGINAL_COST]: yup.number().nullable(),
+            [PLANNED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, 'RealPercentage')
+                .max(1, 'RealPercentage'),
+            [FORCED_OUTAGE_RATE]: yup
+                .number()
+                .nullable()
+                .min(0, 'RealPercentage')
+                .max(1, 'RealPercentage'),
+            ...getSetPointsSchema(true),
+            ...getReactiveLimitsSchema(true),
+        },
+        [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
+    )
+    .required();
 
 const GeneratorModificationDialog = ({
-    editData,
-    defaultIdValue,
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
     studyUuid,
     isUpdate,
@@ -80,6 +133,7 @@ const GeneratorModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [generatorToModify, setGeneratorToModify] = useState();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
@@ -101,75 +155,6 @@ const GeneratorModificationDialog = ({
         });
         return reactiveCapabilityCurvePoints;
     };
-    const emptyFormData = useMemo(
-        () => ({
-            [EQUIPMENT_ID]: defaultIdValue ?? null,
-            [EQUIPMENT_NAME]: '',
-            [ENERGY_SOURCE]: null,
-            [MAXIMUM_ACTIVE_POWER]: null,
-            [MINIMUM_ACTIVE_POWER]: null,
-            [RATED_NOMINAL_POWER]: null,
-            [TRANSIENT_REACTANCE]: null,
-            [TRANSFORMER_REACTANCE]: null,
-            [PLANNED_ACTIVE_POWER_SET_POINT]: null,
-            [STARTUP_COST]: null,
-            [MARGINAL_COST]: null,
-            [PLANNED_OUTAGE_RATE]: null,
-            [FORCED_OUTAGE_RATE]: null,
-            ...getSetPointsEmptyFormData(true),
-            ...getReactiveLimitsEmptyFormData(true),
-        }),
-        [defaultIdValue]
-    );
-
-    const formSchema = useMemo(
-        () =>
-            yup
-                .object()
-                .shape(
-                    {
-                        [EQUIPMENT_ID]: yup.string().nullable().required(),
-                        [EQUIPMENT_NAME]: yup.string(),
-                        [ENERGY_SOURCE]: yup.string().nullable(),
-                        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
-                        [MINIMUM_ACTIVE_POWER]: yup
-                            .number()
-                            .nullable()
-                            .when([MAXIMUM_ACTIVE_POWER], {
-                                is: (maximumActivePower) =>
-                                    maximumActivePower != null,
-                                then: (schema) =>
-                                    schema.max(
-                                        yup.ref(MAXIMUM_ACTIVE_POWER),
-                                        'MinActivePowerLessThanMaxActivePower'
-                                    ),
-                            }),
-                        [RATED_NOMINAL_POWER]: yup.number().nullable(),
-                        [TRANSIENT_REACTANCE]: yup.number().nullable(),
-                        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-                        [PLANNED_ACTIVE_POWER_SET_POINT]: yup
-                            .number()
-                            .nullable(),
-                        [STARTUP_COST]: yup.number().nullable(),
-                        [MARGINAL_COST]: yup.number().nullable(),
-                        [PLANNED_OUTAGE_RATE]: yup
-                            .number()
-                            .nullable()
-                            .min(0, 'RealPercentage')
-                            .max(1, 'RealPercentage'),
-                        [FORCED_OUTAGE_RATE]: yup
-                            .number()
-                            .nullable()
-                            .min(0, 'RealPercentage')
-                            .max(1, 'RealPercentage'),
-                        ...getSetPointsSchema(true),
-                        ...getReactiveLimitsSchema(true),
-                    },
-                    [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
-                )
-                .required(),
-        []
-    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -180,8 +165,10 @@ const GeneratorModificationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
             reset({
-                [EQUIPMENT_ID]: editData?.equipmentId,
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
                 [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
                 [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
@@ -197,7 +184,6 @@ const GeneratorModificationDialog = ({
                     editData?.reactivePowerSetpoint?.value ?? null,
                 [PLANNED_ACTIVE_POWER_SET_POINT]:
                     editData?.plannedActivePowerSetPoint?.value ?? null,
-                [STARTUP_COST]: editData?.startupCost?.value ?? null,
                 [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
                 [PLANNED_OUTAGE_RATE]:
                     editData?.plannedOutageRate?.value ?? null,
@@ -249,7 +235,7 @@ const GeneratorModificationDialog = ({
                 { keepDefaultValues: keepDefaultValues }
             );
         },
-        [emptyFormData, reset]
+        [reset]
     );
 
     const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
@@ -268,34 +254,6 @@ const GeneratorModificationDialog = ({
             };
         });
     };
-
-    const emptyFormAndFormatReactiveCapabilityCurveTable = useCallback(
-        (value, equipmentId) => {
-            //creating empty table depending on existing generator
-            const reactiveCapabilityCurvePoints =
-                value?.reactiveCapabilityCurvePoints
-                    ? value?.reactiveCapabilityCurvePoints.map((val) => ({
-                          [P]: null,
-                          [Q_MIN_P]: null,
-                          [Q_MAX_P]: null,
-                      }))
-                    : [getRowEmptyFormData(), getRowEmptyFormData()];
-            // resets all fields except EQUIPMENT_ID and REACTIVE_CAPABILITY_CURVE_TABLE
-            setValuesAndEmptyOthers(
-                {
-                    [EQUIPMENT_ID]: equipmentId,
-                    [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                        reactiveCapabilityCurvePoints,
-                    [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                        value?.minMaxReactiveLimits != null
-                            ? 'MINMAX'
-                            : 'CURVE',
-                },
-                true
-            );
-        },
-        [setValuesAndEmptyOthers]
-    );
 
     const insertEmptyRowAtSecondToLastIndex = (table) => {
         table.splice(table.length - 1, 0, {
@@ -323,45 +281,33 @@ const GeneratorModificationDialog = ({
                             // which would empty the form instead of displaying data of existing form
                             const previousReactiveCapabilityCurveTable =
                                 value.reactiveCapabilityCurvePoints;
-                            if (
-                                editData?.equipmentId !==
-                                getValues(`${EQUIPMENT_ID}`)
-                            ) {
-                                emptyFormAndFormatReactiveCapabilityCurveTable(
-                                    value,
-                                    equipmentId
-                                );
-                            } else {
-                                // on first render, we need to adjust the UI for the reactive capability curve table
-                                // we need to check if the generator we fetch has reactive capability curve table
-                                if (previousReactiveCapabilityCurveTable) {
-                                    const currentReactiveCapabilityCurveTable =
-                                        getValues(
-                                            REACTIVE_CAPABILITY_CURVE_TABLE
-                                        );
+                            // on first render, we need to adjust the UI for the reactive capability curve table
+                            // we need to check if the generator we fetch has reactive capability curve table
+                            if (previousReactiveCapabilityCurveTable) {
+                                const currentReactiveCapabilityCurveTable =
+                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
 
-                                    const sizeDiff =
-                                        previousReactiveCapabilityCurveTable.length -
-                                        currentReactiveCapabilityCurveTable.length;
+                                const sizeDiff =
+                                    previousReactiveCapabilityCurveTable.length -
+                                    currentReactiveCapabilityCurveTable.length;
 
-                                    // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
-                                    if (sizeDiff > 0) {
-                                        for (let i = 0; i < sizeDiff; i++) {
-                                            insertEmptyRowAtSecondToLastIndex(
-                                                currentReactiveCapabilityCurveTable
-                                            );
-                                        }
-                                        setValue(
-                                            REACTIVE_CAPABILITY_CURVE_TABLE,
+                                // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
+                                if (sizeDiff > 0) {
+                                    for (let i = 0; i < sizeDiff; i++) {
+                                        insertEmptyRowAtSecondToLastIndex(
                                             currentReactiveCapabilityCurveTable
                                         );
-                                    } else if (sizeDiff < 0) {
-                                        // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
-                                        for (let i = 0; i > sizeDiff; i--) {
-                                            insertEmptyRowAtSecondToLastIndex(
-                                                previousReactiveCapabilityCurveTable
-                                            );
-                                        }
+                                    }
+                                    setValue(
+                                        REACTIVE_CAPABILITY_CURVE_TABLE,
+                                        currentReactiveCapabilityCurveTable
+                                    );
+                                } else if (sizeDiff < 0) {
+                                    // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
+                                    for (let i = 0; i > sizeDiff; i--) {
+                                        insertEmptyRowAtSecondToLastIndex(
+                                            previousReactiveCapabilityCurveTable
+                                        );
                                     }
                                 }
                             }
@@ -385,13 +331,17 @@ const GeneratorModificationDialog = ({
         [
             studyUuid,
             currentNodeUuid,
-            editData?.equipmentId,
             getValues,
-            emptyFormAndFormatReactiveCapabilityCurveTable,
             setValue,
             setValuesAndEmptyOthers,
         ]
     );
+
+    useEffect(() => {
+        if (selectedId) {
+            onEquipmentIdChange(selectedId);
+        }
+    }, [selectedId, onEquipmentIdChange]);
 
     const calculateCurvePointsToStore = useCallback(
         (reactiveCapabilityCurve) => {
@@ -482,7 +432,7 @@ const GeneratorModificationDialog = ({
             modifyGenerator(
                 studyUuid,
                 currentNodeUuid,
-                generator[EQUIPMENT_ID],
+                selectedId,
                 sanitizeString(generator[EQUIPMENT_NAME]),
                 generator[ENERGY_SOURCE],
                 generator[MINIMUM_ACTIVE_POWER],
@@ -502,7 +452,6 @@ const GeneratorModificationDialog = ({
                     ? generator[Q_PERCENT]
                     : null,
                 generator[PLANNED_ACTIVE_POWER_SET_POINT],
-                generator[STARTUP_COST],
                 generator[MARGINAL_COST],
                 generator[PLANNED_OUTAGE_RATE],
                 generator[FORCED_OUTAGE_RATE],
@@ -536,6 +485,7 @@ const GeneratorModificationDialog = ({
             });
         },
         [
+            selectedId,
             generatorToModify,
             getPreviousRegulationType,
             calculateCurvePointsToStore,
@@ -578,15 +528,27 @@ const GeneratorModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                <GeneratorModificationForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    onEquipmentIdChange={onEquipmentIdChange}
-                    generatorToModify={generatorToModify}
-                    updatePreviousReactiveCapabilityCurveTable={
-                        updatePreviousReactiveCapabilityCurveTable
-                    }
-                />
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EQUIPMENT_TYPES.GENERATOR.type}
+                        fillerHeight={17}
+                    />
+                )}
+                {selectedId != null && (
+                    <GeneratorModificationForm
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        equipmentId={selectedId}
+                        generatorToModify={generatorToModify}
+                        updatePreviousReactiveCapabilityCurveTable={
+                            updatePreviousReactiveCapabilityCurveTable
+                        }
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );

@@ -160,7 +160,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     singleItem: {
         display: 'flex',
-        flex: 1,
+        flex: 'auto',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
@@ -183,17 +183,12 @@ export const useStyles = makeStyles((theme) => ({
     },
     text: {
         display: 'flex',
-        flex: '-moz-available',
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
     },
-    textContainer: {
-        display: 'flex',
-        flex: '-moz-available',
-    },
     multipleItems: {
         display: 'flex',
-        flex: '-moz-max-content',
+        flex: 'auto',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
