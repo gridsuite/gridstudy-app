@@ -8,7 +8,6 @@
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
     ENERGY_SOURCE,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     MARGINAL_COST,
@@ -34,38 +33,24 @@ import {
     getEnergySourceLabel,
 } from 'components/network/constants';
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import {
-    fetchEquipmentsIds,
-    fetchVoltageLevelsListInfos,
-} from 'utils/rest-api';
+import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-import { useWatch } from 'react-hook-form';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { TextField } from '@mui/material';
 
 const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
-    onEquipmentIdChange,
     generatorToModify,
     updatePreviousReactiveCapabilityCurveTable,
+    equipmentId,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [equipmentOptions, setEquipmentOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-
-    const watchEquipmentId = useWatch({
-        name: EQUIPMENT_ID,
-    });
-
-    useEffect(() => {
-        onEquipmentIdChange(watchEquipmentId);
-    }, [watchEquipmentId, onEquipmentIdChange]);
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
@@ -76,15 +61,6 @@ const GeneratorModificationForm = ({
                     );
                 }
             );
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                undefined,
-                EQUIPMENT_TYPES.GENERATOR.type,
-                true
-            ).then((values) => {
-                setEquipmentOptions(values.sort());
-            });
         }
     }, [studyUuid, currentNodeUuid]);
 
@@ -96,18 +72,18 @@ const GeneratorModificationForm = ({
               id: energySourceLabelId,
           })
         : undefined;
-    const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
 
     const generatorIdField = (
-        <AutocompleteInput
-            allowNewValue
-            forcePopupIcon
-            name={EQUIPMENT_ID}
+        <TextField
+            size="small"
+            fullWidth
             label={'ID'}
-            options={equipmentOptions}
-            formProps={{ ...filledTextField }}
-            size={'small'}
-            isOptionEqualToValue={areIdsEqual}
+            value={equipmentId}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+            {...filledTextField}
         />
     );
 
