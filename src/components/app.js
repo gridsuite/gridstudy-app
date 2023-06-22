@@ -55,13 +55,7 @@ import {
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
 
-import {
-    connectNotificationsWsUpdateConfig,
-    fetchConfigParameter,
-    fetchConfigParameters,
-    fetchDefaultParametersValues,
-    fetchValidateUser,
-} from '../utils/rest-api';
+import { fetchDefaultParametersValues } from '../utils/rest-api';
 import {
     APP_NAME,
     COMMON_APP_NAME,
@@ -92,6 +86,12 @@ import {
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
+import { fetchValidateUser } from '../services/user-admin';
+import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
+import {
+    fetchConfigParameter,
+    fetchConfigParameters,
+} from '../services/config';
 
 const noUserManager = { instance: null, error: null };
 
