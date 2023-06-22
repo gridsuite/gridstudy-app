@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { API_VERSION, backendFetchJson } from '../utils/rest-api';
+import { backendFetchJson } from '../utils/rest-api';
 
 const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/security-analysis`;
 
 function getSecurityAnalysisUrl() {
-    return `${PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES}/${API_VERSION}/`;
+    return `${PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES}/v1/`;
 }
 
 export function fetchSecurityAnalysisProviders() {

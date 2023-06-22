@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { API_VERSION, backendFetch, backendFetchJson } from '../utils/rest-api';
+import { backendFetch, backendFetchJson } from '../utils/rest-api';
 
 const PREFIX_NETWORK_MODIFICATION_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/network-modification`;
 
 export function fetchNetworkModification(modificationUuid) {
-    const modificationFetchUrl = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/${API_VERSION}/network-modifications/${encodeURIComponent(
+    const modificationFetchUrl = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/${encodeURIComponent(
         modificationUuid
     )}`;
 
@@ -20,6 +20,6 @@ export function fetchNetworkModification(modificationUuid) {
 
 export function getLineTypesCatalog() {
     console.info(`get line types catalog`);
-    const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/${API_VERSION}/network-modifications/catalog/line_types`;
+    const url = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/catalog/line_types`;
     return backendFetchJson(url);
 }

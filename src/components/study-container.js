@@ -66,7 +66,6 @@ import {
     BUILD_STATUS,
     MAX_NUMBER_OF_IMPACTED_SUBSTATIONS,
 } from './network/constants';
-import { equipments } from './network/network-equipments';
 import { connectNotificationsWebsocket } from '../services/study-notification';
 import {
     connectDeletedStudyNotificationsWebsocket,

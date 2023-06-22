@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    API_VERSION,
-    backendFetchJson,
-    getRequestParamFromList,
-} from '../utils/rest-api';
+import { backendFetchJson, getRequestParamFromList } from '../utils/rest-api';
 
 const PREFIX_DIRECTORY_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/directory`;
 
@@ -20,7 +16,7 @@ export function fetchRootFolders(types) {
     const typesParams = getRequestParamFromList(types, 'elementTypes');
     const urlSearchParams = new URLSearchParams(typesParams);
 
-    const fetchRootFoldersUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/${API_VERSION}/root-directories?${urlSearchParams}`;
+    const fetchRootFoldersUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/root-directories?${urlSearchParams}`;
     return backendFetchJson(fetchRootFoldersUrl);
 }
 
@@ -31,7 +27,7 @@ export function fetchDirectoryContent(directoryUuid, types) {
     const typesParams = getRequestParamFromList(types, 'elementTypes');
     const urlSearchParams = new URLSearchParams(typesParams);
 
-    const fetchDirectoryContentUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/${API_VERSION}/directories/${directoryUuid}/elements?${urlSearchParams}`;
+    const fetchDirectoryContentUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements?${urlSearchParams}`;
     return backendFetchJson(fetchDirectoryContentUrl);
 }
 
@@ -47,13 +43,13 @@ export function fetchContingencyAndFiltersLists(listIds) {
 
     urlSearchParams.append('strictMode', 'false');
 
-    const url = `${PREFIX_DIRECTORY_SERVER_QUERIES}/${API_VERSION}/elements?${urlSearchParams}`;
+    const url = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/elements?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
 }
 
 function getPathUrl(studyUuid) {
-    return `${PREFIX_DIRECTORY_SERVER_QUERIES}/${API_VERSION}/elements/${encodeURIComponent(
+    return `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/elements/${encodeURIComponent(
         studyUuid
     )}/path`;
 }

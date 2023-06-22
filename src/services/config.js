@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { API_VERSION, backendFetch, backendFetchJson } from '../utils/rest-api';
+import { backendFetch, backendFetchJson } from '../utils/rest-api';
 import { getAppName } from '../utils/config-params';
 
 const PREFIX_CONFIG_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/config`;
@@ -12,8 +12,7 @@ const PREFIX_CONFIG_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/config`;
 export function fetchConfigParameters(appName) {
     console.info('Fetching UI configuration params for app : ' + appName);
     const fetchParams =
-        PREFIX_CONFIG_QUERIES +
-        `/${API_VERSION}/applications/${appName}/parameters`;
+        PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
     return backendFetchJson(fetchParams);
 }
 
@@ -26,7 +25,7 @@ export function fetchConfigParameter(name) {
     );
     const fetchParams =
         PREFIX_CONFIG_QUERIES +
-        `/${API_VERSION}/applications/${appName}/parameters/${name}`;
+        `/v1/applications/${appName}/parameters/${name}`;
     return backendFetch(fetchParams).then((response) =>
         response.status === 204 ? null : response.json()
     );

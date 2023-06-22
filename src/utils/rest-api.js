@@ -18,7 +18,6 @@ import {
 import { toModificationOperation } from '../components/utils/utils';
 
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-export const API_VERSION = process.env.REACT_APP_API_VERSION;
 export const getWsBase = () =>
     document.baseURI
         .replace(/^http:\/\//, 'ws://')
