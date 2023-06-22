@@ -53,7 +53,14 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         Number(state[PARAM_LIMIT_REDUCTION])
     );
     const loadflowNotif = useSelector((state) => state.loadflowNotif);
-
+    const LIMIT_TYPES = useMemo(
+        () => ({
+            HIGH_VOLTAGE: 'HIGH_VOLTAGE',
+            LOW_VOLTAGE: 'LOW_VOLTAGE',
+            CURRENT: 'CURRENT',
+        }),
+        []
+    );
     useEffect(() => {
         const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
         const PERMANENT_LIMIT_NAME = 'permanent';
@@ -69,7 +76,11 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             }
         };
         const convertSide = (side) => {
-            return side === 'ONE' ? 1 : side === 'TWO' ? 2 : undefined;
+            return side === 'ONE'
+                ? intl.formatMessage({ id: 'CurrentViolationSide1' })
+                : side === 'TWO'
+                ? intl.formatMessage({ id: 'CurrentViolationSide2' })
+                : undefined;
         };
         const convertLimitName = (limitName) => {
             return limitName === PERMANENT_LIMIT_NAME
@@ -83,7 +94,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     100
                 ).toFixed(1),
                 name: overloadedEquipment.subjectId,
-                intensity: overloadedEquipment.value,
+                value: overloadedEquipment.value,
                 acceptableDuration: convertDuration(
                     overloadedEquipment.acceptableDuration
                 ),
@@ -153,14 +164,15 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 numeric: false,
             },
             {
-                headerName: intl.formatMessage({ id: 'LimitName' }),
+                headerName: intl.formatMessage({
+                    id: 'LimitNameCurrentViolation',
+                }),
                 field: 'limitName',
                 numeric: false,
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitSide' }),
                 field: 'side',
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
@@ -170,13 +182,13 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 numeric: false,
             },
             {
-                headerName: intl.formatMessage({ id: 'Limit' }),
+                headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
                 field: 'limit',
                 valueFormatter: (params) => params.value.toFixed(1),
             },
             {
-                headerName: intl.formatMessage({ id: 'Intensity' }),
-                field: 'intensity',
+                headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
+                field: 'value',
                 numeric: true,
                 valueFormatter: (params) => params.value.toFixed(1),
             },
@@ -245,15 +257,17 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const renderLimitType = useCallback(
         (limitType) => {
             switch (limitType) {
-                case 'HIGH_VOLTAGE':
+                case LIMIT_TYPES.HIGH_VOLTAGE:
                     return intl.formatMessage({ id: 'HIGH_VOLTAGE' });
-                case 'LOW_VOLTAGE':
+                case LIMIT_TYPES.LOW_VOLTAGE:
                     return intl.formatMessage({ id: 'LOW_VOLTAGE' });
+                case LIMIT_TYPES.CURRENT:
+                    return intl.formatMessage({ id: 'CURRENT' });
                 default:
-                    return 'No';
+                    return limitType;
             }
         },
-        [intl]
+        [intl, LIMIT_TYPES]
     );
     const loadFlowVoltageViolationscolumns = useMemo(() => {
         return [
@@ -268,13 +282,13 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 valueFormatter: (params) => renderLimitType(params.value),
             },
             {
-                headerName: intl.formatMessage({ id: 'Limit' }),
+                headerName: intl.formatMessage({ id: 'VoltageViolationLimit' }),
                 field: 'limit',
                 valueFormatter: (params) => params.value.toFixed(1),
             },
             {
-                headerName: intl.formatMessage({ id: 'Value' }),
-                field: 'intensity',
+                headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
+                field: 'value',
                 numeric: true,
                 valueFormatter: (params) => params.value.toFixed(1),
             },
@@ -313,14 +327,15 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const overloadedEquipmentsCurrentViolation =
         overloadedEquipments &&
         overloadedEquipments.filter(
-            (overloadedEquipment) => overloadedEquipment.limitType === 'CURRENT'
+            (overloadedEquipment) =>
+                overloadedEquipment.limitType === LIMIT_TYPES.CURRENT
         );
     const overloadedEquipmentsVoltageViolation =
         overloadedEquipments &&
         overloadedEquipments.filter(
             (overloadedEquipment) =>
-                overloadedEquipment.limitType === 'HIGH_VOLTAGE' ||
-                overloadedEquipment.limitType === 'LOW_VOLTAGE'
+                overloadedEquipment.limitType === LIMIT_TYPES.HIGH_VOLTAGE ||
+                overloadedEquipment.limitType === LIMIT_TYPES.LOW_VOLTAGE
         );
     function renderLoadFlowCurrentViolations() {
         return (
