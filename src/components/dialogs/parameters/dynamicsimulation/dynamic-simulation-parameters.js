@@ -25,12 +25,12 @@ import {
     fetchDefaultDynamicSimulationProvider,
     fetchDynamicSimulationParameters,
     fetchDynamicSimulationProvider,
-    fetchDynamicSimulationProviders,
     updateDynamicSimulationParameters,
     updateDynamicSimulationProvider,
 } from '../../../../utils/rest-api';
 import NetworkParameters from './network-parameters';
 import CurveParameters from './curve-parameters';
+import { fetchDynamicSimulationProviders } from '../../../../services/dynamic-simulation';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',

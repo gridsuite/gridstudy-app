@@ -15,7 +15,7 @@ import {
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
 } from '@gridsuite/commons-ui';
-
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     CENTER_LABEL,
     CLOSE_STUDY,
@@ -26,8 +26,6 @@ import {
     LINE_FULL_PATH,
     LINE_PARALLEL_PATH,
     LOAD_GEO_DATA_SUCCESS,
-    NETWORK_CREATED,
-    NETWORK_EQUIPMENT_LOADED,
     OPEN_STUDY,
     SELECT_THEME,
     USE_NAME,
@@ -84,10 +82,14 @@ import {
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     STOP_DIAGRAM_BLINK,
-    NETWORK_EQUIPMENT_FETCHED,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     SELECTION_FOR_COPY,
     LIMIT_REDUCTION,
+    LOAD_EQUIPMENTS,
+    UPDATE_EQUIPMENTS,
+    DELETE_EQUIPMENT,
+    RESET_EQUIPMENTS,
+    RESET_EQUIPMENTS_POST_LOADFLOW,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -145,6 +147,23 @@ const paramsInitialState = {
     [PARAMS_LOADED]: false,
 };
 
+const initialSpreadsheetNetworkState = {
+    substations: null,
+    lines: null,
+    twoWindingsTransformers: null,
+    threeWindingsTransformers: null,
+    generators: null,
+    loads: null,
+    batteries: null,
+    danglingLines: null,
+    hvdcLines: null,
+    lccConverterStations: null,
+    vscConverterStations: null,
+    shuntCompensators: null,
+    staticVarCompensators: null,
+    voltageLevels: null,
+};
+
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
@@ -154,7 +173,6 @@ const initialState = {
         copyType: null,
         allChildrenIds: null,
     },
-    network: null,
     mapEquipments: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
@@ -186,7 +204,7 @@ const initialState = {
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
-    networkEquipmentsFetched: false, // indicate if network equipments are fetched
+    spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -206,17 +224,8 @@ export const reducer = createReducer(initialState, {
 
     [CLOSE_STUDY]: (state) => {
         state.studyUuid = null;
-        state.network = null;
         state.geoData = null;
         state.networkModificationTreeModel = null;
-    },
-
-    [NETWORK_CREATED]: (state, action) => {
-        state.network = action.network;
-    },
-
-    [NETWORK_EQUIPMENT_FETCHED]: (state, action) => {
-        state.networkEquipmentsFetched = action.networkEquipmentsFetched;
     },
 
     [MAP_EQUIPMENTS_CREATED]: (state, action) => {
@@ -240,13 +249,6 @@ export const reducer = createReducer(initialState, {
             newMapEquipments.completeHvdcLinesInfos();
         }
         state.mapEquipments = newMapEquipments;
-    },
-
-    [NETWORK_EQUIPMENT_LOADED]: (state, action) => {
-        state.network = state.network.newSharedForUpdate(
-            action.equipmentsName,
-            action.values
-        );
     },
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
@@ -905,7 +907,188 @@ export const reducer = createReducer(initialState, {
     [NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS]: (state, action) => {
         state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
     },
+    [LOAD_EQUIPMENTS]: (state, action) => {
+        state.spreadsheetNetwork[action.equipmentType] = action.equipments;
+    },
+    [UPDATE_EQUIPMENTS]: (state, action) => {
+        // for now, this action receives an object containing all equipments from a substation
+        // it will be modified when the notifications received after a network modification will be more precise
+        const updatedEquipments = action.equipments;
+
+        // equipmentType : type of equipment updated
+        // equipments : list of updated equipments of type <equipmentType>
+        for (const [equipmentType, equipments] of Object.entries(
+            updatedEquipments
+        )) {
+            const currentEquipment = state.spreadsheetNetwork[equipmentType];
+
+            // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
+            if (currentEquipment != null) {
+                //since substations data contains voltage level ones, they have to be treated separatly
+                if (equipmentType === 'substations') {
+                    const [updatedSubtations, updatedVoltageLevels] =
+                        updateSubstationsAndVoltageLevels(
+                            state.spreadsheetNetwork.substations,
+                            state.spreadsheetNetwork.voltageLevels,
+                            equipments
+                        );
+
+                    state.spreadsheetNetwork.substations = updatedSubtations;
+                    state.spreadsheetNetwork.voltageLevels =
+                        updatedVoltageLevels;
+                } else {
+                    state.spreadsheetNetwork[equipmentType] = updateEquipments(
+                        currentEquipment,
+                        equipments
+                    );
+                }
+            }
+        }
+    },
+    [DELETE_EQUIPMENT]: (state, action) => {
+        const equipmentToDeleteId = action.equipmentId;
+        const equipmentToDeleteType = fromEquipmentTypeToSpreadsheetNetworkType(
+            action.equipmentType
+        );
+
+        const currentEquipments =
+            state.spreadsheetNetwork[equipmentToDeleteType];
+        if (currentEquipments != null) {
+            // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
+            if (action.equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type) {
+                const currentSubstations = state.spreadsheetNetwork.substations;
+                if (currentSubstations != null) {
+                    state.spreadsheetNetwork.substations =
+                        updateSubstationAfterVLDeletion(
+                            currentSubstations,
+                            equipmentToDeleteId
+                        );
+                }
+            }
+
+            state.spreadsheetNetwork[equipmentToDeleteType] = deleteEquipment(
+                currentEquipments,
+                equipmentToDeleteId
+            );
+        }
+    },
+    [RESET_EQUIPMENTS]: (state) => {
+        state.spreadsheetNetwork = { ...initialSpreadsheetNetworkState };
+    },
+    [RESET_EQUIPMENTS_POST_LOADFLOW]: (state) => {
+        state.spreadsheetNetwork = {
+            ...initialSpreadsheetNetworkState,
+            substations: state.spreadsheetNetwork.substations,
+            voltageLevels: state.spreadsheetNetwork.voltageLevels,
+            hvdcLines: state.spreadsheetNetwork.hvdcLines,
+        };
+    },
 });
+
+function updateSubstationAfterVLDeletion(currentSubstations, VLToDeleteId) {
+    const substationToUpdateIndex = currentSubstations.findIndex((sub) =>
+        sub.voltageLevels.some((vl) => vl.id === VLToDeleteId)
+    );
+    if (substationToUpdateIndex >= 0) {
+        currentSubstations[substationToUpdateIndex].voltageLevels =
+            currentSubstations[substationToUpdateIndex].voltageLevels.filter(
+                (vl) => vl.id !== VLToDeleteId
+            );
+    }
+
+    return currentSubstations;
+}
+
+function fromEquipmentTypeToSpreadsheetNetworkType(equipmentType) {
+    switch (equipmentType) {
+        case EQUIPMENT_TYPES.LINE.type:
+            return 'lines';
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
+            return 'twoWindingsTransformers';
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type:
+            return 'threeWindingsTransformers';
+        case EQUIPMENT_TYPES.GENERATOR.type:
+            return 'generators';
+        case EQUIPMENT_TYPES.LOAD.type:
+            return 'loads';
+        case EQUIPMENT_TYPES.BATTERY.type:
+            return 'batteries';
+        case EQUIPMENT_TYPES.DANGLING_LINE.type:
+            return 'danglingLines';
+        case EQUIPMENT_TYPES.HVDC_LINE.type:
+            return 'hvdcLines';
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type:
+            return 'lccConverterStations';
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type:
+            return 'vscConverterStations';
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type:
+            return 'shuntCompensators';
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type:
+            return 'staticVarCompensators';
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+            return 'voltageLevels';
+        case EQUIPMENT_TYPES.SUBSTATION.type:
+            return 'substations';
+        default:
+            return;
+    }
+}
+
+function deleteEquipment(currentEquipments, equipmentToDeleteId) {
+    const equipmentToDeleteIndex = currentEquipments.findIndex(
+        (eq) => eq.id === equipmentToDeleteId
+    );
+    if (equipmentToDeleteIndex >= 0) {
+        currentEquipments.splice(equipmentToDeleteIndex, 1);
+    }
+    return currentEquipments;
+}
+
+function updateSubstationsAndVoltageLevels(
+    currentSubstations,
+    currentVoltageLevels,
+    newOrUpdatedSubstations
+) {
+    const updatedSubstations = updateEquipments(
+        currentSubstations,
+        newOrUpdatedSubstations
+    );
+
+    let updatedVoltageLevels = null;
+
+    // if voltage levels are not loaded yet, we don't need to update them
+    if (currentVoltageLevels != null) {
+        const newOrUpdatedVoltageLevels = newOrUpdatedSubstations.reduce(
+            (acc, currentSub) => {
+                return acc.concat([...currentSub.voltageLevels]);
+            },
+            []
+        );
+
+        updatedVoltageLevels = updateEquipments(
+            currentVoltageLevels,
+            newOrUpdatedVoltageLevels
+        );
+    }
+
+    return [updatedSubstations, updatedVoltageLevels];
+}
+
+function updateEquipments(currentEquipments, newOrUpdatedEquipments) {
+    newOrUpdatedEquipments.forEach((equipment) => {
+        const existingEquipmentIndex = currentEquipments.findIndex(
+            (equip) => equip.id === equipment.id
+        );
+
+        if (existingEquipmentIndex >= 0) {
+            currentEquipments[existingEquipmentIndex] = equipment;
+        } else {
+            currentEquipments.push(equipment);
+        }
+    });
+
+    return currentEquipments;
+}
 
 function synchCurrentTreeNode(state, nextCurrentNodeUuid) {
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
