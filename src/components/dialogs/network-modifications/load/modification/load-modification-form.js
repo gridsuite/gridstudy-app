@@ -8,7 +8,6 @@
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
     ACTIVE_POWER,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
     REACTIVE_POWER,
@@ -24,55 +23,34 @@ import SelectInput from 'components/utils/rhf-inputs/select-input';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import Grid from '@mui/material/Grid';
-import { useCallback, useEffect, useState } from 'react';
-import {
-    fetchEquipmentsIds,
-    fetchNetworkElementInfos,
-    FetchStatus,
-} from 'utils/rest-api';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-import { useWatch } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import { fetchNetworkElementInfos, FetchStatus } from 'utils/rest-api';
 import { useIntl } from 'react-intl';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
+import { TextField } from '@mui/material';
 
 const LoadModificationForm = ({
     currentNode,
     studyUuid,
     setDataFetchStatus,
+    equipmentId,
 }) => {
     const currentNodeUuid = currentNode?.id;
-    const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [loadInfos, setLoadInfos] = useState(null);
     const intl = useIntl();
 
-    const loadId = useWatch({
-        name: `${EQUIPMENT_ID}`,
-    });
-
     useEffect(() => {
-        fetchEquipmentsIds(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            EQUIPMENT_TYPES.LOAD.type,
-            true
-        ).then((values) => {
-            setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
-        });
-    }, [studyUuid, currentNodeUuid]);
-
-    useEffect(() => {
-        if (loadId) {
+        if (equipmentId) {
             setDataFetchStatus(FetchStatus.RUNNING);
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNodeUuid,
                 EQUIPMENT_TYPES.LOAD.type,
                 EQUIPMENT_INFOS_TYPES.FORM.type,
-                loadId,
+                equipmentId,
                 true
             )
                 .then((value) => {
@@ -89,26 +67,19 @@ const LoadModificationForm = ({
         } else {
             setLoadInfos(null);
         }
-    }, [studyUuid, currentNodeUuid, loadId, setDataFetchStatus]);
-
-    const getObjectId = useCallback((object) => {
-        if (typeof object === 'string') {
-            return object;
-        }
-
-        return object.id;
-    }, []);
+    }, [studyUuid, currentNodeUuid, equipmentId, setDataFetchStatus]);
 
     const loadIdField = (
-        <AutocompleteInput
-            allowNewValue
-            forcePopupIcon
-            name={`${EQUIPMENT_ID}`}
-            label="ID"
-            options={equipmentOptions}
-            getOptionLabel={getObjectId}
-            size={'small'}
-            formProps={{ autoFocus: true, ...filledTextField }}
+        <TextField
+            size="small"
+            fullWidth
+            label={'ID'}
+            value={equipmentId}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+            {...filledTextField}
         />
     );
 

@@ -14,7 +14,6 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import Network from '../network/network';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Grid, Alert } from '@mui/material';
 import {
@@ -46,6 +45,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
+import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 
 const useEditBuffer = () => {
@@ -109,10 +109,6 @@ const TableWrapper = (props) => {
     );
     const allReorderedTableDefinitionIndexes = useSelector(
         (state) => state.allReorderedTableDefinitionIndexes
-    );
-
-    const equipmentFetched = useSelector(
-        (state) => state.networkEquipmentsFetched
     );
 
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
@@ -297,25 +293,26 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const getRows = useCallback(
-        (index) => {
-            if (props.disabled || !props.network) {
-                return [];
-            }
-            const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
-            const datasourceRows = tableDefinition.getter
-                ? tableDefinition.getter(props.network)
-                : props.network[tableDefinition.resource];
-
-            if (!datasourceRows) {
-                return [];
-            }
-
-            //the method returns a new array so that the table component detects its data changed thus rerendering its rows
-            return [...datasourceRows];
-        },
-        [props.disabled, props.network]
+    const { equipments, errorMessage } = useSpreadsheetEquipments(
+        TABLES_DEFINITION_INDEXES.get(tabIndex)
     );
+
+    useEffect(() => {
+        if (errorMessage) {
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'SpreadsheetFetchError',
+            });
+        }
+    }, [errorMessage, snackError]);
+
+    const getRows = useCallback(() => {
+        if (props.disabled || !equipments) {
+            return [];
+        }
+
+        return equipments;
+    }, [equipments, props.disabled]);
 
     useEffect(() => {
         setColumnData(generateTableColumns(tabIndex));
@@ -325,7 +322,7 @@ const TableWrapper = (props) => {
     //is reinstanciated in order to notify components using it.
     //this variable is regenerated on every renders in order to gather latest external updates done to the dataset,
     //it is necessary since we curently lack the system to detect changes done to it after receiving a notification
-    const rowData = getRows(tabIndex);
+    const rowData = getRows();
 
     const handleSwitchTab = useCallback(
         (value) => {
@@ -362,14 +359,6 @@ const TableWrapper = (props) => {
                   )
         );
     }, [allReorderedTableDefinitionIndexes, tabIndex]);
-
-    useEffect(() => {
-        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        if (!props.network || props.disabled) {
-            return;
-        }
-        props.network.useEquipment(resource);
-    }, [props.network, props.disabled, tabIndex]);
 
     useEffect(() => {
         setManualTabSwitch(false);
@@ -709,15 +698,9 @@ const TableWrapper = (props) => {
                         rowData={rowData}
                         columnData={columnData}
                         topPinnedData={topPinnedData}
-                        fetched={
-                            equipmentFetched &&
-                            props.network?.isResourceFetched(
-                                TABLES_DEFINITION_INDEXES.get(tabIndex).resource
-                            )
-                        }
+                        fetched={equipments || errorMessage}
                         scrollToIndex={scrollToIndex}
                         visible={props.visible}
-                        network={props.network}
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}
@@ -736,7 +719,6 @@ const TableWrapper = (props) => {
 };
 
 TableWrapper.defaultProps = {
-    network: null,
     studyUuid: '',
     currentNode: null,
     equipmentId: null,
@@ -747,7 +729,6 @@ TableWrapper.defaultProps = {
 };
 
 TableWrapper.propTypes = {
-    network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     equipmentId: PropTypes.string,

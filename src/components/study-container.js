@@ -27,19 +27,21 @@ import {
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
     fetchVoltageInitStatus,
+    fetchAllEquipments,
 } from '../utils/rest-api';
 import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
-    networkCreated,
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
     setDeletedEquipments,
     setUpdatedSubstationsIds,
-    isNetworkEquipmentsFetched,
+    updateEquipments,
+    deleteEquipment,
+    resetEquipments,
+    resetEquipmentsPostLoadflow,
 } from '../redux/actions';
-import Network from './network/network';
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
@@ -60,8 +62,11 @@ import {
 import { useIntl } from 'react-intl';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
+import {
+    BUILD_STATUS,
+    MAX_NUMBER_OF_IMPACTED_SUBSTATIONS,
+} from './network/constants';
 import { equipments } from './network/network-equipments';
-import { BUILD_STATUS } from './network/constants';
 import { connectNotificationsWebsocket } from '../services/study-notification';
 import {
     connectDeletedStudyNotificationsWebsocket,
@@ -251,11 +256,8 @@ export function StudyContainer({ view, onChangeTab }) {
     // using a ref because this is not used for rendering, it is used in the websocket onMessage()
     const studyParentDirectoriesUuidsRef = useRef([]);
 
-    const network = useSelector((state) => state.network);
     const userName = useSelector((state) => state.user.profile.sub);
     const paramsLoaded = useSelector((state) => state[PARAMS_LOADED]);
-    const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
-        useState(undefined);
 
     const [errorMessage, setErrorMessage] = useState(undefined);
 
@@ -511,11 +513,6 @@ export function StudyContainer({ view, onChangeTab }) {
         };
     }, [dispatch, fetchStudyPath]);
 
-    const displayNetworkLoadingFailMessage = useCallback((error) => {
-        console.error(error.message);
-        setNetworkLoadingFailMessage(error.message);
-    }, []);
-
     const loadTree = useCallback(() => {
         console.info(
             `Loading network modification tree of study '${studyUuid}'...`
@@ -595,7 +592,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }
 
     useEffect(() => {
-        if (network && studyUpdatedForce.eventData.headers) {
+        if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
@@ -618,9 +615,11 @@ export function StudyContainer({ view, onChangeTab }) {
                                 deletedEquipment?.equipmentType,
                                 ' from the network'
                             );
-                            network.removeEquipment(
-                                deletedEquipment?.equipmentType,
-                                deletedEquipment?.equipmentId
+                            dispatch(
+                                deleteEquipment(
+                                    deletedEquipment?.equipmentType,
+                                    deletedEquipment?.equipmentId
+                                )
                             );
                         }
                     });
@@ -629,53 +628,26 @@ export function StudyContainer({ view, onChangeTab }) {
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
-                    network.reloadImpactedSubstationsEquipments(
+                    const substationsIdsToFetch =
+                        substationsIds?.length >
+                        MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
+                            ? undefined
+                            : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
+                    const updatedEquipments = fetchAllEquipments(
                         studyUuid,
-                        currentNodeRef.current,
-                        substationsIds
+                        currentNode?.id,
+                        substationsIdsToFetch
                     );
+
+                    updatedEquipments.then((values) => {
+                        dispatch(updateEquipments(values));
+                    });
+
                     dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
             }
         }
-    }, [studyUpdatedForce, network, studyUuid, dispatch]);
-
-    const loadNetwork = useCallback(
-        (isUpdate) => {
-            if (!isNodeBuilt(currentNode) || !studyUuid) {
-                return;
-            }
-            console.info(`Loading network of study '${studyUuid}'...`);
-
-            if (isUpdate) {
-                // After a load flow, network has to be recreated.
-                // In order to avoid glitches during sld (this force closes all slds) and map rendering,
-                // lines and substations have to be prefetched and set before network creation event is dispatched
-                // Network creation event is dispatched directly in the network constructor
-                new Network(
-                    studyUuid,
-                    currentNodeRef, // we use currentNodeRef instead of currentNode to check if the node has changed while we fetch data
-                    displayNetworkLoadingFailMessage,
-                    dispatch,
-                    {
-                        equipments: [equipments.lines, equipments.substations],
-                    }
-                );
-            } else {
-                const network = new Network(
-                    studyUuid,
-                    currentNodeRef,
-                    displayNetworkLoadingFailMessage,
-                    dispatch
-                );
-                // For initial network loading, no need to initialize lines and substations at first,
-                // lazy loading will do the job (no glitches to avoid)
-                dispatch(isNetworkEquipmentsFetched(true));
-                dispatch(networkCreated(network));
-            }
-        },
-        [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
-    );
+    }, [studyUpdatedForce, currentNode?.id, studyUuid, dispatch]);
 
     //handles map automatic mode network reload
     useEffect(() => {
@@ -699,8 +671,8 @@ export function StudyContainer({ view, onChangeTab }) {
         ) {
             return;
         }
-        loadNetwork(previousCurrentNode); // loadNetwork(false) only at app startup, otherwise slds are force closed
-    }, [loadNetwork, currentNode, wsConnected]);
+        dispatch(resetEquipments());
+    }, [currentNode, wsConnected, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -708,12 +680,10 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'loadflow'
             ) {
-                //TODO reload data more intelligently
-                loadNetwork(true);
+                dispatch(resetEquipmentsPostLoadflow());
             }
         }
-        // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, loadNetwork, dispatch]);
+    }, [studyUpdatedForce, dispatch]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
@@ -805,15 +775,12 @@ export function StudyContainer({ view, onChangeTab }) {
 
     return (
         <WaitingLoader
-            errMessage={
-                studyErrorMessage || networkLoadingFailMessage || errorMessage
-            }
+            errMessage={studyErrorMessage || errorMessage}
             loading={studyPending || !paramsLoaded} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
             <StudyPane
                 studyUuid={studyUuid}
-                network={network}
                 currentNode={currentNode}
                 view={view}
                 onChangeTab={onChangeTab}
