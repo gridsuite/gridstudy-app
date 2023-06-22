@@ -1020,5 +1020,6 @@
     "Create": "Créer",
     "ShuntCompensator": "Moyen de compensation statique",
     "AttachingAndSplittingLines": "Piquage et coupure",
-    "GenerationAndLoad": "Production et consommation"
+    "GenerationAndLoad": "Production et consommation",
+    "idSelector.idNeeded": "Veuillez sélectionner un ID"
 }
