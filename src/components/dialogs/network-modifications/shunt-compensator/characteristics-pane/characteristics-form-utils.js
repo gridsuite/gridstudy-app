@@ -65,7 +65,7 @@ export const getCharacteristicsFormValidationSchema = (
 const characteristicsEmptyFormData = () => ({
     [CHARACTERISTICS_CHOICE]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
     [SUSCEPTANCE_PER_SECTION]: null,
-    [SHUNT_COMPENSATOR_TYPE]: '',
+    [SHUNT_COMPENSATOR_TYPE]: null,
     [Q_AT_NOMINAL_V]: null,
 });
 
@@ -79,9 +79,9 @@ export const getCharacteristicsFormData = ({
     shuntCompensatorType,
 }) => {
     return {
-        [CHARACTERISTICS_CHOICE]: qAtNominalV
-            ? CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-            : CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+        [CHARACTERISTICS_CHOICE]: susceptancePerSection
+            ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
+            : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [SUSCEPTANCE_PER_SECTION]: susceptancePerSection,
         [SHUNT_COMPENSATOR_TYPE]: shuntCompensatorType ?? '',
         [Q_AT_NOMINAL_V]: qAtNominalV,

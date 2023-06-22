@@ -6,63 +6,30 @@
  */
 
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import TextInput from '../../../../utils/rhf-inputs/text-input';
-import {
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-} from '../../../../utils/field-constants';
+import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
 import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
-import AutocompleteInput from '../../../../utils/rhf-inputs/autocomplete-input';
-import { areIdsEqual, getObjectId } from '../../../../utils/utils';
-import { fetchEquipmentsIds } from '../../../../../utils/rest-api';
-import { useWatch } from 'react-hook-form';
+import { TextField } from '@mui/material';
 
 const ShuntCompensatorModificationForm = ({
-    studyUuid,
-    currentNodeUuid,
-    onEquipmentIdChange,
     shuntCompensatorInfos,
+    equipmentId,
 }) => {
-    const [shuntCompensatorOptions, setShuntCompensatorOptions] = useState([]);
-    const watchShuntCompensatorId = useWatch({
-        name: `${EQUIPMENT_ID}`,
-    });
-
-    useEffect(() => {
-        onEquipmentIdChange(watchShuntCompensatorId);
-    }, [watchShuntCompensatorId, onEquipmentIdChange]);
-
-    useEffect(() => {
-        fetchEquipmentsIds(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            'SHUNT_COMPENSATOR',
-            true
-        ).then((values) => {
-            setShuntCompensatorOptions(
-                values.sort((a, b) => a.localeCompare(b))
-            );
-        });
-    }, [studyUuid, currentNodeUuid]);
-
     const shuntCompensatorIdField = (
-        <AutocompleteInput
-            isOptionEqualToValue={areIdsEqual}
-            allowNewValue
-            forcePopupIcon
-            name={EQUIPMENT_ID}
+        <TextField
+            size="small"
+            fullWidth
             label={'ID'}
-            options={shuntCompensatorOptions}
-            getOptionLabel={getObjectId}
-            outputTransform={getObjectId}
-            size={'small'}
-            formProps={{ autoFocus: true, ...filledTextField }}
+            value={equipmentId}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+            {...filledTextField}
         />
     );
-
     const shuntCompensatorNameField = (
         <TextInput
             name={EQUIPMENT_NAME}

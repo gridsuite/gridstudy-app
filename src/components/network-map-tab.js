@@ -39,6 +39,7 @@ import SubstationModificationDialog from './dialogs/network-modifications/substa
 import VoltageLevelModificationDialog from './dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import LineModificationDialog from './dialogs/network-modifications/line/modification/line-modification-dialog';
+import ShuntCompensatorModificationDialog from './dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -195,6 +196,17 @@ export const NetworkMapTab = ({
             case equipments.lines:
                 return (
                     <LineModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        isUpdate={true}
+                        onClose={() => closeModificationDialog()}
+                    />
+                );
+            case EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type:
+                return (
+                    <ShuntCompensatorModificationDialog
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}

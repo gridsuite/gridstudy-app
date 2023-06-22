@@ -9,7 +9,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     Q_AT_NOMINAL_V,
     SHUNT_COMPENSATOR_TYPE,
@@ -23,7 +22,7 @@ import {
 import { FormProvider, useForm } from 'react-hook-form';
 import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     fetchNetworkElementInfos,
     FetchStatus,
@@ -38,9 +37,9 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 
 const emptyFormData = {
-    [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getCharacteristicsEmptyFormData(),
 };
@@ -48,16 +47,16 @@ const emptyFormData = {
 const formSchema = yup
     .object()
     .shape({
-        [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
         ...getCharacteristicsFormValidationSchema(true),
     })
     .required();
 
 const ShuntCompensatorModificationDialog = ({
-    studyUuid,
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
-    editData,
+    studyUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -67,6 +66,7 @@ const ShuntCompensatorModificationDialog = ({
     const { snackError } = useSnackMessage();
 
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [shuntCompensatorInfos, setShuntCompensatorInfos] = useState(null);
 
     const formMethods = useForm({
@@ -74,12 +74,19 @@ const ShuntCompensatorModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const {
+        reset,
+        formState: { dirtyFields },
+    } = formMethods;
+
+    // we disable the 'Validate' button if the user change characteristic choice only without setting a value
+    const disableSave =
+        dirtyFields[CHARACTERISTICS_CHOICE] &&
+        !(dirtyFields[SUSCEPTANCE_PER_SECTION] || dirtyFields[EQUIPMENT_NAME]);
 
     const fromEditDataToFormValues = useCallback(
         (shuntCompensator) => {
             reset({
-                [EQUIPMENT_ID]: shuntCompensator.equipmentId,
                 [EQUIPMENT_NAME]: shuntCompensator?.equipmentName?.value ?? '',
                 ...getCharacteristicsFormData({
                     susceptancePerSection:
@@ -95,6 +102,9 @@ const ShuntCompensatorModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
             fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
@@ -138,6 +148,12 @@ const ShuntCompensatorModificationDialog = ({
         [currentNodeUuid, studyUuid]
     );
 
+    useEffect(() => {
+        if (selectedId) {
+            onEquipmentIdChange(selectedId);
+        }
+    }, [selectedId, onEquipmentIdChange]);
+
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
@@ -147,7 +163,7 @@ const ShuntCompensatorModificationDialog = ({
             modifyShuntCompensator(
                 studyUuid,
                 currentNodeUuid,
-                shuntCompensator[EQUIPMENT_ID],
+                selectedId,
                 sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
                 shuntCompensator[CHARACTERISTICS_CHOICE] ===
                     CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
@@ -177,6 +193,7 @@ const ShuntCompensatorModificationDialog = ({
             editData,
             shuntCompensatorInfos?.voltageLevelId,
             snackError,
+            selectedId,
         ]
     );
 
@@ -193,6 +210,7 @@ const ShuntCompensatorModificationDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-modify-shuntCompensator"
                 titleId="ModifyShuntCompensator"
+                disabledSave={disableSave}
                 open={open}
                 isDataFetching={
                     isUpdate &&
@@ -201,12 +219,22 @@ const ShuntCompensatorModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                <ShuntCompensatorModificationForm
-                    studyUuid={studyUuid}
-                    currentNodeUuid={currentNodeUuid}
-                    onEquipmentIdChange={onEquipmentIdChange}
-                    shuntCompensatorInfos={shuntCompensatorInfos}
-                />
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type}
+                        fillerHeight={5}
+                    />
+                )}
+                {selectedId != null && (
+                    <ShuntCompensatorModificationForm
+                        shuntCompensatorInfos={shuntCompensatorInfos}
+                        equipmentId={selectedId}
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );
