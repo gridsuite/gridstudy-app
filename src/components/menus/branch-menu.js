@@ -31,7 +31,6 @@ import {
 } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { equipments } from '../network/network-equipments';
 import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
@@ -78,11 +77,11 @@ const withBranchMenu =
 
         const getEquipmentTranslation = useCallback((equipmentType) => {
             switch (equipmentType) {
-                case equipments.lines:
+                case EQUIPMENT_TYPES.LINE.type:
                     return 'Line';
-                case equipments.hvdcLines:
+                case EQUIPMENT_TYPES.HVDC_LINE.type:
                     return 'HvdcLine';
-                case equipments.twoWindingsTransformers:
+                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
                     return '2WTransformer';
                 default:
                     break;
@@ -91,11 +90,11 @@ const withBranchMenu =
 
         const getRealEquipmentType = useCallback((equipmentType) => {
             switch (equipmentType) {
-                case equipments.lines:
+                case EQUIPMENT_TYPES.LINE.type:
                     return EQUIPMENT_TYPES.LINE.type;
-                case equipments.hvdcLines:
+                case EQUIPMENT_TYPES.HVDC_LINE.type:
                     return EQUIPMENT_TYPES.HVDC_LINE.type;
-                case equipments.twoWindingsTransformers:
+                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
                     return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
                 default:
                     break;
@@ -209,7 +208,7 @@ const withBranchMenu =
                     handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                 />
-                {equipmentType === equipments.lines && (
+                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleLockout()}
@@ -233,7 +232,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== equipments.hvdcLines && (
+                {equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleTrip()}
@@ -257,7 +256,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === equipments.lines && (
+                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
@@ -292,7 +291,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === equipments.lines && (
+                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
@@ -327,7 +326,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === equipments.lines && (
+                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() => handleSwitchOn()}
@@ -352,7 +351,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== equipments.hvdcLines && (
+                {equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() =>
@@ -378,8 +377,9 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {(equipmentType === equipments.twoWindingsTransformers ||
-                    equipmentType === equipments.lines) && (
+                {(equipmentType ===
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type ||
+                    equipmentType === EQUIPMENT_TYPES.LINE.type) && (
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() =>

@@ -10,7 +10,6 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { RunningStatus } from '../../utils/running-status';
-import { equipments } from '../../network/network-equipments';
 import {
     getEquipmentTypeFromFeederType,
     MIN_HEIGHT,
@@ -40,6 +39,7 @@ import LoadModificationDialog from 'components/dialogs/network-modifications/loa
 import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -179,9 +179,9 @@ function SingleLineDiagramContent(props) {
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
-            (equipmentMenu.equipmentType === equipments.lines ||
+            (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE.type ||
                 equipmentMenu.equipmentType ===
-                    equipments.twoWindingsTransformers) && (
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type) && (
                 <MenuBranch
                     id={equipmentMenu.equipmentId}
                     equipmentType={equipmentMenu.equipmentType}
@@ -234,7 +234,7 @@ function SingleLineDiagramContent(props) {
 
     const displayModificationDialog = (equipmentType) => {
         switch (equipmentType) {
-            case equipments.generators:
+            case EQUIPMENT_TYPES.GENERATOR.type:
                 return (
                     <GeneratorModificationDialog
                         open={true}
@@ -244,7 +244,7 @@ function SingleLineDiagramContent(props) {
                         defaultIdValue={equipmentToModify.equipmentId}
                     />
                 );
-            case equipments.loads:
+            case EQUIPMENT_TYPES.LOAD.type:
                 return (
                     <LoadModificationDialog
                         open={true}
@@ -254,7 +254,7 @@ function SingleLineDiagramContent(props) {
                         defaultIdValue={equipmentToModify.equipmentId}
                     />
                 );
-            case equipments.twoWindingsTransformers:
+            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
                 return (
                     <TwoWindingsTransformerModificationDialog
                         open={true}
@@ -265,7 +265,7 @@ function SingleLineDiagramContent(props) {
                         onClose={() => closeModificationDialog()}
                     />
                 );
-            case equipments.lines:
+            case EQUIPMENT_TYPES.LINE.type:
                 return (
                     <LineModificationDialog
                         open={true}
@@ -430,29 +430,32 @@ function SingleLineDiagramContent(props) {
             />
             {shouldDisplayTooltip && displayTooltip()}
             {displayBranchMenu()}
-            {displayMenu(equipments.loads, 'load-menus')}
-            {displayMenu(equipments.batteries, 'battery-menus')}
-            {displayMenu(equipments.danglingLines, 'dangling-line-menus')}
-            {displayMenu(equipments.generators, 'generator-menus')}
+            {displayMenu(EQUIPMENT_TYPES.LOAD.type, 'load-menus')}
+            {displayMenu(EQUIPMENT_TYPES.BATTERY.type, 'battery-menus')}
             {displayMenu(
-                equipments.staticVarCompensators,
+                EQUIPMENT_TYPES.DANGLING_LINE.type,
+                'dangling-line-menus'
+            )}
+            {displayMenu(EQUIPMENT_TYPES.GENERATOR.type, 'generator-menus')}
+            {displayMenu(
+                EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
                 'static-var-compensator-menus'
             )}
             {displayMenu(
-                equipments.shuntCompensators,
+                EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
                 'shunt-compensator-menus'
             )}
             {displayMenu(
-                equipments.threeWindingsTransformers,
+                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
                 'three-windings-transformer-menus'
             )}
-            {displayMenu(equipments.hvdcLines, 'hvdc-line-menus')}
+            {displayMenu(EQUIPMENT_TYPES.HVDC_LINE.type, 'hvdc-line-menus')}
             {displayMenu(
-                equipments.lccConverterStations,
+                EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
                 'lcc-converter-station-menus'
             )}
             {displayMenu(
-                equipments.vscConverterStations,
+                EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
                 'vsc-converter-station-menus'
             )}
             {equipmentToModify &&
