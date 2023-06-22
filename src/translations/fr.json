@@ -1023,5 +1023,6 @@
     "ShuntCompensator": "Moyen de compensation statique",
     "AttachingAndSplittingLines": "Piquage et coupure",
     "GenerationAndLoad": "Production et consommation",
-    "idSelector.idNeeded": "Veuillez sélectionner un ID"
+    "idSelector.idNeeded": "Veuillez sélectionner un ID",
+    "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur"
 }
