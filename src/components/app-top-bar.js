@@ -105,6 +105,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const centerOnSubstationCB = useCallback(
         (e, element) => {
+            e.stopPropagation();
             if (!studyUuid || !currentNode) {
                 return;
             }

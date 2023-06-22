@@ -160,7 +160,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     singleItem: {
         display: 'flex',
-        flex: 1,
+        flex: 'auto',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
@@ -183,21 +183,23 @@ export const useStyles = makeStyles((theme) => ({
     },
     text: {
         display: 'flex',
-        flex: '-moz-available',
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
     },
-    textContainer: {
-        display: 'flex',
-        flex: '-moz-available',
-    },
     multipleItems: {
         display: 'flex',
-        flex: '-moz-max-content',
+        flex: 'auto',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
+    },
+    tabWithError: {
+        '&.Mui-selected': { color: theme.palette.error.main },
+        color: theme.palette.error.main,
+    },
+    tabWithErrorIndicator: {
+        backgroundColor: theme.palette.error.main,
     },
 }));
 
@@ -636,9 +638,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                         {enableDeveloperMode && (
                             <Tab
                                 disabled={!studyUuid}
-                                label={
-                                    <FormattedMessage id="VoltageInitOptimalReactivePowerFlow" />
-                                }
+                                label={<FormattedMessage id="VoltageInit" />}
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
                         )}
