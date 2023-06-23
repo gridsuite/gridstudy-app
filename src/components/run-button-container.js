@@ -210,7 +210,7 @@ export function RunButtonContainer({
                     // optional: handle the case where action is not recognized
                     break;
             }
-            setComputationStopped(!computationStopped);
+            setComputationStopped(true);
         },
     };
 
@@ -267,6 +267,7 @@ export function RunButtonContainer({
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
             setLoadFlowStatusState(RunningStatus.RUNNING);
+            setComputationStopped(false);
             startLoadFlow(studyUuid, currentNode?.id)
                 .then(setRanLoadflow(true))
                 .catch((error) => {
@@ -284,6 +285,7 @@ export function RunButtonContainer({
             setRanSensi(true);
         } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
             setShortCircuitStatusState(RunningStatus.RUNNING);
+            setComputationStopped(false);
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
                 .then(setRanShortCircuit(true))
                 .catch((error) => {
@@ -295,6 +297,7 @@ export function RunButtonContainer({
                 });
         } else if (action === runnable.VOLTAGE_INIT) {
             setVoltageInitStatusState(RunningStatus.RUNNING);
+            setComputationStopped(false);
             startVoltageInit(studyUuid, currentNode?.id)
                 .then(setRanVoltageInit(true))
                 .catch((error) => {
