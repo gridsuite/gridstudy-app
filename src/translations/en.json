@@ -603,10 +603,8 @@
     "TransformerReactance": "Transformer reactance",
     "FrequencyRegulation": "Active power regulation",
     "Droop": "Droop",
-    "Startup": "Startup",
     "PlannedActivePowerSetPoint": "Planning active power set point",
-    "StartupCost": "Startup cost",
-    "MarginalCost": "Marginal cost",
+    "MarginalCost": "cost",
     "PlannedOutageRate": "Planning outage rate",
     "ForcedOutageRate": "Forced outage rate",
     "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
@@ -1001,5 +999,7 @@
     "Create": "Create",
     "ShuntCompensator": "Shunt compensator",
     "AttachingAndSplittingLines": "Attaching and splitting lines",
-    "GenerationAndLoad": "Generation and load"
+    "GenerationAndLoad": "Generation and load",
+    "idSelector.idNeeded": "Please select an ID",
+    "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet"
 }

@@ -603,10 +603,8 @@
     "TransformerReactance": "Réactance du transformateur",
     "FrequencyRegulation": "Compensation",
     "Droop": "Participation",
-    "Startup": "Démarrage",
     "PlannedActivePowerSetPoint": "Puissance imposée",
-    "StartupCost": "Coût de démarrage",
-    "MarginalCost": "Coût marginal",
+    "MarginalCost": "Coût",
     "PlannedOutageRate": "Indisponibilité programmée",
     "ForcedOutageRate": "Indisponibilité fortuite",
     "MinActivePowerLessThanMaxActivePower": "La valeur de la puissance active min doit être inférieure ou égale à la valeur de la puissance active max",
@@ -1023,5 +1021,7 @@
     "Create": "Créer",
     "ShuntCompensator": "Moyen de compensation statique",
     "AttachingAndSplittingLines": "Piquage et coupure",
-    "GenerationAndLoad": "Production et consommation"
+    "GenerationAndLoad": "Production et consommation",
+    "idSelector.idNeeded": "Veuillez sélectionner un ID",
+    "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur"
 }
