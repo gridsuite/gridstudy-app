@@ -21,6 +21,12 @@ import { useSelector } from 'react-redux';
 import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
+const LIMIT_TYPES = {
+    HIGH_VOLTAGE: 'HIGH_VOLTAGE',
+    LOW_VOLTAGE: 'LOW_VOLTAGE',
+    CURRENT: 'CURRENT',
+};
+
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const useStyles = makeStyles((theme) => ({
         tablePaper: {
@@ -53,14 +59,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         Number(state[PARAM_LIMIT_REDUCTION])
     );
     const loadflowNotif = useSelector((state) => state.loadflowNotif);
-    const LIMIT_TYPES = useMemo(
-        () => ({
-            HIGH_VOLTAGE: 'HIGH_VOLTAGE',
-            LOW_VOLTAGE: 'LOW_VOLTAGE',
-            CURRENT: 'CURRENT',
-        }),
-        []
-    );
+
     useEffect(() => {
         const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
         const PERMANENT_LIMIT_NAME = 'permanent';
@@ -156,19 +155,17 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         [classes.cell, classes.fail, classes.succeed]
     );
 
-    const loadFlowCurrentViolationscolumns = useMemo(() => {
+    const loadFlowCurrentViolationsColumns = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
                 field: 'name',
-                numeric: false,
             },
             {
                 headerName: intl.formatMessage({
                     id: 'LimitNameCurrentViolation',
                 }),
                 field: 'limitName',
-                numeric: false,
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitSide' }),
@@ -179,7 +176,6 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     id: 'LimitAcceptableDuration',
                 }),
                 field: 'acceptableDuration',
-                numeric: false,
             },
             {
                 headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
@@ -213,7 +209,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         []
     );
 
-    const loadFlowResultcolumns = useMemo(() => {
+    const loadFlowResultColumns = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({
@@ -267,14 +263,13 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     return limitType;
             }
         },
-        [intl, LIMIT_TYPES]
+        [intl]
     );
-    const loadFlowVoltageViolationscolumns = useMemo(() => {
+    const loadFlowVoltageViolationsColumns = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'VoltageLevel' }),
                 field: 'name',
-                numeric: false,
             },
             {
                 headerName: intl.formatMessage({ id: 'Violation' }),
@@ -300,7 +295,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             <Paper className={classes.tablePaper}>
                 <CustomAGGrid
                     rowData={result.componentResults}
-                    columnDefs={loadFlowResultcolumns}
+                    columnDefs={loadFlowResultColumns}
                     defaultColDef={defaultColDef}
                     enableCellTextSelection={true}
                     onGridReady={onGridReady}
@@ -324,13 +319,13 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         },
         [theme.selectedRow.background]
     );
-    const overloadedEquipmentsCurrentViolation =
+    const currentViolations =
         overloadedEquipments &&
         overloadedEquipments.filter(
             (overloadedEquipment) =>
                 overloadedEquipment.limitType === LIMIT_TYPES.CURRENT
         );
-    const overloadedEquipmentsVoltageViolation =
+    const voltageViolations =
         overloadedEquipments &&
         overloadedEquipments.filter(
             (overloadedEquipment) =>
@@ -341,10 +336,10 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         return (
             <Paper className={classes.tablePaper}>
                 <CustomAGGrid
-                    rowData={overloadedEquipmentsCurrentViolation}
+                    rowData={currentViolations}
                     defaultColDef={defaultColDef}
                     enableCellTextSelection={true}
-                    columnDefs={loadFlowCurrentViolationscolumns}
+                    columnDefs={loadFlowCurrentViolationsColumns}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                 />
@@ -355,10 +350,10 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         return (
             <Paper className={classes.tablePaper}>
                 <CustomAGGrid
-                    rowData={overloadedEquipmentsVoltageViolation}
+                    rowData={voltageViolations}
                     defaultColDef={defaultColDef}
                     enableCellTextSelection={true}
-                    columnDefs={loadFlowVoltageViolationscolumns}
+                    columnDefs={loadFlowVoltageViolationsColumns}
                     onGridReady={onGridReady}
                     getRowStyle={getRowStyle}
                 />

@@ -824,7 +824,7 @@ export function fetchLimitViolations(
     limitReduction
 ) {
     console.info(
-        `Fetching violations with limit reduction ${limitReduction}) ...`
+        `Fetching limit violations with (limit reduction ${limitReduction}) ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
