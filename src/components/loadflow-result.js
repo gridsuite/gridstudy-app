@@ -252,16 +252,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
 
     const formatLimitType = useCallback(
         (limitType) => {
-            switch (limitType) {
-                case LIMIT_TYPES.HIGH_VOLTAGE:
-                    return intl.formatMessage({ id: 'HIGH_VOLTAGE' });
-                case LIMIT_TYPES.LOW_VOLTAGE:
-                    return intl.formatMessage({ id: 'LOW_VOLTAGE' });
-                case LIMIT_TYPES.CURRENT:
-                    return intl.formatMessage({ id: 'CURRENT' });
-                default:
-                    return limitType;
-            }
+            return limitType in LIMIT_TYPES
+                ? intl.formatMessage({ id: limitType })
+                : limitType;
         },
         [intl]
     );
@@ -319,19 +312,16 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         },
         [theme.selectedRow.background]
     );
-    const currentViolations =
-        overloadedEquipments &&
-        overloadedEquipments.filter(
-            (overloadedEquipment) =>
-                overloadedEquipment.limitType === LIMIT_TYPES.CURRENT
-        );
-    const voltageViolations =
-        overloadedEquipments &&
-        overloadedEquipments.filter(
-            (overloadedEquipment) =>
-                overloadedEquipment.limitType === LIMIT_TYPES.HIGH_VOLTAGE ||
-                overloadedEquipment.limitType === LIMIT_TYPES.LOW_VOLTAGE
-        );
+
+    const currentViolations = overloadedEquipments?.filter(
+        (overloadedEquipment) =>
+            overloadedEquipment.limitType === LIMIT_TYPES.CURRENT
+    );
+    const voltageViolations = overloadedEquipments?.filter(
+        (overloadedEquipment) =>
+            overloadedEquipment.limitType === LIMIT_TYPES.HIGH_VOLTAGE ||
+            overloadedEquipment.limitType === LIMIT_TYPES.LOW_VOLTAGE
+    );
     function renderLoadFlowCurrentViolations() {
         return (
             <Paper className={classes.tablePaper}>
