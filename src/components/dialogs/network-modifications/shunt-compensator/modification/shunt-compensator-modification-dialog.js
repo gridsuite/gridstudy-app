@@ -19,7 +19,7 @@ import {
     getCharacteristicsFormData,
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -74,7 +74,11 @@ const ShuntCompensatorModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const {
+        reset,
+        formState: { dirtyFields },
+        control,
+    } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (shuntCompensator) => {
@@ -91,6 +95,27 @@ const ShuntCompensatorModificationDialog = ({
         },
         [reset]
     );
+
+    const watchCharacteristicsChoice = useWatch({
+        control,
+        name: CHARACTERISTICS_CHOICE,
+    });
+
+    // If we only change the characteristics choice without changing the corresponding fields,
+    // we keep the validate button disable: if we choose "susceptance", we have to add a value for
+    // "susceptance per section", and if we choose "Q at nominal voltage", we have to add a value for
+    // "shunt compensator type" or for "Q at nominal voltage" numeric field
+    const disableSave =
+        ((watchCharacteristicsChoice ===
+            CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
+            !(
+                dirtyFields[Q_AT_NOMINAL_V] ||
+                dirtyFields[SHUNT_COMPENSATOR_TYPE]
+            )) ||
+            (watchCharacteristicsChoice ===
+                CHARACTERISTICS_CHOICES.SUSCEPTANCE.id &&
+                !dirtyFields[SUSCEPTANCE_PER_SECTION])) &&
+        !dirtyFields[EQUIPMENT_NAME];
 
     useEffect(() => {
         if (editData) {
@@ -203,6 +228,7 @@ const ShuntCompensatorModificationDialog = ({
                 aria-labelledby="dialog-modify-shuntCompensator"
                 titleId="ModifyShuntCompensator"
                 open={open}
+                disabledSave={disableSave}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||
