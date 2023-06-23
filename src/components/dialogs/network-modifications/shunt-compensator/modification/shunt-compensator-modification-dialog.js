@@ -74,15 +74,7 @@ const ShuntCompensatorModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const {
-        reset,
-        formState: { dirtyFields },
-    } = formMethods;
-
-    // we disable the 'Validate' button if the user change characteristic choice only without setting a value
-    const disableSave =
-        dirtyFields[CHARACTERISTICS_CHOICE] &&
-        !(dirtyFields[SUSCEPTANCE_PER_SECTION] || dirtyFields[EQUIPMENT_NAME]);
+    const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (shuntCompensator) => {
@@ -210,7 +202,6 @@ const ShuntCompensatorModificationDialog = ({
                 onSave={onSubmit}
                 aria-labelledby="dialog-modify-shuntCompensator"
                 titleId="ModifyShuntCompensator"
-                disabledSave={disableSave}
                 open={open}
                 isDataFetching={
                     isUpdate &&
