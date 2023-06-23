@@ -250,7 +250,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         ];
     }, [intl, NumberRenderer, StatusCellRender]);
 
-    const renderLimitType = useCallback(
+    const formatLimitType = useCallback(
         (limitType) => {
             switch (limitType) {
                 case LIMIT_TYPES.HIGH_VOLTAGE:
@@ -274,7 +274,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             {
                 headerName: intl.formatMessage({ id: 'Violation' }),
                 field: 'limitType',
-                valueFormatter: (params) => renderLimitType(params.value),
+                valueFormatter: (params) => formatLimitType(params.value),
             },
             {
                 headerName: intl.formatMessage({ id: 'VoltageViolationLimit' }),
@@ -288,7 +288,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 valueFormatter: (params) => params.value.toFixed(1),
             },
         ];
-    }, [intl, renderLimitType]);
+    }, [intl, formatLimitType]);
 
     function renderLoadFlowResult() {
         return (
