@@ -20,7 +20,6 @@ import {
     modifyGenerator,
     modifyLoad,
     requestNetworkChange,
-    updateConfigParameter,
 } from '../../utils/rest-api';
 import {
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -47,6 +46,7 @@ import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
+import { updateConfigParameter } from '../../services/config';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
