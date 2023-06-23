@@ -64,7 +64,7 @@ import { UPDATE_TYPE } from 'components/network/constants';
 import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
-import ShuntCompensatorModificationDialog from '../../dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
+import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { fetchNetworkModification } from '../../../services/network-modification';
 
 const useStyles = makeStyles((theme) => ({
