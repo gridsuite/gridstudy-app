@@ -15,17 +15,21 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
-const characteristicsValidationSchema = () => ({
+const characteristicsValidationSchema = (isModification) => ({
     [CHARACTERISTICS_CHOICE]: yup.string().required(),
     [SUSCEPTANCE_PER_SECTION]: yup
         .number()
         .nullable()
         .when([CHARACTERISTICS_CHOICE], {
-            is: CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+            is: (characteristicsChoice) =>
+                characteristicsChoice ===
+                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && !isModification,
             then: (schema) => schema.required(),
         }),
     [SHUNT_COMPENSATOR_TYPE]: yup.string().when([CHARACTERISTICS_CHOICE], {
-        is: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+        is: (characteristicsChoice) =>
+            characteristicsChoice ===
+                CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && !isModification,
         then: (schema) =>
             schema
                 .oneOf([
@@ -33,12 +37,16 @@ const characteristicsValidationSchema = () => ({
                     SHUNT_COMPENSATOR_TYPES.REACTOR.id,
                 ])
                 .required(),
+        otherwise: (schema) => schema.nullable(),
     }),
     [Q_AT_NOMINAL_V]: yup
         .number()
         .nullable()
         .when([CHARACTERISTICS_CHOICE], {
-            is: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+            is: (characteristicsChoice) =>
+                characteristicsChoice ===
+                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
+                !isModification,
             then: (schema) =>
                 schema
                     .min(
@@ -48,14 +56,16 @@ const characteristicsValidationSchema = () => ({
                     .required(),
         }),
 });
-export const getCharacteristicsFormValidationSchema = () => {
-    return characteristicsValidationSchema();
+export const getCharacteristicsFormValidationSchema = (
+    isModification = false
+) => {
+    return characteristicsValidationSchema(isModification);
 };
 
 const characteristicsEmptyFormData = () => ({
     [CHARACTERISTICS_CHOICE]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
     [SUSCEPTANCE_PER_SECTION]: null,
-    [SHUNT_COMPENSATOR_TYPE]: '',
+    [SHUNT_COMPENSATOR_TYPE]: null,
     [Q_AT_NOMINAL_V]: null,
 });
 
@@ -69,9 +79,9 @@ export const getCharacteristicsFormData = ({
     shuntCompensatorType,
 }) => {
     return {
-        [CHARACTERISTICS_CHOICE]: qAtNominalV
-            ? CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-            : CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+        [CHARACTERISTICS_CHOICE]: susceptancePerSection
+            ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
+            : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [SUSCEPTANCE_PER_SECTION]: susceptancePerSection,
         [SHUNT_COMPENSATOR_TYPE]: shuntCompensatorType ?? '',
         [Q_AT_NOMINAL_V]: qAtNominalV,
