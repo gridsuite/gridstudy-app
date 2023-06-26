@@ -436,22 +436,6 @@ export function fetchHvdcLines(studyUuid, currentNodeUuid, substationsIds) {
     );
 }
 
-export function fetchHvdcLinesWithShuntCompensators(
-    studyUuid,
-    currentNodeUuid
-) {
-    console.info(
-        `Fetching HVDC Lines with Shunt Compensators of study '${studyUuid}' and node '${currentNodeUuid}'...`
-    );
-
-    const fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map' +
-        '/hvdc-lines';
-    console.debug(fetchEquipmentsUrl);
-    return backendFetchJson(fetchEquipmentsUrl);
-}
-
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
     currentNodeUuid,

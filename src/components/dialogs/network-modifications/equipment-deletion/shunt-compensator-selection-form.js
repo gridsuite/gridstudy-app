@@ -44,7 +44,7 @@ const ShuntCompensatorSelectionForm = ({ title, arrayFormName, mcsRows }) => {
 ShuntCompensatorSelectionForm.prototype = {
     title: PropTypes.string.isRequired,
     arrayFormName: PropTypes.string.isRequired,
-    columnsDefinition: PropTypes.object.isRequired,
+    mcsRows: PropTypes.object.isRequired,
 };
 
 export default ShuntCompensatorSelectionForm;
