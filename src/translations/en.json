@@ -998,5 +998,7 @@
     "Create": "Create",
     "ShuntCompensator": "Shunt compensator",
     "AttachingAndSplittingLines": "Attaching and splitting lines",
-    "GenerationAndLoad": "Generation and load"
+    "GenerationAndLoad": "Generation and load",
+    "idSelector.idNeeded": "Please select an ID",
+    "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet"
 }

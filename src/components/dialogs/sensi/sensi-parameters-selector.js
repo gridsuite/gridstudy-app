@@ -18,11 +18,6 @@ import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
 import { useDoubleValue, useInputForm } from '../../utils/inputs/input-hooks';
 import { filledTextField, gridItem, GridSection } from '../dialogUtils';
-import {
-    fetchConfigParameter,
-    getSensiDefaultResultsThreshold,
-    updateConfigParameter,
-} from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import DialogActions from '@mui/material/DialogActions';
 import makeStyles from '@mui/styles/makeStyles';
@@ -33,6 +28,11 @@ import { SensiHVDCs } from './sensi-hvdcs';
 import { SensiPSTs } from './sensi-psts';
 import { SensiNodes } from './sensi-nodes';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import {
+    fetchConfigParameter,
+    updateConfigParameter,
+} from '../../../services/config';
+import { getSensiDefaultResultsThreshold } from '../../../services/sensitivity-analysis';
 
 export const INJECTION_DISTRIBUTION_TYPES = [
     { id: 'PROPORTIONAL', label: 'Proportional' },

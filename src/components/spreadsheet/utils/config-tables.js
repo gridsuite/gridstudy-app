@@ -20,10 +20,6 @@ const generateTapPositions = (params) => {
         : [];
 };
 
-const nominalVoltage = (network, voltageLevelId) => {
-    return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
-};
-
 const applyFluxConvention = (convention, val) => {
     if (convention === FluxConventions.TARGET && val !== undefined) {
         return -val;
@@ -48,6 +44,7 @@ export const TABLES_DEFINITIONS = {
         index: 0,
         name: 'Substations',
         resource: equipments.substations,
+        type: EQUIPMENT_TYPES.SUBSTATION,
         columns: [
             {
                 id: 'ID',
@@ -69,8 +66,8 @@ export const TABLES_DEFINITIONS = {
         index: 1,
         name: 'VoltageLevels',
         resource: equipments.voltageLevels,
+        type: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
         modifiableEquipmentType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
-        getter: (network) => network.getVoltageLevels(),
         columns: [
             {
                 id: 'ID',
@@ -99,6 +96,7 @@ export const TABLES_DEFINITIONS = {
         index: 2,
         name: 'Lines',
         resource: equipments.lines,
+        type: EQUIPMENT_TYPES.LINE,
         columns: [
             {
                 id: 'ID',
@@ -122,11 +120,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId1
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -134,11 +127,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId2
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -186,6 +174,7 @@ export const TABLES_DEFINITIONS = {
         index: 3,
         name: 'TwoWindingsTransformers',
         resource: equipments.twoWindingsTransformers,
+        type: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
         modifiableEquipmentType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
         groovyEquipmentGetter: 'getTwoWindingsTransformer',
         columns: [
@@ -209,11 +198,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId1
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -221,11 +205,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId2
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -302,7 +281,11 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger.tapPosition = params.newValue;
+                    params.data.ratioTapChanger = {
+                        ...params.data.ratioTapChanger,
+                        tapPosition: params.newValue,
+                    };
+
                     return params;
                 },
                 cellEditor: 'agSelectCellEditor',
@@ -343,7 +326,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger.tapPosition = params.newValue;
+                    params.data.phaseTapChanger = {
+                        ...params.data.phaseTapChanger,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 cellEditor: 'agSelectCellEditor',
@@ -375,6 +361,7 @@ export const TABLES_DEFINITIONS = {
         index: 4,
         name: 'ThreeWindingsTransformers',
         resource: equipments.threeWindingsTransformers,
+        type: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
         modifiableEquipmentType:
             EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
         groovyEquipmentGetter: 'getThreeWindingsTransformer',
@@ -403,11 +390,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId1
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -415,11 +397,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId2
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -427,11 +404,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide3',
                 field: 'nominalVoltage3',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId3
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -522,7 +494,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger1?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger1.tapPosition = params.newValue;
+                    params.data.ratioTapChanger1 = {
+                        ...params.data.ratioTapChanger1,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -568,7 +543,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger2?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger2.tapPosition = params.newValue;
+                    params.data.ratioTapChanger2 = {
+                        ...params.data.ratioTapChanger2,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -614,7 +592,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger3?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger3.tapPosition = params.newValue;
+                    params.data.ratioTapChanger3 = {
+                        ...params.data.ratioTapChanger3,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -651,7 +632,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger1?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger1.tapPosition = params.newValue;
+                    params.data.phaseTapChanger1 = {
+                        ...params.data.phaseTapChanger1,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -697,7 +681,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger2?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger2.tapPosition = params.newValue;
+                    params.data.phaseTapChanger2 = {
+                        ...params.data.phaseTapChanger2,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -743,7 +730,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger3?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger3.tapPosition = params.newValue;
+                    params.data.phaseTapChanger3 = {
+                        ...params.data.phaseTapChanger3,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -774,6 +764,7 @@ export const TABLES_DEFINITIONS = {
         name: 'Generators',
         resource: equipments.generators,
         modifiableEquipmentType: EQUIPMENT_TYPES.GENERATOR.type,
+        type: EQUIPMENT_TYPES.GENERATOR,
         columns: [
             {
                 id: 'ID',
@@ -794,11 +785,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1005,6 +991,7 @@ export const TABLES_DEFINITIONS = {
         index: 6,
         name: 'Loads',
         resource: equipments.loads,
+        type: EQUIPMENT_TYPES.LOAD,
         modifiableEquipmentType: EQUIPMENT_TYPES.LOAD.type,
         columns: [
             {
@@ -1042,11 +1029,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1116,6 +1098,7 @@ export const TABLES_DEFINITIONS = {
         index: 7,
         name: 'ShuntCompensators',
         resource: equipments.shuntCompensators,
+        type: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
         columns: [
             {
                 id: 'ID',
@@ -1135,11 +1118,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1177,6 +1155,7 @@ export const TABLES_DEFINITIONS = {
         index: 8,
         name: 'StaticVarCompensators',
         resource: equipments.staticVarCompensators,
+        type: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
         columns: [
             {
                 id: 'ID',
@@ -1194,11 +1173,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1245,6 +1219,7 @@ export const TABLES_DEFINITIONS = {
         index: 9,
         name: 'Batteries',
         resource: equipments.batteries,
+        type: EQUIPMENT_TYPES.BATTERY,
         columns: [
             {
                 id: 'ID',
@@ -1262,11 +1237,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1314,6 +1284,7 @@ export const TABLES_DEFINITIONS = {
         index: 10,
         name: 'HvdcLines',
         resource: equipments.hvdcLines,
+        type: EQUIPMENT_TYPES.HVDC_LINE,
         columns: [
             {
                 id: 'ID',
@@ -1414,6 +1385,7 @@ export const TABLES_DEFINITIONS = {
         index: 11,
         name: 'LccConverterStations',
         resource: equipments.lccConverterStations,
+        type: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
         columns: [
             {
                 id: 'ID',
@@ -1431,11 +1403,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1485,6 +1452,7 @@ export const TABLES_DEFINITIONS = {
         index: 12,
         name: 'VscConverterStations',
         resource: equipments.vscConverterStations,
+        type: EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
         columns: [
             {
                 id: 'ID',
@@ -1503,11 +1471,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1572,6 +1535,7 @@ export const TABLES_DEFINITIONS = {
         index: 13,
         name: 'DanglingLines',
         resource: equipments.danglingLines,
+        type: EQUIPMENT_TYPES.DANGLING_LINE,
         columns: [
             {
                 id: 'ID',
@@ -1589,11 +1553,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
