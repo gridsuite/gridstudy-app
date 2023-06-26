@@ -80,9 +80,11 @@ export function useComputingStatus(
                 }
             })
             .catch(() => {
-                dispatch(
-                    setComputingStatus(computingType, RunningStatus.FAILED)
-                );
+                if (!canceledRequest) {
+                    dispatch(
+                        setComputingStatus(computingType, RunningStatus.FAILED)
+                    );
+                }
             });
 
         return () => {
