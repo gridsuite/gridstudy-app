@@ -90,6 +90,7 @@ import {
     DELETE_EQUIPMENT,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_POST_LOADFLOW,
+    SET_ANALYSIS_STATUS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -125,6 +126,8 @@ import { loadDiagramStateFromSessionStorage } from './session-storage';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
+import { AnalysisType } from 'components/analysis-status/analysis-type';
+import { RunningStatus } from 'components/utils/running-status';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -145,6 +148,15 @@ const paramsInitialState = {
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
+};
+
+const initialAnalysisStatus = {
+    [AnalysisType.LOADFLOW]: RunningStatus.IDLE,
+    [AnalysisType.SECURITY]: RunningStatus.IDLE,
+    [AnalysisType.SENSITIVITY]: RunningStatus.IDLE,
+    [AnalysisType.SHORTCIRCUIT]: RunningStatus.IDLE,
+    [AnalysisType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
+    [AnalysisType.VOLTAGE_INIT]: RunningStatus.IDLE,
 };
 
 const initialSpreadsheetNetworkState = {
@@ -205,6 +217,7 @@ const initialState = {
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
+    analysisStatus: { ...initialAnalysisStatus },
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -982,6 +995,9 @@ export const reducer = createReducer(initialState, {
             voltageLevels: state.spreadsheetNetwork.voltageLevels,
             hvdcLines: state.spreadsheetNetwork.hvdcLines,
         };
+    },
+    [SET_ANALYSIS_STATUS]: (state, action) => {
+        state.analysisStatus[action.analysisType] = action.runningStatus;
     },
 });
 

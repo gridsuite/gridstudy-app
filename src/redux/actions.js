@@ -655,3 +655,13 @@ export function setDeletedEquipments(deletedEquipments) {
         deletedEquipments: deletedEquipments,
     };
 }
+
+export const SET_ANALYSIS_STATUS = 'SET_ANALYSIS_STATUS';
+
+export function setAnalysisStatus(analysisType, runningStatus) {
+    return {
+        type: SET_ANALYSIS_STATUS,
+        analysisType: analysisType,
+        runningStatus: runningStatus,
+    };
+}
