@@ -44,6 +44,7 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
     sanitizeLimitNames,
+    updateTemporaryLimits,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -133,7 +134,7 @@ const LineModificationDialog = ({
     const { reset, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (line) => {
+        (line, completeTemporaryLimits1, completeTemporaryLimits2) => {
             if (line?.equipmentId) {
                 setSelectedId(line.equipmentId);
             }
@@ -159,14 +160,18 @@ const LineModificationDialog = ({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits1?.temporaryLimits
-                        )
+                        completeTemporaryLimits1
+                            ? completeTemporaryLimits1
+                            : formatTemporaryLimits(
+                                  line.currentLimits1?.temporaryLimits
+                              )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits2?.temporaryLimits
-                        )
+                        completeTemporaryLimits2
+                            ? completeTemporaryLimits2
+                            : formatTemporaryLimits(
+                                  line.currentLimits2?.temporaryLimits
+                              )
                     ),
                 }),
             });
@@ -276,7 +281,27 @@ const LineModificationDialog = ({
                                     { keepDefaultValues: true }
                                 );
                             } else {
-                                fromEditDataToFormValues(editData);
+                                fromEditDataToFormValues(
+                                    editData,
+                                    updateTemporaryLimits(
+                                        formatTemporaryLimits(
+                                            editData.currentLimits1
+                                                ?.temporaryLimits
+                                        ),
+                                        formatTemporaryLimits(
+                                            line.currentLimits1?.temporaryLimits
+                                        )
+                                    ),
+                                    updateTemporaryLimits(
+                                        formatTemporaryLimits(
+                                            editData.currentLimits2
+                                                ?.temporaryLimits
+                                        ),
+                                        formatTemporaryLimits(
+                                            line.currentLimits2?.temporaryLimits
+                                        )
+                                    )
+                                );
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -414,7 +439,6 @@ const LineModificationDialog = ({
                             studyUuid={studyUuid}
                             currentNode={currentNode}
                             lineToModify={lineToModify}
-                            modifiedLine={editData}
                             tabIndex={tabIndex}
                         />
                         <LineTypeSegmentDialog
