@@ -1,4 +1,4 @@
-import { useAnalysisStatus } from './use-analysis-status';
+import { useComputingStatus } from './use-computing-status';
 import {
     getSecurityAnalysisRunningStatus,
     getSensiRunningStatus,
@@ -38,8 +38,8 @@ const voltageInitStatusInvalidations = [
 ];
 
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
-export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
-    useAnalysisStatus(
+export const useAllComputingStatus = (studyUuid, currentNodeUuid) => {
+    useComputingStatus(
         studyUuid,
         currentNodeUuid,
         fetchSecurityAnalysisStatus,
@@ -48,7 +48,7 @@ export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
         ComputingType.SECURITY_ANALYSIS
     );
 
-    useAnalysisStatus(
+    useComputingStatus(
         studyUuid,
         currentNodeUuid,
         fetchSensitivityAnalysisStatus,
@@ -57,7 +57,7 @@ export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
         ComputingType.SENSITIVITY_ANALYSIS
     );
 
-    useAnalysisStatus(
+    useComputingStatus(
         studyUuid,
         currentNodeUuid,
         fetchShortCircuitAnalysisStatus,
@@ -66,7 +66,7 @@ export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
         ComputingType.SHORTCIRCUIT_ANALYSIS
     );
 
-    useAnalysisStatus(
+    useComputingStatus(
         studyUuid,
         currentNodeUuid,
         fetchDynamicSimulationStatus,
@@ -75,7 +75,7 @@ export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
         ComputingType.DYNAMIC_SIMULATION
     );
 
-    useAnalysisStatus(
+    useComputingStatus(
         studyUuid,
         currentNodeUuid,
         fetchVoltageInitStatus,

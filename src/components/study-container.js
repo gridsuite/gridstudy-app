@@ -54,7 +54,7 @@ import {
 } from '../services/directory-notification';
 
 import { fetchPath } from '../services/directory';
-import { useAllAnalysisStatus } from './analysis-status/use-all-analysis-status';
+import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -237,7 +237,7 @@ export function StudyContainer({ view, onChangeTab }) {
         loadFlowStatusInvalidations
     );
 
-    useAllAnalysisStatus(studyUuid, currentNode?.id);
+    useAllComputingStatus(studyUuid, currentNode?.id);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 

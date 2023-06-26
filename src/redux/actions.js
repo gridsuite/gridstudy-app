@@ -656,12 +656,12 @@ export function setDeletedEquipments(deletedEquipments) {
     };
 }
 
-export const SET_ANALYSIS_STATUS = 'SET_ANALYSIS_STATUS';
+export const SET_COMPUTING_STATUS = 'SET_COMPUTING_STATUS';
 
-export function setAnalysisStatus(analysisType, runningStatus) {
+export function setComputingStatus(computingType, runningStatus) {
     return {
-        type: SET_ANALYSIS_STATUS,
-        analysisType: analysisType,
+        type: SET_COMPUTING_STATUS,
+        computingType: computingType,
         runningStatus: runningStatus,
     };
 }

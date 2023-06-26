@@ -2,7 +2,7 @@ import { UPDATE_TYPE_HEADER } from 'components/study-container';
 import { RunningStatus } from 'components/utils/running-status';
 import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setAnalysisStatus } from 'redux/actions';
+import { setComputingStatus } from 'redux/actions';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -44,23 +44,23 @@ function isWorthUpdate(
     return false;
 }
 
-// this hook loads <analysisType> state into redux, then keeps it updated according to notifications
+// this hook loads <computingType> state into redux, then keeps it updated according to notifications
 /**
  *
  * @param {String} studyUuid current study uuid
  * @param {String} nodeUuid current node uuid
- * @param {Function} fetcher method fetching current <analysisType> state
+ * @param {Function} fetcher method fetching current <computingType> state
  * @param {Array} invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
  * @param {Function} resultConversion converts <fetcher> result to RunningStatus
- * @param {AnalysisType} analysisType AnalysisType targeted by this hook
+ * @param {ComputingType} computingType ComputingType targeted by this hook
  */
-export function useAnalysisStatus(
+export function useComputingStatus(
     studyUuid,
     nodeUuid,
     fetcher,
     invalidations,
     resultConversion,
-    analysisType
+    computingType
 ) {
     const nodeUuidRef = useRef();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -75,19 +75,21 @@ export function useAnalysisStatus(
             .then((res) => {
                 if (!canceledRequest && nodeUuidRef.current === nodeUuid) {
                     dispatch(
-                        setAnalysisStatus(analysisType, resultConversion(res))
+                        setComputingStatus(computingType, resultConversion(res))
                     );
                 }
             })
             .catch(() => {
-                dispatch(setAnalysisStatus(analysisType, RunningStatus.FAILED));
+                dispatch(
+                    setComputingStatus(computingType, RunningStatus.FAILED)
+                );
             });
 
         return () => {
             canceledRequest = true;
         };
     }, [
-        analysisType,
+        computingType,
         nodeUuid,
         fetcher,
         studyUuid,

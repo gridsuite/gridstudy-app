@@ -10,13 +10,13 @@ import { fetchVoltageInitResult } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import VoltageInitResult from './voltage-init-result';
 import { useSelector } from 'react-redux';
-import { ComputingType } from './analysis-status/computing-type';
+import { ComputingType } from './computing-status/computing-type';
 
 const voltageInitResultInvalidations = ['voltageInitResult'];
 
 export const VoltageInitResultTab = ({ studyUuid, nodeUuid }) => {
     const voltageInitStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.VOLTAGE_INIT]
+        (state) => state.computingStatus[ComputingType.VOLTAGE_INIT]
     );
 
     const [voltageInitResult, isWaiting] = useNodeData(

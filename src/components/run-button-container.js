@@ -32,7 +32,7 @@ import {
     addShortCircuitNotif,
     addDynamicSimulationNotif,
     addVoltageInitNotif,
-    setAnalysisStatus,
+    setComputingStatus,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -42,7 +42,7 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
 } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
-import { ComputingType } from './analysis-status/computing-type';
+import { ComputingType } from './computing-status/computing-type';
 
 export function RunButtonContainer({
     studyUuid,
@@ -55,20 +55,20 @@ export function RunButtonContainer({
         useState(loadFlowStatus);
 
     const securityAnalysisStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.SECURITY_ANALYSIS]
+        (state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     const sensitivityStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.SENSITIVITY_ANALYSIS]
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
     const shortCircuitStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
+        (state) => state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
     );
     const dynamicSimulationStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.DYNAMIC_SIMULATION]
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
     const voltageInitStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.VOLTAGE_INIT]
+        (state) => state.computingStatus[ComputingType.VOLTAGE_INIT]
     );
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -189,7 +189,7 @@ export function RunButtonContainer({
         action: (action) => {
             if (action === runnable[ComputingType.SECURITY_ANALYSIS]) {
                 dispatch(
-                    setAnalysisStatus(
+                    setComputingStatus(
                         ComputingType.SECURITY_ANALYSIS,
                         RunningStatus.IDLE
                     )
@@ -200,7 +200,7 @@ export function RunButtonContainer({
                 action === runnable[ComputingType.SENSITIVITY_ANALYSIS]
             ) {
                 dispatch(
-                    setAnalysisStatus(
+                    setComputingStatus(
                         ComputingType.SENSITIVITY_ANALYSIS,
                         RunningStatus.IDLE
                     )
@@ -211,7 +211,7 @@ export function RunButtonContainer({
                 action === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]
             ) {
                 dispatch(
-                    setAnalysisStatus(
+                    setComputingStatus(
                         ComputingType.SHORTCIRCUIT_ANALYSIS,
                         RunningStatus.IDLE
                     )
@@ -220,7 +220,7 @@ export function RunButtonContainer({
                 setComputationStopped(!computationStopped);
             } else if (action === runnable[ComputingType.DYNAMIC_SIMULATION]) {
                 dispatch(
-                    setAnalysisStatus(
+                    setComputingStatus(
                         ComputingType.DYNAMIC_SIMULATION,
                         RunningStatus.IDLE
                     )
@@ -229,7 +229,7 @@ export function RunButtonContainer({
                 setComputationStopped(!computationStopped);
             } else if (action === runnable[ComputingType.VOLTAGE_INIT]) {
                 dispatch(
-                    setAnalysisStatus(
+                    setComputingStatus(
                         ComputingType.VOLTAGE_INIT,
                         RunningStatus.IDLE
                     )
@@ -246,7 +246,7 @@ export function RunButtonContainer({
 
         setComputationStopped(false);
         dispatch(
-            setAnalysisStatus(
+            setComputingStatus(
                 ComputingType.SECURITY_ANALYSIS,
                 RunningStatus.RUNNING
             )
@@ -258,7 +258,7 @@ export function RunButtonContainer({
             contingencyListNames
         ).catch(() =>
             dispatch(
-                setAnalysisStatus(
+                setComputingStatus(
                     ComputingType.SECURITY_ANALYSIS,
                     RunningStatus.FAILED
                 )
@@ -271,7 +271,7 @@ export function RunButtonContainer({
         setShowSensiParametersSelector(false);
         setComputationStopped(false);
         dispatch(
-            setAnalysisStatus(
+            setComputingStatus(
                 ComputingType.SENSITIVITY_ANALYSIS,
                 RunningStatus.RUNNING
             )
@@ -283,7 +283,7 @@ export function RunButtonContainer({
             sensiConfiguration
         ).catch(() => {
             dispatch(
-                setAnalysisStatus(
+                setComputingStatus(
                     ComputingType.SENSITIVITY_ANALYSIS,
                     RunningStatus.FAILED
                 )
@@ -297,7 +297,7 @@ export function RunButtonContainer({
 
         setComputationStopped(false);
         dispatch(
-            setAnalysisStatus(
+            setComputingStatus(
                 ComputingType.DYNAMIC_SIMULATION,
                 RunningStatus.RUNNING
             )
@@ -309,7 +309,7 @@ export function RunButtonContainer({
             dynamicSimulationConfiguration
         ).catch((error) => {
             dispatch(
-                setAnalysisStatus(
+                setComputingStatus(
                     ComputingType.DYNAMIC_SIMULATION,
                     RunningStatus.FAILED
                 )
@@ -341,7 +341,7 @@ export function RunButtonContainer({
             setRanSensi(true);
         } else if (action === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]) {
             dispatch(
-                setAnalysisStatus(
+                setComputingStatus(
                     ComputingType.SHORTCIRCUIT_ANALYSIS,
                     RunningStatus.RUNNING
                 )
@@ -350,7 +350,7 @@ export function RunButtonContainer({
                 .then(setRanShortCircuit(true))
                 .catch((error) => {
                     dispatch(
-                        setAnalysisStatus(
+                        setComputingStatus(
                             ComputingType.SHORTCIRCUIT_ANALYSIS,
                             RunningStatus.FAILED
                         )
@@ -362,7 +362,7 @@ export function RunButtonContainer({
                 });
         } else if (action === runnable[ComputingType.VOLTAGE_INIT]) {
             dispatch(
-                setAnalysisStatus(
+                setComputingStatus(
                     ComputingType.VOLTAGE_INIT,
                     RunningStatus.RUNNING
                 )
@@ -371,7 +371,7 @@ export function RunButtonContainer({
                 .then(setRanVoltageInit(true))
                 .catch((error) => {
                     dispatch(
-                        setAnalysisStatus(
+                        setComputingStatus(
                             ComputingType.VOLTAGE_INIT,
                             RunningStatus.FAILED
                         )

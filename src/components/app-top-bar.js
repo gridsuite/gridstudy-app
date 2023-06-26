@@ -68,7 +68,7 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
-import { ComputingType } from './analysis-status/computing-type';
+import { ComputingType } from './computing-status/computing-type';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -234,23 +234,23 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     );
 
     const securityAnalysisStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.SECURITY_ANALYSIS]
+        (state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     const sensitivityAnalysisStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.SENSITIVITY_ANALYSIS]
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
     const shortCircuitAnalysisStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
+        (state) => state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
     );
 
     const dynamicSimulationStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.DYNAMIC_SIMULATION]
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
 
     const voltageInitStatus = useSelector(
-        (state) => state.analysisStatus[ComputingType.VOLTAGE_INIT]
+        (state) => state.computingStatus[ComputingType.VOLTAGE_INIT]
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
