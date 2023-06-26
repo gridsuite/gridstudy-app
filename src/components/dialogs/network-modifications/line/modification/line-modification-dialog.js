@@ -134,7 +134,7 @@ const LineModificationDialog = ({
     const { reset, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (line, completeTemporaryLimits1, completeTemporaryLimits2) => {
+        (line, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
             if (line?.equipmentId) {
                 setSelectedId(line.equipmentId);
             }
@@ -160,15 +160,15 @@ const LineModificationDialog = ({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        completeTemporaryLimits1
-                            ? completeTemporaryLimits1
+                        updatedTemporaryLimits1
+                            ? updatedTemporaryLimits1
                             : formatTemporaryLimits(
                                   line.currentLimits1?.temporaryLimits
                               )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        completeTemporaryLimits2
-                            ? completeTemporaryLimits2
+                        updatedTemporaryLimits2
+                            ? updatedTemporaryLimits2
                             : formatTemporaryLimits(
                                   line.currentLimits2?.temporaryLimits
                               )
