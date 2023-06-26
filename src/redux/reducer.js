@@ -126,7 +126,7 @@ import { loadDiagramStateFromSessionStorage } from './session-storage';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
-import { AnalysisType } from 'components/analysis-status/analysis-type';
+import { ComputingType } from 'components/analysis-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 
 const paramsInitialState = {
@@ -151,12 +151,12 @@ const paramsInitialState = {
 };
 
 const initialAnalysisStatus = {
-    [AnalysisType.LOADFLOW]: RunningStatus.IDLE,
-    [AnalysisType.SECURITY]: RunningStatus.IDLE,
-    [AnalysisType.SENSITIVITY]: RunningStatus.IDLE,
-    [AnalysisType.SHORTCIRCUIT]: RunningStatus.IDLE,
-    [AnalysisType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
-    [AnalysisType.VOLTAGE_INIT]: RunningStatus.IDLE,
+    [ComputingType.LOADFLOW]: RunningStatus.IDLE,
+    [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
+    [ComputingType.VOLTAGE_INIT]: RunningStatus.IDLE,
 };
 
 const initialSpreadsheetNetworkState = {

@@ -14,7 +14,7 @@ import {
     fetchDynamicSimulationStatus,
     fetchVoltageInitStatus,
 } from '../../utils/rest-api';
-import { AnalysisType } from './analysis-type';
+import { ComputingType } from './computing-type';
 
 const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
@@ -37,7 +37,7 @@ const voltageInitStatusInvalidations = [
     'voltageInit_failed',
 ];
 
-// this hook loads all current analysis status into redux then keeps them up to date according to notifications
+// this hook loads all current computation status into redux then keeps them up to date according to notifications
 export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
     useAnalysisStatus(
         studyUuid,
@@ -45,7 +45,7 @@ export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
         fetchSecurityAnalysisStatus,
         securityAnalysisStatusInvalidations,
         getSecurityAnalysisRunningStatus,
-        AnalysisType.SECURITY
+        ComputingType.SECURITY_ANALYSIS
     );
 
     useAnalysisStatus(
@@ -54,7 +54,7 @@ export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
         fetchSensitivityAnalysisStatus,
         sensiStatusInvalidations,
         getSensiRunningStatus,
-        AnalysisType.SENSITIVITY
+        ComputingType.SENSITIVITY_ANALYSIS
     );
 
     useAnalysisStatus(
@@ -63,7 +63,7 @@ export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
         fetchShortCircuitAnalysisStatus,
         shortCircuitStatusInvalidations,
         getShortCircuitRunningStatus,
-        AnalysisType.SHORTCIRCUIT
+        ComputingType.SHORTCIRCUIT_ANALYSIS
     );
 
     useAnalysisStatus(
@@ -72,7 +72,7 @@ export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
         fetchDynamicSimulationStatus,
         dynamicSimulationStatusInvalidations,
         getDynamicSimulationRunningStatus,
-        AnalysisType.DYNAMIC_SIMULATION
+        ComputingType.DYNAMIC_SIMULATION
     );
 
     useAnalysisStatus(
@@ -81,6 +81,6 @@ export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
         fetchVoltageInitStatus,
         voltageInitStatusInvalidations,
         getVoltageInitRunningStatus,
-        AnalysisType.VOLTAGE_INIT
+        ComputingType.VOLTAGE_INIT
     );
 };

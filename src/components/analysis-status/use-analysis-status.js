@@ -68,10 +68,12 @@ export function useAnalysisStatus(
     const dispatch = useDispatch();
 
     const update = useCallback(() => {
+        let canceledRequest = false;
+
         nodeUuidRef.current = nodeUuid;
         fetcher(studyUuid, nodeUuid)
             .then((res) => {
-                if (nodeUuidRef.current === nodeUuid) {
+                if (!canceledRequest && nodeUuidRef.current === nodeUuid) {
                     dispatch(
                         setAnalysisStatus(analysisType, resultConversion(res))
                     );
@@ -80,6 +82,10 @@ export function useAnalysisStatus(
             .catch(() => {
                 dispatch(setAnalysisStatus(analysisType, RunningStatus.FAILED));
             });
+
+        return () => {
+            canceledRequest = true;
+        };
     }, [
         analysisType,
         nodeUuid,

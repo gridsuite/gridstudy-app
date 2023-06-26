@@ -42,7 +42,7 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
 } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
-import { AnalysisType } from './analysis-status/analysis-type';
+import { ComputingType } from './analysis-status/computing-type';
 
 export function RunButtonContainer({
     studyUuid,
@@ -55,20 +55,20 @@ export function RunButtonContainer({
         useState(loadFlowStatus);
 
     const securityAnalysisStatus = useSelector(
-        (state) => state.analysisStatus[AnalysisType.SECURITY]
+        (state) => state.analysisStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     const sensitivityStatus = useSelector(
-        (state) => state.analysisStatus[AnalysisType.SENSITIVITY]
+        (state) => state.analysisStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
     const shortCircuitStatus = useSelector(
-        (state) => state.analysisStatus[AnalysisType.SHORTCIRCUIT]
+        (state) => state.analysisStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
     );
     const dynamicSimulationStatus = useSelector(
-        (state) => state.analysisStatus[AnalysisType.DYNAMIC_SIMULATION]
+        (state) => state.analysisStatus[ComputingType.DYNAMIC_SIMULATION]
     );
     const voltageInitStatus = useSelector(
-        (state) => state.analysisStatus[AnalysisType.VOLTAGE_INIT]
+        (state) => state.analysisStatus[ComputingType.VOLTAGE_INIT]
     );
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -112,20 +112,20 @@ export function RunButtonContainer({
 
     const runnable = useMemo(() => {
         return {
-            [AnalysisType.LOADFLOW]: intl.formatMessage({ id: 'LoadFlow' }),
-            [AnalysisType.SECURITY]: intl.formatMessage({
+            [ComputingType.LOADFLOW]: intl.formatMessage({ id: 'LoadFlow' }),
+            [ComputingType.SECURITY_ANALYSIS]: intl.formatMessage({
                 id: 'SecurityAnalysis',
             }),
-            [AnalysisType.SENSITIVITY]: intl.formatMessage({
+            [ComputingType.SENSITIVITY_ANALYSIS]: intl.formatMessage({
                 id: 'SensitivityAnalysis',
             }),
-            [AnalysisType.SHORTCIRCUIT]: intl.formatMessage({
+            [ComputingType.SHORTCIRCUIT_ANALYSIS]: intl.formatMessage({
                 id: 'ShortCircuitAnalysis',
             }),
-            [AnalysisType.DYNAMIC_SIMULATION]: intl.formatMessage({
+            [ComputingType.DYNAMIC_SIMULATION]: intl.formatMessage({
                 id: 'DynamicSimulation',
             }),
-            [AnalysisType.VOLTAGE_INIT]: intl.formatMessage({
+            [ComputingType.VOLTAGE_INIT]: intl.formatMessage({
                 id: 'VoltageInit',
             }),
         };
@@ -187,43 +187,50 @@ export function RunButtonContainer({
     const ACTION_ON_RUNNABLES = {
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (action) => {
-            if (action === runnable[AnalysisType.SECURITY]) {
+            if (action === runnable[ComputingType.SECURITY_ANALYSIS]) {
                 dispatch(
-                    setAnalysisStatus(AnalysisType.SECURITY, RunningStatus.IDLE)
+                    setAnalysisStatus(
+                        ComputingType.SECURITY_ANALYSIS,
+                        RunningStatus.IDLE
+                    )
                 );
                 stopSecurityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
-            } else if (action === runnable[AnalysisType.SENSITIVITY]) {
+            } else if (
+                action === runnable[ComputingType.SENSITIVITY_ANALYSIS]
+            ) {
                 dispatch(
                     setAnalysisStatus(
-                        AnalysisType.SENSITIVITY,
+                        ComputingType.SENSITIVITY_ANALYSIS,
                         RunningStatus.IDLE
                     )
                 );
                 stopSensitivityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
-            } else if (action === runnable[AnalysisType.SHORTCIRCUIT]) {
+            } else if (
+                action === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]
+            ) {
                 dispatch(
                     setAnalysisStatus(
-                        AnalysisType.SHORTCIRCUIT,
+                        ComputingType.SHORTCIRCUIT_ANALYSIS,
                         RunningStatus.IDLE
                     )
                 );
                 stopShortCircuitAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
-            } else if (action === runnable[AnalysisType.DYNAMIC_SIMULATION]) {
+            } else if (action === runnable[ComputingType.DYNAMIC_SIMULATION]) {
                 dispatch(
                     setAnalysisStatus(
-                        AnalysisType.DYNAMIC_SIMULATION,
+                        ComputingType.DYNAMIC_SIMULATION,
                         RunningStatus.IDLE
                     )
                 );
                 stopDynamicSimulation(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
-            } else if (action === runnable[AnalysisType.VOLTAGE_INIT]) {
+            } else if (action === runnable[ComputingType.VOLTAGE_INIT]) {
                 dispatch(
                     setAnalysisStatus(
-                        AnalysisType.VOLTAGE_INIT,
+                        ComputingType.VOLTAGE_INIT,
                         RunningStatus.IDLE
                     )
                 );
@@ -239,7 +246,10 @@ export function RunButtonContainer({
 
         setComputationStopped(false);
         dispatch(
-            setAnalysisStatus(AnalysisType.SECURITY, RunningStatus.RUNNING)
+            setAnalysisStatus(
+                ComputingType.SECURITY_ANALYSIS,
+                RunningStatus.RUNNING
+            )
         );
         // start server side security analysis
         startSecurityAnalysis(
@@ -248,7 +258,10 @@ export function RunButtonContainer({
             contingencyListNames
         ).catch(() =>
             dispatch(
-                setAnalysisStatus(AnalysisType.SECURITY, RunningStatus.FAILED)
+                setAnalysisStatus(
+                    ComputingType.SECURITY_ANALYSIS,
+                    RunningStatus.FAILED
+                )
             )
         );
     };
@@ -258,7 +271,10 @@ export function RunButtonContainer({
         setShowSensiParametersSelector(false);
         setComputationStopped(false);
         dispatch(
-            setAnalysisStatus(AnalysisType.SENSITIVITY, RunningStatus.RUNNING)
+            setAnalysisStatus(
+                ComputingType.SENSITIVITY_ANALYSIS,
+                RunningStatus.RUNNING
+            )
         );
         // start server side security analysis
         startSensitivityAnalysis(
@@ -268,7 +284,7 @@ export function RunButtonContainer({
         ).catch(() => {
             dispatch(
                 setAnalysisStatus(
-                    AnalysisType.SENSITIVITY,
+                    ComputingType.SENSITIVITY_ANALYSIS,
                     RunningStatus.FAILED
                 )
             );
@@ -282,7 +298,7 @@ export function RunButtonContainer({
         setComputationStopped(false);
         dispatch(
             setAnalysisStatus(
-                AnalysisType.DYNAMIC_SIMULATION,
+                ComputingType.DYNAMIC_SIMULATION,
                 RunningStatus.RUNNING
             )
         );
@@ -294,7 +310,7 @@ export function RunButtonContainer({
         ).catch((error) => {
             dispatch(
                 setAnalysisStatus(
-                    AnalysisType.DYNAMIC_SIMULATION,
+                    ComputingType.DYNAMIC_SIMULATION,
                     RunningStatus.FAILED
                 )
             );
@@ -306,7 +322,7 @@ export function RunButtonContainer({
     };
 
     const startComputation = (action) => {
-        if (action === runnable[AnalysisType.LOADFLOW]) {
+        if (action === runnable[ComputingType.LOADFLOW]) {
             setLoadFlowStatusState(RunningStatus.RUNNING);
             startLoadFlow(studyUuid, currentNode?.id)
                 .then(setRanLoadflow(true))
@@ -317,16 +333,16 @@ export function RunButtonContainer({
                         headerId: 'startLoadFlowError',
                     });
                 });
-        } else if (action === runnable[AnalysisType.SECURITY]) {
+        } else if (action === runnable[ComputingType.SECURITY_ANALYSIS]) {
             setShowContingencyListSelector(true);
             setRanSA(true);
-        } else if (action === runnable[AnalysisType.SENSITIVITY]) {
+        } else if (action === runnable[ComputingType.SENSITIVITY_ANALYSIS]) {
             setShowSensiParametersSelector(true);
             setRanSensi(true);
-        } else if (action === runnable[AnalysisType.SHORTCIRCUIT]) {
+        } else if (action === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]) {
             dispatch(
                 setAnalysisStatus(
-                    AnalysisType.SHORTCIRCUIT,
+                    ComputingType.SHORTCIRCUIT_ANALYSIS,
                     RunningStatus.RUNNING
                 )
             );
@@ -335,7 +351,7 @@ export function RunButtonContainer({
                 .catch((error) => {
                     dispatch(
                         setAnalysisStatus(
-                            AnalysisType.SHORTCIRCUIT,
+                            ComputingType.SHORTCIRCUIT_ANALYSIS,
                             RunningStatus.FAILED
                         )
                     );
@@ -344,10 +360,10 @@ export function RunButtonContainer({
                         headerId: 'startShortCircuitError',
                     });
                 });
-        } else if (action === runnable[AnalysisType.VOLTAGE_INIT]) {
+        } else if (action === runnable[ComputingType.VOLTAGE_INIT]) {
             dispatch(
                 setAnalysisStatus(
-                    AnalysisType.VOLTAGE_INIT,
+                    ComputingType.VOLTAGE_INIT,
                     RunningStatus.RUNNING
                 )
             );
@@ -356,7 +372,7 @@ export function RunButtonContainer({
                 .catch((error) => {
                     dispatch(
                         setAnalysisStatus(
-                            AnalysisType.VOLTAGE_INIT,
+                            ComputingType.VOLTAGE_INIT,
                             RunningStatus.FAILED
                         )
                     );
@@ -365,7 +381,7 @@ export function RunButtonContainer({
                         headerId: 'startVoltageInitError',
                     });
                 });
-        } else if (action === runnable[AnalysisType.DYNAMIC_SIMULATION]) {
+        } else if (action === runnable[ComputingType.DYNAMIC_SIMULATION]) {
             checkDynamicSimulationParameters(studyUuid)
                 .then((isValid) => {
                     if (!isValid) {
@@ -396,19 +412,25 @@ export function RunButtonContainer({
 
     const getRunningStatus = useCallback(
         (runnableType) => {
-            if (runnableType === runnable[AnalysisType.LOADFLOW]) {
+            if (runnableType === runnable[ComputingType.LOADFLOW]) {
                 return loadFlowStatusState;
-            } else if (runnableType === runnable[AnalysisType.SECURITY]) {
+            } else if (
+                runnableType === runnable[ComputingType.SECURITY_ANALYSIS]
+            ) {
                 return securityAnalysisStatus;
-            } else if (runnableType === runnable[AnalysisType.SENSITIVITY]) {
+            } else if (
+                runnableType === runnable[ComputingType.SENSITIVITY_ANALYSIS]
+            ) {
                 return sensitivityStatus;
-            } else if (runnableType === runnable[AnalysisType.SHORTCIRCUIT]) {
+            } else if (
+                runnableType === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]
+            ) {
                 return shortCircuitStatus;
             } else if (
-                runnableType === runnable[AnalysisType.DYNAMIC_SIMULATION]
+                runnableType === runnable[ComputingType.DYNAMIC_SIMULATION]
             ) {
                 return dynamicSimulationStatus;
-            } else if (runnableType === runnable[AnalysisType.VOLTAGE_INIT]) {
+            } else if (runnableType === runnable[ComputingType.VOLTAGE_INIT]) {
                 return voltageInitStatus;
             }
         },
@@ -429,17 +451,17 @@ export function RunButtonContainer({
 
     const runnables = useMemo(() => {
         let runnables = [
-            runnable[AnalysisType.LOADFLOW],
-            runnable[AnalysisType.SECURITY],
-            runnable[AnalysisType.SENSITIVITY],
+            runnable[ComputingType.LOADFLOW],
+            runnable[ComputingType.SECURITY_ANALYSIS],
+            runnable[ComputingType.SENSITIVITY_ANALYSIS],
         ];
         if (enableDeveloperMode) {
             // SHORTCIRCUIT is currently a dev feature
-            runnables.push(runnable[AnalysisType.SHORTCIRCUIT]);
+            runnables.push(runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]);
             // DYNAMICSIMULATION is currently a dev feature
-            runnables.push(runnable[AnalysisType.DYNAMIC_SIMULATION]);
+            runnables.push(runnable[ComputingType.DYNAMIC_SIMULATION]);
             // VOLTAGEINIT is currently a dev feature
-            runnables.push(runnable[AnalysisType.VOLTAGE_INIT]);
+            runnables.push(runnable[ComputingType.VOLTAGE_INIT]);
         }
         return runnables;
     }, [runnable, enableDeveloperMode]);
