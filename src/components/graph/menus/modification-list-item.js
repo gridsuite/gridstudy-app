@@ -22,11 +22,12 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../utils/equipment-types';
+import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 
 const nonEditableModificationTypes = new Set([
-    'EQUIPMENT_ATTRIBUTE_MODIFICATION',
-    'GROOVY_SCRIPT',
-    'BRANCH_STATUS_MODIFICATION',
+    MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
+    MODIFICATION_TYPES.GROOVY_SCRIPT.type,
+    MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
 ]);
 
 const isEditableModification = (modif) => {
@@ -82,15 +83,15 @@ export const ModificationListItem = ({
     */
     const getComputedLabel = useCallback(() => {
         switch (modif.type) {
-            case 'LINE_SPLIT_WITH_VOLTAGE_LEVEL':
+            case MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type:
                 return modif.lineToSplitId;
-            case 'LINE_ATTACH_TO_VOLTAGE_LEVEL':
+            case MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type:
                 return modif.lineToAttachToId;
-            case 'LINES_ATTACH_TO_SPLIT_LINES':
+            case MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type:
                 return modif.attachedLineId;
-            case 'DELETE_VOLTAGE_LEVEL_ON_LINE':
+            case MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type:
                 return modif.lineToAttachTo1Id + '/' + modif.lineToAttachTo2Id;
-            case 'DELETE_ATTACHING_LINE':
+            case MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type:
                 return (
                     modif.attachedLineId +
                     '/' +
@@ -114,7 +115,7 @@ export const ModificationListItem = ({
         }
         let energizeEndPromise;
         if (
-            modif.type === 'BRANCH_STATUS_MODIFICATION' &&
+            modif.type === MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type &&
             (modif.action === 'ENERGISE_END_ONE' ||
                 modif.action === 'ENERGISE_END_TWO')
         ) {
