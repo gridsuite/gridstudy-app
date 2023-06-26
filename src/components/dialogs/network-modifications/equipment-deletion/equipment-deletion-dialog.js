@@ -70,6 +70,7 @@ const EquipmentDeletionDialog = ({
     currentNode,
     editData,
     isUpdate,
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD/map
     editDataFetchStatus,
     ...dialogProps
 }) => {
@@ -97,11 +98,31 @@ const EquipmentDeletionDialog = ({
         [reset]
     );
 
+    const fromMenuDataValues = useCallback(
+        (menuSelectId) => {
+            reset({
+                [TYPE]: EQUIPMENT_TYPES.HVDC_LINE,
+                [EQUIPMENT_ID]: menuSelectId,
+                [HVDC_WITH_LCC]: false,
+                [SHUNT_COMPENSATOR_SIDE_1]: [],
+                [SHUNT_COMPENSATOR_SIDE_2]: [],
+            });
+        },
+        [reset]
+    );
+
     useEffect(() => {
         if (editData) {
             fromEditDataToFormValues(editData);
+        } else if (defaultIdValue) {
+            fromMenuDataValues(defaultIdValue);
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [
+        fromEditDataToFormValues,
+        editData,
+        fromMenuDataValues,
+        defaultIdValue,
+    ]);
 
     const onSubmit = useCallback(
         (formData) => {
