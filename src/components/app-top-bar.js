@@ -30,11 +30,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import {
     fetchAppsAndUrls,
-    fetchLoadFlowInfos,
-    fetchSecurityAnalysisStatus,
-    fetchSensitivityAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
     fetchNetworkElementInfos,
     fetchVoltageInitStatus,
 } from '../utils/rest-api';
@@ -70,6 +66,12 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
+import { fetchSensitivityAnalysisStatus } from '../services/study/sensitivity-analysis';
+
+import { fetchDynamicSimulationStatus } from '../services/study/dynamic-simulation';
+import { fetchLoadFlowInfos } from '../services/study/loadflow';
+
+import { fetchSecurityAnalysisStatus } from '../services/study/security-analysis';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {

@@ -10,15 +10,9 @@ import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-    startLoadFlow,
-    startSecurityAnalysis,
-    startSensitivityAnalysis,
     startShortCircuitAnalysis,
-    startDynamicSimulation,
     stopSecurityAnalysis,
-    stopSensitivityAnalysis,
     stopShortCircuitAnalysis,
-    stopDynamicSimulation,
     startVoltageInit,
     stopVoltageInit,
 } from '../utils/rest-api';
@@ -41,6 +35,17 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
 } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+import {
+    startSensitivityAnalysis,
+    stopSensitivityAnalysis,
+} from '../services/study/sensitivity-analysis';
+import {
+    startDynamicSimulation,
+    stopDynamicSimulation,
+} from '../services/study/dynamic-simulation';
+import { startLoadFlow } from '../services/study/loadflow';
+
+import { startSecurityAnalysis } from '../services/study/security-analysis';
 
 export function RunButtonContainer({
     studyUuid,

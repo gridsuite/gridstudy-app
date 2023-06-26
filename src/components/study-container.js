@@ -18,14 +18,10 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
-    fetchLoadFlowInfos,
     fetchNetworkModificationTree,
-    fetchSecurityAnalysisStatus,
     fetchStudyExists,
     fetchCaseName,
-    fetchSensitivityAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
     fetchVoltageInitStatus,
     fetchAllEquipments,
 } from '../utils/rest-api';
@@ -73,6 +69,12 @@ import {
 } from '../services/directory-notification';
 
 import { fetchPath } from '../services/directory';
+import { fetchSensitivityAnalysisStatus } from '../services/study/sensitivity-analysis';
+
+import { fetchDynamicSimulationStatus } from '../services/study/dynamic-simulation';
+import { fetchLoadFlowInfos } from '../services/study/loadflow';
+
+import { fetchSecurityAnalysisStatus } from '../services/study/security-analysis';
 
 function isWorthUpdate(
     studyUpdatedForce,

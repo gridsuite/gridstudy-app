@@ -9,7 +9,6 @@ import { useNodeData } from './study-container';
 import {
     fetchLineOrTransformer,
     fetchNetworkElementInfos,
-    fetchSecurityAnalysisResult,
 } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import SecurityAnalysisResult from './security-analysis-result';
@@ -18,6 +17,8 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
+
+import { fetchSecurityAnalysisResult } from '../services/study/security-analysis';
 
 const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
 
