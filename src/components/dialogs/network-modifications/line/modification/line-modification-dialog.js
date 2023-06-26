@@ -181,9 +181,27 @@ const LineModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            fromEditDataToFormValues(
+                editData,
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits1?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        lineToModify?.currentLimits1?.temporaryLimits
+                    )
+                ),
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits2?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        lineToModify?.currentLimits2?.temporaryLimits
+                    )
+                )
+            );
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [fromEditDataToFormValues, editData, lineToModify]);
 
     const onSubmit = useCallback(
         (line) => {
@@ -280,28 +298,6 @@ const LineModificationDialog = ({
                                     }),
                                     { keepDefaultValues: true }
                                 );
-                            } else {
-                                fromEditDataToFormValues(
-                                    editData,
-                                    updateTemporaryLimits(
-                                        formatTemporaryLimits(
-                                            editData.currentLimits1
-                                                ?.temporaryLimits
-                                        ),
-                                        formatTemporaryLimits(
-                                            line.currentLimits1?.temporaryLimits
-                                        )
-                                    ),
-                                    updateTemporaryLimits(
-                                        formatTemporaryLimits(
-                                            editData.currentLimits2
-                                                ?.temporaryLimits
-                                        ),
-                                        formatTemporaryLimits(
-                                            line.currentLimits2?.temporaryLimits
-                                        )
-                                    )
-                                );
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -315,15 +311,7 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            selectedId,
-            editData,
-            reset,
-            fromEditDataToFormValues,
-            emptyFormData,
-        ]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData]
     );
 
     useEffect(() => {

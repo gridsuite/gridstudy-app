@@ -168,9 +168,27 @@ const TwoWindingsTransformerModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            fromEditDataToFormValues(
+                editData,
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits1?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        twtToModify?.currentLimits1?.temporaryLimits
+                    )
+                ),
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits2?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        twtToModify?.currentLimits2?.temporaryLimits
+                    )
+                )
+            );
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [fromEditDataToFormValues, editData, twtToModify]);
 
     const onSubmit = useCallback(
         (twt) => {
@@ -304,28 +322,6 @@ const TwoWindingsTransformerModificationDialog = ({
                                     }),
                                     { keepDefaultValues: true }
                                 );
-                            } else {
-                                fromEditDataToFormValues(
-                                    editData,
-                                    updateTemporaryLimits(
-                                        formatTemporaryLimits(
-                                            editData.currentLimits1
-                                                ?.temporaryLimits
-                                        ),
-                                        formatTemporaryLimits(
-                                            twt.currentLimits1?.temporaryLimits
-                                        )
-                                    ),
-                                    updateTemporaryLimits(
-                                        formatTemporaryLimits(
-                                            editData.currentLimits2
-                                                ?.temporaryLimits
-                                        ),
-                                        formatTemporaryLimits(
-                                            twt.currentLimits2?.temporaryLimits
-                                        )
-                                    )
-                                );
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -339,14 +335,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            selectedId,
-            editData,
-            reset,
-            fromEditDataToFormValues,
-        ]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset]
     );
 
     useEffect(() => {

@@ -115,28 +115,29 @@ export const sanitizeLimitNames = (temporaryLimitList) =>
         name: sanitizeString(name),
     }));
 
-const findTemporaryLimitByName = (temporaryLimits, name) =>
-    temporaryLimits?.find((limit) => limit.name === name);
+const findTemporaryLimit = (temporaryLimits, limit) =>
+    temporaryLimits?.find(
+        (l) =>
+            l.name === limit.name &&
+            l.acceptableDuration === limit.acceptableDuration
+    );
 
 export const updateTemporaryLimits = (
     modifiedTemporaryLimits,
     temporaryLimitsToModify
 ) => {
-    let completeTemporaryLimits1 = modifiedTemporaryLimits;
+    let updatedTemporaryLimits = modifiedTemporaryLimits;
     //add temporary limits from previous modifications
     temporaryLimitsToModify?.forEach((limit) => {
-        if (
-            findTemporaryLimitByName(completeTemporaryLimits1, limit.name) ===
-            undefined
-        ) {
-            completeTemporaryLimits1.push({
+        if (findTemporaryLimit(updatedTemporaryLimits, limit) === undefined) {
+            updatedTemporaryLimits.push({
                 ...limit,
             });
         }
     });
 
     //remove deleted temporary limits from current and previous modifications
-    completeTemporaryLimits1 = completeTemporaryLimits1.filter(
+    updatedTemporaryLimits = updatedTemporaryLimits.filter(
         (limit) =>
             limit.modificationType !==
                 TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED &&
@@ -144,23 +145,20 @@ export const updateTemporaryLimits = (
                 (limit.modificationType === null ||
                     limit.modificationType ===
                         TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED) &&
-                findTemporaryLimitByName(
-                    temporaryLimitsToModify,
-                    limit.name
-                ) === undefined
+                findTemporaryLimit(temporaryLimitsToModify, limit) === undefined
             )
     );
 
     //update temporary limits values
-    completeTemporaryLimits1.forEach((limit) => {
+    updatedTemporaryLimits.forEach((limit) => {
         if (limit.modificationType === null) {
-            limit.value = findTemporaryLimitByName(
+            limit.value = findTemporaryLimit(
                 temporaryLimitsToModify,
-                limit.name
+                limit
             )?.value;
         }
     });
-    return completeTemporaryLimits1;
+    return updatedTemporaryLimits;
 };
 
 export const addModificationTypeToTemporaryLimits = (
@@ -169,15 +167,15 @@ export const addModificationTypeToTemporaryLimits = (
     currentModifiedTemporaryLimits,
     currentNode
 ) => {
-    const toSendToBack = temporaryLimits.map((limit) => {
-        const limitWithSameName = findTemporaryLimitByName(
+    const updatedTemporaryLimits = temporaryLimits.map((limit) => {
+        const limitWithSameName = findTemporaryLimit(
             formatTemporaryLimits(temporaryLimitsToModify),
-            limit.name
+            limit
         );
         if (limitWithSameName) {
-            const currentLimitWithSameName = findTemporaryLimitByName(
+            const currentLimitWithSameName = findTemporaryLimit(
                 formatTemporaryLimits(currentModifiedTemporaryLimits),
-                limitWithSameName?.name
+                limitWithSameName
             );
             if (
                 (currentLimitWithSameName?.modificationType ===
@@ -211,8 +209,8 @@ export const addModificationTypeToTemporaryLimits = (
     });
     //add deleted limits
     temporaryLimitsToModify?.forEach((limit) => {
-        if (!findTemporaryLimitByName(temporaryLimits, limit.name)) {
-            toSendToBack.push({
+        if (!findTemporaryLimit(temporaryLimits, limit)) {
+            updatedTemporaryLimits.push({
                 ...limit,
                 modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED,
             });
@@ -221,14 +219,14 @@ export const addModificationTypeToTemporaryLimits = (
     //add previously deleted limits
     currentModifiedTemporaryLimits?.forEach((limit) => {
         if (
-            !findTemporaryLimitByName(toSendToBack, limit.name) &&
+            !findTemporaryLimit(updatedTemporaryLimits, limit) &&
             limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED
         ) {
-            toSendToBack.push({
+            updatedTemporaryLimits.push({
                 ...limit,
                 modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED,
             });
         }
     });
-    return toSendToBack;
+    return updatedTemporaryLimits;
 };

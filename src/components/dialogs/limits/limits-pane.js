@@ -29,6 +29,7 @@ import {
 } from 'components/dialogs/dialogUtils';
 import DndTable from 'components/utils/dnd-table/dnd-table';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { formatTemporaryLimits } from 'components/utils/utils';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
@@ -94,9 +95,15 @@ const LimitsPane = ({
 
     const temporaryLimitHasPreviousValue = useCallback(
         (rowIndex, arrayFormName, temporaryLimits) => {
-            return temporaryLimits
-                ?.map(({ name }) => name)
-                .includes(getValues(arrayFormName)[rowIndex]?.name);
+            return (
+                formatTemporaryLimits(temporaryLimits)?.filter(
+                    (l) =>
+                        l.name === getValues(arrayFormName)[rowIndex]?.name &&
+                        l.acceptableDuration ===
+                            getValues(arrayFormName)[rowIndex]
+                                ?.acceptableDuration
+                )?.length > 0
+            );
         },
         [getValues]
     );
@@ -104,7 +111,10 @@ const LimitsPane = ({
     const findTemporaryLimit = useCallback(
         (rowIndex, arrayFormName, temporaryLimits) => {
             return temporaryLimits?.find(
-                (e) => e.name === getValues(arrayFormName)[rowIndex]?.name
+                (e) =>
+                    e.name === getValues(arrayFormName)[rowIndex]?.name &&
+                    e.acceptableDuration ===
+                        getValues(arrayFormName)[rowIndex]?.acceptableDuration
             );
         },
         [getValues]
@@ -144,18 +154,20 @@ const LimitsPane = ({
 
     const getTemporaryLimitPreviousValue = useCallback(
         (rowIndex, column, arrayFormName, temporaryLimits) => {
+            const formattedTemporaryLimits =
+                formatTemporaryLimits(temporaryLimits);
             if (
                 shouldReturnPreviousValue(
                     rowIndex,
                     column,
                     arrayFormName,
-                    temporaryLimits
+                    formattedTemporaryLimits
                 )
             ) {
                 const temporaryLimit = findTemporaryLimit(
                     rowIndex,
                     arrayFormName,
-                    temporaryLimits
+                    formattedTemporaryLimits
                 );
                 if (temporaryLimit === undefined) {
                     return undefined;
