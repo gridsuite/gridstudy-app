@@ -554,6 +554,7 @@
     "LineCreationError": "Error while creating line",
     "LineModificationError": "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
+    "ShuntCompensatorModificationError": "Error while modifying shunt compensator",
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
 
     "CreateGenerator": "Create generator",
@@ -657,6 +658,7 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater or equal to 0",
+    "ModifyShuntCompensator": "Modify shunt compensator",
 
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
@@ -1001,5 +1003,6 @@
     "ShuntCompensator": "Shunt compensator",
     "AttachingAndSplittingLines": "Attaching and splitting lines",
     "GenerationAndLoad": "Generation and load",
-    "idSelector.idNeeded": "Please select an ID"
+    "idSelector.idNeeded": "Please select an ID",
+    "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet"
 }

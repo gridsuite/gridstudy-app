@@ -15,11 +15,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
 import CheckboxList from '../utils/checkbox-list';
-import {
-    fetchContingencyCount,
-    fetchContingencyAndFiltersLists,
-    updateConfigParameter,
-} from '../../utils/rest-api';
+import { fetchContingencyCount } from '../../utils/rest-api';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
@@ -29,6 +25,8 @@ import { useSelector } from 'react-redux';
 import { elementType } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
+import { updateConfigParameter } from '../../services/config';
+import { fetchContingencyAndFiltersLists } from '../../services/directory';
 
 function makeButton(onClick, message, disabled) {
     return (

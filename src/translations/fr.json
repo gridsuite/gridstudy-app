@@ -554,6 +554,7 @@
     "LineCreationError": "Erreur lors de la création d'une ligne",
     "LineModificationError": "Erreur lors de la modification d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
+    "ShuntCompensatorModificationError": "Erreur lors de la modification d'un moyen de compensation",
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
 
     "CreateGenerator": "Créer un groupe",
@@ -657,6 +658,7 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "La valeur de Q à Unom doit être supérieure ou égale à 0",
+    "ModifyShuntCompensator": "Modifier un moyen de compensation statique",
 
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
@@ -1023,5 +1025,6 @@
     "ShuntCompensator": "Moyen de compensation statique",
     "AttachingAndSplittingLines": "Piquage et coupure",
     "GenerationAndLoad": "Production et consommation",
-    "idSelector.idNeeded": "Veuillez sélectionner un ID"
+    "idSelector.idNeeded": "Veuillez sélectionner un ID",
+    "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur"
 }
