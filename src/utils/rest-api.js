@@ -2107,6 +2107,49 @@ export function createShuntCompensator(
     });
 }
 
+export function modifyShuntCompensator(
+    studyUuid,
+    currentNodeUuid,
+    shuntCompensatorId,
+    shuntCompensatorName,
+    susceptancePerSection,
+    qAtNominalV,
+    shuntCompensatorType,
+    voltageLevelId,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating shunt compensator modification');
+    } else {
+        console.info('Creating shunt compensator modification');
+    }
+
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
+            equipmentId: shuntCompensatorId,
+            equipmentName: toModificationOperation(shuntCompensatorName),
+            susceptancePerSection: toModificationOperation(
+                susceptancePerSection
+            ),
+            qAtNominalV: toModificationOperation(qAtNominalV),
+            shuntCompensatorType: toModificationOperation(shuntCompensatorType),
+            voltageLevelId: voltageLevelId,
+        }),
+    });
+}
+
 export function createLine(
     studyUuid,
     currentNodeUuid,
