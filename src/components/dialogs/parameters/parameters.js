@@ -30,18 +30,13 @@ import {
     fetchDefaultSensitivityAnalysisProvider,
     fetchSecurityAnalysisProvider,
     fetchSensitivityAnalysisProvider,
-    fetchSecurityAnalysisProviders,
-    fetchSensitivityAnalysisProviders,
-    updateConfigParameter,
     updateSecurityAnalysisProvider,
     updateSensitivityAnalysisProvider,
     getLoadFlowParameters,
-    getLoadFlowProviders,
     getLoadFlowProvider,
     getDefaultLoadFlowProvider,
     setLoadFlowProvider,
     setLoadFlowParameters,
-    getLoadFlowSpecificParametersDescription,
     getSecurityAnalysisParameters,
     setSecurityAnalysisParameters,
 } from '../../../utils/rest-api';
@@ -68,6 +63,13 @@ import {
     useGetVoltageInitParameters,
     VoltageInitParameters,
 } from './voltageinit/voltage-init-parameters';
+import { updateConfigParameter } from '../../../services/config';
+import {
+    getLoadFlowProviders,
+    getLoadFlowSpecificParametersDescription,
+} from '../../../services/loadflow';
+import { fetchSecurityAnalysisProviders } from '../../../services/security-analysis';
+import { fetchSensitivityAnalysisProviders } from '../../../services/sensitivity-analysis';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
