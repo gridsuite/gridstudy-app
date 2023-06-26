@@ -1,4 +1,4 @@
-import { useAnalysisStatus } from './analysis-status-hooks';
+import { useAnalysisStatus } from './use-analysis-status';
 import {
     getSecurityAnalysisRunningStatus,
     getSensiRunningStatus,
@@ -37,6 +37,7 @@ const voltageInitStatusInvalidations = [
     'voltageInit_failed',
 ];
 
+// this hook loads all current analysis status into redux then keeps them up to date according to notifications
 export const useAllAnalysisStatus = (studyUuid, currentNodeUuid) => {
     useAnalysisStatus(
         studyUuid,

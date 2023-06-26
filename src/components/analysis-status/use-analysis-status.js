@@ -45,6 +45,15 @@ function isWorthUpdate(
 }
 
 // this hook loads <analysisType> state into redux, then keeps it updated according to notifications
+/**
+ *
+ * @param {String} studyUuid current study uuid
+ * @param {String} nodeUuid current node uuid
+ * @param {Function} fetcher method fetching current <analysisType> state
+ * @param {Array} invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
+ * @param {Function} resultConversion converts <fetcher> result to RunningStatus
+ * @param {AnalysisType} analysisType AnalysisType targeted by this hook
+ */
 export function useAnalysisStatus(
     studyUuid,
     nodeUuid,
@@ -64,10 +73,7 @@ export function useAnalysisStatus(
             .then((res) => {
                 if (nodeUuidRef.current === nodeUuid) {
                     dispatch(
-                        setAnalysisStatus(
-                            analysisType,
-                            resultConversion ? resultConversion(res) : res
-                        )
+                        setAnalysisStatus(analysisType, resultConversion(res))
                     );
                 }
             })
