@@ -68,6 +68,8 @@ export function useComputingStatus(
     const dispatch = useDispatch();
 
     const update = useCallback(() => {
+        // this is used to prevent race conditions from happening
+        // if another request is sent, the previous one won't do anything
         let canceledRequest = false;
 
         nodeUuidRef.current = nodeUuid;
