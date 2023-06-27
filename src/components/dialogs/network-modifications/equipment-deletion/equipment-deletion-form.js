@@ -87,6 +87,7 @@ const DeleteEquipmentForm = ({
     }, []);
 
     useEffect(() => {
+        let ignore = false;
         setEquipmentsOptions([]);
         if (watchType?.fetchers?.length) {
             Promise.all(
@@ -95,7 +96,10 @@ const DeleteEquipmentForm = ({
                 )
             )
                 .then((vals) => {
-                    setEquipmentsOptions(vals.flat().sort(compareById));
+                    // check race condition here
+                    if (!ignore) {
+                        setEquipmentsOptions(vals.flat().sort(compareById));
+                    }
                 })
                 .catch((error) => {
                     snackError({
@@ -104,6 +108,9 @@ const DeleteEquipmentForm = ({
                     });
                 });
         }
+        return () => {
+            ignore = true;
+        };
     }, [studyUuid, currentNode?.id, watchType, snackError]);
 
     const updateMcsLists = useCallback(
