@@ -296,7 +296,6 @@
     "Limit_name": "Seuil",
     "OverloadedEquipment": "Ouvrage",
     "PermanentLimitName": "IST",
-    "EquipmentOverload": "Charge",
     "LimitAcceptableDuration": "Durée",
     "ErrFetchCurrentLimitViolationsMsg": "Une erreur est survenue lors la récupération des violations de contraintes en courant",
     "Value": "Valeur",

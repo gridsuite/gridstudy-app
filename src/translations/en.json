@@ -296,7 +296,6 @@
     "Limit_name": "Limit name",
     "OverloadedEquipment": "Equipment",
     "PermanentLimitName": "IST",
-    "EquipmentOverload": "Load",
     "LimitAcceptableDuration": "Duration",
     "ErrFetchCurrentLimitViolationsMsg": "An error occurred while getting the current limit violations",
     "Value": "Value",

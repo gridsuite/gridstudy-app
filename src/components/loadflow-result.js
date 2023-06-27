@@ -180,10 +180,10 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 valueFormatter: (params) => params.value.toFixed(1),
             },
             {
-                headerName: intl.formatMessage({ id: 'EquipmentOverload' }),
+                headerName: intl.formatMessage({ id: 'Loading' }),
                 field: 'overload',
                 numeric: true,
-                valueFormatter: (params) => `${Math.round(params.value)} %`,
+                fractionDigits: 0,
             },
         ];
     }, [intl]);
@@ -194,6 +194,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             sortable: true,
             resizable: true,
             lockPinned: true,
+            suppressMovable: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
         }),
