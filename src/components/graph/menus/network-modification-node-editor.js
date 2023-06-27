@@ -177,7 +177,7 @@ const NetworkModificationNodeEditor = () => {
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);
         setCopiedModifications((oldCopiedModifications) => {
-            if (oldCopiedModifications.length > 0) {
+            if (oldCopiedModifications.length) {
                 snackInfo({
                     messageId: 'CopiedModificationInvalidationMessage',
                 });
