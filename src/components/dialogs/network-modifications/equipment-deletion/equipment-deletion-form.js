@@ -6,7 +6,13 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -29,6 +35,8 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
     const watchType = useWatch({
         name: TYPE,
     });
+    const watchTypeRef = useRef();
+    watchTypeRef.current = watchType;
 
     const { setValue } = useFormContext();
 
@@ -59,6 +67,10 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
                 )
             )
                 .then((vals) => {
+                    // check race condition here
+                    if (watchTypeRef.current !== watchType) {
+                        return;
+                    }
                     setEquipmentsOptions(vals.flat().sort(compareById));
                 })
                 .catch((error) => {
