@@ -25,7 +25,6 @@ import {
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import {
     EQUIPMENT_ID,
-    HVDC_WITH_LCC,
     SHUNT_COMPENSATOR_SIDE_1,
     SHUNT_COMPENSATOR_SIDE_2,
     TYPE,
@@ -52,8 +51,11 @@ const DeleteEquipmentForm = ({
     const watchEquipmentId = useWatch({
         name: EQUIPMENT_ID,
     });
-    const watchIsLcc = useWatch({
-        name: HVDC_WITH_LCC,
+    const watchMcsList1 = useWatch({
+        name: SHUNT_COMPENSATOR_SIDE_1,
+    });
+    const watchMcsList2 = useWatch({
+        name: SHUNT_COMPENSATOR_SIDE_2,
     });
 
     // replace is mandatory to update a fieldArray (not setValue)
@@ -104,14 +106,10 @@ const DeleteEquipmentForm = ({
         }
     }, [studyUuid, currentNode?.id, watchType, snackError]);
 
-    const updateMcsList = useCallback(
+    const updateMcsLists = useCallback(
         (hvdcLineData) => {
-            const withLcc = hvdcLineData
-                ? hvdcLineData.hvdcType === 'LCC'
-                : false;
-            setValue(HVDC_WITH_LCC, withLcc);
-            replaceMcsList1(withLcc ? hvdcLineData.mcsOnSide1 : []);
-            replaceMcsList2(withLcc ? hvdcLineData.mcsOnSide2 : []);
+            replaceMcsList1(hvdcLineData?.mcsOnSide1 ? hvdcLineData.mcsOnSide1 : []);
+            replaceMcsList2(hvdcLineData?.mcsOnSide2 ? hvdcLineData.mcsOnSide2 : []);
         },
         [setValue, replaceMcsList1, replaceMcsList2]
     );
@@ -135,17 +133,17 @@ const DeleteEquipmentForm = ({
                     watchEquipmentId
                 )
                     .then((hvdcLineData) => {
-                        updateMcsList(hvdcLineData);
+                        updateMcsLists(hvdcLineData);
                     })
                     .catch((error) => {
-                        updateMcsList(null);
+                        updateMcsLists(null);
                         snackError({
                             messageTxt: error.message,
                             headerId: 'HVDCLineConverterStationError',
                         });
                     });
             } else {
-                updateMcsList(null);
+                updateMcsLists(null);
             }
         }
     }, [
@@ -153,7 +151,7 @@ const DeleteEquipmentForm = ({
         currentNode?.id,
         watchType?.type,
         watchEquipmentId,
-        updateMcsList,
+        updateMcsLists,
         snackError,
         editDataEquipmentId,
     ]);
@@ -217,7 +215,7 @@ const DeleteEquipmentForm = ({
                 {gridItem(equipmentTypeField, 6)}
                 {gridItem(equipmentField, 6)}
             </Grid>
-            {watchIsLcc && (
+            {(watchMcsList1?.length > 0 || watchMcsList2?.length > 0) && (
                 <Grid
                     container
                     spacing={1}

@@ -2916,7 +2916,6 @@ export function deleteEquipment(
     currentNodeUuid,
     equipmentType,
     equipmentId,
-    hvdcWithLCC,
     mcsOnSide1,
     mcsOnSide2,
     modificationUuid
@@ -2942,7 +2941,6 @@ export function deleteEquipment(
             type: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
             equipmentId: equipmentId,
             equipmentType: equipmentType,
-            hvdcWithLCC: hvdcWithLCC,
             mcsOnSide1: mcsOnSide1,
             mcsOnSide2: mcsOnSide2,
         }),

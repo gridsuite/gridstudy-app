@@ -12,7 +12,6 @@ import {
     EQUIPMENT_ID,
     SHUNT_COMPENSATOR_SIDE_1,
     SHUNT_COMPENSATOR_SIDE_2,
-    HVDC_WITH_LCC,
     ID,
     MCS_SELECTED,
 } from '../../../utils/field-constants';
@@ -32,7 +31,6 @@ const formSchema = yup
     .shape({
         [TYPE]: yup.object().nullable().required(),
         [EQUIPMENT_ID]: yup.string().nullable().required(),
-        [HVDC_WITH_LCC]: yup.boolean(),
         [SHUNT_COMPENSATOR_SIDE_1]: yup.array().of(
             yup.object().shape({
                 [ID]: yup.string(),
@@ -51,7 +49,6 @@ const formSchema = yup
 const emptyFormData = {
     [TYPE]: EQUIPMENT_TYPES.LINE,
     [EQUIPMENT_ID]: null,
-    [HVDC_WITH_LCC]: false,
     [SHUNT_COMPENSATOR_SIDE_1]: [],
     [SHUNT_COMPENSATOR_SIDE_2]: [],
 };
@@ -90,7 +87,6 @@ const EquipmentDeletionDialog = ({
             reset({
                 [TYPE]: EQUIPMENT_TYPES[editData.equipmentType],
                 [EQUIPMENT_ID]: editData.equipmentId,
-                [HVDC_WITH_LCC]: editData.hvdcWithLCC,
                 [SHUNT_COMPENSATOR_SIDE_1]: editData.mcsOnSide1,
                 [SHUNT_COMPENSATOR_SIDE_2]: editData.mcsOnSide2,
             });
@@ -103,7 +99,6 @@ const EquipmentDeletionDialog = ({
             reset({
                 [TYPE]: EQUIPMENT_TYPES.HVDC_LINE,
                 [EQUIPMENT_ID]: menuSelectId,
-                [HVDC_WITH_LCC]: false,
                 [SHUNT_COMPENSATOR_SIDE_1]: [],
                 [SHUNT_COMPENSATOR_SIDE_2]: [],
             });
@@ -131,7 +126,6 @@ const EquipmentDeletionDialog = ({
                 currentNodeUuid,
                 formData[TYPE].type,
                 formData[EQUIPMENT_ID],
-                formData[HVDC_WITH_LCC],
                 formData[SHUNT_COMPENSATOR_SIDE_1],
                 formData[SHUNT_COMPENSATOR_SIDE_2],
                 editData?.uuid
