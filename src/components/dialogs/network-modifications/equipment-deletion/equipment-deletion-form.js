@@ -115,10 +115,14 @@ const DeleteEquipmentForm = ({
 
     const updateMcsLists = useCallback(
         (hvdcLineData) => {
-            replaceMcsList1(hvdcLineData?.mcsOnSide1 ? hvdcLineData.mcsOnSide1 : []);
-            replaceMcsList2(hvdcLineData?.mcsOnSide2 ? hvdcLineData.mcsOnSide2 : []);
+            replaceMcsList1(
+                hvdcLineData?.mcsOnSide1 ? hvdcLineData.mcsOnSide1 : []
+            );
+            replaceMcsList2(
+                hvdcLineData?.mcsOnSide2 ? hvdcLineData.mcsOnSide2 : []
+            );
         },
-        [setValue, replaceMcsList1, replaceMcsList2]
+        [replaceMcsList1, replaceMcsList2]
     );
 
     useEffect(() => {
