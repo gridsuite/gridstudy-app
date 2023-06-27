@@ -36,7 +36,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import {AVAILABLE_SERVICES, PARAM_DEVELOPER_MODE} from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
@@ -101,6 +101,7 @@ export function RunButtonContainer({
     const dispatch = useDispatch();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [availableServices] = useParameterState(AVAILABLE_SERVICES);
 
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
@@ -373,7 +374,7 @@ export function RunButtonContainer({
             // VOLTAGEINIT is currently a dev feature
             runnables.push(runnable.VOLTAGE_INIT);
         }
-        return runnables;
+        return runnables.filter(runnable => !availableServices.includes(runnable));
     }, [runnable, enableDeveloperMode]);
 
     useEffect(() => {

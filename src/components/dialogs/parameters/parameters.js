@@ -58,7 +58,10 @@ import {
 import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import {
+    AVAILABLE_SERVICES,
+    PARAM_DEVELOPER_MODE,
+} from '../../../utils/config-params';
 import {
     useGetVoltageInitParameters,
     VoltageInitParameters,
@@ -516,6 +519,11 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [availableServices] = useParameterState(AVAILABLE_SERVICES);
+
+    const filterServicesByAvailability = (tabs) => {
+        return tabs.filter((tab) => !availableServices.includes(tab));
+    };
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
@@ -589,7 +597,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             <DialogContent style={{ overflowY: 'hidden' }}>
                 <Container maxWidth="md">
                     <Tabs
-                        value={tabValue}
+                        value={filterServicesByAvailability(tabValue)}
                         variant="scrollable"
                         onChange={(event, newValue) => setTabValue(newValue)}
                         aria-label="parameters"

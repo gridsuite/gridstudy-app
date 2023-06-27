@@ -118,6 +118,7 @@ import {
     PARAM_FLUX_CONVENTION,
     PARAM_DEVELOPER_MODE,
     PARAMS_LOADED,
+    AVAILABLE_SERVICES,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -145,6 +146,7 @@ const paramsInitialState = {
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
+    [AVAILABLE_SERVICES]: ['LoadFlow'],
 };
 
 const initialSpreadsheetNetworkState = {
@@ -471,7 +473,7 @@ export const reducer = createReducer(initialState, {
         state.authenticationRouterError = action.authenticationRouterError;
     },
 
-    [RESET_AUTHENTICATION_ROUTER_ERROR]: (state, action) => {
+    [RESET_AUTHENTICATION_ROUTER_ERROR]: (state) => {
         state.authenticationRouterError = null;
     },
 

@@ -655,3 +655,12 @@ export function setDeletedEquipments(deletedEquipments) {
         deletedEquipments: deletedEquipments,
     };
 }
+
+export const SET_AVAILABLE_SERVICES = 'SET_AVAILABLE_SERVICES'
+
+export const setAvailableServices = (availableServices) => {
+    return {
+        type: SET_AVAILABLE_SERVICES,
+        availableServices: availableServices,
+    };
+}

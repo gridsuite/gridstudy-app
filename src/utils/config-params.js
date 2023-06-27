@@ -7,6 +7,7 @@
 
 export const COMMON_APP_NAME = 'common';
 export const APP_NAME = 'study';
+export const AVAILABLE_SERVICES = 'availableServices';
 
 export const PARAM_THEME = 'theme';
 export const PARAM_USE_NAME = 'useName';
