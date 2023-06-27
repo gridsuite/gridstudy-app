@@ -14,7 +14,7 @@ import {
     SHUNT_COMPENSATOR_SIDE_2,
     HVDC_WITH_LCC,
     ID,
-    SELECTED,
+    MCS_SELECTED,
 } from '../../../utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -36,13 +36,13 @@ const formSchema = yup
         [SHUNT_COMPENSATOR_SIDE_1]: yup.array().of(
             yup.object().shape({
                 [ID]: yup.string(),
-                [SELECTED]: yup.boolean(),
+                [MCS_SELECTED]: yup.boolean(),
             })
         ),
         [SHUNT_COMPENSATOR_SIDE_2]: yup.array().of(
             yup.object().shape({
                 [ID]: yup.string(),
-                [SELECTED]: yup.boolean(),
+                [MCS_SELECTED]: yup.boolean(),
             })
         ),
     })

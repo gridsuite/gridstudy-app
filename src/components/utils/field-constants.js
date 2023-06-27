@@ -154,6 +154,8 @@ export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 // dnd table
 export const SELECTED = 'selected';
+// hvdcline removal
+export const MCS_SELECTED = 'connectedToHvdc';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';

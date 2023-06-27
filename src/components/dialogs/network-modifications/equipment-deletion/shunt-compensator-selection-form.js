@@ -8,7 +8,7 @@
 import { Grid } from '@mui/material';
 import CheckboxInput from 'components/utils/rhf-inputs/booleans/checkbox-input';
 import ReadOnlyInput from 'components/utils/rhf-inputs/read-only/read-only-input';
-import { SELECTED, ID } from 'components/utils/field-constants';
+import { MCS_SELECTED, ID } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -26,7 +26,7 @@ const ShuntCompensatorSelectionForm = ({ title, arrayFormName, mcsRows }) => {
                     <Grid item xs={1} align={'start'}>
                         <CheckboxInput
                             key={field.id + 'SEL'}
-                            name={`${arrayFormName}[${index}].${SELECTED}`}
+                            name={`${arrayFormName}[${index}].${MCS_SELECTED}`}
                         />
                     </Grid>
                     <Grid item xs={11} align={'start'}>

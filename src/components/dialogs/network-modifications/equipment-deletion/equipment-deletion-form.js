@@ -151,7 +151,7 @@ const DeleteEquipmentForm = ({
     }, [
         studyUuid,
         currentNode?.id,
-        watchType.type,
+        watchType?.type,
         watchEquipmentId,
         updateMcsList,
         snackError,
