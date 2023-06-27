@@ -167,14 +167,20 @@ export const addModificationTypeToTemporaryLimits = (
     currentModifiedTemporaryLimits,
     currentNode
 ) => {
+    const formattedTemporaryLimitsToModify = formatTemporaryLimits(
+        temporaryLimitsToModify
+    );
+    const formattedCurrentModifiedTemporaryLimits = formatTemporaryLimits(
+        currentModifiedTemporaryLimits
+    );
     const updatedTemporaryLimits = temporaryLimits.map((limit) => {
         const limitWithSameName = findTemporaryLimit(
-            formatTemporaryLimits(temporaryLimitsToModify),
+            formattedTemporaryLimitsToModify,
             limit
         );
         if (limitWithSameName) {
             const currentLimitWithSameName = findTemporaryLimit(
-                formatTemporaryLimits(currentModifiedTemporaryLimits),
+                formattedCurrentModifiedTemporaryLimits,
                 limitWithSameName
             );
             if (
@@ -208,7 +214,7 @@ export const addModificationTypeToTemporaryLimits = (
         }
     });
     //add deleted limits
-    temporaryLimitsToModify?.forEach((limit) => {
+    formattedTemporaryLimitsToModify?.forEach((limit) => {
         if (!findTemporaryLimit(temporaryLimits, limit)) {
             updatedTemporaryLimits.push({
                 ...limit,
@@ -217,7 +223,7 @@ export const addModificationTypeToTemporaryLimits = (
         }
     });
     //add previously deleted limits
-    currentModifiedTemporaryLimits?.forEach((limit) => {
+    formattedCurrentModifiedTemporaryLimits?.forEach((limit) => {
         if (
             !findTemporaryLimit(updatedTemporaryLimits, limit) &&
             limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED
