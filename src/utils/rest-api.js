@@ -691,17 +691,17 @@ export function fetchLineOrTransformer(
     return backendFetchJson(fetchEquipmentInfosUrl);
 }
 
-export function fetchCurrentLimitViolations(
+export function fetchLimitViolations(
     studyUuid,
     currentNodeUuid,
     limitReduction
 ) {
     console.info(
-        `Fetching current limit violations (with limit reduction ${limitReduction}) ...`
+        `Fetching limit violations with (limit reduction ${limitReduction}) ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/current-limit-violations?limitReduction=' +
+        '/limit-violations?limitReduction=' +
         limitReduction.toString();
     return backendFetchJson(url);
 }
