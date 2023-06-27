@@ -37,7 +37,7 @@ export const TableNumericalInput = ({
         () =>
             previousValue === Number.MAX_VALUE
                 ? validateValueIsANumber(value)
-                : previousValue && previousValue !== value,
+                : previousValue !== undefined && previousValue !== value,
         [previousValue, value]
     );
 
@@ -82,7 +82,7 @@ export const TableNumericalInput = ({
                 style: {
                     fontSize: 'small',
                     color:
-                        previousValue &&
+                        previousValue !== undefined &&
                         previousValue === value &&
                         !valueModified
                             ? 'grey'

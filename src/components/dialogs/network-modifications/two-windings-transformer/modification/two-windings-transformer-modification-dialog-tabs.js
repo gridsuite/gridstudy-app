@@ -8,7 +8,9 @@
 import { Grid, Tab, Tabs } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
+import { ENABLED, PHASE_TAP_CHANGER } from 'components/utils/field-constants';
 import React, { useCallback } from 'react';
+import { useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerModificationDialogTab } from './two-windings-transformer-modification-dialog';
 
@@ -26,8 +28,13 @@ const TwoWindingsTransformerModificationDialogTabs = ({
     tabIndex,
     tabIndexesWithError,
     setTabIndex,
+    setDialogWidth,
 }) => {
     const classes = useStyles();
+
+    const phaseTapChangerEnabledWatch = useWatch({
+        name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
+    });
 
     const getTabIndicatorClass = useCallback(
         (index) =>
@@ -68,6 +75,16 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                     className={getTabClass(
                         TwoWindingsTransformerModificationDialogTab.LIMITS_TAB
                     )}
+                />
+                <Tab
+                    onClick={() => setDialogWidth('xl')}
+                    label={
+                        <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
+                    }
+                    className={getTabClass(
+                        TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB
+                    )}
+                    disabled={!phaseTapChangerEnabledWatch}
                 />
             </Tabs>
         </Grid>

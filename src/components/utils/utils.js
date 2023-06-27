@@ -114,6 +114,19 @@ export const formatTemporaryLimits = (temporaryLimits) =>
         };
     });
 
+export const formatPhaseTapSteps = (steps) =>
+    steps?.map((step) => {
+        return {
+            index: step?.index,
+            b: step?.b,
+            g: step?.g,
+            r: step?.r,
+            x: step?.x,
+            rho: step?.rho,
+            alpha: step?.alpha,
+        };
+    });
+
 export function calculateResistance(distance, linearResistance) {
     if (
         distance === undefined ||
