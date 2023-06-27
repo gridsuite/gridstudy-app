@@ -183,7 +183,6 @@ const NetworkModificationNodeEditor = () => {
                 });
                 return [];
             }
-            return oldCopiedModifications;
         });
     }, [snackInfo]);
 
