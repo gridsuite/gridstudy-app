@@ -69,6 +69,7 @@ import {
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
 import { ComputingType } from './computing-status/computing-type';
+import { RunningStatus } from './utils/running-status';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -302,8 +303,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            (securityAnalysisStatus === 'CONVERGED' ||
-                securityAnalysisStatus === 'DIVERGED')
+            (securityAnalysisStatus === RunningStatus.SUCCEED ||
+                securityAnalysisStatus === RunningStatus.FAILED)
         ) {
             dispatch(addSANotif());
         } else {
@@ -314,7 +315,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            sensitivityAnalysisStatus === 'COMPLETED'
+            sensitivityAnalysisStatus === RunningStatus.SUCCEED
         ) {
             dispatch(addSensiNotif());
         } else {
@@ -325,7 +326,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            shortCircuitAnalysisStatus === 'COMPLETED'
+            shortCircuitAnalysisStatus === RunningStatus.SUCCEED
         ) {
             dispatch(addShortCircuitNotif());
         } else {
@@ -336,8 +337,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            (dynamicSimulationStatus === 'CONVERGED' ||
-                dynamicSimulationStatus === 'DIVERGED')
+            (dynamicSimulationStatus === RunningStatus.SUCCEED ||
+                dynamicSimulationStatus === RunningStatus.FAILED)
         ) {
             dispatch(addDynamicSimulationNotif());
         } else {
@@ -348,7 +349,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            (voltageInitStatus === 'OK' || voltageInitStatus === 'NOT_OK')
+            (voltageInitStatus === RunningStatus.SUCCEED ||
+                voltageInitStatus === RunningStatus.FAILED)
         ) {
             dispatch(addVoltageInitNotif());
         } else {
