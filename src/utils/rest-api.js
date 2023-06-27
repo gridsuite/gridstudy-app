@@ -6,11 +6,9 @@
  */
 
 import { store } from '../redux/store';
-import ReconnectingWebSocket from 'reconnecting-websocket';
-import { APP_NAME, getAppName } from './config-params';
 import {
-    BRANCH_STATUS_ACTION,
     BRANCH_SIDE,
+    BRANCH_STATUS_ACTION,
 } from '../components/network/constants';
 import { MODIFICATION_TYPES } from '../components/utils/modification-type';
 import {
@@ -19,32 +17,19 @@ import {
 } from '../components/utils/equipment-types';
 import { toModificationOperation } from '../components/utils/utils';
 
-const PREFIX_USER_ADMIN_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/user-admin';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-const PREFIX_STUDY_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/study-notification';
-const PREFIX_CONFIG_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/config-notification';
-const PREFIX_DIRECTORY_NOTIFICATION_WS =
-    process.env.REACT_APP_WS_GATEWAY + '/directory-notification';
-const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
-const PREFIX_DIRECTORY_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/directory';
-const PREFIX_NETWORK_MODIFICATION_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/network-modification';
-const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/sensitivity-analysis';
-const PREFIX_EXPLORE_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/explore';
-const PREFIX_LOADFLOW_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/loadflow';
-const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/security-analysis';
-const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/dynamic-simulation';
+export const getWsBase = () =>
+    document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
 
-function getToken() {
+export function getRequestParamFromList(params, paramName) {
+    if (params?.length) {
+        return new URLSearchParams(params.map((param) => [paramName, param]));
+    }
+}
+
+export function getToken() {
     const state = store.getState();
     return state.user.id_token;
 }
@@ -135,41 +120,6 @@ export function backendFetchJson(url, init, token) {
     );
 }
 
-export function fetchValidateUser(user) {
-    const sub = user?.profile?.sub;
-    if (!sub) {
-        return Promise.reject(
-            new Error(
-                'Error : Fetching access for missing user.profile.sub : ' + user
-            )
-        );
-    }
-
-    console.info(`Fetching access for user...`);
-    const CheckAccessUrl =
-        PREFIX_USER_ADMIN_SERVER_QUERIES + `/v1/users/${sub}`;
-    console.debug(CheckAccessUrl);
-
-    return backendFetch(
-        CheckAccessUrl,
-        {
-            method: 'head',
-        },
-        user?.id_token
-    )
-        .then((response) => {
-            //if the response is ok, the responseCode will be either 200 or 204 otherwise it's a Http error and it will be caught
-            return response.status === 200;
-        })
-        .catch((error) => {
-            if (error.status === 403) {
-                return false;
-            } else {
-                throw error;
-            }
-        });
-}
-
 export function fetchDefaultParametersValues() {
     return fetchAppsAndUrls().then((res) => {
         console.info(
@@ -184,67 +134,6 @@ export function fetchDefaultParametersValues() {
 
         return studyMetadata.defaultParametersValues;
     });
-}
-
-export function fetchConfigParameters(appName) {
-    console.info('Fetching UI configuration params for app : ' + appName);
-    const fetchParams =
-        PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
-    return backendFetchJson(fetchParams);
-}
-
-export function fetchConfigParameter(name) {
-    const appName = getAppName(name);
-    console.info(
-        "Fetching UI config parameter '%s' for app '%s' ",
-        name,
-        appName
-    );
-    const fetchParams =
-        PREFIX_CONFIG_QUERIES +
-        `/v1/applications/${appName}/parameters/${name}`;
-    return backendFetch(fetchParams).then((response) =>
-        response.status === 204 ? null : response.json()
-    );
-}
-
-export function fetchRootFolders(types) {
-    console.info('Fetching Root Directories');
-    const urlSearchParams = types
-        ? '?elementTypes=' + types.join('&elementTypes=')
-        : '';
-    const fetchRootFoldersUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/root-directories` +
-        urlSearchParams;
-    return backendFetchJson(fetchRootFoldersUrl);
-}
-
-export function fetchDirectoryContent(directoryUuid, types) {
-    console.info("Fetching Folder content '%s'", directoryUuid);
-    const urlSearchParams = types
-        ? '?elementTypes=' + types.join('&elementTypes=')
-        : '';
-    const fetchDirectoryContentUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements` +
-        urlSearchParams;
-    return backendFetchJson(fetchDirectoryContentUrl);
-}
-
-export function updateConfigParameter(name, value) {
-    const appName = getAppName(name);
-    console.info(
-        "Updating config parameter '%s=%s' for app '%s' ",
-        name,
-        value,
-        appName
-    );
-    const updateParams =
-        PREFIX_CONFIG_QUERIES +
-        `/v1/applications/${appName}/parameters/${name}?value=` +
-        encodeURIComponent(value);
-    return backendFetch(updateParams, { method: 'put' });
 }
 
 function getStudyUrl(studyUuid) {
@@ -275,22 +164,6 @@ export function fetchStudyExists(studyUuid) {
     const fetchStudiesUrl = getStudyUrl(studyUuid);
     console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl, { method: 'head' });
-}
-
-function getPathUrl(studyUuid) {
-    return (
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        '/v1/elements/' +
-        encodeURIComponent(studyUuid) +
-        '/path'
-    );
-}
-
-export function fetchPath(studyUuid) {
-    console.info(`Fetching element '${studyUuid}' and its parents info ...`);
-    const fetchPathUrl = getPathUrl(studyUuid);
-    console.debug(fetchPathUrl);
-    return backendFetchJson(fetchPathUrl);
 }
 
 export function getVoltageLevelSingleLineDiagram(
@@ -818,17 +691,17 @@ export function fetchLineOrTransformer(
     return backendFetchJson(fetchEquipmentInfosUrl);
 }
 
-export function fetchCurrentLimitViolations(
+export function fetchLimitViolations(
     studyUuid,
     currentNodeUuid,
     limitReduction
 ) {
     console.info(
-        `Fetching current limit violations (with limit reduction ${limitReduction}) ...`
+        `Fetching limit violations with (limit reduction ${limitReduction}) ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/current-limit-violations?limitReduction=' +
+        '/limit-violations?limitReduction=' +
         limitReduction.toString();
     return backendFetchJson(url);
 }
@@ -1009,17 +882,6 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-function getSecurityAnalysisUrl() {
-    return PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES + '/v1/';
-}
-
-export function fetchSecurityAnalysisProviders() {
-    console.info('fetch security analysis providers');
-    const url = getSecurityAnalysisUrl() + 'providers';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
 export function fetchSecurityAnalysisProvider(studyUuid) {
     console.info('fetch security analysis provider');
     const url = getStudyUrl(studyUuid) + '/security-analysis/provider';
@@ -1124,13 +986,6 @@ export function fetchSensitivityAnalysisResult(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/sensitivity-analysis/result?' +
         urlSearchParams.toString();
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function fetchSensitivityAnalysisProviders() {
-    console.info('fetch sensitivity analysis providers');
-    const url = getSensiUrl() + 'providers';
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -1259,6 +1114,8 @@ export function updateVoltageInitParameters(studyUuid, newParams) {
     console.info('set voltage init parameters');
     const url = getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(url);
+
+    console.info('newParams in rest API', newParams);
 
     return backendFetch(url, {
         method: 'POST',
@@ -1406,11 +1263,6 @@ export function fetchDynamicSimulationResult(studyUuid, currentNodeUuid) {
     );
 }
 
-// -- Parameters API - BEGIN
-function getDynamicSimulationUrl() {
-    return PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES + '/v1/';
-}
-
 export function fetchDynamicSimulationModels(studyUuid, nodeUuid) {
     console.info(
         `Fetching dynamic simulation models on '${studyUuid}' and node '${nodeUuid}' ...`
@@ -1419,13 +1271,6 @@ export function fetchDynamicSimulationModels(studyUuid, nodeUuid) {
     const url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
         '/dynamic-simulation/models';
-    console.debug(url);
-    return backendFetchJson(url);
-}
-
-export function fetchDynamicSimulationProviders() {
-    console.info('fetch dynamic simulation providers');
-    const url = getDynamicSimulationUrl() + 'providers';
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -1495,18 +1340,6 @@ export function updateDynamicSimulationParameters(studyUuid, newParams) {
 
 // -- Parameters API - END
 // --- Dynamic simulation API - END
-
-export function fetchContingencyAndFiltersLists(listIds) {
-    console.info('Fetching contingency and filters lists');
-    const url =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        '/v1/elements?strictMode=false&ids=' +
-        listIds
-            .filter((e) => e != null && e !== '') // filter empty element
-            .join('&ids=');
-    console.debug(url);
-    return backendFetchJson(url);
-}
 
 export function fetchContingencyCount(
     studyUuid,
@@ -1604,7 +1437,7 @@ export function updateTreeNode(studyUuid, node) {
 }
 
 export function copyTreeNode(
-    sourceStudyId,
+    sourceStudyUuid,
     targetStudyId,
     nodeToCopyUuid,
     referenceNodeUuid,
@@ -1619,7 +1452,7 @@ export function copyTreeNode(
         '&referenceNodeUuid=' +
         referenceNodeUuid +
         '&sourceStudyUuid=' +
-        sourceStudyId;
+        sourceStudyUuid;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
@@ -1671,13 +1504,20 @@ export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
     });
 }
 
-export function copySubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+export function copySubtree(
+    sourceStudyUuid,
+    targetStudyUuid,
+    nodeToCopyUuid,
+    referenceNodeUuid
+) {
     const nodeCopyUrl =
-        getStudyUrl(targetStudyId) +
+        getStudyUrl(targetStudyUuid) +
         '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
         nodeToCopyUuid +
         '&referenceNodeUuid=' +
-        referenceNodeUuid;
+        referenceNodeUuid +
+        '&sourceStudyUuid=' +
+        sourceStudyUuid;
     console.debug(nodeCopyUrl);
     return backendFetch(nodeCopyUrl, {
         method: 'post',
@@ -1733,99 +1573,12 @@ export function copyOrMoveModifications(
     });
 }
 
-function getUrlWithToken(baseUrl) {
+export function getUrlWithToken(baseUrl) {
     if (baseUrl.includes('?')) {
         return baseUrl + '&access_token=' + getToken();
     } else {
         return baseUrl + '?access_token=' + getToken();
     }
-}
-
-export function connectNotificationsWebsocket(studyUuid, options) {
-    // The websocket API doesn't allow relative urls
-    const wsbase = document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
-    const wsadress =
-        wsbase +
-        PREFIX_STUDY_NOTIFICATION_WS +
-        '/notify?studyUuid=' +
-        encodeURIComponent(studyUuid);
-
-    const rws = new ReconnectingWebSocket(
-        () => getUrlWithToken(wsadress),
-        [],
-        options
-    );
-    // don't log the token, it's private
-    rws.onopen = function (event) {
-        console.info('Connected Websocket ' + wsadress + ' ...');
-    };
-    return rws;
-}
-
-export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
-    // The websocket API doesn't allow relative urls
-    const wsbase = document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
-    const wsadress =
-        wsbase +
-        PREFIX_DIRECTORY_NOTIFICATION_WS +
-        '/notify?updateType=deleteStudy&elementUuid=' +
-        studyUuid;
-
-    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsadress));
-    // don't log the token, it's private
-    rws.onopen = function (event) {
-        console.info('Connected Websocket ' + wsadress + ' ...');
-    };
-    return rws;
-}
-
-/**
- * Function will be called to connect with notification websocket to update the studies list
- * @returns {ReconnectingWebSocket}
- */
-export function connectNotificationsWsUpdateDirectories() {
-    const webSocketBaseUrl = document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
-    const webSocketUrl =
-        webSocketBaseUrl +
-        PREFIX_DIRECTORY_NOTIFICATION_WS +
-        '/notify?updateType=directories';
-
-    const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => webSocketUrl + '&access_token=' + getToken()
-    );
-    reconnectingWebSocket.onopen = function (event) {
-        console.info(
-            'Connected Websocket update directories ' + webSocketUrl + ' ...'
-        );
-    };
-    return reconnectingWebSocket;
-}
-
-export function connectNotificationsWsUpdateConfig() {
-    const webSocketBaseUrl = document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
-    const webSocketUrl =
-        webSocketBaseUrl +
-        PREFIX_CONFIG_NOTIFICATION_WS +
-        '/notify?appName=' +
-        APP_NAME;
-
-    const reconnectingWebSocket = new ReconnectingWebSocket(() =>
-        getUrlWithToken(webSocketUrl)
-    );
-    reconnectingWebSocket.onopen = function (event) {
-        console.info(
-            'Connected Websocket update config ui ' + webSocketUrl + ' ...'
-        );
-    };
-    return reconnectingWebSocket;
 }
 
 export function getAvailableExportFormats() {
@@ -1897,14 +1650,6 @@ export function getLoadFlowParameters(studyUuid) {
     const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(getLfParams);
     return backendFetchJson(getLfParams);
-}
-
-export function getLoadFlowSpecificParametersDescription() {
-    console.info('get load flow specific parameters description');
-    const getLoadFlowSpecificParameterssUrl =
-        getLoadFlowUrl() + 'specific-parameters';
-    console.debug(getLoadFlowSpecificParameterssUrl);
-    return backendFetchJson(getLoadFlowSpecificParameterssUrl);
 }
 
 export function setShortCircuitParameters(studyUuid, newParams) {
@@ -2143,7 +1888,6 @@ export function modifyGenerator(
     modificationId,
     qPercent,
     plannedActivePowerSetPoint,
-    startupCost,
     marginalCost,
     plannedOutageRate,
     forcedOutageRate,
@@ -2189,7 +1933,6 @@ export function modifyGenerator(
         plannedActivePowerSetPoint: toModificationOperation(
             plannedActivePowerSetPoint
         ),
-        startupCost: toModificationOperation(startupCost),
         marginalCost: toModificationOperation(marginalCost),
         plannedOutageRate: toModificationOperation(plannedOutageRate),
         forcedOutageRate: toModificationOperation(forcedOutageRate),
@@ -2238,7 +1981,6 @@ export function createGenerator(
     isUpdate = false,
     modificationUuid,
     plannedActivePowerSetPoint,
-    startupCost,
     marginalCost,
     plannedOutageRate,
     forcedOutageRate,
@@ -2290,7 +2032,6 @@ export function createGenerator(
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
             plannedActivePowerSetPoint: plannedActivePowerSetPoint,
-            startupCost: startupCost,
             marginalCost: marginalCost,
             plannedOutageRate: plannedOutageRate,
             forcedOutageRate: forcedOutageRate,
@@ -2362,6 +2103,49 @@ export function createShuntCompensator(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
+        }),
+    });
+}
+
+export function modifyShuntCompensator(
+    studyUuid,
+    currentNodeUuid,
+    shuntCompensatorId,
+    shuntCompensatorName,
+    susceptancePerSection,
+    qAtNominalV,
+    shuntCompensatorType,
+    voltageLevelId,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating shunt compensator modification');
+    } else {
+        console.info('Creating shunt compensator modification');
+    }
+
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
+            equipmentId: shuntCompensatorId,
+            equipmentName: toModificationOperation(shuntCompensatorName),
+            susceptancePerSection: toModificationOperation(
+                susceptancePerSection
+            ),
+            qAtNominalV: toModificationOperation(qAtNominalV),
+            shuntCompensatorType: toModificationOperation(shuntCompensatorType),
+            voltageLevelId: voltageLevelId,
         }),
     });
 }
@@ -3070,17 +2854,6 @@ export function deleteAttachingLine(
     });
 }
 
-function getLoadFlowUrl() {
-    return PREFIX_LOADFLOW_SERVER_QUERIES + '/v1/';
-}
-
-export function getLoadFlowProviders() {
-    console.info('get load flow providers');
-    const getLoadFlowProvidersUrl = getLoadFlowUrl() + 'providers';
-    console.debug(getLoadFlowProvidersUrl);
-    return backendFetchJson(getLoadFlowProvidersUrl);
-}
-
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =
@@ -3175,15 +2948,6 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
     return backendFetchJson(modificationsGetUrl);
 }
 
-export function fetchNetworkModification(modificationUuid) {
-    const modificationFetchUrl =
-        PREFIX_NETWORK_MODIFICATION_QUERIES +
-        '/v1/network-modifications/' +
-        encodeURIComponent(modificationUuid);
-    console.debug(modificationFetchUrl);
-    return backendFetch(modificationFetchUrl);
-}
-
 export function buildNode(studyUuid, currentNodeUuid) {
     console.info(
         'Build node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...'
@@ -3243,36 +3007,6 @@ export function getUniqueNodeName(studyUuid) {
     const uniqueNodeNameUrl = getStudyUrl(studyUuid) + '/nodes/nextUniqueName';
     console.debug(uniqueNodeNameUrl);
     return backendFetchText(uniqueNodeNameUrl);
-}
-
-function getSensiUrl() {
-    return PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES + '/v1/';
-}
-
-export function getSensiDefaultResultsThreshold() {
-    console.info('get sensi default results threshold');
-    const getSensiDefaultResultsThresholdUrl =
-        getSensiUrl() + 'results-threshold-default-value';
-    console.debug(getSensiDefaultResultsThresholdUrl);
-    return backendFetchText(getSensiDefaultResultsThresholdUrl, {
-        method: 'get',
-    });
-}
-
-export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
-    console.info('Fetching elements metadata');
-    const url =
-        PREFIX_EXPLORE_SERVER_QUERIES +
-        '/v1/explore/elements/metadata?ids=' +
-        ids
-            .filter((e) => e != null && e !== '') // filter empty element
-            .join('&ids=') +
-        '&equipmentTypes=' +
-        equipmentTypes.join('&equipmentTypes=') +
-        '&elementTypes=' +
-        elementTypes.join('&elementTypes=');
-    console.debug(url);
-    return backendFetchJson(url);
 }
 
 export function fetchSubstationsMapInfos(
@@ -3361,14 +3095,6 @@ export function generationDispatch(
         },
         body,
     });
-}
-
-export function getLineTypesCatalog() {
-    console.info(`get line types catalog`);
-    const url =
-        PREFIX_NETWORK_MODIFICATION_QUERIES +
-        '/v1/network-modifications/catalog/line_types';
-    return backendFetchJson(url);
 }
 
 export function getSecurityAnalysisParameters(studyUuid) {

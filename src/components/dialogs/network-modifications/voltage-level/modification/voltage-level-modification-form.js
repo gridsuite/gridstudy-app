@@ -5,12 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
-import { fetchEquipmentsIds } from 'utils/rest-api';
+import React from 'react';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-import { areIdsEqual, getObjectId } from 'components/utils/utils';
+import { getObjectId } from 'components/utils/utils';
 import {
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
@@ -20,7 +18,6 @@ import {
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
 import TextInput from 'components/utils/rhf-inputs/text-input';
-import { useWatch } from 'react-hook-form';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import {
     filledTextField,
@@ -30,62 +27,20 @@ import {
     VoltageAdornment,
 } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
+import { TextField } from '@mui/material';
 
-const VoltageLevelModificationForm = ({
-    studyUuid,
-    currentNodeUuid,
-    voltageLevelInfos,
-    onEquipmentIdChange,
-}) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [substations, setSubstations] = useState([]);
-
-    const watchVoltageLevelId = useWatch({
-        name: `${EQUIPMENT_ID}`,
-    });
-
-    useEffect(() => {
-        onEquipmentIdChange(watchVoltageLevelId);
-    }, [watchVoltageLevelId, onEquipmentIdChange]);
-
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                undefined,
-                'SUBSTATION',
-                true
-            ).then((values) => {
-                setSubstations(values.sort((a, b) => a.localeCompare(b)));
-            });
-
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                undefined,
-                'VOLTAGE_LEVEL',
-                true
-            ).then((values) => {
-                setVoltageLevelOptions(
-                    values.sort((a, b) => a.localeCompare(b))
-                );
-            });
-        }
-    }, [studyUuid, currentNodeUuid]);
-
+const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
     const voltageLevelIdField = (
-        <AutocompleteInput
-            isOptionEqualToValue={areIdsEqual}
-            allowNewValue
-            forcePopupIcon
-            name={EQUIPMENT_ID}
+        <TextField
+            size="small"
+            fullWidth
             label={'ID'}
-            options={voltageLevelOptions}
-            getOptionLabel={getObjectId}
-            outputTransform={getObjectId}
-            size={'small'}
-            formProps={{ autoFocus: true, ...filledTextField }}
+            value={equipmentId}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+            {...filledTextField}
         />
     );
 
@@ -107,7 +62,10 @@ const VoltageLevelModificationForm = ({
             //setting null programatically when freesolo is enable wont empty the field
             name={SUBSTATION_ID}
             label="SUBSTATION"
-            options={substations}
+            // Because of a mui/material bug, the disabled attribute do not work properly.
+            // It should be fixed after v5.12.2. For the moment, instead of fetching the
+            // substation list to display in this AutocompleteInput, we only show the current substation.
+            options={[voltageLevelInfos?.substationId]}
             getOptionLabel={getObjectId}
             inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) => value}

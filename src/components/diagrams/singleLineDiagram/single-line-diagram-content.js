@@ -37,7 +37,9 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
-import LinePopover from '../../tooltips/line-popover';
+import EquipmentPopover from '../../tooltips/equipment-popover';
+import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -56,8 +58,10 @@ function SingleLineDiagramContent(props) {
     const { openDiagramView } = useDiagram();
     const [equipmentToModify, setEquipmentToModify] = useState();
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
-    const [linePopoverAnchorEl, setLinePopoverAnchorEl] = useState(null);
-    const [lineHoveredId, setLineHoveredId] = useState('');
+    const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] =
+        useState(null);
+    const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
+    const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -73,14 +77,16 @@ function SingleLineDiagramContent(props) {
     };
 
     const handleTogglePopover = useCallback(
-        (shouldDisplay, currentTarget, lineId) => {
+        (shouldDisplay, currentTarget, equipmentId, equipmentType) => {
             setShouldDisplayTooltip(shouldDisplay);
             if (shouldDisplay) {
-                setLineHoveredId(lineId);
-                setLinePopoverAnchorEl(currentTarget);
+                setHoveredEquipmentId(equipmentId);
+                setEquipmentPopoverAnchorEl(currentTarget);
+                setHoveredEquipmentType(equipmentType);
             } else {
-                setLineHoveredId('');
-                setLinePopoverAnchorEl(null);
+                setHoveredEquipmentId('');
+                setEquipmentPopoverAnchorEl(null);
+                setHoveredEquipmentType('');
             }
         },
         [setShouldDisplayTooltip]
@@ -183,6 +189,7 @@ function SingleLineDiagramContent(props) {
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
+                    handleOpenModificationDialog={handleOpenModificationDialog}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
@@ -215,10 +222,11 @@ function SingleLineDiagramContent(props) {
 
     const displayTooltip = () => {
         return (
-            <LinePopover
+            <EquipmentPopover
                 studyUuid={studyUuid}
-                anchorEl={linePopoverAnchorEl}
-                lineId={lineHoveredId}
+                anchorEl={equipmentPopoverAnchorEl}
+                equipmentType={hoveredEquipmentType}
+                equipmentId={hoveredEquipmentId}
                 loadFlowStatus={props.loadFlowStatus}
             />
         );
@@ -244,6 +252,28 @@ function SingleLineDiagramContent(props) {
                         currentNode={currentNode}
                         onClose={() => closeModificationDialog()}
                         defaultIdValue={equipmentToModify.equipmentId}
+                    />
+                );
+            case equipments.twoWindingsTransformers:
+                return (
+                    <TwoWindingsTransformerModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        isUpdate={true}
+                        onClose={() => closeModificationDialog()}
+                    />
+                );
+            case equipments.lines:
+                return (
+                    <LineModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        isUpdate={true}
+                        onClose={() => closeModificationDialog()}
                     />
                 );
             default:
