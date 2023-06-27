@@ -1,16 +1,34 @@
 import { UPDATE_TYPE_HEADER } from 'components/study-container';
 import { RunningStatus } from 'components/utils/running-status';
-import { useCallback, useEffect, useRef } from 'react';
+import { UUID } from 'crypto';
+import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setComputingStatus } from 'redux/actions';
+import { ComputingType } from './computing-type';
+
+interface UseComputingStatusProps {
+    (
+        studyUuid: UUID,
+        nodeUuid: UUID,
+        fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
+        invalidations: string[],
+        resultConversion: (x: string) => string,
+        computingType: ComputingType
+    ): void;
+}
+
+interface LastUpdateProps {
+    studyUpdatedForce: any;
+    fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>;
+}
 
 function isWorthUpdate(
-    studyUpdatedForce,
-    fetcher,
-    lastUpdateRef,
-    nodeUuidRef,
-    nodeUuid,
-    invalidations
+    studyUpdatedForce: any,
+    fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
+    lastUpdateRef: RefObject<LastUpdateProps>,
+    nodeUuidRef: RefObject<UUID>,
+    nodeUuid: UUID,
+    invalidations: Array<string>
 ) {
     const headers = studyUpdatedForce?.eventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
@@ -47,24 +65,24 @@ function isWorthUpdate(
 // this hook loads <computingType> state into redux, then keeps it updated according to notifications
 /**
  *
- * @param {String} studyUuid current study uuid
- * @param {String} nodeUuid current node uuid
- * @param {Function} fetcher method fetching current <computingType> state
- * @param {Array} invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
- * @param {Function} resultConversion converts <fetcher> result to RunningStatus
- * @param {ComputingType} computingType ComputingType targeted by this hook
+ * @param studyUuid current study uuid
+ * @param nodeUuid current node uuid
+ * @param fetcher method fetching current <computingType> state
+ * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
+ * @param resultConversion converts <fetcher> result to RunningStatus
+ * @param computingType ComputingType targeted by this hook
  */
-export function useComputingStatus(
+export const useComputingStatus: UseComputingStatusProps = (
     studyUuid,
     nodeUuid,
     fetcher,
     invalidations,
     resultConversion,
     computingType
-) {
-    const nodeUuidRef = useRef();
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-    const lastUpdateRef = useRef();
+) => {
+    const nodeUuidRef = useRef<UUID | null>(null);
+    const studyUpdatedForce = useSelector((state: any) => state.studyUpdated);
+    const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch();
 
     const update = useCallback(() => {
@@ -74,7 +92,7 @@ export function useComputingStatus(
 
         nodeUuidRef.current = nodeUuid;
         fetcher(studyUuid, nodeUuid)
-            .then((res) => {
+            .then((res: string) => {
                 if (!canceledRequest && nodeUuidRef.current === nodeUuid) {
                     dispatch(
                         setComputingStatus(computingType, resultConversion(res))
@@ -127,4 +145,4 @@ export function useComputingStatus(
         studyUpdatedForce,
         studyUuid,
     ]);
-}
+};

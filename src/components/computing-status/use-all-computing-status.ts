@@ -14,6 +14,7 @@ import {
     fetchDynamicSimulationStatus,
     fetchVoltageInitStatus,
 } from '../../utils/rest-api';
+import { UUID } from 'crypto';
 import { ComputingType } from './computing-type';
 
 const securityAnalysisStatusInvalidations = [
@@ -38,7 +39,10 @@ const voltageInitStatusInvalidations = [
 ];
 
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
-export const useAllComputingStatus = (studyUuid, currentNodeUuid) => {
+export const useAllComputingStatus = (
+    studyUuid: UUID,
+    currentNodeUuid: UUID
+) => {
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
