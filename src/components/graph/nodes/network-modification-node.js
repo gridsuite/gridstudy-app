@@ -205,8 +205,8 @@ const NetworkModificationNode = (props) => {
                         : classes.networkModification
                 }
             >
-                <div className={getClassForBanner(props.data.buildStatusLocal)}>
-                    {props.data.buildStatusLocal === 'BUILDING' && (
+                <div className={getClassForBanner(props.data.localBuildStatus)}>
+                    {props.data.localBuildStatus === 'BUILDING' && (
                         <CircularProgress
                             size={20}
                             color="primary"
@@ -216,7 +216,7 @@ const NetworkModificationNode = (props) => {
                 </div>
                 <div
                     className={getClassForBottomBanner(
-                        props.data.buildStatusGlobal
+                        props.data.globalBuildStatus
                     )}
                 ></div>
 
