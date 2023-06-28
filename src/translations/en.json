@@ -302,7 +302,6 @@
     "Limit_name": "Limit name",
     "OverloadedEquipment": "Equipment",
     "PermanentLimitName": "IST",
-    "EquipmentOverload": "Load",
     "LimitAcceptableDuration": "Duration",
     "ErrFetchViolationsMsg": "An error occurred while getting constraint violations",
     "Value": "Value",
