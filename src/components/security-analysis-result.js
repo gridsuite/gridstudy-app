@@ -102,7 +102,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 field: 'loading',
                 valueFormatter: (params) => params.data?.loading?.toFixed(1),
                 comparator: (valueA, valueB) => {
-                    if (valueA == valueB) {
+                    if (valueA === valueB) {
                         return 0;
                     }
                     return validateValueIsGreaterThan(valueA, valueB) ? 1 : -1;
