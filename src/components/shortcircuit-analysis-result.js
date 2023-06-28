@@ -88,14 +88,13 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     }),
                     limitMin:
                         lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? lv.limit / 1000 // Convert A to kA
                             : null,
                     limitMax:
                         lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? lv.limit / 1000 // Convert A to kA
                             : null,
                     limitName: lv.limitName,
-                    current: lv.value,
                 };
             }
             rows.push({
@@ -106,6 +105,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 current: f.current,
                 ...firstLimitViolation,
             });
+
             limitViolations.slice(1).forEach((lv) => {
                 rows.push({
                     limitType: intl.formatMessage({
@@ -113,11 +113,11 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     }),
                     limitMin:
                         lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? lv.limit / 1000 // Convert A to kA
                             : null,
                     limitMax:
                         lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? lv.limit / 1000 // Convert A to kA
                             : null,
                     limitName: lv.limitName,
                     current: lv.value,
