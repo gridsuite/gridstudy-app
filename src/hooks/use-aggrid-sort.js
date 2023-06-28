@@ -7,40 +7,39 @@
 
 import { useCallback, useState } from 'react';
 
-export const SORT_WAYS = {
+const SORT_WAYS = {
     asc: 1,
     desc: -1,
 };
 
-const getSortSelector = (colKey, sortWay) =>
-    colKey && sortWay
-        ? { sortKeysWithWeightAndDirection: { [colKey]: sortWay } }
+const getSortSelector = (dataKeyToSortKey, key, way) =>
+    key && way
+        ? {
+              sortKeysWithWeightAndDirection: {
+                  [dataKeyToSortKey[key]]: SORT_WAYS[way],
+              },
+          }
         : {};
 
 export const useAgGridSort = (dataKeyToSortKey, initSortConfig) => {
     const { colKey, sortWay } = initSortConfig || {};
 
-    const [sortSelector, setSortSelector] = useState(
-        getSortSelector(colKey, sortWay)
-    );
+    const [sortConfig, setSortConfig] = useState({
+        selector: getSortSelector(dataKeyToSortKey, colKey, sortWay),
+        colKey,
+        sortWay,
+    });
 
     const onSortChanged = useCallback(
-        (event) => {
-            const { columnApi } = event || {};
-
-            const changedColumn = columnApi
-                ?.getColumns()
-                ?.find((column) => !!column?.getSort());
-
-            const changedSortKey = dataKeyToSortKey[changedColumn?.getId()];
-            const changedSortDirection = SORT_WAYS[changedColumn?.getSort()];
-
-            setSortSelector(
-                getSortSelector(changedSortKey, changedSortDirection)
-            );
+        (colKey, sortWay) => {
+            setSortConfig({
+                selector: getSortSelector(dataKeyToSortKey, colKey, sortWay),
+                colKey,
+                sortWay,
+            });
         },
         [dataKeyToSortKey]
     );
 
-    return { onSortChanged, sortSelector };
+    return { onSortChanged, sortConfig };
 };

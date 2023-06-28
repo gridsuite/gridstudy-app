@@ -8,51 +8,10 @@
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { CustomAGGrid } from '../../dialogs/custom-aggrid';
+import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { useTheme } from '@mui/styles';
-
-function makeColumn(isNum, labelId, key, intl) {
-    return {
-        headerName: intl.formatMessage({ id: labelId }),
-        field: key,
-        numeric: isNum,
-        fractionDigits: isNum ? 4 : undefined,
-        comparator: () => 0,
-    };
-}
-
-function buildTableColumns(nOrNkIndex, functionTypeIndex, intl) {
-    const returnedTable = [];
-    const labelId = functionTypeIndex < 2 ? 'SupervisedBranches' : 'BusBarBus';
-
-    returnedTable.push(makeColumn(false, labelId, 'funcId', intl));
-    returnedTable.push(makeColumn(false, 'VariablesToSimulate', 'varId', intl));
-
-    if (nOrNkIndex === 1) {
-        returnedTable.push(
-            makeColumn(false, 'ContingencyId', 'contingencyId', intl)
-        );
-    }
-
-    const suffix1 = 'In' + ['kW', 'kA', 'kV'][functionTypeIndex];
-    const suffix = suffix1 + (nOrNkIndex !== 1 ? '' : 'BeforeContingency');
-
-    returnedTable.push(
-        makeColumn(true, 'ValRef' + suffix, 'functionReference', intl)
-    );
-    returnedTable.push(makeColumn(true, 'Delta' + suffix, 'value', intl));
-
-    if (nOrNkIndex === 1) {
-        returnedTable.push(
-            makeColumn(true, 'ValRef' + suffix1, 'functionReferenceAfter', intl)
-        );
-        returnedTable.push(
-            makeColumn(true, 'Delta' + suffix1, 'valueAfter', intl)
-        );
-    }
-
-    return returnedTable;
-}
+import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
+import { DATA_KEY_TO_FILTER_KEY } from './sensitivity-analysis-content';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -68,23 +27,96 @@ const SensitivityAnalysisResult = ({
     result,
     nOrNkIndex,
     sensiToIndex,
+    filtersDef,
     onSortChanged,
+    sortConfig,
+    updateFilter,
+    filterSelector,
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
     const theme = useTheme();
 
-    const columns = useMemo(
-        () => buildTableColumns(nOrNkIndex, sensiToIndex, intl),
-        [nOrNkIndex, sensiToIndex, intl]
+    const makeColumn = useCallback(
+        (isNum, labelId, field) => {
+            const { options: filterOptions = [] } =
+                filtersDef.find((filterDef) => filterDef?.field === field) ||
+                {};
+
+            const filterSelectedOption =
+                DATA_KEY_TO_FILTER_KEY[field] &&
+                filterSelector[DATA_KEY_TO_FILTER_KEY[field]]?.[0];
+
+            return {
+                field,
+                numeric: isNum,
+                fractionDigits: isNum ? 4 : undefined,
+                headerComponentFramework: CustomHeaderComponent,
+                headerComponentParams: {
+                    field,
+                    displayName: intl.formatMessage({ id: labelId }),
+                    filterOptions,
+                    sortConfig,
+                    onSortChanged: (newSortValue) =>
+                        onSortChanged(field, newSortValue),
+                    updateFilter,
+                    filterSelectedOption,
+                },
+            };
+        },
+        [
+            filtersDef,
+            filterSelector,
+            intl,
+            sortConfig,
+            updateFilter,
+            onSortChanged,
+        ]
     );
+
+    const columnsDefs = useMemo(() => {
+        const returnedTable = [];
+
+        returnedTable.push(
+            makeColumn(
+                false,
+                sensiToIndex < 2 ? 'SupervisedBranches' : 'BusBarBus',
+                'funcId'
+            )
+        );
+        returnedTable.push(makeColumn(false, 'VariablesToSimulate', 'varId'));
+
+        if (nOrNkIndex === 1) {
+            returnedTable.push(
+                makeColumn(false, 'ContingencyId', 'contingencyId')
+            );
+        }
+
+        const suffix1 = 'In' + ['kW', 'kA', 'kV'][sensiToIndex];
+        const suffix = suffix1 + (nOrNkIndex !== 1 ? '' : 'BeforeContingency');
+
+        returnedTable.push(
+            makeColumn(true, 'ValRef' + suffix, 'functionReference')
+        );
+        returnedTable.push(makeColumn(true, 'Delta' + suffix, 'value'));
+
+        if (nOrNkIndex === 1) {
+            returnedTable.push(
+                makeColumn(true, 'ValRef' + suffix1, 'functionReferenceAfter')
+            );
+            returnedTable.push(
+                makeColumn(true, 'Delta' + suffix1, 'valueAfter')
+            );
+        }
+
+        return returnedTable;
+    }, [makeColumn, nOrNkIndex, sensiToIndex]);
 
     const rows = useMemo(() => makeRows(result), [result]);
 
     const defaultColDef = useMemo(
         () => ({
             suppressMovable: true,
-            sortable: true,
             suppressMultiSort: true,
         }),
         []
@@ -118,7 +150,7 @@ const SensitivityAnalysisResult = ({
             <CustomAGGrid
                 ref={gridRef}
                 rowData={rows}
-                columnDefs={columns}
+                columnDefs={columnsDefs}
                 getRowStyle={getRowStyle}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
@@ -139,6 +171,10 @@ SensitivityAnalysisResult.propTypes = {
     nOrNkIndex: PropTypes.number.isRequired,
     sensiToIndex: PropTypes.number.isRequired,
     onSortChanged: PropTypes.func.isRequired,
+    sortConfig: PropTypes.object.isRequired,
+    filtersDef: PropTypes.array.isRequired,
+    updateFilter: PropTypes.func.isRequired,
+    filterSelector: PropTypes.object.isRequired,
 };
 
 export default SensitivityAnalysisResult;

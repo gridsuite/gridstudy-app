@@ -21,8 +21,7 @@ import { fetchSensitivityAnalysisResult } from '../../../utils/rest-api';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
 import { useRowFilter } from '../../../hooks/use-row-filter';
 import { useIntl } from 'react-intl';
-import FilterPanel from '../../spreadsheet/filter-panel/filter-panel';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const PagedSensitivityResult = ({
@@ -32,6 +31,7 @@ const PagedSensitivityResult = ({
     nodeUuid,
 }) => {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
 
     const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_COUNT);
     const [page, setPage] = useState(0);
@@ -66,19 +66,17 @@ const PagedSensitivityResult = ({
         return baseFilters;
     }, [intl, sensiKindIndex, nOrNkIndex, result]);
 
-    const { updateFilter, getFilterSelector } = useRowFilter(
+    const { updateFilter, filterSelector } = useRowFilter(
         DATA_KEY_TO_FILTER_KEY
     );
 
     // Add default sort on sensitivity col
-    const colKey = 'SENSITIVITY';
-    const sortWay = SORT_WAYS.desc;
-    const { onSortChanged, sortSelector } = useAgGridSort(
-        DATA_KEY_TO_SORT_KEY,
-        { colKey: colKey, sortWay }
-    );
-
-    const { snackError } = useSnackMessage();
+    const initColKey = 'value';
+    const initSortWay = 'desc';
+    const { onSortChanged, sortConfig } = useAgGridSort(DATA_KEY_TO_SORT_KEY, {
+        colKey: initColKey,
+        sortWay: initSortWay,
+    });
 
     const handleChangePage = useCallback((_, newPage) => {
         setPage(newPage);
@@ -97,8 +95,8 @@ const PagedSensitivityResult = ({
             functionType: FUNCTION_TYPES[sensiKindIndex],
             offset: page * rowsPerPage,
             chunkSize: rowsPerPage,
-            ...getFilterSelector(),
-            ...sortSelector,
+            ...filterSelector,
+            ...sortConfig?.selector,
         };
 
         fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
@@ -125,8 +123,8 @@ const PagedSensitivityResult = ({
         nodeUuid,
         page,
         rowsPerPage,
-        getFilterSelector,
-        sortSelector,
+        filterSelector,
+        sortConfig,
     ]);
 
     useEffect(() => {
@@ -136,12 +134,15 @@ const PagedSensitivityResult = ({
     return (
         <>
             {isLoading && <LinearProgress />}
-            <FilterPanel filtersDef={filtersDef} updateFilter={updateFilter} />
             <SensitivityAnalysisResult
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
                 sensiToIndex={sensiKindIndex}
+                filtersDef={filtersDef}
                 onSortChanged={onSortChanged}
+                sortConfig={sortConfig}
+                updateFilter={updateFilter}
+                filterSelector={filterSelector}
             />
             <TablePagination
                 component="div"

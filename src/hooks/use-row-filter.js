@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 const removeElementFromArrayWithFieldValue = (
     arrayToRemoveFieldValueFrom,
@@ -61,12 +61,14 @@ export const useRowFilter = (filterSelectorKeys) => {
         });
     }, []);
 
-    const getFilterSelector = useCallback(() => {
-        return rowFilters.reduce((selector, { field, value }) => {
-            selector[filterSelectorKeys[field]] = [value];
-            return selector;
-        }, {});
-    }, [filterSelectorKeys, rowFilters]);
+    const filterSelector = useMemo(
+        () =>
+            rowFilters.reduce((selector, { field, value }) => {
+                selector[filterSelectorKeys[field]] = [value];
+                return selector;
+            }, {}),
+        [filterSelectorKeys, rowFilters]
+    );
 
-    return { updateFilter, getFilterSelector };
+    return { updateFilter, filterSelector };
 };

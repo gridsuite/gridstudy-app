@@ -14,7 +14,7 @@ import Select from '@mui/material/Select';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
 import { useSelector } from 'react-redux';
-import { CustomAGGrid } from './dialogs/custom-aggrid';
+import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
 import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
 import { Button } from '@mui/material';
 import { useTheme } from '@mui/styles';
