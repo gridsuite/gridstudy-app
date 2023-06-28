@@ -302,7 +302,6 @@
     "LimitNameCurrentViolation": "Nom du seuil",
     "OverloadedEquipment": "Ouvrage",
     "PermanentLimitName": "IST",
-    "EquipmentOverload": "Charge",
     "LimitAcceptableDuration": "Durée",
     "ErrFetchViolationsMsg": "Une erreur est survenue lors la récupération des violations de contraintes",
     "Value": "Valeur",
