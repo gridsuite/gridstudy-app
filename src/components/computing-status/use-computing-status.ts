@@ -80,7 +80,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     invalidations,
     resultConversion,
     computingType
-): void => {
+) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const studyUpdatedForce = useSelector(
         (state: ReduxState) => state.studyUpdated
