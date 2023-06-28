@@ -22,7 +22,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const ChildMenuItem = ({ item, sx }) => {
+const ChildMenuItem = ({ item }) => {
     const classes = useStyles();
 
     return (
@@ -30,7 +30,6 @@ const ChildMenuItem = ({ item, sx }) => {
             className={classes.menuItem}
             onClick={item.action}
             disabled={item.disabled}
-            sx={sx}
         >
             <ListItemText
                 primary={
@@ -45,6 +44,5 @@ const ChildMenuItem = ({ item, sx }) => {
 
 ChildMenuItem.protoTypes = {
     item: PropTypes.object.isRequired,
-    sx: PropTypes.object,
 };
 export default ChildMenuItem;

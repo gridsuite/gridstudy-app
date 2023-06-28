@@ -11,8 +11,6 @@ import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import { NestedMenuItem } from 'mui-nested-menu';
 import ChildMenuItem from './create-child-menu-item';
-import { useParameterState } from '../../dialogs/parameters/parameters';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 /**
  * Menu to select network modification to create
@@ -30,9 +28,11 @@ const NetworkModificationsMenu = ({
     anchorEl,
 }) => {
     const intl = useIntl();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const renderMenuItems = (menuItems) => {
         return menuItems.map((menuItem) => {
+            if (menuItem?.hide) {
+                return undefined;
+            }
             return menuItem.subItems === undefined ? (
                 <ChildMenuItem
                     key={menuItem.id}
@@ -41,22 +41,12 @@ const NetworkModificationsMenu = ({
                         action: () => onItemClick(menuItem.id),
                         disabled: false,
                     }}
-                    sx={
-                        menuItem.developerMode && !enableDeveloperMode
-                            ? { display: 'none' }
-                            : undefined
-                    }
                 />
             ) : (
                 <NestedMenuItem
                     key={menuItem.id}
                     parentMenuOpen={true}
                     label={intl.formatMessage({ id: menuItem.label })}
-                    sx={
-                        menuItem.developerMode && !enableDeveloperMode
-                            ? { display: 'none' }
-                            : undefined
-                    }
                 >
                     {renderMenuItems(menuItem.subItems)}
                 </NestedMenuItem>
