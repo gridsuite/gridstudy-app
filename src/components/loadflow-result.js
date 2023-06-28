@@ -7,7 +7,6 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import Paper from '@mui/material/Paper';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import { Lens } from '@mui/icons-material';
@@ -29,9 +28,6 @@ const LIMIT_TYPES = {
 
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const useStyles = makeStyles((theme) => ({
-        tablePaper: {
-            flexGrow: 1,
-        },
         cell: {
             display: 'flex',
             alignItems: 'center',
@@ -206,6 +202,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             suppressMovable: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
+            flex: 1,
         }),
         []
     );
@@ -286,16 +283,14 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
 
     function renderLoadFlowResult() {
         return (
-            <Paper className={classes.tablePaper}>
-                <CustomAGGrid
-                    rowData={result.componentResults}
-                    columnDefs={loadFlowResultColumns}
-                    defaultColDef={defaultColDef}
-                    enableCellTextSelection={true}
-                    onGridReady={onGridReady}
-                    getRowStyle={getRowStyle}
-                />
-            </Paper>
+            <CustomAGGrid
+                rowData={result.componentResults}
+                columnDefs={loadFlowResultColumns}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                onGridReady={onGridReady}
+                getRowStyle={getRowStyle}
+            />
         );
     }
     const onGridReady = useCallback((params) => {
@@ -325,30 +320,26 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     );
     function renderLoadFlowCurrentViolations() {
         return (
-            <Paper className={classes.tablePaper}>
-                <CustomAGGrid
-                    rowData={currentViolations}
-                    defaultColDef={defaultColDef}
-                    enableCellTextSelection={true}
-                    columnDefs={loadFlowCurrentViolationsColumns}
-                    onGridReady={onGridReady}
-                    getRowStyle={getRowStyle}
-                />
-            </Paper>
+            <CustomAGGrid
+                rowData={currentViolations}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                columnDefs={loadFlowCurrentViolationsColumns}
+                onGridReady={onGridReady}
+                getRowStyle={getRowStyle}
+            />
         );
     }
     function renderLoadFlowVoltageViolations() {
         return (
-            <Paper className={classes.tablePaper}>
-                <CustomAGGrid
-                    rowData={voltageViolations}
-                    defaultColDef={defaultColDef}
-                    enableCellTextSelection={true}
-                    columnDefs={loadFlowVoltageViolationsColumns}
-                    onGridReady={onGridReady}
-                    getRowStyle={getRowStyle}
-                />
-            </Paper>
+            <CustomAGGrid
+                rowData={voltageViolations}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                columnDefs={loadFlowVoltageViolationsColumns}
+                onGridReady={onGridReady}
+                getRowStyle={getRowStyle}
+            />
         );
     }
     function renderLoadFlowResultTabs() {
