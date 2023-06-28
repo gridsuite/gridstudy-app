@@ -1,8 +1,15 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useComputingStatus } from './use-computing-status';
 import {
     getSecurityAnalysisRunningStatus,
-    getSensiRunningStatus,
-    getShortCircuitRunningStatus,
+    getSensitivityAnalysisRunningStatus,
+    getShortCircuitAnalysisRunningStatus,
     getDynamicSimulationRunningStatus,
     getVoltageInitRunningStatus,
 } from '../utils/running-status';
@@ -21,11 +28,11 @@ const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
     'securityAnalysis_failed',
 ];
-const sensiStatusInvalidations = [
+const sensitivityAnalysisStatusInvalidations = [
     'sensitivityAnalysis_status',
     'sensitivityAnalysis_failed',
 ];
-const shortCircuitStatusInvalidations = [
+const shortCircuitAnalysisStatusInvalidations = [
     'shortCircuitAnalysis_status',
     'shortCircuitAnalysis_failed',
 ];
@@ -56,8 +63,8 @@ export const useAllComputingStatus = (
         studyUuid,
         currentNodeUuid,
         fetchSensitivityAnalysisStatus,
-        sensiStatusInvalidations,
-        getSensiRunningStatus,
+        sensitivityAnalysisStatusInvalidations,
+        getSensitivityAnalysisRunningStatus,
         ComputingType.SENSITIVITY_ANALYSIS
     );
 
@@ -65,8 +72,8 @@ export const useAllComputingStatus = (
         studyUuid,
         currentNodeUuid,
         fetchShortCircuitAnalysisStatus,
-        shortCircuitStatusInvalidations,
-        getShortCircuitRunningStatus,
+        shortCircuitAnalysisStatusInvalidations,
+        getShortCircuitAnalysisRunningStatus,
         ComputingType.SHORTCIRCUIT_ANALYSIS
     );
 

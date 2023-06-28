@@ -12,8 +12,10 @@ export enum RunningStatus {
     RUNNING = 'RUNNING',
 }
 
-export function getLoadFlowRunningStatus(status: string): RunningStatus {
-    switch (status) {
+export function getLoadFlowRunningStatus(
+    loadFlowStatus: string
+): RunningStatus {
+    switch (loadFlowStatus) {
         case 'CONVERGED':
             return RunningStatus.SUCCEED;
         case 'DIVERGED':
@@ -44,8 +46,10 @@ export function getSecurityAnalysisRunningStatus(
     }
 }
 
-export function getSensiRunningStatus(sensiStatus: string): RunningStatus {
-    switch (sensiStatus) {
+export function getSensitivityAnalysisRunningStatus(
+    sensitivityAnalysisStatus: string
+): RunningStatus {
+    switch (sensitivityAnalysisStatus) {
         case 'COMPLETED':
             return RunningStatus.SUCCEED;
         case 'RUNNING':
@@ -57,10 +61,10 @@ export function getSensiRunningStatus(sensiStatus: string): RunningStatus {
     }
 }
 
-export function getShortCircuitRunningStatus(
-    shortCircuitStatus: string
+export function getShortCircuitAnalysisRunningStatus(
+    shortCircuitAnalysisStatus: string
 ): RunningStatus {
-    switch (shortCircuitStatus) {
+    switch (shortCircuitAnalysisStatus) {
         case 'COMPLETED':
             return RunningStatus.SUCCEED;
         case 'RUNNING':
