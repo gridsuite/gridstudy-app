@@ -58,10 +58,10 @@ export function RunButtonContainer({
         (state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
-    const sensitivityStatus = useSelector(
+    const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-    const shortCircuitStatus = useSelector(
+    const shortCircuitAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
     );
     const dynamicSimulationStatus = useSelector(
@@ -421,11 +421,11 @@ export function RunButtonContainer({
             } else if (
                 runnableType === runnable[ComputingType.SENSITIVITY_ANALYSIS]
             ) {
-                return sensitivityStatus;
+                return sensitivityAnalysisStatus;
             } else if (
                 runnableType === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]
             ) {
-                return shortCircuitStatus;
+                return shortCircuitAnalysisStatus;
             } else if (
                 runnableType === runnable[ComputingType.DYNAMIC_SIMULATION]
             ) {
@@ -438,8 +438,8 @@ export function RunButtonContainer({
             runnable,
             loadFlowStatusState,
             securityAnalysisStatus,
-            sensitivityStatus,
-            shortCircuitStatus,
+            sensitivityAnalysisStatus,
+            shortCircuitAnalysisStatus,
             dynamicSimulationStatus,
             voltageInitStatus,
         ]

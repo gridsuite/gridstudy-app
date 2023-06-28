@@ -36,7 +36,7 @@ function isWorthUpdate(
     lastUpdateRef: RefObject<LastUpdateProps>,
     nodeUuidRef: RefObject<UUID>,
     nodeUuid: UUID,
-    invalidations: Array<string>
+    invalidations: string[]
 ): boolean {
     const headers = studyUpdatedForce?.eventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
@@ -70,9 +70,8 @@ function isWorthUpdate(
     return false;
 }
 
-// this hook loads <computingType> state into redux, then keeps it updated according to notifications
 /**
- *
+ *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
  * @param studyUuid current study uuid
  * @param nodeUuid current node uuid
  * @param fetcher method fetching current <computingType> state
