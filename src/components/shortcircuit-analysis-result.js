@@ -11,6 +11,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
+import { unitToKiloUnit } from '../utils/rounding';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
@@ -88,11 +89,11 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     }),
                     limitMin:
                         lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit / 1000 // Convert A to kA
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitMax:
                         lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit / 1000 // Convert A to kA
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitName: lv.limitName,
                 };
@@ -112,11 +113,11 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     }),
                     limitMin:
                         lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit / 1000 // Convert A to kA
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitMax:
                         lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit / 1000 // Convert A to kA
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitName: lv.limitName,
                     current: lv.value,
