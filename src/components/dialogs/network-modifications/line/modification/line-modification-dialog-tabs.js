@@ -14,7 +14,6 @@ const LineModificationDialogTabs = ({
     studyUuid,
     currentNode,
     lineToModify,
-    modifiedLine,
     tabIndex,
 }) => {
     return (
@@ -37,7 +36,6 @@ const LineModificationDialogTabs = ({
                 <LimitsPane
                     currentNode={currentNode}
                     equipmentToModify={lineToModify}
-                    modifiedEquipment={modifiedLine}
                     clearableFields={true}
                 />
             </Box>
