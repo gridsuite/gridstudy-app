@@ -18,7 +18,6 @@ import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
 import { Button } from '@mui/material';
 import { useTheme } from '@mui/styles';
-import { validateValueIsGreaterThan } from './utils/validation-functions';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
