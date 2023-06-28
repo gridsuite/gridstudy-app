@@ -624,9 +624,9 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
     // TODO: remove this when DynaFlow will be available not only in developer mode
     useEffect(() => {
         if (provider === 'DynaFlow' && !enableDeveloperMode) {
-            updateProvider('OpenLoadFlow');
+            resetProvider();
         }
-    }, [provider, updateProvider, enableDeveloperMode]);
+    }, [provider, resetProvider, enableDeveloperMode]);
 
     // TODO: remove this when DynaFlow will be available not only in developer mode
     const LoadFlowProviders = Object.fromEntries(
