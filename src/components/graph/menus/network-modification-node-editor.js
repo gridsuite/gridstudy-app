@@ -66,8 +66,6 @@ import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifica
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { fetchNetworkModification } from '../../../services/network-modification';
-import { useParameterState } from '../../dialogs/parameters/parameters';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -177,8 +175,6 @@ const NetworkModificationNodeEditor = () => {
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef();
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);
         setCopiedModifications((oldCopiedModifications) => {
@@ -282,16 +278,12 @@ const NetworkModificationNodeEditor = () => {
                     label: 'GENERATOR',
                     action: () => adapt(GeneratorModificationDialog),
                 },
-                ...(enableDeveloperMode
-                    ? [
-                          {
-                              id: 'SHUNT_COMPENSATOR_MODIFICATION',
-                              label: 'ShuntCompensator',
-                              action: () =>
-                                  adapt(ShuntCompensatorModificationDialog),
-                          },
-                      ]
-                    : []),
+                {
+                    id: 'SHUNT_COMPENSATOR_MODIFICATION',
+                    developerMode: true,
+                    label: 'ShuntCompensator',
+                    action: () => adapt(ShuntCompensatorModificationDialog),
+                },
                 {
                     id: 'LINE_MODIFICATION',
                     label: 'LINE',
