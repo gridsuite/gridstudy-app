@@ -24,9 +24,7 @@ export const getWsBase = () =>
         .replace(/^https:\/\//, 'wss://');
 
 export function getRequestParamFromList(params, paramName) {
-    if (params?.length) {
-        return new URLSearchParams(params.map((param) => [paramName, param]));
-    }
+    return new URLSearchParams(params?.length ? params.map((param) => [paramName, param]) : []);
 }
 
 export function getToken() {
