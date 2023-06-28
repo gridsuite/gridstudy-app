@@ -157,6 +157,7 @@
     "FixedGenerators": "Groupes fixes",
     "VariableTransformers": "Transformateurs variables",
     "VariableShuntCompensators": "MCS variables",
+    "voltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
     "VoltageInitParametersError": "Erreur lors de la mise à jour des paramètres d'initialisation du plan de tension",
 
     "SelectAll": "Tout selectionner",

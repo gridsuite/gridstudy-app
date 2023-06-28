@@ -5,6 +5,7 @@ import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setComputingStatus } from 'redux/actions';
 import { ComputingType } from './computing-type';
+import { ReduxState, StudyUpdated } from 'redux/reducer.type';
 
 interface UseComputingStatusProps {
     (
@@ -18,12 +19,12 @@ interface UseComputingStatusProps {
 }
 
 interface LastUpdateProps {
-    studyUpdatedForce: any;
+    studyUpdatedForce: StudyUpdated;
     fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>;
 }
 
 function isWorthUpdate(
-    studyUpdatedForce: any,
+    studyUpdatedForce: StudyUpdated,
     fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
     lastUpdateRef: RefObject<LastUpdateProps>,
     nodeUuidRef: RefObject<UUID>,
@@ -81,7 +82,9 @@ export const useComputingStatus: UseComputingStatusProps = (
     computingType
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
-    const studyUpdatedForce = useSelector((state: any) => state.studyUpdated);
+    const studyUpdatedForce = useSelector(
+        (state: ReduxState) => state.studyUpdated
+    );
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch();
 
