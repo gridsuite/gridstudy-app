@@ -44,6 +44,7 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
     sanitizeLimitNames,
+    updateTemporaryLimits,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -133,7 +134,7 @@ const LineModificationDialog = ({
     const { reset, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (line) => {
+        (line, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
             if (line?.equipmentId) {
                 setSelectedId(line.equipmentId);
             }
@@ -159,14 +160,18 @@ const LineModificationDialog = ({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits1?.temporaryLimits
-                        )
+                        updatedTemporaryLimits1
+                            ? updatedTemporaryLimits1
+                            : formatTemporaryLimits(
+                                  line.currentLimits1?.temporaryLimits
+                              )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits2?.temporaryLimits
-                        )
+                        updatedTemporaryLimits2
+                            ? updatedTemporaryLimits2
+                            : formatTemporaryLimits(
+                                  line.currentLimits2?.temporaryLimits
+                              )
                     ),
                 }),
             });
@@ -176,9 +181,27 @@ const LineModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            fromEditDataToFormValues(
+                editData,
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits1?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        lineToModify?.currentLimits1?.temporaryLimits
+                    )
+                ),
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits2?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        lineToModify?.currentLimits2?.temporaryLimits
+                    )
+                )
+            );
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [fromEditDataToFormValues, editData, lineToModify]);
 
     const onSubmit = useCallback(
         (line) => {
@@ -275,8 +298,6 @@ const LineModificationDialog = ({
                                     }),
                                     { keepDefaultValues: true }
                                 );
-                            } else {
-                                fromEditDataToFormValues(editData);
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -290,15 +311,7 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            selectedId,
-            editData,
-            reset,
-            fromEditDataToFormValues,
-            emptyFormData,
-        ]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData]
     );
 
     useEffect(() => {
@@ -414,7 +427,6 @@ const LineModificationDialog = ({
                             studyUuid={studyUuid}
                             currentNode={currentNode}
                             lineToModify={lineToModify}
-                            modifiedLine={editData}
                             tabIndex={tabIndex}
                         />
                         <LineTypeSegmentDialog
