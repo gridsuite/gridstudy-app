@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
+import { validateValueIsGreaterThan } from './utils/validation-functions';
 const LIMIT_TYPES = {
     HIGH_VOLTAGE: 'HIGH_VOLTAGE',
     LOW_VOLTAGE: 'LOW_VOLTAGE',
@@ -189,6 +190,12 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 field: 'overload',
                 numeric: true,
                 fractionDigits: 0,
+                comparator: (valueA, valueB) => {
+                    if (valueA == valueB) {
+                        return 0;
+                    }
+                    return validateValueIsGreaterThan(valueA, valueB) ? 1 : -1;
+                },
             },
         ];
     }, [intl]);

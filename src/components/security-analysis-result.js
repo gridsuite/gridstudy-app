@@ -18,6 +18,7 @@ import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
 import { Button } from '@mui/material';
 import { useTheme } from '@mui/styles';
+import { validateValueIsGreaterThan } from './utils/validation-functions';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -100,6 +101,12 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 headerName: intl.formatMessage({ id: 'Loading' }),
                 field: 'loading',
                 valueFormatter: (params) => params.data?.loading?.toFixed(1),
+                comparator: (valueA, valueB) => {
+                    if (valueA == valueB) {
+                        return 0;
+                    }
+                    return validateValueIsGreaterThan(valueA, valueB) ? 1 : -1;
+                },
             },
         ];
     }, [intl]);
