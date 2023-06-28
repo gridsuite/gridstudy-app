@@ -30,7 +30,7 @@ function isWorthUpdate(
     nodeUuidRef: RefObject<UUID>,
     nodeUuid: UUID,
     invalidations: Array<string>
-) {
+): boolean {
     const headers = studyUpdatedForce?.eventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const node = headers?.['node'];
@@ -80,7 +80,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     invalidations,
     resultConversion,
     computingType
-) => {
+): void => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const studyUpdatedForce = useSelector(
         (state: ReduxState) => state.studyUpdated

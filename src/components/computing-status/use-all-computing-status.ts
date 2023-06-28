@@ -42,7 +42,7 @@ const voltageInitStatusInvalidations = [
 export const useAllComputingStatus = (
     studyUuid: UUID,
     currentNodeUuid: UUID
-) => {
+): void => {
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
