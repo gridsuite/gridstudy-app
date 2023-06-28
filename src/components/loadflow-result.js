@@ -85,10 +85,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         };
         const makeData = (overloadedEquipment) => {
             return {
-                overload: (
+                overload:
                     (overloadedEquipment.value / overloadedEquipment.limit) *
-                    100
-                ).toFixed(1),
+                    100,
                 name: overloadedEquipment.subjectId,
                 value: overloadedEquipment.value,
                 acceptableDuration: convertDuration(
@@ -190,12 +189,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 field: 'overload',
                 numeric: true,
                 fractionDigits: 0,
-                comparator: (valueA, valueB) => {
-                    if (valueA === valueB) {
-                        return 0;
-                    }
-                    return validateValueIsGreaterThan(valueA, valueB) ? 1 : -1;
-                },
+                valueFormatter: (params) => params.value.toFixed(1),
             },
         ];
     }, [intl]);

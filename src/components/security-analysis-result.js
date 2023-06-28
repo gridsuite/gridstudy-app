@@ -101,12 +101,6 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 headerName: intl.formatMessage({ id: 'Loading' }),
                 field: 'loading',
                 valueFormatter: (params) => params.data?.loading?.toFixed(1),
-                comparator: (valueA, valueB) => {
-                    if (valueA === valueB) {
-                        return 0;
-                    }
-                    return validateValueIsGreaterThan(valueA, valueB) ? 1 : -1;
-                },
             },
         ];
     }, [intl]);
