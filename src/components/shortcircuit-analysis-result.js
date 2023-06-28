@@ -75,9 +75,9 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [theme.selectedRow.background]
     );
 
-    function flattenResult(shortcutAnalysisResult) {
+    function flattenResult(shortCircuitAnalysisResult) {
         const rows = [];
-        shortcutAnalysisResult?.faults?.forEach((f) => {
+        shortCircuitAnalysisResult?.faults?.forEach((f) => {
             const fault = f.fault;
             const limitViolations = f.limitViolations;
             let firstLimitViolation;
