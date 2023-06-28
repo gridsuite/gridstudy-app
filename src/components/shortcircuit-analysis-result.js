@@ -105,7 +105,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 current: f.current,
                 ...firstLimitViolation,
             });
-
             limitViolations.slice(1).forEach((lv) => {
                 rows.push({
                     limitType: intl.formatMessage({
