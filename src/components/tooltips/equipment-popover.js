@@ -109,7 +109,9 @@ const EquipmentPopover = ({
                                     })}
                                 </TableCell>
                                 <TableCell className={classes.tableCells}>
-                                    {checkValue(currentLimits.permanentLimit)}
+                                    {checkValue(
+                                        Math.round(currentLimits.permanentLimit)
+                                    )}
                                 </TableCell>
                                 <TableCell
                                     className={classes.tableCells}
@@ -160,7 +162,9 @@ const EquipmentPopover = ({
                                                 className={classes.tableCells}
                                             >
                                                 {checkValue(
-                                                    temporaryLimit.value
+                                                    Math.round(
+                                                        temporaryLimit.value
+                                                    )
                                                 )}
                                             </TableCell>
                                             <TableCell
