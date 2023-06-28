@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const RunningStatus = {
-    SUCCEED: 'SUCCEED',
-    FAILED: 'FAILED',
-    IDLE: 'IDLE',
-    RUNNING: 'RUNNING',
-};
+export enum RunningStatus {
+    SUCCEED = 'SUCCEED',
+    FAILED = 'FAILED',
+    IDLE = 'IDLE',
+    RUNNING = 'RUNNING',
+}
 
-export function getLoadFlowRunningStatus(status) {
+export function getLoadFlowRunningStatus(status: string): RunningStatus {
     switch (status) {
         case 'CONVERGED':
             return RunningStatus.SUCCEED;
@@ -27,7 +27,9 @@ export function getLoadFlowRunningStatus(status) {
     }
 }
 
-export function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
+export function getSecurityAnalysisRunningStatus(
+    securityAnalysisStatus: string
+): RunningStatus {
     switch (securityAnalysisStatus) {
         case 'CONVERGED':
             return RunningStatus.SUCCEED;
@@ -42,7 +44,7 @@ export function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
     }
 }
 
-export function getSensiRunningStatus(sensiStatus) {
+export function getSensiRunningStatus(sensiStatus: string): RunningStatus {
     switch (sensiStatus) {
         case 'COMPLETED':
             return RunningStatus.SUCCEED;
@@ -55,7 +57,9 @@ export function getSensiRunningStatus(sensiStatus) {
     }
 }
 
-export function getShortCircuitRunningStatus(shortCircuitStatus) {
+export function getShortCircuitRunningStatus(
+    shortCircuitStatus: string
+): RunningStatus {
     switch (shortCircuitStatus) {
         case 'COMPLETED':
             return RunningStatus.SUCCEED;
@@ -68,7 +72,9 @@ export function getShortCircuitRunningStatus(shortCircuitStatus) {
     }
 }
 
-export function getDynamicSimulationRunningStatus(dynamicSimulationStatus) {
+export function getDynamicSimulationRunningStatus(
+    dynamicSimulationStatus: string
+): RunningStatus {
     switch (dynamicSimulationStatus) {
         case 'CONVERGED':
             return RunningStatus.SUCCEED;
@@ -83,7 +89,9 @@ export function getDynamicSimulationRunningStatus(dynamicSimulationStatus) {
     }
 }
 
-export function getVoltageInitRunningStatus(voltageInitStatus) {
+export function getVoltageInitRunningStatus(
+    voltageInitStatus: string
+): RunningStatus {
     switch (voltageInitStatus) {
         case 'OK':
             return RunningStatus.SUCCEED;

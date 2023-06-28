@@ -13,7 +13,7 @@ interface UseComputingStatusProps {
         nodeUuid: UUID,
         fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
         invalidations: string[],
-        resultConversion: (x: string) => string,
+        resultConversion: (x: string) => RunningStatus,
         computingType: ComputingType
     ): void;
 }
