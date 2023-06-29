@@ -19,6 +19,7 @@ import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import { EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { fetchEquipmentsIds } from '../../../../utils/rest-api';
 
 const richTypeEquals = (a, b) => a.type === b.type;
 
@@ -44,20 +45,21 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
             EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
             EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
         ]);
-        const ret = Object.values(EQUIPMENT_TYPES).filter(
+        return Object.values(EQUIPMENT_TYPES).filter(
             (equipmentType) => !equipmentTypesToExclude.has(equipmentType.type)
         );
-        return ret;
     }, []);
 
     useEffect(() => {
         let ignore = false;
         setEquipmentsOptions([]);
         if (watchType?.fetchers?.length) {
-            Promise.all(
-                watchType.fetchers.map((fetchPromise) =>
-                    fetchPromise(studyUuid, currentNode.id)
-                )
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNode?.id,
+                undefined,
+                watchType.type,
+                true
             )
                 .then((vals) => {
                     // check race condition here

@@ -13,27 +13,43 @@ import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { useEffect, useState } from 'react';
 import { PercentageArea } from '../../percentage-area/percentage-area';
 import { useWatch } from 'react-hook-form';
-import { fetchLines } from 'utils/rest-api';
+import { fetchEquipmentsIds } from 'utils/rest-api';
 import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
     const [line1Substation, setLine1Substation] = useState('');
     const [line2Substation, setLine2Substation] = useState('');
     const [linesOptions, setLinesOptions] = useState([]);
-
-    useEffect(() => {
-        if (studyUuid && currentNode?.id) {
-            fetchLines(studyUuid, currentNode.id, []).then((values) => {
-                setLinesOptions(
-                    values.sort((a, b) => a?.id?.localeCompare(b?.id))
-                );
-            });
-        }
-    }, [studyUuid, currentNode?.id]);
-
+    const { snackError } = useSnackMessage();
     const watchLineToAttachOrSplit = useWatch({
         name: LINE_TO_ATTACH_OR_SPLIT_ID,
     });
+
+    useEffect(() => {
+        if (studyUuid && currentNode?.id) {
+            console.log('inside');
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNode?.id,
+                [],
+                EQUIPMENT_TYPES.LINE.type,
+                true
+            )
+                .then((values) => {
+                    setLinesOptions(
+                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
+                    );
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'equipmentsLoadingError',
+                    });
+                });
+        }
+    }, [studyUuid, currentNode?.id, watchLineToAttachOrSplit, snackError]);
 
     useEffect(() => {
         const lineToAttachOrSplit = linesOptions.find(
