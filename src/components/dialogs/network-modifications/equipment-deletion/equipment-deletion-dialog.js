@@ -10,10 +10,11 @@ import yup from 'components/utils/yup-config';
 import {
     TYPE,
     EQUIPMENT_ID,
-    SHUNT_COMPENSATOR_SIDE_1,
-    SHUNT_COMPENSATOR_SIDE_2,
+    DELETION_SPECIFIC_DATA,
     ID,
     MCS_SELECTED,
+    SHUNT_COMPENSATOR_SIDE_1,
+    SHUNT_COMPENSATOR_SIDE_2,
 } from '../../../utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -49,8 +50,7 @@ const formSchema = yup
 const emptyFormData = {
     [TYPE]: EQUIPMENT_TYPES.LINE,
     [EQUIPMENT_ID]: null,
-    [SHUNT_COMPENSATOR_SIDE_1]: [],
-    [SHUNT_COMPENSATOR_SIDE_2]: [],
+    [DELETION_SPECIFIC_DATA]: null,
 };
 
 /**
@@ -87,8 +87,7 @@ const EquipmentDeletionDialog = ({
             reset({
                 [TYPE]: EQUIPMENT_TYPES[editData.equipmentType],
                 [EQUIPMENT_ID]: editData.equipmentId,
-                [SHUNT_COMPENSATOR_SIDE_1]: editData.mcsOnSide1,
-                [SHUNT_COMPENSATOR_SIDE_2]: editData.mcsOnSide2,
+                [DELETION_SPECIFIC_DATA]: editData.specificData,
             });
         },
         [reset]
@@ -99,8 +98,7 @@ const EquipmentDeletionDialog = ({
             reset({
                 [TYPE]: EQUIPMENT_TYPES.HVDC_LINE,
                 [EQUIPMENT_ID]: menuSelectId,
-                [SHUNT_COMPENSATOR_SIDE_1]: [],
-                [SHUNT_COMPENSATOR_SIDE_2]: [],
+                [DELETION_SPECIFIC_DATA]: null,
             });
         },
         [reset]
@@ -121,14 +119,32 @@ const EquipmentDeletionDialog = ({
 
     const onSubmit = useCallback(
         (formData) => {
+            let specificData = null;
+            if (
+                formData[DELETION_SPECIFIC_DATA]?.[SHUNT_COMPENSATOR_SIDE_1]
+                    ?.length > 0 ||
+                formData[DELETION_SPECIFIC_DATA]?.[SHUNT_COMPENSATOR_SIDE_2]
+                    ?.length > 0
+            ) {
+                specificData = {
+                    type: 'HVDC_LINE_WITH_LCC',
+                    mcsOnSide1:
+                        formData[DELETION_SPECIFIC_DATA]?.[
+                            SHUNT_COMPENSATOR_SIDE_1
+                        ],
+                    mcsOnSide2:
+                        formData[DELETION_SPECIFIC_DATA]?.[
+                            SHUNT_COMPENSATOR_SIDE_2
+                        ],
+                };
+            }
             deleteEquipment(
                 studyUuid,
                 currentNodeUuid,
                 formData[TYPE].type,
                 formData[EQUIPMENT_ID],
-                formData[SHUNT_COMPENSATOR_SIDE_1],
-                formData[SHUNT_COMPENSATOR_SIDE_2],
-                editData?.uuid
+                editData?.uuid,
+                specificData
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

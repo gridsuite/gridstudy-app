@@ -2916,9 +2916,8 @@ export function deleteEquipment(
     currentNodeUuid,
     equipmentType,
     equipmentId,
-    mcsOnSide1,
-    mcsOnSide2,
-    modificationUuid
+    modificationUuid,
+    specificData
 ) {
     let deleteEquipmentUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -2941,8 +2940,7 @@ export function deleteEquipment(
             type: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
             equipmentId: equipmentId,
             equipmentType: equipmentType,
-            mcsOnSide1: mcsOnSide1,
-            mcsOnSide2: mcsOnSide2,
+            specificData: specificData,
         }),
     });
 }

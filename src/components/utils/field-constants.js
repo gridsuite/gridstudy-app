@@ -230,5 +230,6 @@ export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
 
 // HVDC deletion
+export const DELETION_SPECIFIC_DATA = 'specificData';
 export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
 export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';

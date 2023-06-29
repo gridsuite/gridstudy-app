@@ -24,6 +24,7 @@ import {
 } from 'components/dialogs/dialogUtils';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import {
+    DELETION_SPECIFIC_DATA,
     EQUIPMENT_ID,
     SHUNT_COMPENSATOR_SIDE_1,
     SHUNT_COMPENSATOR_SIDE_2,
@@ -52,18 +53,18 @@ const DeleteEquipmentForm = ({
         name: EQUIPMENT_ID,
     });
     const watchMcsList1 = useWatch({
-        name: SHUNT_COMPENSATOR_SIDE_1,
+        name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`,
     });
     const watchMcsList2 = useWatch({
-        name: SHUNT_COMPENSATOR_SIDE_2,
+        name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`,
     });
 
     // replace is mandatory to update a fieldArray (not setValue)
     const { replace: replaceMcsList1, fields: mcsRows1 } = useFieldArray({
-        name: SHUNT_COMPENSATOR_SIDE_1,
+        name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`,
     });
     const { replace: replaceMcsList2, fields: mcsRows2 } = useFieldArray({
-        name: SHUNT_COMPENSATOR_SIDE_2,
+        name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`,
     });
 
     const { setValue } = useFormContext();
@@ -207,7 +208,7 @@ const DeleteEquipmentForm = ({
     const mscOnsideOne = (
         <ShuntCompensatorSelectionForm
             title="Side1"
-            arrayFormName={SHUNT_COMPENSATOR_SIDE_1}
+            arrayFormName={`${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`}
             mcsRows={mcsRows1}
         />
     );
@@ -215,7 +216,7 @@ const DeleteEquipmentForm = ({
     const mscOnsideTwo = (
         <ShuntCompensatorSelectionForm
             title="Side2"
-            arrayFormName={SHUNT_COMPENSATOR_SIDE_2}
+            arrayFormName={`${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`}
             mcsRows={mcsRows2}
         />
     );
