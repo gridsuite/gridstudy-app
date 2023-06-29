@@ -288,7 +288,7 @@
     "IDNode": "ID nœud",
     "IscKA": "Icc (kA)",
     "IscMinKA": "Icc min (kA)",
-    "IscMaxKA": "Icc max (kA)",
+    "IscMaxKA": "IMACC (kA)",
     "PscMVA": "Pcc (MVA)",
     "SINGLE_PHASE": "Monophasé",
     "THREE_PHASE": "Triphasé",
