@@ -51,6 +51,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
     }, []);
 
     useEffect(() => {
+        let ignore = false;
         setEquipmentsOptions([]);
         if (watchType?.fetchers?.length) {
             Promise.all(
@@ -59,7 +60,10 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
                 )
             )
                 .then((vals) => {
-                    setEquipmentsOptions(vals.flat().sort(compareById));
+                    // check race condition here
+                    if (!ignore) {
+                        setEquipmentsOptions(vals.flat().sort(compareById));
+                    }
                 })
                 .catch((error) => {
                     snackError({
@@ -68,6 +72,9 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
                     });
                 });
         }
+        return () => {
+            ignore = true;
+        };
     }, [studyUuid, currentNode?.id, watchType, snackError]);
 
     const handleChange = useCallback(() => {

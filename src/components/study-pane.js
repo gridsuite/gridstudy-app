@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useSelector } from 'react-redux';
 
@@ -13,7 +13,6 @@ import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { STUDY_DISPLAY_MODE } from '../redux/actions';
 import Paper from '@mui/material/Paper';
-import { equipments } from './network/network-equipments';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import {
@@ -83,15 +82,8 @@ export const StudyView = {
 
 const StudyPane = ({
     studyUuid,
-    network,
     currentNode,
     loadFlowInfos,
-    securityAnalysisStatus,
-    sensiStatus,
-    shortCircuitStatus,
-    dynamicSimulationStatus,
-    voltageInitStatus,
-    runnable,
     setErrorMessage,
     ...props
 }) => {
@@ -137,21 +129,10 @@ const StudyPane = ({
 
     const openVoltageLevel = useCallback(
         (vlId) => {
-            if (!network) {
-                return;
-            }
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         },
-        [network, openDiagramView]
+        [openDiagramView]
     );
-
-    useEffect(() => {
-        if (!network) {
-            return;
-        }
-        network.useEquipment(equipments.substations);
-        network.useEquipment(equipments.lines);
-    }, [network]);
 
     function showInSpreadsheet(equipment) {
         let newTableEquipment = {
@@ -259,26 +240,15 @@ const StudyPane = ({
                                     loadFlowStatus={getLoadFlowRunningStatus(
                                         loadFlowInfos?.loadFlowStatus
                                     )}
-                                    securityAnalysisStatus={
-                                        securityAnalysisStatus
-                                    }
-                                    sensiStatus={sensiStatus}
-                                    shortCircuitStatus={shortCircuitStatus}
-                                    dynamicSimulationStatus={
-                                        dynamicSimulationStatus
-                                    }
-                                    voltageInitStatus={voltageInitStatus}
                                     setIsComputationRunning={
                                         setIsComputationRunning
                                     }
-                                    runnable={runnable}
                                     setErrorMessage={setErrorMessage}
                                 />
                             </div>
 
                             <DiagramPane
                                 studyUuid={studyUuid}
-                                network={network}
                                 isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
                                 loadFlowStatus={getLoadFlowRunningStatus(
@@ -301,7 +271,6 @@ const StudyPane = ({
         return (
             <Paper className={clsx('singlestretch-child', classes.table)}>
                 <TableWrapper
-                    network={network}
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     equipmentId={tableEquipment.id}
@@ -375,7 +344,6 @@ StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
     onChangeTab: PropTypes.func,
-    dynamicSimulationStatus: PropTypes.string,
 };
 
 export default StudyPane;
