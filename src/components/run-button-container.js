@@ -328,6 +328,7 @@ export function RunButtonContainer({
                 .then(setRanLoadflow(true))
                 .catch((error) => {
                     setLoadFlowStatusState(RunningStatus.FAILED);
+                    setRanLoadflow(false);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startLoadFlowError',
