@@ -75,29 +75,24 @@ const VoltageLevelModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
+    const { reset, resetField } = formMethods;
 
     useEffect(() => {
         if (editData) {
             if (editData?.equipmentId) {
                 setSelectedId(editData.equipmentId);
             }
-            reset(
-                {
-                    [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                    [SUBSTATION_ID]: editData?.substationId?.value ?? null,
-                    [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value ?? null,
-                    [LOW_VOLTAGE_LIMIT]:
-                        editData?.lowVoltageLimit?.value ?? null,
-                    [HIGH_VOLTAGE_LIMIT]:
-                        editData?.highVoltageLimit?.value ?? null,
-                    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                        unitToKiloUnit(editData?.ipMin?.value) ?? null,
-                    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                        unitToKiloUnit(editData?.ipMax?.value) ?? null,
-                },
-                { keepDefaultValues: true }
-            );
+            reset({
+                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
+                [SUBSTATION_ID]: editData?.substationId?.value ?? null,
+                [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value ?? null,
+                [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value ?? null,
+                [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value ?? null,
+                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
+                    unitToKiloUnit(editData?.ipMin?.value) ?? null,
+                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
+                    unitToKiloUnit(editData?.ipMax?.value) ?? null,
+            });
         }
     }, [editData, reset]);
 
@@ -127,7 +122,10 @@ const VoltageLevelModificationDialog = ({
 
                             //TODO We display the previous value of the substation id in the substation field because we can't change it
                             // To be removed when it is possible to change the substation of a voltage level in the backend (Powsybl)
-                            setValue(SUBSTATION_ID, voltageLevel?.substationId);
+                            // Note: we use resetField and a defaultValue instead of setValue to not trigger react hook form's dirty flag
+                            resetField(SUBSTATION_ID, {
+                                defaultValue: voltageLevel?.substationId,
+                            });
                         }
                     })
                     .catch(() => {
@@ -139,7 +137,7 @@ const VoltageLevelModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, setValue, reset]
+        [studyUuid, currentNodeUuid, resetField, reset]
     );
 
     useEffect(() => {
