@@ -59,6 +59,7 @@ const emptyFormData = {
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
+ * @param defaultIdValue the default load id
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
@@ -127,7 +128,7 @@ const EquipmentDeletionDialog = ({
                     ?.length > 0
             ) {
                 specificData = {
-                    type: 'HVDC_LINE_WITH_LCC',
+                    specificType: 'HVDC_LINE_WITH_LCC',
                     mcsOnSide1:
                         formData[DELETION_SPECIFIC_DATA]?.[
                             SHUNT_COMPENSATOR_SIDE_1
@@ -197,6 +198,7 @@ EquipmentDeletionDialog.propTypes = {
     currentNode: PropTypes.object,
     editData: PropTypes.object,
     isUpdate: PropTypes.bool,
+    defaultIdValue: PropTypes.string,
     editDataFetchStatus: PropTypes.string,
 };
 
