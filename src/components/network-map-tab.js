@@ -73,13 +73,7 @@ export const NetworkMapTab = ({
     studyUuid,
     currentNode,
     /* results*/
-    securityAnalysisStatus,
-    runnable,
     loadFlowStatus,
-    sensiStatus,
-    shortCircuitStatus,
-    dynamicSimulationStatus,
-    voltageInitStatus,
     /* visual*/
     visible,
     lineFullPath,
@@ -942,13 +936,7 @@ export const NetworkMapTab = ({
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     loadFlowStatus={loadFlowStatus}
-                    securityAnalysisStatus={securityAnalysisStatus}
-                    sensiStatus={sensiStatus}
-                    shortCircuitStatus={shortCircuitStatus}
-                    dynamicSimulationStatus={dynamicSimulationStatus}
-                    voltageInitStatus={voltageInitStatus}
                     setIsComputationRunning={setIsComputationRunning}
-                    runnable={runnable}
                     disabled={disabled || isNodeReadOnly(currentNode)}
                 />
             </div>
@@ -964,7 +952,6 @@ NetworkMapTab.propTypes = {
     lineFlowColorMode: PropTypes.any,
     lineFlowAlertThreshold: PropTypes.number,
     loadFlowStatus: PropTypes.string,
-    dynamicSimulationStatus: PropTypes.string,
     view: PropTypes.any,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,

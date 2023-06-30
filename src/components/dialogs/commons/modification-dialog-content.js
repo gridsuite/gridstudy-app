@@ -110,7 +110,7 @@ const ModificationDialogContent = ({
 
 ModificationDialogContent.propTypes = {
     titleId: PropTypes.string.isRequired,
-    onOpenCatalogDialog: PropTypes.object,
+    onOpenCatalogDialog: PropTypes.func,
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
     isDataFetching: PropTypes.bool,
