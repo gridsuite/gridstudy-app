@@ -14,26 +14,24 @@ import React, {
     useState,
 } from 'react';
 import { useIntl } from 'react-intl';
-import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     compareById,
     filledTextField,
     gridItem,
-    GridSection,
 } from 'components/dialogs/dialogUtils';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import {
     DELETION_SPECIFIC_DATA,
     EQUIPMENT_ID,
-    SHUNT_COMPENSATOR_SIDE_1,
-    SHUNT_COMPENSATOR_SIDE_2,
+    HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE,
     TYPE,
 } from 'components/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import ShuntCompensatorSelectionForm from './shunt-compensator-selection-form';
-import { fetchHvdcLineWithShuntCompensators } from '../../../../utils/rest-api';
+import HvdcLccDeletionSpecificForm from './hvdc-lcc-deletion/hvdc-lcc-deletion-specific-form';
+import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
 const richTypeEquals = (a, b) => a.type === b.type;
 
@@ -52,21 +50,10 @@ const DeleteEquipmentForm = ({
     const watchEquipmentId = useWatch({
         name: EQUIPMENT_ID,
     });
-    const watchMcsList1 = useWatch({
-        name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`,
+    const watchSpecificData = useWatch({
+        name: DELETION_SPECIFIC_DATA,
     });
-    const watchMcsList2 = useWatch({
-        name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`,
-    });
-
-    // replace is mandatory to update a fieldArray (not setValue)
-    const { replace: replaceMcsList1, fields: mcsRows1 } = useFieldArray({
-        name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`,
-    });
-    const { replace: replaceMcsList2, fields: mcsRows2 } = useFieldArray({
-        name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`,
-    });
-
+    const { specificUpdate: hvdcLccSpecificUpdate } = useHvdcLccDeletion();
     const { setValue } = useFormContext();
 
     const richTypeLabel = (rt) => {
@@ -114,22 +101,10 @@ const DeleteEquipmentForm = ({
         };
     }, [studyUuid, currentNode?.id, watchType, snackError]);
 
-    const updateMcsLists = useCallback(
-        (hvdcLineData) => {
-            replaceMcsList1(
-                hvdcLineData?.mcsOnSide1 ? hvdcLineData.mcsOnSide1 : []
-            );
-            replaceMcsList2(
-                hvdcLineData?.mcsOnSide2 ? hvdcLineData.mcsOnSide2 : []
-            );
-        },
-        [replaceMcsList1, replaceMcsList2]
-    );
-
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
             if (editDataEquipmentId && !editedIdRef.current) {
-                // In case of edition, dont dynamically change MCS lists on first render.
+                // In case of edition, don't dynamically change the form on first render.
                 // Keep user data as it is stored in database (cf editData)
                 editedIdRef.current = editDataEquipmentId;
                 return;
@@ -138,24 +113,14 @@ const DeleteEquipmentForm = ({
                 watchEquipmentId &&
                 watchType?.type === EQUIPMENT_TYPES.HVDC_LINE.type
             ) {
-                // need a specific rest call to get related MCS lists
-                fetchHvdcLineWithShuntCompensators(
+                // need specific update related to HVDC LCC deletion (for MCS lists)
+                hvdcLccSpecificUpdate(
                     studyUuid,
                     currentNode?.id,
                     watchEquipmentId
-                )
-                    .then((hvdcLineData) => {
-                        updateMcsLists(hvdcLineData);
-                    })
-                    .catch((error) => {
-                        updateMcsLists(null);
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'HVDCLineConverterStationError',
-                        });
-                    });
+                );
             } else {
-                updateMcsLists(null);
+                setValue(DELETION_SPECIFIC_DATA, null);
             }
         }
     }, [
@@ -163,8 +128,9 @@ const DeleteEquipmentForm = ({
         currentNode?.id,
         watchType?.type,
         watchEquipmentId,
-        updateMcsLists,
         snackError,
+        setValue,
+        hvdcLccSpecificUpdate,
         editDataEquipmentId,
     ]);
 
@@ -205,45 +171,15 @@ const DeleteEquipmentForm = ({
         />
     );
 
-    const mscOnsideOne = (
-        <ShuntCompensatorSelectionForm
-            title="Side1"
-            arrayFormName={`${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`}
-            mcsRows={mcsRows1}
-        />
-    );
-
-    const mscOnsideTwo = (
-        <ShuntCompensatorSelectionForm
-            title="Side2"
-            arrayFormName={`${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`}
-            mcsRows={mcsRows2}
-        />
-    );
-
     return (
         <>
             <Grid container spacing={2}>
                 {gridItem(equipmentTypeField, 6)}
                 {gridItem(equipmentField, 6)}
             </Grid>
-            {(watchMcsList1?.length > 0 || watchMcsList2?.length > 0) && (
-                <Grid
-                    container
-                    spacing={1}
-                    direction="column"
-                    paddingTop={2}
-                    paddingLeft={1}
-                >
-                    <GridSection
-                        title="LCCConverterStationShuntCompensators"
-                        heading="3"
-                    />
-                    <Grid container spacing={1}>
-                        {gridItem(mscOnsideOne)}
-                        {gridItem(mscOnsideTwo)}
-                    </Grid>
-                </Grid>
+            {watchSpecificData?.specificType ===
+                HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE && (
+                <HvdcLccDeletionSpecificForm />
             )}
         </>
     );

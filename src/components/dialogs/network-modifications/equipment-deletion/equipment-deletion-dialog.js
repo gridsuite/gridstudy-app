@@ -11,10 +11,6 @@ import {
     TYPE,
     EQUIPMENT_ID,
     DELETION_SPECIFIC_DATA,
-    ID,
-    MCS_SELECTED,
-    SHUNT_COMPENSATOR_SIDE_1,
-    SHUNT_COMPENSATOR_SIDE_2,
 } from '../../../utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -32,18 +28,6 @@ const formSchema = yup
     .shape({
         [TYPE]: yup.object().nullable().required(),
         [EQUIPMENT_ID]: yup.string().nullable().required(),
-        [SHUNT_COMPENSATOR_SIDE_1]: yup.array().of(
-            yup.object().shape({
-                [ID]: yup.string(),
-                [MCS_SELECTED]: yup.boolean(),
-            })
-        ),
-        [SHUNT_COMPENSATOR_SIDE_2]: yup.array().of(
-            yup.object().shape({
-                [ID]: yup.string(),
-                [MCS_SELECTED]: yup.boolean(),
-            })
-        ),
     })
     .required();
 
@@ -120,32 +104,13 @@ const EquipmentDeletionDialog = ({
 
     const onSubmit = useCallback(
         (formData) => {
-            let specificData = null;
-            if (
-                formData[DELETION_SPECIFIC_DATA]?.[SHUNT_COMPENSATOR_SIDE_1]
-                    ?.length > 0 ||
-                formData[DELETION_SPECIFIC_DATA]?.[SHUNT_COMPENSATOR_SIDE_2]
-                    ?.length > 0
-            ) {
-                specificData = {
-                    specificType: 'HVDC_LINE_WITH_LCC',
-                    mcsOnSide1:
-                        formData[DELETION_SPECIFIC_DATA]?.[
-                            SHUNT_COMPENSATOR_SIDE_1
-                        ],
-                    mcsOnSide2:
-                        formData[DELETION_SPECIFIC_DATA]?.[
-                            SHUNT_COMPENSATOR_SIDE_2
-                        ],
-                };
-            }
             deleteEquipment(
                 studyUuid,
                 currentNodeUuid,
                 formData[TYPE].type,
                 formData[EQUIPMENT_ID],
                 editData?.uuid,
-                specificData
+                formData[DELETION_SPECIFIC_DATA]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,

@@ -155,8 +155,6 @@ export const COUPLING_OMNIBUS = 'couplingOmnibus';
 export const SWITCH_KINDS = 'switchKinds';
 // dnd table
 export const SELECTED = 'selected';
-// hvdcline removal
-export const MCS_SELECTED = 'connectedToHvdc';
 
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
@@ -232,5 +230,8 @@ export const FILTER_NAME = 'filterName';
 
 // HVDC deletion
 export const DELETION_SPECIFIC_DATA = 'specificData';
+export const DELETION_SPECIFIC_TYPE = 'specificType';
+export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
 export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
 export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
+export const MCS_SELECTED = 'connectedToHvdc';
