@@ -44,6 +44,7 @@ const PhaseTapChangerPaneSteps = ({
                 initialValue: 0,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
             {
                 label: 'DeltaReactance',
@@ -51,6 +52,7 @@ const PhaseTapChangerPaneSteps = ({
                 initialValue: 0,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
             {
                 label: 'DeltaConductance',
@@ -58,6 +60,7 @@ const PhaseTapChangerPaneSteps = ({
                 initialValue: 0,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
             {
                 label: 'DeltaSusceptance',
@@ -65,6 +68,7 @@ const PhaseTapChangerPaneSteps = ({
                 initialValue: 0,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
             {
                 label: 'Ratio',
@@ -72,6 +76,7 @@ const PhaseTapChangerPaneSteps = ({
                 initialValue: 1,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
             {
                 label: 'Alpha',
@@ -79,6 +84,7 @@ const PhaseTapChangerPaneSteps = ({
                 initialValue: 0,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
         ].map((column) => ({
             ...column,
@@ -169,10 +175,6 @@ const PhaseTapChangerPaneSteps = ({
         [getValues]
     );
 
-    const isValueModified = useCallback(() => {
-        return true;
-    }, []);
-
     return (
         <TapChangerSteps
             tapChanger={PHASE_TAP_CHANGER}
@@ -188,7 +190,6 @@ const PhaseTapChangerPaneSteps = ({
             previousValues={twtToModify}
             modifiedValues={modifiedEquipment}
             getPreviousValue={getPhaseStepPreviousValue}
-            isValueModified={isValueModified}
             modification={modification}
         />
     );

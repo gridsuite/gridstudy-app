@@ -93,6 +93,8 @@ function EditableTableCell({
     column,
     previousValue,
     valueModified,
+    handleChange,
+    isClearable,
     ...props
 }) {
     return (
@@ -106,6 +108,8 @@ function EditableTableCell({
                     style={{
                         textAlign: column?.textAlign,
                     }}
+                    handleChange={handleChange}
+                    isClearable={isClearable}
                     {...props}
                 />
             )}
@@ -137,6 +141,7 @@ const DndTable = ({
     createRows,
     handleUploadButton,
     uploadButtonMessageId,
+    handleResetButton,
     disabled = false,
     withLeftButtons = true,
     withAddRowsDialog = true,
@@ -201,6 +206,8 @@ const DndTable = ({
                           )
                         : false
                 }
+                isClearable={column.clearable}
+                handleChange={column.handleChange}
             />
         );
     }
@@ -415,6 +422,7 @@ const DndTable = ({
                 {withLeftButtons && (
                     <DndTableBottomLeftButtons
                         handleUploadButton={handleUploadButton}
+                        handleResetButton={handleResetButton}
                         uploadButtonMessageId={uploadButtonMessageId}
                         disabled={disabled}
                     />

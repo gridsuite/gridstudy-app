@@ -10,11 +10,13 @@ import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import UploadIcon from '@mui/icons-material/Upload';
+import ReplayIcon from '@mui/icons-material/Replay';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
 const DndTableBottomLeftButtons = ({
     handleUploadButton,
+    handleResetButton,
     uploadButtonMessageId,
     disabled,
 }) => {
@@ -40,6 +42,26 @@ const DndTableBottomLeftButtons = ({
                     </span>
                 </Tooltip>
             </Grid>
+            {handleResetButton !== undefined && (
+                <Grid item>
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'Réinitialiser les lignes',
+                        })}
+                        placement="top"
+                    >
+                        <span>
+                            <IconButton
+                                color="primary"
+                                onClick={() => handleResetButton()}
+                                disabled={disabled}
+                            >
+                                <ReplayIcon />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                </Grid>
+            )}
         </Grid>
     );
 };

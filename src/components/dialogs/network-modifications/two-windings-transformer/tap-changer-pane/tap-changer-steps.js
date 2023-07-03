@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
@@ -49,7 +55,7 @@ const TapChangerSteps = ({
 }) => {
     const intl = useIntl();
 
-    const { trigger, getValues, setValue } = useFormContext();
+    const { trigger, getValues, setValue, clearErrors } = useFormContext();
 
     const useFieldArrayOutput = useFieldArray({
         name: `${tapChanger}.${STEPS}`,
@@ -66,6 +72,8 @@ const TapChangerSteps = ({
 
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
+
+    const [isDirty, setDirty] = useState(false);
 
     function allowedToAddTapRows() {
         // triggering validation on low tap position before generating rows (the field is required)
@@ -118,6 +126,10 @@ const TapChangerSteps = ({
                 modification && !lowTapPosition
                     ? previousValues?.[LOW_TAP_POSITION]
                     : lowTapPosition;
+
+            if (currentLowTapPosition !== previousValues?.[LOW_TAP_POSITION]) {
+                setDirty(true);
+            }
 
             for (
                 let tapPosition = currentLowTapPosition, index = 0;
@@ -305,29 +317,64 @@ const TapChangerSteps = ({
         />
     );
 
-    const createRuleButton = (
-        <Tooltip
-            title={intl.formatMessage({
-                id: createRuleMessageId,
-            })}
-            placement="left"
-        >
-            <span>
-                <IconButton
-                    onClick={() => setOpenCreateRuleDialog(true)}
-                    disabled={disabled || tapSteps.length === 0}
-                >
-                    <AddchartIcon />
-                </IconButton>
-            </span>
-        </Tooltip>
+    const completedColumnsDefinition = useMemo(() => {
+        const createRuleButton = (
+            <Tooltip
+                title={intl.formatMessage({
+                    id: createRuleMessageId,
+                })}
+                placement="left"
+            >
+                <span>
+                    <IconButton
+                        onClick={() => setOpenCreateRuleDialog(true)}
+                        disabled={disabled || tapSteps.length === 0}
+                    >
+                        <AddchartIcon />
+                    </IconButton>
+                </span>
+            </Tooltip>
+        );
+        const columnsDef = columnsDefinition.map((columnDefinition) => {
+            return {
+                ...columnDefinition,
+                handleChange: () => {
+                    setDirty(true);
+                },
+            };
+        });
+
+        columnsDef[columnsDef.length - 1] = {
+            ...columnsDef[columnsDef.length - 1],
+            extra: createRuleButton,
+        };
+
+        return columnsDef;
+    }, [
+        columnsDefinition,
+        createRuleMessageId,
+        disabled,
+        intl,
+        tapSteps.length,
+    ]);
+
+    const isValueModified = useCallback(
+        () => modification && isDirty,
+        [isDirty, modification]
     );
 
-    const completedColumnsDefinition = columnsDefinition;
-    completedColumnsDefinition[completedColumnsDefinition.length - 1] = {
-        ...completedColumnsDefinition[completedColumnsDefinition.length - 1],
-        extra: createRuleButton,
-    };
+    const handleResetButton = useCallback(() => {
+        replace(adjustedStepsPreviousValues);
+        setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
+        clearErrors(`${tapChanger}.${STEPS}`);
+        setDirty(false);
+    }, [
+        adjustedStepsPreviousValues,
+        clearErrors,
+        replace,
+        setValue,
+        tapChanger,
+    ]);
 
     return (
         <Grid item container spacing={1}>
@@ -350,10 +397,12 @@ const TapChangerSteps = ({
                 allowedToAddRows={allowedToAddTapRows}
                 createRows={createTapRows}
                 handleUploadButton={handleImportTapRuleButton}
+                handleResetButton={modification ? handleResetButton : undefined}
                 uploadButtonMessageId={importRuleMessageId}
                 disabled={disabled}
                 previousValues={adjustedStepsPreviousValues}
                 getPreviousValue={getTapPreviousValue}
+                isValueModified={isValueModified}
             />
             <CreateRuleDialog
                 ruleType={ruleType}

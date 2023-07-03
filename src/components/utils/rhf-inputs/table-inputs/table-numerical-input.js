@@ -18,6 +18,8 @@ export const TableNumericalInput = ({
     previousValue,
     valueModified,
     adornment,
+    handleChange = () => {},
+    isClearable = true,
     ...props
 }) => {
     const { trigger } = useFormContext();
@@ -37,8 +39,10 @@ export const TableNumericalInput = ({
         () =>
             previousValue === Number.MAX_VALUE
                 ? validateValueIsANumber(value)
-                : previousValue !== undefined && previousValue !== value,
-        [previousValue, value]
+                : previousValue !== undefined &&
+                  previousValue !== value &&
+                  isClearable,
+        [isClearable, previousValue, value]
     );
 
     const outputTransform = (value) => {
@@ -61,6 +65,7 @@ export const TableNumericalInput = ({
 
     const handleInputChange = (e) => {
         onChange(outputTransform(e.target.value));
+        handleChange();
         trigger(name);
     };
 
