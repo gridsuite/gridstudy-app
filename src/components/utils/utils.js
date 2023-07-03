@@ -158,7 +158,7 @@ export function calculateSusceptance(distance, linearCapacity) {
     );
 }
 
-export const replaceAllNanDefaultValues = (arrayParams, oldValue, newValue) => {
+export const replaceAllDefaultValues = (arrayParams, oldValue, newValue) => {
     return (
         arrayParams &&
         arrayParams.reduce((accumulator, current) => {
