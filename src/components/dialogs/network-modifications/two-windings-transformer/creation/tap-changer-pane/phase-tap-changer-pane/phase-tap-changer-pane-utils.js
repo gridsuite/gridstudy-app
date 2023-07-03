@@ -41,14 +41,14 @@ import {
 } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import {
-    getRegulatingTerminalEmptyFormData,
-    getRegulatingTerminalFormData,
-} from '../../../../regulating-terminal/regulating-terminal-form-utils';
-import {
     PHASE_REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
 } from 'components/network/constants';
+import {
+    getRegulatingTerminalEmptyFormData,
+    getRegulatingTerminalFormData,
+} from 'components/dialogs/regulating-terminal/regulating-terminal-form-utils';
 
 const phaseTapChangerValidationSchema = (modification, id) => ({
     [id]: yup.object().shape({

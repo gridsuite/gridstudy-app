@@ -16,7 +16,7 @@ import { FormattedMessage } from 'react-intl';
 import {
     PHASE_TAP,
     RATIO_TAP,
-} from '../../creation/two-windings-transformer-creation-dialog';
+} from '../../two-windings-transformer-creation-dialog';
 
 const CreateRuleForm = (props) => {
     const computeLowTapLabel = (ruleType) => {
