@@ -137,10 +137,19 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     const defaultColDef = useMemo(
         () => ({
             suppressMovable: true,
+            sortable: true,
+            resizable: true,
+            autoHeaderHeight: true,
+            flex: 1,
         }),
         []
     );
 
+    const onGridReady = useCallback((params) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
     const renderResult = () => {
         const rows = flattenResult(result);
 
@@ -151,6 +160,8 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     rowData={rows}
                     columnDefs={columns}
                     getRowStyle={getRowStyle}
+                    onGridReady={onGridReady}
+                    enableCellTextSelection={true}
                     defaultColDef={defaultColDef}
                 />
             )
