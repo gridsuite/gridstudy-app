@@ -66,6 +66,8 @@ import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifica
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { fetchNetworkModification } from '../../../services/network-modification';
+import { useParameterState } from '../../dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -175,15 +177,17 @@ const NetworkModificationNodeEditor = () => {
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef();
 
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);
-        setCopiedModifications((old) => {
-            if (old.length > 0) {
+        setCopiedModifications((oldCopiedModifications) => {
+            if (oldCopiedModifications.length) {
                 snackInfo({
                     messageId: 'CopiedModificationInvalidationMessage',
                 });
+                return [];
             }
-            return [];
         });
     }, [snackInfo]);
 
@@ -280,6 +284,7 @@ const NetworkModificationNodeEditor = () => {
                 },
                 {
                     id: 'SHUNT_COMPENSATOR_MODIFICATION',
+                    hide: !enableDeveloperMode,
                     label: 'ShuntCompensator',
                     action: () => adapt(ShuntCompensatorModificationDialog),
                 },

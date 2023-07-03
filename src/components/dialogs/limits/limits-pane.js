@@ -28,7 +28,8 @@ import {
     GridSection,
 } from 'components/dialogs/dialogUtils';
 import DndTable from 'components/utils/dnd-table/dnd-table';
-import { isNodeBuilt } from '../../graph/util/model-functions';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { formatTemporaryLimits } from 'components/utils/utils';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
@@ -40,7 +41,6 @@ const LimitsPane = ({
     id = LIMITS,
     currentNode,
     equipmentToModify,
-    modifiedEquipment,
     clearableFields,
 }) => {
     const intl = useIntl();
@@ -95,9 +95,15 @@ const LimitsPane = ({
 
     const temporaryLimitHasPreviousValue = useCallback(
         (rowIndex, arrayFormName, temporaryLimits) => {
-            return temporaryLimits
-                ?.map(({ name }) => name)
-                .includes(getValues(arrayFormName)[rowIndex]?.name);
+            return (
+                formatTemporaryLimits(temporaryLimits)?.filter(
+                    (l) =>
+                        l.name === getValues(arrayFormName)[rowIndex]?.name &&
+                        l.acceptableDuration ===
+                            getValues(arrayFormName)[rowIndex]
+                                ?.acceptableDuration
+                )?.length > 0
+            );
         },
         [getValues]
     );
@@ -105,28 +111,21 @@ const LimitsPane = ({
     const findTemporaryLimit = useCallback(
         (rowIndex, arrayFormName, temporaryLimits) => {
             return temporaryLimits?.find(
-                (e) => e.name === getValues(arrayFormName)[rowIndex]?.name
+                (e) =>
+                    e.name === getValues(arrayFormName)[rowIndex]?.name &&
+                    e.acceptableDuration ===
+                        getValues(arrayFormName)[rowIndex]?.acceptableDuration
             );
         },
         [getValues]
     );
 
     const disableTableCell = useCallback(
-        (
-            rowIndex,
-            column,
-            arrayFormName,
-            temporaryLimits,
-            modifiedTemporaryLimits
-        ) => {
+        (rowIndex, column, arrayFormName, temporaryLimits) => {
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
-            return modifiedTemporaryLimits &&
-                findTemporaryLimit(
-                    rowIndex,
-                    arrayFormName,
-                    modifiedTemporaryLimits
-                )?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+            return getValues(arrayFormName)[rowIndex]?.modificationType ===
+                TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
                 ? false
                 : temporaryLimitHasPreviousValue(
                       rowIndex,
@@ -134,11 +133,11 @@ const LimitsPane = ({
                       temporaryLimits
                   ) && column.dataKey !== TEMPORARY_LIMIT_VALUE;
         },
-        [findTemporaryLimit, temporaryLimitHasPreviousValue]
+        [getValues, temporaryLimitHasPreviousValue]
     );
 
     const shouldReturnPreviousValue = useCallback(
-        (rowIndex, column, arrayFormName, temporaryLimits, modifiedValues) => {
+        (rowIndex, column, arrayFormName, temporaryLimits) => {
             return (
                 (temporaryLimitHasPreviousValue(
                     rowIndex,
@@ -146,29 +145,29 @@ const LimitsPane = ({
                     temporaryLimits
                 ) &&
                     column.dataKey === TEMPORARY_LIMIT_VALUE) ||
-                findTemporaryLimit(rowIndex, arrayFormName, modifiedValues)
-                    ?.modificationType ===
+                getValues(arrayFormName)[rowIndex]?.modificationType ===
                     TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
             );
         },
-        [findTemporaryLimit, temporaryLimitHasPreviousValue]
+        [getValues, temporaryLimitHasPreviousValue]
     );
 
     const getTemporaryLimitPreviousValue = useCallback(
-        (rowIndex, column, arrayFormName, temporaryLimits, modifiedValues) => {
+        (rowIndex, column, arrayFormName, temporaryLimits) => {
+            const formattedTemporaryLimits =
+                formatTemporaryLimits(temporaryLimits);
             if (
                 shouldReturnPreviousValue(
                     rowIndex,
                     column,
                     arrayFormName,
-                    temporaryLimits,
-                    modifiedValues
+                    formattedTemporaryLimits
                 )
             ) {
                 const temporaryLimit = findTemporaryLimit(
                     rowIndex,
                     arrayFormName,
-                    temporaryLimits
+                    formattedTemporaryLimits
                 );
                 if (temporaryLimit === undefined) {
                     return undefined;
@@ -188,12 +187,8 @@ const LimitsPane = ({
     );
 
     const isTemporaryLimitModified = useCallback(
-        (rowIndex, arrayFormName, modifiedValues) => {
-            const temporaryLimit = findTemporaryLimit(
-                rowIndex,
-                arrayFormName,
-                modifiedValues
-            );
+        (rowIndex, arrayFormName) => {
+            const temporaryLimit = getValues(arrayFormName)[rowIndex];
             if (
                 temporaryLimit?.modificationType ===
                     TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
@@ -201,10 +196,10 @@ const LimitsPane = ({
             ) {
                 return false;
             } else {
-                return temporaryLimit?.modificationType !== undefined;
+                return temporaryLimit?.modificationType !== null;
             }
         },
-        [currentNode, findTemporaryLimit]
+        [currentNode, getValues]
     );
 
     const permanentCurrentLimit1Field = (
@@ -251,9 +246,6 @@ const LimitsPane = ({
                 previousValues={
                     equipmentToModify?.currentLimits1?.temporaryLimits
                 }
-                modifiedValues={
-                    modifiedEquipment?.currentLimits1?.temporaryLimits
-                }
                 disableTableCell={disableTableCell}
                 getPreviousValue={getTemporaryLimitPreviousValue}
                 isValueModified={isTemporaryLimitModified}
@@ -274,9 +266,6 @@ const LimitsPane = ({
                     withAddRowsDialog={false}
                     previousValues={
                         equipmentToModify?.currentLimits2?.temporaryLimits
-                    }
-                    modifiedValues={
-                        modifiedEquipment?.currentLimits2?.temporaryLimits
                     }
                     disableTableCell={disableTableCell}
                     getPreviousValue={getTemporaryLimitPreviousValue}

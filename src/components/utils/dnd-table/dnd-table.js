@@ -146,7 +146,6 @@ const DndTable = ({
     withLeftButtons = true,
     withAddRowsDialog = true,
     previousValues,
-    modifiedValues,
     disableTableCell,
     getPreviousValue,
     isValueModified,
@@ -181,8 +180,7 @@ const DndTable = ({
                               rowIndex,
                               column,
                               arrayFormName,
-                              previousValues,
-                              modifiedValues
+                              previousValues
                           )
                         : disabled
                 }
@@ -192,18 +190,13 @@ const DndTable = ({
                               rowIndex,
                               column,
                               arrayFormName,
-                              previousValues,
-                              modifiedValues
+                              previousValues
                           )
                         : undefined
                 }
                 valueModified={
                     isValueModified
-                        ? isValueModified(
-                              rowIndex,
-                              arrayFormName,
-                              modifiedValues
-                          )
+                        ? isValueModified(rowIndex, arrayFormName)
                         : false
                 }
                 isClearable={column.clearable}

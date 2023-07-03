@@ -77,6 +77,7 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
     sanitizeLimitNames,
+    updateTemporaryLimits,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -184,8 +185,7 @@ const TwoWindingsTransformerModificationDialog = ({
     };
 
     const fromEditDataToFormValues = useCallback(
-        (twt) => {
-            console.log(twt);
+        (twt, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
             if (twt?.equipmentId) {
                 setSelectedId(twt.equipmentId);
             }
@@ -208,14 +208,18 @@ const TwoWindingsTransformerModificationDialog = ({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            twt.currentLimits1?.temporaryLimits
-                        )
+                        updatedTemporaryLimits1
+                            ? updatedTemporaryLimits1
+                            : formatTemporaryLimits(
+                                  twt.currentLimits1?.temporaryLimits
+                              )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            twt.currentLimits2?.temporaryLimits
-                        )
+                        updatedTemporaryLimits2
+                            ? updatedTemporaryLimits2
+                            : formatTemporaryLimits(
+                                  twt.currentLimits2?.temporaryLimits
+                              )
                     ),
                 }),
                 ...getPhaseTapChangerFormData({
@@ -265,9 +269,27 @@ const TwoWindingsTransformerModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            fromEditDataToFormValues(
+                editData,
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits1?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        twtToModify?.currentLimits1?.temporaryLimits
+                    )
+                ),
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits2?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        twtToModify?.currentLimits2?.temporaryLimits
+                    )
+                )
+            );
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [fromEditDataToFormValues, editData, twtToModify]);
 
     const computePhaseTapChangerRegulating = (
         phaseTapChangerFormValues,
@@ -545,8 +567,6 @@ const TwoWindingsTransformerModificationDialog = ({
                                     }),
                                     { keepDefaultValues: true }
                                 );
-                            } else {
-                                fromEditDataToFormValues(editData);
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -560,15 +580,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            editData,
-            selectedId,
-            reset,
-            fromEditDataToFormValues,
-            emptyFormData,
-        ]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset]
     );
 
     useEffect(() => {
@@ -668,7 +680,6 @@ const TwoWindingsTransformerModificationDialog = ({
                             <LimitsPane
                                 currentNode={currentNode}
                                 equipmentToModify={twtToModify}
-                                modifiedEquipment={editData}
                                 clearableFields
                             />
                         </Box>

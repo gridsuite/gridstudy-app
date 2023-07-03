@@ -415,11 +415,12 @@ const NetworkMap = (props) => {
                 onHover: ({ object, x, y }) => {
                     if (object) {
                         setCursorType('pointer');
+                        const lineObject = object?.line ?? object;
                         setTooltip({
-                            equipmentId: getNameOrId(object),
+                            equipmentId: getNameOrId(lineObject),
                             pointerX: x,
                             pointerY: y,
-                            equipmentInfos: object,
+                            equipmentInfos: lineObject,
                             visible: showTooltip,
                         });
                     } else {

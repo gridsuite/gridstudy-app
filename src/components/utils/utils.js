@@ -111,6 +111,7 @@ export const formatTemporaryLimits = (temporaryLimits) =>
             name: limit?.name ?? '',
             value: limit?.value ?? null,
             acceptableDuration: limit?.acceptableDuration ?? null,
+            modificationType: limit?.modificationType ?? null,
         };
     });
 
