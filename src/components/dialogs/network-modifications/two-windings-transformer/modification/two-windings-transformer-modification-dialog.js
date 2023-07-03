@@ -580,7 +580,14 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset]
+        [
+            studyUuid,
+            currentNodeUuid,
+            editData?.equipmentId,
+            selectedId,
+            reset,
+            emptyFormData,
+        ]
     );
 
     useEffect(() => {
