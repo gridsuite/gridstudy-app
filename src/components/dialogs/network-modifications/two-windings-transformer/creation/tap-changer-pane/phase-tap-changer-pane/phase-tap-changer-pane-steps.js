@@ -15,56 +15,76 @@ import {
     STEPS_SUSCEPTANCE,
     STEPS_TAP,
 } from 'components/utils/field-constants';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../../dialogUtils';
 import { PHASE_TAP } from '../../two-windings-transformer-creation-dialog';
+import { useFormContext } from 'react-hook-form';
 
-const PhaseTapChangerPaneSteps = ({ disabled }) => {
+const PhaseTapChangerPaneSteps = ({
+    disabled,
+    twtToModify,
+    modifiedEquipment,
+    modification,
+}) => {
     const intl = useIntl();
+    const { getValues } = useFormContext();
 
     const COLUMNS_DEFINITIONS = useMemo(() => {
         return [
             {
                 label: 'Tap',
                 dataKey: STEPS_TAP,
+                numeric: true,
             },
             {
                 label: 'DeltaResistance',
                 dataKey: STEPS_RESISTANCE,
                 initialValue: 0,
                 editable: true,
+                numeric: true,
+                clearable: false,
             },
             {
                 label: 'DeltaReactance',
                 dataKey: STEPS_REACTANCE,
                 initialValue: 0,
                 editable: true,
+                numeric: true,
+                clearable: false,
             },
             {
                 label: 'DeltaConductance',
                 dataKey: STEPS_CONDUCTANCE,
                 initialValue: 0,
                 editable: true,
+                numeric: true,
+                clearable: false,
             },
             {
                 label: 'DeltaSusceptance',
                 dataKey: STEPS_SUSCEPTANCE,
                 initialValue: 0,
                 editable: true,
+                numeric: true,
+                clearable: false,
             },
             {
                 label: 'Ratio',
                 dataKey: STEPS_RATIO,
                 initialValue: 1,
                 editable: true,
+                numeric: true,
+                clearable: false,
             },
             {
                 label: 'Alpha',
                 dataKey: STEPS_ALPHA,
                 initialValue: 0,
                 editable: true,
+                numeric: true,
+                clearable: false,
             },
         ].map((column) => ({
             ...column,
@@ -142,6 +162,19 @@ const PhaseTapChangerPaneSteps = ({ disabled }) => {
         };
     };
 
+    const getPhaseStepPreviousValue = useCallback(
+        (rowIndex, column, arrayFormName, steps, modifiedValues) => {
+            const step = steps?.find(
+                (e) => e.index === getValues(arrayFormName)[rowIndex]?.index
+            );
+            if (!step) {
+                return undefined;
+            }
+            return step[column.dataKey];
+        },
+        [getValues]
+    );
+
     return (
         <TapChangerSteps
             tapChanger={PHASE_TAP_CHANGER}
@@ -154,6 +187,10 @@ const PhaseTapChangerPaneSteps = ({ disabled }) => {
             importRuleMessageId="ImportDephasingRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
+            previousValues={twtToModify}
+            modifiedValues={modifiedEquipment}
+            getPreviousValue={getPhaseStepPreviousValue}
+            modification={modification}
         />
     );
 };

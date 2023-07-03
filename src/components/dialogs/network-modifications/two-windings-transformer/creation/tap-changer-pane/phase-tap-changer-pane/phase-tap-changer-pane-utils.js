@@ -16,6 +16,7 @@ import {
     NAME,
     NOMINAL_VOLTAGE,
     PHASE_TAP_CHANGER,
+    REGULATING,
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
@@ -42,63 +43,75 @@ import yup from 'components/utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
-} from '../../../../../regulating-terminal/regulating-terminal-form-utils';
+} from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import {
     PHASE_REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
 } from 'components/network/constants';
 
-const phaseTapChangerValidationSchema = (id) => ({
+const phaseTapChangerValidationSchema = (modification, id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
-        [REGULATION_MODE]: yup
-            .string()
-            .nullable()
-            .when([ENABLED], {
-                is: true,
-                then: (schema) => schema.required(),
-            }),
-        [REGULATION_TYPE]: yup
-            .string()
-            .nullable()
-            .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) =>
-                    enabled &&
-                    regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id,
-                then: (schema) => schema.required(),
-            }),
-        [REGULATION_SIDE]: yup
-            .string()
-            .nullable()
-            .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-                is: (enabled, regulationMode, regulationType) =>
-                    enabled &&
-                    regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id &&
-                    regulationType === REGULATION_TYPES.LOCAL.id,
-                then: (schema) => schema.required(),
-            }),
-        [CURRENT_LIMITER_REGULATING_VALUE]: yup
-            .number()
-            .nullable()
-            .positive('CurrentLimiterGreaterThanZero')
-            .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) =>
-                    enabled &&
-                    regulationMode ===
-                        PHASE_REGULATION_MODES.CURRENT_LIMITER.id,
-                then: (schema) => schema.required(),
-            }),
-        [FLOW_SET_POINT_REGULATING_VALUE]: yup
-            .number()
-            .nullable()
-            .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) =>
-                    enabled &&
-                    regulationMode ===
-                        PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id,
-                then: (schema) => schema.required(),
-            }),
+        [REGULATION_MODE]: modification
+            ? yup.string().nullable()
+            : yup
+                  .string()
+                  .nullable()
+                  .when([ENABLED], {
+                      is: true,
+                      then: (schema) => schema.required(),
+                  }),
+        [REGULATION_TYPE]: modification
+            ? yup.string().nullable()
+            : yup
+                  .string()
+                  .nullable()
+                  .when([ENABLED, REGULATION_MODE], {
+                      is: (enabled, regulationMode) =>
+                          enabled &&
+                          regulationMode !==
+                              PHASE_REGULATION_MODES.FIXED_TAP.id,
+                      then: (schema) => schema.required(),
+                  }),
+        [REGULATION_SIDE]: modification
+            ? yup.string().nullable()
+            : yup
+                  .string()
+                  .nullable()
+                  .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
+                      is: (enabled, regulationMode, regulationType) =>
+                          enabled &&
+                          regulationMode !==
+                              PHASE_REGULATION_MODES.FIXED_TAP.id &&
+                          regulationType === REGULATION_TYPES.LOCAL.id,
+                      then: (schema) => schema.required(),
+                  }),
+        [CURRENT_LIMITER_REGULATING_VALUE]: modification
+            ? yup.string().nullable()
+            : yup
+                  .number()
+                  .nullable()
+                  .positive('CurrentLimiterGreaterThanZero')
+                  .when([ENABLED, REGULATION_MODE], {
+                      is: (enabled, regulationMode) =>
+                          enabled &&
+                          regulationMode ===
+                              PHASE_REGULATION_MODES.CURRENT_LIMITER.id,
+                      then: (schema) => schema.required(),
+                  }),
+        [FLOW_SET_POINT_REGULATING_VALUE]: modification
+            ? yup.string().nullable()
+            : yup
+                  .number()
+                  .nullable()
+                  .when([ENABLED, REGULATION_MODE], {
+                      is: (enabled, regulationMode) =>
+                          enabled &&
+                          regulationMode ===
+                              PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id,
+                      then: (schema) => schema.required(),
+                  }),
         [TARGET_DEADBAND]: yup
             .number()
             .nullable()
@@ -108,7 +121,7 @@ const phaseTapChangerValidationSchema = (id) => ({
             .nullable()
             .when(ENABLED, {
                 is: true,
-                then: (schema) => schema.required(),
+                then: (schema) => (modification ? schema : schema.required()),
             }),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: yup
@@ -117,16 +130,27 @@ const phaseTapChangerValidationSchema = (id) => ({
             .when(ENABLED, {
                 is: true,
                 then: (schema) =>
-                    schema
-                        .required()
-                        .min(
-                            yup.ref(LOW_TAP_POSITION),
-                            'TapPositionBetweenLowAndHighTapPositionValue'
-                        )
-                        .max(
-                            yup.ref(HIGH_TAP_POSITION),
-                            'TapPositionBetweenLowAndHighTapPositionValue'
-                        ),
+                    modification
+                        ? schema
+                              .nullable()
+                              .min(
+                                  yup.ref(LOW_TAP_POSITION),
+                                  'TapPositionBetweenLowAndHighTapPositionValue'
+                              )
+                              .max(
+                                  yup.ref(HIGH_TAP_POSITION),
+                                  'TapPositionBetweenLowAndHighTapPositionValue'
+                              )
+                        : schema
+                              .required()
+                              .min(
+                                  yup.ref(LOW_TAP_POSITION),
+                                  'TapPositionBetweenLowAndHighTapPositionValue'
+                              )
+                              .max(
+                                  yup.ref(HIGH_TAP_POSITION),
+                                  'TapPositionBetweenLowAndHighTapPositionValue'
+                              ),
             }),
         [STEPS]: yup
             .array()
@@ -189,8 +213,11 @@ const phaseTapChangerValidationSchema = (id) => ({
     }),
 });
 
-export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
-    return phaseTapChangerValidationSchema(id);
+export const getPhaseTapChangerValidationSchema = (
+    modification = false,
+    id = PHASE_TAP_CHANGER
+) => {
+    return phaseTapChangerValidationSchema(modification, id);
 };
 
 const phaseTapChangerEmptyFormData = (id) => ({
@@ -252,3 +279,27 @@ export const getPhaseTapChangerFormData = (
         }),
     },
 });
+
+export const getComputedPhaseTapChangerRegulationMode = (
+    phaseTapChangerFormValues
+) => {
+    if (
+        phaseTapChangerFormValues?.[REGULATION_MODE] ===
+            PHASE_REGULATION_MODES.FIXED_TAP.id ||
+        phaseTapChangerFormValues?.[REGULATING] === false
+    ) {
+        return PHASE_REGULATION_MODES.FIXED_TAP;
+    } else if (
+        phaseTapChangerFormValues?.[REGULATION_MODE] ===
+            PHASE_REGULATION_MODES.CURRENT_LIMITER.id &&
+        phaseTapChangerFormValues?.[REGULATING] === true
+    ) {
+        return PHASE_REGULATION_MODES.CURRENT_LIMITER;
+    } else if (
+        phaseTapChangerFormValues?.[REGULATION_MODE] ===
+            PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
+        phaseTapChangerFormValues?.[REGULATING] === true
+    ) {
+        return PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL;
+    }
+};

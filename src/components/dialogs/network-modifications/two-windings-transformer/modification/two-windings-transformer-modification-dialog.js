@@ -90,12 +90,12 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
-import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
+import PhaseTapChangerPane from '../creation/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerValidationSchema,
-} from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
+} from '../creation/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { EquipmentIdSelector } from 'components/dialogs/equipment-id/equipment-id-selector';
 
 export const TwoWindingsTransformerModificationDialogTab = {
