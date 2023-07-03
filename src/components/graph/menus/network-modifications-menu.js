@@ -30,6 +30,9 @@ const NetworkModificationsMenu = ({
     const intl = useIntl();
     const renderMenuItems = (menuItems) => {
         return menuItems.map((menuItem) => {
+            if (menuItem?.hide) {
+                return undefined;
+            }
             return menuItem.subItems === undefined ? (
                 <ChildMenuItem
                     key={menuItem.id}

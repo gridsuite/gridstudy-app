@@ -31,7 +31,7 @@ export const SecurityAnalysisResultTab = ({
 
     function onClickNmKConstraint(row, column) {
         if (studyUuid && nodeUuid) {
-            if (column.dataKey === 'subjectId') {
+            if (column.field === 'subjectId') {
                 let vlId;
                 // ideally we would have the type of the network element but we don't
                 fetchLineOrTransformer(studyUuid, nodeUuid, row.subjectId)

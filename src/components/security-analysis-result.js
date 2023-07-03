@@ -5,16 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import VirtualizedTable from './utils/virtualized-table';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
 import { useSelector } from 'react-redux';
+import { CustomAGGrid } from './dialogs/custom-aggrid';
+import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
+import { Button } from '@mui/material';
+import { useTheme } from '@mui/styles';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -34,12 +37,15 @@ const useStyles = makeStyles((theme) => ({
     nmkResultSelect: {
         position: 'absolute',
         right: theme.spacing(2),
-        top: theme.spacing(1),
+    },
+    button: {
+        color: theme.link.color,
     },
 }));
 
 const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     const classes = useStyles();
+    const theme = useTheme();
 
     const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -67,10 +73,53 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 : undefined);
     }
 
+    const columns = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'Equipment' }),
+                field: 'subjectId',
+                sort: DEFAULT_SORT_ORDER,
+                filter: 'agTextColumnFilter',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitType' }),
+                field: 'limitType',
+                filter: 'agTextColumnFilter',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Limit' }),
+                field: 'limit',
+                valueFormatter: (params) => params.data?.limit?.toFixed(1),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Value' }),
+                field: 'value',
+                valueFormatter: (params) => params.data?.value?.toFixed(1),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Loading' }),
+                field: 'loading',
+                valueFormatter: (params) => params.data?.loading?.toFixed(1),
+            },
+        ];
+    }, [intl]);
+
+    const defaultColDef = useMemo(
+        () => ({
+            sortable: true,
+            resizable: true,
+            wrapHeaderText: true,
+            autoHeaderHeight: true,
+            suppressMovable: true,
+            flex: 1,
+        }),
+        []
+    );
+
     function renderTableN(preContingencyResult) {
         // extend data with loading
         const rows =
-            preContingencyResult.limitViolationsResult.limitViolations.map(
+            preContingencyResult?.limitViolationsResult?.limitViolations?.map(
                 (limitViolation) => {
                     return {
                         subjectId: limitViolation.subjectId,
@@ -85,68 +134,33 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             );
 
         return (
-            <VirtualizedTable
-                rows={rows}
-                sortable={true}
-                columns={[
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Equipment' }),
-                        dataKey: 'subjectId',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LimitType' }),
-                        dataKey: 'limitType',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Limit' }),
-                        dataKey: 'limit',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Value' }),
-                        dataKey: 'value',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Loading' }),
-                        dataKey: 'loading',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                ]}
+            <CustomAGGrid
+                rowData={rows}
+                columnDefs={columns}
+                defaultColDef={defaultColDef}
+                onGridReady={onGridReady}
             />
         );
     }
 
     function flattenNmKresultsContingencies(postContingencyResults) {
         const rows = [];
-        postContingencyResults.forEach((postContingencyResult, index) => {
+        postContingencyResults?.forEach((postContingencyResult, index) => {
             if (
-                postContingencyResult.limitViolationsResult.limitViolations
+                postContingencyResult?.limitViolationsResult?.limitViolations
                     .length > 0 ||
                 postContingencyResult.status !== 'CONVERGED'
             ) {
                 rows.push({
-                    contingencyIndex: index,
                     contingencyId: postContingencyResult.contingency.id,
                     computationStatus: postContingencyResult.status,
                     violationCount:
                         postContingencyResult.limitViolationsResult
                             .limitViolations.length,
-                    _group: index,
-                    _root: true,
                 });
-                postContingencyResult.limitViolationsResult.limitViolations.forEach(
+                postContingencyResult?.limitViolationsResult?.limitViolations?.forEach(
                     (limitViolation) => {
                         rows.push({
-                            contingencyIndex: index,
                             subjectId: limitViolation.subjectId,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
@@ -155,7 +169,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                             value: limitViolation.value,
                             loading: computeLoading(limitViolation),
                             side: limitViolation.side,
-                            _group: index,
+                            linkedElementId:
+                                postContingencyResult.contingency.id,
                         });
                     }
                 );
@@ -164,166 +179,158 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         return rows;
     }
 
-    /**
-     * sortResult : generate an array of index representing the rows sorted by key
-     * rows are grouped by their attribute _group, the first one is root, the other children, we assume that the rows
-     * are already grouped (next to each other)
-     *
-     * rows : rows to sort
-     * rootSet : Set of keys of the root row (if key is in root, we sort root lines, not the children inside
-     *           else we sort children for each root (and do not change order of root)
-     * key : sort key
-     * reverse : ascending or descending sort
-     * isNumeric : is the associated column numeric
-     * */
-    function sortResult(rows, rootSet, key, reverse, isNumeric) {
-        /* utility functions */
-        function sortAndAddResults(result, array) {
-            const compareValue = (a, b) => {
-                const mult = reverse ? 1 : -1;
-                if (a === undefined && b === undefined) {
-                    return 0;
-                }
-                if (b === undefined) {
-                    return -mult;
-                }
-                if (a === undefined) {
-                    return mult;
-                }
-                return isNumeric
-                    ? (Number(a) < Number(b) ? 1 : -1) * mult
-                    : ('' + a).localeCompare(b) * mult;
+    const SubjectIdRenderer = useCallback(
+        (props) => {
+            const onClick = () => {
+                onClickNmKConstraint(props?.node?.data, props?.colDef);
             };
-
-            const getIndexes = (k) => [k.index].concat(k.indexes);
-            array
-                .sort((a, b) => compareValue(a.key, b.key))
-                .flatMap((k) => getIndexes(k))
-                .map((i) => result.push(i));
-        }
-
-        let currentSorting = [];
-        const addRowToSort = (key, index) => {
-            currentSorting.push({
-                key: key,
-                index: index,
-                indexes: [],
-            });
-        };
-
-        const rootSorting = rootSet.has(key);
-        let group = undefined;
-        let result = [];
-        /* now we sort */
-        rows.forEach((row, index) => {
-            if (group !== row._group) {
-                /* new set of lines */
-                if (!rootSorting) {
-                    sortAndAddResults(result, currentSorting); // add previous batch
-                    currentSorting = [];
-                    result.push(index); // add current row (we do not sort root)
-                } else {
-                    addRowToSort(row[key], index); // we sort root
-                }
-                group = row._group;
-            } else if (rootSorting) {
-                currentSorting[currentSorting.length - 1].indexes.push(index); // we don't want to lose children
-            } else {
-                addRowToSort(row[key], index); // children need sorting
+            if (props.value) {
+                return (
+                    <Button className={classes.button} onClick={onClick}>
+                        {props.value}
+                    </Button>
+                );
             }
-        });
-        /* add last group (if any) or all if root sorting */
-        sortAndAddResults(result, currentSorting);
-        return result;
-    }
+        },
+        [onClickNmKConstraint, classes.button]
+    );
+    const columnsNmKContingencies = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'ContingencyId' }),
+                field: 'contingencyId',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'ComputationStatus' }),
+                field: 'computationStatus',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Constraint' }),
+                field: 'subjectId',
+                cellRenderer: SubjectIdRenderer,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitType' }),
+                field: 'limitType',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitName' }),
+                field: 'limitName',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitSide' }),
+                field: 'side',
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'LimitAcceptableDuration',
+                }),
+                field: 'acceptableDuration',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Limit' }),
+                field: 'limit',
+                valueFormatter: (params) => params.data?.limit?.toFixed(1),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Value' }),
+                field: 'value',
+                valueFormatter: (params) => params.data?.value?.toFixed(1),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Loading' }),
+                field: 'loading',
+                valueFormatter: (params) => params.data?.loading?.toFixed(1),
+            },
+            //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
+            //it is used for sorting actions
+            {
+                field: 'linkedElementId',
+                hide: true,
+            },
+        ];
+    }, [intl, SubjectIdRenderer]);
 
+    const groupPostSort = (
+        sortedRows,
+        idField,
+        linkedElementId,
+        isContingency
+    ) => {
+        const result = [];
+        //get all groups ids
+        const idRows = sortedRows.filter((row) => row.data[idField] != null);
+        if (isContingency) {
+            //get all rows with no id group and add them at the beginning.
+            const unconvergerRows = sortedRows.filter(
+                (row) => !row.data[linkedElementId] && !row.data[idField]
+            );
+            result.push(...unconvergerRows);
+        }
+        //for each of those groups
+        idRows.forEach((idRow) => {
+            //add group's parent first
+            result.push(idRow);
+            //then add all elements which belongs to this group
+            result.push(
+                ...sortedRows.filter(
+                    (row) => row.data[linkedElementId] === idRow.data[idField]
+                )
+            );
+        });
+
+        return result;
+    };
+
+    const handlePostSortRows = (params, isFromContingency) => {
+        const rows = params.nodes;
+        return Object.assign(
+            rows,
+            groupPostSort(
+                rows,
+                isFromContingency ? 'contingencyId' : 'subjectId',
+                'linkedElementId',
+                !isFromContingency
+            )
+        );
+    };
+
+    const getRowStyle = useCallback(
+        (params, isFromContingency) => {
+            if (
+                (isFromContingency && params?.data?.contingencyId) ||
+                (!isFromContingency && params?.data?.subjectId)
+            ) {
+                return {
+                    backgroundColor: theme.selectedRow.background,
+                };
+            }
+        },
+        [theme.selectedRow.background]
+    );
     function renderTableNmKContingencies(postContingencyResults) {
         const rows = flattenNmKresultsContingencies(postContingencyResults);
         return (
-            <VirtualizedTable
-                rows={rows}
-                onCellClick={onClickNmKConstraint}
-                sortable={true}
-                sort={(dataKey, reverse, isNumeric) =>
-                    sortResult(
-                        rows,
-                        new Set(['contingencyId', 'computationStatus']),
-                        dataKey,
-                        reverse,
-                        isNumeric
-                    )
-                }
-                columns={[
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ContingencyId' }),
-                        dataKey: 'contingencyId',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ComputationStatus' }),
-                        dataKey: 'computationStatus',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Constraint' }),
-                        dataKey: 'subjectId',
-                        clickable: true,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LimitType' }),
-                        dataKey: 'limitType',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LimitName' }),
-                        dataKey: 'limitName',
-                    },
-                    {
-                        width: 90,
-                        label: intl.formatMessage({ id: 'LimitSide' }),
-                        dataKey: 'side',
-                    },
-                    {
-                        width: 160,
-                        label: intl.formatMessage({
-                            id: 'LimitAcceptableDuration',
-                        }),
-                        dataKey: 'acceptableDuration',
-                        numeric: true,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Limit' }),
-                        dataKey: 'limit',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Value' }),
-                        dataKey: 'value',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Loading' }),
-                        dataKey: 'loading',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                ]}
+            <CustomAGGrid
+                rowData={rows}
+                columnDefs={columnsNmKContingencies}
+                postSortRows={(params) => handlePostSortRows(params, true)}
+                defaultColDef={defaultColDef}
+                getRowStyle={(params) => getRowStyle(params, true)}
+                onGridReady={onGridReady}
             />
         );
     }
-
+    const onGridReady = useCallback((params) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
     function flattenNmKresultsConstraints(postContingencyResults) {
         const rows = [];
         let mapConstraints = new Map();
 
-        postContingencyResults.forEach((postContingencyResult, index) => {
+        postContingencyResults?.forEach((postContingencyResult, index) => {
             if (postContingencyResult.status !== 'CONVERGED') {
                 rows.push({
                     contingencyId: postContingencyResult.contingency.id,
@@ -335,7 +342,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 postContingencyResult.limitViolationsResult.limitViolations
                     .length > 0
             ) {
-                postContingencyResult.limitViolationsResult.limitViolations.forEach(
+                postContingencyResult?.limitViolationsResult?.limitViolations?.forEach(
                     (limitViolation) => {
                         let contingencies;
                         if (!mapConstraints.has(limitViolation.subjectId)) {
@@ -370,15 +377,12 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             }
         });
 
-        let group = 0;
         mapConstraints.forEach((contingencies, subjectId) => {
             rows.push({
                 subjectId: subjectId,
-                _group: group,
-                _root: true,
             });
 
-            contingencies.forEach((contingency) => {
+            contingencies?.forEach((contingency) => {
                 rows.push({
                     contingencyId: contingency.contingencyId,
                     computationStatus: contingency.computationStatus,
@@ -390,94 +394,81 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     side: contingency.side,
                     acceptableDuration: contingency.acceptableDuration,
                     limitName: contingency.limitName,
-                    _group: group,
+                    linkedElementId: subjectId,
                 });
             });
-            group++;
         });
 
         return rows;
     }
 
+    const nmKConstraintsColumns = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'Constraint' }),
+                field: 'subjectId',
+                cellRenderer: SubjectIdRenderer,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'ContingencyId' }),
+                field: 'contingencyId',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'ComputationStatus' }),
+                field: 'computationStatus',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitType' }),
+                field: 'limitType',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitName' }),
+                field: 'limitName',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'LimitSide' }),
+                field: 'side',
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'LimitAcceptableDuration',
+                }),
+                field: 'acceptableDuration',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Limit' }),
+                field: 'limit',
+                valueFormatter: (params) => params.data?.limit?.toFixed(1),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Value' }),
+                field: 'value',
+                valueFormatter: (params) => params.data?.value?.toFixed(1),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Loading' }),
+                field: 'loading',
+                valueFormatter: (params) => params.data?.loading?.toFixed(1),
+            },
+            //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
+            //it is used for sorting actions
+            {
+                field: 'linkedElementId',
+                hide: true,
+            },
+        ];
+    }, [intl, SubjectIdRenderer]);
+
     function renderTableNmKConstraints(postContingencyResults) {
         const rows = flattenNmKresultsConstraints(postContingencyResults);
-
         return (
-            <VirtualizedTable
-                rows={rows}
-                onCellClick={onClickNmKConstraint}
-                sortable={true}
-                sort={(dataKey, reverse, isNumeric) =>
-                    sortResult(
-                        rows,
-                        new Set(['subjectId']),
-                        dataKey,
-                        reverse,
-                        isNumeric
-                    )
-                }
-                columns={[
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Constraint' }),
-                        dataKey: 'subjectId',
-                        clickable: true,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ContingencyId' }),
-                        dataKey: 'contingencyId',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ComputationStatus' }),
-                        dataKey: 'computationStatus',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LimitType' }),
-                        dataKey: 'limitType',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LimitName' }),
-                        dataKey: 'limitName',
-                    },
-                    {
-                        width: 90,
-                        label: intl.formatMessage({ id: 'LimitSide' }),
-                        dataKey: 'side',
-                    },
-                    {
-                        width: 160,
-                        label: intl.formatMessage({
-                            id: 'LimitAcceptableDuration',
-                        }),
-                        dataKey: 'acceptableDuration',
-                        numeric: true,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Limit' }),
-                        dataKey: 'limit',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Value' }),
-                        dataKey: 'value',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Loading' }),
-                        dataKey: 'loading',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                ]}
+            <CustomAGGrid
+                rowData={rows}
+                columnDefs={nmKConstraintsColumns}
+                postSortRows={(params) => handlePostSortRows(params, false)}
+                defaultColDef={defaultColDef}
+                onGridReady={onGridReady}
+                getRowStyle={(params) => getRowStyle(params, false)}
             />
         );
     }
@@ -527,24 +518,24 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 </div>
                 <div style={{ flexGrow: 1 }}>
                     {saNotif &&
-                        result &&
+                        result?.preContingencyResult &&
                         tabIndex === 0 &&
-                        renderTableN(result.preContingencyResult)}
+                        renderTableN(result?.preContingencyResult)}
                     {saNotif &&
-                        result &&
+                        result?.postContingencyResults &&
                         tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
                         renderTableNmKContingencies(
-                            result.postContingencyResults
+                            result?.postContingencyResults
                         )}
                     {saNotif &&
-                        result &&
+                        result?.postContingencyResults &&
                         tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
                         renderTableNmKConstraints(
-                            result.postContingencyResults
+                            result?.postContingencyResults
                         )}
                 </div>
             </>

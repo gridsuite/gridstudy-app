@@ -12,7 +12,6 @@ import {
     CHARACTERISTICS,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LIMITS,
     PERMANENT_LIMIT,
@@ -45,6 +44,7 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
     sanitizeLimitNames,
+    updateTemporaryLimits,
 } from '../../../limits/limits-pane-utils';
 import {
     getCharacteristicsEmptyFormData,
@@ -61,6 +61,7 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -70,6 +71,7 @@ export const LineCreationDialogTab = {
 /**
  * Dialog to modify a line in the network
  * @param studyUuid the study we are currently working on
+ * @param defaultIdValue the default line id
  * @param currentNode The node we are currently working on
  * @param editData the data to edit
  * @param displayConnectivity to display connectivity section or not
@@ -78,8 +80,8 @@ export const LineCreationDialogTab = {
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
 const LineModificationDialog = ({
-    editData,
-    defaultIdValue,
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD or network map
     studyUuid,
     currentNode,
     displayConnectivity = false,
@@ -89,6 +91,7 @@ const LineModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState(null);
@@ -100,7 +103,6 @@ const LineModificationDialog = ({
 
     const emptyFormData = useMemo(
         () => ({
-            [EQUIPMENT_ID]: defaultIdValue ?? null,
             [EQUIPMENT_NAME]: '',
             ...getCharacteristicsEmptyFormData(
                 CHARACTERISTICS,
@@ -108,13 +110,12 @@ const LineModificationDialog = ({
             ),
             ...getLimitsEmptyFormData(),
         }),
-        [displayConnectivity, defaultIdValue]
+        [displayConnectivity]
     );
 
     const formSchema = yup
         .object()
         .shape({
-            [EQUIPMENT_ID]: yup.string().required(),
             [EQUIPMENT_NAME]: yup.string(),
             ...getCharacteristicsValidationSchema(
                 CHARACTERISTICS,
@@ -130,12 +131,14 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues, setValue } = formMethods;
+    const { reset, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (line) => {
+        (line, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
+            if (line?.equipmentId) {
+                setSelectedId(line.equipmentId);
+            }
             reset({
-                [EQUIPMENT_ID]: line.equipmentId,
                 [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
                 ...getCharacteristicsWithOutConnectivityFormData({
                     seriesResistance: line.seriesResistance?.value ?? null,
@@ -157,14 +160,18 @@ const LineModificationDialog = ({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits1?.temporaryLimits
-                        )
+                        updatedTemporaryLimits1
+                            ? updatedTemporaryLimits1
+                            : formatTemporaryLimits(
+                                  line.currentLimits1?.temporaryLimits
+                              )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits2?.temporaryLimits
-                        )
+                        updatedTemporaryLimits2
+                            ? updatedTemporaryLimits2
+                            : formatTemporaryLimits(
+                                  line.currentLimits2?.temporaryLimits
+                              )
                     ),
                 }),
             });
@@ -174,9 +181,27 @@ const LineModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            fromEditDataToFormValues(
+                editData,
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits1?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        lineToModify?.currentLimits1?.temporaryLimits
+                    )
+                ),
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits2?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        lineToModify?.currentLimits2?.temporaryLimits
+                    )
+                )
+            );
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [fromEditDataToFormValues, editData, lineToModify]);
 
     const onSubmit = useCallback(
         (line) => {
@@ -185,7 +210,7 @@ const LineModificationDialog = ({
             modifyLine(
                 studyUuid,
                 currentNodeUuid,
-                line[EQUIPMENT_ID],
+                selectedId,
                 sanitizeString(line[EQUIPMENT_NAME]),
                 characteristics[SERIES_RESISTANCE],
                 characteristics[SERIES_REACTANCE],
@@ -223,6 +248,7 @@ const LineModificationDialog = ({
         [
             studyUuid,
             currentNodeUuid,
+            selectedId,
             lineToModify,
             editData,
             currentNode,
@@ -249,10 +275,7 @@ const LineModificationDialog = ({
                     .then((line) => {
                         if (line) {
                             setLineToModify(line);
-                            if (
-                                editData?.equipmentId !==
-                                getValues(`${EQUIPMENT_ID}`)
-                            ) {
+                            if (editData?.equipmentId !== selectedId) {
                                 reset(
                                     (formValues) => ({
                                         ...formValues,
@@ -275,8 +298,6 @@ const LineModificationDialog = ({
                                     }),
                                     { keepDefaultValues: true }
                                 );
-                            } else {
-                                fromEditDataToFormValues(editData);
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -287,20 +308,17 @@ const LineModificationDialog = ({
                     });
             } else {
                 setLineToModify(null);
-                emptyFormData[EQUIPMENT_ID] = null; // force it to null when reset because of defaultIdValue
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            editData,
-            getValues,
-            reset,
-            fromEditDataToFormValues,
-            emptyFormData,
-        ]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData]
     );
+
+    useEffect(() => {
+        if (selectedId) {
+            onEquipmentIdChange(selectedId);
+        }
+    }, [selectedId, onEquipmentIdChange]);
 
     const onValidationError = (errors) => {
         let tabsInError = [];
@@ -352,13 +370,11 @@ const LineModificationDialog = ({
 
     const headerAndTabs = (
         <LineModificationDialogHeader
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-            onEquipmentIdChange={onEquipmentIdChange}
             lineToModify={lineToModify}
             tabIndexesWithError={tabIndexesWithError}
             tabIndex={tabIndex}
             setTabIndex={setTabIndex}
+            equipmentId={selectedId}
         />
     );
 
@@ -376,7 +392,7 @@ const LineModificationDialog = ({
                 aria-labelledby="dialog-modify-line"
                 maxWidth={'md'}
                 titleId="ModifyLine"
-                subtitle={headerAndTabs}
+                subtitle={selectedId != null ? headerAndTabs : undefined}
                 open={open}
                 keepMounted={true}
                 isDataFetching={
@@ -389,21 +405,37 @@ const LineModificationDialog = ({
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
-                onOpenCatalogDialog={() => setOpenLineTypesCatalogDialog(true)}
+                onOpenCatalogDialog={
+                    selectedId != null
+                        ? () => setOpenLineTypesCatalogDialog(true)
+                        : undefined
+                }
                 {...dialogProps}
             >
-                <LineModificationDialogTabs
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    lineToModify={lineToModify}
-                    modifiedLine={editData}
-                    tabIndex={tabIndex}
-                />
-                <LineTypeSegmentDialog
-                    open={isOpenLineTypesCatalogDialog}
-                    onClose={handleCloseLineTypesCatalogDialog}
-                    onSave={handleLineSegmentsBuildSubmit}
-                />
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EQUIPMENT_TYPES.LINE.type}
+                    />
+                )}
+                {selectedId != null && (
+                    <>
+                        <LineModificationDialogTabs
+                            studyUuid={studyUuid}
+                            currentNode={currentNode}
+                            lineToModify={lineToModify}
+                            tabIndex={tabIndex}
+                        />
+                        <LineTypeSegmentDialog
+                            open={isOpenLineTypesCatalogDialog}
+                            onClose={handleCloseLineTypesCatalogDialog}
+                            onSave={handleLineSegmentsBuildSubmit}
+                        />
+                    </>
+                )}
             </ModificationDialog>
         </FormProvider>
     );
