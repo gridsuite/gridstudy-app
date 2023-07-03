@@ -45,6 +45,7 @@ const TapChangerSteps = ({
     handleImportRow,
     disabled,
     previousValues,
+    modifiedValues,
     modification,
 }) => {
     const intl = useIntl();
@@ -353,8 +354,8 @@ const TapChangerSteps = ({
     ]);
 
     const isValueModified = useCallback(
-        () => modification && isDirty,
-        [isDirty, modification]
+        () => (modification && isDirty) || modifiedValues,
+        [isDirty, modification, modifiedValues]
     );
 
     const handleResetButton = useCallback(() => {
