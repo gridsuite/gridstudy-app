@@ -79,19 +79,7 @@ export const StudyView = {
     LOGS: 'Logs',
 };
 
-const StudyPane = ({
-    studyUuid,
-    currentNode,
-    loadFlowStatus,
-    securityAnalysisStatus,
-    sensiStatus,
-    shortCircuitStatus,
-    dynamicSimulationStatus,
-    voltageInitStatus,
-    runnable,
-    setErrorMessage,
-    ...props
-}) => {
+const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
     const lineParallelPath = useSelector(
@@ -242,20 +230,9 @@ const StudyPane = ({
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    loadFlowStatus={loadFlowStatus}
-                                    securityAnalysisStatus={
-                                        securityAnalysisStatus
-                                    }
-                                    sensiStatus={sensiStatus}
-                                    shortCircuitStatus={shortCircuitStatus}
-                                    dynamicSimulationStatus={
-                                        dynamicSimulationStatus
-                                    }
-                                    voltageInitStatus={voltageInitStatus}
                                     setIsComputationRunning={
                                         setIsComputationRunning
                                     }
-                                    runnable={runnable}
                                     setErrorMessage={setErrorMessage}
                                 />
                             </div>
@@ -264,7 +241,6 @@ const StudyPane = ({
                                 studyUuid={studyUuid}
                                 isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
-                                loadFlowStatus={loadFlowStatus}
                                 currentNode={currentNode}
                                 visible={
                                     props.view === StudyView.MAP &&
@@ -287,7 +263,6 @@ const StudyPane = ({
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
-                    loadFlowStatus={loadFlowStatus}
                     disabled={disabled}
                     visible={props.view === StudyView.SPREADSHEET}
                 />
@@ -322,7 +297,6 @@ const StudyPane = ({
                 <ResultViewTab
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    loadFlowInfos={loadFlowStatus}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
                 />
@@ -353,7 +327,6 @@ StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
     onChangeTab: PropTypes.func,
-    dynamicSimulationStatus: PropTypes.string,
 };
 
 export default StudyPane;

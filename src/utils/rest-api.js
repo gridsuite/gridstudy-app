@@ -24,9 +24,9 @@ export const getWsBase = () =>
         .replace(/^https:\/\//, 'wss://');
 
 export function getRequestParamFromList(params, paramName) {
-    if (params?.length) {
-        return new URLSearchParams(params.map((param) => [paramName, param]));
-    }
+    return new URLSearchParams(
+        params?.length ? params.map((param) => [paramName, param]) : []
+    );
 }
 
 export function getToken() {
@@ -691,17 +691,17 @@ export function fetchLineOrTransformer(
     return backendFetchJson(fetchEquipmentInfosUrl);
 }
 
-export function fetchCurrentLimitViolations(
+export function fetchLimitViolations(
     studyUuid,
     currentNodeUuid,
     limitReduction
 ) {
     console.info(
-        `Fetching current limit violations (with limit reduction ${limitReduction}) ...`
+        `Fetching limit violations with (limit reduction ${limitReduction}) ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/current-limit-violations?limitReduction=' +
+        '/limit-violations?limitReduction=' +
         limitReduction.toString();
     return backendFetchJson(url);
 }
@@ -2135,6 +2135,49 @@ export function createShuntCompensator(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
+        }),
+    });
+}
+
+export function modifyShuntCompensator(
+    studyUuid,
+    currentNodeUuid,
+    shuntCompensatorId,
+    shuntCompensatorName,
+    susceptancePerSection,
+    qAtNominalV,
+    shuntCompensatorType,
+    voltageLevelId,
+    isUpdate,
+    modificationUuid
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating shunt compensator modification');
+    } else {
+        console.info('Creating shunt compensator modification');
+    }
+
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
+            equipmentId: shuntCompensatorId,
+            equipmentName: toModificationOperation(shuntCompensatorName),
+            susceptancePerSection: toModificationOperation(
+                susceptancePerSection
+            ),
+            qAtNominalV: toModificationOperation(qAtNominalV),
+            shuntCompensatorType: toModificationOperation(shuntCompensatorType),
+            voltageLevelId: voltageLevelId,
         }),
     });
 }

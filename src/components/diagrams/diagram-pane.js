@@ -345,7 +345,6 @@ export function DiagramPane({
     studyUuid,
     isComputationRunning,
     showInSpreadsheet,
-    loadFlowStatus,
     currentNode,
     visible,
 }) {
@@ -1098,7 +1097,6 @@ export function DiagramPane({
                                     diagramView.svgType ===
                                         DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
-                                        loadFlowStatus={loadFlowStatus}
                                         isComputationRunning={
                                             isComputationRunning
                                         }
@@ -1115,7 +1113,6 @@ export function DiagramPane({
                                 {diagramView.svgType ===
                                     DiagramType.NETWORK_AREA_DIAGRAM && (
                                     <NetworkAreaDiagramContent
-                                        loadFlowStatus={loadFlowStatus}
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}
                                         svgType={diagramView.svgType}
