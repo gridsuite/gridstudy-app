@@ -154,7 +154,7 @@ const withBranchMenu =
 
         function handleLockout() {
             startModification();
-            lockoutBranch(studyUuid, currentNode?.id, branch.id).catch(
+            lockoutBranch(studyUuid, currentNode?.id, branch).catch(
                 (error) => {
                     handleError(error, 'UnableToLockout');
                 }
@@ -163,7 +163,7 @@ const withBranchMenu =
 
         function handleTrip() {
             startModification();
-            tripBranch(studyUuid, currentNode?.id, branch.id).catch((error) => {
+            tripBranch(studyUuid, currentNode?.id, branch).catch((error) => {
                 handleError(error, 'UnableToTrip');
             });
         }
@@ -179,7 +179,7 @@ const withBranchMenu =
 
         function handleSwitchOn() {
             startModification();
-            switchOnBranch(studyUuid, currentNode?.id, branch.id).catch(
+            switchOnBranch(studyUuid, currentNode?.id, branch).catch(
                 (error) => {
                     handleError(error, 'UnableToSwitchOn');
                 }

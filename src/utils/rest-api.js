@@ -1698,22 +1698,22 @@ function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
     });
 }
 
-export function lockoutBranch(studyUuid, currentNodeUuid, branchId) {
-    console.info('locking out branch ' + branchId + ' ...');
+export function lockoutBranch(studyUuid, currentNodeUuid, branch) {
+    console.info('locking out branch ' + branch.id + ' ...');
     return changeBranchStatus(
         studyUuid,
         currentNodeUuid,
-        branchId,
+        branch,
         BRANCH_STATUS_ACTION.LOCKOUT
     );
 }
 
-export function tripBranch(studyUuid, currentNodeUuid, branchId) {
-    console.info('tripping branch ' + branchId + ' ...');
+export function tripBranch(studyUuid, currentNodeUuid, branch) {
+    console.info('tripping branch ' + branch.id + ' ...');
     return changeBranchStatus(
         studyUuid,
         currentNodeUuid,
-        branchId,
+        branch,
         BRANCH_STATUS_ACTION.TRIP
     );
 }
@@ -1737,12 +1737,12 @@ export function energiseBranchEnd(
     );
 }
 
-export function switchOnBranch(studyUuid, currentNodeUuid, branchId) {
-    console.info('switching on branch ' + branchId + ' ...');
+export function switchOnBranch(studyUuid, currentNodeUuid, branch) {
+    console.info('switching on branch ' + branch.id + ' ...');
     return changeBranchStatus(
         studyUuid,
         currentNodeUuid,
-        branchId,
+        branch,
         BRANCH_STATUS_ACTION.SWITCH_ON
     );
 }
