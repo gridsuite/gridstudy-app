@@ -30,18 +30,13 @@ import {
     fetchDefaultSensitivityAnalysisProvider,
     fetchSecurityAnalysisProvider,
     fetchSensitivityAnalysisProvider,
-    fetchSecurityAnalysisProviders,
-    fetchSensitivityAnalysisProviders,
-    updateConfigParameter,
     updateSecurityAnalysisProvider,
     updateSensitivityAnalysisProvider,
     getLoadFlowParameters,
-    getLoadFlowProviders,
     getLoadFlowProvider,
     getDefaultLoadFlowProvider,
     setLoadFlowProvider,
     setLoadFlowParameters,
-    getLoadFlowSpecificParametersDescription,
     getSecurityAnalysisParameters,
     setSecurityAnalysisParameters,
 } from '../../../utils/rest-api';
@@ -68,6 +63,13 @@ import {
     useGetVoltageInitParameters,
     VoltageInitParameters,
 } from './voltageinit/voltage-init-parameters';
+import { updateConfigParameter } from '../../../services/config';
+import {
+    getLoadFlowProviders,
+    getLoadFlowSpecificParametersDescription,
+} from '../../../services/loadflow';
+import { fetchSecurityAnalysisProviders } from '../../../services/security-analysis';
+import { fetchSensitivityAnalysisProviders } from '../../../services/sensitivity-analysis';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -160,7 +162,7 @@ export const useStyles = makeStyles((theme) => ({
     },
     singleItem: {
         display: 'flex',
-        flex: 1,
+        flex: 'auto',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
@@ -183,17 +185,12 @@ export const useStyles = makeStyles((theme) => ({
     },
     text: {
         display: 'flex',
-        flex: '-moz-available',
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
     },
-    textContainer: {
-        display: 'flex',
-        flex: '-moz-available',
-    },
     multipleItems: {
         display: 'flex',
-        flex: '-moz-max-content',
+        flex: 'auto',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),

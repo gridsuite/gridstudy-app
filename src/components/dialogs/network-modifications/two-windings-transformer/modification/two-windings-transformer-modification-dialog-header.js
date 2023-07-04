@@ -5,54 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
-import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
+import { Grid, TextField } from '@mui/material';
+import { EQUIPMENT_NAME } from 'components/utils/field-constants';
+import React from 'react';
 import { filledTextField, gridItem } from '../../../dialogUtils';
 import TextInput from 'components/utils/rhf-inputs/text-input';
-import { fetchEquipmentsIds } from '../../../../../utils/rest-api';
-import AutocompleteInput from '../../../../utils/rhf-inputs/autocomplete-input';
-import { getObjectId } from '../../../../utils/utils';
-import { useWatch } from 'react-hook-form';
 
 const TwoWindingsTransformerModificationDialogHeader = ({
-    studyUuid,
-    currentNode,
-    onEquipmentIdChange,
     equipmentToModify,
+    equipmentId,
 }) => {
-    const [equipmentOptions, setEquipmentOptions] = useState([]);
-    const watchEquipmentId = useWatch({
-        name: EQUIPMENT_ID,
-    });
-
-    useEffect(() => {
-        onEquipmentIdChange(watchEquipmentId);
-    }, [watchEquipmentId, onEquipmentIdChange]);
-
-    useEffect(() => {
-        fetchEquipmentsIds(
-            studyUuid,
-            currentNode?.id,
-            undefined,
-            'TWO_WINDINGS_TRANSFORMER',
-            true
-        ).then((values) => {
-            setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
-        });
-    }, [studyUuid, currentNode?.id]);
-
     const twoWindingsTransformerIdField = (
-        <AutocompleteInput
-            allowNewValue
-            forcePopupIcon
-            name={EQUIPMENT_ID}
-            label="ID"
-            options={equipmentOptions}
-            getOptionLabel={getObjectId}
-            outputTransform={getObjectId}
-            size={'small'}
-            formProps={{ autoFocus: true, ...filledTextField }}
+        <TextField
+            size="small"
+            fullWidth
+            label={'ID'}
+            value={equipmentId}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+            {...filledTextField}
         />
     );
 
