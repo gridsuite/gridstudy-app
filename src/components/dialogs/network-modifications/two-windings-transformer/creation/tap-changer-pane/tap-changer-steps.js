@@ -269,6 +269,7 @@ const TapChangerSteps = ({
                 }));
                 if (rows && rows.length > 0) {
                     replace(rows);
+                    setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
                 }
             },
         });
