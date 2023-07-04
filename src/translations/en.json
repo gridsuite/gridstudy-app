@@ -839,6 +839,8 @@
     "LowTapAlpha": "Shift angle (low tap position)",
     "HighTapAlpha": "Shift angle (high tap position)",
     "ImportDephasingRule": "Import dephasing rule",
+    "ResetLines": "Reset lines",
+
 
     "GenerateSkeleton": "Generate CSV skeleton",
     "InvalidRuleHeader": "The file has an invalid header, please refer yourself to the skeleton",

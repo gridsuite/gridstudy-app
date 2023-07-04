@@ -46,7 +46,7 @@ const DndTableBottomLeftButtons = ({
                 <Grid item>
                     <Tooltip
                         title={intl.formatMessage({
-                            id: 'Réinitialiser les lignes',
+                            id: 'ResetLines',
                         })}
                         placement="top"
                     >

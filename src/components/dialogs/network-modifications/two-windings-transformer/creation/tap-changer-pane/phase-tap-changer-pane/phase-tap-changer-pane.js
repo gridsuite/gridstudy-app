@@ -230,8 +230,6 @@ const PhaseTapChangerPane = ({
         />
     );
 
-    console.log(twtToModify?.id);
-
     return (
         <>
             <Grid container spacing={2}>

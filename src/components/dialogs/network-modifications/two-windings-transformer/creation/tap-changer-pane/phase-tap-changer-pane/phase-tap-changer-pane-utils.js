@@ -23,6 +23,7 @@ import {
     STEPS,
     STEPS_ALPHA,
     STEPS_CONDUCTANCE,
+    STEPS_MODIFIED,
     STEPS_RATIO,
     STEPS_REACTANCE,
     STEPS_RESISTANCE,
@@ -244,6 +245,7 @@ export const getPhaseTapChangerEmptyFormData = (id = PHASE_TAP_CHANGER) => {
 export const getPhaseTapChangerFormData = (
     {
         enabled = false,
+        stepsModified = false,
         regulationMode = null,
         regulationType = null,
         regulationSide = SIDE.SIDE1.id,
@@ -262,6 +264,7 @@ export const getPhaseTapChangerFormData = (
 ) => ({
     [id]: {
         [ENABLED]: enabled,
+        [STEPS_MODIFIED]: stepsModified,
         [REGULATION_MODE]: regulationMode,
         [REGULATION_TYPE]: regulationType,
         [REGULATION_SIDE]: regulationSide,

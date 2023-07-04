@@ -30,6 +30,7 @@ import {
     STEPS_SUSCEPTANCE,
     STEPS_TAP,
     TAP_POSITION,
+    STEPS_MODIFIED,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 
@@ -45,7 +46,6 @@ const TapChangerSteps = ({
     handleImportRow,
     disabled,
     previousValues,
-    modifiedValues,
     modification,
 }) => {
     const intl = useIntl();
@@ -65,10 +65,12 @@ const TapChangerSteps = ({
         name: `${tapChanger}.${LOW_TAP_POSITION}`,
     });
 
+    const areStepsModified = useWatch({
+        name: `${tapChanger}.${STEPS_MODIFIED}`,
+    });
+
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
-
-    const [isDirty, setDirty] = useState(false);
 
     function allowedToAddTapRows() {
         // triggering validation on low tap position before generating rows (the field is required)
@@ -123,7 +125,7 @@ const TapChangerSteps = ({
                     : lowTapPosition;
 
             if (currentLowTapPosition !== previousValues?.[LOW_TAP_POSITION]) {
-                setDirty(true);
+                setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
             }
 
             for (
@@ -334,7 +336,7 @@ const TapChangerSteps = ({
             return {
                 ...columnDefinition,
                 handleChange: () => {
-                    setDirty(true);
+                    setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
                 },
             };
         });
@@ -350,19 +352,21 @@ const TapChangerSteps = ({
         createRuleMessageId,
         disabled,
         intl,
+        setValue,
+        tapChanger,
         tapSteps.length,
     ]);
 
     const isValueModified = useCallback(
-        () => (modification && isDirty) || modifiedValues,
-        [isDirty, modification, modifiedValues]
+        () => modification && areStepsModified,
+        [areStepsModified, modification]
     );
 
     const handleResetButton = useCallback(() => {
         replace(adjustedStepsPreviousValues);
         setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
+        setValue(`${tapChanger}.${STEPS_MODIFIED}`, false);
         clearErrors(`${tapChanger}.${STEPS}`);
-        setDirty(false);
     }, [
         adjustedStepsPreviousValues,
         clearErrors,
@@ -392,8 +396,8 @@ const TapChangerSteps = ({
                 allowedToAddRows={allowedToAddTapRows}
                 createRows={createTapRows}
                 handleUploadButton={handleImportTapRuleButton}
-                handleResetButton={modification ? handleResetButton : undefined}
                 uploadButtonMessageId={importRuleMessageId}
+                handleResetButton={modification ? handleResetButton : undefined}
                 disabled={disabled}
                 previousValues={adjustedStepsPreviousValues}
                 getPreviousValue={getTapPreviousValue}

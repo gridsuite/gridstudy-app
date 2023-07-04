@@ -31,6 +31,7 @@ import {
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
     STEPS,
+    STEPS_MODIFIED,
     STEPS_TAP,
     TAP_POSITION,
     TARGET_DEADBAND,
@@ -223,7 +224,8 @@ const TwoWindingsTransformerModificationDialog = ({
                     ),
                 }),
                 ...getPhaseTapChangerFormData({
-                    enabled: twt?.[PHASE_TAP_CHANGER]?.[STEPS] !== undefined,
+                    enabled: twt?.[PHASE_TAP_CHANGER] !== undefined,
+                    stepsModified: !!twt?.[PHASE_TAP_CHANGER]?.[STEPS],
                     regulationMode:
                         twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
                     regulationType: getRegulationTypeForEdit(
@@ -235,16 +237,17 @@ const TwoWindingsTransformerModificationDialog = ({
                         twt?.[PHASE_TAP_CHANGER]
                     ),
                     currentLimiterRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value ===
                         PHASE_REGULATION_MODES.CURRENT_LIMITER.id
                             ? twt?.[PHASE_TAP_CHANGER]?.regulationValue?.value
                             : undefined,
                     flowSetpointRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value ===
                         PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
                             ? twt?.[PHASE_TAP_CHANGER]?.regulationValue?.value
                             : undefined,
-                    targetDeadband: twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND],
+                    targetDeadband:
+                        twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND]?.value,
                     lowTapPosition:
                         twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION]?.value,
                     highTapPosition: computeHighTapPosition(
@@ -252,9 +255,13 @@ const TwoWindingsTransformerModificationDialog = ({
                     ),
                     tapPosition:
                         twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION]?.value,
-                    steps: addSelectedFieldToRows(
-                        twt?.[PHASE_TAP_CHANGER]?.[STEPS]
-                    ),
+                    steps: !!twt?.[PHASE_TAP_CHANGER]?.[STEPS]
+                        ? addSelectedFieldToRows(
+                              twt?.[PHASE_TAP_CHANGER]?.[STEPS]
+                          )
+                        : addSelectedFieldToRows(
+                              twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
+                          ),
                     equipmentId:
                         twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId?.value,
                     equipmentType:
@@ -264,7 +271,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
             });
         },
-        [reset]
+        [reset, twtToModify]
     );
 
     useEffect(() => {
@@ -399,6 +406,12 @@ const TwoWindingsTransformerModificationDialog = ({
             const enablePhaseTapChanger = twt[PHASE_TAP_CHANGER]?.[ENABLED];
 
             let phaseTapChanger = undefined;
+            let phaseTapChangerSteps = !!twt[PHASE_TAP_CHANGER]?.[
+                STEPS_MODIFIED
+            ]
+                ? twt[PHASE_TAP_CHANGER]?.[STEPS]
+                : undefined;
+
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTapChanger = {
@@ -442,7 +455,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     [TARGET_DEADBAND]: toModificationOperation(
                         phaseTapChangerFormValues[TARGET_DEADBAND]
                     ),
-                    [STEPS]: phaseTapChangerFormValues[STEPS],
+                    [STEPS]: phaseTapChangerSteps,
                 };
             }
 
@@ -531,7 +544,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 )
                     .then((twt) => {
                         if (twt) {
-                            console.log(twt);
                             setTwtToModify(twt);
                             if (editData?.equipmentId !== selectedId) {
                                 reset(
