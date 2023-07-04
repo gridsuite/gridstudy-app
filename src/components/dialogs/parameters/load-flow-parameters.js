@@ -406,6 +406,7 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
 };
 
 const SpecificLoadFlowParameters = ({
+    lfParams,
     specificParamsDescription,
     specificCurrentParams,
     onSpecificParamChange,
@@ -418,7 +419,10 @@ const SpecificLoadFlowParameters = ({
         }
         onSpecificParamChange(paramName, value);
     };
-
+    const fusionAllParams = fusionSpecificWithOtherParams(
+        lfParams,
+        specificCurrentParams
+    );
     return (
         <>
             <SubgroupParametersButton
@@ -430,7 +434,7 @@ const SpecificLoadFlowParameters = ({
                 <FlatParameters
                     className={classes.parameterName}
                     paramsAsArray={specificParamsDescription}
-                    initValues={flatObject(specificCurrentParams)}
+                    initValues={flatObject(fusionAllParams)}
                     onChange={onChange}
                 />
             )}
@@ -586,6 +590,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 />
                 {specificParamsDescriptions?.[provider] && (
                     <SpecificLoadFlowParameters
+                        lfParams={lfParams}
                         specificParamsDescription={
                             specificParamsDescrWithoutNanVals
                         }
