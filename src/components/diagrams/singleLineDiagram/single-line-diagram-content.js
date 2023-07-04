@@ -40,7 +40,6 @@ import LoadModificationDialog from 'components/dialogs/network-modifications/loa
 import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -136,24 +135,13 @@ function SingleLineDiagramContent(props) {
     const showEquipmentMenu = useCallback(
         (equipmentId, equipmentType, svgId, x, y) => {
             handleTogglePopover(false, null, null);
-            if (equipmentType === EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type) {
-                setEquipmentMenu({
-                    position: [x, y],
-                    equipmentId: equipmentId,
-                    equipmentType: equipments.hvdcLines,
-                    svgId: svgId,
-                    display: true,
-                });
-            } else {
-                setEquipmentMenu({
-                    position: [x, y],
-                    equipmentId: equipmentId,
-                    equipmentType:
-                        getEquipmentTypeFromFeederType(equipmentType),
-                    svgId: svgId,
-                    display: true,
-                });
-            }
+            setEquipmentMenu({
+                position: [x, y],
+                equipmentId: equipmentId,
+                equipmentType: getEquipmentTypeFromFeederType(equipmentType),
+                svgId: svgId,
+                display: true,
+            });
         },
         [handleTogglePopover]
     );

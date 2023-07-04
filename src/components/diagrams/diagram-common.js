@@ -156,10 +156,9 @@ export function getEquipmentTypeFromFeederType(feederType) {
             return equipments.danglingLines;
         case FEEDER_TYPES.GENERATOR.type:
             return equipments.generators;
-        case FEEDER_TYPES.VSC_CONVERTER_STATION.type:
-            return equipments.vscConverterStations;
         case FEEDER_TYPES.LCC_CONVERTER_STATION.type:
             return equipments.lccConverterStations;
+        case FEEDER_TYPES.VSC_CONVERTER_STATION.type: // return equipments.vscConverterStations; TODO : to be reactivated in the next powsybl version
         case FEEDER_TYPES.HVDC_LINE.type:
             return equipments.hvdcLines;
         case FEEDER_TYPES.CAPACITOR.type:
