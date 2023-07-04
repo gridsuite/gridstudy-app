@@ -23,6 +23,13 @@ import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
 import { BUILD_STATUS } from '../../network/constants';
+import makeStyles from '@mui/styles/makeStyles';
+
+const useStyles = makeStyles((theme) => ({
+    warningMessage: {
+        backgroundColor: theme.formFiller.background,
+    },
+}));
 
 /**
  * Common parts for the Modification Dialog
@@ -41,11 +48,13 @@ const ModificationDialogContent = ({
     searchCopy,
     subtitle,
     isDataFetching = false,
-    showNodeNotBuildWarning = false,
+    showNodeNotBuiltWarning = false,
     submitButton,
     closeAndClear,
     ...dialogProps
 }) => {
+    const classes = useStyles();
+
     const catalogButton = useButtonWithTooltip({
         label: 'CatalogButtonTooltip',
         handleClick: onOpenCatalogDialog,
@@ -74,8 +83,7 @@ const ModificationDialogContent = ({
     const handleCancel = (event) => {
         closeAndClear(event, 'cancelButtonClick');
     };
-    //onOpenCatalogDialog = true;
-    //searchCopy = true;
+
     return (
         <Dialog
             onClose={handleClose}
@@ -85,30 +93,37 @@ const ModificationDialogContent = ({
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container spacing={2} justifyContent={'space-between'}>
-                    <Grid item xs={10}>
-                        <Grid item>
-                            <FormattedMessage id={titleId} />
-                        </Grid>
-                        {showNodeNotBuildWarning && isNodeNotBuilt && (
-                            <Grid item>
-                                <Alert severity={'warning'}>
-                                    <FormattedMessage id="ModifyNodeNotBuiltWarningMsg" />
-                                </Alert>
-                            </Grid>
-                        )}
+                    <Grid item xs={6}>
+                        <FormattedMessage id={titleId} />
                     </Grid>
 
                     <Grid
                         item
-                        xs={2}
+                        xs={6}
                         container
                         spacing={2}
                         justifyContent={'right'}
                     >
-                        {onOpenCatalogDialog && (
-                            <Grid item>{catalogButton}</Grid>
+                        {showNodeNotBuiltWarning && isNodeNotBuilt && (
+                            <Grid item xs={10}>
+                                <Alert
+                                    severity={'warning'}
+                                    className={classes.warningMessage}
+                                >
+                                    <FormattedMessage id="ModifyNodeNotBuiltWarningMsg" />
+                                </Alert>
+                            </Grid>
                         )}
-                        {searchCopy && <Grid item>{copyEquipmentButton}</Grid>}
+                        {onOpenCatalogDialog && (
+                            <Grid item xs={1}>
+                                {catalogButton}
+                            </Grid>
+                        )}
+                        {searchCopy && (
+                            <Grid item xs={1}>
+                                {copyEquipmentButton}
+                            </Grid>
+                        )}
                     </Grid>
                 </Grid>
             </DialogTitle>
@@ -129,7 +144,7 @@ ModificationDialogContent.propTypes = {
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
     isDataFetching: PropTypes.bool,
-    showNodeNotBuildWarning: PropTypes.bool,
+    showNodeNotBuiltWarning: PropTypes.bool,
     submitButton: PropTypes.element,
     closeAndClear: PropTypes.func.isRequired,
 };

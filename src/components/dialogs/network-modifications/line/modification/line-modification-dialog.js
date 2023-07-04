@@ -381,7 +381,7 @@ const LineModificationDialog = ({
                 subtitle={selectedId != null ? headerAndTabs : undefined}
                 open={open}
                 keepMounted={true}
-                showNodeNotBuildWarning={selectedId != null}
+                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||
