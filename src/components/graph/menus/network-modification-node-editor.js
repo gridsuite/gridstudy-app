@@ -70,7 +70,6 @@ import { fetchNetworkModification } from '../../../services/network-modification
 import { useParameterState } from '../../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
-
 const useStyles = makeStyles((theme) => ({
     listContainer: {
         overflowY: 'auto',
