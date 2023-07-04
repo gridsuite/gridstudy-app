@@ -406,7 +406,6 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
 };
 
 const SpecificLoadFlowParameters = ({
-    lfParams,
     specificParamsDescription,
     specificCurrentParams,
     onSpecificParamChange,
@@ -417,10 +416,7 @@ const SpecificLoadFlowParameters = ({
         if (isEdit) {
             return;
         }
-        const specificParamDescr = Object.values(
-            specificParamsDescription
-        ).find((descr) => descr.name === paramName);
-        onSpecificParamChange(specificParamDescr, value);
+        onSpecificParamChange(paramName, value);
     };
 
     return (
@@ -434,12 +430,7 @@ const SpecificLoadFlowParameters = ({
                 <FlatParameters
                     className={classes.parameterName}
                     paramsAsArray={specificParamsDescription}
-                    initValues={flatObject(
-                        fusionSpecificWithOtherParams(
-                            lfParams,
-                            specificCurrentParams
-                        )
-                    )}
+                    initValues={flatObject(specificCurrentParams)}
                     onChange={onChange}
                 />
             )}
@@ -484,42 +475,32 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         lfParams['specificParametersPerProvider']
     );
 
-    const onSpecificParamChange = (specificParamDescr, newValue) => {
+    const onSpecificParamChange = (paramName, newValue) => {
+        const specificParamDescr = Object.values(
+            specificParamsDescrWithoutNanVals
+        ).find((descr) => descr.name === paramName);
         setSpecificCurrentParams((prevCurrentParameters) => {
+            if (specificParamDescr.defaultValue !== newValue) {
+                return {
+                    ...prevCurrentParameters,
+                    [provider]: {
+                        ...prevCurrentParameters[provider],
+                        [specificParamDescr.name]: newValue,
+                    },
+                };
+            }
+            const { [specificParamDescr.name]: value, ...otherProviderParams } =
+                prevCurrentParameters[provider] || {};
             return {
                 ...prevCurrentParameters,
-                [provider]: {
-                    ...prevCurrentParameters[provider],
-                    [specificParamDescr.name]: newValue,
-                },
+                [provider]: otherProviderParams,
             };
         });
-        const paramsToSend = specificCurrentParams;
-        const { [provider]: providerParams, ...otherProvidersSpecificParams } =
-            paramsToSend;
-        const currentProviderParams = paramsToSend[provider];
-        const { [specificParamDescr.name]: value, ...otherProviderParams } =
-            currentProviderParams || {};
-        //const {[provider]: {[specificParamDescr.name]: value, ...otherProviderParams}, ...otherSpecificParams} = specificCurrentParams
-        const commitParameters = lfParams;
-        if (specificParamDescr.defaultValue === newValue) {
-            const {
-                specificParametersPerProvider: allSpecificParameters,
-                ...commonParameters
-            } = commitParameters;
-            updateParameters({
-                specificParametersPerProvider: {
-                    [provider]: otherProviderParams,
-                    ...otherProvidersSpecificParams,
-                },
-                ...commonParameters,
-            });
-        } else {
-            commitParameters['specificParametersPerProvider'] = {
-                ...paramsToSend,
-            };
-            updateParameters(commitParameters);
-        }
+        const commitParameters = fusionSpecificWithOtherParams(
+            lfParams,
+            specificCurrentParams
+        );
+        updateParameters(commitParameters);
     };
 
     const specificParamsDescrWithoutNanVals = useMemo(() => {
@@ -605,7 +586,6 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 />
                 {specificParamsDescriptions?.[provider] && (
                     <SpecificLoadFlowParameters
-                        lfParams={lfParams}
                         specificParamsDescription={
                             specificParamsDescrWithoutNanVals
                         }
