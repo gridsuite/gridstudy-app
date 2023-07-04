@@ -190,6 +190,12 @@ const TwoWindingsTransformerModificationDialog = ({
             if (twt?.equipmentId) {
                 setSelectedId(twt.equipmentId);
             }
+            const phaseSteps = !!twt?.[PHASE_TAP_CHANGER]?.[STEPS]
+                ? addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS])
+                : addSelectedFieldToRows(
+                      twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
+                  );
+
             reset({
                 [EQUIPMENT_NAME]: twt.equipmentName?.value,
                 ...getCharacteristicsFormData({
@@ -224,7 +230,9 @@ const TwoWindingsTransformerModificationDialog = ({
                     ),
                 }),
                 ...getPhaseTapChangerFormData({
-                    enabled: twt?.[PHASE_TAP_CHANGER] !== undefined,
+                    enabled:
+                        twt?.[PHASE_TAP_CHANGER] !== undefined &&
+                        Object.keys(twt?.[PHASE_TAP_CHANGER]).length !== 0,
                     stepsModified: !!twt?.[PHASE_TAP_CHANGER]?.[STEPS],
                     regulationMode:
                         twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
@@ -255,13 +263,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     ),
                     tapPosition:
                         twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION]?.value,
-                    steps: !!twt?.[PHASE_TAP_CHANGER]?.[STEPS]
-                        ? addSelectedFieldToRows(
-                              twt?.[PHASE_TAP_CHANGER]?.[STEPS]
-                          )
-                        : addSelectedFieldToRows(
-                              twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
-                          ),
+                    steps: phaseSteps,
                     equipmentId:
                         twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId?.value,
                     equipmentType:
@@ -413,47 +415,46 @@ const TwoWindingsTransformerModificationDialog = ({
                 : undefined;
 
             if (enablePhaseTapChanger) {
-                const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTapChanger = {
                     regulating: toModificationOperation(
                         computePhaseTapChangerRegulating(
-                            phaseTapChangerFormValues,
+                            twt[PHASE_TAP_CHANGER],
                             twtToModify?.[PHASE_TAP_CHANGER]?.[REGULATING]
                         )
                     ),
                     regulationValue: toModificationOperation(
                         computePhaseTapChangerRegulationValue(
-                            phaseTapChangerFormValues,
+                            twt[PHASE_TAP_CHANGER],
                             twtToModify?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
                         )
                     ),
                     regulatingTerminalId: toModificationOperation(
                         computeRegulatingTerminalId(
-                            phaseTapChangerFormValues,
+                            twt[PHASE_TAP_CHANGER],
                             twt[EQUIPMENT_ID]
                         )
                     ),
                     regulatingTerminalType: toModificationOperation(
-                        computeRegulatingTerminalType(phaseTapChangerFormValues)
+                        computeRegulatingTerminalType(twt[PHASE_TAP_CHANGER])
                     ),
                     regulatingTerminalVlId: toModificationOperation(
                         computeTapTerminalVlId(
-                            phaseTapChangerFormValues,
-                            twt.voltageLevelId1,
-                            twt.voltageLevelId2
+                            twt[PHASE_TAP_CHANGER],
+                            twtToModify.voltageLevelId1,
+                            twtToModify.voltageLevelId2
                         )
                     ),
                     [REGULATION_MODE]: toModificationOperation(
-                        phaseTapChangerFormValues[REGULATION_MODE]
+                        twt[PHASE_TAP_CHANGER][REGULATION_MODE]
                     ),
                     [TAP_POSITION]: toModificationOperation(
-                        phaseTapChangerFormValues[TAP_POSITION]
+                        twt[PHASE_TAP_CHANGER][TAP_POSITION]
                     ),
                     [LOW_TAP_POSITION]: toModificationOperation(
-                        phaseTapChangerFormValues[LOW_TAP_POSITION]
+                        twt[PHASE_TAP_CHANGER][LOW_TAP_POSITION]
                     ),
                     [TARGET_DEADBAND]: toModificationOperation(
-                        phaseTapChangerFormValues[TARGET_DEADBAND]
+                        twt[PHASE_TAP_CHANGER][TARGET_DEADBAND]
                     ),
                     [STEPS]: phaseTapChangerSteps,
                 };

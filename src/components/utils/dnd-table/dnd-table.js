@@ -351,6 +351,7 @@ const DndTable = ({
                         key={row.id}
                         draggableId={row.id.toString()}
                         index={index}
+                        isDragDisabled={disabled}
                     >
                         {(provided, snapshot) => (
                             <TableRow
@@ -365,9 +366,7 @@ const DndTable = ({
                                 >
                                     <TableCell
                                         sx={{ textAlign: 'center' }}
-                                        {...(disabled
-                                            ? {}
-                                            : { ...provided.dragHandleProps })}
+                                        {...provided.dragHandleProps}
                                     >
                                         <DragIndicatorIcon />
                                     </TableCell>
