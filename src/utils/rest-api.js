@@ -1632,7 +1632,6 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
 
 export function setLoadFlowParameters(studyUuid, newParams) {
     console.info('set load flow parameters');
-    console.info('TTTT newParams', newParams);
     const setLoadFlowParametersUrl =
         getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(setLoadFlowParametersUrl);

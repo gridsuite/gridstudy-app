@@ -21,7 +21,7 @@ import {
 import { LabelledSlider, LineSeparator } from '../dialogUtils';
 import { FlatParameters } from '@gridsuite/commons-ui';
 import { LocalizedCountries } from '../../utils/localized-countries-hook';
-import { flatObject, replaceAllDefaultValues } from '../../utils/utils';
+import { replaceAllDefaultValues } from '../../utils/utils';
 import {
     PARAM_DEVELOPER_MODE,
     PARAM_LIMIT_REDUCTION,
@@ -148,15 +148,12 @@ const DoubleEditor = ({
 };
 
 const fusionSpecificWithOtherParams = (allParams, specificParams) => {
-    console.info('TTTT specificParams', specificParams)
     const commitParameters = allParams;
     commitParameters['specificParametersPerProvider'] =
         Object.keys(specificParams).length > 0
             ? { ...specificParams }
             : commitParameters['specificParametersPerProvider'];
 
-
-    console.info('TTTT commitParameters', commitParameters)
     return commitParameters;
 };
 
@@ -410,7 +407,6 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
 };
 
 const SpecificLoadFlowParameters = ({
-    // lfParams,
     specificParamsDescription,
     specificCurrentParams,
     onSpecificParamChange,
@@ -423,12 +419,7 @@ const SpecificLoadFlowParameters = ({
         }
         onSpecificParamChange(paramName, value);
     };
-    // const fusionAllParams = fusionSpecificWithOtherParams(
-    //     lfParams,
-    //     specificCurrentParams
-    // );
-    console.info('TTTT specificCurrentParams2222', specificCurrentParams)
-    // console.info('TTTT flatObject(fusionAllParams)', flatObject(fusionAllParams))
+
     return (
         <>
             <SubgroupParametersButton
@@ -480,14 +471,19 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         },
     ];
 
-    const lfParams = params || [];
     const [specificCurrentParams, setSpecificCurrentParams] = useState(
-        lfParams['specificParametersPerProvider']
+        params['specificParametersPerProvider']
     );
 
+    useEffect(() => {
+        const commitParameters = fusionSpecificWithOtherParams(
+            params,
+            specificCurrentParams
+        );
+        updateParameters(commitParameters);
+    }, [params, specificCurrentParams, updateParameters]);
+
     const onSpecificParamChange = (paramName, newValue) => {
-        console.info('TTTT paramName', paramName)
-        console.info('TTTT newValue', newValue)
         const specificParamDescr = Object.values(
             specificParamsDescrWithoutNanVals
         ).find((descr) => descr.name === paramName);
@@ -508,23 +504,9 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 [provider]: otherProviderParams,
             };
         });
-
-
-        console.info('TTTT specificCurrentParams9999999999999', specificCurrentParams)
-        const commitParameters = fusionSpecificWithOtherParams(
-            lfParams,
-            specificCurrentParams
-        );
-        updateParameters(commitParameters);
     };
 
     const specificParamsDescrWithoutNanVals = useMemo(() => {
-        console.info('TTTT specificParamsDescriptions[provider]', specificParamsDescriptions[provider])
-        console.info('TTTT replace', replaceAllDefaultValues(
-            specificParamsDescriptions[provider],
-            'NaN',
-            ''
-        )[provider])
         return replaceAllDefaultValues(
             specificParamsDescriptions[provider],
             'NaN',
@@ -569,8 +551,6 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         )
     );
 
-    console.info('TTTT specificCurrentParams', specificCurrentParams)
-
     return (
         <>
             <Grid container spacing={1} padding={1}>
@@ -609,7 +589,6 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 />
                 {specificParamsDescriptions?.[provider] && (
                     <SpecificLoadFlowParameters
-                        // lfParams={lfParams}
                         specificParamsDescription={
                             specificParamsDescrWithoutNanVals
                         }

@@ -176,21 +176,3 @@ export const replaceAllDefaultValues = (arrayParams, oldValue, newValue) => {
     );
 };
 
-export const flatObject = (object) => {
-    let result = {};
-
-    const recursiveFlatten = (obj) => {
-        for (const key in obj) {
-            if (
-                typeof obj[key] === 'object' &&
-                Array.isArray(obj[key]) === false
-            ) {
-                recursiveFlatten(obj[key]);
-            } else {
-                result = { ...result, [key]: obj[key] };
-            }
-        }
-    };
-    recursiveFlatten(object);
-    return result;
-};
