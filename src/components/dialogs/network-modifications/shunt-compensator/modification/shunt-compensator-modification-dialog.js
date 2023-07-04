@@ -68,6 +68,7 @@ const ShuntCompensatorModificationDialog = ({
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [shuntCompensatorInfos, setShuntCompensatorInfos] = useState(null);
+    const [multiSections, setMultiSections] = useState(false);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -140,6 +141,7 @@ const ShuntCompensatorModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
+                setMultiSections(false);
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
@@ -150,8 +152,18 @@ const ShuntCompensatorModificationDialog = ({
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
-                            setShuntCompensatorInfos(shuntCompensator);
-                            setDataFetchStatus(FetchStatus.SUCCEED);
+                            if (shuntCompensator.maximumSectionCount > 1) {
+                                snackError({
+                                    headerId:
+                                        'ShuntCompensatorMultiSectionsError',
+                                });
+                                setShuntCompensatorInfos(null);
+                                setDataFetchStatus(FetchStatus.FAILED);
+                                setMultiSections(true);
+                            } else {
+                                setShuntCompensatorInfos(shuntCompensator);
+                                setDataFetchStatus(FetchStatus.SUCCEED);
+                            }
                         }
                     })
                     .catch(() => {
@@ -162,7 +174,7 @@ const ShuntCompensatorModificationDialog = ({
                 setShuntCompensatorInfos(null);
             }
         },
-        [currentNodeUuid, studyUuid]
+        [currentNodeUuid, studyUuid, snackError]
     );
 
     useEffect(() => {
@@ -236,7 +248,7 @@ const ShuntCompensatorModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                {selectedId == null && (
+                {(selectedId == null || multiSections) && (
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
@@ -246,12 +258,14 @@ const ShuntCompensatorModificationDialog = ({
                         fillerHeight={5}
                     />
                 )}
-                {selectedId != null && (
-                    <ShuntCompensatorModificationForm
-                        shuntCompensatorInfos={shuntCompensatorInfos}
-                        equipmentId={selectedId}
-                    />
-                )}
+                {selectedId !== null &&
+                    !multiSections &&
+                    shuntCompensatorInfos !== null && (
+                        <ShuntCompensatorModificationForm
+                            shuntCompensatorInfos={shuntCompensatorInfos}
+                            equipmentId={selectedId}
+                        />
+                    )}
             </ModificationDialog>
         </FormProvider>
     );
