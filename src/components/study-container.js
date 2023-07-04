@@ -6,13 +6,7 @@
  */
 
 import StudyPane from './study-pane';
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,15 +41,7 @@ import {
     isNodeRenamed,
     isSameNode,
 } from './graph/util/model-functions';
-import {
-    getSecurityAnalysisRunningStatus,
-    getSensiRunningStatus,
-    getShortCircuitRunningStatus,
-    getDynamicSimulationRunningStatus,
-    getVoltageInitRunningStatus,
-    RunningStatus,
-} from './utils/running-status';
-import { useIntl } from 'react-intl';
+import { RunningStatus } from './utils/running-status';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
 import {
@@ -67,14 +53,12 @@ import {
     connectDeletedStudyNotificationsWebsocket,
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
-
 import { fetchPath } from '../services/directory';
 import { fetchSensitivityAnalysisStatus } from '../services/study/sensitivity-analysis';
-
 import { fetchDynamicSimulationStatus } from '../services/study/dynamic-simulation';
 import { fetchLoadFlowInfos } from '../services/study/loadflow';
-
 import { fetchSecurityAnalysisStatus } from '../services/study/security-analysis';
+import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -215,26 +199,6 @@ function usePrevious(value) {
 }
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
-const securityAnalysisStatusInvalidations = [
-    'securityAnalysis_status',
-    'securityAnalysis_failed',
-];
-const sensiStatusInvalidations = [
-    'sensitivityAnalysis_status',
-    'sensitivityAnalysis_failed',
-];
-const shortCircuitStatusInvalidations = [
-    'shortCircuitAnalysis_status',
-    'shortCircuitAnalysis_failed',
-];
-const dynamicSimulationStatusInvalidations = [
-    'dynamicSimulation_status',
-    'dynamicSimulation_failed',
-];
-const voltageInitStatusInvalidations = [
-    'voltageInit_status',
-    'voltageInit_failed',
-];
 
 export const UPDATE_TYPE_HEADER = 'updateType';
 const ERROR_HEADER = 'error';
@@ -277,58 +241,13 @@ export function StudyContainer({ view, onChangeTab }) {
         loadFlowStatusInvalidations
     );
 
-    const [securityAnalysisStatus] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSecurityAnalysisStatus,
-        securityAnalysisStatusInvalidations,
-        RunningStatus.IDLE,
-        getSecurityAnalysisRunningStatus
-    );
-
-    const [sensiStatus] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSensitivityAnalysisStatus,
-        sensiStatusInvalidations,
-        RunningStatus.IDLE,
-        getSensiRunningStatus
-    );
-
-    const [shortCircuitStatus] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchShortCircuitAnalysisStatus,
-        shortCircuitStatusInvalidations,
-        RunningStatus.IDLE,
-        getShortCircuitRunningStatus
-    );
-
-    const [dynamicSimulationStatus] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchDynamicSimulationStatus,
-        dynamicSimulationStatusInvalidations,
-        RunningStatus.IDLE,
-        getDynamicSimulationRunningStatus
-    );
-
-    const [voltageInitStatus] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchVoltageInitStatus,
-        voltageInitStatusInvalidations,
-        RunningStatus.IDLE,
-        getVoltageInitRunningStatus
-    );
+    useAllComputingStatus(studyUuid, currentNode?.id);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const [wsConnected, setWsConnected] = useState(false);
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
-
-    const intl = useIntl();
 
     const wsRef = useRef();
 
@@ -369,9 +288,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     headerId: 'dynamicSimulationError',
                 });
             }
-            if (updateTypeHeader === 'voltageinit_failed') {
+            if (updateTypeHeader === 'voltageInit_failed') {
                 snackError({
                     headerId: 'voltageInitError',
+                    messageTxt: errorMessage,
                 });
             }
         },
@@ -753,27 +673,6 @@ export function StudyContainer({ view, onChangeTab }) {
         connectDeletedStudyNotifications,
     ]);
 
-    const runnable = useMemo(() => {
-        return {
-            LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
-            SECURITY_ANALYSIS: intl.formatMessage({
-                id: 'SecurityAnalysis',
-            }),
-            SENSITIVITY_ANALYSIS: intl.formatMessage({
-                id: 'SensitivityAnalysis',
-            }),
-            SHORT_CIRCUIT_ANALYSIS: intl.formatMessage({
-                id: 'ShortCircuitAnalysis',
-            }),
-            DYNAMIC_SIMULATION: intl.formatMessage({
-                id: 'DynamicSimulation',
-            }),
-            VOLTAGE_INIT: intl.formatMessage({
-                id: 'VoltageInit',
-            }),
-        };
-    }, [intl]);
-
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || errorMessage}
@@ -786,12 +685,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 view={view}
                 onChangeTab={onChangeTab}
                 loadFlowInfos={loadFlowInfos}
-                securityAnalysisStatus={securityAnalysisStatus}
-                sensiStatus={sensiStatus}
-                shortCircuitStatus={shortCircuitStatus}
-                dynamicSimulationStatus={dynamicSimulationStatus}
-                voltageInitStatus={voltageInitStatus}
-                runnable={runnable}
                 setErrorMessage={setErrorMessage}
             />
         </WaitingLoader>

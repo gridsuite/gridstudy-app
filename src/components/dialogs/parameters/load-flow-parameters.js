@@ -21,7 +21,10 @@ import {
 import { LabelledSlider, LineSeparator } from '../dialogUtils';
 import { FlatParameters } from '@gridsuite/commons-ui';
 import { LocalizedCountries } from '../../utils/localized-countries-hook';
-import { PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
+import {
+    PARAM_DEVELOPER_MODE,
+    PARAM_LIMIT_REDUCTION,
+} from '../../../utils/config-params';
 // TO DO to remove with extractDefault Function
 const ListRE = /^\[(.*)]$/;
 const sepRE = /[, ]/;
@@ -588,6 +591,8 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         PARAM_LIMIT_REDUCTION
     );
 
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
     const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 50;
     const alertThresholdMarks = [
         {
@@ -616,13 +621,27 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         resetParameters();
     }, [resetParameters]);
 
+    // TODO: remove this when DynaFlow will be available not only in developer mode
+    useEffect(() => {
+        if (provider === 'DynaFlow' && !enableDeveloperMode) {
+            resetProvider();
+        }
+    }, [provider, resetProvider, enableDeveloperMode]);
+
+    // TODO: remove this when DynaFlow will be available not only in developer mode
+    const LoadFlowProviders = Object.fromEntries(
+        Object.entries(providers).filter(
+            ([key]) => !key.includes('DynaFlow') || enableDeveloperMode
+        )
+    );
+
     return (
         <>
             <Grid container spacing={1} padding={1}>
                 <DropDown
                     value={provider}
                     label="Provider"
-                    values={providers}
+                    values={LoadFlowProviders}
                     callback={updateLfProviderCallback}
                 />
             </Grid>
