@@ -15,8 +15,6 @@ import {
     fetchNetworkModificationTree,
     fetchStudyExists,
     fetchCaseName,
-    fetchShortCircuitAnalysisStatus,
-    fetchVoltageInitStatus,
     fetchAllEquipments,
 } from '../utils/rest-api';
 import {
@@ -54,10 +52,7 @@ import {
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
 import { fetchPath } from '../services/directory';
-import { fetchSensitivityAnalysisStatus } from '../services/study/sensitivity-analysis';
-import { fetchDynamicSimulationStatus } from '../services/study/dynamic-simulation';
 import { fetchLoadFlowInfos } from '../services/study/loadflow';
-import { fetchSecurityAnalysisStatus } from '../services/study/security-analysis';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 
 function isWorthUpdate(

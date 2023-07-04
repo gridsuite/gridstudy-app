@@ -28,11 +28,7 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    fetchAppsAndUrls,
-    fetchShortCircuitAnalysisStatus,
-    fetchNetworkElementInfos,
-} from '../utils/rest-api';
+import { fetchAppsAndUrls, fetchNetworkElementInfos } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
@@ -68,10 +64,7 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
-import { fetchSensitivityAnalysisStatus } from '../services/study/sensitivity-analysis';
-import { fetchDynamicSimulationStatus } from '../services/study/dynamic-simulation';
 import { fetchLoadFlowInfos } from '../services/study/loadflow';
-import { fetchSecurityAnalysisStatus } from '../services/study/security-analysis';
 import { ComputingType } from './computing-status/computing-type';
 import { RunningStatus } from './utils/running-status';
 
