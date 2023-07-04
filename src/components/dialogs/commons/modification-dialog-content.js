@@ -41,6 +41,7 @@ const ModificationDialogContent = ({
     searchCopy,
     subtitle,
     isDataFetching = false,
+    showNodeNotBuildWarning = false,
     submitButton,
     closeAndClear,
     ...dialogProps
@@ -50,7 +51,10 @@ const ModificationDialogContent = ({
         handleClick: onOpenCatalogDialog,
         icon: <AutoStoriesOutlinedIcon />,
     });
-    const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentNode = useSelector((state) => {
+        console.log({ state });
+        return state.currentTreeNode;
+    });
     const isNodeNotBuilt =
         currentNode?.data?.buildStatus === BUILD_STATUS.NOT_BUILT;
     const copyEquipmentButton = useButtonWithTooltip({
@@ -70,7 +74,8 @@ const ModificationDialogContent = ({
     const handleCancel = (event) => {
         closeAndClear(event, 'cancelButtonClick');
     };
-
+    //onOpenCatalogDialog = true;
+    //searchCopy = true;
     return (
         <Dialog
             onClose={handleClose}
@@ -80,35 +85,31 @@ const ModificationDialogContent = ({
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container spacing={2} justifyContent={'space-between'}>
-                    <Grid item xs={4}>
-                        <FormattedMessage id={titleId} />
+                    <Grid item xs={10}>
+                        <Grid item>
+                            <FormattedMessage id={titleId} />
+                        </Grid>
+                        {showNodeNotBuildWarning && isNodeNotBuilt && (
+                            <Grid item>
+                                <Alert severity={'warning'}>
+                                    <FormattedMessage id="ModifyNodeNotBuiltWarningMsg" />
+                                </Alert>
+                            </Grid>
+                        )}
                     </Grid>
-                    {!searchCopy && isNodeNotBuilt && (
-                        <Grid item xs={8}>
-                            <Alert severity={'warning'}>
-                                <FormattedMessage id="ModifyNodeNotBuiltWarningMsg" />
-                            </Alert>
-                        </Grid>
-                    )}
-                    {searchCopy && (
-                        <Grid
-                            item
-                            xs={1}
-                            container
-                            spacing={2}
-                            justifyContent={'right'}
-                        >
-                            {onOpenCatalogDialog && (
-                                <Grid item>{catalogButton}</Grid>
-                            )}
-                            <Grid item>{copyEquipmentButton}</Grid>
-                        </Grid>
-                    )}
-                    {subtitle && (
-                        <Grid item xs={12}>
-                            {subtitle}
-                        </Grid>
-                    )}
+
+                    <Grid
+                        item
+                        xs={2}
+                        container
+                        spacing={2}
+                        justifyContent={'right'}
+                    >
+                        {onOpenCatalogDialog && (
+                            <Grid item>{catalogButton}</Grid>
+                        )}
+                        {searchCopy && <Grid item>{copyEquipmentButton}</Grid>}
+                    </Grid>
                 </Grid>
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
@@ -128,6 +129,7 @@ ModificationDialogContent.propTypes = {
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
     isDataFetching: PropTypes.bool,
+    showNodeNotBuildWarning: PropTypes.bool,
     submitButton: PropTypes.element,
     closeAndClear: PropTypes.func.isRequired,
 };
