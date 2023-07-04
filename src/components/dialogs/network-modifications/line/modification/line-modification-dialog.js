@@ -207,6 +207,43 @@ const LineModificationDialog = ({
         (line) => {
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
+            const temporaryLimits1 = addModificationTypeToTemporaryLimits(
+                sanitizeLimitNames(
+                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
+                ),
+                lineToModify?.currentLimits1?.temporaryLimits,
+                editData?.currentLimits1?.temporaryLimits,
+                currentNode
+            );
+            let currentLimits1 = null;
+            if (
+                limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT] ||
+                temporaryLimits1.length > 0
+            ) {
+                currentLimits1 = {
+                    permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
+                    temporaryLimits: temporaryLimits1,
+                };
+            }
+            const temporaryLimits2 = addModificationTypeToTemporaryLimits(
+                sanitizeLimitNames(
+                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
+                ),
+                lineToModify?.currentLimits2?.temporaryLimits,
+                editData?.currentLimits2?.temporaryLimits,
+                currentNode
+            );
+            let currentLimits2 = null;
+            if (
+                limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT] ||
+                temporaryLimits2.length > 0
+            ) {
+                currentLimits2 = {
+                    permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
+                    temporaryLimits: temporaryLimits2,
+                };
+            }
+
             modifyLine(
                 studyUuid,
                 currentNodeUuid,
@@ -218,24 +255,8 @@ const LineModificationDialog = ({
                 microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_1]),
                 microUnitToUnit(characteristics[SHUNT_CONDUCTANCE_2]),
                 microUnitToUnit(characteristics[SHUNT_SUSCEPTANCE_2]),
-                limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
-                limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                addModificationTypeToTemporaryLimits(
-                    sanitizeLimitNames(
-                        limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
-                    ),
-                    lineToModify?.currentLimits1?.temporaryLimits,
-                    editData?.currentLimits1?.temporaryLimits,
-                    currentNode
-                ),
-                addModificationTypeToTemporaryLimits(
-                    sanitizeLimitNames(
-                        limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
-                    ),
-                    lineToModify?.currentLimits2?.temporaryLimits,
-                    editData?.currentLimits2?.temporaryLimits,
-                    currentNode
-                ),
+                currentLimits1,
+                currentLimits2,
                 !!editData,
                 editData?.uuid
             ).catch((error) => {
