@@ -11,6 +11,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
+import { unitToKiloUnit } from '../utils/rounding';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
@@ -74,11 +75,11 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [theme.selectedRow.background]
     );
 
-    function flattenResult(shortcutAnalysisResult) {
+    function flattenResult(shortCircuitAnalysisResult) {
         const rows = [];
-        shortcutAnalysisResult?.faults?.forEach((f) => {
-            const fault = f.fault;
-            const limitViolations = f.limitViolations;
+        shortCircuitAnalysisResult?.faults?.forEach((faultResult) => {
+            const fault = faultResult.fault;
+            const limitViolations = faultResult.limitViolations;
             let firstLimitViolation;
             if (limitViolations.length > 0) {
                 let lv = limitViolations[0];
@@ -88,22 +89,21 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     }),
                     limitMin:
                         lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitMax:
                         lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitName: lv.limitName,
-                    current: lv.value,
                 };
             }
             rows.push({
                 faultId: fault.id,
                 elementId: fault.elementId,
                 faultType: intl.formatMessage({ id: fault.faultType }),
-                shortCircuitPower: f.shortCircuitPower,
-                current: f.current,
+                shortCircuitPower: faultResult.shortCircuitPower,
+                current: faultResult.current,
                 ...firstLimitViolation,
             });
             limitViolations.slice(1).forEach((lv) => {
@@ -113,21 +113,21 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     }),
                     limitMin:
                         lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitMax:
                         lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitName: lv.limitName,
                     current: lv.value,
                 });
             });
-            const feederResults = f.feederResults;
-            feederResults.forEach((fr) => {
+            const feederResults = faultResult.feederResults;
+            feederResults.forEach((feederResult) => {
                 rows.push({
-                    connectableId: fr.connectableId,
-                    current: fr.current,
+                    connectableId: feederResult.connectableId,
+                    current: feederResult.current,
                 });
             });
         });
