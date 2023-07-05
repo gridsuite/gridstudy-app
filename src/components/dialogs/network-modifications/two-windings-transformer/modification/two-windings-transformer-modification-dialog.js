@@ -431,7 +431,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     regulatingTerminalId: toModificationOperation(
                         computeRegulatingTerminalId(
                             twt[PHASE_TAP_CHANGER],
-                            twt[EQUIPMENT_ID]
+                            selectedId
                         )
                     ),
                     regulatingTerminalType: toModificationOperation(
