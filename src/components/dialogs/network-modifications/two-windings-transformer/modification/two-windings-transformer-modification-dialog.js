@@ -547,39 +547,36 @@ const TwoWindingsTransformerModificationDialog = ({
                         if (twt) {
                             setTwtToModify(twt);
                             if (editData?.equipmentId !== selectedId) {
-                                reset(
-                                    (formValues) => ({
-                                        ...formValues,
-                                        ...getLimitsFormData({
-                                            temporaryLimits1:
-                                                addSelectedFieldToRows(
-                                                    formatTemporaryLimits(
-                                                        twt.currentLimits1
-                                                            ?.temporaryLimits
-                                                    )
-                                                ),
-                                            temporaryLimits2:
-                                                addSelectedFieldToRows(
-                                                    formatTemporaryLimits(
-                                                        twt.currentLimits2
-                                                            ?.temporaryLimits
-                                                    )
-                                                ),
-                                        }),
-                                        ...getPhaseTapChangerFormData({
-                                            ...formValues.phaseTapChanger,
-                                            enabled: !!twt.phaseTapChanger,
-                                            steps: addSelectedFieldToRows(
-                                                formatPhaseTapSteps(
-                                                    twt?.[PHASE_TAP_CHANGER]?.[
-                                                        STEPS
-                                                    ]
+                                reset((formValues) => ({
+                                    ...formValues,
+                                    ...getLimitsFormData({
+                                        temporaryLimits1:
+                                            addSelectedFieldToRows(
+                                                formatTemporaryLimits(
+                                                    twt.currentLimits1
+                                                        ?.temporaryLimits
                                                 )
                                             ),
-                                        }),
+                                        temporaryLimits2:
+                                            addSelectedFieldToRows(
+                                                formatTemporaryLimits(
+                                                    twt.currentLimits2
+                                                        ?.temporaryLimits
+                                                )
+                                            ),
                                     }),
-                                    { keepDefaultValues: true }
-                                );
+                                    ...getPhaseTapChangerFormData({
+                                        ...formValues.phaseTapChanger,
+                                        enabled: !!twt.phaseTapChanger,
+                                        steps: addSelectedFieldToRows(
+                                            formatPhaseTapSteps(
+                                                twt?.[PHASE_TAP_CHANGER]?.[
+                                                    STEPS
+                                                ]
+                                            )
+                                        ),
+                                    }),
+                                }));
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
