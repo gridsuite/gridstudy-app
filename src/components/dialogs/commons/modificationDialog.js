@@ -27,6 +27,7 @@ const ModificationDialog = ({
     onClear,
     onSave,
     disabledSave = false,
+    showNodeNotBuiltWarning = false,
     onValidated,
     onValidationError,
     ...props
@@ -59,6 +60,9 @@ const ModificationDialog = ({
         <ModificationDialogContent
             submitButton={submitButton}
             closeAndClear={closeAndClear}
+            onValidated={onValidated}
+            showNodeNotBuiltWarning={showNodeNotBuiltWarning}
+            onValidationError={onValidationError}
             {...props}
         />
     );
