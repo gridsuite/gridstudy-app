@@ -148,28 +148,6 @@ const TapChangerSteps = ({
         [getValues, tapChanger, previousValues, lowTapPosition, setValue]
     );
 
-    const adjustedStepsPreviousValues = useMemo(() => {
-        let adjustedTapSteps;
-        if (previousValues?.[STEPS]) {
-            adjustedTapSteps = previousValues[STEPS].map((step) => {
-                return {
-                    index: lowTapPosition
-                        ? step.index +
-                          (lowTapPosition - previousValues?.[LOW_TAP_POSITION])
-                        : step.index,
-                    r: step.r,
-                    x: step.x,
-                    b: step.b,
-                    g: step.g,
-                    rho: step.rho,
-                    alpha: step.alpha,
-                };
-            });
-        }
-        resetTapNumbers(null, modification);
-        return adjustedTapSteps;
-    }, [previousValues, resetTapNumbers, modification, lowTapPosition]);
-
     // Adjust high tap position when low tap position change + remove red if value fixed
     useEffect(() => {
         trigger(`${tapChanger}.${LOW_TAP_POSITION}`).then((result) => {
@@ -177,14 +155,7 @@ const TapChangerSteps = ({
                 resetTapNumbers(null, modification);
             }
         });
-    }, [
-        trigger,
-        tapChanger,
-        lowTapPosition,
-        adjustedStepsPreviousValues,
-        resetTapNumbers,
-        modification,
-    ]);
+    }, [trigger, tapChanger, lowTapPosition, resetTapNumbers, modification]);
 
     // when we detect a change in tapSteps (so when the size or the order of the list of rows change), we reset the tap fields
     useEffect(() => {
@@ -213,41 +184,6 @@ const TapChangerSteps = ({
             }
         });
     }
-
-    const findTap = useCallback(
-        (rowIndex, arrayFormName, tapSteps) => {
-            return adjustedStepsPreviousValues?.find(
-                (e) => e.index === getValues(arrayFormName)[rowIndex]?.index
-            );
-        },
-        [adjustedStepsPreviousValues, getValues]
-    );
-
-    const getTapPreviousValue = useCallback(
-        (rowIndex, column, arrayFormName, tapSteps) => {
-            const temporaryLimit = findTap(rowIndex, arrayFormName, tapSteps);
-            if (temporaryLimit === undefined) {
-                return undefined;
-            }
-            switch (column.dataKey) {
-                case STEPS_RESISTANCE:
-                    return temporaryLimit?.r;
-                case STEPS_REACTANCE:
-                    return temporaryLimit?.x;
-                case STEPS_CONDUCTANCE:
-                    return temporaryLimit?.g;
-                case STEPS_SUSCEPTANCE:
-                    return temporaryLimit?.b;
-                case STEPS_RATIO:
-                    return temporaryLimit?.rho;
-                case STEPS_ALPHA:
-                    return temporaryLimit?.alpha;
-                default:
-                    return undefined;
-            }
-        },
-        [findTap]
-    );
 
     const handleImportTapRule = (selectedFile, setFileParseError) => {
         Papa.parse(selectedFile, {
@@ -358,23 +294,17 @@ const TapChangerSteps = ({
         tapSteps.length,
     ]);
 
-    const isValueModified = useCallback(
+    const isRegulationRulesModified = useCallback(
         () => modification && areStepsModified,
         [areStepsModified, modification]
     );
 
     const handleResetButton = useCallback(() => {
-        replace(adjustedStepsPreviousValues);
+        replace(previousValues?.[STEPS]);
         setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
         setValue(`${tapChanger}.${STEPS_MODIFIED}`, false);
         clearErrors(`${tapChanger}.${STEPS}`);
-    }, [
-        adjustedStepsPreviousValues,
-        clearErrors,
-        replace,
-        setValue,
-        tapChanger,
-    ]);
+    }, [clearErrors, previousValues, replace, setValue, tapChanger]);
 
     return (
         <Grid item container spacing={1}>
@@ -399,10 +329,8 @@ const TapChangerSteps = ({
                 handleUploadButton={handleImportTapRuleButton}
                 uploadButtonMessageId={importRuleMessageId}
                 handleResetButton={modification ? handleResetButton : undefined}
+                isValueModified={isRegulationRulesModified}
                 disabled={disabled}
-                previousValues={adjustedStepsPreviousValues}
-                getPreviousValue={getTapPreviousValue}
-                isValueModified={isValueModified}
             />
             <CreateRuleDialog
                 ruleType={ruleType}
