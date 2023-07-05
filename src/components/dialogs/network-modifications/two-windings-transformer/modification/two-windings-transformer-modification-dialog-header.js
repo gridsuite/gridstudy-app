@@ -10,7 +10,6 @@ import { EQUIPMENT_NAME } from 'components/utils/field-constants';
 import React from 'react';
 import { filledTextField, gridItem } from '../../../dialogUtils';
 import TextInput from 'components/utils/rhf-inputs/text-input';
-
 const TwoWindingsTransformerModificationDialogHeader = ({
     equipmentToModify,
     equipmentId,
