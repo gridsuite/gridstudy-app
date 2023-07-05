@@ -32,7 +32,7 @@ import {
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
-import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
@@ -154,11 +154,9 @@ const withBranchMenu =
 
         function handleLockout() {
             startModification();
-            lockoutBranch(studyUuid, currentNode?.id, branch).catch(
-                (error) => {
-                    handleError(error, 'UnableToLockout');
-                }
-            );
+            lockoutBranch(studyUuid, currentNode?.id, branch).catch((error) => {
+                handleError(error, 'UnableToLockout');
+            });
         }
 
         function handleTrip() {
