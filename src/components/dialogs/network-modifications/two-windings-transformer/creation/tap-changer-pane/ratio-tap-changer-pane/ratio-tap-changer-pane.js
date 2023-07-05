@@ -34,6 +34,22 @@ import SelectInput from 'components/utils/rhf-inputs/select-input';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 
+export const previousRegulationType = (previousValues) => {
+    if (
+        !previousValues?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES]
+    ) {
+        return null;
+    }
+    if (
+        previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId !==
+        previousValues?.id
+    ) {
+        return REGULATION_TYPES.DISTANT.id;
+    } else {
+        return REGULATION_TYPES.LOCAL.id;
+    }
+};
+
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
     studyUuid,
@@ -97,24 +113,6 @@ const RatioTapChangerPane = ({
         }
     };
 
-    const previousRegulationType = useMemo(() => {
-        if (
-            !previousValues?.[RATIO_TAP_CHANGER]?.[
-                LOAD_TAP_CHANGING_CAPABILITIES
-            ]
-        ) {
-            return null;
-        }
-        if (
-            previousValues?.[RATIO_TAP_CHANGER]
-                ?.regulatingTerminalConnectableId !== previousValues?.id
-        ) {
-            return REGULATION_TYPES.DISTANT.id;
-        } else {
-            return REGULATION_TYPES.LOCAL.id;
-        }
-    }, [previousValues]);
-
     const ratioTapChangerEnabledWatcher = useWatch({
         name: `${id}.${ENABLED}`,
     });
@@ -143,8 +141,8 @@ const RatioTapChangerPane = ({
     const regulationType = useMemo(() => {
         return regulationTypeWatch
             ? regulationTypeWatch
-            : previousRegulationType;
-    }, [previousRegulationType, regulationTypeWatch]);
+            : previousRegulationType(previousValues);
+    }, [previousValues, regulationTypeWatch]);
 
     // we want to update the validation of these fields when they become optionals to remove the red alert
     useEffect(() => {
@@ -249,9 +247,7 @@ const RatioTapChangerPane = ({
                     !ratioTapChangerEnabledWatcher ||
                     !isRatioTapLoadTapChangingCapabilitiesOn,
             }}
-            previousValue={
-                previousValues?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND]
-            }
+            previousValue={previousValues?.[RATIO_TAP_CHANGER]?.targetDeadBand}
         />
     );
 

@@ -90,7 +90,9 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import RatioTapChangerPane from '../creation/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
+import RatioTapChangerPane, {
+    previousRegulationType,
+} from '../creation/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
@@ -158,14 +160,14 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const getRegulationTypeForEdit = (twt, tap) => {
         return tap?.regulatingTerminalId?.value != null
-            ? tap?.regulatingTerminalId?.value === twt.equipmentId
+            ? tap?.regulatingTerminalId?.value === twt?.id
                 ? REGULATION_TYPES.LOCAL.id
                 : REGULATION_TYPES.DISTANT.id
             : null;
     };
 
     const getTapSideForEdit = (twt, tap) => {
-        return tap?.regulatingTerminalId?.value === twt.equipmentId
+        return tap?.regulatingTerminalId?.value === twt?.id
             ? tap?.regulatingTerminalVlId?.value === twt?.voltageLevelId1
                 ? SIDE.SIDE1.id
                 : SIDE.SIDE2.id
@@ -241,11 +243,11 @@ const TwoWindingsTransformerModificationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]
                     ),
                     regulationType: getRegulationTypeForEdit(
-                        twt,
+                        twtToModify,
                         twt?.[RATIO_TAP_CHANGER]
                     ),
                     regulationSide: getTapSideForEdit(
-                        twt,
+                        twtToModify,
                         twt?.[RATIO_TAP_CHANGER]
                     ),
                     targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V]?.value,
@@ -317,37 +319,55 @@ const TwoWindingsTransformerModificationDialog = ({
         );
     };
 
-    const computeRegulatingTerminalId = (tapChangerValue, currentTwtId) => {
-        if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
-            return currentTwtId;
-        } else {
-            return tapChangerValue?.[EQUIPMENT]?.id;
-        }
-    };
-
-    const computeTapTerminalVlId = (tapChangerValue, vlId1, vlId2) => {
-        if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
-            if (tapChangerValue?.[REGULATION_SIDE] === SIDE.SIDE1.id) {
-                return vlId1;
+    const computeRegulatingTerminalId = useCallback(
+        (tapChangerValue, currentTwtId) => {
+            const regulationType =
+                tapChangerValue?.[REGULATION_TYPE] ??
+                previousRegulationType(twtToModify);
+            if (regulationType === REGULATION_TYPES.LOCAL.id) {
+                return currentTwtId;
             } else {
-                return vlId2;
+                return tapChangerValue?.[EQUIPMENT]?.id;
             }
-        } else {
-            return tapChangerValue?.[VOLTAGE_LEVEL]?.[ID];
-        }
-    };
+        },
+        [twtToModify]
+    );
 
-    const computeRegulatingTerminalType = (tapChangerValue) => {
-        if (tapChangerValue?.[EQUIPMENT]?.type) {
-            return tapChangerValue?.[EQUIPMENT]?.type;
-        }
+    const computeTapTerminalVlId = useCallback(
+        (tapChangerValue, vlId1, vlId2) => {
+            const regulationType =
+                tapChangerValue?.[REGULATION_TYPE] ??
+                previousRegulationType(twtToModify);
+            if (regulationType === REGULATION_TYPES.LOCAL.id) {
+                if (tapChangerValue?.[REGULATION_SIDE] === SIDE.SIDE1.id) {
+                    return vlId1;
+                } else {
+                    return vlId2;
+                }
+            } else {
+                return tapChangerValue?.[VOLTAGE_LEVEL]?.[ID];
+            }
+        },
+        [twtToModify]
+    );
 
-        if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
-            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
-        }
+    const computeRegulatingTerminalType = useCallback(
+        (tapChangerValue) => {
+            if (tapChangerValue?.[EQUIPMENT]?.type) {
+                return tapChangerValue?.[EQUIPMENT]?.type;
+            }
 
-        return undefined;
-    };
+            const regulationType =
+                tapChangerValue?.[REGULATION_TYPE] ??
+                previousRegulationType(twtToModify);
+            if (regulationType === REGULATION_TYPES.LOCAL.id) {
+                return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
+            }
+
+            return undefined;
+        },
+        [twtToModify]
+    );
 
     const onSubmit = useCallback(
         (twt) => {
@@ -463,13 +483,16 @@ const TwoWindingsTransformerModificationDialog = ({
             });
         },
         [
-            studyUuid,
+            twtToModify,
+            editData,
             currentNode,
+            studyUuid,
             currentNodeUuid,
             selectedId,
+            computeRegulatingTerminalId,
+            computeTapTerminalVlId,
+            computeRegulatingTerminalType,
             snackError,
-            editData,
-            twtToModify,
         ]
     );
 
