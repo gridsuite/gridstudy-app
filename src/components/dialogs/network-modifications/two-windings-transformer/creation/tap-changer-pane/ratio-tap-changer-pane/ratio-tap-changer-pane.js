@@ -40,7 +40,7 @@ const RatioTapChangerPane = ({
     currentNodeUuid,
     voltageLevelOptions = [],
     previousValues,
-    isModification = false,
+    modification = false,
 }) => {
     const { trigger } = useFormContext();
     const intl = useIntl();
@@ -289,7 +289,7 @@ const RatioTapChangerPane = ({
             <Grid container spacing={2}>
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
-                        {isModification
+                        {modification
                             ? ratioTapLoadTapChangingCapabilitiesModificationField
                             : ratioTapLoadTapChangingCapabilitiesField}
                     </Grid>
@@ -356,6 +356,7 @@ const RatioTapChangerPane = ({
                 <RatioTapChangerPaneSteps
                     disabled={!ratioTapChangerEnabledWatcher}
                     previousValues={previousValues?.[RATIO_TAP_CHANGER]}
+                    modification={modification}
                 />
             </Grid>
         </>

@@ -666,7 +666,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 currentNodeUuid={currentNodeUuid}
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify}
-                                isModification={true}
+                                modification={true}
                             />
                         </Box>
                     </>

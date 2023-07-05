@@ -41,7 +41,7 @@ const TapChangerSteps = ({
     handleImportRow,
     disabled,
     previousValues,
-    modification,
+    modification = false,
 }) => {
     const intl = useIntl();
 
@@ -141,7 +141,7 @@ const TapChangerSteps = ({
                     : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
-        [getValues, tapChanger, previousValues, lowTapPosition, setValue]
+        [getValues, tapChanger, lowTapPosition, previousValues, setValue]
     );
 
     // Adjust high tap position when low tap position change + remove red if value fixed
@@ -277,14 +277,16 @@ const TapChangerSteps = ({
                 </span>
             </Tooltip>
         );
-        const columnsDef = columnsDefinition.map((columnDefinition) => {
-            return {
-                ...columnDefinition,
-                handleChange: () => {
-                    setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
-                },
-            };
-        });
+        const columnsDef = !modification
+            ? columnsDefinition
+            : columnsDefinition.map((columnDefinition) => {
+                  return {
+                      ...columnDefinition,
+                      handleChange: () => {
+                          setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
+                      },
+                  };
+              });
         columnsDef[columnsDef.length - 1] = {
             ...columnsDef[columnsDef.length - 1],
             extra: createRuleButton,
@@ -295,6 +297,7 @@ const TapChangerSteps = ({
         createRuleMessageId,
         disabled,
         intl,
+        modification,
         setValue,
         tapChanger,
         tapSteps.length,
