@@ -38,6 +38,7 @@ import {
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -144,7 +145,7 @@ const ShuntCompensatorModificationDialog = ({
                 setMultiSections(false);
                 fetchNetworkElementInfos(
                     studyUuid,
-                    currentNodeUuid,
+                    currentNode?.id,
                     EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -152,7 +153,10 @@ const ShuntCompensatorModificationDialog = ({
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
-                            if (shuntCompensator.maximumSectionCount > 1) {
+                            if (
+                                shuntCompensator.maximumSectionCount > 1 &&
+                                isNodeBuilt(currentNode)
+                            ) {
                                 snackError({
                                     headerId:
                                         'ShuntCompensatorMultiSectionsError',
@@ -174,7 +178,7 @@ const ShuntCompensatorModificationDialog = ({
                 setShuntCompensatorInfos(null);
             }
         },
-        [currentNodeUuid, studyUuid, snackError]
+        [currentNode, studyUuid, snackError]
     );
 
     useEffect(() => {
