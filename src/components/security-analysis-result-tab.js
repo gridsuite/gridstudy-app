@@ -6,9 +6,7 @@
  */
 
 import { useNodeData } from './study-container';
-import {
-    fetchLineOrTransformer,
-} from '../utils/rest-api';
+import { fetchLineOrTransformer } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import SecurityAnalysisResult from './security-analysis-result';
 import { useSnackMessage } from '@gridsuite/commons-ui';
