@@ -521,41 +521,36 @@ const TwoWindingsTransformerModificationDialog = ({
                         if (twt) {
                             setTwtToModify(twt);
                             if (editData?.equipmentId !== selectedId) {
-                                reset(
-                                    (formValues) => ({
-                                        ...formValues,
-                                        ...getLimitsFormData({
-                                            temporaryLimits1:
-                                                addSelectedFieldToRows(
-                                                    formatTemporaryLimits(
-                                                        twt.currentLimits1
-                                                            ?.temporaryLimits
-                                                    )
-                                                ),
-                                            temporaryLimits2:
-                                                addSelectedFieldToRows(
-                                                    formatTemporaryLimits(
-                                                        twt.currentLimits2
-                                                            ?.temporaryLimits
-                                                    )
-                                                ),
-                                        }),
-                                        ...getRatioTapChangerFormData({
-                                            enabled:
-                                                twt?.[RATIO_TAP_CHANGER]?.[
-                                                    TAP_POSITION
-                                                ] !== undefined,
-                                            loadTapChangingCapabilities: null,
-                                            regulationSide: null,
-                                            steps: addSelectedFieldToRows(
-                                                twt?.[RATIO_TAP_CHANGER]?.[
-                                                    STEPS
-                                                ]
+                                reset((formValues) => ({
+                                    ...formValues,
+                                    ...getLimitsFormData({
+                                        temporaryLimits1:
+                                            addSelectedFieldToRows(
+                                                formatTemporaryLimits(
+                                                    twt.currentLimits1
+                                                        ?.temporaryLimits
+                                                )
                                             ),
-                                        }),
+                                        temporaryLimits2:
+                                            addSelectedFieldToRows(
+                                                formatTemporaryLimits(
+                                                    twt.currentLimits2
+                                                        ?.temporaryLimits
+                                                )
+                                            ),
                                     }),
-                                    { keepDefaultValues: true }
-                                );
+                                    ...getRatioTapChangerFormData({
+                                        enabled:
+                                            twt?.[RATIO_TAP_CHANGER]?.[
+                                                TAP_POSITION
+                                            ] !== undefined,
+                                        loadTapChangingCapabilities: null,
+                                        regulationSide: null,
+                                        steps: addSelectedFieldToRows(
+                                            twt?.[RATIO_TAP_CHANGER]?.[STEPS]
+                                        ),
+                                    }),
+                                }));
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);

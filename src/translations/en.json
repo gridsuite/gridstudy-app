@@ -161,6 +161,7 @@
     "FixedGenerators": "Fixed generators",
     "VariableTransformers": " Variable transformers",
     "VariableShuntCompensators": "Variable shunt compensators",
+    "voltageInitError": "An error occurred while excuting the voltage profile initialization",
     "VoltageInitParametersError": "An error occurred while updating the voltage profile initialization parameters",
 
     "SelectAll": "Select all",
@@ -301,7 +302,6 @@
     "Limit_name": "Limit name",
     "OverloadedEquipment": "Equipment",
     "PermanentLimitName": "IST",
-    "EquipmentOverload": "Load",
     "LimitAcceptableDuration": "Duration",
     "ErrFetchViolationsMsg": "An error occurred while getting constraint violations",
     "Value": "Value",
