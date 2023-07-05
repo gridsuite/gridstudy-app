@@ -51,6 +51,7 @@ import {
 } from '../characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
 import { FetchStatus } from 'utils/rest-api';
+import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -87,9 +88,10 @@ const ShuntCompensatorCreationDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }) => {
+    const intl = useIntl();
     const currentNodeUuid = currentNode?.id;
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -100,6 +102,7 @@ const ShuntCompensatorCreationDialog = ({
 
     const fromSearchCopyToFormValues = useCallback(
         (shuntCompensator) => {
+            console.log(shuntCompensator);
             reset({
                 [EQUIPMENT_ID]: shuntCompensator.id + '(1)',
                 [EQUIPMENT_NAME]: shuntCompensator.name ?? '',
@@ -110,16 +113,29 @@ const ShuntCompensatorCreationDialog = ({
                     voltageLevelId: shuntCompensator.voltageLevelId,
                 }),
                 ...getCharacteristicsFormDataFromSearchCopy({
-                    bperSection: shuntCompensator.bperSection,
-                    qatNominalV: shuntCompensator.qatNominalV,
+                    bperSection:
+                        shuntCompensator.maximumSectionCount > 1
+                            ? null
+                            : shuntCompensator.bperSection,
+                    qatNominalV:
+                        shuntCompensator.maximumSectionCount > 1
+                            ? null
+                            : shuntCompensator.qatNominalV,
                 }),
             });
+            if (shuntCompensator.maximumSectionCount > 1) {
+
+                snackInfo({
+                    messageId: 'partialCopyShuntCompensator',
+                });
+            }
         },
-        [reset]
+        [reset, snackInfo]
     );
 
     const fromEditDataToFormValues = useCallback(
         (shuntCompensator) => {
+            console.log('edit', shuntCompensator);
             reset({
                 [EQUIPMENT_ID]: shuntCompensator.equipmentId,
                 [EQUIPMENT_NAME]: shuntCompensator.equipmentName ?? '',

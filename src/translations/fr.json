@@ -660,7 +660,7 @@
     "ShuntIdenticalSections": "Sections identiques",
     "ShuntCurrentNumberOfSections": "Nombre de sections utilisées",
     "ShuntMaximumNumberOfSections": "Nombre de sections disponibles",
-    "CreateShuntCompensator": "Créer un moyen de compensation statique",
+    "CreateShuntCompensator": "Créer un moyen de compensation statique (Un seul gradin)",
     "ShuntCompensatorErrorMaximumLessThanOne": "Le nombre maximum de sections doit être supérieur à 0",
     "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
@@ -1033,5 +1033,6 @@
     "AttachingAndSplittingLines": "Piquage et coupure",
     "GenerationAndLoad": "Production et consommation",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",
-    "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur"
+    "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
+    "partialCopyShuntCompensator" : "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation"
 }

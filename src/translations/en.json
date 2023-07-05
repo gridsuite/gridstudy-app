@@ -660,7 +660,7 @@
     "ShuntIdenticalSections": "Identical sections",
     "ShuntCurrentNumberOfSections": "Current number of sections",
     "ShuntMaximumNumberOfSections": "Maximum number of sections",
-    "CreateShuntCompensator": "Create shunt compensator",
+    "CreateShuntCompensator": "Create shunt compensator (A single section)",
     "ShuntCompensatorErrorMaximumLessThanOne": "Maximum number of sections should be greater than 0",
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
@@ -1011,5 +1011,6 @@
     "AttachingAndSplittingLines": "Attaching and splitting lines",
     "GenerationAndLoad": "Generation and load",
     "idSelector.idNeeded": "Please select an ID",
-    "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet"
+    "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
+    "partialCopyShuntCompensator" : "Partial copy : copying sections is not supported for this shunt compensator"
 }
