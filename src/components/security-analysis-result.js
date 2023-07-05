@@ -80,31 +80,26 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 field: 'subjectId',
                 sort: DEFAULT_SORT_ORDER,
                 filter: 'agTextColumnFilter',
-                width: 300,
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
                 filter: 'agTextColumnFilter',
-                width: 300,
             },
             {
                 headerName: intl.formatMessage({ id: 'Limit' }),
                 field: 'limit',
                 valueFormatter: (params) => params.data?.limit?.toFixed(1),
-                width: 300,
             },
             {
                 headerName: intl.formatMessage({ id: 'Value' }),
                 field: 'value',
                 valueFormatter: (params) => params.data?.value?.toFixed(1),
-                width: 300,
             },
             {
                 headerName: intl.formatMessage({ id: 'Loading' }),
                 field: 'loading',
                 valueFormatter: (params) => params.data?.loading?.toFixed(1),
-                width: 300,
             },
         ];
     }, [intl]);
@@ -115,6 +110,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             resizable: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
+            suppressMovable: true,
+            flex: 1,
         }),
         []
     );
@@ -141,6 +138,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 rowData={rows}
                 columnDefs={columns}
                 defaultColDef={defaultColDef}
+                onGridReady={onGridReady}
             />
         );
     }
@@ -201,55 +199,45 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             {
                 headerName: intl.formatMessage({ id: 'ContingencyId' }),
                 field: 'contingencyId',
-                width: 200,
             },
             {
                 headerName: intl.formatMessage({ id: 'ComputationStatus' }),
                 field: 'computationStatus',
-                width: 150,
             },
             {
                 headerName: intl.formatMessage({ id: 'Constraint' }),
                 field: 'subjectId',
                 cellRenderer: SubjectIdRenderer,
-                width: 200,
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
-                width: 150,
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({ id: 'LimitName' }),
                 field: 'limitName',
             },
             {
-                width: 90,
                 headerName: intl.formatMessage({ id: 'LimitSide' }),
                 field: 'side',
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({
                     id: 'LimitAcceptableDuration',
                 }),
                 field: 'acceptableDuration',
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({ id: 'Limit' }),
                 field: 'limit',
                 valueFormatter: (params) => params.data?.limit?.toFixed(1),
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({ id: 'Value' }),
                 field: 'value',
                 valueFormatter: (params) => params.data?.value?.toFixed(1),
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({ id: 'Loading' }),
                 field: 'loading',
                 valueFormatter: (params) => params.data?.loading?.toFixed(1),
@@ -329,10 +317,15 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 postSortRows={(params) => handlePostSortRows(params, true)}
                 defaultColDef={defaultColDef}
                 getRowStyle={(params) => getRowStyle(params, true)}
+                onGridReady={onGridReady}
             />
         );
     }
-
+    const onGridReady = useCallback((params) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
     function flattenNmKresultsConstraints(postContingencyResults) {
         const rows = [];
         let mapConstraints = new Map();
@@ -412,57 +405,47 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     const nmKConstraintsColumns = useMemo(() => {
         return [
             {
-                width: 200,
                 headerName: intl.formatMessage({ id: 'Constraint' }),
                 field: 'subjectId',
                 cellRenderer: SubjectIdRenderer,
             },
             {
-                width: 200,
                 headerName: intl.formatMessage({ id: 'ContingencyId' }),
                 field: 'contingencyId',
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({ id: 'ComputationStatus' }),
                 field: 'computationStatus',
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({ id: 'LimitName' }),
                 field: 'limitName',
             },
             {
-                width: 90,
                 headerName: intl.formatMessage({ id: 'LimitSide' }),
                 field: 'side',
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({
                     id: 'LimitAcceptableDuration',
                 }),
                 field: 'acceptableDuration',
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({ id: 'Limit' }),
                 field: 'limit',
                 valueFormatter: (params) => params.data?.limit?.toFixed(1),
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({ id: 'Value' }),
                 field: 'value',
                 valueFormatter: (params) => params.data?.value?.toFixed(1),
             },
             {
-                width: 150,
                 headerName: intl.formatMessage({ id: 'Loading' }),
                 field: 'loading',
                 valueFormatter: (params) => params.data?.loading?.toFixed(1),
@@ -484,6 +467,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 columnDefs={nmKConstraintsColumns}
                 postSortRows={(params) => handlePostSortRows(params, false)}
                 defaultColDef={defaultColDef}
+                onGridReady={onGridReady}
                 getRowStyle={(params) => getRowStyle(params, false)}
             />
         );
