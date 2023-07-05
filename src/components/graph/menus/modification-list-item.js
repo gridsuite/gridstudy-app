@@ -16,12 +16,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { fetchNetworkElementInfos } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../../utils/equipment-types';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -112,47 +107,9 @@ export const ModificationListItem = ({
         if (!studyUuid || !currentNode || !modif) {
             return;
         }
-        let energizeEndPromise;
-        if (
-            modif.type === 'BRANCH_STATUS_MODIFICATION' &&
-            (modif.action === 'ENERGISE_END_ONE' ||
-                modif.action === 'ENERGISE_END_TWO')
-        ) {
-            let voltageLevelId;
-            let voltageLevelName;
-            if (modif.action === 'ENERGISE_END_ONE') {
-                voltageLevelId = 'voltageLevelId1';
-                voltageLevelName = 'voltageLevelName1';
-            } else if (modif.action === 'ENERGISE_END_TWO') {
-                voltageLevelId = 'voltageLevelId2';
-                voltageLevelName = 'voltageLevelName2';
-            }
-            //TODO supposed to be temporary, we shouldn't fetch back-end to create a label
-            energizeEndPromise = fetchNetworkElementInfos(
-                studyUuid,
-                currentNode.id,
-                EQUIPMENT_TYPES.LINE.type,
-                EQUIPMENT_INFOS_TYPES.LIST.type,
-                modif.equipmentId,
-                false
-            )
-                .then((line) => {
-                    return line[voltageLevelName] ?? line[voltageLevelId];
-                })
-                .catch(() => {
-                    console.error(
-                        'Could not fetch line with ID ' + modif.equipmentId
-                    );
-                    return null;
-                });
-        } else {
-            energizeEndPromise = Promise.resolve(null);
-        }
-        energizeEndPromise.then((energizedEnd) => {
-            setComputedValues({
-                energizedEnd: energizedEnd,
-                computedLabel: <strong>{getComputedLabel()}</strong>,
-            });
+        setComputedValues({
+            energizedEnd: modif.energizedVoltageLevelId,
+            computedLabel: <strong>{getComputedLabel()}</strong>,
         });
     }, [modif, studyUuid, currentNode, getComputedLabel]);
 
