@@ -104,7 +104,7 @@
   "iidm.export.xml.sorted": "Trier les ouvrages dans le fichier",
   "iidm.export.xml.sorted.desc": "Trier les ouvrages dans le fichier",
   "iidm.export.xml.version": "Version IIDM",
-  "iidm.export.xml.version.desc": "Version IIDM utilisé pour générer le fichier",
+  "iidm.export.xml.version.desc": "Version IIDM utilisée pour générer le fichier",
   "iidm.export.xml.version.1.0": "1.0",
   "iidm.export.xml.version.1.1": "1.1",
   "iidm.export.xml.version.1.2": "1.2",
