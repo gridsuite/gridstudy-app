@@ -170,7 +170,7 @@ const ExportDialog = ({
                             }
                             style={{ fontWeight: 'bold' }}
                         >
-                            Parameters
+                            <FormattedMessage id="parameters" />
                         </Typography>
                         <IconButton
                             onClick={handleFoldChange}
