@@ -17,6 +17,7 @@ export const TableNumericalInput = ({
     inputProps,
     previousValue,
     valueModified,
+    handleChange,
     adornment,
     ...props
 }) => {
@@ -42,6 +43,7 @@ export const TableNumericalInput = ({
     );
 
     const outputTransform = (value) => {
+        handleChange?.();
         if (typeof value === 'string') {
             if (value === '-') {
                 return value;
@@ -82,9 +84,10 @@ export const TableNumericalInput = ({
                 style: {
                     fontSize: 'small',
                     color:
-                        previousValue !== undefined &&
-                        previousValue === value &&
-                        !valueModified
+                        (previousValue !== undefined &&
+                            previousValue === value &&
+                            !valueModified) ||
+                        (handleChange !== undefined && !valueModified)
                             ? 'grey'
                             : null, // grey out the value if it is the same as the previous one
                     textAlign: style?.textAlign ?? 'left',

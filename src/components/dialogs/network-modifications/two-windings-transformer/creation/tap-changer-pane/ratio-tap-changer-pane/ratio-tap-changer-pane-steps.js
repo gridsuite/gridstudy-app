@@ -132,6 +132,7 @@ const RatioTapChangerPaneSteps = ({ disabled, previousValues }) => {
             createRuleMessageId="CreateRegulationRule"
             createRuleAllowNegativeValues={false}
             importRuleMessageId="ImportRegulationRule"
+            resetButtonMessageId="ResetRegulationRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
             previousValues={previousValues}

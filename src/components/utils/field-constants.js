@@ -67,6 +67,7 @@ export const Q_MIN_P = 'qminP';
 export const P = 'p';
 
 export const ENABLED = 'enabled';
+export const STEPS_MODIFIED = 'stepsModified';
 export const REGULATING = 'regulating';
 export const REGULATION_TYPE = 'regulationType';
 export const TARGET_DEADBAND = 'targetDeadband';

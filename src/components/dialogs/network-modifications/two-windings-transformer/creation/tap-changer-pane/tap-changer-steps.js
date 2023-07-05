@@ -22,11 +22,7 @@ import {
     LOW_TAP_POSITION,
     SELECTED,
     STEPS,
-    STEPS_CONDUCTANCE,
-    STEPS_RATIO,
-    STEPS_REACTANCE,
-    STEPS_RESISTANCE,
-    STEPS_SUSCEPTANCE,
+    STEPS_MODIFIED,
     STEPS_TAP,
     TAP_POSITION,
 } from 'components/utils/field-constants';
@@ -41,6 +37,7 @@ const TapChangerSteps = ({
     createRuleMessageId,
     createRuleAllowNegativeValues,
     importRuleMessageId,
+    resetButtonMessageId,
     handleImportRow,
     disabled,
     previousValues,
@@ -48,7 +45,7 @@ const TapChangerSteps = ({
 }) => {
     const intl = useIntl();
 
-    const { trigger, getValues, setValue } = useFormContext();
+    const { trigger, getValues, setValue, clearErrors } = useFormContext();
 
     const useFieldArrayOutput = useFieldArray({
         name: `${tapChanger}.${STEPS}`,
@@ -61,6 +58,10 @@ const TapChangerSteps = ({
 
     const lowTapPosition = useWatch({
         name: `${tapChanger}.${LOW_TAP_POSITION}`,
+    });
+
+    const areStepsModified = useWatch({
+        name: `${tapChanger}.${STEPS_MODIFIED}`,
     });
 
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
@@ -104,6 +105,7 @@ const TapChangerSteps = ({
         }
 
         setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, nextHighestTap);
+        setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
 
         return tapRowsToAdd;
     }
@@ -117,6 +119,10 @@ const TapChangerSteps = ({
                 modification && !lowTapPosition
                     ? previousValues?.[LOW_TAP_POSITION]
                     : lowTapPosition;
+
+            if (currentLowTapPosition !== previousValues?.[LOW_TAP_POSITION]) {
+                setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
+            }
 
             for (
                 let tapPosition = currentLowTapPosition, index = 0;
@@ -138,27 +144,6 @@ const TapChangerSteps = ({
         [getValues, tapChanger, previousValues, lowTapPosition, setValue]
     );
 
-    const adjustedStepsPreviousValues = useMemo(() => {
-        let adjustedTapSteps;
-        if (previousValues?.[STEPS]) {
-            adjustedTapSteps = previousValues[STEPS].map((step) => {
-                return {
-                    index: lowTapPosition
-                        ? step.index +
-                          (lowTapPosition - previousValues?.[LOW_TAP_POSITION])
-                        : step.index,
-                    r: step.r,
-                    x: step.x,
-                    b: step.b,
-                    g: step.g,
-                    rho: step.rho,
-                };
-            });
-        }
-        resetTapNumbers(null, modification);
-        return adjustedTapSteps;
-    }, [previousValues, resetTapNumbers, modification, lowTapPosition]);
-
     // Adjust high tap position when low tap position change + remove red if value fixed
     useEffect(() => {
         trigger(`${tapChanger}.${LOW_TAP_POSITION}`).then((result) => {
@@ -166,19 +151,23 @@ const TapChangerSteps = ({
                 resetTapNumbers(null, modification);
             }
         });
-    }, [
-        trigger,
-        tapChanger,
-        lowTapPosition,
-        adjustedStepsPreviousValues,
-        resetTapNumbers,
-        modification,
-    ]);
+    }, [trigger, tapChanger, lowTapPosition, resetTapNumbers, modification]);
 
     // when we detect a change in tapSteps (so when the size or the order of the list of rows change), we reset the tap fields
     useEffect(() => {
         resetTapNumbers(tapSteps, modification);
     }, [tapSteps, resetTapNumbers, modification]);
+
+    const handleResetButton = useCallback(() => {
+        replace(previousValues?.[STEPS]);
+        setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
+        setValue(`${tapChanger}.${STEPS_MODIFIED}`, false);
+        clearErrors(`${tapChanger}.${STEPS}`);
+    }, [clearErrors, previousValues, replace, setValue, tapChanger]);
+
+    const isRegulationRulesModified = useCallback(() => {
+        return modification && areStepsModified;
+    }, [areStepsModified, modification]);
 
     const handleCreateTapRule = (lowTap, highTap) => {
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
@@ -192,6 +181,7 @@ const TapChangerSteps = ({
                 current += interval;
             });
             replace(currentTapRows);
+            setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
         }
     };
 
@@ -202,39 +192,6 @@ const TapChangerSteps = ({
             }
         });
     }
-
-    const findTap = useCallback(
-        (rowIndex, arrayFormName, tapSteps) => {
-            return adjustedStepsPreviousValues?.find(
-                (e) => e.index === getValues(arrayFormName)[rowIndex]?.index
-            );
-        },
-        [adjustedStepsPreviousValues, getValues]
-    );
-
-    const getTapPreviousValue = useCallback(
-        (rowIndex, column, arrayFormName, tapSteps) => {
-            const temporaryLimit = findTap(rowIndex, arrayFormName, tapSteps);
-            if (temporaryLimit === undefined) {
-                return undefined;
-            }
-            switch (column.dataKey) {
-                case STEPS_RESISTANCE:
-                    return temporaryLimit?.r;
-                case STEPS_REACTANCE:
-                    return temporaryLimit?.x;
-                case STEPS_CONDUCTANCE:
-                    return temporaryLimit?.g;
-                case STEPS_SUSCEPTANCE:
-                    return temporaryLimit?.b;
-                case STEPS_RATIO:
-                    return temporaryLimit?.rho;
-                default:
-                    return undefined;
-            }
-        },
-        [findTap]
-    );
 
     const handleImportTapRule = (selectedFile, setFileParseError) => {
         Papa.parse(selectedFile, {
@@ -256,6 +213,7 @@ const TapChangerSteps = ({
                 }));
                 if (rows && rows.length > 0) {
                     replace(rows);
+                    setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
                 }
             },
         });
@@ -301,29 +259,46 @@ const TapChangerSteps = ({
         />
     );
 
-    const createRuleButton = (
-        <Tooltip
-            title={intl.formatMessage({
-                id: createRuleMessageId,
-            })}
-            placement="left"
-        >
-            <span>
-                <IconButton
-                    onClick={() => setOpenCreateRuleDialog(true)}
-                    disabled={disabled || tapSteps.length === 0}
-                >
-                    <AddchartIcon />
-                </IconButton>
-            </span>
-        </Tooltip>
-    );
-
-    const completedColumnsDefinition = columnsDefinition;
-    completedColumnsDefinition[completedColumnsDefinition.length - 1] = {
-        ...completedColumnsDefinition[completedColumnsDefinition.length - 1],
-        extra: createRuleButton,
-    };
+    const completedColumnsDefinition = useMemo(() => {
+        const createRuleButton = (
+            <Tooltip
+                title={intl.formatMessage({
+                    id: createRuleMessageId,
+                })}
+                placement="left"
+            >
+                <span>
+                    <IconButton
+                        onClick={() => setOpenCreateRuleDialog(true)}
+                        disabled={disabled || tapSteps.length === 0}
+                    >
+                        <AddchartIcon />
+                    </IconButton>
+                </span>
+            </Tooltip>
+        );
+        const columnsDef = columnsDefinition.map((columnDefinition) => {
+            return {
+                ...columnDefinition,
+                handleChange: () => {
+                    setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
+                },
+            };
+        });
+        columnsDef[columnsDef.length - 1] = {
+            ...columnsDef[columnsDef.length - 1],
+            extra: createRuleButton,
+        };
+        return columnsDef;
+    }, [
+        columnsDefinition,
+        createRuleMessageId,
+        disabled,
+        intl,
+        setValue,
+        tapChanger,
+        tapSteps.length,
+    ]);
 
     return (
         <Grid item container spacing={1}>
@@ -347,9 +322,10 @@ const TapChangerSteps = ({
                 createRows={createTapRows}
                 handleUploadButton={handleImportTapRuleButton}
                 uploadButtonMessageId={importRuleMessageId}
+                handleResetButton={modification ? handleResetButton : undefined}
+                resetButtonMessageId={resetButtonMessageId}
+                isValueModified={isRegulationRulesModified}
                 disabled={disabled}
-                previousValues={adjustedStepsPreviousValues}
-                getPreviousValue={getTapPreviousValue}
             />
             <CreateRuleDialog
                 ruleType={ruleType}

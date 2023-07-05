@@ -93,6 +93,7 @@ function EditableTableCell({
     column,
     previousValue,
     valueModified,
+    handleChange,
     ...props
 }) {
     return (
@@ -102,6 +103,7 @@ function EditableTableCell({
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     previousValue={previousValue}
                     valueModified={valueModified}
+                    handleChange={handleChange}
                     adornment={column?.adornment}
                     style={{
                         textAlign: column?.textAlign,
@@ -137,6 +139,8 @@ const DndTable = ({
     createRows,
     handleUploadButton,
     uploadButtonMessageId,
+    handleResetButton,
+    resetButtonMessageId,
     disabled = false,
     withLeftButtons = true,
     withAddRowsDialog = true,
@@ -194,6 +198,7 @@ const DndTable = ({
                         ? isValueModified(rowIndex, arrayFormName)
                         : false
                 }
+                handleChange={column.handleChange}
             />
         );
     }
@@ -409,6 +414,8 @@ const DndTable = ({
                     <DndTableBottomLeftButtons
                         handleUploadButton={handleUploadButton}
                         uploadButtonMessageId={uploadButtonMessageId}
+                        handleResetButton={handleResetButton}
+                        resetButtonMessageId={resetButtonMessageId}
                         disabled={disabled}
                     />
                 )}
