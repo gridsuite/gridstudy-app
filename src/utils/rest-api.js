@@ -1675,7 +1675,7 @@ export function getShortCircuitParameters(studyUuid) {
     return backendFetchJson(getShortCircuitParams);
 }
 
-function changeBranchStatus(studyUuid, currentNodeUuid, branchId, action) {
+function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
     const changeBranchStatusUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
@@ -1688,28 +1688,32 @@ function changeBranchStatus(studyUuid, currentNodeUuid, branchId, action) {
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
-            equipmentId: branchId,
+            equipmentId: branch.id,
+            energizedVoltageLevelId:
+                action === BRANCH_STATUS_ACTION.ENERGISE_END_ONE
+                    ? branch.voltageLevelId1
+                    : branch.voltageLevelId2,
             action: action,
         }),
     });
 }
 
-export function lockoutBranch(studyUuid, currentNodeUuid, branchId) {
-    console.info('locking out branch ' + branchId + ' ...');
+export function lockoutBranch(studyUuid, currentNodeUuid, branch) {
+    console.info('locking out branch ' + branch.id + ' ...');
     return changeBranchStatus(
         studyUuid,
         currentNodeUuid,
-        branchId,
+        branch,
         BRANCH_STATUS_ACTION.LOCKOUT
     );
 }
 
-export function tripBranch(studyUuid, currentNodeUuid, branchId) {
-    console.info('tripping branch ' + branchId + ' ...');
+export function tripBranch(studyUuid, currentNodeUuid, branch) {
+    console.info('tripping branch ' + branch.id + ' ...');
     return changeBranchStatus(
         studyUuid,
         currentNodeUuid,
-        branchId,
+        branch,
         BRANCH_STATUS_ACTION.TRIP
     );
 }
@@ -1717,28 +1721,28 @@ export function tripBranch(studyUuid, currentNodeUuid, branchId) {
 export function energiseBranchEnd(
     studyUuid,
     currentNodeUuid,
-    branchId,
+    branch,
     branchSide
 ) {
     console.info(
-        'energise branch ' + branchId + ' on side ' + branchSide + ' ...'
+        'energise branch ' + branch.id + ' on side ' + branchSide + ' ...'
     );
     return changeBranchStatus(
         studyUuid,
         currentNodeUuid,
-        branchId,
+        branch,
         branchSide === BRANCH_SIDE.ONE
             ? BRANCH_STATUS_ACTION.ENERGISE_END_ONE
             : BRANCH_STATUS_ACTION.ENERGISE_END_TWO
     );
 }
 
-export function switchOnBranch(studyUuid, currentNodeUuid, branchId) {
-    console.info('switching on branch ' + branchId + ' ...');
+export function switchOnBranch(studyUuid, currentNodeUuid, branch) {
+    console.info('switching on branch ' + branch.id + ' ...');
     return changeBranchStatus(
         studyUuid,
         currentNodeUuid,
-        branchId,
+        branch,
         BRANCH_STATUS_ACTION.SWITCH_ON
     );
 }
