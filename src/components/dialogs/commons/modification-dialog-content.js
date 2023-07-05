@@ -121,12 +121,12 @@ const ModificationDialogContent = ({
                                 {copyEquipmentButton}
                             </Grid>
                         )}
-                        {subtitle && (
-                            <Grid item xs={12}>
-                                {subtitle}
-                            </Grid>
-                        )}
                     </Grid>
+                    {subtitle && (
+                        <Grid item xs={12}>
+                            {subtitle}
+                        </Grid>
+                    )}
                 </Grid>
             </DialogTitle>
             <DialogContent>{dialogProps.children}</DialogContent>
