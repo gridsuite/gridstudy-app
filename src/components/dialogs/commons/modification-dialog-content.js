@@ -61,7 +61,6 @@ const ModificationDialogContent = ({
         icon: <AutoStoriesOutlinedIcon />,
     });
     const currentNode = useSelector((state) => {
-        console.log({ state });
         return state.currentTreeNode;
     });
     const isNodeNotBuilt =
@@ -72,8 +71,6 @@ const ModificationDialogContent = ({
         icon: <FindInPageIcon />,
     });
 
-    // For the global Parent Component, disable close with backdropClick
-    // Then close the dialog for other reasons
     const handleClose = (event, reason) => {
         if (reason !== 'backdropClick') {
             closeAndClear(event, reason);
@@ -122,6 +119,11 @@ const ModificationDialogContent = ({
                         {searchCopy && (
                             <Grid item xs={1}>
                                 {copyEquipmentButton}
+                            </Grid>
+                        )}
+                        {subtitle && (
+                            <Grid item xs={12}>
+                                {subtitle}
                             </Grid>
                         )}
                     </Grid>
