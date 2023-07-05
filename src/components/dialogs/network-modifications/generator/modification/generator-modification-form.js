@@ -207,7 +207,6 @@ const GeneratorModificationForm = ({
                 {gridItem(generatorNameField, 4)}
                 {gridItem(energySourceField, 4)}
             </Grid>
-
             {/* Limits part */}
             <Grid container spacing={2}>
                 <Grid item xs={12}>
