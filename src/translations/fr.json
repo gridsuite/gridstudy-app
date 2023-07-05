@@ -1033,5 +1033,6 @@
     "AttachingAndSplittingLines": "Piquage et coupure",
     "GenerationAndLoad": "Production et consommation",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",
-    "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur"
+    "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
+    "SelectiveShortCircuitAnalysis": "Analyse court-circuit"
 }

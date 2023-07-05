@@ -40,6 +40,9 @@ import LoadModificationDialog from 'components/dialogs/network-modifications/loa
 import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
+import { Menu } from '@mui/material';
+import { BusMenu } from 'components/menus/bus-menu';
+import { startShortCircuitAnalysis } from '../../../utils/rest-api';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -132,6 +135,28 @@ function SingleLineDiagramContent(props) {
         display: null,
     });
 
+    const [busMenu, setBusMenu] = useState({
+        position: [-1, -1],
+        busId: null,
+        //equipmentType: null,
+        svgId: null,
+        display: null,
+    });
+
+    const showBusMenu = useCallback(
+        (busId, equipmentType, svgId, x, y) => {
+            handleTogglePopover(false, null, null);
+            setBusMenu({
+                position: [x, y],
+                busId: busId,
+                //equipmentType: getEquipmentTypeFromFeederType(equipmentType),
+                svgId: svgId,
+                display: true,
+            });
+        },
+        [setBusMenu]
+    );
+
     const showEquipmentMenu = useCallback(
         (equipmentId, equipmentType, svgId, x, y) => {
             handleTogglePopover(false, null, null);
@@ -145,6 +170,12 @@ function SingleLineDiagramContent(props) {
         },
         [handleTogglePopover]
     );
+
+    const closeBusMenu = useCallback(() => {
+        setBusMenu({
+            display: false,
+        });
+    }, []);
 
     const closeEquipmentMenu = useCallback(() => {
         setEquipmentMenu({
@@ -175,6 +206,33 @@ function SingleLineDiagramContent(props) {
         },
         [studyUuid, currentNode?.id, closeEquipmentMenu, snackError]
     );
+
+    const handleRunShortcircuitAnalysis = useCallback((busId) => {
+        startShortCircuitAnalysis(studyUuid, currentNode?.id, busId).catch(
+            (error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'UnableToDeleteEquipment',
+                });
+                closeBusMenu();
+            }
+        );
+    });
+
+    const displayBusMenu = () => {
+        return (
+            busMenu.display && (
+                <BusMenu
+                    handleRunShortcircuitAnalysis={
+                        handleRunShortcircuitAnalysis
+                    }
+                    busId={busMenu.busId}
+                    position={busMenu.position}
+                    closeBusMenu={closeBusMenu}
+                />
+            )
+        );
+    };
 
     const displayBranchMenu = () => {
         return (
@@ -322,6 +380,9 @@ function SingleLineDiagramContent(props) {
                 // callback on the feeders
                 isReadyForInteraction ? showEquipmentMenu : null,
 
+                // callback on the buses
+                isReadyForInteraction ? showBusMenu : null,
+
                 // arrows color
                 theme.palette.background.paper,
 
@@ -430,6 +491,7 @@ function SingleLineDiagramContent(props) {
             />
             {shouldDisplayTooltip && displayTooltip()}
             {displayBranchMenu()}
+            {displayBusMenu()}
             {displayMenu(equipments.loads, 'load-menus')}
             {displayMenu(equipments.batteries, 'battery-menus')}
             {displayMenu(equipments.danglingLines, 'dangling-line-menus')}

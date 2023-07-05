@@ -1019,14 +1019,18 @@ export function fetchDefaultSensitivityAnalysisProvider() {
     return backendFetchText(url);
 }
 
-export function startShortCircuitAnalysis(studyUuid, currentNodeUuid) {
+export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     console.info(
         `Running short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
 
+    const urlSearchParams = new URLSearchParams();
+    busId && urlSearchParams.append('busId', busId);
+
     const startShortCircuitAnanysisUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/shortcircuit/run';
+        '/shortcircuit/run?' +
+        urlSearchParams.toString();
     console.debug(startShortCircuitAnanysisUrl);
     return backendFetch(startShortCircuitAnanysisUrl, { method: 'put' });
 }
@@ -1053,15 +1057,35 @@ export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
+export function fetchShortCircuitAnalysisResult(
+    studyUuid,
+    currentNodeUuid,
+    type = 'Global'
+) {
     console.info(
-        `Fetching short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching ${type} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
+
+    const urlSearchParams = new URLSearchParams();
+    type && urlSearchParams.append('type', type);
+
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/shortcircuit/result';
+        '/shortcircuit/result?' +
+        urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function fetchSelectiveShortCircuitAnalysisResult(
+    studyUuid,
+    currentNodeUuid
+) {
+    return fetchShortCircuitAnalysisResult(
+        studyUuid,
+        currentNodeUuid,
+        'Selective'
+    );
 }
 
 // --- Voltage init API - BEGIN

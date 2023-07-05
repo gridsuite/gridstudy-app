@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { SensitivityAnalysisResultTab } from './sensitivity-analysis-result-tab';
-import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-tab';
+import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertInvalidNode from './utils/alert-invalid-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
@@ -59,9 +59,10 @@ export const ResultViewTab = ({
     currentNode,
     loadFlowInfos,
     openVoltageLevelDiagram,
+    defaultTabIndex,
     disabled,
 }) => {
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState(defaultTabIndex);
 
     const classes = useStyles();
 

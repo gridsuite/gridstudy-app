@@ -9,9 +9,9 @@ import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { CustomAGGrid } from './dialogs/custom-aggrid';
+import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
-import { unitToKiloUnit } from '../utils/rounding';
+import { unitToKiloUnit } from 'utils/rounding';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
