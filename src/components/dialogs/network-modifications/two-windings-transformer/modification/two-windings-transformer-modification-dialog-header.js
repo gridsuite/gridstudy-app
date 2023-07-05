@@ -15,7 +15,6 @@ import React from 'react';
 import { filledTextField, gridItem } from '../../../dialogUtils';
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
-
 const TwoWindingsTransformerModificationDialogHeader = ({
     equipmentToModify,
     equipmentId,

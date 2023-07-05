@@ -20,6 +20,16 @@ import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
+import { useSelector } from 'react-redux';
+import Alert from '@mui/material/Alert';
+import { BUILD_STATUS } from '../../network/constants';
+import makeStyles from '@mui/styles/makeStyles';
+
+const useStyles = makeStyles((theme) => ({
+    warningMessage: {
+        backgroundColor: theme.formFiller.background,
+    },
+}));
 
 /**
  * Common parts for the Modification Dialog
@@ -38,24 +48,29 @@ const ModificationDialogContent = ({
     searchCopy,
     subtitle,
     isDataFetching = false,
+    showNodeNotBuiltWarning = false,
     submitButton,
     closeAndClear,
     ...dialogProps
 }) => {
+    const classes = useStyles();
+
     const catalogButton = useButtonWithTooltip({
         label: 'CatalogButtonTooltip',
         handleClick: onOpenCatalogDialog,
         icon: <AutoStoriesOutlinedIcon />,
     });
-
+    const currentNode = useSelector((state) => {
+        return state.currentTreeNode;
+    });
+    const isNodeNotBuilt =
+        currentNode?.data?.buildStatus === BUILD_STATUS.NOT_BUILT;
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: searchCopy?.handleOpenSearchDialog,
         icon: <FindInPageIcon />,
     });
 
-    // For the global Parent Component, disable close with backdropClick
-    // Then close the dialog for other reasons
     const handleClose = (event, reason) => {
         if (reason !== 'backdropClick') {
             closeAndClear(event, reason);
@@ -75,20 +90,37 @@ const ModificationDialogContent = ({
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container spacing={2} justifyContent={'space-between'}>
-                    <Grid item xs={10}>
+                    <Grid item xs={6}>
                         <FormattedMessage id={titleId} />
                     </Grid>
+
                     <Grid
                         item
-                        xs={2}
+                        xs={6}
                         container
                         spacing={2}
                         justifyContent={'right'}
                     >
-                        {onOpenCatalogDialog && (
-                            <Grid item>{catalogButton}</Grid>
+                        {showNodeNotBuiltWarning && isNodeNotBuilt && (
+                            <Grid item xs={10}>
+                                <Alert
+                                    severity={'warning'}
+                                    className={classes.warningMessage}
+                                >
+                                    <FormattedMessage id="ModifyNodeNotBuiltWarningMsg" />
+                                </Alert>
+                            </Grid>
                         )}
-                        {searchCopy && <Grid item>{copyEquipmentButton}</Grid>}
+                        {onOpenCatalogDialog && (
+                            <Grid item xs={1}>
+                                {catalogButton}
+                            </Grid>
+                        )}
+                        {searchCopy && (
+                            <Grid item xs={1}>
+                                {copyEquipmentButton}
+                            </Grid>
+                        )}
                     </Grid>
                     {subtitle && (
                         <Grid item xs={12}>
@@ -114,6 +146,7 @@ ModificationDialogContent.propTypes = {
     searchCopy: PropTypes.object,
     subtitle: PropTypes.element,
     isDataFetching: PropTypes.bool,
+    showNodeNotBuiltWarning: PropTypes.bool,
     submitButton: PropTypes.element,
     closeAndClear: PropTypes.func.isRequired,
 };
