@@ -67,7 +67,7 @@ const PagedSensitivityResult = ({
         return baseFilters;
     }, [intl, sensiKindIndex, nOrNkIndex, result]);
 
-    const { updateFilter, getFilterSelector, initFilters } = useRowFilter(
+    const { updateFilter, filterSelector, initFilters } = useRowFilter(
         DATA_KEY_TO_FILTER_KEY
     );
 
@@ -76,7 +76,7 @@ const PagedSensitivityResult = ({
     const defaultSortOrder = SORT_WAYS.desc;
     const { onSortChanged, sortSelector } = useAgGridSort(
         DATA_KEY_TO_SORT_KEY,
-        { colKey: defaultSortColumn, defaultSortOrder }
+        { colKey: defaultSortColumn, sortWay: defaultSortOrder }
     );
 
     const { snackError } = useSnackMessage();
@@ -106,7 +106,7 @@ const PagedSensitivityResult = ({
             functionType: FUNCTION_TYPES[sensiKindIndex],
             offset: page * rowsPerPage,
             chunkSize: rowsPerPage,
-            ...getFilterSelector(),
+            ...filterSelector,
             ...sortSelector,
         };
 
@@ -132,7 +132,7 @@ const PagedSensitivityResult = ({
         sensiKindIndex,
         page,
         rowsPerPage,
-        getFilterSelector,
+        filterSelector,
         sortSelector,
         studyUuid,
         nodeUuid,

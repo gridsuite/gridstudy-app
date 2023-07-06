@@ -22,7 +22,7 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
-import SensitivityAnalysisResultTab from './results/./sensitivity-analysis/sensitivity-analysis-result-tab';
+import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 
 const useStyles = makeStyles(() => ({
     div: {
