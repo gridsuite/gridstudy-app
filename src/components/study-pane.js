@@ -34,6 +34,8 @@ import { ReactFlowProvider } from 'react-flow-renderer';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
+import { ResultsTabsRootLevel } from './results/use-results-tab';
+import { ShortcircuitAnalysisResultTabs } from './results/shortcircuit/shortcircuit-analysis-result.type';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -149,7 +151,11 @@ const StudyPane = ({
 
     function showSelectiveShortcircuitResults() {
         props.onChangeTab(2); // switch to results view
-        setResultTabIndexRedirection([3, 1]);
+        // redirect to shorcircuit analysis tab, selective subtab
+        setResultTabIndexRedirection([
+            ResultsTabsRootLevel.SHORTCIRCUIT_ANALYSIS,
+            ShortcircuitAnalysisResultTabs.SELECTIVE,
+        ]);
     }
 
     function renderMapView() {

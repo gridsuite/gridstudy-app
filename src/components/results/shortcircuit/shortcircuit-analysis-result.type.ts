@@ -32,3 +32,8 @@ export interface ShortcircuitAnalysisResult {
     writeTimeStamp: Date;
     faults: SCAResultFault[];
 }
+
+export enum ShortcircuitAnalysisResultTabs {
+    GLOBAL = 0,
+    SELECTIVE = 1,
+}

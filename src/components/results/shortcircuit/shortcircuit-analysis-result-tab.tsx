@@ -14,13 +14,18 @@ import WaitingLoader from '../../utils/waiting-loader';
 import ShortCircuitAnalysisResult from './shortcircuit-analysis-result';
 import { Tab, Tabs } from '@mui/material';
 import { UUID } from 'crypto';
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
+import {
+    ResultTabIndexRedirection,
+    ResultsTabsLevel,
+    useResultsTab,
+} from '../use-results-tab';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
-    resultTabIndexRedirection: number[] | null;
+    resultTabIndexRedirection: ResultTabIndexRedirection;
 }
 
 const shortCircuitAnalysisResultInvalidations = ['shortCircuitAnalysisResult'];
@@ -30,11 +35,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
 > = ({ studyUuid, nodeUuid, resultTabIndexRedirection }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
-    useEffect(() => {
-        resultTabIndexRedirection && setTabIndex(resultTabIndexRedirection[1]);
-    }, [resultTabIndexRedirection]);
-
-    console.log('REDIRECTION', tabIndex, resultTabIndexRedirection);
+    useResultsTab(resultTabIndexRedirection, setTabIndex, ResultsTabsLevel.ONE);
 
     const [shortCircuitAnalysisResult, isWaitingShortCircuitAnalysisResult] =
         useNodeData(

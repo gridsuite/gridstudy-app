@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState, useLayoutEffect, useRef } from 'react';
+import { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -40,14 +40,13 @@ import LoadModificationDialog from 'components/dialogs/network-modifications/loa
 import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
-import { Menu } from '@mui/material';
 import { BusMenu } from 'components/menus/bus-menu';
 import { startShortCircuitAnalysis } from '../../../utils/rest-api';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
     const classes = useDiagramStyles();
-    const { diagramSizeSetter } = props;
+    const { diagramSizeSetter, showSelectiveShortcircuitResults } = props;
     const theme = useTheme();
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
     const svgRef = useRef();
@@ -154,7 +153,7 @@ function SingleLineDiagramContent(props) {
                 display: true,
             });
         },
-        [setBusMenu]
+        [setBusMenu, handleTogglePopover]
     );
 
     const showEquipmentMenu = useCallback(
@@ -210,21 +209,20 @@ function SingleLineDiagramContent(props) {
     const handleRunShortcircuitAnalysis = useCallback(
         (busId) => {
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
-                .then(() => props.showSelectiveShortcircuitResults())
+                .then(() => showSelectiveShortcircuitResults())
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'UnableToDeleteEquipment',
                     });
-
-                    closeBusMenu();
-                });
+                })
+                .finally(closeBusMenu());
         },
         [
             closeBusMenu,
             currentNode?.id,
             studyUuid,
-            props.showSelectiveShortcircuitResults,
+            showSelectiveShortcircuitResults,
             snackError,
         ]
     );
@@ -451,6 +449,7 @@ function SingleLineDiagramContent(props) {
         isAnyNodeBuilding,
         equipmentMenu,
         showEquipmentMenu,
+        showBusMenu,
         props.diagramId,
         props.svgType,
         theme,

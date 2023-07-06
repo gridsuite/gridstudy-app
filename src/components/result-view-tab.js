@@ -23,6 +23,7 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
+import { ResultsTabsLevel, useResultsTab } from './results/use-results-tab';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -50,6 +51,7 @@ const useStyles = makeStyles(() => ({
  * @param currentNode : object current node
  * @param loadFlowInfos : object result of load flow
  * @param openVoltageLevelDiagram : function
+ * @param resultTabIndexRedirection : redirection to specific tab [RootTab, LevelOneTab, ...]
  * @param disabled
  * @returns {JSX.Element}
  * @constructor
@@ -64,9 +66,11 @@ export const ResultViewTab = ({
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
-    useEffect(() => {
-        resultTabIndexRedirection && setTabIndex(resultTabIndexRedirection[0]);
-    }, [resultTabIndexRedirection]);
+    useResultsTab(
+        resultTabIndexRedirection,
+        setTabIndex,
+        ResultsTabsLevel.ROOT
+    );
 
     const classes = useStyles();
 

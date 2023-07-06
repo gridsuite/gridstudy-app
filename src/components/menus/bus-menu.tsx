@@ -8,6 +8,14 @@ import {
 import { makeStyles } from '@mui/styles';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
+import { FunctionComponent, useCallback } from 'react';
+
+interface BusMenuProps {
+    busId: string;
+    handleRunShortcircuitAnalysis: (busId: string) => void;
+    position: [number, number];
+    closeBusMenu: () => void;
+}
 
 const useStyles = makeStyles((theme) => ({
     menu: {
@@ -23,20 +31,25 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const BusMenu = ({
+export const BusMenu: FunctionComponent<BusMenuProps> = ({
     busId,
     handleRunShortcircuitAnalysis,
     position,
     closeBusMenu,
 }) => {
     const classes = useStyles();
+
+    const handleClickRunShortcircuitAnalysis = useCallback(
+        () => handleRunShortcircuitAnalysis(busId),
+        [busId, handleRunShortcircuitAnalysis]
+    );
+
     return (
         <Menu
             className={classes.menu}
             open={true}
             anchorReference="anchorPosition"
             anchorPosition={{
-                position: 'absolute',
                 top: position[1],
                 left: position[0],
             }}
@@ -44,7 +57,7 @@ export const BusMenu = ({
         >
             <MenuItem
                 className={classes.menuItem}
-                onClick={() => handleRunShortcircuitAnalysis(busId)}
+                onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
             >
                 <ListItemIcon>
