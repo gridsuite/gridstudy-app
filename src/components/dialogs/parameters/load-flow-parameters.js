@@ -475,44 +475,48 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         params['specificParametersPerProvider']
     );
 
-    useEffect(() => {
-        const commitParameters = fusionSpecificWithOtherParams(
-            params,
-            specificCurrentParams
-        );
-        updateParameters(commitParameters);
-    }, [params, specificCurrentParams, updateParameters]);
-
     const onSpecificParamChange = (paramName, newValue) => {
         const specificParamDescr = Object.values(
-            specificParamsDescrWithoutNanVals
+            specificParamsDescrWithoutNanVals[provider]
         ).find((descr) => descr.name === paramName);
-        setSpecificCurrentParams((prevCurrentParameters) => {
-            if (specificParamDescr.defaultValue !== newValue) {
-                return {
-                    ...prevCurrentParameters,
-                    [provider]: {
-                        ...prevCurrentParameters[provider],
-                        [specificParamDescr.name]: newValue,
-                    },
-                };
-            }
+
+        let specParamsToSave;
+        if (specificParamDescr.defaultValue !== newValue) {
+            specParamsToSave = {
+                ...specificCurrentParams,
+                [provider]: {
+                    ...specificCurrentParams[provider],
+                    [specificParamDescr.name]: newValue,
+                },
+            };
+        } else {
             const { [specificParamDescr.name]: value, ...otherProviderParams } =
-                prevCurrentParameters[provider] || {};
-            return {
-                ...prevCurrentParameters,
+                specificCurrentParams[provider] || {};
+            specParamsToSave = {
+                ...specificCurrentParams,
                 [provider]: otherProviderParams,
             };
-        });
+        }
+
+        setSpecificCurrentParams(specParamsToSave);
+
+        const commitParameters = fusionSpecificWithOtherParams(
+            params,
+            specParamsToSave
+        );
+        updateParameters(commitParameters);
     };
 
     const specificParamsDescrWithoutNanVals = useMemo(() => {
-        return replaceAllDefaultValues(
-            specificParamsDescriptions[provider],
-            'NaN',
-            ''
-        );
-    }, [specificParamsDescriptions, provider]);
+        let specificParamsDescrCopy = {};
+        Object.entries(specificParamsDescriptions).forEach(([k, v]) => {
+            specificParamsDescrCopy = {
+                ...specificParamsDescrCopy,
+                [k]: replaceAllDefaultValues(v, 'NaN', ''),
+            };
+        });
+        return specificParamsDescrCopy;
+    }, [specificParamsDescriptions]);
 
     const updateLfProviderCallback = useCallback(
         (evt) => {
@@ -590,7 +594,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 {specificParamsDescriptions?.[provider] && (
                     <SpecificLoadFlowParameters
                         specificParamsDescription={
-                            specificParamsDescrWithoutNanVals
+                            specificParamsDescrWithoutNanVals[provider]
                         }
                         specificCurrentParams={specificCurrentParams[provider]}
                         onSpecificParamChange={onSpecificParamChange}
