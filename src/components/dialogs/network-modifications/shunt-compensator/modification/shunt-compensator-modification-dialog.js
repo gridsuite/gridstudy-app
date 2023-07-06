@@ -229,6 +229,7 @@ const ShuntCompensatorModificationDialog = ({
                 titleId="ModifyShuntCompensator"
                 open={open}
                 disabledSave={disableSave}
+                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||
