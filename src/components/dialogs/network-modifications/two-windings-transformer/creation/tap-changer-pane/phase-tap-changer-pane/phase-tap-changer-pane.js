@@ -34,6 +34,18 @@ import RegulatingTerminalForm from '../../../../../regulating-terminal/regulatin
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { getComputedPhaseTapChangerRegulationMode } from './phase-tap-changer-pane-utils';
+import { useMemo } from 'react';
+
+export const previousRegulationType = (previousValues) => {
+    if (
+        previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId !==
+        previousValues?.id
+    ) {
+        return REGULATION_TYPES.DISTANT.id;
+    } else {
+        return REGULATION_TYPES.LOCAL.id;
+    }
+};
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -58,19 +70,23 @@ const PhaseTapChangerPane = ({
         name: `${id}.${REGULATION_TYPE}`,
     });
 
-    const regulationEnabled =
-        phaseTapChangerEnabledWatch &&
-        (regulationModeWatch === PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
-            regulationModeWatch ===
-                PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id ||
-            (regulationModeWatch === null &&
-                getComputedPhaseTapChangerRegulationMode(
-                    twtToModify?.[PHASE_TAP_CHANGER]
-                )?.id === PHASE_REGULATION_MODES.CURRENT_LIMITER.id) ||
-            (regulationModeWatch === null &&
-                getComputedPhaseTapChangerRegulationMode(
-                    twtToModify?.[PHASE_TAP_CHANGER]
-                )?.id === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id));
+    const regulationEnabled = useMemo(() => {
+        return (
+            phaseTapChangerEnabledWatch &&
+            (regulationModeWatch ===
+                PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
+                regulationModeWatch ===
+                    PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id ||
+                (regulationModeWatch === null &&
+                    getComputedPhaseTapChangerRegulationMode(
+                        twtToModify?.[PHASE_TAP_CHANGER]
+                    )?.id === PHASE_REGULATION_MODES.CURRENT_LIMITER.id) ||
+                (regulationModeWatch === null &&
+                    getComputedPhaseTapChangerRegulationMode(
+                        twtToModify?.[PHASE_TAP_CHANGER]
+                    )?.id === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id))
+        );
+    }, [phaseTapChangerEnabledWatch, regulationModeWatch, twtToModify]);
 
     const getPhaseTapChangerRegulationModeLabel = (
         phaseTapChangerFormValues
