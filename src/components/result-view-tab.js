@@ -59,10 +59,14 @@ export const ResultViewTab = ({
     currentNode,
     loadFlowInfos,
     openVoltageLevelDiagram,
-    defaultTabIndex,
+    resultTabIndexRedirection,
     disabled,
 }) => {
-    const [tabIndex, setTabIndex] = useState(defaultTabIndex);
+    const [tabIndex, setTabIndex] = useState(0);
+
+    useEffect(() => {
+        resultTabIndexRedirection && setTabIndex(resultTabIndexRedirection[0]);
+    }, [resultTabIndexRedirection]);
 
     const classes = useStyles();
 
@@ -122,6 +126,7 @@ export const ResultViewTab = ({
                 <ShortCircuitAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
+                    resultTabIndexRedirection={resultTabIndexRedirection}
                 />
             </Paper>
         );

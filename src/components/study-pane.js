@@ -113,7 +113,8 @@ const StudyPane = ({
         changed: false,
     });
 
-    const [defaultResultsTabIndex, setDefaultResultTabIndex] = useState(0);
+    const [resultTabIndexRedirection, setResultTabIndexRedirection] =
+        useState();
 
     const classes = useStyles();
 
@@ -148,7 +149,7 @@ const StudyPane = ({
 
     function showSelectiveShortcircuitResults() {
         props.onChangeTab(2); // switch to results view
-        setDefaultResultTabIndex(3);
+        setResultTabIndexRedirection([3, 1]);
     }
 
     function renderMapView() {
@@ -326,7 +327,7 @@ const StudyPane = ({
                     loadFlowInfos={loadFlowInfos}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
-                    defaultTabIndex={defaultResultsTabIndex}
+                    resultTabIndexRedirection={resultTabIndexRedirection}
                 />
             </TabPanelLazy>
             <div
