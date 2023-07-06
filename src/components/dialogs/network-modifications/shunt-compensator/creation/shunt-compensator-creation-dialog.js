@@ -51,7 +51,6 @@ import {
 } from '../characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
 import { FetchStatus } from 'utils/rest-api';
-import { useIntl } from 'react-intl';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -88,10 +87,9 @@ const ShuntCompensatorCreationDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }) => {
-    const intl = useIntl();
     const currentNodeUuid = currentNode?.id;
 
-    const { snackError, snackInfo } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -102,7 +100,6 @@ const ShuntCompensatorCreationDialog = ({
 
     const fromSearchCopyToFormValues = useCallback(
         (shuntCompensator) => {
-            console.log(shuntCompensator);
             reset({
                 [EQUIPMENT_ID]: shuntCompensator.id + '(1)',
                 [EQUIPMENT_NAME]: shuntCompensator.name ?? '',
@@ -124,18 +121,16 @@ const ShuntCompensatorCreationDialog = ({
                 }),
             });
             if (shuntCompensator.maximumSectionCount > 1) {
-
-                snackInfo({
-                    messageId: 'partialCopyShuntCompensator',
+                snackWarning({
+                    headerId: 'partialCopyShuntCompensator',
                 });
             }
         },
-        [reset, snackInfo]
+        [reset, snackWarning]
     );
 
     const fromEditDataToFormValues = useCallback(
         (shuntCompensator) => {
-            console.log('edit', shuntCompensator);
             reset({
                 [EQUIPMENT_ID]: shuntCompensator.equipmentId,
                 [EQUIPMENT_NAME]: shuntCompensator.equipmentName ?? '',
