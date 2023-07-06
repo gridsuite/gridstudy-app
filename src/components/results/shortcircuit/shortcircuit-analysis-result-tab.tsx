@@ -5,22 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNodeData } from '../../study-container';
-import {
-    fetchSelectiveShortCircuitAnalysisResult,
-    fetchShortCircuitAnalysisResult,
-} from '../../../utils/rest-api';
-import WaitingLoader from '../../utils/waiting-loader';
-import ShortCircuitAnalysisResult from './shortcircuit-analysis-result';
 import { Tab, Tabs } from '@mui/material';
 import { UUID } from 'crypto';
 import { FunctionComponent, useCallback, useState } from 'react';
-import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
+import {
+    ShortcircuitAnalysisResultTabs,
+    ShortcircuitAnalysisType,
+} from './shortcircuit-analysis-result.type';
 import {
     ResultTabIndexRedirection,
     ResultsTabsLevel,
     useResultsTab,
 } from '../use-results-tab';
+import { ShortCircuitAnalysisGlobalResult } from './shortcircuit-analysis-global-result';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -28,32 +25,14 @@ interface ShortCircuitAnalysisResultTabProps {
     resultTabIndexRedirection: ResultTabIndexRedirection;
 }
 
-const shortCircuitAnalysisResultInvalidations = ['shortCircuitAnalysisResult'];
-
 export const ShortCircuitAnalysisResultTab: FunctionComponent<
     ShortCircuitAnalysisResultTabProps
-> = ({ studyUuid, nodeUuid, resultTabIndexRedirection }) => {
-    const [tabIndex, setTabIndex] = useState(0);
+> = ({ resultTabIndexRedirection }) => {
+    const [tabIndex, setTabIndex] = useState(
+        resultTabIndexRedirection?.[ResultsTabsLevel.ONE] ?? 0
+    );
 
     useResultsTab(resultTabIndexRedirection, setTabIndex, ResultsTabsLevel.ONE);
-
-    const [shortCircuitAnalysisResult, isWaitingShortCircuitAnalysisResult] =
-        useNodeData(
-            studyUuid,
-            nodeUuid,
-            fetchShortCircuitAnalysisResult,
-            shortCircuitAnalysisResultInvalidations
-        ) as [ShortcircuitAnalysisResult, boolean];
-
-    const [
-        selectiveShortCircuitAnalysisResult,
-        isWaitingSelectiveShortCircuitAnalysisResult,
-    ] = useNodeData(
-        studyUuid,
-        nodeUuid,
-        fetchSelectiveShortCircuitAnalysisResult,
-        shortCircuitAnalysisResultInvalidations
-    ) as [ShortcircuitAnalysisResult, boolean];
 
     const handleTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {
@@ -68,22 +47,16 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                 <Tab label={'Global'} />
                 <Tab label={'Selectif'} />
             </Tabs>
-            <WaitingLoader
-                message={'LoadingRemoteData'}
-                loading={
-                    tabIndex === 0
-                        ? isWaitingShortCircuitAnalysisResult
-                        : isWaitingSelectiveShortCircuitAnalysisResult
-                }
-            >
-                <ShortCircuitAnalysisResult
-                    result={
-                        tabIndex === 0
-                            ? shortCircuitAnalysisResult
-                            : selectiveShortCircuitAnalysisResult
-                    }
+            {tabIndex === ShortcircuitAnalysisResultTabs.GLOBAL && (
+                <ShortCircuitAnalysisGlobalResult
+                    analysisType={ShortcircuitAnalysisType.GLOBAL}
                 />
-            </WaitingLoader>
+            )}
+            {tabIndex === ShortcircuitAnalysisResultTabs.SELECTIVE && (
+                <ShortCircuitAnalysisGlobalResult
+                    analysisType={ShortcircuitAnalysisType.SELECTIVE}
+                />
+            )}
         </>
     );
 };

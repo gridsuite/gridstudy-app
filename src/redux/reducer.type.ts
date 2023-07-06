@@ -10,6 +10,8 @@ import { UUID } from 'crypto';
 export interface ReduxState {
     studyUpdated: StudyUpdated;
     shortCircuitNotif: boolean;
+    studyUuid: UUID;
+    currentTreeNode: CurrentTreeNode;
 }
 
 export interface StudyUpdatedEventDataHeader {
@@ -31,4 +33,20 @@ export interface StudyUpdatedEventData {
 export interface StudyUpdated {
     force: 0 | 1;
     eventData: StudyUpdatedEventData;
+}
+
+export interface CurrentTreeNodeData {
+    parentNodeUuid: UUID;
+    label: string;
+    description: string;
+    buildStatus: string;
+    readonly: boolean;
+}
+
+export interface CurrentTreeNode {
+    id: UUID;
+    type: string;
+    data: CurrentTreeNodeData;
+    targetPosition: string;
+    sourcePosition: string;
 }

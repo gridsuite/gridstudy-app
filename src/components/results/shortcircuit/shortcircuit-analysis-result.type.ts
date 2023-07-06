@@ -37,3 +37,8 @@ export enum ShortcircuitAnalysisResultTabs {
     GLOBAL = 0,
     SELECTIVE = 1,
 }
+
+export enum ShortcircuitAnalysisType {
+    GLOBAL = 0,
+    SELECTIVE = 1,
+}

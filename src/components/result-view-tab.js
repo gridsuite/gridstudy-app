@@ -128,8 +128,6 @@ export const ResultViewTab = ({
         return (
             <Paper className={classes.analysisResult}>
                 <ShortCircuitAnalysisResultTab
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id}
                     resultTabIndexRedirection={resultTabIndexRedirection}
                 />
             </Paper>
