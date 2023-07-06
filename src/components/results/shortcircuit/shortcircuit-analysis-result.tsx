@@ -14,6 +14,12 @@ import { unitToKiloUnit } from 'utils/rounding';
 import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
 import { ReduxState } from 'redux/reducer.type';
 import { AgGridReactProps } from 'ag-grid-react';
+import {
+    GridReadyEvent,
+    IRowNode,
+    PostSortRowsParams,
+    RowClassParams,
+} from 'ag-grid-community';
 
 interface ShortCircuitAnalysisResultProps {
     result: ShortcircuitAnalysisResult;
@@ -71,12 +77,34 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 fractionDigits: 1,
                 numeric: true,
             },
+            {
+                field: 'linkedElementId',
+                hide: true,
+            },
         ];
     }, [intl]);
 
+    const groupPostSort = (
+        sortedRows: IRowNode[],
+        idField: string,
+        linkedIdField: string
+    ) => {
+        const result: IRowNode[] = [];
+        const idRows = sortedRows.filter((row) => row.data[idField] != null);
+        idRows.forEach((idRow) => {
+            result.push(idRow);
+            result.push(
+                ...sortedRows.filter(
+                    (row) => row.data[linkedIdField] === idRow.data[idField]
+                )
+            );
+        });
+
+        return result;
+    };
     const getRowStyle = useCallback(
-        (params: any) => {
-            if (params?.data?.elementId) {
+        (params: RowClassParams) => {
+            if (!params?.data?.linkedElementId) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
@@ -107,7 +135,11 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                   limitMax?: number | null;
                   limitName?: string;
               }
-            | { connectableId: string; current: number }
+            | {
+                  connectableId: string;
+                  current: number;
+                  linkedElementId: string;
+              }
         )[] = [];
         shortCircuitAnalysisResult?.faults?.forEach((faultResult) => {
             const fault = faultResult.fault;
@@ -160,6 +192,7 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 rows.push({
                     connectableId: feederResult.connectableId,
                     current: feederResult.current,
+                    linkedElementId: fault.id,
                 });
             });
         });
@@ -169,9 +202,26 @@ const ShortCircuitAnalysisResult: FunctionComponent<
     const defaultColDef = useMemo(
         () => ({
             suppressMovable: true,
+            resizable: true,
+            sortable: true,
+            autoHeaderHeight: true,
+            flex: 1,
         }),
         []
     );
+
+    const onGridReady = useCallback((params: GridReadyEvent) => {
+        if (params?.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
+    const handlePostSortRows = useCallback((params: PostSortRowsParams) => {
+        const rows = params.nodes;
+        Object.assign(
+            rows,
+            groupPostSort(rows, 'elementId', 'linkedElementId')
+        );
+    }, []);
 
     const renderResult = () => {
         const rows = flattenResult(result);
@@ -180,6 +230,9 @@ const ShortCircuitAnalysisResult: FunctionComponent<
             columnDefs: columns,
             getRowStyle: getRowStyle,
             defaultColDef: defaultColDef,
+            onGridReady: onGridReady,
+            enableCellTextSelection: true,
+            postSortRows: handlePostSortRows,
         };
 
         return (
