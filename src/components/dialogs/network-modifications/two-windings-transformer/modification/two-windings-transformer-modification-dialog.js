@@ -187,9 +187,6 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (twt, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
-            console.log(
-                getRegulationTypeForEdit(twtToModify, twt?.[PHASE_TAP_CHANGER])
-            );
             if (twt?.equipmentId) {
                 setSelectedId(twt.equipmentId);
             }
