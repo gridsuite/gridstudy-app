@@ -288,7 +288,7 @@
     "IDNode": "ID nœud",
     "IscKA": "Icc (kA)",
     "IscMinKA": "Icc min (kA)",
-    "IscMaxKA": "Icc max (kA)",
+    "IscMaxKA": "IMACC (kA)",
     "PscMVA": "Pcc (MVA)",
     "SINGLE_PHASE": "Monophasé",
     "THREE_PHASE": "Triphasé",
@@ -497,6 +497,7 @@
     "Advanced": "Avancés",
     "EnableDeveloperMode": "Activer mode développeur",
     "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
+    "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
 
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",

@@ -11,6 +11,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
+import { unitToKiloUnit } from '../utils/rounding';
 
 const ShortCircuitAnalysisResult = ({ result }) => {
     const intl = useIntl();
@@ -60,12 +61,30 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 fractionDigits: 1,
                 numeric: true,
             },
+            {
+                field: 'linkedElementId',
+                hide: true,
+            },
         ];
     }, [intl]);
 
+    const groupPostSort = (sortedRows, idField, linkedIdField) => {
+        const result = [];
+        const idRows = sortedRows.filter((row) => row.data[idField] != null);
+        idRows.forEach((idRow) => {
+            result.push(idRow);
+            result.push(
+                ...sortedRows.filter(
+                    (row) => row.data[linkedIdField] === idRow.data[idField]
+                )
+            );
+        });
+
+        return result;
+    };
     const getRowStyle = useCallback(
         (params) => {
-            if (params?.data?.elementId) {
+            if (!params?.data?.linkedElementId) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
@@ -74,11 +93,11 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [theme.selectedRow.background]
     );
 
-    function flattenResult(shortcutAnalysisResult) {
+    function flattenResult(shortCircuitAnalysisResult) {
         const rows = [];
-        shortcutAnalysisResult?.faults?.forEach((f) => {
-            const fault = f.fault;
-            const limitViolations = f.limitViolations;
+        shortCircuitAnalysisResult?.faults?.forEach((faultResult) => {
+            const fault = faultResult.fault;
+            const limitViolations = faultResult.limitViolations;
             let firstLimitViolation;
             if (limitViolations.length > 0) {
                 let lv = limitViolations[0];
@@ -88,22 +107,21 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     }),
                     limitMin:
                         lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitMax:
                         lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitName: lv.limitName,
-                    current: lv.value,
                 };
             }
             rows.push({
                 faultId: fault.id,
                 elementId: fault.elementId,
                 faultType: intl.formatMessage({ id: fault.faultType }),
-                shortCircuitPower: f.shortCircuitPower,
-                current: f.current,
+                shortCircuitPower: faultResult.shortCircuitPower,
+                current: faultResult.current,
                 ...firstLimitViolation,
             });
             limitViolations.slice(1).forEach((lv) => {
@@ -113,21 +131,22 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     }),
                     limitMin:
                         lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitMax:
                         lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? lv.limit
+                            ? unitToKiloUnit(lv.limit)
                             : null,
                     limitName: lv.limitName,
                     current: lv.value,
                 });
             });
-            const feederResults = f.feederResults;
-            feederResults.forEach((fr) => {
+            const feederResults = faultResult.feederResults;
+            feederResults.forEach((feederResult) => {
                 rows.push({
-                    connectableId: fr.connectableId,
-                    current: fr.current,
+                    connectableId: feederResult.connectableId,
+                    current: feederResult.current,
+                    linkedElementId: fault.id,
                 });
             });
         });
@@ -137,9 +156,26 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     const defaultColDef = useMemo(
         () => ({
             suppressMovable: true,
+            resizable: true,
+            sortable: true,
+            autoHeaderHeight: true,
+            flex: 1,
         }),
         []
     );
+
+    const onGridReady = useCallback((params) => {
+        if (params?.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
+    const handlePostSortRows = useCallback((params) => {
+        const rows = params.nodes;
+        Object.assign(
+            rows,
+            groupPostSort(rows, 'elementId', 'linkedElementId')
+        );
+    }, []);
 
     const renderResult = () => {
         const rows = flattenResult(result);
@@ -151,6 +187,9 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     rowData={rows}
                     columnDefs={columns}
                     getRowStyle={getRowStyle}
+                    onGridReady={onGridReady}
+                    enableCellTextSelection={true}
+                    postSortRows={handlePostSortRows}
                     defaultColDef={defaultColDef}
                 />
             )
