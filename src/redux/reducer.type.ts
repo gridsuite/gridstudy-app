@@ -9,6 +9,7 @@ import { UUID } from 'crypto';
 
 export interface ReduxState {
     studyUpdated: StudyUpdated;
+    shortCircuitNotif: boolean;
 }
 
 export interface StudyUpdatedEventDataHeader {

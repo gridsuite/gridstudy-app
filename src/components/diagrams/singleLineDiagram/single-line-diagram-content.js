@@ -207,17 +207,27 @@ function SingleLineDiagramContent(props) {
         [studyUuid, currentNode?.id, closeEquipmentMenu, snackError]
     );
 
-    const handleRunShortcircuitAnalysis = useCallback((busId) => {
-        startShortCircuitAnalysis(studyUuid, currentNode?.id, busId).catch(
-            (error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'UnableToDeleteEquipment',
+    const handleRunShortcircuitAnalysis = useCallback(
+        (busId) => {
+            startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
+                .then(() => props.showSelectiveShortcircuitResults())
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'UnableToDeleteEquipment',
+                    });
+
+                    closeBusMenu();
                 });
-                closeBusMenu();
-            }
-        );
-    });
+        },
+        [
+            closeBusMenu,
+            currentNode?.id,
+            studyUuid,
+            props.showSelectiveShortcircuitResults,
+            snackError,
+        ]
+    );
 
     const displayBusMenu = () => {
         return (

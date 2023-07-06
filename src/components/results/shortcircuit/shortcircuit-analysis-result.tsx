@@ -5,19 +5,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo } from 'react';
-import PropTypes from 'prop-types';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
 import { unitToKiloUnit } from 'utils/rounding';
+import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
+import { ReduxState } from 'redux/reducer.type';
+import { AgGridReactProps } from 'ag-grid-react';
 
-const ShortCircuitAnalysisResult = ({ result }) => {
+interface ShortCircuitAnalysisResultProps {
+    result: ShortcircuitAnalysisResult;
+}
+
+const ShortCircuitAnalysisResult: FunctionComponent<
+    ShortCircuitAnalysisResultProps
+> = ({ result }) => {
     const intl = useIntl();
-    const theme = useTheme();
+    const theme: any = useTheme();
 
-    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+    const shortCircuitNotif = useSelector(
+        (state: ReduxState) => state.shortCircuitNotif
+    );
 
     const columns = useMemo(() => {
         return [
@@ -65,7 +75,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     }, [intl]);
 
     const getRowStyle = useCallback(
-        (params) => {
+        (params: any) => {
             if (params?.data?.elementId) {
                 return {
                     backgroundColor: theme.selectedRow.background,
@@ -75,8 +85,30 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [theme.selectedRow.background]
     );
 
-    function flattenResult(shortCircuitAnalysisResult) {
-        const rows = [];
+    function flattenResult(
+        shortCircuitAnalysisResult: ShortcircuitAnalysisResult
+    ) {
+        const rows: (
+            | {
+                  faultId: string;
+                  elementId: string;
+                  faultType: string;
+                  shortCircuitPower: number;
+                  current: number;
+                  limitType?: string | null;
+                  limitMin?: number | null;
+                  limitMax?: number | null;
+                  limitName?: string;
+              }
+            | {
+                  current: number;
+                  limitType?: string | null;
+                  limitMin?: number | null;
+                  limitMax?: number | null;
+                  limitName?: string;
+              }
+            | { connectableId: string; current: number }
+        )[] = [];
         shortCircuitAnalysisResult?.faults?.forEach((faultResult) => {
             const fault = faultResult.fault;
             const limitViolations = faultResult.limitViolations;
@@ -144,28 +176,21 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     const renderResult = () => {
         const rows = flattenResult(result);
 
+        const aggridProps: AgGridReactProps = {
+            columnDefs: columns,
+            getRowStyle: getRowStyle,
+            defaultColDef: defaultColDef,
+        };
+
         return (
             result &&
             shortCircuitNotif && (
-                <CustomAGGrid
-                    rowData={rows}
-                    columnDefs={columns}
-                    getRowStyle={getRowStyle}
-                    defaultColDef={defaultColDef}
-                />
+                <CustomAGGrid rowData={rows} {...aggridProps} ref={null} />
             )
         );
     };
 
-    return renderResult();
-};
-
-ShortCircuitAnalysisResult.defaultProps = {
-    result: null,
-};
-
-ShortCircuitAnalysisResult.propTypes = {
-    result: PropTypes.object,
+    return <>{renderResult()}</>;
 };
 
 export default ShortCircuitAnalysisResult;

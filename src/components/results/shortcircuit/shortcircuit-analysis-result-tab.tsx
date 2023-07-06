@@ -15,6 +15,7 @@ import ShortCircuitAnalysisResult from './shortcircuit-analysis-result';
 import { Tab, Tabs } from '@mui/material';
 import { UUID } from 'crypto';
 import { FunctionComponent, useCallback, useState } from 'react';
+import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -34,7 +35,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
             nodeUuid,
             fetchShortCircuitAnalysisResult,
             shortCircuitAnalysisResultInvalidations
-        );
+        ) as [ShortcircuitAnalysisResult, boolean];
 
     const [
         selectiveShortCircuitAnalysisResult,
@@ -44,7 +45,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
         nodeUuid,
         fetchSelectiveShortCircuitAnalysisResult,
         shortCircuitAnalysisResultInvalidations
-    );
+    ) as [ShortcircuitAnalysisResult, boolean];
 
     const handleTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {

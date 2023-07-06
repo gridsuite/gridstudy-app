@@ -345,6 +345,7 @@ export function DiagramPane({
     studyUuid,
     isComputationRunning,
     showInSpreadsheet,
+    showSelectiveShortcircuitResults,
     loadFlowStatus,
     currentNode,
     visible,
@@ -1103,6 +1104,9 @@ export function DiagramPane({
                                             isComputationRunning
                                         }
                                         showInSpreadsheet={showInSpreadsheet}
+                                        showSelectiveShortcircuitResults={
+                                            showSelectiveShortcircuitResults
+                                        }
                                         studyUuid={studyUuid}
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}

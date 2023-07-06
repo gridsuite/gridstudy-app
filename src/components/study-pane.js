@@ -258,6 +258,9 @@ const StudyPane = ({
                                 studyUuid={studyUuid}
                                 isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
+                                showSelectiveShortcircuitResults={
+                                    showSelectiveShortcircuitResults
+                                }
                                 loadFlowStatus={getLoadFlowRunningStatus(
                                     loadFlowInfos?.loadFlowStatus
                                 )}
