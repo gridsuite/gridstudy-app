@@ -64,7 +64,9 @@ export const ResultViewTab = ({
     resultTabIndexRedirection,
     disabled,
 }) => {
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState(
+        resultTabIndexRedirection?.[ResultsTabsLevel.ROOT] ?? 0
+    );
 
     useResultsTab(
         resultTabIndexRedirection,
