@@ -12,7 +12,6 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
-    fetchLoadFlowInfos,
     fetchNetworkModificationTree,
     fetchStudyExists,
     fetchCaseName,
@@ -52,8 +51,8 @@ import {
     connectDeletedStudyNotificationsWebsocket,
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
-
 import { fetchPath } from '../services/directory';
+import { fetchLoadFlowInfos } from '../services/study/loadflow';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 
 function isWorthUpdate(
