@@ -5,14 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useRef, useEffect } from 'react';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { TablePagination } from '@mui/material';
 
 const CustomTablePagination = (props) => {
     const intl = useIntl();
-    const tablePaginationRef = useRef(null);
 
     const customLabelDisplayedRows = ({ from, to, count }) => {
         return `${from}-${to} ${intl.formatMessage({
@@ -40,37 +38,26 @@ const CustomTablePagination = (props) => {
         id: 'muiTablePaginationLast',
     });
 
-    useEffect(() => {
-        const { current } = tablePaginationRef || {};
-        if (current) {
-            const buttons =
-                current.querySelectorAll('.MuiButtonBase-root') || [];
-            const firstButton = buttons[0];
-            const lastButton = buttons[buttons.length - 1];
-
-            firstButton?.setAttribute('aria-label', customLabelFirstPage);
-            firstButton?.setAttribute('title', customLabelFirstPage);
-
-            lastButton?.setAttribute('aria-label', customLabelLastPage);
-            lastButton?.setAttribute('title', customLabelLastPage);
-        }
-    }, [customLabelFirstPage, customLabelLastPage, tablePaginationRef]);
-
     return (
         <TablePagination
-            ref={tablePaginationRef}
             component="div"
             showFirstButton={true}
             showLastButton={true}
             labelDisplayedRows={customLabelDisplayedRows}
             labelRowsPerPage={customLabelRowsPerPage}
-            nextIconButtonProps={{
-                'aria-label': customLabelNextPage,
-                title: customLabelNextPage,
-            }}
-            backIconButtonProps={{
-                'aria-label': customLabelPreviousPage,
-                title: customLabelPreviousPage,
+            getItemAriaLabel={(type) => {
+                switch (type) {
+                    case 'next':
+                        return customLabelNextPage;
+                    case 'previous':
+                        return customLabelPreviousPage;
+                    case 'last':
+                        return customLabelLastPage;
+                    case 'first':
+                        return customLabelFirstPage;
+                    default:
+                        return '';
+                }
             }}
             {...props}
         >
