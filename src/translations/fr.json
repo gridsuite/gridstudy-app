@@ -562,6 +562,7 @@
     "LineModificationError": "Erreur lors de la modification d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
     "ShuntCompensatorModificationError": "Erreur lors de la modification d'un moyen de compensation",
+    "ShuntCompensatorMultiSectionsError": "La modification d'un moyen de compensation à plusieurs gradins n'est pas possible pour le moment",
 
     "CreateGenerator": "Créer un groupe",
     "ModifyGenerator": "Modifier un groupe",
@@ -666,7 +667,7 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "La valeur de Q à Unom doit être supérieure ou égale à 0",
-    "ModifyShuntCompensator": "Modifier un moyen de compensation statique",
+    "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Un seul gradin)",
 
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
