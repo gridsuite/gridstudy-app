@@ -29,11 +29,10 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            console.log('inside');
             fetchEquipmentsIds(
                 studyUuid,
                 currentNode?.id,
-                [],
+                undefined,
                 EQUIPMENT_TYPES.LINE.type,
                 true
             )
