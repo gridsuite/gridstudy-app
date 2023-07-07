@@ -16,8 +16,9 @@ import PropTypes from 'prop-types';
 
 const DndTableBottomLeftButtons = ({
     handleUploadButton,
-    handleResetButton,
     uploadButtonMessageId,
+    handleResetButton,
+    resetButtonMessageId,
     disabled,
 }) => {
     const intl = useIntl();
@@ -46,7 +47,7 @@ const DndTableBottomLeftButtons = ({
                 <Grid item>
                     <Tooltip
                         title={intl.formatMessage({
-                            id: 'ResetLines',
+                            id: resetButtonMessageId,
                         })}
                         placement="top"
                     >

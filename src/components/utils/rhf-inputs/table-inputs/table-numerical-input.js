@@ -17,8 +17,8 @@ export const TableNumericalInput = ({
     inputProps,
     previousValue,
     valueModified,
+    handleChange,
     adornment,
-    handleChange = () => {},
     isClearable = true,
     ...props
 }) => {

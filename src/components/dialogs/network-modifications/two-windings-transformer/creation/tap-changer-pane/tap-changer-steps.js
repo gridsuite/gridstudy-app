@@ -22,9 +22,9 @@ import {
     LOW_TAP_POSITION,
     SELECTED,
     STEPS,
+    STEPS_MODIFIED,
     STEPS_TAP,
     TAP_POSITION,
-    STEPS_MODIFIED,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 
@@ -37,10 +37,11 @@ const TapChangerSteps = ({
     createRuleMessageId,
     createRuleAllowNegativeValues,
     importRuleMessageId,
+    resetButtonMessageId,
     handleImportRow,
     disabled,
     previousValues,
-    modification,
+    modification = false,
 }) => {
     const intl = useIntl();
 
@@ -104,6 +105,7 @@ const TapChangerSteps = ({
         }
 
         setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, nextHighestTap);
+        setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
 
         return tapRowsToAdd;
     }
@@ -139,7 +141,7 @@ const TapChangerSteps = ({
                     : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
-        [getValues, tapChanger, previousValues, lowTapPosition, setValue]
+        [getValues, tapChanger, lowTapPosition, previousValues, setValue]
     );
 
     // Adjust high tap position when low tap position change + remove red if value fixed
@@ -156,6 +158,17 @@ const TapChangerSteps = ({
         resetTapNumbers(tapSteps, modification);
     }, [tapSteps, resetTapNumbers, modification]);
 
+    const handleResetButton = useCallback(() => {
+        replace(previousValues?.[STEPS]);
+        setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
+        setValue(`${tapChanger}.${STEPS_MODIFIED}`, false);
+        clearErrors(`${tapChanger}.${STEPS}`);
+    }, [clearErrors, previousValues, replace, setValue, tapChanger]);
+
+    const isRegulationRulesModified = useCallback(() => {
+        return modification && areStepsModified;
+    }, [areStepsModified, modification]);
+
     const handleCreateTapRule = (lowTap, highTap) => {
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
 
@@ -168,6 +181,7 @@ const TapChangerSteps = ({
                 current += interval;
             });
             replace(currentTapRows);
+            setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
         }
     };
 
@@ -263,42 +277,31 @@ const TapChangerSteps = ({
                 </span>
             </Tooltip>
         );
-        const columnsDef = columnsDefinition.map((columnDefinition) => {
-            return {
-                ...columnDefinition,
-                handleChange: () => {
-                    setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
-                },
-            };
-        });
-
+        const columnsDef = !modification
+            ? columnsDefinition
+            : columnsDefinition.map((columnDefinition) => {
+                  return {
+                      ...columnDefinition,
+                      handleChange: () => {
+                          setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
+                      },
+                  };
+              });
         columnsDef[columnsDef.length - 1] = {
             ...columnsDef[columnsDef.length - 1],
             extra: createRuleButton,
         };
-
         return columnsDef;
     }, [
         columnsDefinition,
         createRuleMessageId,
         disabled,
         intl,
+        modification,
         setValue,
         tapChanger,
         tapSteps.length,
     ]);
-
-    const isRegulationRulesModified = useCallback(
-        () => modification && areStepsModified,
-        [areStepsModified, modification]
-    );
-
-    const handleResetButton = useCallback(() => {
-        replace(previousValues?.[STEPS]);
-        setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
-        setValue(`${tapChanger}.${STEPS_MODIFIED}`, false);
-        clearErrors(`${tapChanger}.${STEPS}`);
-    }, [clearErrors, previousValues, replace, setValue, tapChanger]);
 
     return (
         <Grid item container spacing={1}>
@@ -323,6 +326,7 @@ const TapChangerSteps = ({
                 handleUploadButton={handleImportTapRuleButton}
                 uploadButtonMessageId={importRuleMessageId}
                 handleResetButton={modification ? handleResetButton : undefined}
+                resetButtonMessageId={resetButtonMessageId}
                 isValueModified={isRegulationRulesModified}
                 disabled={disabled}
             />
