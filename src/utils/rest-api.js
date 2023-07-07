@@ -1817,10 +1817,8 @@ export function modifyLine(
     shuntSusceptance1,
     shuntConductance2,
     shuntSusceptance2,
-    permanentCurrentLimit1,
-    permanentCurrentLimit2,
-    temporaryCurrentLimits1,
-    temporaryCurrentLimits2,
+    currentLimit1,
+    currentLimit2,
     isUpdate,
     modificationUuid
 ) {
@@ -1851,14 +1849,8 @@ export function modifyLine(
             shuntSusceptance1: toModificationOperation(shuntSusceptance1),
             shuntConductance2: toModificationOperation(shuntConductance2),
             shuntSusceptance2: toModificationOperation(shuntSusceptance2),
-            currentLimits1: {
-                permanentLimit: permanentCurrentLimit1,
-                temporaryLimits: temporaryCurrentLimits1,
-            },
-            currentLimits2: {
-                permanentLimit: permanentCurrentLimit2,
-                temporaryLimits: temporaryCurrentLimits2,
-            },
+            currentLimits1: currentLimit1,
+            currentLimits2: currentLimit2,
         }),
     });
 }

@@ -382,7 +382,8 @@ export const NetworkModificationTreePane = ({
                     createTreeNode(studyUuid, element.id, insertMode, {
                         name: response,
                         type: type,
-                        buildStatus: BUILD_STATUS.NOT_BUILT,
+                        localBuildStatus: BUILD_STATUS.NOT_BUILT,
+                        globalBuildStatus: BUILD_STATUS.NOT_BUILT,
                     }).catch((error) => {
                         snackError({
                             messageTxt: error.message,
