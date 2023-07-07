@@ -25,6 +25,25 @@ const LIMIT_TYPES = {
     LOW_VOLTAGE: 'LOW_VOLTAGE',
     CURRENT: 'CURRENT',
 };
+const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
+
+const convertDuration = (duration) => {
+    if (!duration) {
+        return null;
+    }
+
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+
+    if (seconds === 0) {
+        return minutes + "'";
+    }
+
+    if (minutes === 0) {
+        return seconds + '"';
+    }
+    return minutes + "' " + seconds + '"';
+};
 
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const useStyles = makeStyles((theme) => ({
@@ -57,19 +76,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const loadflowNotif = useSelector((state) => state.loadflowNotif);
 
     useEffect(() => {
-        const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
         const PERMANENT_LIMIT_NAME = 'permanent';
-        const convertDuration = (acceptableDuration) => {
-            if (acceptableDuration === UNDEFINED_ACCEPTABLE_DURATION) {
-                return undefined;
-            }
-            // if modulo 60 convert into minutes, otherwise we still use seconds (600 -> 10' and 700 -> 700")
-            if (acceptableDuration % 60 === 0) {
-                return acceptableDuration / 60 + "'";
-            } else {
-                return acceptableDuration + '"';
-            }
-        };
         const convertSide = (side) => {
             return side === 'ONE'
                 ? intl.formatMessage({ id: 'CurrentViolationSide1' })
@@ -89,9 +96,11 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     100,
                 name: overloadedEquipment.subjectId,
                 value: overloadedEquipment.value,
-                acceptableDuration: convertDuration(
-                    overloadedEquipment.acceptableDuration
-                ),
+                acceptableDuration:
+                    overloadedEquipment.acceptableDuration ===
+                    UNDEFINED_ACCEPTABLE_DURATION
+                        ? null
+                        : overloadedEquipment.acceptableDuration,
                 limit: overloadedEquipment.limit,
                 limitName: convertLimitName(overloadedEquipment.limitName),
                 side: convertSide(overloadedEquipment.side),
@@ -171,6 +180,8 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     id: 'LimitAcceptableDuration',
                 }),
                 field: 'acceptableDuration',
+                valueFormatter: (value) =>
+                    convertDuration(value.data.acceptableDuration),
             },
             {
                 headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
