@@ -40,7 +40,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
     fetchNetworkElementInfos,
@@ -674,7 +674,7 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-    }, [emptyFormData, reset]);
+    }, [reset]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
