@@ -842,7 +842,6 @@
     "LowTapAlpha": "Déphasage (prise min)",
     "HighTapAlpha": "Déphasage (prise max)",
     "ImportDephasingRule": "Importer une loi de déphasage",
-    "ResetLines": "Réinitialiser les lignes",
 
     "GenerateSkeleton": "Générer le squelette",
     "InvalidRuleHeader": "Le fichier n'a pas le bon header, veuillez vous référer au squelette",

@@ -185,6 +185,7 @@ const PhaseTapChangerPaneSteps = ({
             createRuleMessageId="CreateDephasingRule"
             createRuleAllowNegativeValues={true}
             importRuleMessageId="ImportDephasingRule"
+            resetButtonMessageId="ResetRegulationRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
             previousValues={twtToModify}
