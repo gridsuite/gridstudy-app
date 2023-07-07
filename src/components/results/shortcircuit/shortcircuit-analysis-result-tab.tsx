@@ -17,7 +17,7 @@ import {
     ResultsTabsLevel,
     useResultsTab,
 } from '../use-results-tab';
-import { ShortCircuitAnalysisGlobalResult } from './shortcircuit-analysis-global-result';
+import { ShortCircuitAnalysisGlobalResult } from './shortcircuit-analysis-result';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;

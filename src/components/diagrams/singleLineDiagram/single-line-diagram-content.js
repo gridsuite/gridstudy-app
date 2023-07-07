@@ -29,7 +29,11 @@ import withBranchMenu from '../../menus/branch-menu';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
-import { deleteEquipment, updateSwitchState } from '../../../utils/rest-api';
+import {
+    deleteEquipment,
+    updateSwitchState,
+    startShortCircuitAnalysis,
+} from '../../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -41,13 +45,16 @@ import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import { BusMenu } from 'components/menus/bus-menu';
-import { startShortCircuitAnalysis } from '../../../utils/rest-api';
+import { setComputingStatus } from 'redux/actions';
+import { ComputingType } from 'components/computing-status/computing-type';
+import { useDispatch } from 'react-redux';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
     const classes = useDiagramStyles();
     const { diagramSizeSetter, showSelectiveShortcircuitResults } = props;
     const theme = useTheme();
+    const dispatch = useDispatch();
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
     const svgRef = useRef();
     const diagramViewerRef = useRef();
@@ -208,6 +215,12 @@ function SingleLineDiagramContent(props) {
 
     const handleRunShortcircuitAnalysis = useCallback(
         (busId) => {
+            dispatch(
+                setComputingStatus(
+                    ComputingType.SELECTIVE_SHORTCIRCUIT_ANALYSIS,
+                    RunningStatus.RUNNING
+                )
+            );
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
                 .then(() => showSelectiveShortcircuitResults())
                 .catch((error) => {
@@ -224,6 +237,7 @@ function SingleLineDiagramContent(props) {
             studyUuid,
             showSelectiveShortcircuitResults,
             snackError,
+            dispatch,
         ]
     );
 

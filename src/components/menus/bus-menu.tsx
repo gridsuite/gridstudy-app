@@ -16,6 +16,8 @@ import {
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
+import { ComputingType } from 'components/computing-status/computing-type';
+import { RunningStatus } from 'components/utils/running-status';
 
 interface BusMenuProps {
     busId: string;
@@ -48,6 +50,12 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
+
+    const selectiveShortcircuitAnalysisState = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.SELECTIVE_SHORTCIRCUIT_ANALYSIS]
+    );
+
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const handleClickRunShortcircuitAnalysis = useCallback(
@@ -57,7 +65,6 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
 
     const isNodeEditable = useMemo(
         () =>
-            busId &&
             isNodeBuilt(currentNode) &&
             !isNodeReadOnly(currentNode) &&
             !isAnyNodeBuilding,
@@ -79,7 +86,10 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 className={classes.menuItem}
                 onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
-                disabled={!isNodeEditable}
+                disabled={
+                    selectiveShortcircuitAnalysisState ===
+                        RunningStatus.RUNNING || !isNodeEditable
+                }
             >
                 <ListItemIcon>
                     <BoltIcon />

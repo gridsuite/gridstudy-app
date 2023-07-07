@@ -20,6 +20,7 @@ import {
     fetchShortCircuitAnalysisStatus,
     fetchDynamicSimulationStatus,
     fetchVoltageInitStatus,
+    fetchShortCircuitCircuitAnalysisStatus,
 } from '../../utils/rest-api';
 import { UUID } from 'crypto';
 import { ComputingType } from './computing-type';
@@ -35,6 +36,10 @@ const sensitivityAnalysisStatusInvalidations = [
 const shortCircuitAnalysisStatusInvalidations = [
     'shortCircuitAnalysis_status',
     'shortCircuitAnalysis_failed',
+];
+const selectiveShortCircuitAnalysisStatusInvalidations = [
+    'selectiveShortCircuitAnalysis_status',
+    //'shortCircuitAnalysis_failed',
 ];
 const dynamicSimulationStatusInvalidations = [
     'dynamicSimulation_status',
@@ -75,6 +80,15 @@ export const useAllComputingStatus = (
         shortCircuitAnalysisStatusInvalidations,
         getShortCircuitAnalysisRunningStatus,
         ComputingType.SHORTCIRCUIT_ANALYSIS
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        fetchShortCircuitCircuitAnalysisStatus,
+        selectiveShortCircuitAnalysisStatusInvalidations,
+        getShortCircuitAnalysisRunningStatus,
+        ComputingType.SELECTIVE_SHORTCIRCUIT_ANALYSIS
     );
 
     useComputingStatus(

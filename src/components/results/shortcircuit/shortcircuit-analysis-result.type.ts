@@ -42,3 +42,16 @@ export enum ShortcircuitAnalysisType {
     GLOBAL = 0,
     SELECTIVE = 1,
 }
+
+export const getShortcircuitAnalysisTypeFromEnum = (
+    type: ShortcircuitAnalysisType
+) => {
+    switch (type) {
+        case ShortcircuitAnalysisType.GLOBAL:
+            return 'Global';
+        case ShortcircuitAnalysisType.SELECTIVE:
+            return 'Selective';
+        default:
+            return null;
+    }
+};

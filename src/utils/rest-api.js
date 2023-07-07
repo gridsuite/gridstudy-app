@@ -16,6 +16,10 @@ import {
     EQUIPMENT_TYPES,
 } from '../components/utils/equipment-types';
 import { toModificationOperation } from '../components/utils/utils';
+import {
+    ShortcircuitAnalysisType,
+    getShortcircuitAnalysisTypeFromEnum,
+} from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 export const getWsBase = () =>
@@ -1046,15 +1050,34 @@ export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
     return backendFetch(stopShortCircuitAnalysisUrl, { method: 'put' });
 }
 
-export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
+export function fetchShortCircuitAnalysisStatus(
+    studyUuid,
+    currentNodeUuid,
+    type = ShortcircuitAnalysisType.GLOBAL
+) {
+    const analysisType = getShortcircuitAnalysisTypeFromEnum(type);
     console.info(
-        `Fetching short circuit analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching ${analysisType} short circuit analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('type', analysisType);
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/shortcircuit/status';
+        '/shortcircuit/status?' +
+        urlSearchParams.toString();
     console.debug(url);
     return backendFetchText(url);
+}
+
+export function fetchShortCircuitCircuitAnalysisStatus(
+    studyUuid,
+    currentNodeUuid
+) {
+    return fetchShortCircuitAnalysisStatus(
+        studyUuid,
+        currentNodeUuid,
+        ShortcircuitAnalysisType.SELECTIVE
+    );
 }
 
 export function fetchShortCircuitAnalysisResult(
