@@ -16,18 +16,12 @@ import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { fetchNetworkElementInfos } from '../../../utils/rest-api';
 import { useSelector } from 'react-redux';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../../utils/equipment-types';
-import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 
 const nonEditableModificationTypes = new Set([
-    MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
-    MODIFICATION_TYPES.GROOVY_SCRIPT.type,
-    MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
+    'EQUIPMENT_ATTRIBUTE_MODIFICATION',
+    'GROOVY_SCRIPT',
+    'BRANCH_STATUS_MODIFICATION',
 ]);
 
 const isEditableModification = (modif) => {
@@ -83,15 +77,15 @@ export const ModificationListItem = ({
     */
     const getComputedLabel = useCallback(() => {
         switch (modif.type) {
-            case MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type:
+            case 'LINE_SPLIT_WITH_VOLTAGE_LEVEL':
                 return modif.lineToSplitId;
-            case MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type:
+            case 'LINE_ATTACH_TO_VOLTAGE_LEVEL':
                 return modif.lineToAttachToId;
-            case MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type:
+            case 'LINES_ATTACH_TO_SPLIT_LINES':
                 return modif.attachedLineId;
-            case MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type:
+            case 'DELETE_VOLTAGE_LEVEL_ON_LINE':
                 return modif.lineToAttachTo1Id + '/' + modif.lineToAttachTo2Id;
-            case MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type:
+            case 'DELETE_ATTACHING_LINE':
                 return (
                     modif.attachedLineId +
                     '/' +
@@ -113,47 +107,9 @@ export const ModificationListItem = ({
         if (!studyUuid || !currentNode || !modif) {
             return;
         }
-        let energizeEndPromise;
-        if (
-            modif.type === MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type &&
-            (modif.action === 'ENERGISE_END_ONE' ||
-                modif.action === 'ENERGISE_END_TWO')
-        ) {
-            let voltageLevelId;
-            let voltageLevelName;
-            if (modif.action === 'ENERGISE_END_ONE') {
-                voltageLevelId = 'voltageLevelId1';
-                voltageLevelName = 'voltageLevelName1';
-            } else if (modif.action === 'ENERGISE_END_TWO') {
-                voltageLevelId = 'voltageLevelId2';
-                voltageLevelName = 'voltageLevelName2';
-            }
-            //TODO supposed to be temporary, we shouldn't fetch back-end to create a label
-            energizeEndPromise = fetchNetworkElementInfos(
-                studyUuid,
-                currentNode.id,
-                EQUIPMENT_TYPES.LINE.type,
-                EQUIPMENT_INFOS_TYPES.LIST.type,
-                modif.equipmentId,
-                false
-            )
-                .then((line) => {
-                    return line[voltageLevelName] ?? line[voltageLevelId];
-                })
-                .catch(() => {
-                    console.error(
-                        'Could not fetch line with ID ' + modif.equipmentId
-                    );
-                    return null;
-                });
-        } else {
-            energizeEndPromise = Promise.resolve(null);
-        }
-        energizeEndPromise.then((energizedEnd) => {
-            setComputedValues({
-                energizedEnd: energizedEnd,
-                computedLabel: <strong>{getComputedLabel()}</strong>,
-            });
+        setComputedValues({
+            energizedEnd: modif.energizedVoltageLevelId,
+            computedLabel: <strong>{getComputedLabel()}</strong>,
         });
     }, [modif, studyUuid, currentNode, getComputedLabel]);
 

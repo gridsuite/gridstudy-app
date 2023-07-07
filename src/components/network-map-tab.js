@@ -208,7 +208,7 @@ export const NetworkMapTab = ({
     function withEquipment(Menu, props) {
         return (
             <Menu
-                id={equipmentMenu.equipment.id}
+                equipment={equipmentMenu.equipment}
                 position={equipmentMenu.position}
                 handleClose={closeEquipmentMenu}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}

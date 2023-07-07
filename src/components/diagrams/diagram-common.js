@@ -144,6 +144,7 @@ export const DiagramType = {
     NETWORK_AREA_DIAGRAM: 'network-area-diagram',
 };
 
+// be careful when using this method because there are treatments made on purpose
 export function getEquipmentTypeFromFeederType(feederType) {
     switch (feederType) {
         case FEEDER_TYPES.LINE.type:
@@ -156,10 +157,8 @@ export function getEquipmentTypeFromFeederType(feederType) {
             return EQUIPMENT_TYPES.DANGLING_LINE.type;
         case FEEDER_TYPES.GENERATOR.type:
             return EQUIPMENT_TYPES.GENERATOR.type;
-        case FEEDER_TYPES.VSC_CONVERTER_STATION.type:
-            return EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type;
-        case FEEDER_TYPES.LCC_CONVERTER_STATION.type:
-            return EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type;
+        case FEEDER_TYPES.LCC_CONVERTER_STATION.type: // return EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type; TODO : to be reactivated in the next powsybl version
+        case FEEDER_TYPES.VSC_CONVERTER_STATION.type: // return EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type; TODO : to be reactivated in the next powsybl version
         case FEEDER_TYPES.HVDC_LINE.type:
             return EQUIPMENT_TYPES.HVDC_LINE.type;
         case FEEDER_TYPES.CAPACITOR.type:

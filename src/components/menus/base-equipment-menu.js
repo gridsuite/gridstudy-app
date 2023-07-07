@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
@@ -21,12 +21,8 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
-import { fetchNetworkElementInfos } from '../../utils/rest-api';
 import { isNodeReadOnly } from '../graph/util/model-functions';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../utils/equipment-types';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -153,7 +149,7 @@ const ItemViewInForm = ({
 };
 
 const BaseEquipmentMenu = ({
-    equipmentId,
+    equipment,
     equipmentType,
     handleViewInSpreadsheet,
     handleDeleteEquipment,
@@ -161,44 +157,6 @@ const BaseEquipmentMenu = ({
 }) => {
     const intl = useIntl();
     const { getNameOrId } = useNameOrId();
-    const [equipment, setEquipment] = useState();
-    const [equipmentSubstationNameOrId, setEquipmentSubstationNameOrId] =
-        useState();
-
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
-
-    // Returns a promise
-    //TODO ideally we should have the equipment data from the props instead of doing a fetch,
-    // we can have it from mapEquipments in the map and metadata in the SVG
-    const getEquipment = useCallback(
-        (equipmentType, equipmentId) => {
-            if (!studyUuid || !currentNode) {
-                return Promise.reject('no study or node selected');
-            } else if (equipmentType === EQUIPMENT_TYPES.SUBSTATION.type) {
-                return fetchNetworkElementInfos(
-                    studyUuid,
-                    currentNode.id,
-                    EQUIPMENT_TYPES.SUBSTATION.type,
-                    EQUIPMENT_INFOS_TYPES.LIST.type,
-                    equipmentId,
-                    true
-                );
-            } else if (equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type) {
-                return fetchNetworkElementInfos(
-                    studyUuid,
-                    currentNode.id,
-                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
-                    EQUIPMENT_INFOS_TYPES.LIST.type,
-                    equipmentId,
-                    true
-                );
-            } else {
-                return Promise.reject('not a substation or a voltage level');
-            }
-        },
-        [studyUuid, currentNode]
-    );
 
     const equipmentsWithBranch = [
         EQUIPMENT_TYPES.LINE.type,
@@ -210,24 +168,6 @@ const BaseEquipmentMenu = ({
         EQUIPMENT_TYPES.HVDC_LINE.type,
     ];
 
-    useEffect(() => {
-        getEquipment(equipmentType, equipmentId)
-            .then((equipment) => {
-                setEquipment(equipment);
-                if (equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type) {
-                    setEquipmentSubstationNameOrId(
-                        equipment.substationName ?? equipment.substationId
-                    );
-                }
-            })
-            .catch((reason) =>
-                console.log(
-                    'We did not fetch the equipment of contextual menu because ' +
-                        reason
-                )
-            );
-    }, [getEquipment, equipmentType, equipmentId]);
-
     return (
         <>
             {/* menus for equipment other than substation and voltage level */}
@@ -237,7 +177,7 @@ const BaseEquipmentMenu = ({
                         <ViewInSpreadsheetItem
                             key="ViewOnSpreadsheet"
                             equipmentType={equipmentType}
-                            equipmentId={equipmentId}
+                            equipmentId={equipment.id}
                             itemText={intl.formatMessage({
                                 id: 'ViewOnSpreadsheet',
                             })}
@@ -253,7 +193,7 @@ const BaseEquipmentMenu = ({
                                 <DeleteEquipmentItem
                                     key="DeleteFromMenu"
                                     equipmentType={equipmentType}
-                                    equipmentId={equipmentId}
+                                    equipmentId={equipment.id}
                                     itemText={intl.formatMessage({
                                         id: 'DeleteFromMenu',
                                     })}
@@ -269,7 +209,7 @@ const BaseEquipmentMenu = ({
             {(equipmentType === EQUIPMENT_TYPES.GENERATOR.type ||
                 equipmentType === EQUIPMENT_TYPES.LOAD.type) && (
                 <ItemViewInForm
-                    equipmentId={equipmentId}
+                    equipmentId={equipment.id}
                     equipmentType={equipmentType}
                     itemText={intl.formatMessage({
                         id: 'edit',
@@ -381,7 +321,10 @@ const BaseEquipmentMenu = ({
                                 key={equipment.substationId}
                                 equipmentType={EQUIPMENT_TYPES.SUBSTATION.type}
                                 equipmentId={equipment.substationId}
-                                itemText={equipmentSubstationNameOrId}
+                                itemText={
+                                    equipment.substationName ??
+                                    equipment.substationId
+                                }
                                 handleViewInSpreadsheet={
                                     handleViewInSpreadsheet
                                 }
@@ -408,7 +351,10 @@ const BaseEquipmentMenu = ({
                                 key={equipment.substationId}
                                 equipmentType={EQUIPMENT_TYPES.SUBSTATION.type}
                                 equipmentId={equipment.substationId}
-                                itemText={equipmentSubstationNameOrId}
+                                itemText={
+                                    equipment.substationName ??
+                                    equipment.substationId
+                                }
                                 handleDeleteEquipment={handleDeleteEquipment}
                             />
                             {/* menus for the voltage level */}
@@ -431,7 +377,10 @@ const BaseEquipmentMenu = ({
                                 key={equipment.substationId}
                                 equipmentType={EQUIPMENT_TYPES.SUBSTATION.type}
                                 equipmentId={equipment.substationId}
-                                itemText={equipmentSubstationNameOrId}
+                                itemText={
+                                    equipment.substationName ??
+                                    equipment.substationId
+                                }
                                 handleOpenModificationDialog={
                                     handleOpenModificationDialog
                                 }
