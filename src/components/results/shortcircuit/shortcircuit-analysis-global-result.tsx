@@ -18,6 +18,9 @@ interface ShortCircuitAnalysisGlobalResultProps {
 }
 
 const shortCircuitAnalysisResultInvalidations = ['shortCircuitAnalysisResult'];
+const selectiveShortCircuitAnalysisResultInvalidations = [
+    'selectiveShortCircuitAnalysisResult',
+];
 
 export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
     ShortCircuitAnalysisGlobalResultProps
@@ -32,12 +35,17 @@ export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
             ? fetchShortCircuitAnalysisResult
             : fetchSelectiveShortCircuitAnalysisResult;
 
+    const resultsInvalidationsNotif =
+        analysisType === ShortcircuitAnalysisType.GLOBAL
+            ? shortCircuitAnalysisResultInvalidations
+            : selectiveShortCircuitAnalysisResultInvalidations;
+
     const [shortCircuitAnalysisResult, isWaitingShortCircuitAnalysisResult] =
         useNodeData(
             studyUuid,
             currentNode?.id,
             resultsFetcher,
-            shortCircuitAnalysisResultInvalidations
+            resultsInvalidationsNotif
         ) as [ShortcircuitAnalysisResult, boolean];
 
     return (
