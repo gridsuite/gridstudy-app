@@ -78,5 +78,5 @@ export const useRowFilter = (filterSelectorKeys) => {
         setRowFilters([]);
     }, []);
 
-    return { updateFilter, filterSelector, initFilters };
+    return { updateFilter, filterSelector, rowFilters, initFilters };
 };

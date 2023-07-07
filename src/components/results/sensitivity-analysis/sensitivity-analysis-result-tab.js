@@ -10,30 +10,72 @@ import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
-import PagedSensitivityResult from './paged-sensitivity-analysis-result';
+import PagedSensitivityAnalysisResult from './paged-sensitivity-analysis-result';
+import { useRowFilter } from '../../../hooks/use-row-filter';
+import {
+    DATA_KEY_TO_FILTER_KEY,
+    DATA_KEY_TO_SORT_KEY,
+} from './sensitivity-analysis-content';
+import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKindIndex, setSensiKindIndex] = useState(0);
+    const [page, setPage] = useState(0);
+
+    const { updateFilter, filterSelector, initFilters, rowFilters } =
+        useRowFilter(DATA_KEY_TO_FILTER_KEY);
+
+    // Add default sort on sensitivity col
+    const defaultSortColumn = DATA_KEY_TO_SORT_KEY.value;
+    const defaultSortOrder = SORT_WAYS.desc;
+    const { onSortChanged, sortSelector, initSort } = useAgGridSort(
+        DATA_KEY_TO_SORT_KEY,
+        { colKey: defaultSortColumn, sortWay: defaultSortOrder }
+    );
+
+    const initTable = () => {
+        initFilters();
+        initSort();
+
+        /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
+       for the page prop of MUI TablePagination if was not on the first page
+       for the prev sensiKindIndex */
+        setPage(0);
+    };
+
+    const handleSensiKindIndexChange = (index) => {
+        setSensiKindIndex(index);
+        initTable();
+    };
+
+    const handleSensiNOrNkIndexChange = (_, newTabIndexs) => {
+        setNOrNkIndex(newTabIndexs);
+        initTable();
+    };
 
     return (
         <>
             <SensitivityAnalysisTabs
                 sensiKindIndex={sensiKindIndex}
-                setSensiKindIndex={setSensiKindIndex}
+                setSensiKindIndex={handleSensiKindIndexChange}
             />
-            <Tabs
-                value={nOrNkIndex}
-                onChange={(_, newTabIndex) => setNOrNkIndex(newTabIndex)}
-            >
+            <Tabs value={nOrNkIndex} onChange={handleSensiNOrNkIndexChange}>
                 <Tab label="N" />
                 <Tab label="N-K" />
             </Tabs>
-            <PagedSensitivityResult
+            <PagedSensitivityAnalysisResult
                 nOrNkIndex={nOrNkIndex}
                 sensiKindIndex={sensiKindIndex}
                 studyUuid={studyUuid}
                 nodeUuid={nodeUuid}
+                updateFilter={updateFilter}
+                filterSelector={filterSelector}
+                rowFilters={rowFilters}
+                onSortChanged={onSortChanged}
+                sortSelector={sortSelector}
+                page={page}
+                setPage={setPage}
             />
         </>
     );

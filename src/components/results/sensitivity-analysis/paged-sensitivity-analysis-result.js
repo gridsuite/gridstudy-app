@@ -8,37 +8,37 @@
 import PropTypes from 'prop-types';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
-    DATA_KEY_TO_FILTER_KEY,
-    DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
     PAGE_OPTIONS,
 } from './sensitivity-analysis-content';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { fetchSensitivityAnalysisResult } from '../../../utils/rest-api';
-import { useRowFilter } from '../../../hooks/use-row-filter';
 import { useIntl } from 'react-intl';
 import FilterPanel from '../../spreadsheet/filter-panel/filter-panel';
-import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import LoaderWithOverlay from '../../utils/loader-with-overlay';
 import CustomTablePagination from '../../utils/custom-table-pagination';
+import { fetchSensitivityAnalysisResult } from '../../../services/study/sensitivity-analysis';
 
-const PagedSensitivityResult = ({
+const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
     sensiKindIndex,
     studyUuid,
     nodeUuid,
+    updateFilter,
+    filterSelector,
+    page,
+    setPage,
+    onSortChanged,
+    sortSelector,
+    rowFilters,
 }) => {
     const intl = useIntl();
 
     const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_COUNT);
-    const [page, setPage] = useState(0);
     const [count, setCount] = useState(0);
     const [result, setResult] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [prevSensiKindIndex, setPrevSensiKindIndex] =
-        useState(sensiKindIndex);
 
     const filtersDef = useMemo(() => {
         const baseFilters = [
@@ -67,35 +67,29 @@ const PagedSensitivityResult = ({
         return baseFilters;
     }, [intl, sensiKindIndex, nOrNkIndex, result]);
 
-    const { updateFilter, filterSelector, initFilters } = useRowFilter(
-        DATA_KEY_TO_FILTER_KEY
-    );
-
-    // Add default sort on sensitivity col
-    const defaultSortColumn = DATA_KEY_TO_SORT_KEY.value;
-    const defaultSortOrder = SORT_WAYS.desc;
-    const { onSortChanged, sortSelector } = useAgGridSort(
-        DATA_KEY_TO_SORT_KEY,
-        { colKey: defaultSortColumn, sortWay: defaultSortOrder }
-    );
-
     const { snackError } = useSnackMessage();
 
-    const handleChangePage = useCallback((_, newPage) => {
-        setPage(newPage);
-    }, []);
+    const handleChangePage = useCallback(
+        (_, newPage) => {
+            setPage(newPage);
+        },
+        [setPage]
+    );
 
-    const handleChangeRowsPerPage = useCallback((event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    }, []);
+    const handleChangeRowsPerPage = useCallback(
+        (event) => {
+            setRowsPerPage(parseInt(event.target.value, 10));
+            setPage(0);
+        },
+        [setPage]
+    );
 
     const handleUpdateFilter = useCallback(
         (field, value) => {
             setPage(0);
             updateFilter(field, value);
         },
-        [updateFilter]
+        [setPage, updateFilter]
     );
 
     const fetchResult = useCallback(() => {
@@ -112,8 +106,9 @@ const PagedSensitivityResult = ({
 
         fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
             .then((res) => {
-                setResult(res);
                 const { filteredSensitivitiesCount = 0 } = res || {};
+
+                setResult(res);
                 setCount(filteredSensitivitiesCount);
             })
             .catch((error) => {
@@ -141,18 +136,10 @@ const PagedSensitivityResult = ({
     ]);
 
     useEffect(() => {
-        if (prevSensiKindIndex !== sensiKindIndex) {
-            setPrevSensiKindIndex(sensiKindIndex);
-            setPage(0);
-            return;
-        }
-
         fetchResult();
-    }, [fetchResult, sensiKindIndex, prevSensiKindIndex]);
+    }, [fetchResult]);
 
-    useEffect(() => {
-        initFilters();
-    }, [initFilters, sensiKindIndex]);
+    useEffect(() => {}, [sensiKindIndex, nOrNkIndex]);
 
     return (
         <>
@@ -168,6 +155,7 @@ const PagedSensitivityResult = ({
             <FilterPanel
                 filtersDef={filtersDef}
                 updateFilter={handleUpdateFilter}
+                rowFilters={rowFilters}
             />
             <SensitivityAnalysisResult
                 result={result?.sensitivities || []}
@@ -187,11 +175,23 @@ const PagedSensitivityResult = ({
     );
 };
 
-PagedSensitivityResult.propTypes = {
+PagedSensitivityAnalysisResult.propTypes = {
     nOrNkIndex: PropTypes.number.isRequired,
     sensiKindIndex: PropTypes.number.isRequired,
     studyUuid: PropTypes.string.isRequired,
     nodeUuid: PropTypes.string.isRequired,
+    updateFilter: PropTypes.func,
+    onSortChanged: PropTypes.func,
+    filterSelector: PropTypes.object,
+    sortSelector: PropTypes.object,
+    page: PropTypes.number.isRequired,
+    setPage: PropTypes.func.isRequired,
+    rowFilters: PropTypes.arrayOf(
+        PropTypes.shape({
+            field: PropTypes.string.isRequired,
+            value: PropTypes.string.isRequired,
+        })
+    ).isRequired,
 };
 
-export default PagedSensitivityResult;
+export default PagedSensitivityAnalysisResult;

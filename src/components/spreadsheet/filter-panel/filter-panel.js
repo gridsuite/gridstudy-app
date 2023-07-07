@@ -7,9 +7,8 @@
 
 import { Autocomplete, Grid, TextField } from '@mui/material';
 import PropTypes from 'prop-types';
-import React from 'react';
 
-const FilterPanel = ({ filtersDef = [], updateFilter }) => {
+const FilterPanel = ({ filtersDef = [], updateFilter, rowFilters }) => {
     const handleFilterChange = (field, data) => {
         updateFilter(field, data);
     };
@@ -20,6 +19,11 @@ const FilterPanel = ({ filtersDef = [], updateFilter }) => {
                 <Grid key={field} item p={1} xs={6} sm={4} md={3} lg={2}>
                     {!!options?.length && (
                         <Autocomplete
+                            value={
+                                rowFilters?.find(
+                                    (rowFilter) => rowFilter.field === field
+                                )?.value || ''
+                            }
                             options={options}
                             onChange={(_, data) =>
                                 handleFilterChange(field, data)
@@ -46,6 +50,12 @@ FilterPanel.propTypes = {
             field: PropTypes.string.isRequired,
             options: PropTypes.array.isRequired,
             label: PropTypes.string.isRequired,
+        })
+    ).isRequired,
+    rowFilters: PropTypes.arrayOf(
+        PropTypes.shape({
+            field: PropTypes.string.isRequired,
+            value: PropTypes.string.isRequired,
         })
     ).isRequired,
     updateFilter: PropTypes.func.isRequired,
