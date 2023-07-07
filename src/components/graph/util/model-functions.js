@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,7 +23,8 @@ export function convertNodetoReactFlowModelNode(node, parentNodeUuid) {
             parentNodeUuid: parentNodeUuid,
             label: node.name,
             description: node.description,
-            buildStatus: node.buildStatus,
+            globalBuildStatus: node.nodeBuildStatus?.globalBuildStatus,
+            localBuildStatus: node.nodeBuildStatus?.localBuildStatus,
             readOnly: node.readOnly,
         },
     };
@@ -50,7 +51,7 @@ export function recursiveSearchFirstNodeOfType(
     if (
         elements.type === nodeType &&
         (buildStatusList === undefined ||
-            buildStatusList.includes(elements.buildStatus))
+            buildStatusList.includes(elements.globalBuildStatus))
     ) {
         return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
     }
@@ -82,7 +83,7 @@ export function isNodeBuilt(node) {
     if (node.type === 'ROOT') {
         return true;
     }
-    return node.data?.buildStatus?.startsWith('BUILT');
+    return node.data?.globalBuildStatus?.startsWith('BUILT');
 }
 
 export function isSameNode(node1, node2) {

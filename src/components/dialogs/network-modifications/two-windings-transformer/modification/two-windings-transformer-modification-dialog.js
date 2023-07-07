@@ -194,30 +194,42 @@ const TwoWindingsTransformerModificationDialog = ({
         (twt) => {
             const characteristics = twt[CHARACTERISTICS];
             const limits = twt[LIMITS];
-
-            const currentLimits1 = {
-                permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
-                temporaryLimits: addModificationTypeToTemporaryLimits(
-                    sanitizeLimitNames(
-                        limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
-                    ),
-                    twtToModify?.currentLimits1?.temporaryLimits,
-                    editData?.currentLimits1?.temporaryLimits,
-                    currentNode
+            const temporaryLimits1 = addModificationTypeToTemporaryLimits(
+                sanitizeLimitNames(
+                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
                 ),
-            };
-
-            const currentLimits2 = {
-                permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                temporaryLimits: addModificationTypeToTemporaryLimits(
-                    sanitizeLimitNames(
-                        limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
-                    ),
-                    twtToModify?.currentLimits2?.temporaryLimits,
-                    editData?.currentLimits2?.temporaryLimits,
-                    currentNode
+                twtToModify?.currentLimits1?.temporaryLimits,
+                editData?.currentLimits1?.temporaryLimits,
+                currentNode
+            );
+            let currentLimits1 = null;
+            if (
+                limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT] ||
+                temporaryLimits1.length > 0
+            ) {
+                currentLimits1 = {
+                    permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
+                    temporaryLimits: temporaryLimits1,
+                };
+            }
+            const temporaryLimits2 = addModificationTypeToTemporaryLimits(
+                sanitizeLimitNames(
+                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
                 ),
-            };
+                twtToModify?.currentLimits2?.temporaryLimits,
+                editData?.currentLimits2?.temporaryLimits,
+                currentNode
+            );
+            let currentLimits2 = null;
+            if (
+                limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT] ||
+                temporaryLimits2.length > 0
+            ) {
+                currentLimits2 = {
+                    permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
+                    temporaryLimits: temporaryLimits2,
+                };
+            }
 
             modifyTwoWindingsTransformer(
                 studyUuid,
@@ -300,28 +312,25 @@ const TwoWindingsTransformerModificationDialog = ({
                         if (twt) {
                             setTwtToModify(twt);
                             if (editData?.equipmentId !== selectedId) {
-                                reset(
-                                    (formValues) => ({
-                                        ...formValues,
-                                        ...getLimitsFormData({
-                                            temporaryLimits1:
-                                                addSelectedFieldToRows(
-                                                    formatTemporaryLimits(
-                                                        twt.currentLimits1
-                                                            ?.temporaryLimits
-                                                    )
-                                                ),
-                                            temporaryLimits2:
-                                                addSelectedFieldToRows(
-                                                    formatTemporaryLimits(
-                                                        twt.currentLimits2
-                                                            ?.temporaryLimits
-                                                    )
-                                                ),
-                                        }),
+                                reset((formValues) => ({
+                                    ...formValues,
+                                    ...getLimitsFormData({
+                                        temporaryLimits1:
+                                            addSelectedFieldToRows(
+                                                formatTemporaryLimits(
+                                                    twt.currentLimits1
+                                                        ?.temporaryLimits
+                                                )
+                                            ),
+                                        temporaryLimits2:
+                                            addSelectedFieldToRows(
+                                                formatTemporaryLimits(
+                                                    twt.currentLimits2
+                                                        ?.temporaryLimits
+                                                )
+                                            ),
                                     }),
-                                    { keepDefaultValues: true }
-                                );
+                                }));
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -374,6 +383,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 onSave={onSubmit}
                 onValidationError={onValidationError}
                 open={open}
+                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||
