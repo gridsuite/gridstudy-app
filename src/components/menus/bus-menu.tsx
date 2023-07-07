@@ -8,7 +8,14 @@ import {
 import { makeStyles } from '@mui/styles';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
+import {
+    isNodeBuilt,
+    isNodeReadOnly,
+} from 'components/graph/util/model-functions';
+import { useSelector } from 'react-redux';
+import { ReduxState } from 'redux/reducer.type';
+import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 
 interface BusMenuProps {
     busId: string;
@@ -38,10 +45,23 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     closeBusMenu,
 }) => {
     const classes = useStyles();
+    const currentNode = useSelector(
+        (state: ReduxState) => state.currentTreeNode
+    );
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const handleClickRunShortcircuitAnalysis = useCallback(
         () => handleRunShortcircuitAnalysis(busId),
         [busId, handleRunShortcircuitAnalysis]
+    );
+
+    const isNodeEditable = useMemo(
+        () =>
+            busId &&
+            isNodeBuilt(currentNode) &&
+            !isNodeReadOnly(currentNode) &&
+            !isAnyNodeBuilding,
+        [currentNode, isAnyNodeBuilding]
     );
 
     return (
@@ -59,6 +79,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 className={classes.menuItem}
                 onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
+                disabled={!isNodeEditable}
             >
                 <ListItemIcon>
                     <BoltIcon />
