@@ -263,13 +263,12 @@ const ShuntCompensatorModificationDialog = ({
                         fillerHeight={5}
                     />
                 )}
-                {selectedId !== null &&
-                    !multiSections && (
-                        <ShuntCompensatorModificationForm
-                            shuntCompensatorInfos={shuntCompensatorInfos}
-                            equipmentId={selectedId}
-                        />
-                    )}
+                {selectedId !== null && !multiSections && (
+                    <ShuntCompensatorModificationForm
+                        shuntCompensatorInfos={shuntCompensatorInfos}
+                        equipmentId={selectedId}
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );
