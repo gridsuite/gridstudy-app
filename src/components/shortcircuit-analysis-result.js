@@ -113,12 +113,8 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 elementId: fault.elementId,
                 faultType: intl.formatMessage({ id: fault.faultType }),
                 shortCircuitPower: faultResult.shortCircuitPower,
-                limitMin: unitToKiloUnit(
-                    faultResult.shortCircuitCurrentLimits.ipMin
-                ),
-                limitMax: unitToKiloUnit(
-                    faultResult.shortCircuitCurrentLimits.ipMax
-                ),
+                limitMin: unitToKiloUnit(faultResult.shortCircuitLimits.ipMin),
+                limitMax: unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
                 current: faultResult.current,
                 ...firstLimitViolation,
             });
