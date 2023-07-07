@@ -11,9 +11,6 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    MAXIMUM_NUMBER_OF_SECTIONS,
-    CURRENT_NUMBER_OF_SECTIONS,
-    IDENTICAL_SECTIONS,
     SUSCEPTANCE_PER_SECTION,
     CONNECTIVITY,
     CONNECTION_DIRECTION,
@@ -173,9 +170,6 @@ const ShuntCompensatorCreationDialog = ({
                 currentNodeUuid,
                 shuntCompensator[EQUIPMENT_ID],
                 sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
-                shuntCompensator[MAXIMUM_NUMBER_OF_SECTIONS] ?? 1,
-                shuntCompensator[CURRENT_NUMBER_OF_SECTIONS] ?? 1,
-                shuntCompensator[IDENTICAL_SECTIONS] ?? true,
                 shuntCompensator[CHARACTERISTICS_CHOICE] ===
                     CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
                     ? shuntCompensator[SUSCEPTANCE_PER_SECTION]
