@@ -105,14 +105,6 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     limitType: intl.formatMessage({
                         id: lv.limitType,
                     }),
-                    limitMin:
-                        lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? unitToKiloUnit(lv.limit)
-                            : null,
-                    limitMax:
-                        lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? unitToKiloUnit(lv.limit)
-                            : null,
                     limitName: lv.limitName,
                 };
             }
@@ -121,6 +113,12 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 elementId: fault.elementId,
                 faultType: intl.formatMessage({ id: fault.faultType }),
                 shortCircuitPower: faultResult.shortCircuitPower,
+                limitMin: unitToKiloUnit(
+                    faultResult.shortCircuitCurrentLimits.ipMin
+                ),
+                limitMax: unitToKiloUnit(
+                    faultResult.shortCircuitCurrentLimits.ipMax
+                ),
                 current: faultResult.current,
                 ...firstLimitViolation,
             });
