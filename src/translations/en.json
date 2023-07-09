@@ -498,7 +498,7 @@
     "Advanced": "Advanced",
     "EnableDeveloperMode": "Enable developer mode",
     "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",
-
+    "ModifyNodeNotBuiltWarningMsg": "The values are those of the previous built node in the current branch",
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
     "buildNode": "Build node",
@@ -562,6 +562,7 @@
     "LineModificationError": "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
     "ShuntCompensatorModificationError": "Error while modifying shunt compensator",
+    "ShuntCompensatorMultiSectionsError": "It is currently not possible to modify a multi sections shunt compensator",
 
     "CreateGenerator": "Create generator",
     "ModifyGenerator": "Modify generator",
@@ -666,7 +667,7 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater or equal to 0",
-    "ModifyShuntCompensator": "Modify shunt compensator",
+    "ModifyShuntCompensator": "Modify shunt compensator (A single section)",
 
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",

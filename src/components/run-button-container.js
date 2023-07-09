@@ -10,15 +10,9 @@ import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-    startLoadFlow,
-    startSecurityAnalysis,
-    startSensitivityAnalysis,
     startShortCircuitAnalysis,
-    startDynamicSimulation,
     stopSecurityAnalysis,
-    stopSensitivityAnalysis,
     stopShortCircuitAnalysis,
-    stopDynamicSimulation,
     startVoltageInit,
     stopVoltageInit,
     stopLoadFlow,
@@ -44,6 +38,17 @@ import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
 } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
 import { ComputingType } from './computing-status/computing-type';
+import {
+    startSensitivityAnalysis,
+    stopSensitivityAnalysis,
+} from '../services/study/sensitivity-analysis';
+import {
+    startDynamicSimulation,
+    stopDynamicSimulation,
+} from '../services/study/dynamic-simulation';
+import { startLoadFlow } from '../services/study/loadflow';
+
+import { startSecurityAnalysis } from '../services/study/security-analysis';
 
 export function RunButtonContainer({
     studyUuid,
@@ -319,6 +324,7 @@ export function RunButtonContainer({
                             RunningStatus.FAILED
                         )
                     );
+                    setRanLoadflow(false);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startLoadFlowError',

@@ -51,7 +51,6 @@ import {
     connectDeletedStudyNotificationsWebsocket,
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
-
 import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 
