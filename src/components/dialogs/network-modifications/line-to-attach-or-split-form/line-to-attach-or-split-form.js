@@ -37,9 +37,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
                 true
             )
                 .then((values) => {
-                    setLinesOptions(
-                        values.sort()
-                    );
+                    setLinesOptions(values.sort());
                 })
                 .catch((error) => {
                     snackError({
