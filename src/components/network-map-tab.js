@@ -723,7 +723,7 @@ export const NetworkMapTab = ({
         if (isInitialized && studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'loadflow'
+                'loadflowResult'
             ) {
                 updateMapEquipments(currentNodeRef.current);
             }

@@ -140,7 +140,8 @@ export function RunButtonContainer({
     useEffect(() => {
         if (
             ranLoadflow &&
-            studyUpdatedForce?.eventData?.headers?.updateType === 'loadflow'
+            studyUpdatedForce?.eventData?.headers?.updateType ===
+                'loadflowResult'
         ) {
             dispatch(addLoadflowNotif());
         } else if (
