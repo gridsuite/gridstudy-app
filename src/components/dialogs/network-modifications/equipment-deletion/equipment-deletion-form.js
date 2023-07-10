@@ -10,15 +10,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    compareById,
-    filledTextField,
-    gridItem,
-} from 'components/dialogs/dialogUtils';
+import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import { EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { fetchEquipmentsIds } from '../../../../utils/rest-api';
 
 const richTypeEquals = (a, b) => a.type === b.type;
 
@@ -44,25 +41,26 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
             EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
             EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
         ]);
-        const ret = Object.values(EQUIPMENT_TYPES).filter(
+        return Object.values(EQUIPMENT_TYPES).filter(
             (equipmentType) => !equipmentTypesToExclude.has(equipmentType.type)
         );
-        return ret;
     }, []);
 
     useEffect(() => {
         let ignore = false;
         setEquipmentsOptions([]);
         if (watchType?.fetchers?.length) {
-            Promise.all(
-                watchType.fetchers.map((fetchPromise) =>
-                    fetchPromise(studyUuid, currentNode.id)
-                )
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNode?.id,
+                undefined,
+                watchType.type,
+                true
             )
                 .then((vals) => {
                     // check race condition here
                     if (!ignore) {
-                        setEquipmentsOptions(vals.flat().sort(compareById));
+                        setEquipmentsOptions(vals.sort());
                     }
                 })
                 .catch((error) => {
@@ -105,7 +103,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
             getOptionLabel={getObjectId}
             //hack to work with freesolo autocomplete
             //setting null programatically when freesolo is enable wont empty the field
-            inputTransform={(value) => (value === null ? '' : value)}
+            inputTransform={(value) => value}
             outputTransform={(value) =>
                 value === '' ? null : getObjectId(value)
             }
