@@ -32,7 +32,7 @@ import {
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
-import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 const withBranchMenu =
     (BaseMenu) =>
     ({
-        id,
+        equipment,
         equipmentType,
         position,
         handleClose,
@@ -103,7 +103,7 @@ const withBranchMenu =
                 currentNode?.id,
                 getRealEquipmentType(equipmentType),
                 EQUIPMENT_INFOS_TYPES.LIST.type,
-                id,
+                equipment.id,
                 false
             ).then((value) => {
                 if (value) {
@@ -114,7 +114,7 @@ const withBranchMenu =
             studyUuid,
             currentNode?.id,
             equipmentType,
-            id,
+            equipment.id,
             getRealEquipmentType,
         ]);
 
@@ -150,35 +150,30 @@ const withBranchMenu =
 
         function handleLockout() {
             startModification();
-            lockoutBranch(studyUuid, currentNode?.id, branch.id).catch(
-                (error) => {
-                    handleError(error, 'UnableToLockout');
-                }
-            );
+            lockoutBranch(studyUuid, currentNode?.id, branch).catch((error) => {
+                handleError(error, 'UnableToLockout');
+            });
         }
 
         function handleTrip() {
             startModification();
-            tripBranch(studyUuid, currentNode?.id, branch.id).catch((error) => {
+            tripBranch(studyUuid, currentNode?.id, branch).catch((error) => {
                 handleError(error, 'UnableToTrip');
             });
         }
 
         function handleEnergise(side) {
             startModification();
-            energiseBranchEnd(
-                studyUuid,
-                currentNode?.id,
-                branch.id,
-                side
-            ).catch((error) => {
-                handleError(error, 'UnableToEnergiseOnOneEnd');
-            });
+            energiseBranchEnd(studyUuid, currentNode?.id, branch, side).catch(
+                (error) => {
+                    handleError(error, 'UnableToEnergiseOnOneEnd');
+                }
+            );
         }
 
         function handleSwitchOn() {
             startModification();
-            switchOnBranch(studyUuid, currentNode?.id, branch.id).catch(
+            switchOnBranch(studyUuid, currentNode?.id, branch).catch(
                 (error) => {
                     handleError(error, 'UnableToSwitchOn');
                 }
@@ -199,7 +194,7 @@ const withBranchMenu =
                 onClose={handleClose}
             >
                 <BaseMenu
-                    equipmentId={id}
+                    equipment={equipment}
                     equipmentType={equipmentType}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
@@ -351,7 +346,7 @@ const withBranchMenu =
                     onClick={() =>
                         handleDeleteEquipment(
                             getFeederTypeFromEquipmentType(equipmentType),
-                            id
+                            equipment.id
                         )
                     }
                     disabled={!isNodeEditable}
@@ -375,7 +370,10 @@ const withBranchMenu =
                     <MenuItem
                         className={classes.menuItem}
                         onClick={() =>
-                            handleOpenModificationDialog(id, equipmentType)
+                            handleOpenModificationDialog(
+                                equipment.id,
+                                equipmentType
+                            )
                         }
                         disabled={!isNodeEditable}
                     >

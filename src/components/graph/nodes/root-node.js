@@ -67,7 +67,7 @@ const RootNode = (props) => {
                         isSelectedNode() ? classes.rootSelected : classes.root
                     }
                 >
-                    {(props.data.buildStatus === 'BUILDING' && (
+                    {(props.data.globalBuildStatus === 'BUILDING' && (
                         <CircularProgress size={24} />
                     )) || <PhotoIcon />}
                 </IconButton>

@@ -199,6 +199,7 @@ const VoltageLevelModificationDialog = ({
                 open={open}
                 titleId="ModifyVoltageLevel"
                 keepMounted={true}
+                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||

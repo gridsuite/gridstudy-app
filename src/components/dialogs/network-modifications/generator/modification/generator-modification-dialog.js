@@ -521,6 +521,7 @@ const GeneratorModificationDialog = ({
                 titleId="ModifyGenerator"
                 open={open}
                 keepMounted={true}
+                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||
