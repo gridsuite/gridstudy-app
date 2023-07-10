@@ -561,7 +561,7 @@
     "LineModificationError": "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
     "ShuntCompensatorModificationError": "Error while modifying shunt compensator",
-    "CreateBattery": "Battery",
+    "CreateBattery": "Create battery",
     "ModifyBattery": "Modify battery",
     "CreateGenerator": "Create generator",
     "ModifyGenerator": "Modify generator",

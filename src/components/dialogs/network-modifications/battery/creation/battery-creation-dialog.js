@@ -40,7 +40,7 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import BatteryCreationForm from './battery-creation-form';
-import { createBattery } from 'utils/rest-api';
+import { createBattery, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import {
     FORM_LOADING_DELAY,
@@ -51,7 +51,6 @@ import {
     getReactiveLimitsSchema,
 } from '../../generator/reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
 import { getFrequencyRegulationSchema } from '../../generator/set-points/set-points-utils';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import PropTypes from 'prop-types';
@@ -112,7 +111,7 @@ const BatteryCreationDialog = ({
             [MINIMUM_ACTIVE_POWER]: battery.minP,
             [ACTIVE_POWER_SET_POINT]: battery.targetP,
             [REACTIVE_POWER_SET_POINT]: battery.targetQ,
-            [FREQUENCY_REGULATION]: battery.participate,
+            [FREQUENCY_REGULATION]: battery.activePowerControlOn,
             [DROOP]: battery.droop,
             [MINIMUM_REACTIVE_POWER]:
                 battery?.minMaxReactiveLimits?.minimumReactivePower ?? null,

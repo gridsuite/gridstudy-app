@@ -234,7 +234,7 @@ const NetworkModificationNodeEditor = () => {
             subItems: [
                 {
                     id: 'BATTERY_CREATION',
-                    label: 'CreateBattery',
+                    label: 'BATTERY',
                     action: () => adapt(BatteryCreationDialog),
                 },
                 {
