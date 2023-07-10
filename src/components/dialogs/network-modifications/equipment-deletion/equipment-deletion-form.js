@@ -10,10 +10,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    filledTextField,
-    gridItem,
-} from 'components/dialogs/dialogUtils';
+import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
 import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import { EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
