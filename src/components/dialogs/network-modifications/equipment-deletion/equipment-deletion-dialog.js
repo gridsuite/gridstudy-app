@@ -43,7 +43,7 @@ const emptyFormData = {
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
- * @param defaultIdValue the default load id
+ * @param defaultIdValue the default equipment id
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
