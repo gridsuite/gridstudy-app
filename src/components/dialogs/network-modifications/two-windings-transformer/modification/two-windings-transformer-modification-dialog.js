@@ -167,6 +167,9 @@ const TwoWindingsTransformerModificationDialog = ({
     };
 
     const getTapSideForEdit = (twt, tap) => {
+        if (tap?.regulatingTerminalVlId?.value == null) {
+            return null;
+        }
         return tap?.regulatingTerminalId?.value === twt?.id
             ? tap?.regulatingTerminalVlId?.value === twt?.voltageLevelId1
                 ? SIDE.SIDE1.id
@@ -339,6 +342,9 @@ const TwoWindingsTransformerModificationDialog = ({
                 tapChangerValue?.[REGULATION_TYPE] ??
                 previousRegulationType(twtToModify);
             if (regulationType === REGULATION_TYPES.LOCAL.id) {
+                if (!tapChangerValue?.[REGULATION_SIDE]) {
+                    return undefined;
+                }
                 if (tapChangerValue?.[REGULATION_SIDE] === SIDE.SIDE1.id) {
                     return vlId1;
                 } else {

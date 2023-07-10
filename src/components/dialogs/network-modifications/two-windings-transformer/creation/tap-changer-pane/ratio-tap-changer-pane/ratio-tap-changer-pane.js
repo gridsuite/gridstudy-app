@@ -82,6 +82,9 @@ const RatioTapChangerPane = ({
     const getRatioTapChangerRegulationModeLabel = (
         ratioTapChangerFormValues
     ) => {
+        if (!ratioTapChangerFormValues) {
+            return null;
+        }
         if (ratioTapChangerFormValues?.[REGULATING]) {
             return intl.formatMessage({
                 id: RATIO_REGULATION_MODES.VOLTAGE_REGULATION.label,
@@ -104,6 +107,9 @@ const RatioTapChangerPane = ({
     };
 
     const getTapSideLabel = (twt, tap) => {
+        if (!tap || !twt) {
+            return null;
+        }
         if (tap?.regulatingTerminalConnectableId === twt?.id) {
             return tap?.regulatingTerminalVlId === twt?.voltageLevelId1
                 ? intl.formatMessage({ id: SIDE.SIDE1.label })

@@ -105,10 +105,33 @@ const TapChangerSteps = ({
         }
 
         setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, nextHighestTap);
-        setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
 
         return tapRowsToAdd;
     }
+
+    const compareStepsWithPreviousValues = useCallback(
+        (tapSteps, previousValues) => {
+            if (previousValues === undefined) {
+                return false;
+            }
+            const previousTapSteps = previousValues?.[STEPS];
+
+            if (tapSteps.length !== previousTapSteps?.length) {
+                return false;
+            }
+            return tapSteps.every((step, index) => {
+                const previousStep = previousTapSteps[index];
+                return (
+                    step.r === previousStep.r &&
+                    step.x === previousStep.x &&
+                    step.b === previousStep.b &&
+                    step.g === previousStep.g &&
+                    step.rho === previousStep.rho
+                );
+            });
+        },
+        []
+    );
 
     const resetTapNumbers = useCallback(
         (tapSteps, modification) => {
@@ -120,7 +143,10 @@ const TapChangerSteps = ({
                     ? previousValues?.[LOW_TAP_POSITION]
                     : lowTapPosition;
 
-            if (currentLowTapPosition !== previousValues?.[LOW_TAP_POSITION]) {
+            if (
+                currentLowTapPosition !== previousValues?.[LOW_TAP_POSITION] ||
+                !compareStepsWithPreviousValues(currentTapRows, previousValues)
+            ) {
                 setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
             }
 
@@ -141,7 +167,14 @@ const TapChangerSteps = ({
                     : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
-        [getValues, tapChanger, lowTapPosition, previousValues, setValue]
+        [
+            getValues,
+            tapChanger,
+            lowTapPosition,
+            previousValues,
+            compareStepsWithPreviousValues,
+            setValue,
+        ]
     );
 
     // Adjust high tap position when low tap position change + remove red if value fixed
@@ -181,7 +214,6 @@ const TapChangerSteps = ({
                 current += interval;
             });
             replace(currentTapRows);
-            setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
         }
     };
 
@@ -213,7 +245,6 @@ const TapChangerSteps = ({
                 }));
                 if (rows && rows.length > 0) {
                     replace(rows);
-                    setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
                 }
             },
         });
