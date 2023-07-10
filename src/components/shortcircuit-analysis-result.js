@@ -61,12 +61,30 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 fractionDigits: 1,
                 numeric: true,
             },
+            {
+                field: 'linkedElementId',
+                hide: true,
+            },
         ];
     }, [intl]);
 
+    const groupPostSort = (sortedRows, idField, linkedIdField) => {
+        const result = [];
+        const idRows = sortedRows.filter((row) => row.data[idField] != null);
+        idRows.forEach((idRow) => {
+            result.push(idRow);
+            result.push(
+                ...sortedRows.filter(
+                    (row) => row.data[linkedIdField] === idRow.data[idField]
+                )
+            );
+        });
+
+        return result;
+    };
     const getRowStyle = useCallback(
         (params) => {
-            if (params?.data?.elementId) {
+            if (!params?.data?.linkedElementId) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
@@ -128,6 +146,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 rows.push({
                     connectableId: feederResult.connectableId,
                     current: feederResult.current,
+                    linkedElementId: fault.id,
                 });
             });
         });
@@ -137,9 +156,26 @@ const ShortCircuitAnalysisResult = ({ result }) => {
     const defaultColDef = useMemo(
         () => ({
             suppressMovable: true,
+            resizable: true,
+            sortable: true,
+            autoHeaderHeight: true,
+            flex: 1,
         }),
         []
     );
+
+    const onGridReady = useCallback((params) => {
+        if (params?.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
+    const handlePostSortRows = useCallback((params) => {
+        const rows = params.nodes;
+        Object.assign(
+            rows,
+            groupPostSort(rows, 'elementId', 'linkedElementId')
+        );
+    }, []);
 
     const renderResult = () => {
         const rows = flattenResult(result);
@@ -151,6 +187,9 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                     rowData={rows}
                     columnDefs={columns}
                     getRowStyle={getRowStyle}
+                    onGridReady={onGridReady}
+                    enableCellTextSelection={true}
+                    postSortRows={handlePostSortRows}
                     defaultColDef={defaultColDef}
                 />
             )
