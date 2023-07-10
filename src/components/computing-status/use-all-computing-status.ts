@@ -14,15 +14,13 @@ import {
     getVoltageInitRunningStatus,
 } from '../utils/running-status';
 
-import {
-    fetchShortCircuitAnalysisStatus,
-    fetchVoltageInitStatus,
-} from '../../utils/rest-api';
 import { UUID } from 'crypto';
 import { ComputingType } from './computing-type';
 import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
 import { fetchDynamicSimulationStatus } from '../../services/study/dynamic-simulation';
+import { fetchShortCircuitAnalysisStatus } from '../../services/study/short-circuit-analysis';
+import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
 
 const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',

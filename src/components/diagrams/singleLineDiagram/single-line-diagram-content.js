@@ -29,7 +29,6 @@ import withBranchMenu from '../../menus/branch-menu';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
-import { deleteEquipment, updateSwitchState } from '../../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -40,6 +39,10 @@ import LoadModificationDialog from 'components/dialogs/network-modifications/loa
 import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
+import {
+    deleteEquipment,
+    updateSwitchState,
+} from '../../../services/study/network-modifications';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;

@@ -35,6 +35,21 @@ export function startSecurityAnalysis(
     return backendFetch(url, { method: 'post' });
 }
 
+export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        'Stopping security analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const stopSecurityAnalysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/security-analysis/stop';
+    console.debug(stopSecurityAnalysisUrl);
+    return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
+}
+
 export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
     console.info(
         `Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`
@@ -84,4 +99,25 @@ export function fetchDefaultSecurityAnalysisProvider() {
     const url = PREFIX_STUDY_QUERIES + '/v1/security-analysis-default-provider';
     console.debug(url);
     return backendFetchText(url);
+}
+
+export function getSecurityAnalysisParameters(studyUuid) {
+    console.info('get security analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function setSecurityAnalysisParameters(studyUuid, newParams) {
+    console.info('set security analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
 }

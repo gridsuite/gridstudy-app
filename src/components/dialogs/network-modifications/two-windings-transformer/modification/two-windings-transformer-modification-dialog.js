@@ -22,11 +22,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    modifyTwoWindingsTransformer,
-} from 'utils/rest-api';
+import { fetchNetworkElementInfos, FetchStatus } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
 import { sanitizeString } from '../../../dialogUtils';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -67,6 +63,7 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { modifyTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

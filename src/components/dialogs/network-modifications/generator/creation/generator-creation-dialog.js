@@ -54,7 +54,6 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import { createGenerator } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import {
     FORM_LOADING_DELAY,
@@ -72,6 +71,7 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { createGenerator } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

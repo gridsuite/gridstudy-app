@@ -25,11 +25,6 @@ import {
     MenuItem,
 } from '@mui/material';
 
-import {
-    getSecurityAnalysisParameters,
-    setSecurityAnalysisParameters,
-} from '../../../utils/rest-api';
-
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 
 import {
@@ -74,6 +69,8 @@ import {
 import {
     fetchDefaultSecurityAnalysisProvider,
     fetchSecurityAnalysisProvider,
+    getSecurityAnalysisParameters,
+    setSecurityAnalysisParameters,
     updateSecurityAnalysisProvider,
 } from '../../../services/study/security-analysis';
 

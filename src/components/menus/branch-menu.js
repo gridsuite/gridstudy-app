@@ -22,13 +22,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import {
-    energiseBranchEnd,
-    fetchNetworkElementInfos,
-    lockoutBranch,
-    switchOnBranch,
-    tripBranch,
-} from '../../utils/rest-api';
+import { fetchNetworkElementInfos } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { equipments } from '../network/network-equipments';
@@ -40,8 +34,14 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
+import {
+    energiseBranchEnd,
+    lockoutBranch,
+    switchOnBranch,
+    tripBranch,
+} from '../../services/study/network-modifications';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     menuItem: {
         // NestedMenu item manages only label prop of string type
         // It fix paddings itself then we must force this padding

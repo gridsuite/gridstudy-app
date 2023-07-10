@@ -6,12 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    changeNetworkModificationOrder,
-    copyOrMoveModifications,
-    deleteModifications,
-    fetchNetworkModifications,
-} from '../../../utils/rest-api';
+import { copyOrMoveModifications } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
@@ -68,6 +63,11 @@ import ShuntCompensatorModificationDialog from 'components/dialogs/network-modif
 import { fetchNetworkModification } from '../../../services/network-modification';
 import { useParameterState } from '../../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import {
+    changeNetworkModificationOrder,
+    deleteModifications,
+    fetchNetworkModifications,
+} from '../../../services/study/network-modifications';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
