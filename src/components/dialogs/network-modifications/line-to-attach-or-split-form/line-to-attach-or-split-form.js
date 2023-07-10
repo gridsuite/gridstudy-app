@@ -38,7 +38,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
             )
                 .then((values) => {
                     setLinesOptions(
-                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
+                        values.sort()
                     );
                 })
                 .catch((error) => {

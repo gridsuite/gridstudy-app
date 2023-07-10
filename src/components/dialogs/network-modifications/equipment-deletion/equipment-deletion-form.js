@@ -11,7 +11,6 @@ import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
-    compareById,
     filledTextField,
     gridItem,
 } from 'components/dialogs/dialogUtils';
@@ -64,7 +63,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
                 .then((vals) => {
                     // check race condition here
                     if (!ignore) {
-                        setEquipmentsOptions(vals.flat().sort(compareById));
+                        setEquipmentsOptions(vals.sort());
                     }
                 })
                 .catch((error) => {
@@ -107,7 +106,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
             getOptionLabel={getObjectId}
             //hack to work with freesolo autocomplete
             //setting null programatically when freesolo is enable wont empty the field
-            inputTransform={(value) => (value === null ? '' : value)}
+            inputTransform={(value) => value}
             outputTransform={(value) =>
                 value === '' ? null : getObjectId(value)
             }
