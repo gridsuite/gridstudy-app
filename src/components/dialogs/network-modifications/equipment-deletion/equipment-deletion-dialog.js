@@ -72,7 +72,7 @@ const EquipmentDeletionDialog = ({
             reset({
                 [TYPE]: EQUIPMENT_TYPES[editData.equipmentType],
                 [EQUIPMENT_ID]: editData.equipmentId,
-                [DELETION_SPECIFIC_DATA]: editData.specificData,
+                [DELETION_SPECIFIC_DATA]: editData[DELETION_SPECIFIC_DATA],
             });
         },
         [reset]
