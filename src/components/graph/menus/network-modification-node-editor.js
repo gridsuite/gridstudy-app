@@ -284,7 +284,6 @@ const NetworkModificationNodeEditor = () => {
                 },
                 {
                     id: 'SHUNT_COMPENSATOR_MODIFICATION',
-                    hide: !enableDeveloperMode,
                     label: 'ShuntCompensator',
                     action: () => adapt(ShuntCompensatorModificationDialog),
                 },
