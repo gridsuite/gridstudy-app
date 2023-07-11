@@ -24,6 +24,9 @@ const FilterPanel = ({ filtersDef = [], updateFilter, rowFilters }) => {
                                     (rowFilter) => rowFilter.field === field
                                 )?.value || ''
                             }
+                            isOptionEqualToValue={(option, value) =>
+                                value === '' || option === value
+                            }
                             options={options}
                             onChange={(_, data) =>
                                 handleFilterChange(field, data)
