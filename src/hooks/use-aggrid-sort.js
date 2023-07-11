@@ -12,39 +12,44 @@ export const SORT_WAYS = {
     desc: -1,
 };
 
-const getSortSelector = (colKey, sortWay) =>
+const getKeyByValue = (object, value) => {
+    return Object.keys(object).find((key) => object[key] === value);
+};
+
+const getSortSelector = (dataKeyToSortKey, colKey, sortWay) =>
     colKey && sortWay
-        ? { sortKeysWithWeightAndDirection: { [colKey]: sortWay } }
+        ? {
+              sortKeysWithWeightAndDirection: {
+                  [colKey]: sortWay,
+              },
+          }
         : {};
+
+const getSortConfig = (dataKeyToSortKey, colKey, sortWay) => {
+    return {
+        selector: getSortSelector(dataKeyToSortKey, colKey, sortWay),
+        colKey: getKeyByValue(dataKeyToSortKey, colKey),
+        sortWay,
+    };
+};
 
 export const useAgGridSort = (dataKeyToSortKey, initSortConfig) => {
     const { colKey, sortWay } = initSortConfig || {};
 
-    const [sortSelector, setSortSelector] = useState(
-        getSortSelector(colKey, sortWay)
+    const [sortConfig, setSortConfig] = useState(
+        getSortConfig(dataKeyToSortKey, colKey, sortWay)
     );
 
     const onSortChanged = useCallback(
-        (event) => {
-            const { columnApi } = event || {};
-
-            const changedColumn = columnApi
-                ?.getColumns()
-                ?.find((column) => !!column?.getSort());
-
-            const changedSortKey = dataKeyToSortKey[changedColumn?.getId()];
-            const changedSortDirection = SORT_WAYS[changedColumn?.getSort()];
-
-            setSortSelector(
-                getSortSelector(changedSortKey, changedSortDirection)
-            );
-        },
+        (colKey, sortWay) =>
+            setSortConfig(getSortConfig(dataKeyToSortKey, colKey, sortWay)),
         [dataKeyToSortKey]
     );
 
-    const initSort = useCallback(() => {
-        setSortSelector({});
-    }, []);
+    const initSort = useCallback(
+        () => setSortConfig(getSortConfig(dataKeyToSortKey, colKey, sortWay)),
+        [colKey, dataKeyToSortKey, sortWay]
+    );
 
-    return { onSortChanged, sortSelector, initSort };
+    return { onSortChanged, sortConfig, initSort };
 };

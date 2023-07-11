@@ -14,7 +14,6 @@ import {
 } from './sensitivity-analysis-content';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import FilterPanel from '../../spreadsheet/filter-panel/filter-panel';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import LoaderWithOverlay from '../../utils/loader-with-overlay';
 import CustomTablePagination from '../../utils/custom-table-pagination';
@@ -30,8 +29,7 @@ const PagedSensitivityAnalysisResult = ({
     page,
     setPage,
     onSortChanged,
-    sortSelector,
-    rowFilters,
+    sortConfig,
 }) => {
     const intl = useIntl();
 
@@ -101,7 +99,7 @@ const PagedSensitivityAnalysisResult = ({
             offset: page * rowsPerPage,
             chunkSize: rowsPerPage,
             ...filterSelector,
-            ...sortSelector,
+            ...sortConfig?.selector,
         };
 
         fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
@@ -128,7 +126,7 @@ const PagedSensitivityAnalysisResult = ({
         page,
         rowsPerPage,
         filterSelector,
-        sortSelector,
+        sortConfig,
         studyUuid,
         nodeUuid,
         snackError,
@@ -152,16 +150,15 @@ const PagedSensitivityAnalysisResult = ({
                     />
                 </div>
             )}
-            <FilterPanel
-                filtersDef={filtersDef}
-                updateFilter={handleUpdateFilter}
-                rowFilters={rowFilters}
-            />
             <SensitivityAnalysisResult
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
                 sensiToIndex={sensiKindIndex}
                 onSortChanged={onSortChanged}
+                sortConfig={sortConfig}
+                updateFilter={handleUpdateFilter}
+                filterSelector={filterSelector}
+                filtersDef={filtersDef}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
@@ -183,7 +180,7 @@ PagedSensitivityAnalysisResult.propTypes = {
     updateFilter: PropTypes.func,
     onSortChanged: PropTypes.func,
     filterSelector: PropTypes.object,
-    sortSelector: PropTypes.object,
+    sortConfig: PropTypes.object,
     page: PropTypes.number.isRequired,
     setPage: PropTypes.func.isRequired,
     rowFilters: PropTypes.arrayOf(
