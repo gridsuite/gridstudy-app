@@ -126,7 +126,8 @@ const TapChangerSteps = ({
                     step.x === previousStep.x &&
                     step.b === previousStep.b &&
                     step.g === previousStep.g &&
-                    step.rho === previousStep.rho
+                    step.rho === previousStep.rho &&
+                    step.alpha === previousStep.alpha
                 );
             });
         },

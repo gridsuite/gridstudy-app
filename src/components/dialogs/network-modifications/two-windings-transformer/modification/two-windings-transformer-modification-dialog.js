@@ -86,7 +86,6 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
 import {
-    formatPhaseTapSteps,
     formatTemporaryLimits,
     toModificationOperation,
 } from '../../../../utils/utils';
@@ -191,6 +190,18 @@ const TwoWindingsTransformerModificationDialog = ({
             : null;
     };
 
+    const computePhaseTapChangerRegulating = (phaseTapChangerFormValues) => {
+        if (!phaseTapChangerFormValues?.[REGULATION_MODE]) {
+            return null;
+        }
+        return (
+            phaseTapChangerFormValues?.[REGULATION_MODE] ===
+                PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
+            phaseTapChangerFormValues?.[REGULATION_MODE] ===
+                PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
+        );
+    };
+
     const computeRatioTapChangerRegulationMode = (
         ratioTapChangerFormValues
     ) => {
@@ -216,12 +227,6 @@ const TwoWindingsTransformerModificationDialog = ({
             if (twt?.equipmentId) {
                 setSelectedId(twt.equipmentId);
             }
-            const phaseSteps = !!twt?.[PHASE_TAP_CHANGER]?.[STEPS]
-                ? addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS])
-                : addSelectedFieldToRows(
-                      twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
-                  );
-
             reset({
                 [EQUIPMENT_NAME]: twt.equipmentName?.value,
                 ...getCharacteristicsFormData({
@@ -326,7 +331,10 @@ const TwoWindingsTransformerModificationDialog = ({
                     ),
                     tapPosition:
                         twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION]?.value,
-                    steps: phaseSteps,
+                    steps: addSelectedFieldToRows(
+                        twt?.[PHASE_TAP_CHANGER]?.[STEPS] ??
+                            twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
+                    ),
                     equipmentId:
                         twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalId?.value,
                     equipmentType:
@@ -509,19 +517,21 @@ const TwoWindingsTransformerModificationDialog = ({
                 ratioTap = {
                     enabled: toModificationOperation(true),
                     lowTapPosition: toModificationOperation(
-                        twt[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION]
+                        ratioTapChangerFormValues?.[LOW_TAP_POSITION]
                     ),
                     tapPosition: toModificationOperation(
-                        twt[RATIO_TAP_CHANGER]?.[TAP_POSITION]
+                        ratioTapChangerFormValues?.[TAP_POSITION]
                     ),
                     targetDeadband: toModificationOperation(
-                        twt[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND]
+                        ratioTapChangerFormValues?.[TARGET_DEADBAND]
                     ),
                     targetV: toModificationOperation(
-                        twt[RATIO_TAP_CHANGER]?.[TARGET_V]
+                        ratioTapChangerFormValues?.[TARGET_V]
                     ),
                     loadTapChangingCapabilities: toModificationOperation(
-                        twt[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES]
+                        ratioTapChangerFormValues?.[
+                            LOAD_TAP_CHANGING_CAPABILITIES
+                        ]
                     ),
                     regulating: toModificationOperation(
                         ratioTapChangerFormValues?.[REGULATION_MODE]
@@ -557,50 +567,49 @@ const TwoWindingsTransformerModificationDialog = ({
             const enablePhaseTapChanger = twt[PHASE_TAP_CHANGER]?.[ENABLED];
 
             let phaseTap = undefined;
-            let phaseTapChangerSteps = !!twt[PHASE_TAP_CHANGER]?.[
-                STEPS_MODIFIED
-            ]
+            let phaseTapChangerSteps = twt[PHASE_TAP_CHANGER]?.[STEPS_MODIFIED]
                 ? twt[PHASE_TAP_CHANGER]?.[STEPS]
                 : undefined;
-
             if (enablePhaseTapChanger) {
+                const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTap = {
-                    enabled: toModificationOperation(
-                        twt[PHASE_TAP_CHANGER]?.[ENABLED]
+                    enabled: toModificationOperation(true),
+                    regulating: toModificationOperation(
+                        computePhaseTapChangerRegulating(twt[PHASE_TAP_CHANGER])
                     ),
                     regulationValue: toModificationOperation(
                         computePhaseTapChangerRegulationValue(
-                            twt[PHASE_TAP_CHANGER],
+                            phaseTapChangerFormValues,
                             twtToModify?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
                         )
                     ),
                     regulatingTerminalId: toModificationOperation(
                         computeRegulatingTerminalId(
-                            twt[PHASE_TAP_CHANGER],
+                            phaseTapChangerFormValues,
                             selectedId
                         )
                     ),
                     regulatingTerminalType: toModificationOperation(
-                        computeRegulatingTerminalType(twt[PHASE_TAP_CHANGER])
+                        computeRegulatingTerminalType(phaseTapChangerFormValues)
                     ),
                     regulatingTerminalVlId: toModificationOperation(
                         computeTapTerminalVlId(
-                            twt[PHASE_TAP_CHANGER],
-                            twtToModify.voltageLevelId1,
-                            twtToModify.voltageLevelId2
+                            phaseTapChangerFormValues,
+                            twtToModify?.voltageLevelId1,
+                            twtToModify?.voltageLevelId2
                         )
                     ),
                     [REGULATION_MODE]: toModificationOperation(
-                        twt[PHASE_TAP_CHANGER][REGULATION_MODE]
+                        phaseTapChangerFormValues[REGULATION_MODE]
                     ),
                     [TAP_POSITION]: toModificationOperation(
-                        twt[PHASE_TAP_CHANGER][TAP_POSITION]
+                        phaseTapChangerFormValues[TAP_POSITION]
                     ),
                     [LOW_TAP_POSITION]: toModificationOperation(
-                        twt[PHASE_TAP_CHANGER][LOW_TAP_POSITION]
+                        phaseTapChangerFormValues[LOW_TAP_POSITION]
                     ),
                     [TARGET_DEADBAND]: toModificationOperation(
-                        twt[PHASE_TAP_CHANGER][TARGET_DEADBAND]
+                        phaseTapChangerFormValues[TARGET_DEADBAND]
                     ),
                     [STEPS]: phaseTapChangerSteps,
                 };
@@ -725,10 +734,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                             ),
                                     }),
                                     ...getRatioTapChangerFormData({
-                                        enabled:
-                                            twt?.[RATIO_TAP_CHANGER]?.[
-                                                TAP_POSITION
-                                            ] !== undefined,
+                                        enabled: !!twt.ratioTapChanger,
                                         loadTapChangingCapabilities: null,
                                         regulationSide: null,
                                         steps: addSelectedFieldToRows(
@@ -736,14 +742,10 @@ const TwoWindingsTransformerModificationDialog = ({
                                         ),
                                     }),
                                     ...getPhaseTapChangerFormData({
-                                        ...formValues.phaseTapChanger,
                                         enabled: !!twt.phaseTapChanger,
+                                        regulationSide: null,
                                         steps: addSelectedFieldToRows(
-                                            formatPhaseTapSteps(
-                                                twt?.[PHASE_TAP_CHANGER]?.[
-                                                    STEPS
-                                                ]
-                                            )
+                                            twt?.[PHASE_TAP_CHANGER]?.[STEPS]
                                         ),
                                     }),
                                 }));
@@ -886,13 +888,11 @@ const TwoWindingsTransformerModificationDialog = ({
                             p={1}
                         >
                             <PhaseTapChangerPane
-                                modification
                                 studyUuid={studyUuid}
                                 currentNodeUuid={currentNodeUuid}
                                 voltageLevelOptions={voltageLevelOptions}
                                 twtToModify={twtToModify}
-                                modifiedEquipment={editData}
-                                clearableFields
+                                modification={true}
                             />
                         </Box>
                     </>

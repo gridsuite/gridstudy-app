@@ -63,7 +63,7 @@ const TwoWindingsTransformerModificationDialogHeader = ({
             {gridItem(twoWindingsTransformerIdField, 4)}
             {gridItem(twoWindingsTransformerNameField, 4)}
             {gridItem(ratioTapChangerEnabledField, 2)}
-            {gridItem(phaseTapChangerEnabledField, 4)}
+            {gridItem(phaseTapChangerEnabledField, 2)}
         </Grid>
     );
 };

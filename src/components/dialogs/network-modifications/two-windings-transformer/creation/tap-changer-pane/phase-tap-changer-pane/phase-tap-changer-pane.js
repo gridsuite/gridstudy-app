@@ -53,7 +53,6 @@ const PhaseTapChangerPane = ({
     currentNodeUuid,
     voltageLevelOptions = [],
     twtToModify,
-    modifiedEquipment,
     modification = false,
 }) => {
     const intl = useIntl();
@@ -112,6 +111,9 @@ const PhaseTapChangerPane = ({
     };
 
     const getTapSideLabel = (twt, tap) => {
+        if (!tap || !twt) {
+            return null;
+        }
         if (tap?.regulatingTerminalConnectableId === twt?.id) {
             return tap?.regulatingTerminalVlId === twt?.voltageLevelId1
                 ? intl.formatMessage({ id: SIDE.SIDE1.label })
@@ -155,7 +157,6 @@ const PhaseTapChangerPane = ({
             options={Object.values(REGULATION_TYPES)}
             disabled={!regulationEnabled}
             size={'small'}
-            disableClearable
             previousValue={getRegulationTypeLabel(
                 twtToModify,
                 twtToModify?.[PHASE_TAP_CHANGER]
@@ -170,7 +171,6 @@ const PhaseTapChangerPane = ({
             options={Object.values(SIDE)}
             disabled={!regulationEnabled}
             size={'small'}
-            disableClearable
             previousValue={getTapSideLabel(
                 twtToModify,
                 twtToModify?.[PHASE_TAP_CHANGER]
@@ -304,31 +304,30 @@ const PhaseTapChangerPane = ({
                         {gridItem(regulatingTerminalField, 8)}
                     </Grid>
                 )}
-                {((regulationEnabled &&
-                    regulationTypeWatch === REGULATION_TYPES.LOCAL.id) ||
-                    (regulationTypeWatch === null &&
-                        twtToModify?.[PHASE_TAP_CHANGER]
-                            ?.regulatingTerminalConnectableId ===
-                            twtToModify?.id)) && (
-                    <Grid item container spacing={2}>
-                        <Grid
-                            item
-                            xs={4}
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <FormattedMessage id="RegulatedTerminal" />
+                {regulationEnabled &&
+                    (regulationTypeWatch === REGULATION_TYPES.LOCAL.id ||
+                        (regulationTypeWatch === null &&
+                            twtToModify?.[PHASE_TAP_CHANGER]
+                                ?.regulatingTerminalConnectableId ===
+                                twtToModify?.id)) && (
+                        <Grid item container spacing={2}>
+                            <Grid
+                                item
+                                xs={4}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <FormattedMessage id="RegulatedTerminal" />
+                            </Grid>
+                            {gridItem(sideField, 4)}
                         </Grid>
-                        {gridItem(sideField, 4)}
-                    </Grid>
-                )}
+                    )}
                 <PhaseTapChangerPaneSteps
                     disabled={!phaseTapChangerEnabledWatch}
                     twtToModify={twtToModify?.[PHASE_TAP_CHANGER]}
-                    modifiedEquipment={modifiedEquipment}
                     modification={modification}
                 />
             </Grid>
