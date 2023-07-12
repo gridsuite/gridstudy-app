@@ -126,18 +126,18 @@ export const updateTemporaryLimits = (
     modifiedTemporaryLimits,
     temporaryLimitsToModify
 ) => {
-    let updatedTemporaryLimits = modifiedTemporaryLimits;
+    let updatedTemporaryLimits = modifiedTemporaryLimits ?? [];
     //add temporary limits from previous modifications
     temporaryLimitsToModify?.forEach((limit) => {
         if (findTemporaryLimit(updatedTemporaryLimits, limit) === undefined) {
-            updatedTemporaryLimits.push({
+            updatedTemporaryLimits?.push({
                 ...limit,
             });
         }
     });
 
     //remove deleted temporary limits from current and previous modifications
-    updatedTemporaryLimits = updatedTemporaryLimits.filter(
+    updatedTemporaryLimits = updatedTemporaryLimits?.filter(
         (limit) =>
             limit.modificationType !==
                 TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED &&
@@ -150,7 +150,7 @@ export const updateTemporaryLimits = (
     );
 
     //update temporary limits values
-    updatedTemporaryLimits.forEach((limit) => {
+    updatedTemporaryLimits?.forEach((limit) => {
         if (limit.modificationType === null) {
             limit.value = findTemporaryLimit(
                 temporaryLimitsToModify,

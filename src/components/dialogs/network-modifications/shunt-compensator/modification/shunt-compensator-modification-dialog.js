@@ -38,6 +38,7 @@ import {
     EQUIPMENT_TYPES,
 } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -68,6 +69,7 @@ const ShuntCompensatorModificationDialog = ({
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [shuntCompensatorInfos, setShuntCompensatorInfos] = useState(null);
+    const [multiSections, setMultiSections] = useState(false);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -140,9 +142,10 @@ const ShuntCompensatorModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
+                setMultiSections(false);
                 fetchNetworkElementInfos(
                     studyUuid,
-                    currentNodeUuid,
+                    currentNode?.id,
                     EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -150,8 +153,21 @@ const ShuntCompensatorModificationDialog = ({
                 )
                     .then((shuntCompensator) => {
                         if (shuntCompensator) {
-                            setShuntCompensatorInfos(shuntCompensator);
-                            setDataFetchStatus(FetchStatus.SUCCEED);
+                            if (
+                                shuntCompensator.maximumSectionCount > 1 &&
+                                isNodeBuilt(currentNode)
+                            ) {
+                                snackError({
+                                    headerId:
+                                        'ShuntCompensatorMultiSectionsError',
+                                });
+                                setShuntCompensatorInfos(null);
+                                setDataFetchStatus(FetchStatus.FAILED);
+                                setMultiSections(true);
+                            } else {
+                                setShuntCompensatorInfos(shuntCompensator);
+                                setDataFetchStatus(FetchStatus.SUCCEED);
+                            }
                         }
                     })
                     .catch(() => {
@@ -162,7 +178,7 @@ const ShuntCompensatorModificationDialog = ({
                 setShuntCompensatorInfos(null);
             }
         },
-        [currentNodeUuid, studyUuid]
+        [currentNode, studyUuid, snackError]
     );
 
     useEffect(() => {
@@ -237,7 +253,7 @@ const ShuntCompensatorModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                {selectedId == null && (
+                {(selectedId == null || multiSections) && (
                     <EquipmentIdSelector
                         studyUuid={studyUuid}
                         currentNode={currentNode}
@@ -247,7 +263,7 @@ const ShuntCompensatorModificationDialog = ({
                         fillerHeight={5}
                     />
                 )}
-                {selectedId != null && (
+                {selectedId !== null && !multiSections && (
                     <ShuntCompensatorModificationForm
                         shuntCompensatorInfos={shuntCompensatorInfos}
                         equipmentId={selectedId}

@@ -561,6 +561,7 @@
     "LineModificationError": "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
     "ShuntCompensatorModificationError": "Error while modifying shunt compensator",
+    "ShuntCompensatorMultiSectionsError": "It is currently not possible to modify a multi sections shunt compensator",
 
     "CreateGenerator": "Create generator",
     "ModifyGenerator": "Modify generator",
@@ -665,7 +666,7 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater or equal to 0",
-    "ModifyShuntCompensator": "Modify shunt compensator",
+    "ModifyShuntCompensator": "Modify shunt compensator (A single section)",
 
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
@@ -1012,6 +1013,14 @@
     "GenerationAndLoad": "Generation and load",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
-    "SelectiveShortCircuitAnalysis": "Shortcircuit analysis"
+    "SelectiveShortCircuitAnalysis": "Shortcircuit analysis",
 
+    "SensitivityAnalysisResultsError": "An error occured while fetching sensitivity results",
+
+    "muiTablePaginationLabelRowsPerPage": "Rows per Page: ",
+    "muiTablePaginationOfLabel": "of",
+    "muiTablePaginationPrevious": "Go to the previous page",
+    "muiTablePaginationNext": "Go to the next page",
+    "muiTablePaginationFirst": "Go to the first page",
+    "muiTablePaginationLast": "Go to the last page"
 }

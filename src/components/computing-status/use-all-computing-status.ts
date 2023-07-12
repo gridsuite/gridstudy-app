@@ -15,15 +15,15 @@ import {
 } from '../utils/running-status';
 
 import {
-    fetchSecurityAnalysisStatus,
-    fetchSensitivityAnalysisStatus,
     fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
     fetchVoltageInitStatus,
     fetchShortCircuitCircuitAnalysisStatus,
 } from '../../utils/rest-api';
 import { UUID } from 'crypto';
 import { ComputingType } from './computing-type';
+import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
+import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
+import { fetchDynamicSimulationStatus } from '../../services/study/dynamic-simulation';
 
 const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
