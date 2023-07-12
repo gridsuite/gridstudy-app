@@ -64,7 +64,7 @@ const ModificationDialogContent = ({
         return state.currentTreeNode;
     });
     const isNodeNotBuilt =
-        currentNode?.data?.buildStatus === BUILD_STATUS.NOT_BUILT;
+        currentNode?.data?.globalBuildStatus === BUILD_STATUS.NOT_BUILT;
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: searchCopy?.handleOpenSearchDialog,

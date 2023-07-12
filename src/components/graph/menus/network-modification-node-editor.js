@@ -67,8 +67,6 @@ import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modi
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { fetchNetworkModification } from '../../../services/network-modification';
-import { useParameterState } from '../../dialogs/parameters/parameters';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -177,8 +175,6 @@ const NetworkModificationNodeEditor = () => {
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef();
-
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);
@@ -290,7 +286,6 @@ const NetworkModificationNodeEditor = () => {
                 },
                 {
                     id: 'SHUNT_COMPENSATOR_MODIFICATION',
-                    hide: !enableDeveloperMode,
                     label: 'ShuntCompensator',
                     action: () => adapt(ShuntCompensatorModificationDialog),
                 },
