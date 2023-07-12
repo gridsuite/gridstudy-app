@@ -771,18 +771,6 @@ const TwoWindingsTransformerModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
-
     const headerAndTabs = (
         <Grid container spacing={2}>
             <TwoWindingsTransformerModificationDialogHeader

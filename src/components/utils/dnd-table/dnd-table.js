@@ -94,7 +94,6 @@ function EditableTableCell({
     previousValue,
     valueModified,
     handleChange,
-    isClearable,
     ...props
 }) {
     return (
@@ -109,7 +108,6 @@ function EditableTableCell({
                     style={{
                         textAlign: column?.textAlign,
                     }}
-                    isClearable={isClearable}
                     {...props}
                 />
             )}
@@ -200,7 +198,6 @@ const DndTable = ({
                         ? isValueModified(rowIndex, arrayFormName)
                         : false
                 }
-                isClearable={column.clearable}
                 handleChange={column.handleChange}
             />
         );
@@ -352,7 +349,6 @@ const DndTable = ({
                         key={row.id}
                         draggableId={row.id.toString()}
                         index={index}
-                        isDragDisabled={disabled}
                     >
                         {(provided, snapshot) => (
                             <TableRow
@@ -367,7 +363,9 @@ const DndTable = ({
                                 >
                                     <TableCell
                                         sx={{ textAlign: 'center' }}
-                                        {...provided.dragHandleProps}
+                                        {...(disabled
+                                            ? {}
+                                            : { ...provided.dragHandleProps })}
                                     >
                                         <DragIndicatorIcon />
                                     </TableCell>
