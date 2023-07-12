@@ -23,8 +23,8 @@ import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
-import { fetchElementsMetadata } from 'utils/rest-api';
 import { IDENTIFIER_LIST } from './variation-utils';
+import { fetchElementsMetadata } from '../../../../../services/explore';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR.type];
 

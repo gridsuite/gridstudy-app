@@ -19,7 +19,6 @@ import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
-import { updateConfigParameter } from 'utils/rest-api';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -34,6 +33,7 @@ import clsx from 'clsx';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { updateConfigParameter } from '../../services/config';
 
 const useStyles = makeStyles((theme) => ({
     checkboxSelectAll: {

@@ -97,9 +97,6 @@ export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
 
 //ShuntCompensator
-export const MAXIMUM_NUMBER_OF_SECTIONS = 'maximumNumberOfSections';
-export const CURRENT_NUMBER_OF_SECTIONS = 'currentNumberOfSections';
-export const IDENTICAL_SECTIONS = 'identicalSections';
 export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
 export const Q_AT_NOMINAL_V = 'qatNominalV';
@@ -126,6 +123,7 @@ export const TEMPORARY_LIMIT_VALUE = 'value';
 export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     MODIFIED: 'MODIFIED',
     ADDED: 'ADDED',
+    DELETED: 'DELETED',
 };
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';

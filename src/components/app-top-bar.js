@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
     equipmentStyles,
     LIGHT_THEME,
@@ -28,16 +28,7 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    fetchAppsAndUrls,
-    fetchLoadFlowInfos,
-    fetchSecurityAnalysisStatus,
-    fetchSensitivityAnalysisStatus,
-    fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
-    fetchNetworkElementInfos,
-    fetchVoltageInitStatus,
-} from '../utils/rest-api';
+import { fetchAppsAndUrls, fetchNetworkElementInfos } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
@@ -60,16 +51,22 @@ import {
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import { DiagramType, useDiagram } from './diagrams/diagram-common';
+import {
+    DiagramType,
+    useDiagram,
+    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
+} from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
-import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagrams/diagram-common';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
+import { fetchLoadFlowInfos } from '../services/study/loadflow';
+import { ComputingType } from './computing-status/computing-type';
+import { RunningStatus } from './utils/running-status';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -105,6 +102,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const centerOnSubstationCB = useCallback(
         (e, element) => {
+            e.stopPropagation();
             if (!studyUuid || !currentNode) {
                 return;
             }
@@ -226,26 +224,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
     const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
-    const securityAnalysisStatusInvalidations = [
-        'securityAnalysis_status',
-        'securityAnalysis_failed',
-    ];
-    const sensitivityAnalysisStatusInvalidations = [
-        'sensitivityAnalysis_status',
-        'sensitivityAnalysis_failed',
-    ];
-    const shortCircuitAnalysisStatusInvalidations = [
-        'shortCircuitAnalysis_status',
-        'shortCircuitAnalysis_failed',
-    ];
-    const dynamicSimulationStatusInvalidations = [
-        'dynamicSimulation_status',
-        'dynamicSimulation_failed',
-    ];
-    const voltageInitStatusInvalidations = [
-        'voltageInit_status',
-        'voltageInit_failed',
-    ];
     const [loadFlowInfosNode] = useNodeData(
         studyUuid,
         currentNode?.id,
@@ -253,39 +231,24 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         loadFlowStatusInvalidations
     );
 
-    const [securityAnalysisStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSecurityAnalysisStatus,
-        securityAnalysisStatusInvalidations
+    const securityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
-    const [sensitivityAnalysisStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSensitivityAnalysisStatus,
-        sensitivityAnalysisStatusInvalidations
+    const sensitivityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const [shortCircuitAnalysisStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchShortCircuitAnalysisStatus,
-        shortCircuitAnalysisStatusInvalidations
+    const shortCircuitAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
     );
 
-    const [dynamicSimulationStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchDynamicSimulationStatus,
-        dynamicSimulationStatusInvalidations
+    const dynamicSimulationStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
 
-    const [voltageInitStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchVoltageInitStatus,
-        voltageInitStatusInvalidations
+    const voltageInitStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.VOLTAGE_INIT]
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
@@ -337,60 +300,60 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            (securityAnalysisStatusNode === 'CONVERGED' ||
-                securityAnalysisStatusNode === 'DIVERGED')
+            (securityAnalysisStatus === RunningStatus.SUCCEED ||
+                securityAnalysisStatus === RunningStatus.FAILED)
         ) {
             dispatch(addSANotif());
         } else {
             dispatch(resetSANotif());
         }
-    }, [currentNode, dispatch, securityAnalysisStatusNode, tabIndex, user]);
+    }, [currentNode, dispatch, securityAnalysisStatus, tabIndex, user]);
 
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            sensitivityAnalysisStatusNode === 'COMPLETED'
+            sensitivityAnalysisStatus === RunningStatus.SUCCEED
         ) {
             dispatch(addSensiNotif());
         } else {
             dispatch(resetSensiNotif());
         }
-    }, [currentNode, dispatch, sensitivityAnalysisStatusNode, tabIndex, user]);
+    }, [currentNode, dispatch, sensitivityAnalysisStatus, tabIndex, user]);
 
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            shortCircuitAnalysisStatusNode === 'COMPLETED'
+            shortCircuitAnalysisStatus === RunningStatus.SUCCEED
         ) {
             dispatch(addShortCircuitNotif());
         } else {
             dispatch(resetShortCircuitNotif());
         }
-    }, [currentNode, dispatch, shortCircuitAnalysisStatusNode, tabIndex, user]);
+    }, [currentNode, dispatch, shortCircuitAnalysisStatus, tabIndex, user]);
 
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            (dynamicSimulationStatusNode === 'CONVERGED' ||
-                dynamicSimulationStatusNode === 'DIVERGED')
+            (dynamicSimulationStatus === RunningStatus.SUCCEED ||
+                dynamicSimulationStatus === RunningStatus.FAILED)
         ) {
             dispatch(addDynamicSimulationNotif());
         } else {
             dispatch(resetDynamicSimulationNotif());
         }
-    }, [currentNode, dispatch, dynamicSimulationStatusNode, tabIndex, user]);
+    }, [currentNode, dispatch, dynamicSimulationStatus, tabIndex, user]);
 
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            (voltageInitStatusNode === 'OK' ||
-                voltageInitStatusNode === 'NOT_OK')
+            (voltageInitStatus === RunningStatus.SUCCEED ||
+                voltageInitStatus === RunningStatus.FAILED)
         ) {
             dispatch(addVoltageInitNotif());
         } else {
             dispatch(resetVoltageInitNotif());
         }
-    }, [currentNode, dispatch, voltageInitStatusNode, tabIndex, user]);
+    }, [currentNode, dispatch, voltageInitStatus, tabIndex, user]);
 
     function showParameters() {
         setParametersOpen(true);

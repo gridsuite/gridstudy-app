@@ -21,10 +21,11 @@ import {
 import { LabelledSlider, LineSeparator } from '../dialogUtils';
 import { FlatParameters } from '@gridsuite/commons-ui';
 import { LocalizedCountries } from '../../utils/localized-countries-hook';
-import { PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
-// TO DO to remove with extractDefault Function
-const ListRE = /^\[(.*)]$/;
-const sepRE = /[, ]/;
+import { replaceAllDefaultValues } from '../../utils/utils';
+import {
+    PARAM_DEVELOPER_MODE,
+    PARAM_LIMIT_REDUCTION,
+} from '../../../utils/config-params';
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
     const { translate, countryCodes } = LocalizedCountries();
@@ -146,89 +147,15 @@ const DoubleEditor = ({
     );
 };
 
-// TODO this is not complete.
-// We should clean these functions: extractDefaultMap,makeDeltaMap, areEquivDeeply, extractDefault
-// FlatParameters contains this mechanism, we can optimize the process
-// We should refactor the code and remove these functions
-// These functions are added after removing useImportExportParams from commons-ui
-function extractDefaultMap(paramsAsArray) {
-    return Object.fromEntries(
-        paramsAsArray.map((paramDescription) => {
-            return [paramDescription.name, extractDefault(paramDescription)];
-        })
-    );
-}
+const fusionSpecificWithOtherParams = (allParams, specificParams) => {
+    const commitParameters = allParams;
+    commitParameters['specificParametersPerProvider'] =
+        Object.keys(specificParams).length > 0
+            ? { ...specificParams }
+            : commitParameters['specificParametersPerProvider'];
 
-function makeDeltaMap(defaultMap, changingMap) {
-    if (!changingMap) {
-        return null;
-    }
-
-    const delta = {};
-
-    Object.entries(defaultMap).forEach(([k, v]) => {
-        const m = changingMap[k];
-        if (!areEquivDeeply(v, m)) {
-            delta[k] = m;
-        }
-    });
-
-    return Object.keys(delta).length ? delta : null;
-}
-
-function areEquivDeeply(a, b) {
-    if (a === b) {
-        return true;
-    }
-
-    const aIsArray = Array.isArray(a);
-    const bIsArray = Array.isArray(b);
-    if (aIsArray || bIsArray) {
-        if (aIsArray && bIsArray && a.length === b.length) {
-            let i = 0;
-            while (i < a.length && areEquivDeeply(a[i], b[i])) {
-                ++i;
-            }
-            if (i >= a.length) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    if (typeof a !== 'object' || typeof b !== 'object') {
-        return false;
-    }
-
-    return areEquivDeeply(Object.entries(a), Object.entries(b));
-}
-
-function extractDefault(paramDescription) {
-    const d = paramDescription.defaultValue;
-    if (paramDescription.type === 'BOOLEAN') {
-        return !!d;
-    }
-    if (paramDescription.type === 'DOUBLE') {
-        return d - 0.0;
-    }
-    if (paramDescription.type === 'INTEGER') {
-        return d - 0;
-    }
-    if (paramDescription.type === 'STRING_LIST') {
-        if (Array.isArray(d)) {
-            return d;
-        }
-        const mo = ListRE.exec(d);
-        if (mo?.length > 1) {
-            return mo[1]
-                .split(sepRE)
-                .map((s) => s.trim())
-                .filter((s) => !!s);
-        }
-        return [];
-    }
-    return d ?? null;
-}
+    return commitParameters;
+};
 
 function makeComponentsFor(
     defParams,
@@ -480,70 +407,18 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
 };
 
 const SpecificLoadFlowParameters = ({
-    lfParams,
-    commitLFParameter,
-    currentProvider,
     specificParamsDescription,
+    specificCurrentParams,
+    onSpecificParamChange,
 }) => {
     const classes = useStyles();
     const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
-
-    const defaultValues = useMemo(() => {
-        return extractDefaultMap(specificParamsDescription);
-    }, [specificParamsDescription]);
-
-    // change object's NaN values into empty string
-    const getObjectWithoutNanValues = useCallback((initialObject) => {
-        initialObject &&
-            Object.keys(initialObject)?.map(
-                (key) =>
-                    (initialObject[key] = Number.isNaN(initialObject[key])
-                        ? ''
-                        : initialObject[key])
-            );
-    }, []);
-
-    const onChange = useCallback(
-        (paramName, value, isEdit) => {
-            if (isEdit) {
-                return;
-            }
-            const prevCurrentParameters = {
-                ...defaultValues,
-                ...lfParams?.specificParametersPerProvider?.[currentProvider],
-            };
-            const nextCurrentParameters = {
-                ...prevCurrentParameters,
-                ...{ [paramName]: value },
-            };
-
-            const deltaMap = makeDeltaMap(defaultValues, nextCurrentParameters);
-
-            const toSend = { ...lfParams };
-
-            getObjectWithoutNanValues(deltaMap);
-            const formattedData = { ...deltaMap };
-            Object.keys(formattedData)?.forEach((key) => {
-                formattedData[key] =
-                    formattedData[key] === '' ? null : formattedData[key];
-            });
-            const oldSpecifics = toSend['specificParametersPerProvider'];
-            toSend['specificParametersPerProvider'] = {
-                ...oldSpecifics,
-                [currentProvider]: formattedData ?? {},
-            };
-
-            commitLFParameter(toSend);
-        },
-        [
-            commitLFParameter,
-            currentProvider,
-            defaultValues,
-            lfParams,
-            getObjectWithoutNanValues,
-        ]
-    );
-    getObjectWithoutNanValues(defaultValues);
+    const onChange = (paramName, value, isEdit) => {
+        if (isEdit) {
+            return;
+        }
+        onSpecificParamChange(paramName, value);
+    };
 
     return (
         <>
@@ -556,13 +431,7 @@ const SpecificLoadFlowParameters = ({
                 <FlatParameters
                     className={classes.parameterName}
                     paramsAsArray={specificParamsDescription}
-                    initValues={{
-                        ...defaultValues,
-                        ...lfParams?.specificParametersPerProvider?.[
-                            currentProvider
-                        ],
-                    }}
-                    showSeparator
+                    initValues={specificCurrentParams}
                     onChange={onChange}
                 />
             )}
@@ -588,6 +457,8 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         PARAM_LIMIT_REDUCTION
     );
 
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
     const MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION = 50;
     const alertThresholdMarks = [
         {
@@ -600,6 +471,53 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         },
     ];
 
+    const [specificCurrentParams, setSpecificCurrentParams] = useState(
+        params['specificParametersPerProvider']
+    );
+
+    const onSpecificParamChange = (paramName, newValue) => {
+        const specificParamDescr = Object.values(
+            specificParamsDescrWithoutNanVals[provider]
+        ).find((descr) => descr.name === paramName);
+
+        let specParamsToSave;
+        if (specificParamDescr.defaultValue !== newValue) {
+            specParamsToSave = {
+                ...specificCurrentParams,
+                [provider]: {
+                    ...specificCurrentParams[provider],
+                    [specificParamDescr.name]: newValue,
+                },
+            };
+        } else {
+            const { [specificParamDescr.name]: value, ...otherProviderParams } =
+                specificCurrentParams[provider] || {};
+            specParamsToSave = {
+                ...specificCurrentParams,
+                [provider]: otherProviderParams,
+            };
+        }
+
+        setSpecificCurrentParams(specParamsToSave);
+
+        const commitParameters = fusionSpecificWithOtherParams(
+            params,
+            specParamsToSave
+        );
+        updateParameters(commitParameters);
+    };
+
+    const specificParamsDescrWithoutNanVals = useMemo(() => {
+        let specificParamsDescrCopy = {};
+        Object.entries(specificParamsDescriptions).forEach(([k, v]) => {
+            specificParamsDescrCopy = {
+                ...specificParamsDescrCopy,
+                [k]: replaceAllDefaultValues(v, 'NaN', ''),
+            };
+        });
+        return specificParamsDescrCopy;
+    }, [specificParamsDescriptions]);
+
     const updateLfProviderCallback = useCallback(
         (evt) => {
             updateProvider(evt.target.value);
@@ -608,13 +526,34 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
     );
 
     const resetLfParametersAndLfProvider = useCallback(() => {
+        setSpecificCurrentParams({});
         resetParameters();
         resetProvider();
     }, [resetParameters, resetProvider]);
 
     const resetLfParameters = useCallback(() => {
+        setSpecificCurrentParams((prevCurrentParameters) => {
+            return {
+                ...prevCurrentParameters,
+                [provider]: {},
+            };
+        });
         resetParameters();
-    }, [resetParameters]);
+    }, [resetParameters, provider]);
+
+    // TODO: remove this when DynaFlow will be available not only in developer mode
+    useEffect(() => {
+        if (provider === 'DynaFlow' && !enableDeveloperMode) {
+            resetProvider();
+        }
+    }, [provider, resetProvider, enableDeveloperMode]);
+
+    // TODO: remove this when DynaFlow will be available not only in developer mode
+    const LoadFlowProviders = Object.fromEntries(
+        Object.entries(providers).filter(
+            ([key]) => !key.includes('DynaFlow') || enableDeveloperMode
+        )
+    );
 
     return (
         <>
@@ -622,7 +561,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 <DropDown
                     value={provider}
                     label="Provider"
-                    values={providers}
+                    values={LoadFlowProviders}
                     callback={updateLfProviderCallback}
                 />
             </Grid>
@@ -654,12 +593,11 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                 />
                 {specificParamsDescriptions?.[provider] && (
                     <SpecificLoadFlowParameters
-                        lfParams={params || {}}
-                        commitLFParameter={updateParameters}
-                        currentProvider={provider}
                         specificParamsDescription={
-                            specificParamsDescriptions[provider]
+                            specificParamsDescrWithoutNanVals[provider]
                         }
+                        specificCurrentParams={specificCurrentParams[provider]}
+                        onSpecificParamChange={onSpecificParamChange}
                     />
                 )}
             </Grid>

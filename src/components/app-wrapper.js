@@ -40,6 +40,8 @@ import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import networkModification_en from '../translations/network-modifications-en.json';
 import networkModification_fr from '../translations/network-modifications-fr.json';
+import exportParameters_en from '../translations/export-parameters-en.json';
+import exportParameters_fr from '../translations/export-parameters-fr.json';
 import messages_plugins_en from '../plugins/translations/en.json';
 import messages_plugins_fr from '../plugins/translations/fr.json';
 import { store } from '../redux/store';
@@ -64,6 +66,9 @@ const lightTheme = createTheme({
     tooltipTable: {
         background: '#e6e6e6',
     },
+    formFiller: {
+        background: '#e6e6e6',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
     aggrid: 'ag-theme-alpine',
 });
@@ -86,6 +91,9 @@ const darkTheme = createTheme({
     tooltipTable: {
         background: '#121212',
     },
+    formFiller: {
+        background: '#2C2C2C',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
     aggrid: 'ag-theme-alpine-dark',
 });
@@ -103,6 +111,7 @@ const messages = {
         ...treeview_finder_en,
         ...messages_en,
         ...networkModification_en,
+        ...exportParameters_en,
         ...report_viewer_en,
         ...login_en,
         ...top_bar_en,
@@ -116,6 +125,7 @@ const messages = {
         ...treeview_finder_fr,
         ...messages_fr,
         ...networkModification_fr,
+        ...exportParameters_fr,
         ...report_viewer_fr,
         ...login_fr,
         ...top_bar_fr,

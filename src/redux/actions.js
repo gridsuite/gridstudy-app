@@ -26,19 +26,49 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 
-export const NETWORK_EQUIPMENT_FETCHED = 'NETWORK_EQUIPMENT_FETCHED';
+export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 
-export function isNetworkEquipmentsFetched(fetched) {
+export function loadEquipments(equipmentType, equipments) {
     return {
-        type: NETWORK_EQUIPMENT_FETCHED,
-        networkEquipmentsFetched: fetched,
+        type: LOAD_EQUIPMENTS,
+        equipmentType: equipmentType,
+        equipments: equipments,
     };
 }
 
-export const NETWORK_CREATED = 'NETWORK_CREATED';
+export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 
-export function networkCreated(network) {
-    return { type: NETWORK_CREATED, network: network };
+export function updateEquipments(equipments) {
+    return {
+        type: UPDATE_EQUIPMENTS,
+        equipments: equipments,
+    };
+}
+
+export const DELETE_EQUIPMENT = 'DELETE_EQUIPMENT';
+
+export function deleteEquipment(equipmentType, equipmentId) {
+    return {
+        type: DELETE_EQUIPMENT,
+        equipmentId: equipmentId,
+        equipmentType: equipmentType,
+    };
+}
+
+export const RESET_EQUIPMENTS = 'RESET_EQUIPMENTS';
+
+export function resetEquipments() {
+    return {
+        type: RESET_EQUIPMENTS,
+    };
+}
+
+export const RESET_EQUIPMENTS_POST_LOADFLOW = 'RESET_EQUIPMENTS_POST_LOADFLOW';
+
+export function resetEquipmentsPostLoadflow() {
+    return {
+        type: RESET_EQUIPMENTS_POST_LOADFLOW,
+    };
 }
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
@@ -55,16 +85,6 @@ export function mapEquipmentsCreated(
         newLines: newLines,
         newSubstations: newSubstations,
         newHvdcLines: newHvdcLines,
-    };
-}
-
-export const NETWORK_EQUIPMENT_LOADED = 'NETWORK_EQUIPMENT_LOADED';
-
-export function networkEquipmentLoaded(equipmentsName, values) {
-    return {
-        type: NETWORK_EQUIPMENT_LOADED,
-        equipmentsName: equipmentsName,
-        values: values,
     };
 }
 
@@ -633,5 +653,15 @@ export function setDeletedEquipments(deletedEquipments) {
     return {
         type: SET_DELETED_EQUIPMENTS,
         deletedEquipments: deletedEquipments,
+    };
+}
+
+export const SET_COMPUTING_STATUS = 'SET_COMPUTING_STATUS';
+
+export function setComputingStatus(computingType, runningStatus) {
+    return {
+        type: SET_COMPUTING_STATUS,
+        computingType: computingType,
+        runningStatus: runningStatus,
     };
 }

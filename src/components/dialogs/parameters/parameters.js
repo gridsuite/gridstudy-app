@@ -26,22 +26,6 @@ import {
 } from '@mui/material';
 
 import {
-    fetchDefaultSecurityAnalysisProvider,
-    fetchDefaultSensitivityAnalysisProvider,
-    fetchSecurityAnalysisProvider,
-    fetchSensitivityAnalysisProvider,
-    fetchSecurityAnalysisProviders,
-    fetchSensitivityAnalysisProviders,
-    updateConfigParameter,
-    updateSecurityAnalysisProvider,
-    updateSensitivityAnalysisProvider,
-    getLoadFlowParameters,
-    getLoadFlowProviders,
-    getLoadFlowProvider,
-    getDefaultLoadFlowProvider,
-    setLoadFlowProvider,
-    setLoadFlowParameters,
-    getLoadFlowSpecificParametersDescription,
     getSecurityAnalysisParameters,
     setSecurityAnalysisParameters,
 } from '../../../utils/rest-api';
@@ -68,6 +52,30 @@ import {
     useGetVoltageInitParameters,
     VoltageInitParameters,
 } from './voltageinit/voltage-init-parameters';
+import { updateConfigParameter } from '../../../services/config';
+import {
+    getLoadFlowProviders,
+    getLoadFlowSpecificParametersDescription,
+} from '../../../services/loadflow';
+import { fetchSecurityAnalysisProviders } from '../../../services/security-analysis';
+import { fetchSensitivityAnalysisProviders } from '../../../services/sensitivity-analysis';
+import {
+    fetchDefaultSensitivityAnalysisProvider,
+    fetchSensitivityAnalysisProvider,
+    updateSensitivityAnalysisProvider,
+} from '../../../services/study/sensitivity-analysis';
+import {
+    getDefaultLoadFlowProvider,
+    getLoadFlowParameters,
+    getLoadFlowProvider,
+    setLoadFlowParameters,
+    setLoadFlowProvider,
+} from '../../../services/study/loadflow';
+import {
+    fetchDefaultSecurityAnalysisProvider,
+    fetchSecurityAnalysisProvider,
+    updateSecurityAnalysisProvider,
+} from '../../../services/study/security-analysis';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (

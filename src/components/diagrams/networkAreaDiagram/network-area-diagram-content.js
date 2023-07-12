@@ -24,7 +24,6 @@ import Box from '@mui/material/Box';
 function NetworkAreaDiagramContent(props) {
     const classes = useDiagramStyles();
     const { diagramSizeSetter } = props;
-    const network = useSelector((state) => state.network);
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const currentNode = useSelector((state) => state.currentTreeNode);
@@ -67,7 +66,6 @@ function NetworkAreaDiagramContent(props) {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
-        network,
         props.diagramId,
         props.svgType,
         props.svg,
