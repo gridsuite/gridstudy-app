@@ -1036,5 +1036,12 @@
     "GenerationAndLoad": "Production et consommation",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
-    "partialCopyShuntCompensator" : "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation"
+    "partialCopyShuntCompensator" : "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
+    "SensitivityAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de sensibilité",
+    "muiTablePaginationLabelRowsPerPage": "Lignes par page: ",
+    "muiTablePaginationOfLabel": "sur",
+    "muiTablePaginationPrevious": "Aller à la page précédente",
+    "muiTablePaginationNext": "Aller à la page suivante",
+    "muiTablePaginationFirst": "Aller à la première page",
+    "muiTablePaginationLast": "Aller à la dernière page"
 }

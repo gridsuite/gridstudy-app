@@ -1013,5 +1013,12 @@
     "GenerationAndLoad": "Generation and load",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
-    "partialCopyShuntCompensator" : "Partial copy : copying sections is not supported for this shunt compensator"
+    "partialCopyShuntCompensator" : "Partial copy : copying sections is not supported for this shunt compensator",
+    "SensitivityAnalysisResultsError": "An error occured while fetching sensitivity results",
+    "muiTablePaginationLabelRowsPerPage": "Rows per Page: ",
+    "muiTablePaginationOfLabel": "of",
+    "muiTablePaginationPrevious": "Go to the previous page",
+    "muiTablePaginationNext": "Go to the next page",
+    "muiTablePaginationFirst": "Go to the first page",
+    "muiTablePaginationLast": "Go to the last page"
 }
