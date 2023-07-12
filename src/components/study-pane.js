@@ -252,6 +252,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
                                 }
+                                loadFlowStatus={loadFlowStatus}
                             />
                         </div>
                     </div>

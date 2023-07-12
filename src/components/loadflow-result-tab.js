@@ -6,16 +6,12 @@
  */
 
 import { useNodeData } from './study-container';
-import { fetchLoadFlowResult, fetchLoadFlowStatus } from '../utils/rest-api';
+import { fetchLoadFlowResult } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
-import {
-    RunningStatus,
-    getLoadFlowRunningStatus,
-} from './utils/running-status';
+
 import LoadFlowResult from './loadflow-result';
 
 const loadflowResultInvalidations = ['loadflowResult'];
-const loadflowStatusInvalidations = ['loadflowStatus'];
 
 export const LoadFlowResultTab = ({ studyUuid, nodeUuid }) => {
     const [loadflowResult, isWaiting] = useNodeData(
@@ -25,20 +21,10 @@ export const LoadFlowResultTab = ({ studyUuid, nodeUuid }) => {
         loadflowResultInvalidations
     );
 
-    const [loadflowStatus] = useNodeData(
-        studyUuid,
-        nodeUuid,
-        fetchLoadFlowStatus,
-        loadflowStatusInvalidations,
-        RunningStatus.IDLE,
-        getLoadFlowRunningStatus
-    );
-
     return (
         <WaitingLoader message={'LoadingRemoteData'} loading={isWaiting}>
             <LoadFlowResult
                 result={loadflowResult}
-                status={loadflowStatus}
                 studyUuid={studyUuid}
                 nodeUuid={nodeUuid}
             />
