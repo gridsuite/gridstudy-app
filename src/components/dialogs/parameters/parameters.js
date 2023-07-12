@@ -522,7 +522,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const [availableServices] = useParameterState(AVAILABLE_SERVICES);
 
     const filterServicesByAvailability = (tabs) => {
-        return tabs.filter((tab) => !availableServices.includes(tab));
+        return Object.values(tabs).filter((tab) => !availableServices.includes(tab));
     };
 
     const loadFlowParametersBackend = useParametersBackend(
