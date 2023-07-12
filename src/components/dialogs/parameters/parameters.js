@@ -527,8 +527,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [availableServices] = useParameterState(AVAILABLE_SERVICES);
 
-    const filterServicesByAvailability = (tabs) => {
-        return Object.values(tabs).filter((tab) => !availableServices.includes(tab));
+    const isAvailableService = (tab) => {
+        return availableServices.includes(tab);
     };
 
     const loadFlowParametersBackend = useParametersBackend(
@@ -603,7 +603,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             <DialogContent style={{ overflowY: 'hidden' }}>
                 <Container maxWidth="md">
                     <Tabs
-                        value={filterServicesByAvailability(tabValue)}
+                        value={tabValue}
                         variant="scrollable"
                         onChange={(event, newValue) => setTabValue(newValue)}
                         aria-label="parameters"
@@ -621,43 +621,72 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             label={<FormattedMessage id="LoadFlow" />}
                             value={TAB_VALUES.lfParamsTabValue}
                         />
-                        <Tab
-                            disabled={!studyUuid}
-                            label={<FormattedMessage id="SecurityAnalysis" />}
-                            value={TAB_VALUES.securityAnalysisParamsTabValue}
-                        />
-                        <Tab
-                            disabled={!studyUuid}
-                            label={
-                                <FormattedMessage id="SensitivityAnalysis" />
-                            }
-                            value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
-                        />
-                        {enableDeveloperMode && (
-                            <Tab
-                                disabled={!studyUuid}
-                                label={<FormattedMessage id="ShortCircuit" />}
-                                value={TAB_VALUES.shortCircuitParamsTabValue}
-                            />
-                        )}
-                        {enableDeveloperMode && (
+                        {isAvailableService(
+                            TAB_VALUES.securityAnalysisParamsTabValue
+                        ) && (
                             <Tab
                                 disabled={!studyUuid}
                                 label={
-                                    <FormattedMessage id="DynamicSimulation" />
+                                    <FormattedMessage id="SecurityAnalysis" />
                                 }
                                 value={
-                                    TAB_VALUES.dynamicSimulationParamsTabValue
+                                    TAB_VALUES.securityAnalysisParamsTabValue
                                 }
                             />
                         )}
-                        {enableDeveloperMode && (
+                        {isAvailableService(
+                            TAB_VALUES.sensitivityAnalysisParamsTabValue
+                        ) && (
                             <Tab
                                 disabled={!studyUuid}
-                                label={<FormattedMessage id="VoltageInit" />}
-                                value={TAB_VALUES.voltageInitParamsTabValue}
+                                label={
+                                    <FormattedMessage id="SensitivityAnalysis" />
+                                }
+                                value={
+                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
+                                }
                             />
                         )}
+                        {isAvailableService(
+                            TAB_VALUES.shortCircuitParamsTabValue
+                        ) &&
+                            enableDeveloperMode && (
+                                <Tab
+                                    disabled={!studyUuid}
+                                    label={
+                                        <FormattedMessage id="ShortCircuit" />
+                                    }
+                                    value={
+                                        TAB_VALUES.shortCircuitParamsTabValue
+                                    }
+                                />
+                            )}
+                        {isAvailableService(
+                            TAB_VALUES.dynamicSimulationParamsTabValue
+                        ) &&
+                            enableDeveloperMode && (
+                                <Tab
+                                    disabled={!studyUuid}
+                                    label={
+                                        <FormattedMessage id="DynamicSimulation" />
+                                    }
+                                    value={
+                                        TAB_VALUES.dynamicSimulationParamsTabValue
+                                    }
+                                />
+                            )}
+                        {isAvailableService(
+                            TAB_VALUES.voltageInitParamsTabValue
+                        ) &&
+                            enableDeveloperMode && (
+                                <Tab
+                                    disabled={!studyUuid}
+                                    label={
+                                        <FormattedMessage id="VoltageInit" />
+                                    }
+                                    value={TAB_VALUES.voltageInitParamsTabValue}
+                                />
+                            )}
                         <Tab
                             label={<FormattedMessage id="Advanced" />}
                             value={TAB_VALUES.advancedParamsTabValue}

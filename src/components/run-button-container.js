@@ -31,7 +31,10 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {AVAILABLE_SERVICES, PARAM_DEVELOPER_MODE} from '../utils/config-params';
+import {
+    AVAILABLE_SERVICES,
+    PARAM_DEVELOPER_MODE,
+} from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
@@ -457,21 +460,27 @@ export function RunButtonContainer({
     };
 
     const runnables = useMemo(() => {
-        let runnables = [
+        return [
             runnable[ComputingType.LOADFLOW],
-            runnable[ComputingType.SECURITY_ANALYSIS],
-            runnable[ComputingType.SENSITIVITY_ANALYSIS],
+            ...(availableServices.includes('SecurityAnalysis')
+                ? [runnable[ComputingType.SECURITY_ANALYSIS]]
+                : []),
+            ...(availableServices.includes('SensitivityAnalysis')
+                ? [runnable[ComputingType.SENSITIVITY_ANALYSIS]]
+                : []),
+            ...(availableServices.includes('ShortCircuitAnalysis') &&
+            enableDeveloperMode
+                ? [runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]]
+                : []),
+            ...(availableServices.includes('DynamicSimulation') &&
+            enableDeveloperMode
+                ? [runnable[ComputingType.DYNAMIC_SIMULATION]]
+                : []),
+            ...(availableServices.includes('VoltageInit') && enableDeveloperMode
+                ? [runnable[ComputingType.VOLTAGE_INIT]]
+                : []),
         ];
-        if (enableDeveloperMode) {
-            // SHORTCIRCUIT is currently a dev feature
-            runnables.push(runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]);
-            // DYNAMICSIMULATION is currently a dev feature
-            runnables.push(runnable[ComputingType.DYNAMIC_SIMULATION]);
-            // VOLTAGEINIT is currently a dev feature
-            runnables.push(runnable[ComputingType.VOLTAGE_INIT]);
-        }
-        return runnables.filter(runnable => !availableServices.includes(runnable));
-    }, [runnable, enableDeveloperMode]);
+    }, [availableServices, runnable, enableDeveloperMode]);
 
     useEffect(() => {
         setIsComputationRunning(
