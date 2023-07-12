@@ -70,11 +70,7 @@ const formSchema = yup.object().shape({
         )
         .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
             checkUniquePropertiesNames(values)
-        )
-        .when([ADDITIONAL_PROPERTIES], {
-            is: (additionalProperties) => additionalProperties != null,
-            then: (schema) => schema.required(),
-        }),
+        ),
 });
 
 const getPropertiesFromModification = (properties) => {
