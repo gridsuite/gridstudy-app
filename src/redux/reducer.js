@@ -90,6 +90,7 @@ import {
     DELETE_EQUIPMENT,
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_POST_LOADFLOW,
+    SET_COMPUTING_STATUS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -126,6 +127,8 @@ import { loadDiagramStateFromSessionStorage } from './session-storage';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
+import { ComputingType } from 'components/computing-status/computing-type';
+import { RunningStatus } from 'components/utils/running-status';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -147,6 +150,15 @@ const paramsInitialState = {
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
     [AVAILABLE_SERVICES]: ['LoadFlow'],
+};
+
+const initialComputingStatus = {
+    [ComputingType.LOADFLOW]: RunningStatus.IDLE,
+    [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
+    [ComputingType.VOLTAGE_INIT]: RunningStatus.IDLE,
 };
 
 const initialSpreadsheetNetworkState = {
@@ -207,6 +219,7 @@ const initialState = {
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
+    computingStatus: { ...initialComputingStatus },
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -984,6 +997,9 @@ export const reducer = createReducer(initialState, {
             voltageLevels: state.spreadsheetNetwork.voltageLevels,
             hvdcLines: state.spreadsheetNetwork.hvdcLines,
         };
+    },
+    [SET_COMPUTING_STATUS]: (state, action) => {
+        state.computingStatus[action.computingType] = action.runningStatus;
     },
 });
 

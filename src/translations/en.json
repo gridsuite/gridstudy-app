@@ -87,6 +87,10 @@
     "limit": "limit",
     "Limit": "Limit",
     "LimitLabel": "Limit (A)",
+    "CurrentViolationValue": "Value (A)",
+    "CurrentViolationLimit":"Limit (A)",
+    "VoltageViolationLimit":"Limit (kV)",
+    "VoltageViolationValue": "Value (kV)",
     "load": "load",
     "Load": "Load",
     "MapManualRefresh": "Manual update of geographical view:",
@@ -157,6 +161,7 @@
     "FixedGenerators": "Fixed generators",
     "VariableTransformers": " Variable transformers",
     "VariableShuntCompensators": "Variable shunt compensators",
+    "voltageInitError": "An error occurred while excuting the voltage profile initialization",
     "VoltageInitParametersError": "An error occurred while updating the voltage profile initialization parameters",
 
     "SelectAll": "Select all",
@@ -293,12 +298,12 @@
     "LimitType": "Limit type",
     "LimitSide": "Side",
     "LimitName": "Name",
+    "LimitNameCurrentViolation": "Limit name",
     "Limit_name": "Limit name",
     "OverloadedEquipment": "Equipment",
     "PermanentLimitName": "IST",
-    "EquipmentOverload": "Load",
     "LimitAcceptableDuration": "Duration",
-    "ErrFetchCurrentLimitViolationsMsg": "An error occurred while getting the current limit violations",
+    "ErrFetchViolationsMsg": "An error occurred while getting constraint violations",
     "Value": "Value",
     "ContingencyId": "Contingency ID",
     "ComputationStatus": "Status",
@@ -352,7 +357,8 @@
 
     "securityAnalysisError": "An error occurred while executing the security analysis",
     "startLoadFlowError": "An error occurred while starting the load flow",
-    "LoadFlowResultsConstraints": "Violations",
+    "LoadFlowResultsCurrentViolations": "Current violations",
+    "LoadFlowResultsVoltageViolations": "Voltage violations",
     "LoadFlowResultsStatus": "Status",
 
     "connectedComponentNum": "Connected component number",
@@ -491,7 +497,7 @@
     "Advanced": "Advanced",
     "EnableDeveloperMode": "Enable developer mode",
     "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",
-
+    "ModifyNodeNotBuiltWarningMsg": "The values are those of the previous built node in the current branch",
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
     "buildNode": "Build node",
@@ -520,6 +526,7 @@
     "ActivePowerText": "Active power",
     "ReactivePowerText": "Reactive power",
     "VoltageLevel": "Voltage level",
+    "Violation": "Violation",
     "BusBarBus": "Bus bar section / bus",
     "Setpoints": "Setpoints",
     "Connectivity": "Connectivity",
@@ -553,6 +560,8 @@
     "LineCreationError": "Error while creating line",
     "LineModificationError": "Error while modifying line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
+    "ShuntCompensatorModificationError": "Error while modifying shunt compensator",
+    "ShuntCompensatorMultiSectionsError": "It is currently not possible to modify a multi sections shunt compensator",
 
     "CreateGenerator": "Create generator",
     "ModifyGenerator": "Modify generator",
@@ -626,6 +635,8 @@
     "Side": "Side",
     "Side1": "Side 1",
     "Side2": "Side 2",
+    "CurrentViolationSide1": "1",
+    "CurrentViolationSide2": "2",
     "OriginSide": "Side 1",
     "ExtremitySide": "Side 2",
     "SeriesResistanceText": "Series resistance",
@@ -655,6 +666,7 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater or equal to 0",
+    "ModifyShuntCompensator": "Modify shunt compensator (A single section)",
 
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
@@ -1000,5 +1012,14 @@
     "AttachingAndSplittingLines": "Attaching and splitting lines",
     "GenerationAndLoad": "Generation and load",
     "idSelector.idNeeded": "Please select an ID",
-    "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet"
+    "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
+
+    "SensitivityAnalysisResultsError": "An error occured while fetching sensitivity results",
+
+    "muiTablePaginationLabelRowsPerPage": "Rows per Page: ",
+    "muiTablePaginationOfLabel": "of",
+    "muiTablePaginationPrevious": "Go to the previous page",
+    "muiTablePaginationNext": "Go to the next page",
+    "muiTablePaginationFirst": "Go to the first page",
+    "muiTablePaginationLast": "Go to the last page"
 }

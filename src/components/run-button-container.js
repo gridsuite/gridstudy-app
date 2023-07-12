@@ -10,15 +10,9 @@ import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-    startLoadFlow,
-    startSecurityAnalysis,
-    startSensitivityAnalysis,
     startShortCircuitAnalysis,
-    startDynamicSimulation,
     stopSecurityAnalysis,
-    stopSensitivityAnalysis,
     stopShortCircuitAnalysis,
-    stopDynamicSimulation,
     startVoltageInit,
     stopVoltageInit,
 } from '../utils/rest-api';
@@ -32,6 +26,7 @@ import {
     addShortCircuitNotif,
     addDynamicSimulationNotif,
     addVoltageInitNotif,
+    setComputingStatus,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -41,31 +36,45 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
 } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
+import { ComputingType } from './computing-status/computing-type';
+import {
+    startSensitivityAnalysis,
+    stopSensitivityAnalysis,
+} from '../services/study/sensitivity-analysis';
+import {
+    startDynamicSimulation,
+    stopDynamicSimulation,
+} from '../services/study/dynamic-simulation';
+import { startLoadFlow } from '../services/study/loadflow';
+
+import { startSecurityAnalysis } from '../services/study/security-analysis';
 
 export function RunButtonContainer({
     studyUuid,
     currentNode,
     loadFlowStatus,
-    securityAnalysisStatus,
-    sensiStatus,
-    shortCircuitStatus,
-    dynamicSimulationStatus,
-    voltageInitStatus,
     setIsComputationRunning,
-    runnable,
     disabled,
 }) {
     const [loadFlowStatusState, setLoadFlowStatusState] =
         useState(loadFlowStatus);
-    const [securityAnalysisStatusState, setSecurityAnalysisStatusState] =
-        useState(securityAnalysisStatus);
-    const [sensiStatusState, setSensiStatusState] = useState(sensiStatus);
-    const [shortCircuitStatusState, setShortCircuitStatusState] =
-        useState(shortCircuitStatus);
-    const [dynamicSimulationStatusState, setDynamicSimulationStatusState] =
-        useState(dynamicSimulationStatus);
-    const [voltageInitStatusState, setVoltageInitStatusState] =
-        useState(voltageInitStatus);
+
+    const securityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+    );
+
+    const sensitivityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
+    const shortCircuitAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
+    );
+    const dynamicSimulationStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+    );
+    const voltageInitStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.VOLTAGE_INIT]
+    );
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -106,6 +115,27 @@ export function RunButtonContainer({
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
     );
+
+    const runnable = useMemo(() => {
+        return {
+            [ComputingType.LOADFLOW]: intl.formatMessage({ id: 'LoadFlow' }),
+            [ComputingType.SECURITY_ANALYSIS]: intl.formatMessage({
+                id: 'SecurityAnalysis',
+            }),
+            [ComputingType.SENSITIVITY_ANALYSIS]: intl.formatMessage({
+                id: 'SensitivityAnalysis',
+            }),
+            [ComputingType.SHORTCIRCUIT_ANALYSIS]: intl.formatMessage({
+                id: 'ShortCircuitAnalysis',
+            }),
+            [ComputingType.DYNAMIC_SIMULATION]: intl.formatMessage({
+                id: 'DynamicSimulation',
+            }),
+            [ComputingType.VOLTAGE_INIT]: intl.formatMessage({
+                id: 'VoltageInit',
+            }),
+        };
+    }, [intl]);
 
     useEffect(() => {
         if (
@@ -154,51 +184,62 @@ export function RunButtonContainer({
         ranDynamicSimulation,
         ranVoltageInit,
         loadFlowStatus,
-        sensiStatus,
-        shortCircuitStatus,
-        dynamicSimulationStatus,
-        securityAnalysisStatus,
-        voltageInitStatus,
     ]);
 
     useEffect(() => {
         setLoadFlowStatusState(loadFlowStatus);
-        setSecurityAnalysisStatusState(securityAnalysisStatus);
-        setSensiStatusState(sensiStatus);
-        setShortCircuitStatusState(shortCircuitStatus);
-        setDynamicSimulationStatusState(dynamicSimulationStatus);
-        setVoltageInitStatusState(voltageInitStatus);
-    }, [
-        loadFlowStatus,
-        sensiStatus,
-        shortCircuitStatus,
-        dynamicSimulationStatus,
-        voltageInitStatus,
-        securityAnalysisStatus,
-        currentNode,
-    ]);
+    }, [loadFlowStatus, currentNode]);
 
     const ACTION_ON_RUNNABLES = {
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (action) => {
-            if (action === runnable.SECURITY_ANALYSIS) {
-                setSecurityAnalysisStatusState(RunningStatus.IDLE);
+            if (action === runnable[ComputingType.SECURITY_ANALYSIS]) {
+                dispatch(
+                    setComputingStatus(
+                        ComputingType.SECURITY_ANALYSIS,
+                        RunningStatus.IDLE
+                    )
+                );
                 stopSecurityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
-            } else if (action === runnable.SENSITIVITY_ANALYSIS) {
-                setSensiStatusState(RunningStatus.IDLE);
+            } else if (
+                action === runnable[ComputingType.SENSITIVITY_ANALYSIS]
+            ) {
+                dispatch(
+                    setComputingStatus(
+                        ComputingType.SENSITIVITY_ANALYSIS,
+                        RunningStatus.IDLE
+                    )
+                );
                 stopSensitivityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
-            } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
-                setShortCircuitStatusState(RunningStatus.IDLE);
+            } else if (
+                action === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]
+            ) {
+                dispatch(
+                    setComputingStatus(
+                        ComputingType.SHORTCIRCUIT_ANALYSIS,
+                        RunningStatus.IDLE
+                    )
+                );
                 stopShortCircuitAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
-            } else if (action === runnable.DYNAMIC_SIMULATION) {
-                setDynamicSimulationStatusState(RunningStatus.IDLE);
+            } else if (action === runnable[ComputingType.DYNAMIC_SIMULATION]) {
+                dispatch(
+                    setComputingStatus(
+                        ComputingType.DYNAMIC_SIMULATION,
+                        RunningStatus.IDLE
+                    )
+                );
                 stopDynamicSimulation(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
-            } else if (action === runnable.VOLTAGE_INIT) {
-                setVoltageInitStatusState(RunningStatus.IDLE);
+            } else if (action === runnable[ComputingType.VOLTAGE_INIT]) {
+                dispatch(
+                    setComputingStatus(
+                        ComputingType.VOLTAGE_INIT,
+                        RunningStatus.IDLE
+                    )
+                );
                 stopVoltageInit(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
@@ -210,27 +251,49 @@ export function RunButtonContainer({
         setShowContingencyListSelector(false);
 
         setComputationStopped(false);
-        setSecurityAnalysisStatusState(RunningStatus.RUNNING);
+        dispatch(
+            setComputingStatus(
+                ComputingType.SECURITY_ANALYSIS,
+                RunningStatus.RUNNING
+            )
+        );
         // start server side security analysis
         startSecurityAnalysis(
             studyUuid,
             currentNode?.id,
             contingencyListNames
-        ).catch(() => setSecurityAnalysisStatusState(RunningStatus.FAILED));
+        ).catch(() =>
+            dispatch(
+                setComputingStatus(
+                    ComputingType.SECURITY_ANALYSIS,
+                    RunningStatus.FAILED
+                )
+            )
+        );
     };
 
     const handleStartSensi = (sensiConfiguration) => {
         // close the contingency list selection window
         setShowSensiParametersSelector(false);
         setComputationStopped(false);
-        setSensiStatusState(RunningStatus.RUNNING);
+        dispatch(
+            setComputingStatus(
+                ComputingType.SENSITIVITY_ANALYSIS,
+                RunningStatus.RUNNING
+            )
+        );
         // start server side security analysis
         startSensitivityAnalysis(
             studyUuid,
             currentNode?.id,
             sensiConfiguration
         ).catch(() => {
-            setSensiStatusState(RunningStatus.FAILED);
+            dispatch(
+                setComputingStatus(
+                    ComputingType.SENSITIVITY_ANALYSIS,
+                    RunningStatus.FAILED
+                )
+            );
         });
     };
 
@@ -239,15 +302,24 @@ export function RunButtonContainer({
         setShowDynamicSimulationParametersSelector(false);
 
         setComputationStopped(false);
-        setDynamicSimulationStatusState(RunningStatus.RUNNING);
-
+        dispatch(
+            setComputingStatus(
+                ComputingType.DYNAMIC_SIMULATION,
+                RunningStatus.RUNNING
+            )
+        );
         // start server side dynamic simulation
         return startDynamicSimulation(
             studyUuid,
             currentNode?.id,
             dynamicSimulationConfiguration
         ).catch((error) => {
-            setDynamicSimulationStatusState(RunningStatus.FAILED);
+            dispatch(
+                setComputingStatus(
+                    ComputingType.DYNAMIC_SIMULATION,
+                    RunningStatus.FAILED
+                )
+            );
             snackError({
                 messageTxt: error.message,
                 headerId: 'DynamicSimulationRunError',
@@ -256,46 +328,67 @@ export function RunButtonContainer({
     };
 
     const startComputation = (action) => {
-        if (action === runnable.LOADFLOW) {
+        if (action === runnable[ComputingType.LOADFLOW]) {
             setLoadFlowStatusState(RunningStatus.RUNNING);
             startLoadFlow(studyUuid, currentNode?.id)
                 .then(setRanLoadflow(true))
                 .catch((error) => {
                     setLoadFlowStatusState(RunningStatus.FAILED);
+                    setRanLoadflow(false);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startLoadFlowError',
                     });
                 });
-        } else if (action === runnable.SECURITY_ANALYSIS) {
+        } else if (action === runnable[ComputingType.SECURITY_ANALYSIS]) {
             setShowContingencyListSelector(true);
             setRanSA(true);
-        } else if (action === runnable.SENSITIVITY_ANALYSIS) {
+        } else if (action === runnable[ComputingType.SENSITIVITY_ANALYSIS]) {
             setShowSensiParametersSelector(true);
             setRanSensi(true);
-        } else if (action === runnable.SHORT_CIRCUIT_ANALYSIS) {
-            setShortCircuitStatusState(RunningStatus.RUNNING);
+        } else if (action === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]) {
+            dispatch(
+                setComputingStatus(
+                    ComputingType.SHORTCIRCUIT_ANALYSIS,
+                    RunningStatus.RUNNING
+                )
+            );
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
                 .then(setRanShortCircuit(true))
                 .catch((error) => {
-                    setShortCircuitStatusState(RunningStatus.FAILED);
+                    dispatch(
+                        setComputingStatus(
+                            ComputingType.SHORTCIRCUIT_ANALYSIS,
+                            RunningStatus.FAILED
+                        )
+                    );
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startShortCircuitError',
                     });
                 });
-        } else if (action === runnable.VOLTAGE_INIT) {
-            setVoltageInitStatusState(RunningStatus.RUNNING);
+        } else if (action === runnable[ComputingType.VOLTAGE_INIT]) {
+            dispatch(
+                setComputingStatus(
+                    ComputingType.VOLTAGE_INIT,
+                    RunningStatus.RUNNING
+                )
+            );
             startVoltageInit(studyUuid, currentNode?.id)
                 .then(setRanVoltageInit(true))
                 .catch((error) => {
-                    setVoltageInitStatusState(RunningStatus.FAILED);
+                    dispatch(
+                        setComputingStatus(
+                            ComputingType.VOLTAGE_INIT,
+                            RunningStatus.FAILED
+                        )
+                    );
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startVoltageInitError',
                     });
                 });
-        } else if (action === runnable.DYNAMIC_SIMULATION) {
+        } else if (action === runnable[ComputingType.DYNAMIC_SIMULATION]) {
             checkDynamicSimulationParameters(studyUuid)
                 .then((isValid) => {
                     if (!isValid) {
@@ -326,33 +419,36 @@ export function RunButtonContainer({
 
     const getRunningStatus = useCallback(
         (runnableType) => {
-            if (runnableType === runnable.LOADFLOW) {
+            if (runnableType === runnable[ComputingType.LOADFLOW]) {
                 return loadFlowStatusState;
-            } else if (runnableType === runnable.SECURITY_ANALYSIS) {
-                return securityAnalysisStatusState;
-            } else if (runnableType === runnable.SENSITIVITY_ANALYSIS) {
-                return sensiStatusState;
-            } else if (runnableType === runnable.SHORT_CIRCUIT_ANALYSIS) {
-                return shortCircuitStatusState;
-            } else if (runnableType === runnable.DYNAMIC_SIMULATION) {
-                return dynamicSimulationStatusState;
-            } else if (runnableType === runnable.VOLTAGE_INIT) {
-                return voltageInitStatusState;
+            } else if (
+                runnableType === runnable[ComputingType.SECURITY_ANALYSIS]
+            ) {
+                return securityAnalysisStatus;
+            } else if (
+                runnableType === runnable[ComputingType.SENSITIVITY_ANALYSIS]
+            ) {
+                return sensitivityAnalysisStatus;
+            } else if (
+                runnableType === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]
+            ) {
+                return shortCircuitAnalysisStatus;
+            } else if (
+                runnableType === runnable[ComputingType.DYNAMIC_SIMULATION]
+            ) {
+                return dynamicSimulationStatus;
+            } else if (runnableType === runnable[ComputingType.VOLTAGE_INIT]) {
+                return voltageInitStatus;
             }
         },
         [
-            runnable.LOADFLOW,
-            runnable.SECURITY_ANALYSIS,
-            runnable.SENSITIVITY_ANALYSIS,
-            runnable.SHORT_CIRCUIT_ANALYSIS,
-            runnable.DYNAMIC_SIMULATION,
-            runnable.VOLTAGE_INIT,
+            runnable,
             loadFlowStatusState,
-            securityAnalysisStatusState,
-            sensiStatusState,
-            shortCircuitStatusState,
-            dynamicSimulationStatusState,
-            voltageInitStatusState,
+            securityAnalysisStatus,
+            sensitivityAnalysisStatus,
+            shortCircuitAnalysisStatus,
+            dynamicSimulationStatus,
+            voltageInitStatus,
         ]
     );
 
@@ -362,17 +458,17 @@ export function RunButtonContainer({
 
     const runnables = useMemo(() => {
         let runnables = [
-            runnable.LOADFLOW,
-            runnable.SECURITY_ANALYSIS,
-            runnable.SENSITIVITY_ANALYSIS,
+            runnable[ComputingType.LOADFLOW],
+            runnable[ComputingType.SECURITY_ANALYSIS],
+            runnable[ComputingType.SENSITIVITY_ANALYSIS],
         ];
         if (enableDeveloperMode) {
             // SHORTCIRCUIT is currently a dev feature
-            runnables.push(runnable.SHORT_CIRCUIT_ANALYSIS);
+            runnables.push(runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]);
             // DYNAMICSIMULATION is currently a dev feature
-            runnables.push(runnable.DYNAMIC_SIMULATION);
+            runnables.push(runnable[ComputingType.DYNAMIC_SIMULATION]);
             // VOLTAGEINIT is currently a dev feature
-            runnables.push(runnable.VOLTAGE_INIT);
+            runnables.push(runnable[ComputingType.VOLTAGE_INIT]);
         }
         return runnables.filter(runnable => !availableServices.includes(runnable));
     }, [runnable, enableDeveloperMode]);
@@ -446,6 +542,4 @@ RunButtonContainer.propTypes = {
     startIcon: PropTypes.func,
     computationStopped: PropTypes.bool,
     disabled: PropTypes.bool,
-    dynamicSimulationStatus: PropTypes.string,
-    voltageInitStatus: PropTypes.string,
 };

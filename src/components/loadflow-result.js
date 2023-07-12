@@ -7,25 +7,27 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import Paper from '@mui/material/Paper';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { fetchCurrentLimitViolations } from '../utils/rest-api';
+import { fetchLimitViolations } from '../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
 import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
+const LIMIT_TYPES = {
+    HIGH_VOLTAGE: 'HIGH_VOLTAGE',
+    LOW_VOLTAGE: 'LOW_VOLTAGE',
+    CURRENT: 'CURRENT',
+};
+
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const useStyles = makeStyles((theme) => ({
-        tablePaper: {
-            flexGrow: 1,
-        },
         cell: {
             display: 'flex',
             alignItems: 'center',
@@ -69,7 +71,11 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             }
         };
         const convertSide = (side) => {
-            return side === 'ONE' ? 1 : side === 'TWO' ? 2 : undefined;
+            return side === 'ONE'
+                ? intl.formatMessage({ id: 'CurrentViolationSide1' })
+                : side === 'TWO'
+                ? intl.formatMessage({ id: 'CurrentViolationSide2' })
+                : undefined;
         };
         const convertLimitName = (limitName) => {
             return limitName === PERMANENT_LIMIT_NAME
@@ -78,22 +84,22 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         };
         const makeData = (overloadedEquipment) => {
             return {
-                overload: (
+                overload:
                     (overloadedEquipment.value / overloadedEquipment.limit) *
-                    100
-                ).toFixed(1),
+                    100,
                 name: overloadedEquipment.subjectId,
-                intensity: overloadedEquipment.value,
+                value: overloadedEquipment.value,
                 acceptableDuration: convertDuration(
                     overloadedEquipment.acceptableDuration
                 ),
                 limit: overloadedEquipment.limit,
                 limitName: convertLimitName(overloadedEquipment.limitName),
                 side: convertSide(overloadedEquipment.side),
+                limitType: overloadedEquipment.limitType,
             };
         };
         if (result) {
-            fetchCurrentLimitViolations(
+            fetchLimitViolations(
                 studyUuid,
                 nodeUuid,
                 limitReductionParam / 100.0
@@ -109,7 +115,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'ErrFetchCurrentLimitViolationsMsg',
+                        headerId: 'ErrFetchViolationsMsg',
                     });
                 });
         }
@@ -144,46 +150,45 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         [classes.cell, classes.fail, classes.succeed]
     );
 
-    const loadFlowConstraintscolumns = useMemo(() => {
+    const loadFlowCurrentViolationsColumns = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
                 field: 'name',
-                numeric: false,
             },
             {
-                headerName: intl.formatMessage({ id: 'LimitName' }),
+                headerName: intl.formatMessage({
+                    id: 'LimitNameCurrentViolation',
+                }),
                 field: 'limitName',
-                numeric: false,
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitSide' }),
                 field: 'side',
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({
                     id: 'LimitAcceptableDuration',
                 }),
                 field: 'acceptableDuration',
-                numeric: false,
             },
             {
-                headerName: intl.formatMessage({ id: 'Limit' }),
+                headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
                 field: 'limit',
                 valueFormatter: (params) => params.value.toFixed(1),
             },
             {
-                headerName: intl.formatMessage({ id: 'Intensity' }),
-                field: 'intensity',
+                headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
+                field: 'value',
                 numeric: true,
                 valueFormatter: (params) => params.value.toFixed(1),
             },
             {
-                headerName: intl.formatMessage({ id: 'EquipmentOverload' }),
+                headerName: intl.formatMessage({ id: 'Loading' }),
                 field: 'overload',
                 numeric: true,
-                valueFormatter: (params) => `${Math.round(params.value)} %`,
+                fractionDigits: 0,
+                valueFormatter: (params) => params.value.toFixed(1),
             },
         ];
     }, [intl]);
@@ -194,13 +199,15 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             sortable: true,
             resizable: true,
             lockPinned: true,
+            suppressMovable: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
+            flex: 1,
         }),
         []
     );
 
-    const loadFlowResultcolumns = useMemo(() => {
+    const loadFlowResultColumns = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({
@@ -241,18 +248,49 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         ];
     }, [intl, NumberRenderer, StatusCellRender]);
 
+    const formatLimitType = useCallback(
+        (limitType) => {
+            return limitType in LIMIT_TYPES
+                ? intl.formatMessage({ id: limitType })
+                : limitType;
+        },
+        [intl]
+    );
+    const loadFlowVoltageViolationsColumns = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'VoltageLevel' }),
+                field: 'name',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Violation' }),
+                field: 'limitType',
+                valueFormatter: (params) => formatLimitType(params.value),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'VoltageViolationLimit' }),
+                field: 'limit',
+                valueFormatter: (params) => params.value.toFixed(1),
+            },
+            {
+                headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
+                field: 'value',
+                numeric: true,
+                valueFormatter: (params) => params.value.toFixed(1),
+            },
+        ];
+    }, [intl, formatLimitType]);
+
     function renderLoadFlowResult() {
         return (
-            <Paper className={classes.tablePaper}>
-                <CustomAGGrid
-                    rowData={result.componentResults}
-                    columnDefs={loadFlowResultcolumns}
-                    defaultColDef={defaultColDef}
-                    enableCellTextSelection={true}
-                    onGridReady={onGridReady}
-                    getRowStyle={getRowStyle}
-                />
-            </Paper>
+            <CustomAGGrid
+                rowData={result.componentResults}
+                columnDefs={loadFlowResultColumns}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                onGridReady={onGridReady}
+                getRowStyle={getRowStyle}
+            />
         );
     }
     const onGridReady = useCallback((params) => {
@@ -270,21 +308,40 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         },
         [theme.selectedRow.background]
     );
-    function renderLoadFlowConstraints() {
+
+    const currentViolations = overloadedEquipments?.filter(
+        (overloadedEquipment) =>
+            overloadedEquipment.limitType === LIMIT_TYPES.CURRENT
+    );
+    const voltageViolations = overloadedEquipments?.filter(
+        (overloadedEquipment) =>
+            overloadedEquipment.limitType === LIMIT_TYPES.HIGH_VOLTAGE ||
+            overloadedEquipment.limitType === LIMIT_TYPES.LOW_VOLTAGE
+    );
+    function renderLoadFlowCurrentViolations() {
         return (
-            <Paper className={classes.tablePaper}>
-                <CustomAGGrid
-                    rowData={overloadedEquipments}
-                    defaultColDef={defaultColDef}
-                    enableCellTextSelection={true}
-                    columnDefs={loadFlowConstraintscolumns}
-                    onGridReady={onGridReady}
-                    getRowStyle={getRowStyle}
-                />
-            </Paper>
+            <CustomAGGrid
+                rowData={currentViolations}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                columnDefs={loadFlowCurrentViolationsColumns}
+                onGridReady={onGridReady}
+                getRowStyle={getRowStyle}
+            />
         );
     }
-
+    function renderLoadFlowVoltageViolations() {
+        return (
+            <CustomAGGrid
+                rowData={voltageViolations}
+                defaultColDef={defaultColDef}
+                enableCellTextSelection={true}
+                columnDefs={loadFlowVoltageViolationsColumns}
+                onGridReady={onGridReady}
+                getRowStyle={getRowStyle}
+            />
+        );
+    }
     function renderLoadFlowResultTabs() {
         return (
             <>
@@ -299,7 +356,14 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                             <Tab
                                 label={
                                     <FormattedMessage
-                                        id={'LoadFlowResultsConstraints'}
+                                        id={'LoadFlowResultsCurrentViolations'}
+                                    />
+                                }
+                            />
+                            <Tab
+                                label={
+                                    <FormattedMessage
+                                        id={'LoadFlowResultsVoltageViolations'}
                                     />
                                 }
                             />
@@ -317,8 +381,12 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                     overloadedEquipments &&
                     loadflowNotif &&
                     result &&
-                    renderLoadFlowConstraints()}
+                    renderLoadFlowCurrentViolations()}
                 {tabIndex === 1 &&
+                    loadflowNotif &&
+                    result &&
+                    renderLoadFlowVoltageViolations()}
+                {tabIndex === 2 &&
                     loadflowNotif &&
                     result &&
                     renderLoadFlowResult()}

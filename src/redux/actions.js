@@ -656,6 +656,16 @@ export function setDeletedEquipments(deletedEquipments) {
     };
 }
 
+export const SET_COMPUTING_STATUS = 'SET_COMPUTING_STATUS';
+
+export function setComputingStatus(computingType, runningStatus) {
+    return {
+        type: SET_COMPUTING_STATUS,
+        computingType: computingType,
+        runningStatus: runningStatus,
+    };
+}
+
 export const SET_AVAILABLE_SERVICES = 'SET_AVAILABLE_SERVICES'
 
 export const setAvailableServices = (availableServices) => {

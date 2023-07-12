@@ -23,7 +23,8 @@ import { CURVE_EQUIPMENT_TYPES } from './equipment-filter';
 import CheckboxTreeview from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
-import { fetchDynamicSimulationModels } from '../../../../../../utils/rest-api';
+
+import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
 
 const modelsToVariablesTree = (models) => {
     return models.reduce(

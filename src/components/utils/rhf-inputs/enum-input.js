@@ -24,7 +24,7 @@ const EnumInput = ({ options, name, label, size, labelValues }) => {
     } = useController({ name });
 
     return (
-        <FormControl fullWidth size={size} error={error ? true : false}>
+        <FormControl fullWidth size={size} error={!!error}>
             <InputLabel id="enum-type-label">
                 <FieldLabel label={label} values={labelValues} />
             </InputLabel>

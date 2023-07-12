@@ -54,6 +54,7 @@ import {
     getLimitsFormData,
     getLimitsValidationSchema,
     sanitizeLimitNames,
+    updateTemporaryLimits,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
@@ -123,7 +124,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const { reset } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
-        (twt) => {
+        (twt, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
             if (twt?.equipmentId) {
                 setSelectedId(twt.equipmentId);
             }
@@ -146,14 +147,18 @@ const TwoWindingsTransformerModificationDialog = ({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            twt.currentLimits1?.temporaryLimits
-                        )
+                        updatedTemporaryLimits1
+                            ? updatedTemporaryLimits1
+                            : formatTemporaryLimits(
+                                  twt.currentLimits1?.temporaryLimits
+                              )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            twt.currentLimits2?.temporaryLimits
-                        )
+                        updatedTemporaryLimits2
+                            ? updatedTemporaryLimits2
+                            : formatTemporaryLimits(
+                                  twt.currentLimits2?.temporaryLimits
+                              )
                     ),
                 }),
             });
@@ -163,38 +168,68 @@ const TwoWindingsTransformerModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            fromEditDataToFormValues(editData);
+            fromEditDataToFormValues(
+                editData,
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits1?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        twtToModify?.currentLimits1?.temporaryLimits
+                    )
+                ),
+                updateTemporaryLimits(
+                    formatTemporaryLimits(
+                        editData.currentLimits2?.temporaryLimits
+                    ),
+                    formatTemporaryLimits(
+                        twtToModify?.currentLimits2?.temporaryLimits
+                    )
+                )
+            );
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [fromEditDataToFormValues, editData, twtToModify]);
 
     const onSubmit = useCallback(
         (twt) => {
             const characteristics = twt[CHARACTERISTICS];
             const limits = twt[LIMITS];
-
-            const currentLimits1 = {
-                permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
-                temporaryLimits: addModificationTypeToTemporaryLimits(
-                    sanitizeLimitNames(
-                        limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
-                    ),
-                    twtToModify?.currentLimits1?.temporaryLimits,
-                    editData?.currentLimits1?.temporaryLimits,
-                    currentNode
+            const temporaryLimits1 = addModificationTypeToTemporaryLimits(
+                sanitizeLimitNames(
+                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
                 ),
-            };
-
-            const currentLimits2 = {
-                permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                temporaryLimits: addModificationTypeToTemporaryLimits(
-                    sanitizeLimitNames(
-                        limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
-                    ),
-                    twtToModify?.currentLimits2?.temporaryLimits,
-                    editData?.currentLimits2?.temporaryLimits,
-                    currentNode
+                twtToModify?.currentLimits1?.temporaryLimits,
+                editData?.currentLimits1?.temporaryLimits,
+                currentNode
+            );
+            let currentLimits1 = null;
+            if (
+                limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT] ||
+                temporaryLimits1.length > 0
+            ) {
+                currentLimits1 = {
+                    permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
+                    temporaryLimits: temporaryLimits1,
+                };
+            }
+            const temporaryLimits2 = addModificationTypeToTemporaryLimits(
+                sanitizeLimitNames(
+                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
                 ),
-            };
+                twtToModify?.currentLimits2?.temporaryLimits,
+                editData?.currentLimits2?.temporaryLimits,
+                currentNode
+            );
+            let currentLimits2 = null;
+            if (
+                limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT] ||
+                temporaryLimits2.length > 0
+            ) {
+                currentLimits2 = {
+                    permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
+                    temporaryLimits: temporaryLimits2,
+                };
+            }
 
             modifyTwoWindingsTransformer(
                 studyUuid,
@@ -277,30 +312,25 @@ const TwoWindingsTransformerModificationDialog = ({
                         if (twt) {
                             setTwtToModify(twt);
                             if (editData?.equipmentId !== selectedId) {
-                                reset(
-                                    (formValues) => ({
-                                        ...formValues,
-                                        ...getLimitsFormData({
-                                            temporaryLimits1:
-                                                addSelectedFieldToRows(
-                                                    formatTemporaryLimits(
-                                                        twt.currentLimits1
-                                                            ?.temporaryLimits
-                                                    )
-                                                ),
-                                            temporaryLimits2:
-                                                addSelectedFieldToRows(
-                                                    formatTemporaryLimits(
-                                                        twt.currentLimits2
-                                                            ?.temporaryLimits
-                                                    )
-                                                ),
-                                        }),
+                                reset((formValues) => ({
+                                    ...formValues,
+                                    ...getLimitsFormData({
+                                        temporaryLimits1:
+                                            addSelectedFieldToRows(
+                                                formatTemporaryLimits(
+                                                    twt.currentLimits1
+                                                        ?.temporaryLimits
+                                                )
+                                            ),
+                                        temporaryLimits2:
+                                            addSelectedFieldToRows(
+                                                formatTemporaryLimits(
+                                                    twt.currentLimits2
+                                                        ?.temporaryLimits
+                                                )
+                                            ),
                                     }),
-                                    { keepDefaultValues: true }
-                                );
-                            } else {
-                                fromEditDataToFormValues(editData);
+                                }));
                             }
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -314,14 +344,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            selectedId,
-            editData,
-            reset,
-            fromEditDataToFormValues,
-        ]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset]
     );
 
     useEffect(() => {
@@ -360,6 +383,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 onSave={onSubmit}
                 onValidationError={onValidationError}
                 open={open}
+                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||
@@ -408,7 +432,6 @@ const TwoWindingsTransformerModificationDialog = ({
                             <LimitsPane
                                 currentNode={currentNode}
                                 equipmentToModify={twtToModify}
-                                modifiedEquipment={editData}
                                 clearableFields
                             />
                         </Box>
