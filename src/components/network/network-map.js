@@ -36,7 +36,6 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { fetchMapBoxToken } from 'utils/rest-api';
 import EquipmentPopover from '.././tooltips/equipment-popover';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { ComputingType } from 'components/computing-status/computing-type';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {
@@ -84,9 +83,6 @@ const NetworkMap = (props) => {
         (state) => state[PARAM_MAP_MANUAL_REFRESH]
     );
     const reloadMapNeeded = useSelector((state) => state.reloadMap);
-    const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOADFLOW]
-    );
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { getNameOrId } = useNameOrId();
 
@@ -407,7 +403,7 @@ const NetworkMap = (props) => {
                 showLineFlow: props.visible && showLineFlow,
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
-                loadFlowStatus: loadFlowStatus,
+                loadFlowStatus: props?.loadFlowStatus,
                 lineFullPath:
                     props.geoData.linePositionsById.size > 0 &&
                     props.lineFullPath,

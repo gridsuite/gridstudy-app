@@ -56,6 +56,7 @@ import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
+import { ComputingType } from 'components/computing-status/computing-type';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -356,6 +357,9 @@ export function DiagramPane({
     const diagramStates = useSelector((state) => state.diagramStates);
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
+    );
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const [diagramContentSizes, setDiagramContentSizes] = useState(new Map()); // When a diagram content gets its size from the backend, it will update this map of sizes.
@@ -1097,6 +1101,7 @@ export function DiagramPane({
                                     diagramView.svgType ===
                                         DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
+                                        loadFlowStatus={loadFlowStatus}
                                         isComputationRunning={
                                             isComputationRunning
                                         }
@@ -1113,6 +1118,7 @@ export function DiagramPane({
                                 {diagramView.svgType ===
                                     DiagramType.NETWORK_AREA_DIAGRAM && (
                                     <NetworkAreaDiagramContent
+                                        loadFlowStatus={loadFlowStatus}
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}
                                         svgType={diagramView.svgType}

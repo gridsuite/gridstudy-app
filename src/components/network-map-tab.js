@@ -923,7 +923,6 @@ export const NetworkMapTab = ({
                 <RunButtonContainer
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    loadFlowStatus={loadFlowStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     disabled={disabled || isNodeReadOnly(currentNode)}
                 />

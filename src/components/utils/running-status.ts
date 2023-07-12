@@ -16,7 +16,7 @@ export function getLoadFlowRunningStatus(
     loadFlowStatus: string
 ): RunningStatus {
     switch (loadFlowStatus) {
-        case 'COMPLETED':
+        case 'CONVERGED':
             return RunningStatus.SUCCEED;
         case 'DIVERGED':
             return RunningStatus.FAILED;

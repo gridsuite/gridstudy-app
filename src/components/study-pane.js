@@ -33,6 +33,7 @@ import { ReactFlowProvider } from 'react-flow-renderer';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
+import { ComputingType } from './computing-status/computing-type';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -105,6 +106,10 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
         type: null,
         changed: false,
     });
+
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
 
     const classes = useStyles();
 
@@ -234,6 +239,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                         setIsComputationRunning
                                     }
                                     setErrorMessage={setErrorMessage}
+                                    loadFlowStatus={loadFlowStatus}
                                 />
                             </div>
 
