@@ -221,7 +221,6 @@ export function RunButtonContainer({
             }
 
             dispatch(setComputingStatus(type, RunningStatus.IDLE));
-            setComputationStopped(!computationStopped);
             setComputationStopped(true);
         },
     };
