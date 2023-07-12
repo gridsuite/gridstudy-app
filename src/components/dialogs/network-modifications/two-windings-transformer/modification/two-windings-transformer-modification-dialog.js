@@ -190,18 +190,6 @@ const TwoWindingsTransformerModificationDialog = ({
             : null;
     };
 
-    const computePhaseTapChangerRegulating = (phaseTapChangerFormValues) => {
-        if (!phaseTapChangerFormValues?.[REGULATION_MODE]) {
-            return null;
-        }
-        return (
-            phaseTapChangerFormValues?.[REGULATION_MODE] ===
-                PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
-            phaseTapChangerFormValues?.[REGULATION_MODE] ===
-                PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
-        );
-    };
-
     const computeRatioTapChangerRegulationMode = (
         ratioTapChangerFormValues
     ) => {
@@ -574,9 +562,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTap = {
                     enabled: toModificationOperation(true),
-                    regulating: toModificationOperation(
-                        computePhaseTapChangerRegulating(twt[PHASE_TAP_CHANGER])
-                    ),
                     regulationValue: toModificationOperation(
                         computePhaseTapChangerRegulationValue(
                             phaseTapChangerFormValues,
