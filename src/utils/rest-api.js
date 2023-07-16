@@ -2648,3 +2648,10 @@ export function setSecurityAnalysisParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
+export function getAvailableOptionalServices(studyUuid) {
+    console.info('get available optional services');
+    const url = PREFIX_STUDY_QUERIES + '/v1/studies/optional-up-services';
+    console.debug(url);
+    return backendFetchJson(url);
+}
