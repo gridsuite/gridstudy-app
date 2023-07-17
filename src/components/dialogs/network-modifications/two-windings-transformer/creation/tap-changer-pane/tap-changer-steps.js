@@ -193,7 +193,7 @@ const TapChangerSteps = ({
     }, [tapSteps, resetTapNumbers, modification]);
 
     const handleResetButton = useCallback(() => {
-        replace(previousValues?.[STEPS]);
+        replace(previousValues?.[STEPS] ?? []);
         setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
         setValue(`${tapChanger}.${STEPS_MODIFIED}`, false);
         clearErrors(`${tapChanger}.${STEPS}`);
@@ -360,6 +360,7 @@ const TapChangerSteps = ({
                 handleResetButton={modification ? handleResetButton : undefined}
                 resetButtonMessageId={resetButtonMessageId}
                 isValueModified={isRegulationRulesModified}
+                withResetButton={modification && areStepsModified}
                 disabled={disabled}
             />
             <CreateRuleDialog

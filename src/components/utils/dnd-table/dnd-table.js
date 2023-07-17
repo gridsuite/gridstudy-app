@@ -142,6 +142,7 @@ const DndTable = ({
     handleResetButton,
     resetButtonMessageId,
     disabled = false,
+    withResetButton = false,
     withLeftButtons = true,
     withAddRowsDialog = true,
     previousValues,
@@ -416,6 +417,7 @@ const DndTable = ({
                         uploadButtonMessageId={uploadButtonMessageId}
                         handleResetButton={handleResetButton}
                         resetButtonMessageId={resetButtonMessageId}
+                        withResetButton={withResetButton}
                         disabled={disabled}
                     />
                 )}
