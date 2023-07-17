@@ -563,7 +563,8 @@
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
     "ShuntCompensatorModificationError": "Error while modifying shunt compensator",
     "ShuntCompensatorMultiSectionsError": "It is currently not possible to modify a multi sections shunt compensator",
-
+    "CreateBattery": "Create battery",
+    "ModifyBattery": "Modify battery",
     "CreateGenerator": "Create generator",
     "ModifyGenerator": "Modify generator",
     "On": "On",

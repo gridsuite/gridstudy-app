@@ -10,7 +10,6 @@ export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
 export const ACTIVE_POWER = 'activePower';
 export const REACTIVE_POWER = 'reactivePower';
-
 export const CONNECTIVITY = 'connectivity';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';

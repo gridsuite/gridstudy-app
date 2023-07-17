@@ -64,6 +64,7 @@ import { UPDATE_TYPE } from 'components/network/constants';
 import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { fetchNetworkModification } from '../../../services/network-modification';
 
@@ -227,6 +228,11 @@ const NetworkModificationNodeEditor = () => {
             id: 'CREATE',
             label: 'Create',
             subItems: [
+                {
+                    id: 'BATTERY_CREATION',
+                    label: 'BATTERY',
+                    action: () => adapt(BatteryCreationDialog),
+                },
                 {
                     id: 'LOAD_CREATION',
                     label: 'LOAD',
