@@ -34,23 +34,23 @@ export interface ShortcircuitAnalysisResult {
 }
 
 export enum ShortcircuitAnalysisResultTabs {
-    GLOBAL = 0,
-    SELECTIVE = 1,
+    ALL_BUSES = 0,
+    ONE_BUS = 1,
 }
 
 export enum ShortcircuitAnalysisType {
-    GLOBAL = 0,
-    SELECTIVE = 1,
+    ALL_BUSES = 0,
+    ONE_BUS = 1,
 }
 
 export const getShortcircuitAnalysisTypeFromEnum = (
     type: ShortcircuitAnalysisType
 ) => {
     switch (type) {
-        case ShortcircuitAnalysisType.GLOBAL:
-            return 'Global';
-        case ShortcircuitAnalysisType.SELECTIVE:
-            return 'Selective';
+        case ShortcircuitAnalysisType.ALL_BUSES:
+            return 'AllBuses';
+        case ShortcircuitAnalysisType.ONE_BUS:
+            return 'OneBus';
         default:
             return null;
     }

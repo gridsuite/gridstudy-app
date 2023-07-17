@@ -285,6 +285,8 @@
     "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
     "startShortCircuitError": "Une erreur est survenue lors du lancement de l'analyse de court-circuit",
     "ShortCircuitAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de court-circuit",
+    "ShortCircuitAnalysisTabOneBus": "Unitaire",
+    "ShortCircuitAnalysisTabAllBuses": "Réseau",
     "IDNode": "ID nœud",
     "IscKA": "Icc (kA)",
     "IscMinKA": "Icc min (kA)",
@@ -1036,7 +1038,6 @@
     "GenerationAndLoad": "Production et consommation",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
-    "SelectiveShortCircuitAnalysis": "Analyse court-circuit",
 
     "SensitivityAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de sensibilité",
 

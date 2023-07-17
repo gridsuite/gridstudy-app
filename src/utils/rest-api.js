@@ -852,7 +852,7 @@ export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
 export function fetchShortCircuitAnalysisStatus(
     studyUuid,
     currentNodeUuid,
-    type = ShortcircuitAnalysisType.GLOBAL
+    type = ShortcircuitAnalysisType.ALL_BUSES
 ) {
     const analysisType = getShortcircuitAnalysisTypeFromEnum(type);
     console.info(
@@ -875,14 +875,16 @@ export function fetchShortCircuitCircuitAnalysisStatus(
     return fetchShortCircuitAnalysisStatus(
         studyUuid,
         currentNodeUuid,
-        ShortcircuitAnalysisType.SELECTIVE
+        ShortcircuitAnalysisType.ONE_BUS
     );
 }
 
 export function fetchShortCircuitAnalysisResult(
     studyUuid,
     currentNodeUuid,
-    type = 'Global'
+    type = getShortcircuitAnalysisTypeFromEnum(
+        ShortcircuitAnalysisType.ALL_BUSES
+    )
 ) {
     console.info(
         `Fetching ${type} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
@@ -899,14 +901,14 @@ export function fetchShortCircuitAnalysisResult(
     return backendFetchJson(url);
 }
 
-export function fetchSelectiveShortCircuitAnalysisResult(
+export function fetchOneBusShortCircuitAnalysisResult(
     studyUuid,
     currentNodeUuid
 ) {
     return fetchShortCircuitAnalysisResult(
         studyUuid,
         currentNodeUuid,
-        'Selective'
+        getShortcircuitAnalysisTypeFromEnum(ShortcircuitAnalysisType.ONE_BUS)
     );
 }
 

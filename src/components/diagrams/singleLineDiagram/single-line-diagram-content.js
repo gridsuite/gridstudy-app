@@ -48,11 +48,13 @@ import { BusMenu } from 'components/menus/bus-menu';
 import { setComputingStatus } from 'redux/actions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { useDispatch } from 'react-redux';
+import { useParameterState } from 'components/dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
     const classes = useDiagramStyles();
-    const { diagramSizeSetter, showSelectiveShortcircuitResults } = props;
+    const { diagramSizeSetter, showOneBusShortcircuitResults } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
@@ -71,6 +73,7 @@ function SingleLineDiagramContent(props) {
         useState(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -217,17 +220,23 @@ function SingleLineDiagramContent(props) {
         (busId) => {
             dispatch(
                 setComputingStatus(
-                    ComputingType.SELECTIVE_SHORTCIRCUIT_ANALYSIS,
+                    ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
                     RunningStatus.RUNNING
                 )
             );
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
-                .then(() => showSelectiveShortcircuitResults())
+                .then(() => showOneBusShortcircuitResults())
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'UnableToDeleteEquipment',
+                        headerId: 'startShortCircuitError',
                     });
+                    dispatch(
+                        setComputingStatus(
+                            ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
+                            RunningStatus.FAILED
+                        )
+                    );
                 })
                 .finally(closeBusMenu());
         },
@@ -235,7 +244,7 @@ function SingleLineDiagramContent(props) {
             closeBusMenu,
             currentNode?.id,
             studyUuid,
-            showSelectiveShortcircuitResults,
+            showOneBusShortcircuitResults,
             snackError,
             dispatch,
         ]
@@ -403,7 +412,9 @@ function SingleLineDiagramContent(props) {
                 isReadyForInteraction ? showEquipmentMenu : null,
 
                 // callback on the buses
-                isReadyForInteraction ? showBusMenu : null,
+                isReadyForInteraction && enableDeveloperMode
+                    ? showBusMenu
+                    : null,
 
                 // arrows color
                 theme.palette.background.paper,
@@ -464,6 +475,7 @@ function SingleLineDiagramContent(props) {
         equipmentMenu,
         showEquipmentMenu,
         showBusMenu,
+        enableDeveloperMode,
         props.diagramId,
         props.svgType,
         theme,

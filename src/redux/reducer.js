@@ -155,7 +155,7 @@ const initialComputingStatus = {
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
-    [ComputingType.SELECTIVE_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
     [ComputingType.VOLTAGE_INIT]: RunningStatus.IDLE,
 };

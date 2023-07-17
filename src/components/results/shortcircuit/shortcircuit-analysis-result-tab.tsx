@@ -18,6 +18,7 @@ import {
     useResultsTab,
 } from '../use-results-tab';
 import { ShortCircuitAnalysisGlobalResult } from './shortcircuit-analysis-result';
+import { FormattedMessage } from 'react-intl';
 
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
@@ -44,17 +45,29 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     return (
         <>
             <Tabs value={tabIndex} onChange={handleTabChange}>
-                <Tab label={'Global'} />
-                <Tab label={'Selectif'} />
+                <Tab
+                    label={
+                        <FormattedMessage
+                            id={'ShortCircuitAnalysisTabAllBuses'}
+                        />
+                    }
+                />
+                <Tab
+                    label={
+                        <FormattedMessage
+                            id={'ShortCircuitAnalysisTabOneBus'}
+                        />
+                    }
+                />
             </Tabs>
-            {tabIndex === ShortcircuitAnalysisResultTabs.GLOBAL && (
+            {tabIndex === ShortcircuitAnalysisResultTabs.ALL_BUSES && (
                 <ShortCircuitAnalysisGlobalResult
-                    analysisType={ShortcircuitAnalysisType.GLOBAL}
+                    analysisType={ShortcircuitAnalysisType.ALL_BUSES}
                 />
             )}
-            {tabIndex === ShortcircuitAnalysisResultTabs.SELECTIVE && (
+            {tabIndex === ShortcircuitAnalysisResultTabs.ONE_BUS && (
                 <ShortCircuitAnalysisGlobalResult
-                    analysisType={ShortcircuitAnalysisType.SELECTIVE}
+                    analysisType={ShortcircuitAnalysisType.ONE_BUS}
                 />
             )}
         </>

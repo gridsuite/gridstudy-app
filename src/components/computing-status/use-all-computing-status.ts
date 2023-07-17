@@ -37,8 +37,8 @@ const shortCircuitAnalysisStatusInvalidations = [
     'shortCircuitAnalysis_status',
     'shortCircuitAnalysis_failed',
 ];
-const selectiveShortCircuitAnalysisStatusInvalidations = [
-    'selectiveShortCircuitAnalysis_status',
+const oneBusShortCircuitAnalysisStatusInvalidations = [
+    'oneBusShortCircuitAnalysis_status',
     //'shortCircuitAnalysis_failed',
 ];
 const dynamicSimulationStatusInvalidations = [
@@ -86,9 +86,9 @@ export const useAllComputingStatus = (
         studyUuid,
         currentNodeUuid,
         fetchShortCircuitCircuitAnalysisStatus,
-        selectiveShortCircuitAnalysisStatusInvalidations,
+        oneBusShortCircuitAnalysisStatusInvalidations,
         getShortCircuitAnalysisRunningStatus,
-        ComputingType.SELECTIVE_SHORTCIRCUIT_ANALYSIS
+        ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
     );
 
     useComputingStatus(

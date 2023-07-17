@@ -2,7 +2,7 @@ import WaitingLoader from 'components/utils/waiting-loader';
 import ShortCircuitAnalysisResult from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
 import {
-    fetchSelectiveShortCircuitAnalysisResult,
+    fetchOneBusShortCircuitAnalysisResult,
     fetchShortCircuitAnalysisResult,
 } from 'utils/rest-api';
 import {
@@ -20,8 +20,8 @@ interface ShortCircuitAnalysisGlobalResultProps {
 }
 
 const shortCircuitAnalysisResultInvalidations = ['shortCircuitAnalysisResult'];
-const selectiveShortCircuitAnalysisResultInvalidations = [
-    'selectiveShortCircuitAnalysisResult',
+const oneBusShortCircuitAnalysisResultInvalidations = [
+    'oneBusShortCircuitAnalysisResult',
 ];
 
 export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
@@ -31,39 +31,42 @@ export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
-    const selectiveShortcircuitAnalysisState = useSelector(
+    const oneBusShortcircuitAnalysisState = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.SELECTIVE_SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
     const resultsFetcher =
-        analysisType === ShortcircuitAnalysisType.GLOBAL
+        analysisType === ShortcircuitAnalysisType.ALL_BUSES
             ? fetchShortCircuitAnalysisResult
-            : fetchSelectiveShortCircuitAnalysisResult;
+            : fetchOneBusShortCircuitAnalysisResult;
 
     const resultsInvalidationsNotif =
-        analysisType === ShortcircuitAnalysisType.GLOBAL
+        analysisType === ShortcircuitAnalysisType.ALL_BUSES
             ? shortCircuitAnalysisResultInvalidations
-            : selectiveShortCircuitAnalysisResultInvalidations;
+            : oneBusShortCircuitAnalysisResultInvalidations;
 
-    const [shortCircuitAnalysisResult, isWaitingShortCircuitAnalysisResult] =
-        useNodeData(
-            studyUuid,
-            currentNode?.id,
-            resultsFetcher,
-            resultsInvalidationsNotif
-        ) as [ShortcircuitAnalysisResult, boolean];
+    const [
+        shortCircuitAnalysisResult,
+        isWaitingShortCircuitAnalysisResult,
+        errorMessage,
+    ] = useNodeData(
+        studyUuid,
+        currentNode?.id,
+        resultsFetcher,
+        resultsInvalidationsNotif
+    ) as [ShortcircuitAnalysisResult, boolean, string];
 
-    console.log(shortCircuitAnalysisResult);
+    const isLoading =
+        analysisType === ShortcircuitAnalysisType.ALL_BUSES
+            ? isWaitingShortCircuitAnalysisResult
+            : oneBusShortcircuitAnalysisState === RunningStatus.RUNNING ||
+              isWaitingShortCircuitAnalysisResult;
+
+    console.log(errorMessage);
 
     return (
-        <WaitingLoader
-            message={'LoadingRemoteData'}
-            loading={
-                selectiveShortcircuitAnalysisState === RunningStatus.RUNNING ||
-                isWaitingShortCircuitAnalysisResult
-            }
-        >
+        <WaitingLoader message={'LoadingRemoteData'} loading={isLoading}>
             <ShortCircuitAnalysisResult result={shortCircuitAnalysisResult} />
         </WaitingLoader>
     );

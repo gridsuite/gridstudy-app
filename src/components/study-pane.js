@@ -149,12 +149,12 @@ const StudyPane = ({
         props.onChangeTab(1); // switch to spreadsheet view
     }
 
-    function showSelectiveShortcircuitResults() {
+    function showOneBusShortcircuitResults() {
         props.onChangeTab(2); // switch to results view
-        // redirect to shorcircuit analysis tab, selective subtab
+        // redirect to shorcircuit analysis tab, one bus subtab
         setResultTabIndexRedirection([
             ResultsTabsRootLevel.SHORTCIRCUIT_ANALYSIS,
-            ShortcircuitAnalysisResultTabs.SELECTIVE,
+            ShortcircuitAnalysisResultTabs.ONE_BUS,
         ]);
     }
 
@@ -265,8 +265,8 @@ const StudyPane = ({
                                 studyUuid={studyUuid}
                                 isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
-                                showSelectiveShortcircuitResults={
-                                    showSelectiveShortcircuitResults
+                                showOneBusShortcircuitResults={
+                                    showOneBusShortcircuitResults
                                 }
                                 loadFlowStatus={getLoadFlowRunningStatus(
                                     loadFlowInfos?.loadFlowStatus

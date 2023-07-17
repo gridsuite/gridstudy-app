@@ -51,9 +51,9 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         (state: ReduxState) => state.currentTreeNode
     );
 
-    const selectiveShortcircuitAnalysisState = useSelector(
+    const oneBusShortcircuitAnalysisState = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.SELECTIVE_SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -87,8 +87,8 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
                 disabled={
-                    selectiveShortcircuitAnalysisState ===
-                        RunningStatus.RUNNING || !isNodeEditable
+                    oneBusShortcircuitAnalysisState === RunningStatus.RUNNING ||
+                    !isNodeEditable
                 }
             >
                 <ListItemIcon>
@@ -98,7 +98,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 <ListItemText
                     primary={
                         <Typography noWrap>
-                            <FormattedMessage id="SelectiveShortCircuitAnalysis" />
+                            <FormattedMessage id="ShortCircuitAnalysis" />
                         </Typography>
                     }
                 />
