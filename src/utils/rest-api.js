@@ -1403,6 +1403,68 @@ export function generatorScaling(
             : response.text().then((text) => Promise.reject(text))
     );
 }
+export function createBattery(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    connectionName,
+    connectionDirection,
+    connectionPosition,
+    minActivePower,
+    maxActivePower,
+    isReactiveCapabilityCurveOn,
+    minimumReactivePower,
+    maximumReactivePower,
+    reactiveCapabilityCurve,
+    activePowerSetpoint,
+    reactivePowerSetpoint,
+    frequencyRegulation,
+    droop,
+    isUpdate = false,
+    modificationUuid
+) {
+    let createBatteryUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating battery creation');
+    } else {
+        console.info('Creating battery creation');
+    }
+
+    return backendFetchText(createBatteryUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.BATTERY_CREATION.type,
+            equipmentId: id,
+            equipmentName: name,
+            voltageLevelId,
+            busOrBusbarSectionId,
+            connectionName,
+            connectionDirection,
+            connectionPosition,
+            minActivePower,
+            maxActivePower,
+            reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
+            minimumReactivePower,
+            maximumReactivePower,
+            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+            activePowerSetpoint,
+            reactivePowerSetpoint,
+            participate: frequencyRegulation,
+            droop,
+        }),
+    });
+}
 
 export function createLoad(
     studyUuid,
