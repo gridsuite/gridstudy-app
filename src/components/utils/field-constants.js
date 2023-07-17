@@ -10,7 +10,6 @@ export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
 export const ACTIVE_POWER = 'activePower';
 export const REACTIVE_POWER = 'reactivePower';
-
 export const CONNECTIVITY = 'connectivity';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
@@ -97,9 +96,6 @@ export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
 
 //ShuntCompensator
-export const MAXIMUM_NUMBER_OF_SECTIONS = 'maximumNumberOfSections';
-export const CURRENT_NUMBER_OF_SECTIONS = 'currentNumberOfSections';
-export const IDENTICAL_SECTIONS = 'identicalSections';
 export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
 export const Q_AT_NOMINAL_V = 'qatNominalV';
