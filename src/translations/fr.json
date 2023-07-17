@@ -290,6 +290,8 @@
     "IscMinKA": "Icc min (kA)",
     "IscMaxKA": "IMACC (kA)",
     "PscMVA": "Pcc (MVA)",
+    "DeltaIscIscMax": "Icc - Icc max (kA)",
+    "DeltaIscIscMin": "Icc - Icc min (kA)",
     "SINGLE_PHASE": "Monophasé",
     "THREE_PHASE": "Triphasé",
     "LOW_SHORT_CIRCUIT_CURRENT": "Icc min",

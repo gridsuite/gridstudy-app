@@ -62,6 +62,18 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 numeric: true,
             },
             {
+                headerName: intl.formatMessage({ id: 'DeltaIscIscMax' }),
+                field: 'deltaIscIscMax',
+                fractionDigits: 1,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'DeltaIscIscMin' }),
+                field: 'deltaIscIscMin',
+                fractionDigits: 1,
+                numeric: true,
+            },
+            {
                 field: 'linkedElementId',
                 hide: true,
             },
@@ -115,6 +127,12 @@ const ShortCircuitAnalysisResult = ({ result }) => {
                 shortCircuitPower: faultResult.shortCircuitPower,
                 limitMin: unitToKiloUnit(faultResult.shortCircuitLimits.ipMin),
                 limitMax: unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
+                deltaIscIscMax:
+                    faultResult.current -
+                    unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
+                deltaIscIscMin:
+                    faultResult.current -
+                    unitToKiloUnit(faultResult.shortCircuitLimits.ipMin),
                 current: faultResult.current,
                 ...firstLimitViolation,
             });
