@@ -403,7 +403,7 @@ const NetworkMap = (props) => {
                 showLineFlow: props.visible && showLineFlow,
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
-                loadFlowStatus: props.loadFlowStatus,
+                loadFlowStatus: props?.loadFlowStatus,
                 lineFullPath:
                     props.geoData.linePositionsById.size > 0 &&
                     props.lineFullPath,
