@@ -19,6 +19,7 @@ const DndTableBottomLeftButtons = ({
     uploadButtonMessageId,
     handleResetButton,
     resetButtonMessageId,
+    withResetButton,
     disabled,
 }) => {
     const intl = useIntl();
@@ -43,7 +44,7 @@ const DndTableBottomLeftButtons = ({
                     </span>
                 </Tooltip>
             </Grid>
-            {handleResetButton !== undefined && (
+            {withResetButton && (
                 <Grid item>
                     <Tooltip
                         title={intl.formatMessage({
