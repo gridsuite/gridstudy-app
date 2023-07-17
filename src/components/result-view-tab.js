@@ -9,7 +9,6 @@ import clsx from 'clsx';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
-import LoadFlowResult from './loadflow-result';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import React, { useEffect, useState } from 'react';
@@ -25,6 +24,7 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
+import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 
 const useStyles = makeStyles(() => ({
@@ -51,7 +51,6 @@ const useStyles = makeStyles(() => ({
  * control results views
  * @param studyUuid : string uuid of study
  * @param currentNode : object current node
- * @param loadFlowInfos : object result of load flow
  * @param openVoltageLevelDiagram : function
  * @param disabled
  * @returns {JSX.Element}
@@ -60,7 +59,6 @@ const useStyles = makeStyles(() => ({
 export const ResultViewTab = ({
     studyUuid,
     currentNode,
-    loadFlowInfos,
     openVoltageLevelDiagram,
     disabled,
 }) => {
@@ -80,8 +78,7 @@ export const ResultViewTab = ({
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.table}>
-                <LoadFlowResult
-                    result={loadFlowInfos?.loadFlowResult}
+                <LoadFlowResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                 />
@@ -267,7 +264,6 @@ export const ResultViewTab = ({
 };
 
 ResultViewTab.propTypes = {
-    loadFlowInfos: PropTypes.object,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,

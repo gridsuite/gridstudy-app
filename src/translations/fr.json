@@ -281,6 +281,7 @@
     "ValRefInkV": "Tension de référence (kV)",
     "DeltaInkV": "Sensibilité (ΔkV / ΔkV)",
 
+    "LoadFlowError": "Une erreur est survenue lors de l'exécution du calcul de répartition",
     "ShortCircuitAnalysis": "Analyse de court-circuit",
     "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
     "startShortCircuitError": "Une erreur est survenue lors du lancement de l'analyse de court-circuit",
@@ -662,7 +663,7 @@
     "ShuntIdenticalSections": "Sections identiques",
     "ShuntCurrentNumberOfSections": "Nombre de sections utilisées",
     "ShuntMaximumNumberOfSections": "Nombre de sections disponibles",
-    "CreateShuntCompensator": "Créer un moyen de compensation statique",
+    "CreateShuntCompensator": "Créer un moyen de compensation statique (Un seul gradin)",
     "ShuntCompensatorErrorMaximumLessThanOne": "Le nombre maximum de sections doit être supérieur à 0",
     "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
@@ -1036,9 +1037,8 @@
     "GenerationAndLoad": "Production et consommation",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",
-
+    "partialCopyShuntCompensator" : "Copie partielle : la copie des gradins n'est pas supportée pour ce moyen de compensation",
     "SensitivityAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de sensibilité",
-
     "muiTablePaginationLabelRowsPerPage": "Lignes par page: ",
     "muiTablePaginationOfLabel": "sur",
     "muiTablePaginationPrevious": "Aller à la page précédente",

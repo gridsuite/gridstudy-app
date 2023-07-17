@@ -792,6 +792,52 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
     });
 }
 
+export function startLoadFlow(studyUuid, currentNodeUuid) {
+    console.info(
+        'Running loadflow on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            '...'
+    );
+    const startLoadFlowUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/run';
+    console.debug(startLoadFlowUrl);
+    return backendFetch(startLoadFlowUrl, { method: 'put' });
+}
+
+export function stopLoadFlow(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping loadFlow on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopLoadFlowUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/stop';
+    console.debug(stopLoadFlowUrl);
+    return backendFetch(stopLoadFlowUrl, { method: 'put' });
+}
+
+export function fetchLoadFlowStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching loadFlow status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/loadflow/status';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchLoadFlowResult(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/loadflow/result';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
     console.info(
         'Stopping security analysis on ' +
@@ -1637,9 +1683,6 @@ export function createShuntCompensator(
     currentNodeUuid,
     shuntCompensatorId,
     shuntCompensatorName,
-    maximumNumberOfSections,
-    currentNumberOfSections,
-    identicalSections,
     susceptancePerSection,
     qAtNominalV,
     shuntCompensatorType,
@@ -1671,9 +1714,6 @@ export function createShuntCompensator(
             type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
             equipmentId: shuntCompensatorId,
             equipmentName: shuntCompensatorName,
-            maximumNumberOfSections: maximumNumberOfSections,
-            currentNumberOfSections: currentNumberOfSections,
-            isIdenticalSection: identicalSections,
             susceptancePerSection: susceptancePerSection,
             qAtNominalV: qAtNominalV,
             shuntCompensatorType: shuntCompensatorType,

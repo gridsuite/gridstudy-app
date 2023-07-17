@@ -281,6 +281,7 @@
     "ValRefInkV": "Reference voltage (kV)",
     "DeltaInkV": "Sensitivity (ΔkV / ΔkV)",
 
+    "LoadFlowError": "An error occured when executing loadflow",
     "ShortCircuitAnalysis": "Short circuit analysis",
     "ShortCircuitAnalysisParameters": "Short circuit analysis parameters",
     "startShortCircuitError": "An error occurred while starting the short circuit analysis",
@@ -661,7 +662,7 @@
     "ShuntIdenticalSections": "Identical sections",
     "ShuntCurrentNumberOfSections": "Current number of sections",
     "ShuntMaximumNumberOfSections": "Maximum number of sections",
-    "CreateShuntCompensator": "Create shunt compensator",
+    "CreateShuntCompensator": "Create shunt compensator (A single section)",
     "ShuntCompensatorErrorMaximumLessThanOne": "Maximum number of sections should be greater than 0",
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
@@ -1013,9 +1014,8 @@
     "GenerationAndLoad": "Generation and load",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",
-
+    "partialCopyShuntCompensator" : "Partial copy : copying sections is not supported for this shunt compensator",
     "SensitivityAnalysisResultsError": "An error occured while fetching sensitivity results",
-
     "muiTablePaginationLabelRowsPerPage": "Rows per Page: ",
     "muiTablePaginationOfLabel": "of",
     "muiTablePaginationPrevious": "Go to the previous page",
