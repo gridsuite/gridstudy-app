@@ -67,6 +67,7 @@ import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modi
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { fetchNetworkModification } from '../../../services/network-modification';
+import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -274,6 +275,11 @@ const NetworkModificationNodeEditor = () => {
             id: 'EDIT',
             label: 'ModifyFromMenu',
             subItems: [
+                {
+                    id: 'BATTERY_MODIFICATION',
+                    label: 'BATTERY',
+                    action: () => adapt(BatteryModificationDialog),
+                },
                 {
                     id: 'LOAD_MODIFICATION',
                     label: 'LOAD',
