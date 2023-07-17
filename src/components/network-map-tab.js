@@ -723,7 +723,7 @@ export const NetworkMapTab = ({
         if (isInitialized && studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'loadflow'
+                'loadflowResult'
             ) {
                 updateMapEquipments(currentNodeRef.current);
             }
@@ -923,7 +923,6 @@ export const NetworkMapTab = ({
                 <RunButtonContainer
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    loadFlowStatus={loadFlowStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     disabled={disabled || isNodeReadOnly(currentNode)}
                 />
