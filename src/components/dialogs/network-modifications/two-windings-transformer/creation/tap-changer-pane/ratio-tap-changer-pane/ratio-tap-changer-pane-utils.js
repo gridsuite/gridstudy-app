@@ -49,7 +49,7 @@ import {
     SIDE,
 } from 'components/network/constants';
 
-const ratioTapChangerValidationSchema = (modification, id) => ({
+const ratioTapChangerValidationSchema = (modification, previousValues, id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
         [LOAD_TAP_CHANGING_CAPABILITIES]: modification
@@ -104,7 +104,14 @@ const ratioTapChangerValidationSchema = (modification, id) => ({
             .nullable()
             .positive('TargetDeadbandGreaterThanZero'),
         [LOW_TAP_POSITION]: modification
-            ? yup.number().nullable()
+            ? yup
+                  .number()
+                  .nullable()
+                  .when([], {
+                      is: () =>
+                          previousValues?.[LOW_TAP_POSITION] === undefined,
+                      then: (schema) => schema.required(),
+                  })
             : yup
                   .number()
                   .nullable()
@@ -114,7 +121,13 @@ const ratioTapChangerValidationSchema = (modification, id) => ({
                   }),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: modification
-            ? yup.number().nullable()
+            ? yup
+                  .number()
+                  .nullable()
+                  .when([], {
+                      is: () => previousValues?.[TAP_POSITION] === undefined,
+                      then: (schema) => schema.required(),
+                  })
             : yup
                   .number()
                   .nullable()
@@ -198,9 +211,10 @@ const ratioTapChangerValidationSchema = (modification, id) => ({
 
 export const getRatioTapChangerValidationSchema = (
     modification,
+    previousValues,
     id = RATIO_TAP_CHANGER
 ) => {
-    return ratioTapChangerValidationSchema(modification, id);
+    return ratioTapChangerValidationSchema(modification, previousValues, id);
 };
 
 const ratioTapChangerEmptyFormData = (id) => ({
