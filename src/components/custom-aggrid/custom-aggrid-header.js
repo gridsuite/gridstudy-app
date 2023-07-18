@@ -5,13 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState } from 'react';
-import {
-    ArrowDownward,
-    ArrowUpward,
-    FilterList,
-    SwapVert,
-} from '@mui/icons-material';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ArrowDownward, ArrowUpward, Menu } from '@mui/icons-material';
 
 import {
     Popover,
@@ -19,6 +14,7 @@ import {
     Grid,
     Autocomplete,
     TextField,
+    Badge,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 
@@ -38,6 +34,11 @@ const CustomHeaderComponent = ({
     const isSortActive = colKey === field;
 
     const [anchorEl, setAnchorEl] = useState(null);
+    const [displayFilterIcon, setDisplayFilterIcon] = useState(
+        !!filterSelectedOption
+    );
+
+    const agGridHeaderContainer = useRef(null);
 
     const handleShowFilter = (event) => {
         setAnchorEl(event.currentTarget);
@@ -45,6 +46,9 @@ const CustomHeaderComponent = ({
 
     const handleCloseFilter = () => {
         setAnchorEl(null);
+        if (!filterSelectedOption) {
+            setDisplayFilterIcon(false);
+        }
     };
 
     const handleFilterChange = (field, data) => {
@@ -62,30 +66,80 @@ const CustomHeaderComponent = ({
         onSortChanged(newSort);
     };
 
+    /* did not use onMouseEnter and onMouseLeave events because there is a
+     loader showing on all the page (when fetching new results on sort change)
+     making mouse cursor out of the header hiding the filter icon */
+    const handleMouseMove = useCallback(
+        (event) => {
+            const { top, left, bottom, right } =
+                agGridHeaderContainer?.current?.getBoundingClientRect() || {};
+
+            const { clientX, clientY } = event || {};
+
+            const isCursorInsideHeader =
+                clientX >= left &&
+                clientY >= top &&
+                clientX <= right &&
+                clientY <= bottom;
+
+            setDisplayFilterIcon(
+                isCursorInsideHeader || !!filterSelectedOption || anchorEl
+            );
+        },
+        [anchorEl, filterSelectedOption]
+    );
+
+    useEffect(() => {
+        window.addEventListener('mousemove', handleMouseMove);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, [handleMouseMove]);
+
     const open = Boolean(anchorEl);
     const popoverId = open ? `${field}-filter-popover` : undefined;
     const isFilterActive = !!filterOptions.length;
 
     return (
-        <Grid container alignItems="center">
-            <Grid item>{displayName}</Grid>
-            <Grid item>
-                <IconButton fontSize="small" onClick={handleSortChange}>
-                    {isSortActive && sortWay ? (
-                        sortWay === 1 ? (
-                            <ArrowUpward sx={{ fontSize: FONT_SIZE }} />
-                        ) : (
-                            <ArrowDownward sx={{ fontSize: FONT_SIZE }} />
-                        )
-                    ) : (
-                        <SwapVert sx={{ fontSize: FONT_SIZE }} />
-                    )}
-                </IconButton>
+        <Grid
+            ref={agGridHeaderContainer}
+            container
+            alignItems="center"
+            sx={{ height: '100%' }}
+        >
+            <Grid
+                container
+                item
+                direction={'row'}
+                alignItems={'center'}
+                sx={{ height: '100%' }}
+                xs={10}
+                onClick={handleSortChange}
+            >
+                <Grid item>{displayName}</Grid>
+                {isSortActive && sortWay && (
+                    <Grid item>
+                        <IconButton fontSize="small">
+                            {sortWay === 1 ? (
+                                <ArrowUpward sx={{ fontSize: FONT_SIZE }} />
+                            ) : (
+                                <ArrowDownward sx={{ fontSize: FONT_SIZE }} />
+                            )}
+                        </IconButton>
+                    </Grid>
+                )}
             </Grid>
-            {isFilterActive && (
-                <Grid item>
+            {isFilterActive && displayFilterIcon && (
+                <Grid item xs={2}>
                     <IconButton onClick={handleShowFilter}>
-                        <FilterList sx={{ fontSize: FONT_SIZE }} />
+                        <Badge
+                            color="secondary"
+                            variant="dot"
+                            invisible={!filterSelectedOption}
+                        >
+                            <Menu sx={{ fontSize: FONT_SIZE }} />
+                        </Badge>
                     </IconButton>
                 </Grid>
             )}
