@@ -1471,29 +1471,25 @@ export function modifyBattery(
     currentNodeUuid,
     batteryId,
     name,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    connectionName,
-    connectionDirection,
-    connectionPosition,
     minimumActivePower,
     maximumActivePower,
-    isReactiveCapabilityCurveOn,
-    minimumReactivePower,
-    maximumReactivePower,
-    reactiveCapabilityCurve,
     activePowerSetpoint,
     reactivePowerSetpoint,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    modificationId,
+    isReactiveCapabilityCurveOn,
     frequencyRegulation,
     droop,
-    isUpdate = false,
-    modificationId
+    maximumReactivePower,
+    minimumReactivePower,
+    reactiveCapabilityCurve
 ) {
     let modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-modifications';
 
-    if (isUpdate) {
+    if (modificationId) {
         modificationUrl += '/' + encodeURIComponent(modificationId);
         console.info('Updating battery modification');
     } else {

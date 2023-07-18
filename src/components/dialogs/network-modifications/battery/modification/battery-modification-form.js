@@ -7,11 +7,10 @@
 
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
-    EQUIPMENT_ID,
+    ACTIVE_POWER_SET_POINT,
     EQUIPMENT_NAME,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    ACTIVE_POWER_SET_POINT,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
 import {
@@ -22,33 +21,29 @@ import {
     ReactivePowerAdornment,
 } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import React from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import ReactiveLimitsForm from '../../generator/reactive-limits/reactive-limits-form';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
+import { FormattedMessage } from 'react-intl';
+import { TextField } from '@mui/material';
 import FrequencyRegulation from '../../generator/set-points/frequency-regulation';
-const BatteryModificationForm = ({ studyUuid, currentNode }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const currentNodeUuid = currentNode?.id;
 
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
-
+const BatteryModificationForm = ({
+    batteryToModify,
+    updatePreviousReactiveCapabilityCurveTable,
+    equipmentId,
+}) => {
     const batteryIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
+        <TextField
+            size="small"
+            fullWidth
             label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
+            value={equipmentId}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+            {...filledTextField}
         />
     );
 
@@ -57,15 +52,8 @@ const BatteryModificationForm = ({ studyUuid, currentNode }) => {
             name={EQUIPMENT_NAME}
             label={'Name'}
             formProps={filledTextField}
-        />
-    );
-
-    const connectivityForm = (
-        <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
-            withPosition={true}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
+            previousValue={batteryToModify?.name}
+            clearable={true}
         />
     );
 
@@ -74,6 +62,8 @@ const BatteryModificationForm = ({ studyUuid, currentNode }) => {
             name={MAXIMUM_ACTIVE_POWER}
             label={'MaximumActivePowerText'}
             adornment={ActivePowerAdornment}
+            previousValue={batteryToModify?.maxP}
+            clearable={true}
         />
     );
 
@@ -82,14 +72,18 @@ const BatteryModificationForm = ({ studyUuid, currentNode }) => {
             name={MINIMUM_ACTIVE_POWER}
             label={'MinimumActivePowerText'}
             adornment={ActivePowerAdornment}
+            previousValue={batteryToModify?.minP}
+            clearable={true}
         />
     );
+
     const activePowerSetPointField = (
         <FloatInput
             name={ACTIVE_POWER_SET_POINT}
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
-            clearable
+            previousValue={batteryToModify?.targetP}
+            clearable={true}
         />
     );
 
@@ -98,7 +92,8 @@ const BatteryModificationForm = ({ studyUuid, currentNode }) => {
             name={REACTIVE_POWER_SET_POINT}
             label={'ReactivePowerText'}
             adornment={ReactivePowerAdornment}
-            clearable
+            previousValue={batteryToModify?.targetQ}
+            clearable={true}
         />
     );
 
@@ -108,22 +103,29 @@ const BatteryModificationForm = ({ studyUuid, currentNode }) => {
                 {gridItem(batteryIdField, 4)}
                 {gridItem(batteryNameField, 4)}
             </Grid>
-
-            {/* Connectivity part */}
-            <GridSection title="Connectivity" />
+            {/* Limits part */}
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
+                <Grid item xs={12}>
+                    <h3>
+                        <FormattedMessage id="Limits" />
+                    </h3>
+                    <h4>
+                        <FormattedMessage id="ActiveLimits" />
+                    </h4>
+                </Grid>
             </Grid>
-
-            {/* ActiveLimits part */}
-            <GridSection title="ActiveLimits" />
             <Grid container spacing={2}>
                 {gridItem(minimumActivePowerField, 4)}
                 {gridItem(maximumActivePowerField, 4)}
             </Grid>
 
             {/* Reactive limits part */}
-            <ReactiveLimitsForm />
+            <ReactiveLimitsForm
+                batteryInfos={batteryToModify}
+                updatePreviousReactiveCapabilityCurveTable={
+                    updatePreviousReactiveCapabilityCurveTable
+                }
+            />
 
             {/* Set points part */}
             <GridSection title="Setpoints" />
@@ -132,7 +134,10 @@ const BatteryModificationForm = ({ studyUuid, currentNode }) => {
                 {gridItem(reactivePowerSetPointField, 4)}
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <FrequencyRegulation />
+                <FrequencyRegulation
+                    isbatteryToModify={true}
+                    previousValues={batteryToModify}
+                />
             </Grid>
         </>
     );

@@ -7,56 +7,47 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
-import { useCallback, useEffect } from 'react';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    CONNECTION_NAME,
-    CONNECTIVITY,
-    ID,
-    VOLTAGE_LEVEL,
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTION_DIRECTION,
-    CONNECTION_POSITION,
     ACTIVE_POWER_SET_POINT,
-    REACTIVE_POWER_SET_POINT,
-    MAXIMUM_REACTIVE_POWER,
-    MINIMUM_REACTIVE_POWER,
-    MAXIMUM_ACTIVE_POWER,
-    MINIMUM_ACTIVE_POWER,
-    FREQUENCY_REGULATION,
     DROOP,
-    REACTIVE_CAPABILITY_CURVE_TABLE,
+    EQUIPMENT_NAME,
+    FREQUENCY_REGULATION,
+    MAXIMUM_ACTIVE_POWER,
+    MAXIMUM_REACTIVE_POWER,
+    MINIMUM_ACTIVE_POWER,
+    MINIMUM_REACTIVE_POWER,
+    P,
+    Q_MAX_P,
+    Q_MIN_P,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
+    REACTIVE_CAPABILITY_CURVE_TABLE,
+    REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import {
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityFormData,
-    getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils';
-import BatteryModificationForm from './battery-modification-form';
-import { modifyBattery, FetchStatus } from 'utils/rest-api';
+import { fetchNetworkElementInfos, modifyBattery } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
-import {
-    FORM_LOADING_DELAY,
-    UNDEFINED_CONNECTION_DIRECTION,
-} from 'components/network/constants';
+import BatteryModificationForm from './battery-modification-form';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
 } from '../../generator/reactive-limits/reactive-limits-utils';
-import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import {
+    getRowEmptyFormData,
+    REMOVE,
+} from '../../generator/reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
+import { FetchStatus } from 'utils/rest-api';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { getFrequencyRegulationSchema } from '../../generator/set-points/set-points-utils';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
-import PropTypes from 'prop-types';
 
 const emptyFormData = {
-    [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
@@ -64,23 +55,30 @@ const emptyFormData = {
     [REACTIVE_POWER_SET_POINT]: null,
     [FREQUENCY_REGULATION]: false,
     [DROOP]: null,
-    ...getReactiveLimitsEmptyFormData(),
-    ...getConnectivityWithPositionEmptyFormData(),
+    ...getReactiveLimitsEmptyFormData(true),
 };
 
 const formSchema = yup
     .object()
     .shape(
         {
-            [EQUIPMENT_ID]: yup.string().required(),
             [EQUIPMENT_NAME]: yup.string(),
-            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-            [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-            [ACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
-            [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
-            ...getReactiveLimitsSchema(),
-            ...getConnectivityWithPositionValidationSchema(),
-            ...getFrequencyRegulationSchema(),
+            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+            [MINIMUM_ACTIVE_POWER]: yup
+                .number()
+                .nullable()
+                .when([MAXIMUM_ACTIVE_POWER], {
+                    is: (maximumActivePower) => maximumActivePower != null,
+                    then: (schema) =>
+                        schema.max(
+                            yup.ref(MAXIMUM_ACTIVE_POWER),
+                            'MinActivePowerLessThanMaxActivePower'
+                        ),
+                }),
+            [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+            [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+            ...getReactiveLimitsSchema(true),
+            ...getFrequencyRegulationSchema(true),
         },
         [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
     )
@@ -88,6 +86,7 @@ const formSchema = yup
 
 const BatteryModificationDialog = ({
     editData,
+    defaultIdValue,
     currentNode,
     studyUuid,
     isUpdate,
@@ -96,118 +95,272 @@ const BatteryModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
+    const [batteryToModify, setBatteryToModify] = useState();
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
+
+    const completeReactiveCapabilityCurvePointsData = (
+        reactiveCapabilityCurvePoints
+    ) => {
+        reactiveCapabilityCurvePoints.map((rcc) => {
+            if (!(P in rcc)) {
+                rcc[P] = null;
+            }
+            if (!(Q_MAX_P in rcc)) {
+                rcc[Q_MAX_P] = null;
+            }
+            if (!(Q_MIN_P in rcc)) {
+                rcc[Q_MIN_P] = null;
+            }
+            return rcc;
+        });
+        return reactiveCapabilityCurvePoints;
+    };
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
-    const fromSearchCopyToFormValues = (battery) => {
-        reset({
-            [EQUIPMENT_ID]: battery.id + '(1)',
-            [EQUIPMENT_NAME]: battery.name ?? '',
-            [MAXIMUM_ACTIVE_POWER]: battery.maxP,
-            [MINIMUM_ACTIVE_POWER]: battery.minP,
-            [ACTIVE_POWER_SET_POINT]: battery.targetP,
-            [REACTIVE_POWER_SET_POINT]: battery.targetQ,
-            [FREQUENCY_REGULATION]: battery.activePowerControlOn,
-            [DROOP]: battery.droop,
-            [MINIMUM_REACTIVE_POWER]:
-                battery?.minMaxReactiveLimits?.minimumReactivePower ?? null,
-            [MAXIMUM_REACTIVE_POWER]:
-                battery?.minMaxReactiveLimits?.maximumReactivePower ?? null,
-            ...getConnectivityFormData({
-                voltageLevelId: battery.voltageLevelId,
-                busbarSectionId: battery.busOrBusbarSectionId,
-                connectionDirection: battery.connectionDirection,
-                connectionName: battery.connectionName,
-            }),
-            [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                battery.reactiveCapabilityCurvePoints,
-            [REACTIVE_CAPABILITY_CURVE_CHOICE]: battery?.minMaxReactiveLimits
-                ? 'MINMAX'
-                : 'CURVE',
-            [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
-        });
-    };
+    const { reset, getValues, setValue } = formMethods;
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.BATTERY.type,
-    });
+    const fromEditDataToFormValues = useCallback(
+        (editData) => {
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
+            reset({
+                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
+                [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
+                [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value ?? null,
+                [ACTIVE_POWER_SET_POINT]:
+                    editData?.activePowerSetpoint?.value ?? null,
+                [REACTIVE_POWER_SET_POINT]:
+                    editData?.reactivePowerSetpoint?.value ?? null,
+                [DROOP]: editData?.droop?.value ?? null,
+                [MINIMUM_REACTIVE_POWER]:
+                    editData?.minimumReactivePower?.value ?? null,
+                [MAXIMUM_REACTIVE_POWER]:
+                    editData?.maximumReactivePower?.value ?? null,
+                [REACTIVE_CAPABILITY_CURVE_CHOICE]: editData
+                    ?.reactiveCapabilityCurve?.value
+                    ? 'CURVE'
+                    : 'MINMAX',
+                [REACTIVE_CAPABILITY_CURVE_TABLE]:
+                    editData?.reactiveCapabilityCurvePoints.length > 0
+                        ? completeReactiveCapabilityCurvePointsData(
+                              editData?.reactiveCapabilityCurvePoints
+                          )
+                        : [getRowEmptyFormData(), getRowEmptyFormData()],
+            });
+        },
+        [reset]
+    );
 
     useEffect(() => {
         if (editData) {
-            reset({
-                [EQUIPMENT_ID]: editData.equipmentId,
-                [EQUIPMENT_NAME]: editData.equipmentName ?? '',
-                [MAXIMUM_ACTIVE_POWER]: editData.maxActivePower,
-                [MINIMUM_ACTIVE_POWER]: editData.minActivePower,
-                [ACTIVE_POWER_SET_POINT]: editData.activePowerSetpoint,
-                [REACTIVE_POWER_SET_POINT]: editData.reactivePowerSetpoint,
-                [FREQUENCY_REGULATION]: editData.participate,
-                [DROOP]: editData.droop,
-                [MINIMUM_REACTIVE_POWER]: editData?.minimumReactivePower,
-                [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower,
-                ...getConnectivityFormData({
-                    voltageLevelId: editData.voltageLevelId,
-                    busbarSectionId: editData.busOrBusbarSectionId,
-                    connectionDirection: editData.connectionDirection,
-                    connectionName: editData.connectionName,
-                    connectionPosition: editData.connectionPosition,
-                }),
-                [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                    editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
-                [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                    editData?.reactiveCapabilityCurve
-                        ? editData?.reactiveCapabilityCurvePoints
-                        : [{}, {}],
-            });
+            fromEditDataToFormValues(editData);
         }
-    }, [editData, reset]);
+    }, [fromEditDataToFormValues, editData]);
 
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [reset]);
+    //this method empties the form, and let us pass custom data that we want to set
+    const setValuesAndEmptyOthers = useCallback(
+        (customData = {}, keepDefaultValues = false) => {
+            reset(
+                { ...emptyFormData, ...customData },
+                { keepDefaultValues: keepDefaultValues }
+            );
+        },
+        [reset]
+    );
+
+    const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
+        setBatteryToModify((previousValue) => {
+            const newRccValues = previousValue?.reactiveCapabilityCurvePoints;
+            action === REMOVE
+                ? newRccValues.splice(index, 1)
+                : newRccValues.splice(index, 0, {
+                      [P]: null,
+                      [Q_MIN_P]: null,
+                      [Q_MAX_P]: null,
+                  });
+            return {
+                ...previousValue,
+                reactiveCapabilityCurvePoints: newRccValues,
+            };
+        });
+    };
+
+    const insertEmptyRowAtSecondToLastIndex = (table) => {
+        table.splice(table.length - 1, 0, {
+            [P]: null,
+            [Q_MAX_P]: null,
+            [Q_MIN_P]: null,
+        });
+    };
+
+    const onEquipmentIdChange = useCallback(
+        (equipmentId) => {
+            if (equipmentId) {
+                setDataFetchStatus(FetchStatus.RUNNING);
+                fetchNetworkElementInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    EQUIPMENT_TYPES.BATTERY.type,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
+                    equipmentId,
+                    true
+                )
+                    .then((value) => {
+                        if (value) {
+                            // when editing modification form, first render should not trigger this reset
+                            // which would empty the form instead of displaying data of existing form
+                            const previousReactiveCapabilityCurveTable =
+                                value.reactiveCapabilityCurvePoints;
+                            // on first render, we need to adjust the UI for the reactive capability curve table
+                            // we need to check if the battery we fetch has reactive capability curve table
+                            if (previousReactiveCapabilityCurveTable) {
+                                const currentReactiveCapabilityCurveTable =
+                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
+
+                                const sizeDiff =
+                                    previousReactiveCapabilityCurveTable.length -
+                                    currentReactiveCapabilityCurveTable.length;
+
+                                // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
+                                if (sizeDiff > 0) {
+                                    for (let i = 0; i < sizeDiff; i++) {
+                                        insertEmptyRowAtSecondToLastIndex(
+                                            currentReactiveCapabilityCurveTable
+                                        );
+                                    }
+                                    setValue(
+                                        REACTIVE_CAPABILITY_CURVE_TABLE,
+                                        currentReactiveCapabilityCurveTable
+                                    );
+                                } else if (sizeDiff < 0) {
+                                    // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
+                                    for (let i = 0; i > sizeDiff; i--) {
+                                        insertEmptyRowAtSecondToLastIndex(
+                                            previousReactiveCapabilityCurveTable
+                                        );
+                                    }
+                                }
+                            }
+                            setBatteryToModify({
+                                ...value,
+                                reactiveCapabilityCurveTable:
+                                    previousReactiveCapabilityCurveTable,
+                            });
+                        }
+                        setDataFetchStatus(FetchStatus.SUCCEED);
+                    })
+                    .catch(() => {
+                        setBatteryToModify(null);
+                        setDataFetchStatus(FetchStatus.FAILED);
+                    });
+            } else {
+                setValuesAndEmptyOthers();
+                setBatteryToModify(null);
+            }
+        },
+        [
+            studyUuid,
+            currentNodeUuid,
+            getValues,
+            setValue,
+            setValuesAndEmptyOthers,
+        ]
+    );
+
+    useEffect(() => {
+        if (selectedId) {
+            onEquipmentIdChange(selectedId);
+        }
+    }, [selectedId, onEquipmentIdChange]);
+
+    const calculateCurvePointsToStore = useCallback(
+        (reactiveCapabilityCurve) => {
+            if (
+                reactiveCapabilityCurve.every(
+                    (point) =>
+                        point.p == null &&
+                        point.qminP == null &&
+                        point.qmaxP == null
+                )
+            ) {
+                return null;
+            } else {
+                const pointsToStore = [];
+                reactiveCapabilityCurve.forEach((point, index) => {
+                    if (point) {
+                        let pointToStore = {
+                            p: point?.[P],
+                            oldP:
+                                batteryToModify.reactiveCapabilityCurveTable?.[
+                                    index
+                                ]?.p ?? null,
+                            qminP: point?.qminP,
+                            oldQminP:
+                                batteryToModify.reactiveCapabilityCurveTable?.[
+                                    index
+                                ]?.qminP ?? null,
+                            qmaxP: point?.qmaxP,
+                            oldQmaxP:
+                                batteryToModify.reactiveCapabilityCurveTable?.[
+                                    index
+                                ]?.qmaxP ?? null,
+                        };
+                        pointsToStore.push(pointToStore);
+                    }
+                });
+                return pointsToStore.filter(
+                    (point) =>
+                        point.p != null ||
+                        point.oldP != null ||
+                        point.qmaxP != null ||
+                        point.oldQmaxP != null ||
+                        point.qminP != null ||
+                        point.oldQminP != null
+                );
+            }
+        },
+        [batteryToModify]
+    );
 
     const onSubmit = useCallback(
         (battery) => {
+            const buildCurvePointsToStore = calculateCurvePointsToStore(
+                battery[REACTIVE_CAPABILITY_CURVE_TABLE]
+            );
+
+            const isFrequencyRegulationOn =
+                batteryToModify.activePowerControlOn === true;
+
             const isReactiveCapabilityCurveOn =
                 battery[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+
             modifyBattery(
                 studyUuid,
                 currentNodeUuid,
-                battery[EQUIPMENT_ID],
+                selectedId,
                 sanitizeString(battery[EQUIPMENT_NAME]),
-                battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME]),
-                battery[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                battery[CONNECTIVITY]?.[CONNECTION_POSITION],
                 battery[MINIMUM_ACTIVE_POWER],
                 battery[MAXIMUM_ACTIVE_POWER],
+                battery[ACTIVE_POWER_SET_POINT],
+                undefined,
+                undefined,
+                editData?.uuid,
                 isReactiveCapabilityCurveOn,
-                isReactiveCapabilityCurveOn
-                    ? null
-                    : battery[MINIMUM_REACTIVE_POWER],
+                isFrequencyRegulationOn ? battery[DROOP] : null,
+                isReactiveCapabilityCurveOn,
                 isReactiveCapabilityCurveOn
                     ? null
                     : battery[MAXIMUM_REACTIVE_POWER],
                 isReactiveCapabilityCurveOn
-                    ? battery[REACTIVE_CAPABILITY_CURVE_TABLE]
-                    : null,
-                battery[ACTIVE_POWER_SET_POINT],
-                battery[REACTIVE_POWER_SET_POINT],
-                battery[FREQUENCY_REGULATION],
-                battery[DROOP] ?? null,
-                !!editData,
-                editData?.uuid ?? null
+                    ? null
+                    : battery[MINIMUM_REACTIVE_POWER],
+                isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -215,54 +368,72 @@ const BatteryModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, studyUuid, snackError]
+        [
+            selectedId,
+            batteryToModify,
+            calculateCurvePointsToStore,
+            studyUuid,
+            currentNodeUuid,
+            editData?.uuid,
+            snackError,
+        ]
     );
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
-        delay: FORM_LOADING_DELAY,
+            ((editDataFetchStatus === FetchStatus.SUCCEED ||
+                editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED ||
+                    dataFetchStatus === FetchStatus.FAILED)),
+        delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in BatteryModificationForm and right after receiving the editData without waiting
     });
+
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <FormProvider
+            validationSchema={formSchema}
+            removeOptional={true}
+            {...formMethods}
+        >
             <ModificationDialog
                 fullWidth
-                onClear={clear}
+                onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-battery"
+                aria-labelledby="dialog-modification-battery"
                 maxWidth={'md'}
                 titleId="ModifyBattery"
-                searchCopy={searchCopy}
                 open={open}
+                keepMounted={true}
+                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
+                    isUpdate &&
+                    (editDataFetchStatus === FetchStatus.RUNNING ||
+                        dataFetchStatus === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >
-                <BatteryModificationForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                />
-
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={'BATTERY'}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
-                />
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EQUIPMENT_TYPES.BATTERY.type}
+                        fillerHeight={17}
+                    />
+                )}
+                {selectedId != null && (
+                    <BatteryModificationForm
+                        equipmentId={selectedId}
+                        batteryToModify={batteryToModify}
+                        updatePreviousReactiveCapabilityCurveTable={
+                            updatePreviousReactiveCapabilityCurveTable
+                        }
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );
 };
 
-BatteryModificationDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    isUpdate: PropTypes.bool,
-    editDataFetchStatus: PropTypes.string,
-};
 export default BatteryModificationDialog;
