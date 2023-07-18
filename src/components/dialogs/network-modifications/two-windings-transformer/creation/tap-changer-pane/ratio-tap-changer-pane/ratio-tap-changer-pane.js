@@ -36,7 +36,10 @@ import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-
 
 export const previousRegulationType = (previousValues) => {
     if (
-        !previousValues?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES]
+        !previousValues?.[RATIO_TAP_CHANGER]?.[
+            LOAD_TAP_CHANGING_CAPABILITIES
+        ] ||
+        !previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId
     ) {
         return null;
     }

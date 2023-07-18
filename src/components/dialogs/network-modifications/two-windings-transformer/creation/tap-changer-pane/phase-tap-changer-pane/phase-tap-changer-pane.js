@@ -287,6 +287,8 @@ const PhaseTapChangerPane = ({
                     regulationTypeWatch === REGULATION_TYPES.DISTANT.id) ||
                     (regulationTypeWatch === null &&
                         twtToModify?.[PHASE_TAP_CHANGER]
+                            ?.regulatingTerminalConnectableId &&
+                        twtToModify?.[PHASE_TAP_CHANGER]
                             ?.regulatingTerminalConnectableId !==
                             twtToModify?.id)) && (
                     <Grid item container spacing={2}>
@@ -307,6 +309,8 @@ const PhaseTapChangerPane = ({
                 {regulationEnabled &&
                     (regulationTypeWatch === REGULATION_TYPES.LOCAL.id ||
                         (regulationTypeWatch === null &&
+                            twtToModify?.[PHASE_TAP_CHANGER]
+                                ?.regulatingTerminalConnectableId &&
                             twtToModify?.[PHASE_TAP_CHANGER]
                                 ?.regulatingTerminalConnectableId ===
                                 twtToModify?.id)) && (

@@ -40,7 +40,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
     fetchNetworkElementInfos,
@@ -117,17 +117,6 @@ const emptyFormData = {
     ...getPhaseTapChangerEmptyFormData(),
 };
 
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_NAME]: yup.string(),
-        ...getCharacteristicsValidationSchema(true),
-        ...getLimitsValidationSchema(),
-        ...getRatioTapChangerValidationSchema(true),
-        ...getPhaseTapChangerValidationSchema(true),
-    })
-    .required();
-
 export const TwoWindingsTransformerModificationDialogTab = {
     CHARACTERISTICS_TAB: 0,
     LIMITS_TAB: 1,
@@ -164,6 +153,27 @@ const TwoWindingsTransformerModificationDialog = ({
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState(null);
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape({
+                    [EQUIPMENT_NAME]: yup.string(),
+                    ...getCharacteristicsValidationSchema(true),
+                    ...getLimitsValidationSchema(),
+                    ...getRatioTapChangerValidationSchema(
+                        true,
+                        twtToModify?.[RATIO_TAP_CHANGER]
+                    ),
+                    ...getPhaseTapChangerValidationSchema(
+                        true,
+                        twtToModify?.[PHASE_TAP_CHANGER]
+                    ),
+                })
+                .required(),
+        [twtToModify]
+    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
