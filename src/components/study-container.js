@@ -268,7 +268,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
+            if (
+                updateTypeHeader === 'shortCircuitAnalysis_failed' ||
+                updateTypeHeader === 'oneBusShortCircuitAnalysis_failed'
+            ) {
                 snackError({
                     headerId: 'ShortCircuitAnalysisError',
                     messageTxt: errorMessage,

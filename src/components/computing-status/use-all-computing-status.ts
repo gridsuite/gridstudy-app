@@ -43,7 +43,7 @@ const shortCircuitAnalysisStatusInvalidations = [
 ];
 const oneBusShortCircuitAnalysisStatusInvalidations = [
     'oneBusShortCircuitAnalysis_status',
-    //'shortCircuitAnalysis_failed',
+    'oneBusShortCircuitAnalysis_failed',
 ];
 const dynamicSimulationStatusInvalidations = [
     'dynamicSimulation_status',
