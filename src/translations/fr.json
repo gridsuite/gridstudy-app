@@ -755,6 +755,7 @@
     "TwoWindingsTransformerRatioTapChangerTab": "Régleur",
     "TwoWindingsTransformerPhaseTapChangerTab": "Déphaseur",
     "ConfigureRatioTapChanger": "Créer régleur",
+    "WithRatioTapChanger": "Avec régleur",
     "ConfigurePhaseTapChanger": "Créer déphaseur",
     "RegulatedSide": "Côté réglé",
     "RegulatedSide1": "Origine",

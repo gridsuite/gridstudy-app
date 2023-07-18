@@ -755,6 +755,7 @@
     "TwoWindingsTransformerRatioTapChangerTab": "Ratio tap changer",
     "TwoWindingsTransformerPhaseTapChangerTab": "Phase tap changer",
     "ConfigureRatioTapChanger": "Configure ratio tap changer",
+    "WithRatioTapChanger": "With ratio tap changer",
     "ConfigurePhaseTapChanger": "Configure phase tap changer",
     "RegulatedSide": "Regulated side",
     "RegulatedSide1": "Side 1",

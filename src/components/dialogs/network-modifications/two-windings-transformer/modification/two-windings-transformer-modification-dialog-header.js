@@ -46,7 +46,7 @@ const TwoWindingsTransformerModificationDialogHeader = ({
     const ratioTapChangerEnabledField = (
         <SwitchInput
             name={`${RATIO_TAP_CHANGER}.${ENABLED}`}
-            label="ConfigureRatioTapChanger"
+            label="WithRatioTapChanger"
         />
     );
 
