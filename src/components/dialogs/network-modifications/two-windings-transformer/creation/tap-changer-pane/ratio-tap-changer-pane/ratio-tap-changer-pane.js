@@ -59,7 +59,7 @@ const RatioTapChangerPane = ({
     currentNodeUuid,
     voltageLevelOptions = [],
     previousValues,
-    modification = false,
+    isModification = false,
 }) => {
     const { trigger } = useFormContext();
     const intl = useIntl();
@@ -162,17 +162,7 @@ const RatioTapChangerPane = ({
         }
     }, [regulationModeWatch, trigger, id]);
 
-    const ratioTapLoadTapChangingCapabilitiesField = (
-        <SwitchInput
-            name={`${id}.${LOAD_TAP_CHANGING_CAPABILITIES}`}
-            label="OnLoad"
-            formProps={{
-                disabled: !ratioTapChangerEnabledWatcher,
-            }}
-        />
-    );
-
-    const ratioTapLoadTapChangingCapabilitiesModificationField = (
+    const ratioTapLoadTapChangingCapabilitiesField = isModification ? (
         <CheckboxNullableInput
             name={`${id}.${LOAD_TAP_CHANGING_CAPABILITIES}`}
             label="OnLoad"
@@ -180,6 +170,14 @@ const RatioTapChangerPane = ({
                 disabled: !ratioTapChangerEnabledWatcher,
             }}
             previousValue={previousRegulation()}
+        />
+    ) : (
+        <SwitchInput
+            name={`${id}.${LOAD_TAP_CHANGING_CAPABILITIES}`}
+            label="OnLoad"
+            formProps={{
+                disabled: !ratioTapChangerEnabledWatcher,
+            }}
         />
     );
 
@@ -294,9 +292,7 @@ const RatioTapChangerPane = ({
             <Grid container spacing={2}>
                 <Grid item container spacing={2}>
                     <Grid item xs={4}>
-                        {modification
-                            ? ratioTapLoadTapChangingCapabilitiesModificationField
-                            : ratioTapLoadTapChangingCapabilitiesField}
+                        {ratioTapLoadTapChangingCapabilitiesField}
                     </Grid>
                     {isRatioTapLoadTapChangingCapabilitiesOn && (
                         <Grid item xs={4}>
@@ -361,7 +357,7 @@ const RatioTapChangerPane = ({
                 <RatioTapChangerPaneSteps
                     disabled={!ratioTapChangerEnabledWatcher}
                     previousValues={previousValues?.[RATIO_TAP_CHANGER]}
-                    modification={modification}
+                    isModification={isModification}
                 />
             </Grid>
         </>

@@ -17,28 +17,28 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
-const characteristicsValidationSchema = (modification, additionalFields) => ({
+const characteristicsValidationSchema = (isModification, additionalFields) => ({
     [CHARACTERISTICS]: yup.object().shape({
-        [SERIES_RESISTANCE]: modification
+        [SERIES_RESISTANCE]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [SERIES_REACTANCE]: modification
+        [SERIES_REACTANCE]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [MAGNETIZING_CONDUCTANCE]: modification
+        [MAGNETIZING_CONDUCTANCE]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [MAGNETIZING_SUSCEPTANCE]: modification
+        [MAGNETIZING_SUSCEPTANCE]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
         [RATED_S]: yup
             .number()
             .nullable()
             .positive('RatedNominalPowerGreaterThanZero'),
-        [RATED_VOLTAGE_1]: modification
+        [RATED_VOLTAGE_1]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
-        [RATED_VOLTAGE_2]: modification
+        [RATED_VOLTAGE_2]: isModification
             ? yup.number().nullable()
             : yup.number().nullable().required(),
         ...additionalFields,
@@ -46,10 +46,10 @@ const characteristicsValidationSchema = (modification, additionalFields) => ({
 });
 
 export const getCharacteristicsValidationSchema = (
-    modification = false,
+    isModification = false,
     additionalFields = {}
 ) => {
-    return characteristicsValidationSchema(modification, additionalFields);
+    return characteristicsValidationSchema(isModification, additionalFields);
 };
 
 const characteristicsEmptyFormData = (additionalFields) => ({

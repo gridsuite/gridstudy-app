@@ -23,7 +23,7 @@ import { RATIO_TAP } from '../../two-windings-transformer-creation-dialog';
 const RatioTapChangerPaneSteps = ({
     disabled,
     previousValues,
-    modification = false,
+    isModification = false,
 }) => {
     const intl = useIntl();
 
@@ -140,7 +140,7 @@ const RatioTapChangerPaneSteps = ({
             handleImportRow={handleImportRow}
             disabled={disabled}
             previousValues={previousValues}
-            modification={modification}
+            isModification={isModification}
         />
     );
 };
