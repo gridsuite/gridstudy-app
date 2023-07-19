@@ -12,17 +12,21 @@ import {
     getShortCircuitAnalysisRunningStatus,
     getDynamicSimulationRunningStatus,
     getVoltageInitRunningStatus,
+    getLoadFlowRunningStatus,
 } from '../utils/running-status';
 
 import {
     fetchShortCircuitAnalysisStatus,
     fetchVoltageInitStatus,
+    fetchLoadFlowStatus,
 } from '../../utils/rest-api';
 import { UUID } from 'crypto';
 import { ComputingType } from './computing-type';
 import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
 import { fetchDynamicSimulationStatus } from '../../services/study/dynamic-simulation';
+
+const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
 const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
@@ -50,6 +54,15 @@ export const useAllComputingStatus = (
     studyUuid: UUID,
     currentNodeUuid: UUID
 ): void => {
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        fetchLoadFlowStatus,
+        loadFlowStatusInvalidations,
+        getLoadFlowRunningStatus,
+        ComputingType.LOADFLOW
+    );
+
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
