@@ -33,7 +33,6 @@ import {
     SERIES_RESISTANCE,
     STEPS,
     STEPS_MODIFIED,
-    STEPS_TAP,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
@@ -86,6 +85,7 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
 import {
+    computeHighTapPosition,
     formatTemporaryLimits,
     toModificationOperation,
 } from '../../../../utils/utils';
@@ -100,7 +100,7 @@ import RatioTapChangerPane, {
 import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
-    getRatioTapChangerValidationSchema,
+    getRatioTapChangerModificationValidationSchema,
 } from '../creation/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import PhaseTapChangerPane from '../creation/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
@@ -162,8 +162,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     [EQUIPMENT_NAME]: yup.string(),
                     ...getCharacteristicsValidationSchema(true),
                     ...getLimitsValidationSchema(),
-                    ...getRatioTapChangerValidationSchema(
-                        true,
+                    ...getRatioTapChangerModificationValidationSchema(
                         twtToModify?.[RATIO_TAP_CHANGER]
                     ),
                     ...getPhaseTapChangerValidationSchema(
@@ -211,13 +210,6 @@ const TwoWindingsTransformerModificationDialog = ({
         } else {
             return RATIO_REGULATION_MODES.FIXED_RATIO.id;
         }
-    };
-
-    const computeHighTapPosition = (steps) => {
-        const values = steps?.map((step) => step[STEPS_TAP]);
-        return Array.isArray(values) && values.length > 0
-            ? Math.max(...values)
-            : null;
     };
 
     const fromEditDataToFormValues = useCallback(
@@ -831,7 +823,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         >
                             <TwoWindingsTransformerCharacteristicsPane
                                 twtToModify={twtToModify}
-                                modification
+                                isModification
                             />
                         </Box>
 
@@ -860,7 +852,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 currentNodeUuid={currentNodeUuid}
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify}
-                                modification={true}
+                                isModification={true}
                             />
                         </Box>
                         <Box
@@ -875,7 +867,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 currentNodeUuid={currentNodeUuid}
                                 voltageLevelOptions={voltageLevelOptions}
                                 twtToModify={twtToModify}
-                                modification={true}
+                                isModification={true}
                             />
                         </Box>
                     </>

@@ -94,6 +94,7 @@ function EditableTableCell({
     previousValue,
     valueModified,
     handleChange,
+    greyOutValue,
     ...props
 }) {
     return (
@@ -104,6 +105,7 @@ function EditableTableCell({
                     previousValue={previousValue}
                     valueModified={valueModified}
                     handleChange={handleChange}
+                    greyOutValue={greyOutValue}
                     adornment={column?.adornment}
                     style={{
                         textAlign: column?.textAlign,
@@ -149,6 +151,7 @@ const DndTable = ({
     disableTableCell,
     getPreviousValue,
     isValueModified,
+    greyOutValue = false,
 }) => {
     const intl = useIntl();
 
@@ -200,6 +203,7 @@ const DndTable = ({
                         : false
                 }
                 handleChange={column.handleChange}
+                greyOutValue={greyOutValue}
             />
         );
     }

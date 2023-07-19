@@ -53,7 +53,7 @@ const PhaseTapChangerPane = ({
     currentNodeUuid,
     voltageLevelOptions = [],
     twtToModify,
-    modification = false,
+    isModification = false,
 }) => {
     const intl = useIntl();
 
@@ -332,7 +332,7 @@ const PhaseTapChangerPane = ({
                 <PhaseTapChangerPaneSteps
                     disabled={!phaseTapChangerEnabledWatch}
                     twtToModify={twtToModify?.[PHASE_TAP_CHANGER]}
-                    modification={modification}
+                    isModification={isModification}
                 />
             </Grid>
         </>

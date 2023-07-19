@@ -39,7 +39,6 @@ import {
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
     STEPS,
-    STEPS_TAP,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
@@ -104,6 +103,7 @@ import {
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
+import { computeHighTapPosition } from 'components/utils/utils';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -179,13 +179,6 @@ const TwoWindingsTransformerCreationDialog = ({
         } else {
             return RATIO_REGULATION_MODES.FIXED_RATIO.id;
         }
-    };
-
-    const computeHighTapPosition = (steps) => {
-        const values = steps?.map((step) => step[STEPS_TAP]);
-        return Array.isArray(values) && values.length > 0
-            ? Math.max(...values)
-            : null;
     };
 
     const getTapSideForEdit = (twt, tap) => {

@@ -24,7 +24,7 @@ import { PHASE_TAP } from '../../two-windings-transformer-creation-dialog';
 const PhaseTapChangerPaneSteps = ({
     disabled,
     twtToModify,
-    modification = false,
+    isModification = false,
 }) => {
     const intl = useIntl();
 
@@ -166,7 +166,7 @@ const PhaseTapChangerPaneSteps = ({
             handleImportRow={handleImportRow}
             disabled={disabled}
             previousValues={twtToModify}
-            modification={modification}
+            isModification={isModification}
         />
     );
 };
