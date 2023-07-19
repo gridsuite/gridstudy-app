@@ -21,14 +21,11 @@ type BaseParameterLineProps = {
     readonly type: ParameterType;
     readonly param_name_id: string;
     disabled?: boolean;
-    //callback?: (event: Event, newValue: any) => void;
 };
 
-type SwitchParameterLineProps = /*BaseParameterLineProps &*/ {
+type SwitchParameterLineProps = {
     readonly type: ParameterType.Switch;
     label?: string;
-    //value?: boolean;
-    //callback?: (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
 };
 
 type DropDownParameterLineProps = {
@@ -37,18 +34,15 @@ type DropDownParameterLineProps = {
     labelValue?: string;
     values: Record<string, string>;
     defaultValueIfNull?: boolean;
-    //callback?: SelectInputProps<T>['onChange'];
 };
 
 type SliderParameterLineProps = {
     readonly type: ParameterType.Slider;
     value: number;
     label: string;
-    //onCommitCallback: any;
     marks: boolean | Mark[];
     minValue?: number; //default = 0;
     maxValue?: number; //default = 100;
-    //callback?: (event: Event, value: number | number[], activeThumb: number) => void;
 };
 
 type ParameterLineProps = BaseParameterLineProps &
@@ -65,7 +59,6 @@ type ParameterLineProps = BaseParameterLineProps &
  * @param other
  * @constructor
  */
-//export const ParamLine: FunctionComponent<ParameterLineProps> = ({ type, param_name_id, label, value, callback, values }) => {
 export const ParamLine: FunctionComponent<ParameterLineProps> = (
     props,
     context
@@ -100,9 +93,7 @@ export const ParamLine: FunctionComponent<ParameterLineProps> = (
             return (
                 <>
                     <Grid item xs={8} className={classes.parameterName}>
-                        {/*<Typography component="span" variant="body1" fontWeight="fontWeightBold" margin={1}>*/}
                         <FormattedMessage id={props.labelTitle} />
-                        {/*</Typography>*/}
                     </Grid>
                     <Grid item container xs={4} className={classes.controlItem}>
                         <Select
@@ -138,9 +129,7 @@ export const ParamLine: FunctionComponent<ParameterLineProps> = (
             return (
                 <>
                     <Grid item xs={8} className={classes.parameterName}>
-                        {/*<Typography component="span" variant="body1" fontWeight="fontWeightBold" margin={1}>*/}
                         <FormattedMessage id={props.label} />
-                        {/*</Typography>*/}
                     </Grid>
                     <Grid item container xs={4} className={classes.controlItem}>
                         <Slider
@@ -163,7 +152,7 @@ export const ParamLine: FunctionComponent<ParameterLineProps> = (
             );
 
         default:
-            //throw new Error(`Not supported parameter type ${type}`);
+            //TODO: how to manage in react component? throw new Error(`Not supported parameter type ${type}`);
             // @ts-ignore
             return <p>{`Not supported parameter type ${props.type}`}</p>;
     }

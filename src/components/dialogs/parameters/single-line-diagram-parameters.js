@@ -34,11 +34,11 @@ export const useGetAvailableComponentLibraries = (user) => {
 };
 
 export const SingleLineDiagramParameters = ({
-    hideParameters, //function
-    componentLibraries, //array<string>
+    hideParameters,
+    componentLibraries,
 }) => {
     const classes = useStyles();
-    const cmpntLibs = useMemo(
+    const componentLibsRenderCache = useMemo(
         () =>
             Array.from(componentLibraries).reduce(
                 (prev, val, idx) => ({ ...prev, [val]: val }),
@@ -90,7 +90,7 @@ export const SingleLineDiagramParameters = ({
                     param_name_id={PARAM_COMPONENT_LIBRARY}
                     labelTitle="ComponentLibrary"
                     labelValue="component-library-select-label"
-                    values={cmpntLibs}
+                    values={componentLibsRenderCache}
                 />
             </Grid>
             <Grid
