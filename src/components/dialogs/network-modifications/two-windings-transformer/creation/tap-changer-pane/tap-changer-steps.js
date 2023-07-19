@@ -22,7 +22,12 @@ import {
     LOW_TAP_POSITION,
     SELECTED,
     STEPS,
+    STEPS_CONDUCTANCE,
     STEPS_MODIFIED,
+    STEPS_RATIO,
+    STEPS_REACTANCE,
+    STEPS_RESISTANCE,
+    STEPS_SUSCEPTANCE,
     STEPS_TAP,
     TAP_POSITION,
 } from 'components/utils/field-constants';
@@ -67,6 +72,14 @@ const TapChangerSteps = ({
 
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
+
+    const disableAddingRows = useMemo(() => {
+        return (
+            isModification &&
+            lowTapPosition === null &&
+            previousValues?.[LOW_TAP_POSITION] === undefined
+        );
+    }, [isModification, lowTapPosition, previousValues]);
 
     function allowedToAddTapRows() {
         // triggering validation on low tap position before generating rows (the field is required)
@@ -136,7 +149,7 @@ const TapChangerSteps = ({
                 tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
 
             const currentLowTapPosition =
-                isModification && !lowTapPosition
+                isModification && lowTapPosition === null
                     ? previousValues?.[LOW_TAP_POSITION]
                     : lowTapPosition;
 
@@ -145,8 +158,6 @@ const TapChangerSteps = ({
                 !compareStepsWithPreviousValues(currentTapRows, previousValues)
             ) {
                 setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
-            } else {
-                setValue(`${tapChanger}.${STEPS_MODIFIED}`, false);
             }
 
             for (
@@ -336,6 +347,37 @@ const TapChangerSteps = ({
         tapSteps.length,
     ]);
 
+    const getTapPreviousValue = useCallback(
+        (rowIndex, column, arrayFormName, tapSteps) => {
+            const step = tapSteps?.find(
+                (e) => e.index === getValues(arrayFormName)[rowIndex]?.index
+            );
+            if (step === undefined) {
+                return undefined;
+            }
+            switch (column.dataKey) {
+                case STEPS_RESISTANCE:
+                    return step?.r;
+                case STEPS_REACTANCE:
+                    return step?.x;
+                case STEPS_CONDUCTANCE:
+                    return step?.g;
+                case STEPS_SUSCEPTANCE:
+                    return step?.b;
+                case STEPS_RATIO:
+                    return step?.rho;
+                default:
+                    return undefined;
+            }
+        },
+        [getValues]
+    );
+
+    const isTapModified = useCallback(
+        () => areStepsModified,
+        [areStepsModified]
+    );
+
     return (
         <Grid item container spacing={1}>
             <Grid item container spacing={2}>
@@ -362,8 +404,11 @@ const TapChangerSteps = ({
                     isModification ? handleResetButton : undefined
                 }
                 resetButtonMessageId={resetButtonMessageId}
-                greyOutValue={!areStepsModified}
+                previousValues={previousValues?.[STEPS]}
+                getPreviousValue={getTapPreviousValue}
+                isValueModified={isTapModified}
                 withResetButton={isModification && areStepsModified}
+                disableAddingRows={disableAddingRows}
                 disabled={disabled}
             />
             <CreateRuleDialog

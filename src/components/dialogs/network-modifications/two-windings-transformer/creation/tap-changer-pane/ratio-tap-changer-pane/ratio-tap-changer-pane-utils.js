@@ -193,21 +193,9 @@ const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
             .number()
             .nullable()
             .positive('TargetDeadbandGreaterThanZero'),
-        [LOW_TAP_POSITION]: yup
-            .number()
-            .nullable()
-            .when([], {
-                is: () => previousValues?.[LOW_TAP_POSITION] === undefined,
-                then: (schema) => schema.required(),
-            }),
+        [LOW_TAP_POSITION]: yup.number().nullable(),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
-        [TAP_POSITION]: yup
-            .number()
-            .nullable()
-            .when([], {
-                is: () => previousValues?.[TAP_POSITION] === undefined,
-                then: (schema) => schema.required(),
-            }),
+        [TAP_POSITION]: yup.number().nullable(),
         [STEPS]: yup
             .array()
             .of(
@@ -220,10 +208,6 @@ const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
                     [STEPS_RATIO]: yup.number(),
                 })
             )
-            .when(ENABLED, {
-                is: true,
-                then: (schema) => schema.min(1, 'GenerateRatioTapRowsError'),
-            })
             .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
                 const ratioArray = array.map((step) => step[STEPS_RATIO]);
                 return (

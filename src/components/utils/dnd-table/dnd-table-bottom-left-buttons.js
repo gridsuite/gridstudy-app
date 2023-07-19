@@ -20,6 +20,7 @@ const DndTableBottomLeftButtons = ({
     handleResetButton,
     resetButtonMessageId,
     withResetButton,
+    disableUploadButton,
     disabled,
 }) => {
     const intl = useIntl();
@@ -37,7 +38,7 @@ const DndTableBottomLeftButtons = ({
                         <IconButton
                             color="primary"
                             onClick={() => handleUploadButton()}
-                            disabled={disabled}
+                            disabled={disabled || disableUploadButton}
                         >
                             <UploadIcon />
                         </IconButton>
