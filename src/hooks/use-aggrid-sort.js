@@ -16,18 +16,8 @@ const getKeyByValue = (object, value) => {
     return Object.keys(object).find((key) => object[key] === value);
 };
 
-const getSortSelector = (dataKeyToSortKey, colKey, sortWay) =>
-    colKey && sortWay
-        ? {
-              sortKeysWithWeightAndDirection: {
-                  [colKey]: sortWay,
-              },
-          }
-        : {};
-
 const getSortConfig = (dataKeyToSortKey, colKey, sortWay) => {
     return {
-        selector: getSortSelector(dataKeyToSortKey, colKey, sortWay),
         colKey: getKeyByValue(dataKeyToSortKey, colKey),
         sortWay,
     };
