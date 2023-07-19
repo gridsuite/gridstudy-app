@@ -117,9 +117,7 @@ export const formatTemporaryLimits = (temporaryLimits) =>
 
 export const computeHighTapPosition = (steps) => {
     const values = steps?.map((step) => step['index']);
-    return Array.isArray(values) && values.length > 0
-        ? Math.max(...values)
-        : null;
+    return values?.length > 0 ? Math.max(...values) : null;
 };
 
 export function calculateResistance(distance, linearResistance) {

@@ -107,6 +107,7 @@ function EditableTableCell({
                     handleChange={handleChange}
                     greyOutValue={greyOutValue}
                     adornment={column?.adornment}
+                    isClearable={column?.clearable}
                     style={{
                         textAlign: column?.textAlign,
                     }}
@@ -151,7 +152,7 @@ const DndTable = ({
     disableTableCell,
     getPreviousValue,
     isValueModified,
-    greyOutValue = false,
+    disableAddingRows = false,
 }) => {
     const intl = useIntl();
 
@@ -203,7 +204,6 @@ const DndTable = ({
                         : false
                 }
                 handleChange={column.handleChange}
-                greyOutValue={greyOutValue}
             />
         );
     }
@@ -422,6 +422,7 @@ const DndTable = ({
                         handleResetButton={handleResetButton}
                         resetButtonMessageId={resetButtonMessageId}
                         withResetButton={withResetButton}
+                        disableUploadButton={disableAddingRows}
                         disabled={disabled}
                     />
                 )}
@@ -431,6 +432,7 @@ const DndTable = ({
                     handleDeleteButton={deleteSelectedRows}
                     handleMoveUpButton={moveUpSelectedRows}
                     handleMoveDownButton={moveDownSelectedRows}
+                    disableAddingRows={disableAddingRows}
                     disabled={disabled}
                 />
             </Grid>

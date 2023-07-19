@@ -39,6 +39,7 @@ const RatioTapChangerPaneSteps = ({
                 initialValue: 0,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
             {
                 label: 'DeltaReactance',
@@ -46,6 +47,7 @@ const RatioTapChangerPaneSteps = ({
                 initialValue: 0,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
             {
                 label: 'DeltaConductance',
@@ -53,6 +55,7 @@ const RatioTapChangerPaneSteps = ({
                 initialValue: 0,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
             {
                 label: 'DeltaSusceptance',
@@ -60,6 +63,7 @@ const RatioTapChangerPaneSteps = ({
                 initialValue: 0,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
             {
                 label: 'Ratio',
@@ -67,6 +71,7 @@ const RatioTapChangerPaneSteps = ({
                 initialValue: 1,
                 editable: true,
                 numeric: true,
+                clearable: false,
             },
         ].map((column) => ({
             ...column,
