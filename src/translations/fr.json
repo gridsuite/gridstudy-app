@@ -832,10 +832,10 @@
     "HighTapRatio": "Rapport (prise max)",
     "ImportRegulationRule": "Importer une loi de régleur",
 
-    "AddRows": "Ajouter des lignes",
-    "DeleteRows": "Supprimer des lignes",
-    "MoveUpRows": "Monter des lignes",
-    "MoveDownRows": "Descendre des lignes",
+    "AddRows": "Ajouter",
+    "DeleteRows": "Supprimer",
+    "MoveUpRows": "Monter",
+    "MoveDownRows": "Descendre",
 
     "AddRowsDialogTitle": "Combien de lignes voulez-vous ajouter ?",
     "AddRowsButton": "Ajouter",
@@ -1050,5 +1050,6 @@
     "muiTablePaginationNext": "Aller à la page suivante",
     "muiTablePaginationFirst": "Aller à la première page",
     "muiTablePaginationLast": "Aller à la dernière page",
-    "GeneratorAvailability": "Indisponibilité groupes"
+    "GeneratorAvailability": "Indisponibilité groupes",
+    "chooseElement": "Choisir un element"
 }

@@ -830,10 +830,10 @@
     "HighTapRatio": "Ratio (high tap position)",
     "ImportRegulationRule": "Import regulation rule",
 
-    "AddRows": "Add rows",
-    "DeleteRows": "Delete rows",
-    "MoveUpRows": "Move up rows",
-    "MoveDownRows": "Move down rows",
+    "AddRows": "Add",
+    "DeleteRows": "Delete",
+    "MoveUpRows": "Move up",
+    "MoveDownRows": "Move down",
 
     "AddRowsDialogTitle": "How many rows do you want to add ?",
     "AddRowsButton": "Add",
@@ -1027,5 +1027,6 @@
     "muiTablePaginationNext": "Go to the next page",
     "muiTablePaginationFirst": "Go to the first page",
     "muiTablePaginationLast": "Go to the last page",
-    "GeneratorAvailability": "Generator availability"
+    "GeneratorAvailability": "Generator availability",
+    "chooseElement": "Choose element"
 }
