@@ -106,7 +106,7 @@ import PhaseTapChangerPane from '../creation/tap-changer-pane/phase-tap-changer-
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
-    getPhaseTapChangerValidationSchema,
+    getPhaseTapChangerModificationValidationSchema,
 } from '../creation/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 
 const emptyFormData = {
@@ -165,8 +165,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     ...getRatioTapChangerModificationValidationSchema(
                         twtToModify?.[RATIO_TAP_CHANGER]
                     ),
-                    ...getPhaseTapChangerValidationSchema(
-                        true,
+                    ...getPhaseTapChangerModificationValidationSchema(
                         twtToModify?.[PHASE_TAP_CHANGER]
                     ),
                 })
@@ -749,7 +748,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, editData?.equipmentId, selectedId, reset]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset]
     );
 
     useEffect(() => {
