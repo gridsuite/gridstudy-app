@@ -86,7 +86,7 @@ const GenerationDispatchForm = () => {
             </Grid>
             <Grid item xs={4}>
                 <DirectoryItemsInput
-                    name={`${GENERATORS_WITHOUT_OUTAGE}`}
+                    name={GENERATORS_WITHOUT_OUTAGE}
                     equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
                     elementType={elementType.FILTER}
                     titleId={'FiltersListsSelection'}
