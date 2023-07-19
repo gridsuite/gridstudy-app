@@ -69,7 +69,10 @@ const CustomHeaderComponent = ({
     };
 
     const handleMouseLeave = () => {
-        setDisplayFilterIcon(!!filterSelectedOption || anchorEl);
+        if (!!filterSelectedOption) {
+            return;
+        }
+        setDisplayFilterIcon(false);
     };
 
     const open = Boolean(anchorEl);
