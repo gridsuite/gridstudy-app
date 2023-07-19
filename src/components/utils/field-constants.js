@@ -10,7 +10,6 @@ export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
 export const ACTIVE_POWER = 'activePower';
 export const REACTIVE_POWER = 'reactivePower';
-
 export const CONNECTIVITY = 'connectivity';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
@@ -224,3 +223,11 @@ export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
+
+// HVDC deletion
+export const DELETION_SPECIFIC_DATA = 'specificEquipmentInfos';
+export const DELETION_SPECIFIC_TYPE = 'specificType';
+export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
+export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
+export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
+export const MCS_SELECTED = 'connectedToHvdc';

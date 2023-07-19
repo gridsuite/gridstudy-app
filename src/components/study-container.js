@@ -52,7 +52,6 @@ import {
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
 import { fetchPath } from '../services/directory';
-import { fetchLoadFlowInfos } from '../services/study/loadflow';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 
 function isWorthUpdate(
@@ -193,8 +192,6 @@ function usePrevious(value) {
     return ref.current;
 }
 
-const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
-
 export const UPDATE_TYPE_HEADER = 'updateType';
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
@@ -229,13 +226,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const currentNodeRef = useRef();
 
-    const [loadFlowInfos] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchLoadFlowInfos,
-        loadFlowStatusInvalidations
-    );
-
     useAllComputingStatus(studyUuid, currentNode?.id);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -253,6 +243,12 @@ export function StudyContainer({ view, onChangeTab }) {
             const userId = eventData.headers[USER_HEADER];
             if (userId !== userName) {
                 return;
+            }
+            if (updateTypeHeader === 'loadflow_failed') {
+                snackError({
+                    headerId: 'LoadFlowError',
+                    messageTxt: errorMessage,
+                });
             }
             if (updateTypeHeader === 'buildFailed') {
                 snackError({
@@ -679,7 +675,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 currentNode={currentNode}
                 view={view}
                 onChangeTab={onChangeTab}
-                loadFlowInfos={loadFlowInfos}
                 setErrorMessage={setErrorMessage}
             />
         </WaitingLoader>
