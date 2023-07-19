@@ -33,19 +33,17 @@ const CustomHeaderComponent = ({
     const { colKey, sortWay } = sortConfig || {};
     const isSortActive = colKey === field;
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [displayFilterIcon, setDisplayFilterIcon] = useState(
-        !!filterSelectedOption
-    );
+    const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+    const [isHoveringHeader, setIsHoveringHeader] = useState(false);
 
     const handleShowFilter = (event) => {
-        setAnchorEl(event.currentTarget);
+        setFilterAnchorEl(event.currentTarget);
     };
 
     const handleCloseFilter = () => {
-        setAnchorEl(null);
+        setFilterAnchorEl(null);
         if (!filterSelectedOption) {
-            setDisplayFilterIcon(false);
+            setIsHoveringHeader(false);
         }
     };
 
@@ -65,19 +63,18 @@ const CustomHeaderComponent = ({
     };
 
     const handleMouseEnter = () => {
-        setDisplayFilterIcon(true);
+        setIsHoveringHeader(true);
     };
 
     const handleMouseLeave = () => {
-        if (!!filterSelectedOption) {
-            return;
-        }
-        setDisplayFilterIcon(false);
+        setIsHoveringHeader(false);
     };
 
-    const open = Boolean(anchorEl);
-    const popoverId = open ? `${field}-filter-popover` : undefined;
+    const isFilterOpened = Boolean(filterAnchorEl);
+    const popoverId = isFilterOpened ? `${field}-filter-popover` : undefined;
     const isFilterActive = !!filterOptions.length;
+    const isFilterIconDisplayed =
+        isHoveringHeader || !!filterSelectedOption || isFilterOpened;
 
     return (
         <Grid
@@ -109,7 +106,7 @@ const CustomHeaderComponent = ({
                     </Grid>
                 )}
             </Grid>
-            {isFilterActive && displayFilterIcon && (
+            {isFilterActive && isFilterIconDisplayed && (
                 <Grid item xs={2}>
                     <IconButton onClick={handleShowFilter}>
                         <Badge
@@ -124,8 +121,8 @@ const CustomHeaderComponent = ({
             )}
             <Popover
                 id={popoverId}
-                open={open}
-                anchorEl={anchorEl}
+                open={isFilterOpened}
+                anchorEl={filterAnchorEl}
                 onClose={handleCloseFilter}
                 anchorOrigin={{
                     vertical: 'bottom',
