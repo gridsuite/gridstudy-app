@@ -39,7 +39,7 @@ const SensitivityAnalysisResult = ({
     const intl = useIntl();
 
     const makeColumn = useCallback(
-        (isNum, labelId, field) => {
+        (field, labelId, isNum = false) => {
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
                 {};
@@ -83,33 +83,30 @@ const SensitivityAnalysisResult = ({
 
         returnedTable.push(
             makeColumn(
-                false,
-                sensiToIndex < 2 ? 'SupervisedBranches' : 'BusBarBus',
-                'funcId'
+                'funcId',
+                sensiToIndex < 2 ? 'SupervisedBranches' : 'BusBarBus'
             )
         );
-        returnedTable.push(makeColumn(false, 'VariablesToSimulate', 'varId'));
+        returnedTable.push(makeColumn('varId', 'VariablesToSimulate'));
 
         if (nOrNkIndex === 1) {
-            returnedTable.push(
-                makeColumn(false, 'ContingencyId', 'contingencyId')
-            );
+            returnedTable.push(makeColumn('contingencyId', 'ContingencyId'));
         }
 
         const suffix1 = 'In' + ['kW', 'kA', 'kV'][sensiToIndex];
         const suffix = suffix1 + (nOrNkIndex !== 1 ? '' : 'BeforeContingency');
 
         returnedTable.push(
-            makeColumn(true, 'ValRef' + suffix, 'functionReference')
+            makeColumn('functionReference', 'ValRef' + suffix, true)
         );
-        returnedTable.push(makeColumn(true, 'Delta' + suffix, 'value'));
+        returnedTable.push(makeColumn('value', 'Delta' + suffix, true));
 
         if (nOrNkIndex === 1) {
             returnedTable.push(
-                makeColumn(true, 'ValRef' + suffix1, 'functionReferenceAfter')
+                makeColumn('functionReferenceAfter', 'ValRef' + suffix1, true)
             );
             returnedTable.push(
-                makeColumn(true, 'Delta' + suffix1, 'valueAfter')
+                makeColumn('valueAfter', 'Delta' + suffix1, true)
             );
         }
 
