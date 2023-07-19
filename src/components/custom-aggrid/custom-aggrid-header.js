@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { ArrowDownward, ArrowUpward, Menu } from '@mui/icons-material';
 
 import {
@@ -38,8 +38,6 @@ const CustomHeaderComponent = ({
         !!filterSelectedOption
     );
 
-    const agGridHeaderContainer = useRef(null);
-
     const handleShowFilter = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -66,36 +64,13 @@ const CustomHeaderComponent = ({
         onSortChanged(newSort);
     };
 
-    /* did not use onMouseEnter and onMouseLeave events because there is a
-     loader showing on all the page (when fetching new results on sort change)
-     making mouse cursor out of the header hiding the filter icon */
-    const handleMouseMove = useCallback(
-        (event) => {
-            const { top, left, bottom, right } =
-                agGridHeaderContainer?.current?.getBoundingClientRect() || {};
+    const handleMouseEnter = () => {
+        setDisplayFilterIcon(true);
+    };
 
-            const { clientX, clientY } = event || {};
-
-            const isCursorInsideHeader =
-                clientX >= left &&
-                clientY >= top &&
-                clientX <= right &&
-                clientY <= bottom;
-
-            setDisplayFilterIcon(
-                isCursorInsideHeader || !!filterSelectedOption || anchorEl
-            );
-        },
-        [anchorEl, filterSelectedOption]
-    );
-
-    useEffect(() => {
-        window.addEventListener('mousemove', handleMouseMove);
-
-        return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-        };
-    }, [handleMouseMove]);
+    const handleMouseLeave = () => {
+        setDisplayFilterIcon(!!filterSelectedOption || anchorEl);
+    };
 
     const open = Boolean(anchorEl);
     const popoverId = open ? `${field}-filter-popover` : undefined;
@@ -103,10 +78,11 @@ const CustomHeaderComponent = ({
 
     return (
         <Grid
-            ref={agGridHeaderContainer}
             container
             alignItems="center"
             sx={{ height: '100%' }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
             <Grid
                 container
