@@ -57,14 +57,12 @@ import {
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
 } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
-import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
-import { fetchLoadFlowInfos } from '../services/study/loadflow';
 import { ComputingType } from './computing-status/computing-type';
 import { RunningStatus } from './utils/running-status';
 
@@ -223,12 +221,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
-    const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
-    const [loadFlowInfosNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchLoadFlowInfos,
-        loadFlowStatusInvalidations
+
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
 
     const securityAnalysisStatus = useSelector(
@@ -281,21 +276,14 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            loadFlowInfosNode?.loadFlowStatus !== 'NOT_DONE' &&
-            loadFlowInfosNode?.loadFlowResult != null
+            (loadFlowStatus === RunningStatus.SUCCEED ||
+                loadFlowStatus === RunningStatus.FAILED)
         ) {
             dispatch(addLoadflowNotif());
         } else {
             dispatch(resetLoadflowNotif());
         }
-    }, [
-        currentNode,
-        dispatch,
-        loadFlowInfosNode?.loadFlowResult,
-        loadFlowInfosNode?.loadFlowStatus,
-        tabIndex,
-        user,
-    ]);
+    }, [currentNode, dispatch, loadFlowStatus, tabIndex, user]);
 
     useEffect(() => {
         if (

@@ -17,15 +17,6 @@ export function getDefaultLoadFlowProvider() {
     return backendFetchText(getDefaultLoadFlowProviderUrl);
 }
 
-export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching loadflow infos (status and result) for '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const fetchLoadFlowInfosUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/infos';
-    return backendFetchJson(fetchLoadFlowInfosUrl);
-}
-
 export function startLoadFlow(studyUuid, currentNodeUuid) {
     console.info(
         'Running loadflow on ' +
