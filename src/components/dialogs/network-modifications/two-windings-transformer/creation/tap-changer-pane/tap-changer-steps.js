@@ -22,6 +22,7 @@ import {
     LOW_TAP_POSITION,
     SELECTED,
     STEPS,
+    STEPS_ALPHA,
     STEPS_CONDUCTANCE,
     STEPS_MODIFIED,
     STEPS_RATIO,
@@ -366,6 +367,8 @@ const TapChangerSteps = ({
                     return step?.b;
                 case STEPS_RATIO:
                     return step?.rho;
+                case STEPS_ALPHA:
+                    return step?.alpha;
                 default:
                     return undefined;
             }

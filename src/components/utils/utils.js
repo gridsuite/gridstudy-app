@@ -120,6 +120,18 @@ export const computeHighTapPosition = (steps) => {
     return values?.length > 0 ? Math.max(...values) : null;
 };
 
+export const getTapChangerEquipmentSectionTypeValue = (tapChanger) => {
+    if (!tapChanger?.regulatingTerminalConnectableType) {
+        return null;
+    } else {
+        return (
+            tapChanger?.regulatingTerminalConnectableType +
+            ' : ' +
+            tapChanger?.regulatingTerminalConnectableId
+        );
+    }
+};
+
 export function calculateResistance(distance, linearResistance) {
     if (
         distance === undefined ||

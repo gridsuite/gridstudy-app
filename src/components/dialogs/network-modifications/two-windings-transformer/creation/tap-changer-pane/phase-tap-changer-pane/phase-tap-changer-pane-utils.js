@@ -191,7 +191,7 @@ const phaseTapChangerValidationSchema = (id) => ({
     }),
 });
 
-const phaseTapChangerModificationValidationSchema = (previousValues, id) => ({
+const phaseTapChangerModificationValidationSchema = (id) => ({
     [id]: yup.object().shape({
         [ENABLED]: yup.bool().required(),
         [REGULATION_MODE]: yup.string().nullable(),
@@ -206,21 +206,9 @@ const phaseTapChangerModificationValidationSchema = (previousValues, id) => ({
             .number()
             .nullable()
             .positive('TargetDeadbandGreaterThanZero'),
-        [LOW_TAP_POSITION]: yup
-            .number()
-            .nullable()
-            .when([], {
-                is: () => previousValues?.[LOW_TAP_POSITION] === undefined,
-                then: (schema) => schema.required(),
-            }),
+        [LOW_TAP_POSITION]: yup.number().nullable(),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
-        [TAP_POSITION]: yup
-            .number()
-            .nullable()
-            .when([], {
-                is: () => previousValues?.[TAP_POSITION] === undefined,
-                then: (schema) => schema.required(),
-            }),
+        [TAP_POSITION]: yup.number().nullable(),
         [STEPS]: yup
             .array()
             .of(
@@ -234,10 +222,6 @@ const phaseTapChangerModificationValidationSchema = (previousValues, id) => ({
                     [STEPS_ALPHA]: yup.number(),
                 })
             )
-            .when(ENABLED, {
-                is: true,
-                then: (schema) => schema.min(1, 'GeneratePhaseTapRowsError'),
-            })
             .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
                 const alphaArray = array.map((step) => step[STEPS_ALPHA]);
                 return (
@@ -272,10 +256,9 @@ export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
 };
 
 export const getPhaseTapChangerModificationValidationSchema = (
-    previousValues,
     id = PHASE_TAP_CHANGER
 ) => {
-    return phaseTapChangerModificationValidationSchema(previousValues, id);
+    return phaseTapChangerModificationValidationSchema(id);
 };
 
 const phaseTapChangerEmptyFormData = (id) => ({

@@ -35,8 +35,12 @@ import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { getComputedPhaseTapChangerRegulationMode } from './phase-tap-changer-pane-utils';
 import { useMemo } from 'react';
+import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 
 export const previousRegulationType = (previousValues) => {
+    if (!previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId) {
+        return null;
+    }
     if (
         previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId !==
         previousValues?.id
@@ -68,24 +72,6 @@ const PhaseTapChangerPane = ({
     const regulationTypeWatch = useWatch({
         name: `${id}.${REGULATION_TYPE}`,
     });
-
-    const regulationEnabled = useMemo(() => {
-        return (
-            phaseTapChangerEnabledWatch &&
-            (regulationModeWatch ===
-                PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
-                regulationModeWatch ===
-                    PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id ||
-                (regulationModeWatch === null &&
-                    getComputedPhaseTapChangerRegulationMode(
-                        twtToModify?.[PHASE_TAP_CHANGER]
-                    )?.id === PHASE_REGULATION_MODES.CURRENT_LIMITER.id) ||
-                (regulationModeWatch === null &&
-                    getComputedPhaseTapChangerRegulationMode(
-                        twtToModify?.[PHASE_TAP_CHANGER]
-                    )?.id === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id))
-        );
-    }, [phaseTapChangerEnabledWatch, regulationModeWatch, twtToModify]);
 
     const getPhaseTapChangerRegulationModeLabel = (
         phaseTapChangerFormValues
@@ -138,6 +124,29 @@ const PhaseTapChangerPane = ({
         }
     };
 
+    const regulationType = useMemo(() => {
+        return regulationTypeWatch
+            ? regulationTypeWatch
+            : previousRegulationType(twtToModify);
+    }, [regulationTypeWatch, twtToModify]);
+
+    const regulationMode = useMemo(() => {
+        return regulationModeWatch
+            ? regulationModeWatch
+            : getComputedPhaseTapChangerRegulationMode(
+                  twtToModify?.[PHASE_TAP_CHANGER]
+              )?.id;
+    }, [regulationModeWatch, twtToModify]);
+
+    const regulationEnabled = useMemo(() => {
+        return (
+            phaseTapChangerEnabledWatch &&
+            (regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
+                regulationMode ===
+                    PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id)
+        );
+    }, [phaseTapChangerEnabledWatch, regulationMode]);
+
     const regulationModeField = (
         <SelectInput
             name={`${id}.${REGULATION_MODE}`}
@@ -157,6 +166,7 @@ const PhaseTapChangerPane = ({
             options={Object.values(REGULATION_TYPES)}
             disabled={!regulationEnabled}
             size={'small'}
+            disableClearable={!isModification}
             previousValue={getRegulationTypeLabel(
                 twtToModify,
                 twtToModify?.[PHASE_TAP_CHANGER]
@@ -171,6 +181,7 @@ const PhaseTapChangerPane = ({
             options={Object.values(SIDE)}
             disabled={!regulationEnabled}
             size={'small'}
+            disableClearable={!isModification}
             previousValue={getTapSideLabel(
                 twtToModify,
                 twtToModify?.[PHASE_TAP_CHANGER]
@@ -233,16 +244,9 @@ const PhaseTapChangerPane = ({
             previousRegulatingTerminalValue={
                 twtToModify?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId
             }
-            previousEquipmentSectionTypeValue={
+            previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
                 twtToModify?.[PHASE_TAP_CHANGER]
-                    ?.regulatingTerminalConnectableType
-                    ? twtToModify?.[PHASE_TAP_CHANGER]
-                          ?.regulatingTerminalConnectableType +
-                      ' : ' +
-                      twtToModify?.[PHASE_TAP_CHANGER]
-                          ?.regulatingTerminalConnectableId
-                    : null
-            }
+            )}
         />
     );
 
@@ -260,60 +264,37 @@ const PhaseTapChangerPane = ({
                             {regulationTypeField}
                         </Grid>
                         <Grid item xs={4}>
-                            {(regulationModeWatch ===
-                                PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
-                                (regulationModeWatch === null &&
-                                    twtToModify?.[PHASE_TAP_CHANGER]
-                                        ?.regulationMode ===
-                                        PHASE_REGULATION_MODES.CURRENT_LIMITER
-                                            .id)) &&
+                            {regulationMode ===
+                                PHASE_REGULATION_MODES.CURRENT_LIMITER.id &&
                                 currentLimiterRegulatingValueField}
-                            {(regulationModeWatch ===
+                            {regulationMode ===
                                 PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL
-                                    .id ||
-                                (regulationModeWatch === null &&
-                                    twtToModify?.[PHASE_TAP_CHANGER]
-                                        ?.regulationMode ===
-                                        PHASE_REGULATION_MODES
-                                            .ACTIVE_POWER_CONTROL.id)) &&
-                                flowSetPointRegulatingValueField}
+                                    .id && flowSetPointRegulatingValueField}
                         </Grid>
                         <Grid item xs={4}>
                             {targetDeadbandField}
                         </Grid>
                     </Grid>
                 )}
-                {((regulationEnabled &&
-                    regulationTypeWatch === REGULATION_TYPES.DISTANT.id) ||
-                    (regulationTypeWatch === null &&
-                        twtToModify?.[PHASE_TAP_CHANGER]
-                            ?.regulatingTerminalConnectableId &&
-                        twtToModify?.[PHASE_TAP_CHANGER]
-                            ?.regulatingTerminalConnectableId !==
-                            twtToModify?.id)) && (
-                    <Grid item container spacing={2}>
-                        <Grid
-                            item
-                            xs={4}
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                                alignItems: 'center',
-                            }}
-                        >
-                            <FormattedMessage id="DistantRegulatedTerminal" />
-                        </Grid>
-                        {gridItem(regulatingTerminalField, 8)}
-                    </Grid>
-                )}
                 {regulationEnabled &&
-                    (regulationTypeWatch === REGULATION_TYPES.LOCAL.id ||
-                        (regulationTypeWatch === null &&
-                            twtToModify?.[PHASE_TAP_CHANGER]
-                                ?.regulatingTerminalConnectableId &&
-                            twtToModify?.[PHASE_TAP_CHANGER]
-                                ?.regulatingTerminalConnectableId ===
-                                twtToModify?.id)) && (
+                    regulationType === REGULATION_TYPES.DISTANT.id && (
+                        <Grid item container spacing={2}>
+                            <Grid
+                                item
+                                xs={4}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <FormattedMessage id="DistantRegulatedTerminal" />
+                            </Grid>
+                            {gridItem(regulatingTerminalField, 8)}
+                        </Grid>
+                    )}
+                {regulationEnabled &&
+                    regulationType === REGULATION_TYPES.LOCAL.id && (
                         <Grid item container spacing={2}>
                             <Grid
                                 item

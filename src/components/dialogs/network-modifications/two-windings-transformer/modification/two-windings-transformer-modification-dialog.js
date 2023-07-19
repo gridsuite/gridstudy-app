@@ -162,15 +162,11 @@ const TwoWindingsTransformerModificationDialog = ({
                     [EQUIPMENT_NAME]: yup.string(),
                     ...getCharacteristicsValidationSchema(true),
                     ...getLimitsValidationSchema(),
-                    ...getRatioTapChangerModificationValidationSchema(
-                        twtToModify?.[RATIO_TAP_CHANGER]
-                    ),
-                    ...getPhaseTapChangerModificationValidationSchema(
-                        twtToModify?.[PHASE_TAP_CHANGER]
-                    ),
+                    ...getRatioTapChangerModificationValidationSchema(),
+                    ...getPhaseTapChangerModificationValidationSchema(),
                 })
                 .required(),
-        [twtToModify]
+        []
     );
 
     const formMethods = useForm({

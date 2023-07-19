@@ -33,6 +33,7 @@ import {
 import SelectInput from 'components/utils/rhf-inputs/select-input';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
+import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 
 export const previousRegulationType = (previousValues) => {
     if (
@@ -274,16 +275,9 @@ const RatioTapChangerPane = ({
             previousRegulatingTerminalValue={
                 previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId
             }
-            previousEquipmentSectionTypeValue={
+            previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
                 previousValues?.[RATIO_TAP_CHANGER]
-                    ?.regulatingTerminalConnectableType
-                    ? previousValues?.[RATIO_TAP_CHANGER]
-                          ?.regulatingTerminalConnectableType +
-                      ' : ' +
-                      previousValues?.[RATIO_TAP_CHANGER]
-                          ?.regulatingTerminalConnectableId
-                    : null
-            }
+            )}
         />
     );
 
