@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
@@ -53,9 +53,9 @@ interface ShortCircuitAnalysisResultsFeederResult {
     linkedElementId: string;
 }
 
-const ShortCircuitAnalysisResult: FunctionComponent<
-    ShortCircuitAnalysisResultProps
-> = ({ result }) => {
+const ShortCircuitAnalysisResult: FC<ShortCircuitAnalysisResultProps> = ({
+    result,
+}) => {
     const intl = useIntl();
     const theme: any = useTheme();
 

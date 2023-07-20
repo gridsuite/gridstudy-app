@@ -18,9 +18,9 @@ import {
 } from './shortcircuit-analysis-result.type';
 import { useNodeData } from 'components/study-container';
 import { ReduxState } from 'redux/reducer.type';
-import { FunctionComponent } from 'react';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
+import { FC } from 'react';
 
 interface ShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortcircuitAnalysisType;
@@ -31,7 +31,7 @@ const oneBusShortCircuitAnalysisResultInvalidations = [
     'oneBusShortCircuitAnalysisResult',
 ];
 
-export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
+export const ShortCircuitAnalysisGlobalResult: FC<
     ShortCircuitAnalysisGlobalResultProps
 > = ({ analysisType }) => {
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);

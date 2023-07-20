@@ -6,8 +6,7 @@
  */
 
 import { Tab, Tabs } from '@mui/material';
-import { UUID } from 'crypto';
-import { FunctionComponent, useCallback, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import {
     ShortcircuitAnalysisResultTabs,
     ShortcircuitAnalysisType,
@@ -21,12 +20,10 @@ import { ShortCircuitAnalysisGlobalResult } from './shortcircuit-analysis-result
 import { FormattedMessage } from 'react-intl';
 
 interface ShortCircuitAnalysisResultTabProps {
-    studyUuid: UUID;
-    nodeUuid: UUID;
     resultTabIndexRedirection: ResultTabIndexRedirection;
 }
 
-export const ShortCircuitAnalysisResultTab: FunctionComponent<
+export const ShortCircuitAnalysisResultTab: FC<
     ShortCircuitAnalysisResultTabProps
 > = ({ resultTabIndexRedirection }) => {
     const [tabIndex, setTabIndex] = useState(
