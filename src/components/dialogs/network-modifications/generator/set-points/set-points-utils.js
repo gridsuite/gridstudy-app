@@ -32,7 +32,7 @@ const getFrequencyRegulationEmptyFormData = (isGeneratorModification) => ({
     [DROOP]: null,
 });
 
-const getFrequencyRegulationSchema = (isGeneratorModification) => ({
+export const getFrequencyRegulationSchema = (isGeneratorModification) => ({
     [FREQUENCY_REGULATION]: yup
         .bool()
         .nullable()

@@ -52,6 +52,7 @@ const formSchema = yup.object().shape({
     [COUNTRY]: yup.string().nullable(),
     [ADDITIONAL_PROPERTIES]: yup
         .array()
+        .nullable()
         .of(
             yup.object().shape({
                 [NAME]: yup.string().nullable().required(),
@@ -68,9 +69,12 @@ const formSchema = yup.object().shape({
                 [ADDED]: yup.boolean(),
             })
         )
-        .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
-            checkUniquePropertiesNames(values)
-        ),
+        .test('checkUniqueProperties', 'DuplicatedProps', (values) => {
+            if (values) {
+                return checkUniquePropertiesNames(values);
+            }
+            return true;
+        }),
 });
 
 const getPropertiesFromModification = (properties) => {
@@ -259,7 +263,7 @@ const SubstationModificationDialog = ({
                 substation[COUNTRY],
                 !!editData,
                 editData?.uuid,
-                substation[ADDITIONAL_PROPERTIES].filter(
+                substation[ADDITIONAL_PROPERTIES]?.filter(
                     (p) => p[VALUE] != null || p[DELETION_MARK]
                 )
             ).catch((error) => {
