@@ -137,6 +137,7 @@ const BatteryModificationDialog = ({
                     editData?.activePowerSetpoint?.value ?? null,
                 [REACTIVE_POWER_SET_POINT]:
                     editData?.reactivePowerSetpoint?.value ?? null,
+                [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
                 [MINIMUM_REACTIVE_POWER]:
                     editData?.minimumReactivePower?.value ?? null,
@@ -335,7 +336,9 @@ const BatteryModificationDialog = ({
             );
 
             const isFrequencyRegulationOn =
-                batteryToModify.activePowerControlOn === true;
+                battery[FREQUENCY_REGULATION] === true ||
+                (battery[FREQUENCY_REGULATION] === null &&
+                    batteryToModify.activePowerControlOn === true);
 
             const isReactiveCapabilityCurveOn =
                 battery[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
@@ -348,10 +351,11 @@ const BatteryModificationDialog = ({
                 battery[MINIMUM_ACTIVE_POWER],
                 battery[MAXIMUM_ACTIVE_POWER],
                 battery[ACTIVE_POWER_SET_POINT],
+                battery[REACTIVE_POWER_SET_POINT],
                 undefined,
                 undefined,
                 editData?.uuid,
-                isReactiveCapabilityCurveOn,
+                battery[FREQUENCY_REGULATION],
                 isFrequencyRegulationOn ? battery[DROOP] : null,
                 isReactiveCapabilityCurveOn,
                 isReactiveCapabilityCurveOn

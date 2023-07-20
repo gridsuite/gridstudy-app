@@ -24,7 +24,6 @@ import Grid from '@mui/material/Grid';
 import React from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import ReactiveLimitsForm from '../../generator/reactive-limits/reactive-limits-form';
-import { FormattedMessage } from 'react-intl';
 import { TextField } from '@mui/material';
 import FrequencyRegulation from '../../generator/set-points/frequency-regulation';
 
@@ -104,21 +103,11 @@ const BatteryModificationForm = ({
                 {gridItem(batteryNameField, 4)}
             </Grid>
             {/* Limits part */}
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h3>
-                        <FormattedMessage id="Limits" />
-                    </h3>
-                    <h4>
-                        <FormattedMessage id="ActiveLimits" />
-                    </h4>
-                </Grid>
-            </Grid>
+            <GridSection title="Limits" />
             <Grid container spacing={2}>
                 {gridItem(minimumActivePowerField, 4)}
                 {gridItem(maximumActivePowerField, 4)}
             </Grid>
-
             {/* Reactive limits part */}
             <ReactiveLimitsForm
                 batteryInfos={batteryToModify}
@@ -126,7 +115,6 @@ const BatteryModificationForm = ({
                     updatePreviousReactiveCapabilityCurveTable
                 }
             />
-
             {/* Set points part */}
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>

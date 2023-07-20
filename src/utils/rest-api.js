@@ -1478,9 +1478,9 @@ export function modifyBattery(
     voltageLevelId,
     busOrBusbarSectionId,
     modificationId,
-    isReactiveCapabilityCurveOn,
     frequencyRegulation,
     droop,
+    isReactiveCapabilityCurveOn,
     maximumReactivePower,
     minimumReactivePower,
     reactiveCapabilityCurve
