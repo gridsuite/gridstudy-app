@@ -18,7 +18,6 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 
-const FONT_SIZE = '0.75rem';
 const FILTER_TEXT_FIELD_WIDTH = '250px';
 
 const CustomHeaderComponent = ({
@@ -96,11 +95,11 @@ const CustomHeaderComponent = ({
                 <Grid item>{displayName}</Grid>
                 {isSortActive && sortWay && (
                     <Grid item>
-                        <IconButton fontSize="small">
+                        <IconButton size={'small'}>
                             {sortWay === 1 ? (
-                                <ArrowUpward sx={{ fontSize: FONT_SIZE }} />
+                                <ArrowUpward fontSize={'small'} />
                             ) : (
-                                <ArrowDownward sx={{ fontSize: FONT_SIZE }} />
+                                <ArrowDownward fontSize={'small'} />
                             )}
                         </IconButton>
                     </Grid>
@@ -108,13 +107,13 @@ const CustomHeaderComponent = ({
             </Grid>
             {isFilterActive && isFilterIconDisplayed && (
                 <Grid item xs={2}>
-                    <IconButton onClick={handleShowFilter}>
+                    <IconButton size={'small'} onClick={handleShowFilter}>
                         <Badge
                             color="secondary"
                             variant="dot"
                             invisible={!filterSelectedOption}
                         >
-                            <Menu sx={{ fontSize: FONT_SIZE }} />
+                            <Menu fontSize={'small'} />
                         </Badge>
                     </IconButton>
                 </Grid>
@@ -126,11 +125,11 @@ const CustomHeaderComponent = ({
                 onClose={handleCloseFilter}
                 anchorOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'center',
+                    horizontal: 'left',
                 }}
                 transformOrigin={{
                     vertical: 'top',
-                    horizontal: 'center',
+                    horizontal: 'left',
                 }}
             >
                 <Autocomplete
@@ -142,13 +141,10 @@ const CustomHeaderComponent = ({
                     onChange={(_, data) => {
                         handleFilterChange(field, data);
                     }}
+                    size="small"
+                    sx={{ minWidth: FILTER_TEXT_FIELD_WIDTH }}
                     renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            fullWidth
-                            size="small"
-                            style={{ width: FILTER_TEXT_FIELD_WIDTH }}
-                        />
+                        <TextField {...params} fullWidth />
                     )}
                 />
             </Popover>
