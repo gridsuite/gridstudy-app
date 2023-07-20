@@ -6,7 +6,7 @@
  */
 
 import { Tab, Tabs } from '@mui/material';
-import { FC, useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import {
     ShortcircuitAnalysisResultTabs,
     ShortcircuitAnalysisType,
@@ -23,7 +23,7 @@ interface ShortCircuitAnalysisResultTabProps {
     resultTabIndexRedirection: ResultTabIndexRedirection;
 }
 
-export const ShortCircuitAnalysisResultTab: FC<
+export const ShortCircuitAnalysisResultTab: FunctionComponent<
     ShortCircuitAnalysisResultTabProps
 > = ({ resultTabIndexRedirection }) => {
     const [tabIndex, setTabIndex] = useState(

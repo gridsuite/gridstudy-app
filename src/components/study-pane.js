@@ -150,6 +150,8 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     function showOneBusShortcircuitResults() {
         props.onChangeTab(2); // switch to results view
         // redirect to shorcircuit analysis tab, one bus subtab
+        // TODO: it's working only because the object passed to the state is different each time which will cause the useEffect to execute
+        // done this way to match the "showInSpreadsheet" behaviour
         setResultTabIndexRedirection([
             ResultsTabsRootLevel.SHORTCIRCUIT_ANALYSIS,
             ShortcircuitAnalysisResultTabs.ONE_BUS,

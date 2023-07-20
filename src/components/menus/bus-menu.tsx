@@ -15,7 +15,7 @@ import {
 import { makeStyles } from '@mui/styles';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import { FC, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import {
     isNodeBuilt,
     isNodeReadOnly,
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const BusMenu: FC<BusMenuProps> = ({
+export const BusMenu: FunctionComponent<BusMenuProps> = ({
     busId,
     handleRunShortcircuitAnalysis,
     position,
