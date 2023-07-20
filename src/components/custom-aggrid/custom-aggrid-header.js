@@ -41,9 +41,7 @@ const CustomHeaderComponent = ({
 
     const handleCloseFilter = () => {
         setFilterAnchorEl(null);
-        if (!filterSelectedOption) {
-            setIsHoveringHeader(false);
-        }
+        setIsHoveringHeader(false);
     };
 
     const handleFilterChange = (field, data) => {
