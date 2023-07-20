@@ -147,18 +147,16 @@ function SingleLineDiagramContent(props) {
     const [busMenu, setBusMenu] = useState({
         position: [-1, -1],
         busId: null,
-        //equipmentType: null,
         svgId: null,
         display: null,
     });
 
     const showBusMenu = useCallback(
-        (busId, equipmentType, svgId, x, y) => {
+        (busId, svgId, x, y) => {
             handleTogglePopover(false, null, null);
             setBusMenu({
                 position: [x, y],
                 busId: busId,
-                //equipmentType: getEquipmentTypeFromFeederType(equipmentType),
                 svgId: svgId,
                 display: true,
             });

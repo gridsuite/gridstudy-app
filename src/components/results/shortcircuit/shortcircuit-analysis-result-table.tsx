@@ -11,7 +11,6 @@ import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
 import { unitToKiloUnit } from 'utils/rounding';
 import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
-import { AgGridReactProps } from 'ag-grid-react';
 import {
     GridReadyEvent,
     IRowNode,
@@ -227,16 +226,17 @@ const ShortCircuitAnalysisResult: FunctionComponent<
     const renderResult = () => {
         const rows = flattenResult(result);
 
-        const aggridProps: AgGridReactProps = {
-            columnDefs: columns,
-            getRowStyle: getRowStyle,
-            defaultColDef: defaultColDef,
-            onGridReady: onGridReady,
-            enableCellTextSelection: true,
-            postSortRows: handlePostSortRows,
-        };
-
-        return <CustomAGGrid rowData={rows} {...aggridProps} ref={null} />;
+        return (
+            <CustomAGGrid
+                rowData={rows}
+                defaultColDef={defaultColDef}
+                onGridReady={onGridReady}
+                getRowStyle={getRowStyle}
+                enableCellTextSelection={true}
+                postSortRows={handlePostSortRows}
+                columnDefs={columns}
+            />
+        );
     };
 
     return <>{renderResult()}</>;

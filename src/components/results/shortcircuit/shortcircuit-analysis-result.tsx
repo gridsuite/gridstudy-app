@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import WaitingLoader from 'components/utils/waiting-loader';
 import ShortCircuitAnalysisResult from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
@@ -46,24 +53,19 @@ export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
             ? shortCircuitAnalysisResultInvalidations
             : oneBusShortCircuitAnalysisResultInvalidations;
 
-    const [
-        shortCircuitAnalysisResult,
-        isWaitingShortCircuitAnalysisResult,
-        errorMessage,
-    ] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        resultsFetcher,
-        resultsInvalidationsNotif
-    ) as [ShortcircuitAnalysisResult, boolean, string];
+    const [shortCircuitAnalysisResult, isWaitingShortCircuitAnalysisResult] =
+        useNodeData(
+            studyUuid,
+            currentNode?.id,
+            resultsFetcher,
+            resultsInvalidationsNotif
+        ) as [ShortcircuitAnalysisResult, boolean, string];
 
     const isLoading =
         analysisType === ShortcircuitAnalysisType.ALL_BUSES
             ? isWaitingShortCircuitAnalysisResult
             : oneBusShortcircuitAnalysisState === RunningStatus.RUNNING ||
               isWaitingShortCircuitAnalysisResult;
-
-    console.log(errorMessage);
 
     return (
         <WaitingLoader message={'LoadingRemoteData'} loading={isLoading}>
