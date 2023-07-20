@@ -91,6 +91,7 @@ import {
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_POST_LOADFLOW,
     SET_COMPUTING_STATUS,
+    SET_AVAILABLE_SERVICES
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -149,7 +150,7 @@ const paramsInitialState = {
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
-    [AVAILABLE_SERVICES]: ['LoadFlow'],
+    [AVAILABLE_SERVICES]: [],
 };
 
 const initialComputingStatus = {
@@ -1000,6 +1001,9 @@ export const reducer = createReducer(initialState, {
     },
     [SET_COMPUTING_STATUS]: (state, action) => {
         state.computingStatus[action.computingType] = action.runningStatus;
+    },
+    [SET_AVAILABLE_SERVICES]: (state, action) => {
+        state.availableServices = action.availableServices;
     },
 });
 

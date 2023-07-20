@@ -157,14 +157,12 @@ export const ResultViewTab = ({
                     variant="scrollable"
                     onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
                 >
-                    {isAvailable('LoadFlow') && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'LoadFlow',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'LoadFlow',
+                        })}
+                        disabled={disabled}
+                    />
                     {isAvailable('SecurityAnalysis') && (
                         <Tab
                             label={intl.formatMessage({
