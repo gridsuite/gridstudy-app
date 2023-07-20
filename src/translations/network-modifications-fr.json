@@ -30,5 +30,6 @@
     "network_modifications/deletingModification": "Suppression de la modification en cours ...",
     "network_modifications/updatingModification": "Mise à jour de la modification en cours ...",
     "network_modifications/modifications": "Mise à jour de la liste des modifications en cours ...",
-    "network_modifications/GENERATION_DISPATCH": "Démarrage de groupes {computedLabel}"
+    "network_modifications/GENERATION_DISPATCH": "Démarrage de groupes {computedLabel}",
+    "network_modifications/MASSIVE_EQUIPMENTS_MODIFICATIONS": "Modifications massives d'équipements {computedLabel}"
 }

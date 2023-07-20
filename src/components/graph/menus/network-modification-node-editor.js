@@ -66,6 +66,8 @@ import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifica
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
+import MassiveEquipmentsModificationDialog from 'components/dialogs/network-modifications/massive-equipments-modifications/massive-equipments-modifications-dialog';
+
 import { fetchNetworkModification } from '../../../services/network-modification';
 
 const useStyles = makeStyles((theme) => ({
@@ -368,6 +370,12 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(GenerationDispatchDialog),
                 },
             ],
+        },
+        {
+            id: 'MASSIVE_EQUIPMENTS_MODIFICATIONS',
+            label: 'MassiveEquipmentsModifications',
+            hide: true,
+            action: () => adapt(MassiveEquipmentsModificationDialog),
         },
     ];
 

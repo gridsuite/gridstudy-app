@@ -979,6 +979,7 @@ export function getVoltageInitParameters(studyUuid) {
     console.debug(getVoltageInitParams);
     return backendFetchJson(getVoltageInitParams);
 }
+
 // --- Voltage init API - END
 
 // -- Parameters API - END
@@ -1403,6 +1404,7 @@ export function generatorScaling(
             : response.text().then((text) => Promise.reject(text))
     );
 }
+
 export function createBattery(
     studyUuid,
     currentNodeUuid,
@@ -1557,6 +1559,7 @@ export function modifyLoad(
         }),
     });
 }
+
 export function modifyGenerator(
     studyUuid,
     currentNodeUuid,
@@ -2748,5 +2751,16 @@ export function setSecurityAnalysisParameters(studyUuid, newParams) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newParams),
+    });
+}
+
+export function cloneVoltageInitModifications(studyUuid, currentNodeId) {
+    console.info('cloning voltage init modifications');
+    const cloneVoltageInitModificationsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeId) +
+        '/voltage-init/modifications';
+
+    return backendFetch(cloneVoltageInitModificationsUrl, {
+        method: 'PUT',
     });
 }

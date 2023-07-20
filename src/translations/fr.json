@@ -1045,5 +1045,9 @@
     "muiTablePaginationPrevious": "Aller à la page précédente",
     "muiTablePaginationNext": "Aller à la page suivante",
     "muiTablePaginationFirst": "Aller à la première page",
-    "muiTablePaginationLast": "Aller à la dernière page"
+    "muiTablePaginationLast": "Aller à la dernière page",
+
+    "applyModifications": "Appliquer modifications",
+    "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
+    "MassiveEquipmentsModifications": "Modifications massives d'équipements"
 }

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -15,6 +15,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
+import Button from '@mui/material/Button';
+import { useParams } from 'react-router-dom';
+import { cloneVoltageInitModifications } from 'utils/rest-api';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -32,16 +36,35 @@ const useStyles = makeStyles((theme) => ({
     fail: {
         color: red[500],
     },
+    buttonApplyModifications: {
+        position: 'relative',
+        top: 5,
+        left: 80,
+    },
 }));
 
 const VoltageInitResult = ({ result, status }) => {
     const classes = useStyles();
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const { snackError } = useSnackMessage();
 
-    const [tabIndex, setTabIndex] = React.useState(0);
+    const [tabIndex, setTabIndex] = useState(0);
 
     const intl = useIntl();
 
     const viNotif = useSelector((state) => state.voltageInitNotif);
+
+    const applyModifications = useCallback(() => {
+        cloneVoltageInitModifications(studyUuid, currentNode.id).catch(
+            (errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errCloneVoltageInitModificationMsg',
+                });
+            }
+        );
+    }, [currentNode?.id, snackError, studyUuid]);
 
     function renderIndicatorsTable(indicators) {
         const rows = indicators
@@ -123,6 +146,16 @@ const VoltageInitResult = ({ result, status }) => {
                                 })}
                             />
                         </Tabs>
+                    </div>
+
+                    <div className={classes.buttonApplyModifications}>
+                        <Button
+                            variant="outlined"
+                            onClick={applyModifications}
+                            disabled={!result}
+                        >
+                            <FormattedMessage id="applyModifications" />
+                        </Button>
                     </div>
                 </div>
                 <div style={{ flexGrow: 1 }}>
