@@ -377,7 +377,11 @@ const App = () => {
                 getAvailableOptionalServices()
                     .then((services) => {
                         services.forEach((service, offset) => {
-                            if (Object.keys(AVAILABLE_SERVICES).includes(service)) {
+                            if (
+                                Object.keys(AVAILABLE_SERVICES).includes(
+                                    service
+                                )
+                            ) {
                                 services[offset] = AVAILABLE_SERVICES[service];
                             }
                         });

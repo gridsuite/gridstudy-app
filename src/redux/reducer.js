@@ -91,7 +91,7 @@ import {
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_POST_LOADFLOW,
     SET_COMPUTING_STATUS,
-    SET_AVAILABLE_SERVICES
+    SET_AVAILABLE_SERVICES,
 } from './actions';
 import {
     getLocalStorageTheme,
