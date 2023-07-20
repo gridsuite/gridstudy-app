@@ -39,6 +39,7 @@ import SubstationModificationDialog from './dialogs/network-modifications/substa
 import VoltageLevelModificationDialog from './dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import LineModificationDialog from './dialogs/network-modifications/line/modification/line-modification-dialog';
+import EquipmentDeletionDialog from './dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -156,10 +157,12 @@ export const NetworkMapTab = ({
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
     const [equipmentToModify, setEquipmentToModify] = useState();
     const [modificationDialogOpen, setModificationDialogOpen] = useState(false);
+    const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
 
     const closeModificationDialog = () => {
         setEquipmentToModify();
         setModificationDialogOpen(false);
+        setDeletionDialogOpen(false);
     };
 
     function renderModificationDialog() {
@@ -201,11 +204,43 @@ export const NetworkMapTab = ({
                 break;
         }
     }
-    const handleOpenModificationDialog = (equipmentId, equipmentType) => {
-        setEquipmentToModify({ equipmentId, equipmentType });
-        setModificationDialogOpen(true);
-        closeEquipmentMenu();
-    };
+
+    function renderDeletionDialog() {
+        switch (equipmentToModify.equipmentType) {
+            case equipments.hvdcLines:
+                return (
+                    <EquipmentDeletionDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        isUpdate={true}
+                        onClose={() => closeModificationDialog()}
+                    />
+                );
+            default:
+                break;
+        }
+    }
+
+    const handleOpenModificationDialog = useCallback(
+        (equipmentId, equipmentType) => {
+            setEquipmentToModify({ equipmentId, equipmentType });
+            setModificationDialogOpen(true);
+            closeEquipmentMenu();
+        },
+        []
+    );
+
+    const handleOpenDeletionDialog = useCallback(
+        (equipmentId, equipmentType) => {
+            setEquipmentToModify({ equipmentId, equipmentType });
+            setDeletionDialogOpen(true);
+            closeEquipmentMenu();
+        },
+        []
+    );
+
     function withEquipment(Menu, props) {
         return (
             <Menu
@@ -234,6 +269,12 @@ export const NetworkMapTab = ({
         equipments.voltageLevels
     );
 
+    const MenuHvdcLine = withEquipmentMenu(
+        BaseEquipmentMenu,
+        'hvdc-line-menus',
+        equipments.hvdcLines
+    );
+
     function showEquipmentMenu(equipment, x, y, type) {
         setEquipmentMenu({
             position: [x, y],
@@ -259,21 +300,36 @@ export const NetworkMapTab = ({
 
     const handleDeleteEquipment = useCallback(
         (equipmentType, equipmentId) => {
-            deleteEquipment(
-                studyUuid,
-                currentNode?.id,
-                equipmentType,
-                equipmentId,
-                undefined
-            ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'UnableToDeleteEquipment',
+            if (
+                equipmentType === EQUIPMENT_TYPES.HVDC_LINE.type &&
+                mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType ===
+                    'LCC'
+            ) {
+                // only hvdc line with LCC requires a Dialog (to select MCS)
+                handleOpenDeletionDialog(equipmentId, equipments.hvdcLines);
+            } else {
+                deleteEquipment(
+                    studyUuid,
+                    currentNode?.id,
+                    equipmentType,
+                    equipmentId,
+                    undefined
+                ).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'UnableToDeleteEquipment',
+                    });
                 });
-            });
-            closeEquipmentMenu();
+                closeEquipmentMenu();
+            }
         },
-        [studyUuid, currentNode?.id, snackError]
+        [
+            studyUuid,
+            currentNode?.id,
+            snackError,
+            handleOpenDeletionDialog,
+            mapEquipments?.hvdcLinesById,
+        ]
     );
 
     function closeChoiceVoltageLevelMenu() {
@@ -828,14 +884,14 @@ export const NetworkMapTab = ({
         }
         return (
             <>
-                {(equipmentMenu.equipmentType === equipments.lines ||
-                    equipmentMenu.equipmentType === equipments.hvdcLines) &&
+                {equipmentMenu.equipmentType === equipments.lines &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
-
+                {equipmentMenu.equipmentType === equipments.hvdcLines &&
+                    withEquipment(MenuHvdcLine)}
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
                 {equipmentMenu.equipmentType === equipments.voltageLevels &&
@@ -915,6 +971,7 @@ export const NetworkMapTab = ({
             {renderMap()}
             {renderEquipmentMenu()}
             {modificationDialogOpen && renderModificationDialog()}
+            {deletionDialogOpen && renderDeletionDialog()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
