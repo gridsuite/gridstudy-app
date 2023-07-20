@@ -509,7 +509,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
 
     const specificParamsDescrWithoutNanVals = useMemo(() => {
         let specificParamsDescrCopy = {};
-        Object.entries(specificParamsDescriptions).forEach(([k, v]) => {
+        specificParamsDescriptions && Object.entries(specificParamsDescriptions).forEach(([k, v]) => {
             specificParamsDescrCopy = {
                 ...specificParamsDescrCopy,
                 [k]: replaceAllDefaultValues(v, 'NaN', ''),

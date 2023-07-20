@@ -2771,7 +2771,7 @@ export function setSecurityAnalysisParameters(studyUuid, newParams) {
     });
 }
 
-export function getAvailableOptionalServices(studyUuid) {
+export function getAvailableOptionalServices() {
     console.info('get available optional services');
     const url = PREFIX_STUDY_QUERIES + '/v1/studies/optional-up-services';
     console.debug(url);

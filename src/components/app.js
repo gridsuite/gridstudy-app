@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-
+import { AVAILABLE_SERVICES } from './utils/available-services.js';
 import {
     Navigate,
     Route,
@@ -42,6 +42,7 @@ import {
     selectMapManualRefresh,
     selectEnableDeveloperMode,
     setParamsLoaded,
+    setAvailableServices,
 } from '../redux/actions';
 
 import {
@@ -55,7 +56,10 @@ import {
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
 
-import { fetchDefaultParametersValues } from '../utils/rest-api';
+import {
+    fetchDefaultParametersValues,
+    getAvailableOptionalServices,
+} from '../utils/rest-api';
 import {
     APP_NAME,
     COMMON_APP_NAME,
@@ -369,11 +373,32 @@ const App = () => {
                 }
             );
 
+            const fetchAvailableOptionalServices =
+                getAvailableOptionalServices()
+                    .then((services) => {
+                        services.forEach(([key, value]) => {
+                            if (AVAILABLE_SERVICES[value] === value) {
+                                services[key] = AVAILABLE_SERVICES[value];
+                            }
+                        });
+                        dispatch(setAvailableServices(services));
+                    })
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+
             // Dispatch globally when all params are loaded to allow easy waiting.
             // This might not be necessary but allows to gradually migrate parts
             // of the code that don't subscribe to exactly the parameters they need.
             // Code that depends on this could be rewritten to depend on what it acually needs.
-            Promise.all([fetchCommonConfigPromise, fetchAppConfigPromise])
+            Promise.all([
+                fetchCommonConfigPromise,
+                fetchAppConfigPromise,
+                fetchAvailableOptionalServices,
+            ])
                 .then(() => {
                     dispatch(setParamsLoaded());
                 })
