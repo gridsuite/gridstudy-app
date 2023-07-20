@@ -2773,7 +2773,7 @@ export function setSecurityAnalysisParameters(studyUuid, newParams) {
 
 export function getAvailableOptionalServices() {
     console.info('get available optional services');
-    const url = PREFIX_STUDY_QUERIES + '/v1/studies/optional-up-services';
+    const url = PREFIX_STUDY_QUERIES + '/v1/optional-up-services';
     console.debug(url);
     return backendFetchJson(url);
 }

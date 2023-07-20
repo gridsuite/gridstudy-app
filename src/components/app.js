@@ -376,9 +376,9 @@ const App = () => {
             const fetchAvailableOptionalServices =
                 getAvailableOptionalServices()
                     .then((services) => {
-                        services.forEach(([key, value]) => {
-                            if (AVAILABLE_SERVICES[value] === value) {
-                                services[key] = AVAILABLE_SERVICES[value];
+                        services.forEach((service, offset) => {
+                            if (Object.keys(AVAILABLE_SERVICES).includes(service)) {
+                                services[offset] = AVAILABLE_SERVICES[service];
                             }
                         });
                         dispatch(setAvailableServices(services));
