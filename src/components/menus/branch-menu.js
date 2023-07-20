@@ -80,8 +80,6 @@ const withBranchMenu =
             switch (equipmentType) {
                 case equipments.lines:
                     return 'Line';
-                case equipments.hvdcLines:
-                    return 'HvdcLine';
                 case equipments.twoWindingsTransformers:
                     return '2WTransformer';
                 default:
@@ -93,8 +91,6 @@ const withBranchMenu =
             switch (equipmentType) {
                 case equipments.lines:
                     return EQUIPMENT_TYPES.LINE.type;
-                case equipments.hvdcLines:
-                    return EQUIPMENT_TYPES.HVDC_LINE.type;
                 case equipments.twoWindingsTransformers:
                     return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
                 default:
@@ -228,30 +224,28 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== equipments.hvdcLines && (
-                    <MenuItem
-                        className={classes.menuItem}
-                        onClick={() => handleTrip()}
-                        disabled={
-                            !isNodeEditable ||
-                            branch.branchStatus === 'FORCED_OUTAGE'
-                        }
-                    >
-                        <ListItemIcon>
-                            <OfflineBoltOutlinedIcon />
-                        </ListItemIcon>
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() => handleTrip()}
+                    disabled={
+                        !isNodeEditable ||
+                        branch.branchStatus === 'FORCED_OUTAGE'
+                    }
+                >
+                    <ListItemIcon>
+                        <OfflineBoltOutlinedIcon />
+                    </ListItemIcon>
 
-                        <ListItemText
-                            primary={
-                                <Typography noWrap>
-                                    {intl.formatMessage({
-                                        id: getTranslationKey('Trip'),
-                                    })}
-                                </Typography>
-                            }
-                        />
-                    </MenuItem>
-                )}
+                    <ListItemText
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({
+                                    id: getTranslationKey('Trip'),
+                                })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
                 {equipmentType === equipments.lines && (
                     <MenuItem
                         className={classes.menuItem}
@@ -347,32 +341,30 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== equipments.hvdcLines && (
-                    <MenuItem
-                        className={classes.menuItem}
-                        onClick={() =>
-                            handleDeleteEquipment(
-                                getFeederTypeFromEquipmentType(equipmentType),
-                                equipment.id
-                            )
-                        }
-                        disabled={!isNodeEditable}
-                    >
-                        <ListItemIcon>
-                            <DeleteIcon />
-                        </ListItemIcon>
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() =>
+                        handleDeleteEquipment(
+                            getFeederTypeFromEquipmentType(equipmentType),
+                            equipment.id
+                        )
+                    }
+                    disabled={!isNodeEditable}
+                >
+                    <ListItemIcon>
+                        <DeleteIcon />
+                    </ListItemIcon>
 
-                        <ListItemText
-                            primary={
-                                <Typography noWrap>
-                                    {intl.formatMessage({
-                                        id: 'DeleteFromMenu',
-                                    })}
-                                </Typography>
-                            }
-                        />
-                    </MenuItem>
-                )}
+                    <ListItemText
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({
+                                    id: 'DeleteFromMenu',
+                                })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
                 {(equipmentType === equipments.twoWindingsTransformers ||
                     equipmentType === equipments.lines) && (
                     <MenuItem

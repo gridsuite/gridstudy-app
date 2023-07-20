@@ -440,6 +440,24 @@ export function fetchHvdcLines(studyUuid, currentNodeUuid, substationsIds) {
     );
 }
 
+export function fetchHvdcLineWithShuntCompensators(
+    studyUuid,
+    currentNodeUuid,
+    hvdcLineId
+) {
+    console.info(
+        `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' and node '${currentNodeUuid}'...`
+    );
+    const fetchEquipmentsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-map' +
+        '/hvdc-lines/' +
+        hvdcLineId +
+        '/shunt-compensators';
+    console.debug(fetchEquipmentsUrl);
+    return backendFetchJson(fetchEquipmentsUrl);
+}
+
 export function fetchLccConverterStations(
     studyUuid,
     currentNodeUuid,
@@ -1451,6 +1469,68 @@ export function generatorScaling(
             ? response.text()
             : response.text().then((text) => Promise.reject(text))
     );
+}
+export function createBattery(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    connectionName,
+    connectionDirection,
+    connectionPosition,
+    minActivePower,
+    maxActivePower,
+    isReactiveCapabilityCurveOn,
+    minimumReactivePower,
+    maximumReactivePower,
+    reactiveCapabilityCurve,
+    activePowerSetpoint,
+    reactivePowerSetpoint,
+    frequencyRegulation,
+    droop,
+    isUpdate = false,
+    modificationUuid
+) {
+    let createBatteryUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating battery creation');
+    } else {
+        console.info('Creating battery creation');
+    }
+
+    return backendFetchText(createBatteryUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.BATTERY_CREATION.type,
+            equipmentId: id,
+            equipmentName: name,
+            voltageLevelId,
+            busOrBusbarSectionId,
+            connectionName,
+            connectionDirection,
+            connectionPosition,
+            minActivePower,
+            maxActivePower,
+            reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
+            minimumReactivePower,
+            maximumReactivePower,
+            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+            activePowerSetpoint,
+            reactivePowerSetpoint,
+            participate: frequencyRegulation,
+            droop,
+        }),
+    });
 }
 
 export function createLoad(
@@ -2527,7 +2607,8 @@ export function deleteEquipment(
     currentNodeUuid,
     equipmentType,
     equipmentId,
-    modificationUuid
+    modificationUuid,
+    specificEquipmentInfos
 ) {
     let deleteEquipmentUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -2550,6 +2631,7 @@ export function deleteEquipment(
             type: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
             equipmentId: equipmentId,
             equipmentType: equipmentType,
+            specificEquipmentInfos: specificEquipmentInfos,
         }),
     });
 }
