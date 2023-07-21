@@ -9,7 +9,7 @@ import React, { useMemo, useCallback } from 'react';
 import { useTheme } from '@mui/styles';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { ALLOWED_KEYS } from './utils/config-tables';
-import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
+import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;

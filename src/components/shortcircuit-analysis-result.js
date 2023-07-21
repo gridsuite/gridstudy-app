@@ -9,7 +9,7 @@ import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { CustomAGGrid } from './dialogs/custom-aggrid';
+import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
 import { useTheme } from '@mui/styles';
 import { unitToKiloUnit } from '../utils/rounding';
 
