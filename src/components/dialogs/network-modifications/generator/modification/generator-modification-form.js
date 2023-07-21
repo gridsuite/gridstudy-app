@@ -226,7 +226,7 @@ const GeneratorModificationForm = ({
 
             {/* Reactive limits part */}
             <ReactiveLimitsForm
-                generatorToModify={generatorToModify}
+                equipmentToModify={generatorToModify}
                 updatePreviousReactiveCapabilityCurveTable={
                     updatePreviousReactiveCapabilityCurveTable
                 }
@@ -237,7 +237,7 @@ const GeneratorModificationForm = ({
                 studyUuid={studyUuid}
                 currentNodeUuid={currentNodeUuid}
                 voltageLevelOptions={voltageLevelOptions}
-                isGeneratorModification={true}
+                isEquipmentModification={true}
                 previousValues={generatorToModify}
             />
 

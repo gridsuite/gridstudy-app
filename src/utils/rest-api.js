@@ -1403,6 +1403,7 @@ export function generatorScaling(
             : response.text().then((text) => Promise.reject(text))
     );
 }
+
 export function createBattery(
     studyUuid,
     currentNodeUuid,

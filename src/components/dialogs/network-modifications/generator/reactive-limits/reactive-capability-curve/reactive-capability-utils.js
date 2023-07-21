@@ -66,7 +66,7 @@ export const getReactiveCapabilityCurveEmptyFormData = (
     };
 };
 
-function getNotNullPFromArray(values, isGeneratorModification) {
+function getNotNullPFromArray(values, isEquipmentModification) {
     return values
         .map((element) => {
             const pValue = element[P];
@@ -78,19 +78,19 @@ function getNotNullPFromArray(values, isGeneratorModification) {
         .filter((p) => p !== null);
 }
 
-function checkAllPValuesAreUnique(values, isGeneratorModification) {
+function checkAllPValuesAreUnique(values, isEquipmentModification) {
     const validActivePowerValues = getNotNullPFromArray(
         values,
-        isGeneratorModification
+        isEquipmentModification
     );
     const setOfPs = [...new Set(validActivePowerValues)];
     return setOfPs.length === validActivePowerValues.length;
 }
 
-function checkAllPValuesBetweenMinMax(values, isGeneratorModification) {
+function checkAllPValuesBetweenMinMax(values, isEquipmentModification) {
     const validActivePowerValues = getNotNullPFromArray(
         values,
-        isGeneratorModification
+        isEquipmentModification
     );
     const minP = validActivePowerValues[0];
     const maxP = validActivePowerValues[validActivePowerValues.length - 1];
@@ -100,7 +100,7 @@ function checkAllPValuesBetweenMinMax(values, isGeneratorModification) {
 
 export const getReactiveCapabilityCurveValidationSchema = (
     id = REACTIVE_CAPABILITY_CURVE_TABLE,
-    isGeneratorModification = false
+    isEquipmentModification = false
 ) => ({
     [id]: yup
         .array()
@@ -110,7 +110,7 @@ export const getReactiveCapabilityCurveValidationSchema = (
             then: (schema) =>
                 schema
                     .when([], {
-                        is: () => !isGeneratorModification,
+                        is: () => !isEquipmentModification,
                         then: (schema) => schema.of(getCreationRowSchema()),
                         otherwise: (schema) =>
                             schema.of(getModificationRowSchema()),
@@ -122,7 +122,7 @@ export const getReactiveCapabilityCurveValidationSchema = (
                         (values) =>
                             checkAllPValuesAreUnique(
                                 values,
-                                isGeneratorModification
+                                isEquipmentModification
                             )
                     )
                     .test(
@@ -131,7 +131,7 @@ export const getReactiveCapabilityCurveValidationSchema = (
                         (values) =>
                             checkAllPValuesBetweenMinMax(
                                 values,
-                                isGeneratorModification
+                                isEquipmentModification
                             )
                     ),
         }),

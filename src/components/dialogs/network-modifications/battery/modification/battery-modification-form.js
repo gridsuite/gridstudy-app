@@ -103,14 +103,14 @@ const BatteryModificationForm = ({
                 {gridItem(batteryNameField, 4)}
             </Grid>
             {/* Limits part */}
-            <GridSection title="Limits" />
+            <GridSection title="ActiveLimits" />
             <Grid container spacing={2}>
                 {gridItem(minimumActivePowerField, 4)}
                 {gridItem(maximumActivePowerField, 4)}
             </Grid>
             {/* Reactive limits part */}
             <ReactiveLimitsForm
-                batteryInfos={batteryToModify}
+                equipmentToModify={batteryToModify}
                 updatePreviousReactiveCapabilityCurveTable={
                     updatePreviousReactiveCapabilityCurveTable
                 }
@@ -123,7 +123,7 @@ const BatteryModificationForm = ({
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
                 <FrequencyRegulation
-                    isbatteryToModify={true}
+                    isEquipmentModification={true}
                     previousValues={batteryToModify}
                 />
             </Grid>

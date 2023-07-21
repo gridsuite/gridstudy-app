@@ -631,7 +631,7 @@
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Chaque valeur de puissance active doit être un nombre unique et valide.",
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Chaque valeur de puissance active doit être comprise entre les valeurs P min et P max.",
     "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Chaque valeur de puissance réactive minimale doit être inférieur ou égale à la puissance réactive maximale correspondante.",
-
+    "BatteryModificationError": "Erreur lors de la modification d'une batterie ",
     "ModifyLine": "Modifier une ligne",
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
