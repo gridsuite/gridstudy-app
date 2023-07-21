@@ -142,6 +142,86 @@ export const ResultViewTab = ({
         );
     }
 
+    const services = [
+        {
+            id: 'LoadFlow',
+            isAvailable: true,
+            enableDeveloperMode: true,
+            // tabIndex: 0,
+            renderResult: renderLoadFlowResult(),
+        },
+        {
+            id: 'SecurityAnalysis',
+            isAvailable: isAvailable('SecurityAnalysis'),
+            enableDeveloperMode: true,
+            // tabIndex: 1,
+            renderResult: renderSecurityAnalysisResult(),
+        },
+        {
+            id: 'SensitivityAnalysis',
+            isAvailable: isAvailable('SensitivityAnalysis'),
+            enableDeveloperMode: true,
+            // tabIndex: 2,
+            renderResult: renderSensitivityAnalysisResult(),
+        },
+        {
+            id: 'ShortCircuit',
+            isAvailable: isAvailable('ShortCircuit'),
+            enableDeveloperMode: enableDeveloperMode,
+            // tabIndex: 3,
+            renderResult: renderShortCircuitAnalysisResult(),
+        },
+        {
+            id: 'DynamicSimulation',
+            isAvailable: isAvailable('DynamicSimulation'),
+            enableDeveloperMode: enableDeveloperMode,
+            // tabIndex: 4,
+            renderResult: renderDynamicSimulationResult(),
+        },
+        {
+            id: 'VoltageInit',
+            isAvailable: isAvailable('VoltageInit'),
+            enableDeveloperMode: enableDeveloperMode,
+            // tabIndex: 5,
+            renderResult: renderVoltageInitResult(),
+        },
+    ];
+
+    const renderTab = (service) => {
+        return (
+            service.isAvailable &&
+            service.enableDeveloperMode && (
+                <Tab
+                    key={service.id}
+                    label={intl.formatMessage({
+                        id: service.id,
+                    })}
+                    disabled={disabled}
+                />
+            )
+        );
+    };
+    const renderTabPanelLazy = (service) => {
+        return (
+            service.isAvailable && (
+                <TabPanelLazy
+                    key={service.id}
+                    className={classes.tabPanel}
+                    selected={!disabled}
+                >
+                    {service.renderResult}
+                </TabPanelLazy>
+            )
+        );
+    };
+
+    const getSelectedServices = () => {
+        const displayedServices = services.filter(
+            (service) => service.isAvailable
+        );
+        return displayedServices.filter((service, key) => tabIndex === key);
+    };
+
     useEffect(() => {
         if (!enableDeveloperMode) {
             // a displayed tab may be obsolete when developer mode is disabled, then switch on first one
@@ -157,105 +237,13 @@ export const ResultViewTab = ({
                     variant="scrollable"
                     onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
                 >
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'LoadFlow',
-                        })}
-                        disabled={disabled}
-                    />
-                    {isAvailable('SecurityAnalysis') && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'SecurityAnalysis',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
-                    {isAvailable('SensitivityAnalysis') && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'SensitivityAnalysis',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
-                    {isAvailable('ShortCircuit') &&
-                        enableDeveloperMode && (
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'ShortCircuitAnalysis',
-                                })}
-                                disabled={disabled}
-                            />
-                        )}
-                    {isAvailable('DynamicSimulation') &&
-                        enableDeveloperMode && (
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'DynamicSimulation',
-                                })}
-                                disabled={disabled}
-                            />
-                        )}
-                    {isAvailable('VoltageInit') && enableDeveloperMode && (
-                        <Tab
-                            label={intl.formatMessage({
-                                id: 'VoltageInit',
-                            })}
-                            disabled={disabled}
-                        />
-                    )}
+                    {services.map((service) => renderTab(service))}
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
             {/* tab contents */}
-            {isAvailable('LoadFlow') && (
-                <TabPanelLazy
-                    className={classes.tabPanel}
-                    selected={tabIndex === 0 && !disabled}
-                >
-                    {renderLoadFlowResult()}
-                </TabPanelLazy>
-            )}
-            {isAvailable('SecurityAnalysis') && (
-                <TabPanelLazy
-                    className={classes.tabPanel}
-                    selected={tabIndex === 1 && !disabled}
-                >
-                    {renderSecurityAnalysisResult()}
-                </TabPanelLazy>
-            )}
-            {isAvailable('SensitivityAnalysis') && (
-                <TabPanelLazy
-                    className={classes.tabPanel}
-                    selected={tabIndex === 2 && !disabled}
-                >
-                    {renderSensitivityAnalysisResult()}
-                </TabPanelLazy>
-            )}
-            {isAvailable('ShortCircuitAnalysis') && (
-                <TabPanelLazy
-                    className={classes.tabPanel}
-                    selected={tabIndex === 3 && !disabled}
-                >
-                    {renderShortCircuitAnalysisResult()}
-                </TabPanelLazy>
-            )}
-            {isAvailable('DynamicSimulation') && (
-                <TabPanelLazy
-                    className={classes.tabPanel}
-                    selected={tabIndex === 4 && !disabled}
-                >
-                    {renderDynamicSimulationResult()}
-                </TabPanelLazy>
-            )}
-            {isAvailable('VoltageInit') && (
-                <TabPanelLazy
-                    className={classes.tabPanel}
-                    selected={tabIndex === 5 && !disabled}
-                >
-                    {renderVoltageInitResult()}
-                </TabPanelLazy>
+            {getSelectedServices().map((service) =>
+                renderTabPanelLazy(service)
             )}
         </Paper>
     );
