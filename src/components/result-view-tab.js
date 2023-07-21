@@ -179,7 +179,7 @@ export const ResultViewTab = ({
                             disabled={disabled}
                         />
                     )}
-                    {isAvailable('ShortCircuitAnalysis') &&
+                    {isAvailable('ShortCircuit') &&
                         enableDeveloperMode && (
                             <Tab
                                 label={intl.formatMessage({

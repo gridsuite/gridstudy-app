@@ -459,7 +459,7 @@ export function RunButtonContainer({
             ...(availableServices.includes('SensitivityAnalysis')
                 ? [runnable[ComputingType.SENSITIVITY_ANALYSIS]]
                 : []),
-            ...(availableServices.includes('ShortCircuitAnalysis') &&
+            ...(availableServices.includes('ShortCircuit') &&
             enableDeveloperMode
                 ? [runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]]
                 : []),
