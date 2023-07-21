@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     grid: {
         width: 'auto',
         height: '100%',

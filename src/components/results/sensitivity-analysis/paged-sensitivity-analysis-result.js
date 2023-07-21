@@ -8,13 +8,13 @@
 import PropTypes from 'prop-types';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
+    DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
     PAGE_OPTIONS,
 } from './sensitivity-analysis-content';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import FilterPanel from '../../spreadsheet/filter-panel/filter-panel';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import LoaderWithOverlay from '../../utils/loader-with-overlay';
 import CustomTablePagination from '../../utils/custom-table-pagination';
@@ -30,8 +30,7 @@ const PagedSensitivityAnalysisResult = ({
     page,
     setPage,
     onSortChanged,
-    sortSelector,
-    rowFilters,
+    sortConfig,
 }) => {
     const intl = useIntl();
 
@@ -95,6 +94,17 @@ const PagedSensitivityAnalysisResult = ({
     const fetchResult = useCallback(() => {
         setIsLoading(true);
 
+        const { colKey, sortWay } = sortConfig || {};
+
+        const sortSelector =
+            colKey && sortWay
+                ? {
+                      sortKeysWithWeightAndDirection: {
+                          [DATA_KEY_TO_SORT_KEY[colKey]]: sortWay,
+                      },
+                  }
+                : {};
+
         const selector = {
             isJustBefore: !nOrNkIndex,
             functionType: FUNCTION_TYPES[sensiKindIndex],
@@ -128,7 +138,7 @@ const PagedSensitivityAnalysisResult = ({
         page,
         rowsPerPage,
         filterSelector,
-        sortSelector,
+        sortConfig,
         studyUuid,
         nodeUuid,
         snackError,
@@ -152,16 +162,15 @@ const PagedSensitivityAnalysisResult = ({
                     />
                 </div>
             )}
-            <FilterPanel
-                filtersDef={filtersDef}
-                updateFilter={handleUpdateFilter}
-                rowFilters={rowFilters}
-            />
             <SensitivityAnalysisResult
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
                 sensiToIndex={sensiKindIndex}
                 onSortChanged={onSortChanged}
+                sortConfig={sortConfig}
+                updateFilter={handleUpdateFilter}
+                filterSelector={filterSelector}
+                filtersDef={filtersDef}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
@@ -183,7 +192,7 @@ PagedSensitivityAnalysisResult.propTypes = {
     updateFilter: PropTypes.func,
     onSortChanged: PropTypes.func,
     filterSelector: PropTypes.object,
-    sortSelector: PropTypes.object,
+    sortConfig: PropTypes.object,
     page: PropTypes.number.isRequired,
     setPage: PropTypes.func.isRequired,
     rowFilters: PropTypes.arrayOf(
