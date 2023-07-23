@@ -35,7 +35,9 @@ import {
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import {
+    completeReactiveCapabilityCurvePointsData,
     getRowEmptyFormData,
+    insertEmptyRowAtSecondToLastIndex,
     REMOVE,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -45,7 +47,10 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { getFrequencyRegulationSchema } from '../../../set-points/set-points-utils';
+import {
+    getFrequencyRegulationSchema,
+    getFrequencyRegulationEmptyFormData,
+} from '../../../set-points/set-points-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -53,9 +58,8 @@ const emptyFormData = {
     [MINIMUM_ACTIVE_POWER]: null,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
-    [FREQUENCY_REGULATION]: false,
-    [DROOP]: null,
     ...getReactiveLimitsEmptyFormData(true),
+    ...getFrequencyRegulationEmptyFormData(true),
 };
 
 const formSchema = yup
@@ -98,24 +102,6 @@ const BatteryModificationDialog = ({
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [batteryToModify, setBatteryToModify] = useState();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-
-    const completeReactiveCapabilityCurvePointsData = (
-        reactiveCapabilityCurvePoints
-    ) => {
-        reactiveCapabilityCurvePoints.map((rcc) => {
-            if (!(P in rcc)) {
-                rcc[P] = null;
-            }
-            if (!(Q_MAX_P in rcc)) {
-                rcc[Q_MAX_P] = null;
-            }
-            if (!(Q_MIN_P in rcc)) {
-                rcc[Q_MIN_P] = null;
-            }
-            return rcc;
-        });
-        return reactiveCapabilityCurvePoints;
-    };
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -189,14 +175,6 @@ const BatteryModificationDialog = ({
                 ...previousValue,
                 reactiveCapabilityCurvePoints: newRccValues,
             };
-        });
-    };
-
-    const insertEmptyRowAtSecondToLastIndex = (table) => {
-        table.splice(table.length - 1, 0, {
-            [P]: null,
-            [Q_MAX_P]: null,
-            [Q_MIN_P]: null,
         });
     };
 

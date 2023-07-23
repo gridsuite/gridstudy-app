@@ -27,7 +27,9 @@ import yup from 'components/utils/yup-config';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { getRegulatingTerminalEmptyFormData } from '../regulating-terminal/regulating-terminal-form-utils';
 
-const getFrequencyRegulationEmptyFormData = (isEquipmentModification) => ({
+export const getFrequencyRegulationEmptyFormData = (
+    isEquipmentModification
+) => ({
     [FREQUENCY_REGULATION]: isEquipmentModification ? null : false,
     [DROOP]: null,
 });

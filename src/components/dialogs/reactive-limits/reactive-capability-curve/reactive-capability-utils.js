@@ -136,3 +136,29 @@ export const getReactiveCapabilityCurveValidationSchema = (
                     ),
         }),
 });
+
+export const completeReactiveCapabilityCurvePointsData = (
+    reactiveCapabilityCurvePoints
+) => {
+    reactiveCapabilityCurvePoints.map((rcc) => {
+        if (!(P in rcc)) {
+            rcc[P] = null;
+        }
+        if (!(Q_MAX_P in rcc)) {
+            rcc[Q_MAX_P] = null;
+        }
+        if (!(Q_MIN_P in rcc)) {
+            rcc[Q_MIN_P] = null;
+        }
+        return rcc;
+    });
+    return reactiveCapabilityCurvePoints;
+};
+
+export const insertEmptyRowAtSecondToLastIndex = (table) => {
+    table.splice(table.length - 1, 0, {
+        [P]: null,
+        [Q_MAX_P]: null,
+        [Q_MIN_P]: null,
+    });
+};

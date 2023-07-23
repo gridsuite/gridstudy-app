@@ -123,7 +123,7 @@ const BatteryModificationForm = ({
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
                 <FrequencyRegulation
-                    isEquipmentModification={true}
+                    isEquipmentModification={batteryToModify}
                     previousValues={batteryToModify}
                 />
             </Grid>

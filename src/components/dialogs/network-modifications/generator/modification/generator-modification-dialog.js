@@ -55,7 +55,9 @@ import {
 } from '../../../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import {
+    completeReactiveCapabilityCurvePointsData,
     getRowEmptyFormData,
+    insertEmptyRowAtSecondToLastIndex,
     REMOVE,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -136,25 +138,6 @@ const GeneratorModificationDialog = ({
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [generatorToModify, setGeneratorToModify] = useState();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-
-    //in order to work properly, react hook form needs all fields to be set at least to null
-    const completeReactiveCapabilityCurvePointsData = (
-        reactiveCapabilityCurvePoints
-    ) => {
-        reactiveCapabilityCurvePoints.map((rcc) => {
-            if (!(P in rcc)) {
-                rcc[P] = null;
-            }
-            if (!(Q_MAX_P in rcc)) {
-                rcc[Q_MAX_P] = null;
-            }
-            if (!(Q_MIN_P in rcc)) {
-                rcc[Q_MIN_P] = null;
-            }
-            return rcc;
-        });
-        return reactiveCapabilityCurvePoints;
-    };
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -252,14 +235,6 @@ const GeneratorModificationDialog = ({
                 ...previousValue,
                 reactiveCapabilityCurvePoints: newRccValues,
             };
-        });
-    };
-
-    const insertEmptyRowAtSecondToLastIndex = (table) => {
-        table.splice(table.length - 1, 0, {
-            [P]: null,
-            [Q_MAX_P]: null,
-            [Q_MIN_P]: null,
         });
     };
 
