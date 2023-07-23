@@ -23,9 +23,9 @@ import {
 import Grid from '@mui/material/Grid';
 import React from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import ReactiveLimitsForm from '../../generator/reactive-limits/reactive-limits-form';
+import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import { TextField } from '@mui/material';
-import FrequencyRegulation from '../../generator/set-points/frequency-regulation';
+import FrequencyRegulation from '../../../set-points/frequency-regulation';
 
 const BatteryModificationForm = ({
     batteryToModify,

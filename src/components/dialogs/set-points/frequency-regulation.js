@@ -9,7 +9,7 @@ import {
     gridItem,
     gridItemWithTooltip,
     percentageTextField,
-} from '../../../dialogUtils';
+} from '../dialogUtils';
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
 import React, { useMemo } from 'react';

@@ -15,7 +15,7 @@ import {
 import { REACTIVE_LIMIT_TYPES } from 'components/network/constants';
 import React from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import { gridItem, ReactivePowerAdornment } from '../../../dialogUtils';
+import { gridItem, ReactivePowerAdornment } from '../dialogUtils';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';

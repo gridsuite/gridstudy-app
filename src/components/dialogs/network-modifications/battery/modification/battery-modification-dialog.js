@@ -33,11 +33,11 @@ import BatteryModificationForm from './battery-modification-form';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
-} from '../../generator/reactive-limits/reactive-limits-utils';
+} from '../../../reactive-limits/reactive-limits-utils';
 import {
     getRowEmptyFormData,
     REMOVE,
-} from '../../generator/reactive-limits/reactive-capability-curve/reactive-capability-utils';
+} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 import {
@@ -45,7 +45,7 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { getFrequencyRegulationSchema } from '../../generator/set-points/set-points-utils';
+import { getFrequencyRegulationSchema } from '../../../set-points/set-points-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

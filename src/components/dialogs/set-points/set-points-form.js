@@ -11,7 +11,7 @@ import {
     gridItemWithTooltip,
     GridSection,
     ReactivePowerAdornment,
-} from '../../../dialogUtils';
+} from '../dialogUtils';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
 import React from 'react';

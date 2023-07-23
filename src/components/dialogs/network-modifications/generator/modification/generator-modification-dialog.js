@@ -48,16 +48,16 @@ import GeneratorModificationForm from './generator-modification-form';
 import {
     getSetPointsEmptyFormData,
     getSetPointsSchema,
-} from '../set-points/set-points-utils';
+} from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
-} from '../reactive-limits/reactive-limits-utils';
+} from '../../../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import {
     getRowEmptyFormData,
     REMOVE,
-} from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 import {
