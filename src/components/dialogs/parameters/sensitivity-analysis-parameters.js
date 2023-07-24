@@ -9,6 +9,7 @@ import React, { useCallback } from 'react';
 import { Grid } from '@mui/material';
 import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
+import { TYPES, makeComponentsFor } from './util/make-component-utils';
 
 export const SensitivityAnalysisParameters = ({
     hideParameters,
@@ -24,6 +25,21 @@ export const SensitivityAnalysisParameters = ({
     const updateProviderCallback = useCallback(handleUpdateProvider, [
         updateProvider,
     ]);
+
+    const sensiParams = {
+        flowFlowSensitivityValueThreshold: {
+            type: TYPES.double,
+            description: 'flowFlowSensitivityValueThreshold',
+        },
+        angleFlowSensitivityValueThreshold: {
+            type: TYPES.double,
+            description: 'angleFlowSensitivityValueThreshold',
+        },
+        flowVoltageSensitivityValueThreshold: {
+            type: TYPES.double,
+            description: 'flowVoltageSensitivityValueThreshold',
+        },
+    };
 
     return (
         <>
@@ -41,6 +57,7 @@ export const SensitivityAnalysisParameters = ({
                 className={classes.scrollableGrid}
             ></Grid>
             <LineSeparator />
+            {makeComponentsFor(sensiParams)}
             <Grid
                 container
                 className={classes.controlItem + ' ' + classes.marginTopButton}
