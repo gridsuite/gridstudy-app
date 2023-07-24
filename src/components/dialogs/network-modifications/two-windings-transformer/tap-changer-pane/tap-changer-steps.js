@@ -45,7 +45,7 @@ const TapChangerSteps = ({
     handleImportRow,
     disabled,
     previousValues,
-    previousModifications,
+    editData,
     currentNode,
     isModification = false,
 }) => {
@@ -124,7 +124,7 @@ const TapChangerSteps = ({
     });
 
     const areStepsModified = useMemo(() => {
-        if (previousModifications && isNodeBuilt(currentNode)) {
+        if (editData?.[STEPS] && isNodeBuilt(currentNode)) {
             return true;
         } else {
             return !compareStepsWithPreviousValues(
@@ -132,7 +132,7 @@ const TapChangerSteps = ({
                 previousValues?.[STEPS]
             );
         }
-    }, [currentNode, previousModifications, previousValues, tapStepsWatcher]);
+    }, [currentNode, editData, previousValues, tapStepsWatcher]);
 
     const resetTapNumbers = useCallback(
         (tapSteps, isModification) => {

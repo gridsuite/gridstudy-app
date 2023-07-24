@@ -92,12 +92,12 @@ import {
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import RatioTapChangerPane, {
     previousRegulationType,
-} from '../creation/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
+} from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
     getRatioTapChangerModificationValidationSchema,
-} from '../creation/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+} from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -705,7 +705,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 currentNode={currentNode}
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify}
-                                previousModifications={editData}
+                                editData={editData}
                                 isModification={true}
                             />
                         </Box>
