@@ -5,16 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { ChangeEvent, FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { useParameterState, useStyles } from '../parameters';
-import {
-    Grid,
-    MenuItem,
-    Select,
-    SelectChangeEvent,
-    Slider,
-    Switch,
-} from '@mui/material';
+import { Grid, MenuItem, Select, Slider, Switch } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { Mark } from '@mui/base/useSlider';
 
@@ -82,9 +75,11 @@ export const ParamLine: FunctionComponent<ParameterLineProps> = (
 
         default:
             //TODO: how to manage in react component? throw new Error(`Not supported parameter type ${type}`);
-            // TS2339: Property 'type' does not exist on type 'never'.
-            // @ts-ignore
-            return <p>{`Not supported parameter type '${props.type || '<unknown>'}'`}</p>;
+            return (
+                <p>{`Not supported parameter type '${
+                    (props as any).type || '<unknown>'
+                }'`}</p>
+            );
     }
 };
 
@@ -104,11 +99,8 @@ const ParamLineSwitch: FunctionComponent<
             <Grid item container xs={4} className={classes.controlItem}>
                 <Switch
                     checked={parameterValue}
-                    onChange={(
-                        event: ChangeEvent<HTMLInputElement>,
-                        checked: boolean
-                    ) => {
-                        handleChangeParameterValue(checked);
+                    onChange={(event, isChecked) => {
+                        handleChangeParameterValue(isChecked);
                     }}
                     value={parameterValue}
                     inputProps={{ 'aria-label': 'primary checkbox' }}
@@ -140,7 +132,7 @@ const ParamLineDropdown: FunctionComponent<
                             ? Object.entries<string>(props.values)[0]
                             : parameterValue
                     }
-                    onChange={(event: SelectChangeEvent<any>) => {
+                    onChange={(event) => {
                         handleChangeParameterValue(event.target.value);
                     }}
                     size="small"
@@ -180,12 +172,10 @@ const ParamLineSlider: FunctionComponent<
                     min={props.minValue ?? 0}
                     max={props.maxValue ?? 100}
                     valueLabelDisplay="auto"
-                    onChange={(event: Event, newValue: number | number[]) => {
-                        setSliderValue(
-                            typeof newValue == 'number' ? newValue : newValue[0]
-                        );
+                    onChange={(event, newValue: number | number[]) => {
+                        setSliderValue(Number(newValue));
                     }}
-                    onChangeCommitted={(event, value) => {
+                    onChangeCommitted={(event, value: number | number[]) => {
                         handleChangeParameterValue(value);
                     }}
                     value={sliderValue}
