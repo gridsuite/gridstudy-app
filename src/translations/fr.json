@@ -447,6 +447,7 @@
     "Hades2": "Hades 2",
     "DynaFlow": "Dyna Flow",
 
+    "fetchSecurityAnalysisProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs d'analyse de sécurité",
     "fetchLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de calcul de répartition",
     "fetchLoadFlowProvidersError": "Une erreur est survenue lors de la récupération des fournisseurs de calcul de répartition",
     "fetchDefaultLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de calcul de répartition par défaut",
