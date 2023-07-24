@@ -172,10 +172,10 @@ const ParamLineSlider: FunctionComponent<
                     min={props.minValue ?? 0}
                     max={props.maxValue ?? 100}
                     valueLabelDisplay="auto"
-                    onChange={(event, newValue: number | number[]) => {
+                    onChange={(event, newValue) => {
                         setSliderValue(Number(newValue));
                     }}
-                    onChangeCommitted={(event, value: number | number[]) => {
+                    onChangeCommitted={(event, value) => {
                         handleChangeParameterValue(value);
                     }}
                     value={sliderValue}
