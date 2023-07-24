@@ -255,7 +255,6 @@ export const ResultViewTab = ({
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
-            {/* tab contents */}
             {renderTabPanelLazy(selectedService)}
         </Paper>
     );

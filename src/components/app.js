@@ -390,7 +390,7 @@ const App = () => {
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
+                            headerId: 'optionalServicesRetrievingError',
                         });
                     });
 
