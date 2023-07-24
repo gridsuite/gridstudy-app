@@ -11,7 +11,7 @@ import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-tab';
@@ -71,11 +71,11 @@ export const ResultViewTab = ({
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [availableServices] = useParameterState(AVAILABLE_SERVICES);
 
-    const isAvailable = (tab) => {
+    const isAvailable = useCallback((tab) => {
         return !!availableServices.includes(tab);
-    };
+    }, [availableServices]);
 
-    function renderLoadFlowResult() {
+    const renderLoadFlowResult = useMemo(() => {
         return (
             <Paper className={classes.table}>
                 <LoadFlowResultTab
@@ -84,9 +84,9 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }
+    }, [studyUuid, currentNode]);
 
-    function renderSecurityAnalysisResult() {
+    const renderSecurityAnalysisResult = useMemo(() => {
         return (
             <Paper className={classes.table}>
                 <SecurityAnalysisResultTab
@@ -96,9 +96,9 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }
+    }, [studyUuid, currentNode]);
 
-    function renderVoltageInitResult() {
+    const renderVoltageInitResult = useMemo(() => {
         return (
             <Paper className={classes.table}>
                 <VoltageInitResultTab
@@ -107,9 +107,9 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }
+    }, [studyUuid, currentNode]);
 
-    function renderSensitivityAnalysisResult() {
+    const renderSensitivityAnalysisResult = useMemo(() => {
         return (
             <Paper className={classes.analysisResult}>
                 <SensitivityAnalysisResultTab
@@ -118,9 +118,9 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }
+    }, [studyUuid, currentNode]);
 
-    function renderShortCircuitAnalysisResult() {
+    const renderShortCircuitAnalysisResult = useMemo(() => {
         return (
             <Paper className={classes.analysisResult}>
                 <ShortCircuitAnalysisResultTab
@@ -129,9 +129,9 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }
+    }, [studyUuid, currentNode]);
 
-    function renderDynamicSimulationResult() {
+    const renderDynamicSimulationResult = useMemo(() => {
         return (
             <Paper className={classes.analysisResult}>
                 <DynamicSimulationResultTab
@@ -140,52 +140,63 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }
+    }, [studyUuid, currentNode]);
 
-    const services = [
-        {
-            id: 'LoadFlow',
-            isAvailable: true,
-            enableDeveloperMode: true,
-            // tabIndex: 0,
-            renderResult: renderLoadFlowResult(),
-        },
-        {
-            id: 'SecurityAnalysis',
-            isAvailable: isAvailable('SecurityAnalysis'),
-            enableDeveloperMode: true,
-            // tabIndex: 1,
-            renderResult: renderSecurityAnalysisResult(),
-        },
-        {
-            id: 'SensitivityAnalysis',
-            isAvailable: isAvailable('SensitivityAnalysis'),
-            enableDeveloperMode: true,
-            // tabIndex: 2,
-            renderResult: renderSensitivityAnalysisResult(),
-        },
-        {
-            id: 'ShortCircuit',
-            isAvailable: isAvailable('ShortCircuit'),
-            enableDeveloperMode: enableDeveloperMode,
-            // tabIndex: 3,
-            renderResult: renderShortCircuitAnalysisResult(),
-        },
-        {
-            id: 'DynamicSimulation',
-            isAvailable: isAvailable('DynamicSimulation'),
-            enableDeveloperMode: enableDeveloperMode,
-            // tabIndex: 4,
-            renderResult: renderDynamicSimulationResult(),
-        },
-        {
-            id: 'VoltageInit',
-            isAvailable: isAvailable('VoltageInit'),
-            enableDeveloperMode: enableDeveloperMode,
-            // tabIndex: 5,
-            renderResult: renderVoltageInitResult(),
-        },
-    ];
+    const services = useMemo(() => {
+        return [
+            {
+                id: 'LoadFlow',
+                label: 'LoadFlow',
+                isAvailable: true,
+                enableDeveloperMode: true,
+                renderResult: renderLoadFlowResult,
+            },
+            {
+                id: 'SecurityAnalysis',
+                label: 'SecurityAnalysis',
+                isAvailable: isAvailable('SecurityAnalysis'),
+                enableDeveloperMode: true,
+                renderResult: renderSecurityAnalysisResult,
+            },
+            {
+                id: 'SensitivityAnalysis',
+                label: 'SensitivityAnalysis',
+                isAvailable: isAvailable('SensitivityAnalysis'),
+                enableDeveloperMode: true,
+                renderResult: renderSensitivityAnalysisResult,
+            },
+            {
+                id: 'ShortCircuit',
+                label: 'ShortCircuitAnalysis',
+                isAvailable: isAvailable('ShortCircuit'),
+                enableDeveloperMode: enableDeveloperMode,
+                renderResult: renderShortCircuitAnalysisResult,
+            },
+            {
+                id: 'DynamicSimulation',
+                label: 'DynamicSimulation',
+                isAvailable: isAvailable('DynamicSimulation'),
+                enableDeveloperMode: enableDeveloperMode,
+                renderResult: renderDynamicSimulationResult,
+            },
+            {
+                id: 'VoltageInit',
+                label: 'VoltageInit',
+                isAvailable: isAvailable('VoltageInit'),
+                enableDeveloperMode: enableDeveloperMode,
+                renderResult: renderVoltageInitResult,
+            },
+        ];
+    }, [
+        isAvailable,
+        enableDeveloperMode,
+        renderDynamicSimulationResult,
+        renderSecurityAnalysisResult,
+        renderSensitivityAnalysisResult,
+        renderShortCircuitAnalysisResult,
+        renderVoltageInitResult,
+        renderLoadFlowResult,
+    ]);
 
     const renderTab = (service) => {
         return (
@@ -194,7 +205,7 @@ export const ResultViewTab = ({
                 <Tab
                     key={service.id}
                     label={intl.formatMessage({
-                        id: service.id,
+                        id: service.label,
                     })}
                     disabled={disabled}
                 />
@@ -215,12 +226,12 @@ export const ResultViewTab = ({
         );
     };
 
-    const getSelectedServices = () => {
+    const selectedService = useMemo(() => {
         const displayedServices = services.filter(
             (service) => service.isAvailable
         );
-        return displayedServices.filter((service, key) => tabIndex === key);
-    };
+        return displayedServices.find((service, key) => tabIndex === key);
+    }, [services, tabIndex]);
 
     useEffect(() => {
         if (!enableDeveloperMode) {
@@ -242,9 +253,7 @@ export const ResultViewTab = ({
                 {disabled && <AlertInvalidNode />}
             </div>
             {/* tab contents */}
-            {getSelectedServices().map((service) =>
-                renderTabPanelLazy(service)
-            )}
+            {renderTabPanelLazy(selectedService)}
         </Paper>
     );
 };
