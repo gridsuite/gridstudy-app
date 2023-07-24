@@ -254,6 +254,12 @@ export const useParametersBackend = (
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
+    const [availableServices] = useParameterState(AVAILABLE_SERVICES);
+
+    const isAvailableService = useCallback((tab) => {
+        return availableServices.includes(tab);
+    }, [availableServices]);
+
     const { snackError } = useSnackMessage();
 
     const [providers, setProviders] = useState(INITIAL_PROVIDERS);
@@ -379,7 +385,7 @@ export const useParametersBackend = (
     );
 
     useEffect(() => {
-        if (user !== null) {
+        if (user !== null && isAvailableService(type)) {
             backendFetchProviders()
                 .then((providers) => {
                     // we can consider the provider gotten from back will be also used as
@@ -397,7 +403,7 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [user, backendFetchProviders, type, snackError]);
+    }, [user, backendFetchProviders, type, snackError, isAvailableService]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -723,20 +729,24 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 />
                             )}
                         </TabPanel>
-                        <TabPanel
-                            value={tabValue}
-                            index={TAB_VALUES.securityAnalysisParamsTabValue}
-                            keepState
-                        >
-                            {studyUuid && (
-                                <SecurityAnalysisParameters
-                                    hideParameters={hideParameters}
-                                    parametersBackend={
-                                        securityAnalysisParametersBackend
-                                    }
-                                />
-                            )}
-                        </TabPanel>
+                        {isAvailableService('SecurityAnalysis') && (
+                            <TabPanel
+                                value={tabValue}
+                                index={
+                                    TAB_VALUES.securityAnalysisParamsTabValue
+                                }
+                                keepState
+                            >
+                                {studyUuid && (
+                                    <SecurityAnalysisParameters
+                                        hideParameters={hideParameters}
+                                        parametersBackend={
+                                            securityAnalysisParametersBackend
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )}
                         <TabPanel
                             value={tabValue}
                             index={TAB_VALUES.sensitivityAnalysisParamsTabValue}

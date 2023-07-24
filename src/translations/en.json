@@ -455,7 +455,6 @@
     "fetchLoadFlowParametersError": "An error occured when fetching the load flow parameters",
     "fetchLoadFlowSpecificParametersError": "An error occured when fetching the load flow specific parameters",
 
-    "fetchSecurityAnalysisProvidersError": "An error occured when fetching security analysis provider list",
     "fetchSecurityAnalysisProviderError": "An error occured when fetching security analysis provider",
     "fetchDefaultSecurityAnalysisProviderError": "An error occured when fetching default security analysis provider",
     "updateSecurityAnalysisProviderError": "An error occured when updating security analysis provider",
