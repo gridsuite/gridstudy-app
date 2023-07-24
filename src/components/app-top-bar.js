@@ -270,7 +270,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 setAppsAndUrls(res);
             });
         }
-        hideParameters();
     }, [user]);
 
     useEffect(() => {
@@ -473,11 +472,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     </Tabs>
                 )}
             </TopBar>
-            <Parameters
-                isParametersOpen={isParametersOpen}
-                hideParameters={hideParameters}
-                user={user}
-            />
+            {studyUuid && (
+                <Parameters
+                    isParametersOpen={isParametersOpen}
+                    hideParameters={hideParameters}
+                    user={user}
+                />
+            )}
         </>
     );
 };
