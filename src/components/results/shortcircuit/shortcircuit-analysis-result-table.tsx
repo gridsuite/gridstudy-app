@@ -7,7 +7,6 @@
 
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { CustomAGGrid } from 'components/dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
 import { unitToKiloUnit } from 'utils/rounding';
 import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
@@ -17,6 +16,8 @@ import {
     PostSortRowsParams,
     RowClassParams,
 } from 'ag-grid-community';
+import { GridStudyTheme } from 'components/app-wrapper.type';
+import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 
 interface ShortCircuitAnalysisResultProps {
     result: ShortcircuitAnalysisResult;
@@ -57,7 +58,7 @@ const ShortCircuitAnalysisResult: FunctionComponent<
     ShortCircuitAnalysisResultProps
 > = ({ result }) => {
     const intl = useIntl();
-    const theme: any = useTheme();
+    const theme: GridStudyTheme = useTheme();
 
     const columns = useMemo(() => {
         return [
