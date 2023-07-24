@@ -63,97 +63,126 @@ export const ParamLine: FunctionComponent<ParameterLineProps> = (
     props,
     context
 ) => {
+    switch (props.type) {
+        case ParameterType.Switch:
+            return ParamLineSwitch(props, context);
+
+        case ParameterType.DropDown:
+            return ParamLineDropdown(props, context);
+
+        case ParameterType.Slider:
+            return ParamLineSlider(props, context);
+
+        default:
+            //TODO: how to manage in react component? throw new Error(`Not supported parameter type ${type}`);
+            // TS2339: Property 'type' does not exist on type 'never'.
+            // @ts-ignore
+            return <p>{`Not supported parameter type ${props.type}`}</p>;
+    }
+};
+
+const ParamLineSwitch: FunctionComponent<
+    BaseParameterLineProps & SwitchParameterLineProps
+> = (props, context) => {
     const [parameterValue, handleChangeParameterValue] = useParameterState(
         props.param_name_id
     );
     const classes = useStyles();
 
-    switch (props.type) {
-        case ParameterType.Switch:
-            return (
-                <>
-                    <Grid item xs={8} className={classes.parameterName}>
-                        <FormattedMessage id={props.label} />
-                    </Grid>
-                    <Grid item container xs={4} className={classes.controlItem}>
-                        <Switch
-                            checked={parameterValue}
-                            onChange={(event, checked) => {
-                                handleChangeParameterValue(checked);
-                            }}
-                            value={parameterValue}
-                            inputProps={{ 'aria-label': 'primary checkbox' }}
-                            disabled={props.disabled ?? false}
-                        />
-                    </Grid>
-                </>
-            );
+    return (
+        <>
+            <Grid item xs={8} className={classes.parameterName}>
+                <FormattedMessage id={props.label} />
+            </Grid>
+            <Grid item container xs={4} className={classes.controlItem}>
+                <Switch
+                    checked={parameterValue}
+                    onChange={(event, checked) => {
+                        handleChangeParameterValue(checked);
+                    }}
+                    value={parameterValue}
+                    inputProps={{ 'aria-label': 'primary checkbox' }}
+                    disabled={props.disabled ?? false}
+                />
+            </Grid>
+        </>
+    );
+};
 
-        case ParameterType.DropDown:
-            return (
-                <>
-                    <Grid item xs={8} className={classes.parameterName}>
-                        <FormattedMessage id={props.labelTitle} />
-                    </Grid>
-                    <Grid item container xs={4} className={classes.controlItem}>
-                        <Select
-                            labelId={props.labelValue}
-                            value={
-                                props.defaultValueIfNull && !parameterValue
-                                    ? Object.entries<string>(props.values)[0]
-                                    : parameterValue
-                            }
-                            onChange={(event) => {
-                                handleChangeParameterValue(event.target.value);
-                            }}
-                            size="small"
-                            disabled={props.disabled ?? false}
-                        >
-                            {Object.entries<string>(props.values).map(
-                                ([key, value]) => (
-                                    <MenuItem key={key} value={key}>
-                                        <FormattedMessage id={value} />
-                                    </MenuItem>
-                                )
-                            )}
-                        </Select>
-                    </Grid>
-                </>
-            );
+const ParamLineDropdown: FunctionComponent<
+    BaseParameterLineProps & DropDownParameterLineProps
+> = (props, context) => {
+    const [parameterValue, handleChangeParameterValue] = useParameterState(
+        props.param_name_id
+    );
+    const classes = useStyles();
 
-        case ParameterType.Slider:
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const [sliderValue, setSliderValue] = useState(
-                Number(parameterValue)
-            );
-            return (
-                <>
-                    <Grid item xs={8} className={classes.parameterName}>
-                        <FormattedMessage id={props.label} />
-                    </Grid>
-                    <Grid item container xs={4} className={classes.controlItem}>
-                        <Slider
-                            min={props.minValue ?? 0}
-                            max={props.maxValue ?? 100}
-                            valueLabelDisplay="auto"
-                            onChange={(event, newValue) => {
-                                // @ts-ignore
-                                setSliderValue(newValue);
-                            }}
-                            onChangeCommitted={(event, value) => {
-                                handleChangeParameterValue(value);
-                            }}
-                            value={sliderValue}
-                            disabled={props.disabled ?? false}
-                            marks={props.marks}
-                        />
-                    </Grid>
-                </>
-            );
+    return (
+        <>
+            <Grid item xs={8} className={classes.parameterName}>
+                <FormattedMessage id={props.labelTitle} />
+            </Grid>
+            <Grid item container xs={4} className={classes.controlItem}>
+                <Select
+                    labelId={props.labelValue}
+                    value={
+                        props.defaultValueIfNull && !parameterValue
+                            ? Object.entries<string>(props.values)[0]
+                            : parameterValue
+                    }
+                    onChange={(event) => {
+                        handleChangeParameterValue(event.target.value);
+                    }}
+                    size="small"
+                    disabled={props.disabled ?? false}
+                >
+                    {Object.entries<string>(props.values).map(
+                        ([key, value]) => (
+                            <MenuItem key={key} value={key}>
+                                <FormattedMessage id={value} />
+                            </MenuItem>
+                        )
+                    )}
+                </Select>
+            </Grid>
+        </>
+    );
+};
 
-        default:
-            //TODO: how to manage in react component? throw new Error(`Not supported parameter type ${type}`);
-            // @ts-ignore
-            return <p>{`Not supported parameter type ${props.type}`}</p>;
-    }
+/* separate in another component because of eslint-rule react-hooks/rules-of-hooks */
+const ParamLineSlider: FunctionComponent<
+    BaseParameterLineProps & SliderParameterLineProps
+> = (props, context) => {
+    const classes = useStyles();
+
+    const [parameterValue, handleChangeParameterValue] = useParameterState(
+        props.param_name_id
+    );
+    const [sliderValue, setSliderValue] = useState(Number(parameterValue));
+
+    return (
+        <>
+            <Grid item xs={8} className={classes.parameterName}>
+                <FormattedMessage id={props.label} />
+            </Grid>
+            <Grid item container xs={4} className={classes.controlItem}>
+                <Slider
+                    min={props.minValue ?? 0}
+                    max={props.maxValue ?? 100}
+                    valueLabelDisplay="auto"
+                    onChange={(event, newValue) => {
+                        // TS2345: Argument of type 'number | number[]' is not assignable to parameter of type 'SetStateAction<number>'.
+                        // @ts-ignore
+                        setSliderValue(newValue);
+                    }}
+                    onChangeCommitted={(event, value) => {
+                        handleChangeParameterValue(value);
+                    }}
+                    value={sliderValue}
+                    disabled={props.disabled ?? false}
+                    marks={props.marks}
+                />
+            </Grid>
+        </>
+    );
 };
