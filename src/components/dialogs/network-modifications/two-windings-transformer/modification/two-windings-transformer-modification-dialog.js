@@ -98,6 +98,7 @@ import {
     getRatioTapChangerFormData,
     getRatioTapChangerModificationValidationSchema,
 } from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -230,7 +231,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
                 ...getRatioTapChangerFormData({
                     enabled: twt?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
-                    stepsModified: !!twt?.[RATIO_TAP_CHANGER]?.[STEPS],
                     loadTapChangingCapabilities:
                         twt?.[RATIO_TAP_CHANGER]?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
@@ -412,10 +412,15 @@ const TwoWindingsTransformerModificationDialog = ({
             let ratioTap = undefined;
             const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
             const enableRatioTapChanger = ratioTapChangerFormValues?.[ENABLED];
-            let ratioTapChangerSteps = compareStepsWithPreviousValues(
-                ratioTapChangerFormValues[STEPS],
-                twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
-            )
+            const areStepsModified =
+                isNodeBuilt(currentNode) &&
+                editData?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ? true
+                    : !compareStepsWithPreviousValues(
+                          ratioTapChangerFormValues[STEPS],
+                          twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
+                      );
+            let ratioTapChangerSteps = !areStepsModified
                 ? null
                 : ratioTapChangerFormValues[STEPS];
             if (enableRatioTapChanger) {

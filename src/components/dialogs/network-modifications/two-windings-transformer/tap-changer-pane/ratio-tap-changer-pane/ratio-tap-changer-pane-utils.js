@@ -272,7 +272,6 @@ export const getRatioTapChangerEmptyFormData = (id = RATIO_TAP_CHANGER) => {
 export const getRatioTapChangerFormData = (
     {
         enabled = false,
-        stepsModified = false,
         loadTapChangingCapabilities = false,
         regulationMode = null,
         regulationType = null,
