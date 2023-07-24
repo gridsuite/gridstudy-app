@@ -539,7 +539,8 @@
     "errCutModificationMsg": "Une erreur est survenue lors du coupage des modifications",
     "warnDuplicateModificationMsg": "Nombre de modifications non copiées :",
     "errDeleteModificationMsg": "Une erreur est survenue lors de la suppression des modifications",
-    "DeleteEquipment": "Supprimer ouvrage",
+    "DeleteEquipment": "Supprimer un ouvrage",
+    "LCCConverterStationShuntCompensators": "Moyens de compensation liés à la LCC",
     "Type": "Type",
     "SUBSTATION": "Site",
     "VOLTAGE_LEVEL": "Poste",
@@ -564,6 +565,8 @@
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
     "ShuntCompensatorModificationError": "Erreur lors de la modification d'un moyen de compensation",
     "ShuntCompensatorMultiSectionsError": "La modification d'un moyen de compensation à plusieurs gradins n'est pas possible pour le moment",
+    "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
+
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",
     "CreateGenerator": "Créer un groupe",
