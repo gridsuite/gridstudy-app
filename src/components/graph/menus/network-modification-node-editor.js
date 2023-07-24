@@ -66,7 +66,7 @@ import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifica
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
-import MassiveEquipmentsModificationDialog from 'components/dialogs/network-modifications/massive-equipments-modifications/massive-equipments-modifications-dialog';
+import TableEquipmentModificationDialog from 'components/dialogs/network-modifications/table-equipment-modification/table-equipment-modification-dialog';
 
 import { fetchNetworkModification } from '../../../services/network-modification';
 
@@ -372,10 +372,10 @@ const NetworkModificationNodeEditor = () => {
             ],
         },
         {
-            id: 'MASSIVE_EQUIPMENTS_MODIFICATIONS',
-            label: 'MassiveEquipmentsModifications',
+            id: 'TABLE_EQUIPMENT_MODIFICATION',
+            label: 'TableEquipmentModification',
             hide: true,
-            action: () => adapt(MassiveEquipmentsModificationDialog),
+            action: () => adapt(TableEquipmentModificationDialog),
         },
     ];
 

@@ -1054,5 +1054,5 @@
 
     "applyModifications": "Appliquer modifications",
     "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
-    "MassiveEquipmentsModifications": "Modifications massives d'équipements"
+    "TableEquipmentModification": "Modification tabulaire d'équipement"
 }

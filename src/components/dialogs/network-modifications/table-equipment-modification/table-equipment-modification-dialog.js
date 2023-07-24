@@ -32,7 +32,7 @@ export const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
 };
 
-const MassiveEquipmentsModificationDialog = ({
+const TableEquipmentModificationDialog = ({
     editData,
     onClose,
     editDataFetchStatus,
@@ -155,14 +155,14 @@ const MassiveEquipmentsModificationDialog = ({
             onClose={onClose}
             onClear={handleClear}
             onSave={() => {}} // no modifications
-            aria-labelledby="dialog-massive-modifications"
+            aria-labelledby="dialog-table-equipment-modification"
             subtitle={equipmentTabs}
             PaperProps={{
                 sx: {
                     height: '90vh',
                 },
             }}
-            titleId={'MassiveEquipmentsModifications'}
+            titleId={'TableEquipmentModification'}
             {...dialogProps}
             disabledSave={true}
             isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
@@ -172,9 +172,9 @@ const MassiveEquipmentsModificationDialog = ({
     );
 };
 
-MassiveEquipmentsModificationDialog.propTypes = {
+TableEquipmentModificationDialog.propTypes = {
     onClose: PropTypes.func,
     editData: PropTypes.array,
 };
 
-export default MassiveEquipmentsModificationDialog;
+export default TableEquipmentModificationDialog;
