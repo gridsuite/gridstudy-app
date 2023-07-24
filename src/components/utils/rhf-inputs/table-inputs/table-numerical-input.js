@@ -18,6 +18,7 @@ export const TableNumericalInput = ({
     previousValue,
     valueModified,
     adornment,
+    isClearable = true,
     ...props
 }) => {
     const { trigger } = useFormContext();
@@ -35,10 +36,12 @@ export const TableNumericalInput = ({
 
     const clearable = useMemo(
         () =>
-            previousValue === Number.MAX_VALUE
+            /** we add the clear button only if the field is clearable and the previous value is different from the current one **/
+            isClearable &&
+            (previousValue === Number.MAX_VALUE
                 ? validateValueIsANumber(value)
-                : previousValue && previousValue !== value,
-        [previousValue, value]
+                : previousValue !== undefined && previousValue !== value),
+        [isClearable, previousValue, value]
     );
 
     const outputTransform = (value) => {
@@ -82,8 +85,8 @@ export const TableNumericalInput = ({
                 style: {
                     fontSize: 'small',
                     color:
-                        previousValue &&
-                        previousValue === value &&
+                        previousValue !== undefined &&
+                        previousValue === parseFloat(value) &&
                         !valueModified
                             ? 'grey'
                             : null, // grey out the value if it is the same as the previous one
@@ -98,7 +101,6 @@ export const TableNumericalInput = ({
                 endAdornment: (
                     <InputAdornment position="end">
                         {transformedValue && adornment?.text}
-                        {/** we add the clear button only if the previous value is different from the current value **/}
                         {clearable && (
                             <IconButton
                                 onClick={handleClearValue}
