@@ -5,9 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useState } from 'react';
+import React, { ChangeEvent, FunctionComponent, useState } from 'react';
 import { useParameterState, useStyles } from '../parameters';
-import { Grid, MenuItem, Select, Slider, Switch } from '@mui/material';
+import {
+    Grid,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    Slider,
+    Switch,
+} from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { Mark } from '@mui/base/useSlider';
 
@@ -55,9 +62,9 @@ type ParameterLineProps = BaseParameterLineProps &
 /**
  * This component represents a parameter in the list.
  * This is an effort to uniformize the UI style.
- * @param name
- * @param other
  * @constructor
+ * @param props Parameter line component properties
+ * @param context React context
  */
 export const ParamLine: FunctionComponent<ParameterLineProps> = (
     props,
@@ -77,7 +84,7 @@ export const ParamLine: FunctionComponent<ParameterLineProps> = (
             //TODO: how to manage in react component? throw new Error(`Not supported parameter type ${type}`);
             // TS2339: Property 'type' does not exist on type 'never'.
             // @ts-ignore
-            return <p>{`Not supported parameter type ${props.type}`}</p>;
+            return <p>{`Not supported parameter type '${props.type || '<unknown>'}'`}</p>;
     }
 };
 
@@ -97,7 +104,10 @@ const ParamLineSwitch: FunctionComponent<
             <Grid item container xs={4} className={classes.controlItem}>
                 <Switch
                     checked={parameterValue}
-                    onChange={(event, checked) => {
+                    onChange={(
+                        event: ChangeEvent<HTMLInputElement>,
+                        checked: boolean
+                    ) => {
                         handleChangeParameterValue(checked);
                     }}
                     value={parameterValue}
@@ -130,7 +140,7 @@ const ParamLineDropdown: FunctionComponent<
                             ? Object.entries<string>(props.values)[0]
                             : parameterValue
                     }
-                    onChange={(event) => {
+                    onChange={(event: SelectChangeEvent<any>) => {
                         handleChangeParameterValue(event.target.value);
                     }}
                     size="small"
@@ -170,10 +180,10 @@ const ParamLineSlider: FunctionComponent<
                     min={props.minValue ?? 0}
                     max={props.maxValue ?? 100}
                     valueLabelDisplay="auto"
-                    onChange={(event, newValue) => {
-                        // TS2345: Argument of type 'number | number[]' is not assignable to parameter of type 'SetStateAction<number>'.
-                        // @ts-ignore
-                        setSliderValue(newValue);
+                    onChange={(event: Event, newValue: number | number[]) => {
+                        setSliderValue(
+                            typeof newValue == 'number' ? newValue : newValue[0]
+                        );
                     }}
                     onChangeCommitted={(event, value) => {
                         handleChangeParameterValue(value);
