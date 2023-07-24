@@ -11,7 +11,7 @@ import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-tab';
@@ -71,9 +71,12 @@ export const ResultViewTab = ({
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [availableServices] = useParameterState(AVAILABLE_SERVICES);
 
-    const isAvailable = useCallback((tab) => {
-        return !!availableServices.includes(tab);
-    }, [availableServices]);
+    const isAvailable = useCallback(
+        (tab) => {
+            return !!availableServices.includes(tab);
+        },
+        [availableServices]
+    );
 
     const renderLoadFlowResult = useMemo(() => {
         return (
@@ -84,7 +87,7 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, classes]);
 
     const renderSecurityAnalysisResult = useMemo(() => {
         return (
@@ -96,7 +99,7 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, classes, openVoltageLevelDiagram]);
 
     const renderVoltageInitResult = useMemo(() => {
         return (
@@ -107,7 +110,7 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, classes]);
 
     const renderSensitivityAnalysisResult = useMemo(() => {
         return (
@@ -118,7 +121,7 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, classes]);
 
     const renderShortCircuitAnalysisResult = useMemo(() => {
         return (
@@ -129,7 +132,7 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, classes]);
 
     const renderDynamicSimulationResult = useMemo(() => {
         return (
@@ -140,7 +143,7 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, classes]);
 
     const services = useMemo(() => {
         return [
