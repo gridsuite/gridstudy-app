@@ -37,10 +37,10 @@ const useStyles = makeStyles((theme) => ({
 const TwoWindingsTransformerCharacteristicsPane = ({
     id = CHARACTERISTICS,
     twtToModify,
-    modification = false,
+    isModification = false,
 }) => {
     const classes = useStyles();
-    const width = modification ? 12 : 8;
+    const width = isModification ? 12 : 8;
 
     const seriesResistanceField = (
         <FloatInput
@@ -48,7 +48,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             label="SeriesResistanceText"
             adornment={OhmAdornment}
             previousValue={twtToModify?.r}
-            clearable={modification}
+            clearable={isModification}
         />
     );
 
@@ -58,7 +58,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             label="SeriesReactanceText"
             adornment={OhmAdornment}
             previousValue={twtToModify?.x}
-            clearable={modification}
+            clearable={isModification}
         />
     );
 
@@ -68,7 +68,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             label="MagnetizingConductance"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(twtToModify?.g)}
-            clearable={modification}
+            clearable={isModification}
         />
     );
 
@@ -78,7 +78,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             label="MagnetizingSusceptance"
             adornment={MicroSusceptanceAdornment}
             previousValue={unitToMicroUnit(twtToModify?.b)}
-            clearable={modification}
+            clearable={isModification}
         />
     );
 
@@ -88,7 +88,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             label="RatedNominalPowerText"
             adornment={MVAPowerAdornment}
             previousValue={twtToModify?.ratedS}
-            clearable={modification}
+            clearable={isModification}
         />
     );
 
@@ -98,7 +98,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             label="RatedVoltage"
             adornment={VoltageAdornment}
             previousValue={twtToModify?.ratedU1}
-            clearable={modification}
+            clearable={isModification}
         />
     );
 
@@ -108,7 +108,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             label="RatedVoltage"
             adornment={VoltageAdornment}
             previousValue={twtToModify?.ratedU2}
-            clearable={modification}
+            clearable={isModification}
         />
     );
 

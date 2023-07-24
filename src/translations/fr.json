@@ -763,6 +763,7 @@
     "TwoWindingsTransformerRatioTapChangerTab": "Régleur",
     "TwoWindingsTransformerPhaseTapChangerTab": "Déphaseur",
     "ConfigureRatioTapChanger": "Créer régleur",
+    "WithRatioTapChanger": "Avec régleur",
     "ConfigurePhaseTapChanger": "Créer déphaseur",
     "RegulatedSide": "Côté réglé",
     "RegulatedSide1": "Origine",
@@ -770,6 +771,7 @@
 
     "OnLoad": "En charge",
     "VoltageRegulation": "Réglage de tension",
+    "ResetRegulationRule": "Réinitialiser la loi de réglage",
     "Regulating": "En réglage",
     "TargetVoltage": "Tension",
     "TargetVoltageGreaterThanZero": "La tension doit être strictement positive",

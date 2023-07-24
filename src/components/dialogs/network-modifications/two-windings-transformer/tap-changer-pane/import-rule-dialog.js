@@ -19,7 +19,7 @@ import { FormattedMessage } from 'react-intl';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 
 import CsvDownloader from 'react-csv-downloader';
-import { PHASE_TAP } from '../two-windings-transformer-creation-dialog';
+import { PHASE_TAP } from '../creation/two-windings-transformer-creation-dialog';
 import { MAX_ROWS_NUMBER } from 'components/utils/dnd-table/dnd-table';
 
 export const ImportRuleDialog = (props) => {
