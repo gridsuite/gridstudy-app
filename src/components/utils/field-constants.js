@@ -10,7 +10,6 @@ export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
 export const ACTIVE_POWER = 'activePower';
 export const REACTIVE_POWER = 'reactivePower';
-
 export const CONNECTIVITY = 'connectivity';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
@@ -97,9 +96,6 @@ export const CURRENT_LIMITER_REGULATING_VALUE = 'currentLimiterRegulatingValue';
 export const FLOW_SET_POINT_REGULATING_VALUE = 'flowSetPointRegulatingValue';
 
 //ShuntCompensator
-export const MAXIMUM_NUMBER_OF_SECTIONS = 'maximumNumberOfSections';
-export const CURRENT_NUMBER_OF_SECTIONS = 'currentNumberOfSections';
-export const IDENTICAL_SECTIONS = 'identicalSections';
 export const SUSCEPTANCE_PER_SECTION = 'susceptancePerSection';
 export const CHARACTERISTICS_CHOICE = 'characteristicsChoice';
 export const Q_AT_NOMINAL_V = 'qatNominalV';
@@ -227,3 +223,11 @@ export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
+
+// HVDC deletion
+export const DELETION_SPECIFIC_DATA = 'specificEquipmentInfos';
+export const DELETION_SPECIFIC_TYPE = 'specificType';
+export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
+export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
+export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
+export const MCS_SELECTED = 'connectedToHvdc';

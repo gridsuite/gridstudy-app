@@ -12,7 +12,6 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
-    fetchLoadFlowInfos,
     fetchNetworkModificationTree,
     fetchStudyExists,
     fetchCaseName,
@@ -52,7 +51,6 @@ import {
     connectDeletedStudyNotificationsWebsocket,
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
-
 import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 
@@ -194,8 +192,6 @@ function usePrevious(value) {
     return ref.current;
 }
 
-const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
-
 export const UPDATE_TYPE_HEADER = 'updateType';
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
@@ -230,13 +226,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const currentNodeRef = useRef();
 
-    const [loadFlowInfos] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchLoadFlowInfos,
-        loadFlowStatusInvalidations
-    );
-
     useAllComputingStatus(studyUuid, currentNode?.id);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -254,6 +243,12 @@ export function StudyContainer({ view, onChangeTab }) {
             const userId = eventData.headers[USER_HEADER];
             if (userId !== userName) {
                 return;
+            }
+            if (updateTypeHeader === 'loadflow_failed') {
+                snackError({
+                    headerId: 'LoadFlowError',
+                    messageTxt: errorMessage,
+                });
             }
             if (updateTypeHeader === 'buildFailed') {
                 snackError({
@@ -273,7 +268,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
+            if (
+                updateTypeHeader === 'shortCircuitAnalysis_failed' ||
+                updateTypeHeader === 'oneBusShortCircuitAnalysis_failed'
+            ) {
                 snackError({
                     headerId: 'ShortCircuitAnalysisError',
                     messageTxt: errorMessage,
@@ -680,7 +678,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 currentNode={currentNode}
                 view={view}
                 onChangeTab={onChangeTab}
-                loadFlowInfos={loadFlowInfos}
                 setErrorMessage={setErrorMessage}
             />
         </WaitingLoader>

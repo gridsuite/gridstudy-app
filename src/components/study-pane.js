@@ -22,7 +22,6 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
-import { getLoadFlowRunningStatus } from './utils/running-status';
 import NetworkMapTab from './network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
@@ -34,6 +33,9 @@ import { ReactFlowProvider } from 'react-flow-renderer';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
+import { ResultsTabsRootLevel } from './results/use-results-tab';
+import { ShortcircuitAnalysisResultTabs } from './results/shortcircuit/shortcircuit-analysis-result.type';
+import { ComputingType } from './computing-status/computing-type';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -80,13 +82,7 @@ export const StudyView = {
     LOGS: 'Logs',
 };
 
-const StudyPane = ({
-    studyUuid,
-    currentNode,
-    loadFlowInfos,
-    setErrorMessage,
-    ...props
-}) => {
+const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
     const lineParallelPath = useSelector(
@@ -112,6 +108,13 @@ const StudyPane = ({
         type: null,
         changed: false,
     });
+
+    const [resultTabIndexRedirection, setResultTabIndexRedirection] =
+        useState();
+
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
 
     const classes = useStyles();
 
@@ -142,6 +145,17 @@ const StudyPane = ({
         };
         setTableEquipment(newTableEquipment);
         props.onChangeTab(1); // switch to spreadsheet view
+    }
+
+    function showOneBusShortcircuitResults() {
+        props.onChangeTab(2); // switch to results view
+        // redirect to shorcircuit analysis tab, one bus subtab
+        // TODO: it's working only because the object passed to the state is different each time which will cause the useEffect to execute
+        // done this way to match the "showInSpreadsheet" behaviour
+        setResultTabIndexRedirection([
+            ResultsTabsRootLevel.SHORTCIRCUIT_ANALYSIS,
+            ShortcircuitAnalysisResultTabs.ONE_BUS,
+        ]);
     }
 
     function renderMapView() {
@@ -237,13 +251,11 @@ const StudyPane = ({
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    loadFlowStatus={getLoadFlowRunningStatus(
-                                        loadFlowInfos?.loadFlowStatus
-                                    )}
                                     setIsComputationRunning={
                                         setIsComputationRunning
                                     }
                                     setErrorMessage={setErrorMessage}
+                                    loadFlowStatus={loadFlowStatus}
                                 />
                             </div>
 
@@ -251,14 +263,15 @@ const StudyPane = ({
                                 studyUuid={studyUuid}
                                 isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
-                                loadFlowStatus={getLoadFlowRunningStatus(
-                                    loadFlowInfos?.loadFlowStatus
-                                )}
+                                showOneBusShortcircuitResults={
+                                    showOneBusShortcircuitResults
+                                }
                                 currentNode={currentNode}
                                 visible={
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
                                 }
+                                loadFlowStatus={loadFlowStatus}
                             />
                         </div>
                     </div>
@@ -276,9 +289,6 @@ const StudyPane = ({
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
-                    loadFlowStatus={getLoadFlowRunningStatus(
-                        loadFlowInfos?.loadFlowStatus
-                    )}
                     disabled={disabled}
                     visible={props.view === StudyView.SPREADSHEET}
                 />
@@ -313,9 +323,9 @@ const StudyPane = ({
                 <ResultViewTab
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    loadFlowInfos={loadFlowInfos}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
+                    resultTabIndexRedirection={resultTabIndexRedirection}
                 />
             </TabPanelLazy>
             <div

@@ -28,11 +28,7 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    fetchAppsAndUrls,
-    fetchLoadFlowInfos,
-    fetchNetworkElementInfos,
-} from '../utils/rest-api';
+import { fetchAppsAndUrls, fetchNetworkElementInfos } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
@@ -61,7 +57,6 @@ import {
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
 } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
-import { useNodeData } from './study-container';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import {
@@ -226,12 +221,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
-    const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
-    const [loadFlowInfosNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchLoadFlowInfos,
-        loadFlowStatusInvalidations
+
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
 
     const securityAnalysisStatus = useSelector(
@@ -284,21 +276,14 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            loadFlowInfosNode?.loadFlowStatus !== 'NOT_DONE' &&
-            loadFlowInfosNode?.loadFlowResult != null
+            (loadFlowStatus === RunningStatus.SUCCEED ||
+                loadFlowStatus === RunningStatus.FAILED)
         ) {
             dispatch(addLoadflowNotif());
         } else {
             dispatch(resetLoadflowNotif());
         }
-    }, [
-        currentNode,
-        dispatch,
-        loadFlowInfosNode?.loadFlowResult,
-        loadFlowInfosNode?.loadFlowStatus,
-        tabIndex,
-        user,
-    ]);
+    }, [currentNode, dispatch, loadFlowStatus, tabIndex, user]);
 
     useEffect(() => {
         if (
