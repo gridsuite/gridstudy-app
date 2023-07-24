@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Grid } from '@mui/material';
 import { SubstationLayout } from '../../diagrams/diagram-common';
 import {
     PARAM_CENTER_LABEL,
@@ -15,10 +14,10 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../../utils/config-params';
-import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
-import { useStyles } from './parameters';
+import { CloseButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { getAvailableComponentLibraries } from '../../../utils/rest-api';
+import { ParamLine, ParameterType } from './widget/ParameterLine';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);
@@ -39,15 +38,14 @@ export const SingleLineDiagramParameters = ({
     componentLibraries,
 }) => {
     const classes = useStyles();
-
-    const [diagonalLabelLocal, handleChangeDiagonalLabel] =
-        useParameterState(PARAM_DIAGONAL_LABEL);
-    const [centerLabelLocal, handleChangeCenterLabel] =
-        useParameterState(PARAM_CENTER_LABEL);
-    const [substationLayoutLocal, handleChangeSubstationLayout] =
-        useParameterState(PARAM_SUBSTATION_LAYOUT);
-    const [componentLibraryLocal, handleChangeComponentLibrary] =
-        useParameterState(PARAM_COMPONENT_LIBRARY);
+    const componentLibsRenderCache = useMemo(
+        () =>
+            Array.from(componentLibraries).reduce(
+                (prev, val, idx) => ({ ...prev, [val]: val }),
+                {}
+            ),
+        [componentLibraries]
+    );
 
     return (
         <>
@@ -57,89 +55,43 @@ export const SingleLineDiagramParameters = ({
                 className={classes.scrollableGrid}
                 key={'sldParameters'}
             >
-                <SwitchWithLabel
-                    value={diagonalLabelLocal}
+                <ParamLine
+                    type={ParameterType.Switch}
+                    param_name_id={PARAM_DIAGONAL_LABEL}
                     label="diagonalLabel"
-                    callback={() => {
-                        handleChangeDiagonalLabel(!diagonalLabelLocal);
-                    }}
                 />
                 <LineSeparator />
-                <SwitchWithLabel
-                    value={centerLabelLocal}
+                <ParamLine
+                    type={ParameterType.Switch}
+                    param_name_id={PARAM_CENTER_LABEL}
                     label="centerLabel"
-                    callback={() => {
-                        handleChangeCenterLabel(!centerLabelLocal);
+                />
+                <LineSeparator />
+                <ParamLine
+                    type={ParameterType.DropDown}
+                    param_name_id={PARAM_SUBSTATION_LAYOUT}
+                    labelTitle="SubstationLayout"
+                    labelValue="substation-layout-select-label"
+                    defaultValueIfNull={true}
+                    values={{
+                        [SubstationLayout.HORIZONTAL]:
+                            'HorizontalSubstationLayout',
+                        [SubstationLayout.VERTICAL]: 'VerticalSubstationLayout',
+                        [SubstationLayout.SMART]: 'SmartSubstationLayout',
+                        [SubstationLayout.SMARTHORIZONTALCOMPACTION]:
+                            'SmartWithHorizontalCompactionSubstationLayout',
+                        [SubstationLayout.SMARTVERTICALCOMPACTION]:
+                            'SmartWithVerticalCompactionSubstationLayout',
                     }}
                 />
                 <LineSeparator />
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="SubstationLayout" />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <Select
-                        size="small"
-                        labelId="substation-layout-select-label"
-                        value={substationLayoutLocal}
-                        onChange={(event) => {
-                            handleChangeSubstationLayout(event.target.value);
-                        }}
-                    >
-                        <MenuItem value={SubstationLayout.HORIZONTAL}>
-                            <FormattedMessage id="HorizontalSubstationLayout" />
-                        </MenuItem>
-                        <MenuItem value={SubstationLayout.VERTICAL}>
-                            <FormattedMessage id="VerticalSubstationLayout" />
-                        </MenuItem>
-                        <MenuItem value={SubstationLayout.SMART}>
-                            <FormattedMessage id="SmartSubstationLayout" />
-                        </MenuItem>
-                        <MenuItem
-                            value={SubstationLayout.SMARTHORIZONTALCOMPACTION}
-                        >
-                            <FormattedMessage id="SmartWithHorizontalCompactionSubstationLayout" />
-                        </MenuItem>
-                        <MenuItem
-                            value={SubstationLayout.SMARTVERTICALCOMPACTION}
-                        >
-                            <FormattedMessage id="SmartWithVerticalCompactionSubstationLayout" />
-                        </MenuItem>
-                    </Select>
-                </Grid>
-                <LineSeparator />
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="ComponentLibrary" />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <Select
-                        size="small"
-                        labelId="component-library-select-label"
-                        value={
-                            componentLibraryLocal !== null
-                                ? componentLibraryLocal
-                                : componentLibraries[0]
-                        }
-                        onChange={(event) => {
-                            handleChangeComponentLibrary(event.target.value);
-                        }}
-                    >
-                        {componentLibraries.map((library) => {
-                            return (
-                                <MenuItem key={library} value={library}>
-                                    {library}
-                                </MenuItem>
-                            );
-                        })}
-                    </Select>
-                </Grid>
+                <ParamLine
+                    type={ParameterType.DropDown}
+                    param_name_id={PARAM_COMPONENT_LIBRARY}
+                    labelTitle="ComponentLibrary"
+                    labelValue="component-library-select-label"
+                    values={componentLibsRenderCache}
+                />
             </Grid>
             <Grid
                 container

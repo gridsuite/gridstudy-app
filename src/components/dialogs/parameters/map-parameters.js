@@ -5,11 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useEffect } from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
-import { LineFlowMode } from '../../network/line-layer';
-import { LineFlowColorMode } from '../../network/line-layer';
+import { Grid } from '@mui/material';
+import { LineFlowMode, LineFlowColorMode } from '../../network/line-layer';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
@@ -18,33 +15,12 @@ import {
     PARAM_LINE_PARALLEL_PATH,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../utils/config-params';
-import { CloseButton, SwitchWithLabel, useParameterState } from './parameters';
-import { useStyles } from './parameters';
-import { LabelledSlider, LineSeparator } from '../dialogUtils';
+import { CloseButton, useParameterState, useStyles } from './parameters';
+import { LineSeparator } from '../dialogUtils';
+import { ParamLine, ParameterType } from './widget/ParameterLine';
 
 export const MapParameters = ({ hideParameters }) => {
     const classes = useStyles();
-
-    const [lineFullPathLocal, handleChangeLineFullPath] =
-        useParameterState(PARAM_LINE_FULL_PATH);
-
-    const [lineParallelPathLocal, handleChangeLineParallelPath] =
-        useParameterState(PARAM_LINE_PARALLEL_PATH);
-
-    const [lineFlowModeLocal, handleChangeLineFlowMode] =
-        useParameterState(PARAM_LINE_FLOW_MODE);
-
-    const [lineFlowColorModeLocal, handleChangeLineFlowColorMode] =
-        useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
-
-    const [lineFlowAlertThresholdLocal, handleChangeLineFlowAlertThreshold] =
-        useParameterState(PARAM_LINE_FLOW_ALERT_THRESHOLD);
-
-    const [mapManualRefreshLocal, handleChangeMapManualRefresh] =
-        useParameterState(PARAM_MAP_MANUAL_REFRESH);
-
-    const [disabledFlowAlertThreshold, setDisabledFlowAlertThreshold] =
-        useState(lineFlowColorModeLocal === 'nominalVoltage');
 
     const alertThresholdMarks = [
         {
@@ -57,11 +33,11 @@ export const MapParameters = ({ hideParameters }) => {
         },
     ];
 
-    useEffect(() => {
-        setDisabledFlowAlertThreshold(
-            lineFlowColorModeLocal === 'nominalVoltage'
-        );
-    }, [lineFlowColorModeLocal]);
+    const [lineFlowColorModeLocal] = useParameterState(
+        PARAM_LINE_FLOW_COLOR_MODE
+    );
+    const isLineFlowNominal =
+        lineFlowColorModeLocal === LineFlowColorMode.NOMINAL_VOLTAGE;
 
     return (
         <>
@@ -71,91 +47,54 @@ export const MapParameters = ({ hideParameters }) => {
                 className={classes.scrollableGrid}
                 key={'mapParameters'}
             >
-                <SwitchWithLabel
-                    value={lineFullPathLocal}
+                <ParamLine
+                    type={ParameterType.Switch}
+                    param_name_id={PARAM_LINE_FULL_PATH}
                     label="lineFullPath"
-                    callback={() => {
-                        handleChangeLineFullPath(!lineFullPathLocal);
-                    }}
                 />
                 <LineSeparator />
-                <SwitchWithLabel
-                    value={lineParallelPathLocal}
+                <ParamLine
+                    type={ParameterType.Switch}
+                    param_name_id={PARAM_LINE_PARALLEL_PATH}
                     label="lineParallelPath"
-                    callback={() => {
-                        handleChangeLineParallelPath(!lineParallelPathLocal);
+                />
+                <LineSeparator />
+                <ParamLine
+                    type={ParameterType.DropDown}
+                    param_name_id={PARAM_LINE_FLOW_MODE}
+                    labelTitle="LineFlowMode"
+                    labelValue="line-flow-mode-select-label"
+                    values={{
+                        [LineFlowMode.STATIC_ARROWS]: 'StaticArrows',
+                        [LineFlowMode.ANIMATED_ARROWS]: 'AnimatedArrows',
+                        [LineFlowMode.FEEDERS]: 'Feeders',
                     }}
                 />
                 <LineSeparator />
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="LineFlowMode" />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <Select
-                        size="small"
-                        labelId="line-flow-mode-select-label"
-                        value={lineFlowModeLocal}
-                        onChange={(event) => {
-                            handleChangeLineFlowMode(event.target.value);
-                        }}
-                    >
-                        <MenuItem value={LineFlowMode.STATIC_ARROWS}>
-                            <FormattedMessage id="StaticArrows" />
-                        </MenuItem>
-                        <MenuItem value={LineFlowMode.ANIMATED_ARROWS}>
-                            <FormattedMessage id="AnimatedArrows" />
-                        </MenuItem>
-                        <MenuItem value={LineFlowMode.FEEDERS}>
-                            <FormattedMessage id="Feeders" />
-                        </MenuItem>
-                    </Select>
-                </Grid>
-                <LineSeparator />
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="LineFlowColorMode" />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <Select
-                        size="small"
-                        labelId="line-flow-color-mode-select-label"
-                        value={lineFlowColorModeLocal}
-                        onChange={(event) => {
-                            handleChangeLineFlowColorMode(event.target.value);
-                        }}
-                    >
-                        <MenuItem value={LineFlowColorMode.NOMINAL_VOLTAGE}>
-                            <FormattedMessage id="NominalVoltage" />
-                        </MenuItem>
-                        <MenuItem value={LineFlowColorMode.OVERLOADS}>
-                            <FormattedMessage id="Overloads" />
-                        </MenuItem>
-                    </Select>
-                </Grid>
-                <LineSeparator />
-                <LabelledSlider
-                    value={Number(lineFlowAlertThresholdLocal)}
-                    label="AlertThresholdLabel"
-                    disabled={disabledFlowAlertThreshold}
-                    onCommitCallback={(event, value) => {
-                        handleChangeLineFlowAlertThreshold(value);
+                <ParamLine
+                    type={ParameterType.DropDown}
+                    param_name_id={PARAM_LINE_FLOW_COLOR_MODE}
+                    labelTitle="LineFlowColorMode"
+                    labelValue="line-flow-color-mode-select-label"
+                    values={{
+                        [LineFlowColorMode.NOMINAL_VOLTAGE]: 'NominalVoltage',
+                        [LineFlowColorMode.OVERLOADS]: 'Overloads',
                     }}
+                />
+                <LineSeparator />
+                <ParamLine
+                    type={ParameterType.Slider}
+                    param_name_id={PARAM_LINE_FLOW_ALERT_THRESHOLD}
+                    label="AlertThresholdLabel"
+                    disabled={isLineFlowNominal}
                     marks={alertThresholdMarks}
                 />
                 <LineSeparator />
-                <SwitchWithLabel
-                    value={mapManualRefreshLocal}
+                <ParamLine
+                    type={ParameterType.Switch}
+                    param_name_id={PARAM_MAP_MANUAL_REFRESH}
                     label="MapManualRefresh"
-                    callback={() => {
-                        handleChangeMapManualRefresh(!mapManualRefreshLocal);
-                    }}
+                    marks={alertThresholdMarks}
                 />
             </Grid>
             <Grid
