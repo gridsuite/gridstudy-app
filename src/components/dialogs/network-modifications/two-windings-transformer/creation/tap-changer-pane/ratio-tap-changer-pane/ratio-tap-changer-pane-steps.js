@@ -23,6 +23,8 @@ import { RATIO_TAP } from '../../two-windings-transformer-creation-dialog';
 const RatioTapChangerPaneSteps = ({
     disabled,
     previousValues,
+    previousModifications,
+    currentNode,
     isModification = false,
 }) => {
     const intl = useIntl();
@@ -145,6 +147,8 @@ const RatioTapChangerPaneSteps = ({
             handleImportRow={handleImportRow}
             disabled={disabled}
             previousValues={previousValues}
+            previousModifications={previousModifications}
+            currentNode={currentNode}
             isModification={isModification}
         />
     );

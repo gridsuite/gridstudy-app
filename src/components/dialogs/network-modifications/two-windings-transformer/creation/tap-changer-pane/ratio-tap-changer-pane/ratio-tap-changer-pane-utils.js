@@ -20,7 +20,6 @@ import {
     REGULATION_TYPE,
     STEPS,
     STEPS_CONDUCTANCE,
-    STEPS_MODIFIED,
     STEPS_RATIO,
     STEPS_REACTANCE,
     STEPS_RESISTANCE,
@@ -292,7 +291,6 @@ export const getRatioTapChangerFormData = (
 ) => ({
     [id]: {
         [ENABLED]: enabled,
-        [STEPS_MODIFIED]: stepsModified,
         [LOAD_TAP_CHANGING_CAPABILITIES]: loadTapChangingCapabilities,
         [REGULATION_MODE]: regulationMode,
         [REGULATION_TYPE]: regulationType,

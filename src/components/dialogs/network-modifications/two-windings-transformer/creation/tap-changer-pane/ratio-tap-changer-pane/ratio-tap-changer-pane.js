@@ -14,6 +14,7 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
+    STEPS,
     TARGET_DEADBAND,
     TARGET_V,
 } from 'components/utils/field-constants';
@@ -56,9 +57,10 @@ export const previousRegulationType = (previousValues) => {
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
     studyUuid,
-    currentNodeUuid,
+    currentNode,
     voltageLevelOptions = [],
     previousValues,
+    previousModifications,
     isModification = false,
 }) => {
     const { trigger } = useFormContext();
@@ -269,7 +271,7 @@ const RatioTapChangerPane = ({
                 EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
             }
             studyUuid={studyUuid}
-            currentNodeUuid={currentNodeUuid}
+            currentNodeUuid={currentNode?.id}
             voltageLevelOptions={voltageLevelOptions}
             previousRegulatingTerminalValue={
                 previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId
@@ -357,6 +359,10 @@ const RatioTapChangerPane = ({
                 <RatioTapChangerPaneSteps
                     disabled={!ratioTapChangerEnabledWatcher}
                     previousValues={previousValues?.[RATIO_TAP_CHANGER]}
+                    previousModifications={
+                        previousModifications?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    }
+                    currentNode={currentNode}
                     isModification={isModification}
                 />
             </Grid>

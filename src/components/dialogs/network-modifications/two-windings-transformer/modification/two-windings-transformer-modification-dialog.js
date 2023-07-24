@@ -29,14 +29,13 @@ import {
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
     STEPS,
-    STEPS_MODIFIED,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
     fetchNetworkElementInfos,
@@ -81,6 +80,7 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
 import {
+    compareStepsWithPreviousValues,
     computeHighTapPosition,
     formatTemporaryLimits,
     toModificationOperation,
@@ -105,6 +105,16 @@ const emptyFormData = {
     ...getLimitsEmptyFormData(),
     ...getRatioTapChangerEmptyFormData(),
 };
+
+const formSchema = yup
+    .object()
+    .shape({
+        [EQUIPMENT_NAME]: yup.string(),
+        ...getCharacteristicsValidationSchema(true),
+        ...getLimitsValidationSchema(),
+        ...getRatioTapChangerModificationValidationSchema(),
+    })
+    .required();
 
 export const TwoWindingsTransformerModificationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -141,22 +151,6 @@ const TwoWindingsTransformerModificationDialog = ({
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState(null);
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-
-    const formSchema = useMemo(
-        () =>
-            yup
-                .object()
-                .shape({
-                    [EQUIPMENT_NAME]: yup.string(),
-                    ...getCharacteristicsValidationSchema(true),
-                    ...getLimitsValidationSchema(),
-                    ...getRatioTapChangerModificationValidationSchema(
-                        twtToModify?.[RATIO_TAP_CHANGER]
-                    ),
-                })
-                .required(),
-        [twtToModify]
-    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -415,30 +409,34 @@ const TwoWindingsTransformerModificationDialog = ({
                 };
             }
 
-            const enableRatioTapChanger = twt[RATIO_TAP_CHANGER]?.[ENABLED];
-
             let ratioTap = undefined;
-            let ratioTapChangerSteps = twt[RATIO_TAP_CHANGER]?.[STEPS_MODIFIED]
-                ? twt[RATIO_TAP_CHANGER]?.[STEPS]
-                : undefined;
+            const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
+            const enableRatioTapChanger = ratioTapChangerFormValues?.[ENABLED];
+            let ratioTapChangerSteps = compareStepsWithPreviousValues(
+                ratioTapChangerFormValues[STEPS],
+                twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
+            )
+                ? null
+                : ratioTapChangerFormValues[STEPS];
             if (enableRatioTapChanger) {
-                const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
                 ratioTap = {
                     enabled: toModificationOperation(true),
                     lowTapPosition: toModificationOperation(
-                        twt[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION]
+                        ratioTapChangerFormValues?.[LOW_TAP_POSITION]
                     ),
                     tapPosition: toModificationOperation(
-                        twt[RATIO_TAP_CHANGER]?.[TAP_POSITION]
+                        ratioTapChangerFormValues?.[TAP_POSITION]
                     ),
                     targetDeadband: toModificationOperation(
-                        twt[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND]
+                        ratioTapChangerFormValues?.[TARGET_DEADBAND]
                     ),
                     targetV: toModificationOperation(
-                        twt[RATIO_TAP_CHANGER]?.[TARGET_V]
+                        ratioTapChangerFormValues?.[TARGET_V]
                     ),
                     loadTapChangingCapabilities: toModificationOperation(
-                        twt[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES]
+                        ratioTapChangerFormValues?.[
+                            LOAD_TAP_CHANGING_CAPABILITIES
+                        ]
                     ),
                     regulating: toModificationOperation(
                         ratioTapChangerFormValues?.[REGULATION_MODE]
@@ -704,9 +702,10 @@ const TwoWindingsTransformerModificationDialog = ({
                         >
                             <RatioTapChangerPane
                                 studyUuid={studyUuid}
-                                currentNodeUuid={currentNodeUuid}
+                                currentNode={currentNode}
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify}
+                                previousModifications={editData}
                                 isModification={true}
                             />
                         </Box>
