@@ -82,8 +82,18 @@ import {
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
-        <Button onClick={hideParameters} className={classeStyleName}>
-            <FormattedMessage id="close" />
+        <LabelledButton
+            callback={hideParameters}
+            label={'close'}
+            name={classeStyleName}
+        />
+    );
+};
+
+export const LabelledButton = ({ callback, label, name }) => {
+    return (
+        <Button onClick={callback} className={name}>
+            <FormattedMessage id={label} />
         </Button>
     );
 };
@@ -213,14 +223,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.error.main,
     },
 }));
-
-export const LabelledButton = ({ callback, label, name }) => {
-    return (
-        <Button onClick={callback} className={name}>
-            <FormattedMessage id={label} />
-        </Button>
-    );
-};
 
 export const TabPanel = (props) => {
     const { children, value, index, keepState, ...other } = props;

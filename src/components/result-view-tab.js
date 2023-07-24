@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
-import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-tab';
+import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertInvalidNode from './utils/alert-invalid-node';
 import {
     AVAILABLE_SERVICES,
@@ -24,6 +24,7 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
+import { ResultsTabsLevel, useResultsTab } from './results/use-results-tab';
 import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 
@@ -52,6 +53,7 @@ const useStyles = makeStyles(() => ({
  * @param studyUuid : string uuid of study
  * @param currentNode : object current node
  * @param openVoltageLevelDiagram : function
+ * @param resultTabIndexRedirection : redirection to specific tab [RootTab, LevelOneTab, ...]
  * @param disabled
  * @returns {JSX.Element}
  * @constructor
@@ -60,9 +62,18 @@ export const ResultViewTab = ({
     studyUuid,
     currentNode,
     openVoltageLevelDiagram,
+    resultTabIndexRedirection,
     disabled,
 }) => {
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState(
+        resultTabIndexRedirection?.[ResultsTabsLevel.ROOT] ?? 0
+    );
+
+    useResultsTab(
+        resultTabIndexRedirection,
+        setTabIndex,
+        ResultsTabsLevel.ROOT
+    );
 
     const classes = useStyles();
 
@@ -127,8 +138,7 @@ export const ResultViewTab = ({
         return (
             <Paper className={classes.analysisResult}>
                 <ShortCircuitAnalysisResultTab
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id}
+                    resultTabIndexRedirection={resultTabIndexRedirection}
                 />
             </Paper>
         );

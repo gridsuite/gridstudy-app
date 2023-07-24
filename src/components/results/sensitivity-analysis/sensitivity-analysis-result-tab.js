@@ -29,7 +29,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     // Add default sort on sensitivity col
     const defaultSortColumn = DATA_KEY_TO_SORT_KEY.value;
     const defaultSortOrder = SORT_WAYS.desc;
-    const { onSortChanged, sortSelector, initSort } = useAgGridSort(
+    const { onSortChanged, sortConfig, initSort } = useAgGridSort(
         DATA_KEY_TO_SORT_KEY,
         { colKey: defaultSortColumn, sortWay: defaultSortOrder }
     );
@@ -49,8 +49,8 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         initTable();
     };
 
-    const handleSensiNOrNkIndexChange = (_, newTabIndexs) => {
-        setNOrNkIndex(newTabIndexs);
+    const handleSensiNOrNkIndexChange = (_, newTabIndexes) => {
+        setNOrNkIndex(newTabIndexes);
         initTable();
     };
 
@@ -73,7 +73,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                 filterSelector={filterSelector}
                 rowFilters={rowFilters}
                 onSortChanged={onSortChanged}
-                sortSelector={sortSelector}
+                sortConfig={sortConfig}
                 page={page}
                 setPage={setPage}
             />

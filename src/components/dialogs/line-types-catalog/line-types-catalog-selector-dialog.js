@@ -12,7 +12,7 @@ import React, {
     useEffect,
     useState,
 } from 'react';
-import { CustomAGGrid } from '../custom-aggrid';
+import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import BasicModificationDialog from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
