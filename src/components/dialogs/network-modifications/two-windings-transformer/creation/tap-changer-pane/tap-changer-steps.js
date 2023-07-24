@@ -302,20 +302,7 @@ const TapChangerSteps = ({
             if (step === undefined) {
                 return undefined;
             }
-            switch (column.dataKey) {
-                case STEPS_RESISTANCE:
-                    return step?.r;
-                case STEPS_REACTANCE:
-                    return step?.x;
-                case STEPS_CONDUCTANCE:
-                    return step?.g;
-                case STEPS_SUSCEPTANCE:
-                    return step?.b;
-                case STEPS_RATIO:
-                    return step?.rho;
-                default:
-                    return undefined;
-            }
+            return step?.[column.dataKey];
         },
         [getValues]
     );
