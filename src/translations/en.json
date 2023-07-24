@@ -286,6 +286,8 @@
     "ShortCircuitAnalysisParameters": "Short circuit analysis parameters",
     "startShortCircuitError": "An error occurred while starting the short circuit analysis",
     "ShortCircuitAnalysisError": "An error occured when executing short circuit analysis",
+    "ShortCircuitAnalysisTabOneBus": "One bus",
+    "ShortCircuitAnalysisTabAllBuses": "All buses",
     "IDNode": "ID bus",
     "IscKA": "Isc (kA)",
     "IscMinKA": "Isc min (kA)",
