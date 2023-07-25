@@ -15,30 +15,17 @@ import {
     GENERATORS_WITH_FIXED_ACTIVE_POWER,
 } from 'components/utils/field-constants';
 import { gridItem, percentageTextField, GridSection } from '../../dialogUtils';
-import Grid from '@mui/material/Grid';
+import { Box, Grid, Typography } from '@mui/material';
 import {
     formatPercentageValue,
     isValidPercentage,
 } from '../../percentage-area/percentage-area-utils';
 import { elementType } from '@gridsuite/commons-ui';
-import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import FrequencyReservePane from './frequency-reserve-pane';
+import { FormattedMessage } from 'react-intl';
+import { FieldLabel } from '../../../utils/inputs/hooks-helpers';
 
-export const useStyles = makeStyles((theme) => ({
-    padding: {
-        paddingTop: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
-    },
-    padding2: {
-        paddingTop: theme.spacing(2),
-        paddingLeft: theme.spacing(2),
-    },
-}));
-
-const GenerationDispatchForm = ({ currentNode, studyUuid }) => {
-    const classes = useStyles();
-
+const GenerationDispatchForm = () => {
     const handleCoefficientValueChange = (id, value) => {
         return formatPercentageValue(value);
     };
@@ -55,71 +42,81 @@ const GenerationDispatchForm = ({ currentNode, studyUuid }) => {
         />
     );
 
+    const generatorsWithFixedActivePowerField = (
+        <Grid container alignItems="center" spacing={2} direction={'row'}>
+            <Grid item xs={5}>
+                <FieldLabel label={'GeneratorsWithFixedActivePower'} optional />
+            </Grid>
+            <Grid item xs={4}>
+                <DirectoryItemsInput
+                    name={GENERATORS_WITH_FIXED_ACTIVE_POWER}
+                    equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
+                    elementType={elementType.FILTER}
+                    titleId={'FiltersListsSelection'}
+                />
+            </Grid>
+        </Grid>
+    );
+
     const defaultOutageRateField = (
-        <FloatInput
-            name={DEFAULT_OUTAGE_RATE}
-            label={'DefaultOutageRate'}
-            adornment={percentageTextField}
-            acceptValue={isValidPercentage}
-            outputTransform={(value) =>
-                handleCoefficientValueChange(DEFAULT_OUTAGE_RATE, value)
-            }
-        />
+        <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <Typography variant="span" component="h4">
+                    <FormattedMessage id="GeneratorAvailability" />
+                </Typography>
+            </Grid>
+            <Grid item xs={12}>
+                <FloatInput
+                    name={DEFAULT_OUTAGE_RATE}
+                    label={'DefaultOutageRate'}
+                    adornment={percentageTextField}
+                    acceptValue={isValidPercentage}
+                    outputTransform={(value) =>
+                        handleCoefficientValueChange(DEFAULT_OUTAGE_RATE, value)
+                    }
+                />
+            </Grid>
+        </Grid>
     );
 
     const generatorsWithoutOutageField = (
-        <DirectoryItemsInput
-            name={`${GENERATORS_WITHOUT_OUTAGE}`}
-            equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
-            elementType={elementType.FILTER}
-            label={'GeneratorsWithoutOutage'}
-            titleId={'FiltersListsSelection'}
-        />
-    );
-
-    const generatorsWithFixedActivePowerField = (
-        <DirectoryItemsInput
-            name={`${GENERATORS_WITH_FIXED_ACTIVE_POWER}`}
-            equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
-            elementType={elementType.FILTER}
-            label={'GeneratorsWithFixedActivePower'}
-            titleId={'FiltersListsSelection'}
-        />
+        <Grid container alignItems="center" spacing={2} direction={'row'}>
+            <Grid item xs={5}>
+                <FieldLabel label={'GeneratorsWithoutOutage'} optional />
+            </Grid>
+            <Grid item xs={4}>
+                <DirectoryItemsInput
+                    name={GENERATORS_WITHOUT_OUTAGE}
+                    equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
+                    elementType={elementType.FILTER}
+                    titleId={'FiltersListsSelection'}
+                />
+            </Grid>
+        </Grid>
     );
 
     return (
-        <>
-            <Grid
-                container
-                direction="column"
-                spacing={2}
-                alignItems="start"
-                className={classes.padding}
-            >
+        <Box pt={2}>
+            <Grid container spacing={2} mb={2}>
                 {gridItem(lossCoefficientField, 4)}
-                {gridItem(generatorsWithFixedActivePowerField, 6)}
+                {gridItem(generatorsWithFixedActivePowerField, 12)}
             </Grid>
             <GridSection title="ReduceMaxP" />
-            <Grid
-                container
-                direction="column"
-                spacing={2}
-                alignItems="start"
-                className={classes.padding}
-            >
-                <Grid
-                    container
-                    direction="row"
-                    spacing={2}
-                    alignItems="start"
-                    className={classes.padding2}
-                >
-                    {gridItem(defaultOutageRateField, 4)}
-                    {gridItem(generatorsWithoutOutageField, 6)}
-                </Grid>
-                <FrequencyReservePane />
+            <Grid container spacing={2} mb={3}>
+                {gridItem(defaultOutageRateField, 4)}
+                {gridItem(generatorsWithoutOutageField, 12)}
             </Grid>
-        </>
+            <Grid container spacing={2}>
+                <Grid item>
+                    <Typography variant="span" component="h4">
+                        <FormattedMessage id="frequencyReserve" />
+                    </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    <FrequencyReservePane />
+                </Grid>
+            </Grid>
+        </Box>
     );
 };
 
