@@ -103,13 +103,10 @@ export const DynamicSimulationEventDialog = (
     });
     const open = defaultOpen !== undefined ? defaultOpen : waitingOpen;
 
-    const formMethods = {
-        validationSchema: formSchema,
-        ...useForm({
-            defaultValues: emptyFormData,
-            resolver: yupResolver(formSchema),
-        }),
-    };
+    const formMethods = useForm({
+        defaultValues: emptyFormData,
+        resolver: yupResolver(formSchema),
+    });
 
     // empty form
     const handleSetValuesAndEmptyOthers = useCallback(() => {}, []);
@@ -123,7 +120,7 @@ export const DynamicSimulationEventDialog = (
     );
 
     return (
-        <FormProvider {...formMethods}>
+        <FormProvider {...{ validationSchema: formSchema, ...formMethods }}>
             <ModificationDialog
                 fullWidth
                 onClose={onClose}
