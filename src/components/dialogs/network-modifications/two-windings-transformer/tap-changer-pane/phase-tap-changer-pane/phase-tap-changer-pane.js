@@ -22,7 +22,7 @@ import {
     ActivePowerAdornment,
     AmpereAdornment,
     gridItem,
-} from '../../../../../dialogUtils';
+} from '../../../../dialogUtils';
 import {
     PHASE_REGULATION_MODES,
     REGULATION_TYPES,
@@ -30,7 +30,7 @@ import {
 } from 'components/network/constants';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import SelectInput from 'components/utils/rhf-inputs/select-input';
-import RegulatingTerminalForm from '../../../../../regulating-terminal/regulating-terminal-form';
+import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { getComputedPhaseTapChangerRegulationMode } from './phase-tap-changer-pane-utils';
