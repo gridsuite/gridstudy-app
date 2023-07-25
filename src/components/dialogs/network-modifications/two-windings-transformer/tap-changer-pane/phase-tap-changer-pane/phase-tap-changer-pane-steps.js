@@ -23,7 +23,9 @@ import { PHASE_TAP } from '../../creation/two-windings-transformer-creation-dial
 
 const PhaseTapChangerPaneSteps = ({
     disabled,
-    twtToModify,
+    previousValues,
+    editData,
+    currentNode,
     isModification = false,
 }) => {
     const intl = useIntl();
@@ -171,7 +173,9 @@ const PhaseTapChangerPaneSteps = ({
             resetButtonMessageId="ResetRegulationRule"
             handleImportRow={handleImportRow}
             disabled={disabled}
-            previousValues={twtToModify}
+            previousValues={previousValues}
+            editData={editData}
+            currentNode={currentNode}
             isModification={isModification}
         />
     );

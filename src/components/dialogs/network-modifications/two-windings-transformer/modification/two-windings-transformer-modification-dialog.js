@@ -854,7 +854,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         >
                             <RatioTapChangerPane
                                 studyUuid={studyUuid}
-                                currentNodeUuid={currentNodeUuid}
+                                currentNode={currentNode}
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify}
                                 isModification={true}
@@ -869,9 +869,9 @@ const TwoWindingsTransformerModificationDialog = ({
                         >
                             <PhaseTapChangerPane
                                 studyUuid={studyUuid}
-                                currentNodeUuid={currentNodeUuid}
+                                currentNode={currentNode}
                                 voltageLevelOptions={voltageLevelOptions}
-                                twtToModify={twtToModify}
+                                previousValues={twtToModify}
                                 isModification={true}
                             />
                         </Box>

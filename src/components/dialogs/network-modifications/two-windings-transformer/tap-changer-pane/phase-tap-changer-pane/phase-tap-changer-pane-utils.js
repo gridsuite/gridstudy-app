@@ -23,7 +23,6 @@ import {
     STEPS,
     STEPS_ALPHA,
     STEPS_CONDUCTANCE,
-    STEPS_MODIFIED,
     STEPS_RATIO,
     STEPS_REACTANCE,
     STEPS_RESISTANCE,
@@ -42,14 +41,14 @@ import {
 } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import {
+    getRegulatingTerminalEmptyFormData,
+    getRegulatingTerminalFormData,
+} from '../../../../regulating-terminal/regulating-terminal-form-utils';
+import {
     PHASE_REGULATION_MODES,
     REGULATION_TYPES,
     SIDE,
 } from 'components/network/constants';
-import {
-    getRegulatingTerminalEmptyFormData,
-    getRegulatingTerminalFormData,
-} from 'components/dialogs/regulating-terminal/regulating-terminal-form-utils';
 
 const phaseTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
@@ -285,7 +284,6 @@ export const getPhaseTapChangerEmptyFormData = (id = PHASE_TAP_CHANGER) => {
 export const getPhaseTapChangerFormData = (
     {
         enabled = false,
-        stepsModified = false,
         regulationMode = null,
         regulationType = null,
         regulationSide = SIDE.SIDE1.id,
@@ -304,7 +302,6 @@ export const getPhaseTapChangerFormData = (
 ) => ({
     [id]: {
         [ENABLED]: enabled,
-        [STEPS_MODIFIED]: stepsModified,
         [REGULATION_MODE]: regulationMode,
         [REGULATION_TYPE]: regulationType,
         [REGULATION_SIDE]: regulationSide,

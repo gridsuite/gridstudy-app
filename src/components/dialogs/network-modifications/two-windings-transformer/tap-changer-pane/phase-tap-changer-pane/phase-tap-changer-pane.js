@@ -54,9 +54,10 @@ export const previousRegulationType = (previousValues) => {
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
     studyUuid,
-    currentNodeUuid,
+    currentNode,
     voltageLevelOptions = [],
-    twtToModify,
+    previousValues,
+    editData,
     isModification = false,
 }) => {
     const intl = useIntl();
@@ -127,16 +128,16 @@ const PhaseTapChangerPane = ({
     const regulationType = useMemo(() => {
         return regulationTypeWatch
             ? regulationTypeWatch
-            : previousRegulationType(twtToModify);
-    }, [regulationTypeWatch, twtToModify]);
+            : previousRegulationType(previousValues);
+    }, [regulationTypeWatch, previousValues]);
 
     const regulationMode = useMemo(() => {
         return regulationModeWatch
             ? regulationModeWatch
             : getComputedPhaseTapChangerRegulationMode(
-                  twtToModify?.[PHASE_TAP_CHANGER]
+                  previousValues?.[PHASE_TAP_CHANGER]
               )?.id;
-    }, [regulationModeWatch, twtToModify]);
+    }, [regulationModeWatch, previousValues]);
 
     const regulationEnabled = useMemo(() => {
         return (
@@ -154,7 +155,7 @@ const PhaseTapChangerPane = ({
             options={Object.values(PHASE_REGULATION_MODES)}
             disabled={!phaseTapChangerEnabledWatch}
             previousValue={getPhaseTapChangerRegulationModeLabel(
-                twtToModify?.[PHASE_TAP_CHANGER]
+                previousValues?.[PHASE_TAP_CHANGER]
             )}
         />
     );
@@ -168,8 +169,8 @@ const PhaseTapChangerPane = ({
             size={'small'}
             disableClearable={!isModification}
             previousValue={getRegulationTypeLabel(
-                twtToModify,
-                twtToModify?.[PHASE_TAP_CHANGER]
+                previousValues,
+                previousValues?.[PHASE_TAP_CHANGER]
             )}
         />
     );
@@ -183,8 +184,8 @@ const PhaseTapChangerPane = ({
             size={'small'}
             disableClearable={!isModification}
             previousValue={getTapSideLabel(
-                twtToModify,
-                twtToModify?.[PHASE_TAP_CHANGER]
+                previousValues,
+                previousValues?.[PHASE_TAP_CHANGER]
             )}
         />
     );
@@ -199,7 +200,7 @@ const PhaseTapChangerPane = ({
             adornment={AmpereAdornment}
             previousValue={getRegulatingPreviousValue(
                 CURRENT_LIMITER_REGULATING_VALUE,
-                twtToModify?.[PHASE_TAP_CHANGER]
+                previousValues?.[PHASE_TAP_CHANGER]
             )}
         />
     );
@@ -214,7 +215,7 @@ const PhaseTapChangerPane = ({
             }}
             previousValue={getRegulatingPreviousValue(
                 FLOW_SET_POINT_REGULATING_VALUE,
-                twtToModify?.[PHASE_TAP_CHANGER]
+                previousValues?.[PHASE_TAP_CHANGER]
             )}
         />
     );
@@ -227,7 +228,7 @@ const PhaseTapChangerPane = ({
             formProps={{
                 disabled: !regulationEnabled,
             }}
-            previousValue={twtToModify?.[PHASE_TAP_CHANGER]?.targetDeadBand}
+            previousValue={previousValues?.[PHASE_TAP_CHANGER]?.targetDeadBand}
         />
     );
 
@@ -239,13 +240,13 @@ const PhaseTapChangerPane = ({
                 EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
             }
             studyUuid={studyUuid}
-            currentNodeUuid={currentNodeUuid}
+            currentNodeUuid={currentNode?.id}
             voltageLevelOptions={voltageLevelOptions}
             previousRegulatingTerminalValue={
-                twtToModify?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId
+                previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId
             }
             previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
-                twtToModify?.[PHASE_TAP_CHANGER]
+                previousValues?.[PHASE_TAP_CHANGER]
             )}
         />
     );
@@ -312,7 +313,9 @@ const PhaseTapChangerPane = ({
                     )}
                 <PhaseTapChangerPaneSteps
                     disabled={!phaseTapChangerEnabledWatch}
-                    twtToModify={twtToModify?.[PHASE_TAP_CHANGER]}
+                    previousValues={previousValues?.[PHASE_TAP_CHANGER]}
+                    editData={editData}
+                    currentNode={currentNode}
                     isModification={isModification}
                 />
             </Grid>

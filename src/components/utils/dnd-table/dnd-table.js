@@ -93,8 +93,6 @@ function EditableTableCell({
     column,
     previousValue,
     valueModified,
-    handleChange,
-    greyOutValue,
     ...props
 }) {
     return (
@@ -104,8 +102,6 @@ function EditableTableCell({
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     previousValue={previousValue}
                     valueModified={valueModified}
-                    handleChange={handleChange}
-                    greyOutValue={greyOutValue}
                     adornment={column?.adornment}
                     isClearable={column?.clearable}
                     style={{
@@ -203,7 +199,6 @@ const DndTable = ({
                         ? isValueModified(rowIndex, arrayFormName)
                         : false
                 }
-                handleChange={column.handleChange}
             />
         );
     }

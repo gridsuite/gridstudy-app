@@ -17,8 +17,6 @@ export const TableNumericalInput = ({
     inputProps,
     previousValue,
     valueModified,
-    handleChange,
-    greyOutValue,
     adornment,
     isClearable = true,
     ...props
@@ -66,7 +64,6 @@ export const TableNumericalInput = ({
 
     const handleInputChange = (e) => {
         onChange(outputTransform(e.target.value));
-        handleChange?.();
         trigger(name);
     };
 
