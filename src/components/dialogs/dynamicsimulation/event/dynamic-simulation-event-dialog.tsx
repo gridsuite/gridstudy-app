@@ -21,10 +21,6 @@ import { equipments } from '../../../network/network-equipments';
 export const START_TIME = 'startTime';
 export const SIDE = 'side';
 
-type FormContext = {
-    validationSchema: any;
-};
-
 const formSchema = yup
     .object()
     .shape({
@@ -107,11 +103,13 @@ export const DynamicSimulationEventDialog = (
     });
     const open = defaultOpen !== undefined ? defaultOpen : waitingOpen;
 
-    const formMethods = useForm<any, FormContext>({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
-        context: { validationSchema: formSchema },
-    });
+    const formMethods = {
+        validationSchema: formSchema,
+        ...useForm({
+            defaultValues: emptyFormData,
+            resolver: yupResolver(formSchema),
+        }),
+    };
 
     // empty form
     const handleSetValuesAndEmptyOthers = useCallback(() => {}, []);
