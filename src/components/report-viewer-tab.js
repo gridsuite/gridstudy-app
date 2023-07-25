@@ -61,7 +61,7 @@ export const ReportViewerTab = ({
 
     const nodesNames = useMemo(() => {
         return new Map(
-            treeModel.treeNodes.map((node) => [node.id, node.data.label])
+            treeModel?.treeNodes.map((node) => [node.id, node.data.label])
         );
     }, [treeModel]);
 
