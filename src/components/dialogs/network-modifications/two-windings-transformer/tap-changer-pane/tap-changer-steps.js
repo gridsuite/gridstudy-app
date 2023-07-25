@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
@@ -26,6 +26,11 @@ import {
     TAP_POSITION,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
+import {
+    compareStepsWithPreviousValues,
+    computeHighTapPosition,
+} from 'components/utils/utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 const TapChangerSteps = ({
     tapChanger,
@@ -36,12 +41,17 @@ const TapChangerSteps = ({
     createRuleMessageId,
     createRuleAllowNegativeValues,
     importRuleMessageId,
+    resetButtonMessageId,
     handleImportRow,
     disabled,
+    previousValues,
+    editData,
+    currentNode,
+    isModification = false,
 }) => {
     const intl = useIntl();
 
-    const { trigger, getValues, setValue } = useFormContext();
+    const { trigger, getValues, setValue, clearErrors } = useFormContext();
 
     const useFieldArrayOutput = useFieldArray({
         name: `${tapChanger}.${STEPS}`,
@@ -58,6 +68,14 @@ const TapChangerSteps = ({
 
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
+
+    const disableAddingRows = useMemo(() => {
+        return (
+            isModification &&
+            lowTapPosition === null &&
+            previousValues?.[LOW_TAP_POSITION] === undefined
+        );
+    }, [isModification, lowTapPosition, previousValues]);
 
     function allowedToAddTapRows() {
         // triggering validation on low tap position before generating rows (the field is required)
@@ -101,14 +119,30 @@ const TapChangerSteps = ({
         return tapRowsToAdd;
     }
 
+    const tapStepsWatcher = useWatch({
+        name: `${tapChanger}.${STEPS}`,
+    });
+
+    const areStepsModified = useMemo(() => {
+        if (editData?.[STEPS] && isNodeBuilt(currentNode)) {
+            return true;
+        } else {
+            return !compareStepsWithPreviousValues(
+                tapStepsWatcher,
+                previousValues?.[STEPS]
+            );
+        }
+    }, [currentNode, editData, previousValues, tapStepsWatcher]);
+
     const resetTapNumbers = useCallback(
-        (tapSteps) => {
+        (tapSteps, isModification) => {
             const currentTapRows =
                 tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
 
-            const currentLowTapPosition = getValues(
-                `${tapChanger}.${LOW_TAP_POSITION}`
-            );
+            const currentLowTapPosition =
+                isModification && lowTapPosition === null
+                    ? previousValues?.[LOW_TAP_POSITION]
+                    : lowTapPosition;
 
             for (
                 let tapPosition = currentLowTapPosition, index = 0;
@@ -127,27 +161,28 @@ const TapChangerSteps = ({
                     : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
-        [tapChanger, getValues, setValue]
+        [getValues, tapChanger, lowTapPosition, previousValues, setValue]
     );
 
     // Adjust high tap position when low tap position change + remove red if value fixed
     useEffect(() => {
         trigger(`${tapChanger}.${LOW_TAP_POSITION}`).then((result) => {
             if (result) {
-                resetTapNumbers(null);
+                resetTapNumbers(null, isModification);
             }
         });
-    }, [
-        trigger,
-        tapChanger,
-        lowTapPosition, // the only value supposed to change
-        resetTapNumbers,
-    ]);
+    }, [trigger, tapChanger, lowTapPosition, resetTapNumbers, isModification]);
 
     // when we detect a change in tapSteps (so when the size or the order of the list of rows change), we reset the tap fields
     useEffect(() => {
-        resetTapNumbers(tapSteps);
-    }, [tapSteps, resetTapNumbers]);
+        resetTapNumbers(tapSteps, isModification);
+    }, [tapSteps, resetTapNumbers, isModification]);
+
+    const handleResetButton = useCallback(() => {
+        replace(previousValues?.[STEPS] ?? []);
+        setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
+        clearErrors(`${tapChanger}.${STEPS}`);
+    }, [clearErrors, previousValues, replace, setValue, tapChanger]);
 
     const handleCreateTapRule = (lowTap, highTap) => {
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
@@ -204,6 +239,7 @@ const TapChangerSteps = ({
             formProps={{
                 disabled: disabled,
             }}
+            previousValue={previousValues?.[LOW_TAP_POSITION]}
         />
     );
 
@@ -214,6 +250,7 @@ const TapChangerSteps = ({
             formProps={{
                 disabled: true,
             }}
+            previousValue={computeHighTapPosition(previousValues?.[STEPS])}
         />
     );
 
@@ -224,6 +261,7 @@ const TapChangerSteps = ({
             formProps={{
                 disabled: disabled,
             }}
+            previousValue={previousValues?.[TAP_POSITION]}
         />
     );
 
@@ -251,6 +289,24 @@ const TapChangerSteps = ({
         extra: createRuleButton,
     };
 
+    const getTapPreviousValue = useCallback(
+        (rowIndex, column, arrayFormName, tapSteps) => {
+            const step = tapSteps?.find(
+                (e) => e.index === getValues(arrayFormName)[rowIndex]?.index
+            );
+            if (step === undefined) {
+                return undefined;
+            }
+            return step?.[column.dataKey];
+        },
+        [getValues]
+    );
+
+    const isTapModified = useCallback(
+        () => areStepsModified,
+        [areStepsModified]
+    );
+
     return (
         <Grid item container spacing={1}>
             <Grid item container spacing={2}>
@@ -273,6 +329,15 @@ const TapChangerSteps = ({
                 createRows={createTapRows}
                 handleUploadButton={handleImportTapRuleButton}
                 uploadButtonMessageId={importRuleMessageId}
+                handleResetButton={
+                    isModification ? handleResetButton : undefined
+                }
+                resetButtonMessageId={resetButtonMessageId}
+                previousValues={previousValues?.[STEPS]}
+                getPreviousValue={getTapPreviousValue}
+                isValueModified={isTapModified}
+                withResetButton={isModification && areStepsModified}
+                disableAddingRows={disableAddingRows}
                 disabled={disabled}
             />
             <CreateRuleDialog
