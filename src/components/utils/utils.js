@@ -115,6 +115,26 @@ export const formatTemporaryLimits = (temporaryLimits) =>
         };
     });
 
+export const computeHighTapPosition = (steps) => {
+    const values = steps?.map((step) => step['index']);
+    return values?.length > 0 ? Math.max(...values) : null;
+};
+
+export const compareStepsWithPreviousValues = (tapSteps, previousValues) => {
+    if (previousValues === undefined) {
+        return false;
+    }
+    if (tapSteps.length !== previousValues?.length) {
+        return false;
+    }
+    return tapSteps.every((step, index) => {
+        const previousStep = previousValues[index];
+        return Object.getOwnPropertyNames(previousStep).every((key) => {
+            return parseFloat(step[key]) === previousStep[key];
+        });
+    });
+};
+
 export function calculateResistance(distance, linearResistance) {
     if (
         distance === undefined ||

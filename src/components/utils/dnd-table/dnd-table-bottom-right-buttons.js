@@ -24,6 +24,7 @@ const DndTableBottomRightButtons = ({
     handleDeleteButton,
     handleMoveUpButton,
     handleMoveDownButton,
+    disableAddingRows,
     disabled,
 }) => {
     const intl = useIntl();
@@ -49,7 +50,7 @@ const DndTableBottomRightButtons = ({
                         <IconButton
                             color="primary"
                             onClick={() => handleAddButton()}
-                            disabled={disabled}
+                            disabled={disabled || disableAddingRows}
                         >
                             <AddCircleIcon />
                         </IconButton>

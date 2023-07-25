@@ -6,10 +6,15 @@
  */
 
 import { Grid, TextField } from '@mui/material';
-import { EQUIPMENT_NAME } from 'components/utils/field-constants';
+import {
+    ENABLED,
+    EQUIPMENT_NAME,
+    RATIO_TAP_CHANGER,
+} from 'components/utils/field-constants';
 import React from 'react';
 import { filledTextField, gridItem } from '../../../dialogUtils';
 import TextInput from 'components/utils/rhf-inputs/text-input';
+import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
 const TwoWindingsTransformerModificationDialogHeader = ({
     equipmentToModify,
     equipmentId,
@@ -38,10 +43,18 @@ const TwoWindingsTransformerModificationDialogHeader = ({
         />
     );
 
+    const ratioTapChangerEnabledField = (
+        <SwitchInput
+            name={`${RATIO_TAP_CHANGER}.${ENABLED}`}
+            label="WithRatioTapChanger"
+        />
+    );
+
     return (
         <Grid container item spacing={2}>
-            {gridItem(twoWindingsTransformerIdField)}
-            {gridItem(twoWindingsTransformerNameField)}
+            {gridItem(twoWindingsTransformerIdField, 4)}
+            {gridItem(twoWindingsTransformerNameField, 4)}
+            {gridItem(ratioTapChangerEnabledField, 2)}
         </Grid>
     );
 };
