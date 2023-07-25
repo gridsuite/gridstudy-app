@@ -857,6 +857,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 currentNode={currentNode}
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify}
+                                editData={editData}
                                 isModification={true}
                             />
                         </Box>
@@ -872,6 +873,7 @@ const TwoWindingsTransformerModificationDialog = ({
                                 currentNode={currentNode}
                                 voltageLevelOptions={voltageLevelOptions}
                                 previousValues={twtToModify}
+                                editData={editData}
                                 isModification={true}
                             />
                         </Box>
