@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { MODIFICATION_TYPES } from '../../components/utils/modification-type';
 import { toModificationOperation } from '../../components/utils/utils';
 import {
@@ -11,6 +18,172 @@ import {
     BRANCH_SIDE,
     BRANCH_STATUS_ACTION,
 } from '../../components/network/constants';
+
+export function changeNetworkModificationOrder(
+    studyUuid,
+    currentNodeUuid,
+    itemUuid,
+    beforeUuid
+) {
+    console.info(
+        'reorder node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modification/' +
+        itemUuid +
+        '?' +
+        new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
+    console.debug(url);
+    return backendFetch(url, { method: 'put' });
+}
+
+export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
+    const modificationDeleteUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/network-modifications?uuids=' +
+        encodeURIComponent(modificationUuids);
+
+    console.debug(modificationDeleteUrl);
+    return backendFetch(modificationDeleteUrl, {
+        method: 'delete',
+    });
+}
+
+export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
+    console.info('Creating groovy script (request network change)');
+    const changeUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    console.debug(changeUrl);
+    return backendFetchText(changeUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/text',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.GROOVY_SCRIPT.type,
+            script: groovyScript,
+        }),
+    });
+}
+
+function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
+    const changeBranchStatusUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    console.debug('%s with action: %s', changeBranchStatusUrl, action);
+    return backendFetch(changeBranchStatusUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/text',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
+            equipmentId: branch.id,
+            energizedVoltageLevelId:
+                action === BRANCH_STATUS_ACTION.ENERGISE_END_ONE
+                    ? branch.voltageLevelId1
+                    : branch.voltageLevelId2,
+            action: action,
+        }),
+    });
+}
+
+export function lockoutBranch(studyUuid, currentNodeUuid, branch) {
+    console.info('locking out branch ' + branch.id + ' ...');
+    return changeBranchStatus(
+        studyUuid,
+        currentNodeUuid,
+        branch,
+        BRANCH_STATUS_ACTION.LOCKOUT
+    );
+}
+
+export function tripBranch(studyUuid, currentNodeUuid, branch) {
+    console.info('tripping branch ' + branch.id + ' ...');
+    return changeBranchStatus(
+        studyUuid,
+        currentNodeUuid,
+        branch,
+        BRANCH_STATUS_ACTION.TRIP
+    );
+}
+
+export function energiseBranchEnd(
+    studyUuid,
+    currentNodeUuid,
+    branch,
+    branchSide
+) {
+    console.info(
+        'energise branch ' + branch.id + ' on side ' + branchSide + ' ...'
+    );
+    return changeBranchStatus(
+        studyUuid,
+        currentNodeUuid,
+        branch,
+        branchSide === BRANCH_SIDE.ONE
+            ? BRANCH_STATUS_ACTION.ENERGISE_END_ONE
+            : BRANCH_STATUS_ACTION.ENERGISE_END_TWO
+    );
+}
+
+export function switchOnBranch(studyUuid, currentNodeUuid, branch) {
+    console.info('switching on branch ' + branch.id + ' ...');
+    return changeBranchStatus(
+        studyUuid,
+        currentNodeUuid,
+        branch,
+        BRANCH_STATUS_ACTION.SWITCH_ON
+    );
+}
+
+export function generationDispatch(
+    studyUuid,
+    currentNodeUuid,
+    modificationUuid,
+    lossCoefficient,
+    defaultOutageRate,
+    generatorsWithoutOutage,
+    generatorsWithFixedActivePower,
+    generatorsFrequencyReserve
+) {
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
+        lossCoefficient: lossCoefficient,
+        defaultOutageRate: defaultOutageRate,
+        generatorsWithoutOutage: generatorsWithoutOutage,
+        generatorsWithFixedSupply: generatorsWithFixedActivePower,
+        generatorsFrequencyReserve: generatorsFrequencyReserve,
+    });
+
+    let generationDispatchUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+    if (modificationUuid) {
+        console.info('Updating generation dispatch ', body);
+        generationDispatchUrl =
+            generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
+    } else {
+        console.info('Creating generation dispatch ', body);
+    }
+
+    return backendFetchText(generationDispatchUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
+}
 
 export function generatorScaling(
     studyUuid,
@@ -46,6 +219,69 @@ export function generatorScaling(
             ? response.text()
             : response.text().then((text) => Promise.reject(text))
     );
+}
+
+export function createBattery(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    connectionName,
+    connectionDirection,
+    connectionPosition,
+    minActivePower,
+    maxActivePower,
+    isReactiveCapabilityCurveOn,
+    minimumReactivePower,
+    maximumReactivePower,
+    reactiveCapabilityCurve,
+    activePowerSetpoint,
+    reactivePowerSetpoint,
+    frequencyRegulation,
+    droop,
+    isUpdate = false,
+    modificationUuid
+) {
+    let createBatteryUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating battery creation');
+    } else {
+        console.info('Creating battery creation');
+    }
+
+    return backendFetchText(createBatteryUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.BATTERY_CREATION.type,
+            equipmentId: id,
+            equipmentName: name,
+            voltageLevelId,
+            busOrBusbarSectionId,
+            connectionName,
+            connectionDirection,
+            connectionPosition,
+            minActivePower,
+            maxActivePower,
+            reactiveCapabilityCurve: isReactiveCapabilityCurveOn,
+            minimumReactivePower,
+            maximumReactivePower,
+            reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+            activePowerSetpoint,
+            reactivePowerSetpoint,
+            participate: frequencyRegulation,
+            droop,
+        }),
+    });
 }
 
 export function createLoad(
@@ -328,9 +564,6 @@ export function createShuntCompensator(
     currentNodeUuid,
     shuntCompensatorId,
     shuntCompensatorName,
-    maximumNumberOfSections,
-    currentNumberOfSections,
-    identicalSections,
     susceptancePerSection,
     qAtNominalV,
     shuntCompensatorType,
@@ -362,9 +595,6 @@ export function createShuntCompensator(
             type: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
             equipmentId: shuntCompensatorId,
             equipmentName: shuntCompensatorName,
-            maximumNumberOfSections: maximumNumberOfSections,
-            currentNumberOfSections: currentNumberOfSections,
-            isIdenticalSection: identicalSections,
             susceptancePerSection: susceptancePerSection,
             qAtNominalV: qAtNominalV,
             shuntCompensatorType: shuntCompensatorType,
@@ -636,6 +866,7 @@ export function modifyTwoWindingsTransformer(
     ratedVoltage2,
     currentLimit1,
     currentLimit2,
+    ratioTapChanger,
     isUpdate,
     modificationUuid
 ) {
@@ -670,6 +901,7 @@ export function modifyTwoWindingsTransformer(
             ratedVoltage2: ratedVoltage2,
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
+            ratioTapChanger: ratioTapChanger,
         }),
     });
 }
@@ -1121,7 +1353,8 @@ export function deleteEquipment(
     currentNodeUuid,
     equipmentType,
     equipmentId,
-    modificationUuid
+    modificationUuid,
+    specificEquipmentInfos
 ) {
     let deleteEquipmentUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -1144,6 +1377,7 @@ export function deleteEquipment(
             type: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
             equipmentId: equipmentId,
             equipmentType: equipmentType,
+            specificEquipmentInfos: specificEquipmentInfos,
         }),
     });
 }
@@ -1160,25 +1394,6 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
 
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
-}
-
-export function changeNetworkModificationOrder(
-    studyUuid,
-    currentNodeUuid,
-    itemUuid,
-    beforeUuid
-) {
-    console.info(
-        'reorder node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...'
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/' +
-        itemUuid +
-        '?' +
-        new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
-    console.debug(url);
-    return backendFetch(url, { method: 'put' });
 }
 
 export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
@@ -1200,152 +1415,5 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
             equipmentAttributeName: 'open',
             equipmentAttributeValue: open,
         }),
-    });
-}
-
-export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
-    const modificationDeleteUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/nodes/' +
-        encodeURIComponent(nodeUuid) +
-        '/network-modifications?uuids=' +
-        encodeURIComponent(modificationUuids);
-
-    console.debug(modificationDeleteUrl);
-    return backendFetch(modificationDeleteUrl, {
-        method: 'delete',
-    });
-}
-
-export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
-    console.info('Creating groovy script (request network change)');
-    const changeUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modifications';
-    console.debug(changeUrl);
-    return backendFetchText(changeUrl, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/text',
-        },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.GROOVY_SCRIPT.type,
-            script: groovyScript,
-        }),
-    });
-}
-
-function changeBranchStatus(studyUuid, currentNodeUuid, branch, action) {
-    const changeBranchStatusUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modifications';
-    console.debug('%s with action: %s', changeBranchStatusUrl, action);
-    return backendFetch(changeBranchStatusUrl, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/text',
-        },
-        body: JSON.stringify({
-            type: MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type,
-            equipmentId: branch.id,
-            energizedVoltageLevelId:
-                action === BRANCH_STATUS_ACTION.ENERGISE_END_ONE
-                    ? branch.voltageLevelId1
-                    : branch.voltageLevelId2,
-            action: action,
-        }),
-    });
-}
-
-export function lockoutBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('locking out branch ' + branch.id + ' ...');
-    return changeBranchStatus(
-        studyUuid,
-        currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.LOCKOUT
-    );
-}
-
-export function tripBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('tripping branch ' + branch.id + ' ...');
-    return changeBranchStatus(
-        studyUuid,
-        currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.TRIP
-    );
-}
-
-export function energiseBranchEnd(
-    studyUuid,
-    currentNodeUuid,
-    branch,
-    branchSide
-) {
-    console.info(
-        'energise branch ' + branch.id + ' on side ' + branchSide + ' ...'
-    );
-    return changeBranchStatus(
-        studyUuid,
-        currentNodeUuid,
-        branch,
-        branchSide === BRANCH_SIDE.ONE
-            ? BRANCH_STATUS_ACTION.ENERGISE_END_ONE
-            : BRANCH_STATUS_ACTION.ENERGISE_END_TWO
-    );
-}
-
-export function switchOnBranch(studyUuid, currentNodeUuid, branch) {
-    console.info('switching on branch ' + branch.id + ' ...');
-    return changeBranchStatus(
-        studyUuid,
-        currentNodeUuid,
-        branch,
-        BRANCH_STATUS_ACTION.SWITCH_ON
-    );
-}
-
-export function generationDispatch(
-    studyUuid,
-    currentNodeUuid,
-    modificationUuid,
-    lossCoefficient,
-    defaultOutageRate,
-    generatorsWithoutOutage,
-    generatorsWithFixedActivePower,
-    generatorsFrequencyReserve
-) {
-    const body = JSON.stringify({
-        type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
-        lossCoefficient: lossCoefficient,
-        defaultOutageRate: defaultOutageRate,
-        generatorsWithoutOutage: generatorsWithoutOutage,
-        generatorsWithFixedSupply: generatorsWithFixedActivePower,
-        generatorsFrequencyReserve: generatorsFrequencyReserve,
-    });
-
-    let generationDispatchUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modifications';
-    if (modificationUuid) {
-        console.info('Updating generation dispatch ', body);
-        generationDispatchUrl =
-            generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
-    } else {
-        console.info('Creating generation dispatch ', body);
-    }
-
-    return backendFetchText(generationDispatchUrl, {
-        method: modificationUuid ? 'PUT' : 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body,
     });
 }
