@@ -2117,6 +2117,7 @@ export function modifyTwoWindingsTransformer(
     ratedVoltage2,
     currentLimit1,
     currentLimit2,
+    ratioTapChanger,
     isUpdate,
     modificationUuid
 ) {
@@ -2151,6 +2152,7 @@ export function modifyTwoWindingsTransformer(
             ratedVoltage2: ratedVoltage2,
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
+            ratioTapChanger: ratioTapChanger,
         }),
     });
 }

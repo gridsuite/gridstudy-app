@@ -11,6 +11,8 @@ import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerModificationDialogTab } from './two-windings-transformer-modification-dialog';
+import { useWatch } from 'react-hook-form';
+import { ENABLED, RATIO_TAP_CHANGER } from 'components/utils/field-constants';
 
 const useStyles = makeStyles((theme) => ({
     tabWithError: {
@@ -28,6 +30,10 @@ const TwoWindingsTransformerModificationDialogTabs = ({
     setTabIndex,
 }) => {
     const classes = useStyles();
+
+    const ratioTapChangerEnabledWatch = useWatch({
+        name: `${RATIO_TAP_CHANGER}.${ENABLED}`,
+    });
 
     const getTabIndicatorClass = useCallback(
         (index) =>
@@ -68,6 +74,15 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                     className={getTabClass(
                         TwoWindingsTransformerModificationDialogTab.LIMITS_TAB
                     )}
+                />
+                <Tab
+                    label={
+                        <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
+                    }
+                    className={getTabClass(
+                        TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB
+                    )}
+                    disabled={!ratioTapChangerEnabledWatch}
                 />
             </Tabs>
         </Grid>

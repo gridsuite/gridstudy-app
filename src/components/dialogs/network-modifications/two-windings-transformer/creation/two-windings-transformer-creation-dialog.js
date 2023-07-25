@@ -39,7 +39,6 @@ import {
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
     STEPS,
-    STEPS_TAP,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
@@ -69,18 +68,18 @@ import {
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
-import PhaseTapChangerPane from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
+import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerValidationSchema,
-} from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
-import RatioTapChangerPane from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
+} from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
+import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
     getRatioTapChangerValidationSchema,
-} from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+} from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import TwoWindingsTransformerCreationDialogTabs from './two-windings-transformer-creation-dialog-tabs';
 import TwoWindingsTransformerCreationCharacteristicsPane from './characteristics-pane/two-windings-transformer-creation-characteristics-pane';
 import {
@@ -104,6 +103,7 @@ import {
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
+import { computeHighTapPosition } from 'components/utils/utils';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -179,13 +179,6 @@ const TwoWindingsTransformerCreationDialog = ({
         } else {
             return RATIO_REGULATION_MODES.FIXED_RATIO.id;
         }
-    };
-
-    const computeHighTapPosition = (steps) => {
-        const values = steps?.map((step) => step[STEPS_TAP]);
-        return Array.isArray(values) && values.length > 0
-            ? Math.max(...values)
-            : null;
     };
 
     const getTapSideForEdit = (twt, tap) => {

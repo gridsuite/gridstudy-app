@@ -103,6 +103,7 @@ function EditableTableCell({
                     previousValue={previousValue}
                     valueModified={valueModified}
                     adornment={column?.adornment}
+                    isClearable={column?.clearable}
                     style={{
                         textAlign: column?.textAlign,
                     }}
@@ -137,13 +138,17 @@ const DndTable = ({
     createRows,
     handleUploadButton,
     uploadButtonMessageId,
+    handleResetButton,
+    resetButtonMessageId,
     disabled = false,
+    withResetButton = false,
     withLeftButtons = true,
     withAddRowsDialog = true,
     previousValues,
     disableTableCell,
     getPreviousValue,
     isValueModified,
+    disableAddingRows = false,
 }) => {
     const intl = useIntl();
 
@@ -409,6 +414,10 @@ const DndTable = ({
                     <DndTableBottomLeftButtons
                         handleUploadButton={handleUploadButton}
                         uploadButtonMessageId={uploadButtonMessageId}
+                        handleResetButton={handleResetButton}
+                        resetButtonMessageId={resetButtonMessageId}
+                        withResetButton={withResetButton}
+                        disableUploadButton={disableAddingRows}
                         disabled={disabled}
                     />
                 )}
@@ -418,6 +427,7 @@ const DndTable = ({
                     handleDeleteButton={deleteSelectedRows}
                     handleMoveUpButton={moveUpSelectedRows}
                     handleMoveDownButton={moveDownSelectedRows}
+                    disableAddingRows={disableAddingRows}
                     disabled={disabled}
                 />
             </Grid>
