@@ -34,7 +34,15 @@ const TextInput = ({
     customAdornment,
 }) => {
     const classes = useStyles();
-    const { validationSchema, getValues, removeOptional } = useFormContext();
+    let { validationSchema, getValues, removeOptional, control } =
+        useFormContext();
+
+    // hacky, FormProvider in a ts file can only accept a props: ReturnType<useForm<any, FormContext>>
+    // Thus, validationSchema can be passed via a FormContext of FormProvider
+    if (!validationSchema) {
+        validationSchema = control?._options?.context?.validationSchema;
+    }
+
     const {
         field: { onChange, value, ref },
         fieldState: { error },

@@ -49,6 +49,7 @@ import {
     EQUIPMENT_TYPES,
 } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -72,6 +73,16 @@ function SingleLineDiagramContent(props) {
         useState(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+
+    // dynamic simulation event configuration states
+    const [
+        equipmentToConfigDynamicSimulationEvent,
+        setEquipmentToConfigDynamicSimulationEvent,
+    ] = useState();
+    const [
+        dynamicSimulationEventDialogTitle,
+        setDynamicSimulationEventDialogTitle,
+    ] = useState('');
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -240,6 +251,22 @@ function SingleLineDiagramContent(props) {
         ]
     );
 
+    const handleOpenDynamicSimulationEventDialog = useCallback(
+        (equipmentId, equipmentType, dialogTitle) => {
+            closeEquipmentMenu();
+            setDynamicSimulationEventDialogTitle(dialogTitle);
+            setEquipmentToConfigDynamicSimulationEvent({
+                equipmentId,
+                equipmentType,
+            });
+        },
+        []
+    );
+
+    const handleCloseDynamicSimulationEventDialog = useCallback(() => {
+        setEquipmentToConfigDynamicSimulationEvent(undefined);
+    }, []);
+
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
@@ -254,6 +281,9 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
+                    handleOpenDynamicSimulationEventDialog={
+                        handleOpenDynamicSimulationEventDialog
+                    }
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
@@ -539,6 +569,21 @@ function SingleLineDiagramContent(props) {
             )}
             {equipmentToModify && displayModificationDialog()}
             {equipmentToDelete && displayDeletionDialog()}
+            {equipmentToConfigDynamicSimulationEvent && (
+                <DynamicSimulationEventDialog
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    equipmentId={
+                        equipmentToConfigDynamicSimulationEvent.equipmentId
+                    }
+                    equipmentType={
+                        equipmentToConfigDynamicSimulationEvent.equipmentType
+                    }
+                    isUpdate={true}
+                    onClose={() => handleCloseDynamicSimulationEventDialog()}
+                    title={dynamicSimulationEventDialogTitle}
+                />
+            )}
         </>
     );
 }

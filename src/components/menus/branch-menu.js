@@ -40,6 +40,8 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
+import { useParameterState } from '../dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -60,6 +62,7 @@ const withBranchMenu =
         handleViewInSpreadsheet,
         handleDeleteEquipment,
         handleOpenModificationDialog,
+        handleOpenDynamicSimulationEventDialog,
         currentNode,
         studyUuid,
         modificationInProgress,
@@ -71,6 +74,8 @@ const withBranchMenu =
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const { getNameOrId } = useNameOrId();
         const [branch, setBranch] = useState(null);
+
+        const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
         const getTranslationKey = (key) => {
             return key.concat(getEquipmentTranslation(equipmentType));
@@ -246,6 +251,46 @@ const withBranchMenu =
                         }
                     />
                 </MenuItem>
+                {enableDeveloperMode &&
+                    (equipmentType === equipments.lines ||
+                        equipmentType ===
+                            equipments.twoWindingsTransformers) && (
+                        <MenuItem
+                            className={classes.menuItem}
+                            onClick={() =>
+                                handleOpenDynamicSimulationEventDialog(
+                                    equipment.id,
+                                    equipmentType,
+                                    intl.formatMessage({
+                                        id: getTranslationKey('Trip'),
+                                    })
+                                )
+                            }
+                            disabled={
+                                !isNodeEditable ||
+                                branch.branchStatus === 'FORCED_OUTAGE'
+                            }
+                        >
+                            <ListItemIcon>
+                                <OfflineBoltOutlinedIcon />
+                            </ListItemIcon>
+
+                            <ListItemText
+                                primary={
+                                    <Typography noWrap>
+                                        {intl.formatMessage({
+                                            id: getTranslationKey('Trip'),
+                                        })}
+                                        {' ('}
+                                        {intl.formatMessage({
+                                            id: 'DynamicSimulation',
+                                        })}
+                                        {')'}
+                                    </Typography>
+                                }
+                            />
+                        </MenuItem>
+                    )}
                 {equipmentType === equipments.lines && (
                     <MenuItem
                         className={classes.menuItem}
@@ -404,6 +449,7 @@ withBranchMenu.propTypes = {
     handleViewInSpreadsheet: PropTypes.func.isRequired,
     handleDeleteEquipment: PropTypes.func.isRequired,
     handleOpenModificationDialog: PropTypes.func.isRequired,
+    handleOpenDynamicSimulationEventDialog: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
     modificationInProgress: PropTypes.func,

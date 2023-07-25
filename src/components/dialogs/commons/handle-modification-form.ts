@@ -15,12 +15,18 @@ import { useEffect, useState } from 'react';
  *
  * @returns {boolean} A boolean indicating whether the form should be opened.
  */
-export const useOpenShortWaitFetching = ({ isDataFetched, delay }) => {
+export const useOpenShortWaitFetching = ({
+    isDataFetched,
+    delay,
+}: {
+    isDataFetched: boolean;
+    delay: number;
+}) => {
     // State to track whether the form should be opened or not.
     const [shouldOpen, setShouldOpen] = useState(false);
 
     useEffect(() => {
-        let timeout;
+        let timeout: any;
         // If data is already available, open the form immediately.
         if (isDataFetched) {
             setShouldOpen(true);
