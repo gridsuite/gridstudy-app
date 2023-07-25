@@ -345,9 +345,10 @@ export function DiagramPane({
     studyUuid,
     isComputationRunning,
     showInSpreadsheet,
-    loadFlowStatus,
+    showOneBusShortcircuitResults,
     currentNode,
     visible,
+    loadFlowStatus,
 }) {
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -358,6 +359,7 @@ export function DiagramPane({
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
+
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const [diagramContentSizes, setDiagramContentSizes] = useState(new Map()); // When a diagram content gets its size from the backend, it will update this map of sizes.
 
@@ -1103,6 +1105,9 @@ export function DiagramPane({
                                             isComputationRunning
                                         }
                                         showInSpreadsheet={showInSpreadsheet}
+                                        showOneBusShortcircuitResults={
+                                            showOneBusShortcircuitResults
+                                        }
                                         studyUuid={studyUuid}
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}

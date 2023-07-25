@@ -7,7 +7,11 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { TYPE, EQUIPMENT_ID } from '../../../utils/field-constants';
+import {
+    TYPE,
+    EQUIPMENT_ID,
+    DELETION_SPECIFIC_DATA,
+} from '../../../utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
 import React, { useCallback, useEffect } from 'react';
@@ -31,6 +35,7 @@ const formSchema = yup
 const emptyFormData = {
     [TYPE]: EQUIPMENT_TYPES.LINE,
     [EQUIPMENT_ID]: null,
+    [DELETION_SPECIFIC_DATA]: null,
 };
 
 /**
@@ -39,6 +44,7 @@ const emptyFormData = {
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
  * @param isUpdate check if edition form
+ * @param defaultIdValue the default equipment id
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
@@ -47,6 +53,7 @@ const EquipmentDeletionDialog = ({
     currentNode,
     editData,
     isUpdate,
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD/map
     editDataFetchStatus,
     ...dialogProps
 }) => {
@@ -66,6 +73,18 @@ const EquipmentDeletionDialog = ({
             reset({
                 [TYPE]: EQUIPMENT_TYPES[editData.equipmentType],
                 [EQUIPMENT_ID]: editData.equipmentId,
+                [DELETION_SPECIFIC_DATA]: editData[DELETION_SPECIFIC_DATA],
+            });
+        },
+        [reset]
+    );
+
+    const fromMenuDataValues = useCallback(
+        (menuSelectId) => {
+            reset({
+                [TYPE]: EQUIPMENT_TYPES.HVDC_LINE,
+                [EQUIPMENT_ID]: menuSelectId,
+                [DELETION_SPECIFIC_DATA]: null,
             });
         },
         [reset]
@@ -74,20 +93,25 @@ const EquipmentDeletionDialog = ({
     useEffect(() => {
         if (editData) {
             fromEditDataToFormValues(editData);
+        } else if (defaultIdValue) {
+            fromMenuDataValues(defaultIdValue);
         }
-    }, [fromEditDataToFormValues, editData]);
+    }, [
+        fromEditDataToFormValues,
+        editData,
+        fromMenuDataValues,
+        defaultIdValue,
+    ]);
 
     const onSubmit = useCallback(
         (formData) => {
-            const equipmentType = formData[TYPE];
             deleteEquipment(
                 studyUuid,
                 currentNodeUuid,
-                equipmentType.type.endsWith('CONVERTER_STATION')
-                    ? EQUIPMENT_TYPES.HVDC_CONVERTER_STATION.type
-                    : equipmentType.type,
+                formData[TYPE].type,
                 formData[EQUIPMENT_ID],
-                editData?.uuid
+                editData?.uuid,
+                formData[DELETION_SPECIFIC_DATA]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -109,6 +133,7 @@ const EquipmentDeletionDialog = ({
             editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
+
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
@@ -127,6 +152,7 @@ const EquipmentDeletionDialog = ({
                 <DeleteEquipmentForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    editDataEquipmentId={editData?.equipmentId}
                 />
             </ModificationDialog>
         </FormProvider>
@@ -138,6 +164,7 @@ EquipmentDeletionDialog.propTypes = {
     currentNode: PropTypes.object,
     editData: PropTypes.object,
     isUpdate: PropTypes.bool,
+    defaultIdValue: PropTypes.string,
     editDataFetchStatus: PropTypes.string,
 };
 

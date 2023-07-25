@@ -59,10 +59,9 @@ import { UPDATE_TYPE } from 'components/network/constants';
 import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { fetchNetworkModification } from '../../../services/network-modification';
-import { useParameterState } from '../../dialogs/parameters/parameters';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import {
     changeNetworkModificationOrder,
     deleteModifications,
@@ -177,8 +176,6 @@ const NetworkModificationNodeEditor = () => {
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef();
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);
         setCopiedModifications((oldCopiedModifications) => {
@@ -232,6 +229,11 @@ const NetworkModificationNodeEditor = () => {
             label: 'Create',
             subItems: [
                 {
+                    id: 'BATTERY_CREATION',
+                    label: 'BATTERY',
+                    action: () => adapt(BatteryCreationDialog),
+                },
+                {
                     id: 'LOAD_CREATION',
                     label: 'LOAD',
                     action: () => adapt(LoadCreationDialog),
@@ -284,7 +286,6 @@ const NetworkModificationNodeEditor = () => {
                 },
                 {
                     id: 'SHUNT_COMPENSATOR_MODIFICATION',
-                    hide: !enableDeveloperMode,
                     label: 'ShuntCompensator',
                     action: () => adapt(ShuntCompensatorModificationDialog),
                 },
