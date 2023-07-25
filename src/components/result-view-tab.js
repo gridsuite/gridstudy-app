@@ -142,7 +142,7 @@ export const ResultViewTab = ({
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, classes]);
+    }, [studyUuid, currentNode, classes, resultTabIndexRedirection]);
 
     const renderDynamicSimulationResult = useMemo(() => {
         return (
