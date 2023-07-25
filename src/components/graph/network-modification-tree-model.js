@@ -21,8 +21,14 @@ export default class NetworkModificationTreeModel {
 
     addChild(newNode, parentId, insertMode) {
         // Add node
-        const parentIndex = this.treeNodes.findIndex(node => node.id === parentId)
-        this.treeNodes.splice(parentIndex, 0, convertNodetoReactFlowModelNode(newNode, parentId))
+        const parentIndex = this.treeNodes.findIndex(
+            (node) => node.id === parentId
+        );
+        this.treeNodes.splice(
+            parentIndex,
+            0,
+            convertNodetoReactFlowModelNode(newNode, parentId)
+        );
         // Add edge between node and its parent
         this.treeEdges.push({
             id: 'e' + parentId + '-' + newNode.id,
