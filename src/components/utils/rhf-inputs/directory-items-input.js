@@ -23,6 +23,7 @@ import MidFormError from './error-inputs/mid-form-error';
 import { RawReadOnlyInput } from './read-only/raw-read-only-input';
 import { NAME } from '../field-constants';
 import { isFieldRequired } from '../utils';
+import Tooltip from '@mui/material/Tooltip';
 
 const DirectoryItemsInput = ({
     label,
@@ -120,13 +121,19 @@ const DirectoryItemsInput = ({
                 )}
                 <Grid item xs>
                     <Grid container direction="row-reverse">
-                        <IconButton
-                            className={classes.addDirectoryElements}
-                            size={'small'}
-                            onClick={() => setDirectoryItemSelectorOpen(true)}
+                        <Tooltip
+                            title={intl.formatMessage({ id: 'chooseElement' })}
                         >
-                            <FolderIcon />
-                        </IconButton>
+                            <IconButton
+                                className={classes.addDirectoryElements}
+                                size={'small'}
+                                onClick={() =>
+                                    setDirectoryItemSelectorOpen(true)
+                                }
+                            >
+                                <FolderIcon />
+                            </IconButton>
+                        </Tooltip>
                     </Grid>
                 </Grid>
             </FormControl>
