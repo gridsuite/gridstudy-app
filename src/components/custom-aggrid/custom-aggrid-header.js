@@ -78,6 +78,7 @@ const CustomHeaderComponent = ({
             container
             alignItems="center"
             sx={{ height: '100%' }}
+            justifyContent="space-between"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
@@ -87,35 +88,54 @@ const CustomHeaderComponent = ({
                 direction={'row'}
                 alignItems={'center'}
                 sx={{ height: '100%' }}
-                xs={10}
                 onClick={handleSortChange}
             >
-                <Grid item>{displayName}</Grid>
-                {isSortActive && sortWay && (
-                    <Grid item>
-                        <IconButton size={'small'}>
-                            {sortWay === 1 ? (
-                                <ArrowUpward fontSize={'small'} />
-                            ) : (
-                                <ArrowDownward fontSize={'small'} />
+                <Grid item xs={11}>
+                    <Grid
+                        container
+                        alignItems={'center'}
+                        sx={{ height: '100%' }}
+                        direction={'row'}
+                        wrap={'nowrap'}
+                    >
+                        <Grid item sx={6}>
+                            {displayName}
+                        </Grid>
+                        <Grid item sx={6}>
+                            {isSortActive && sortWay && (
+                                <Grid item>
+                                    <IconButton size={'small'}>
+                                        {sortWay === 1 ? (
+                                            <ArrowUpward fontSize={'small'} />
+                                        ) : (
+                                            <ArrowDownward fontSize={'small'} />
+                                        )}
+                                    </IconButton>
+                                </Grid>
                             )}
-                        </IconButton>
+                        </Grid>
                     </Grid>
-                )}
-            </Grid>
-            {isFilterActive && isFilterIconDisplayed && (
-                <Grid item xs={2}>
-                    <IconButton size={'small'} onClick={handleShowFilter}>
-                        <Badge
-                            color="secondary"
-                            variant="dot"
-                            invisible={!filterSelectedOption}
-                        >
-                            <Menu fontSize={'small'} />
-                        </Badge>
-                    </IconButton>
                 </Grid>
-            )}
+                <Grid item xs={1}>
+                    {isFilterActive && isFilterIconDisplayed && (
+                        <Grid item>
+                            <IconButton
+                                size={'small'}
+                                onClick={handleShowFilter}
+                            >
+                                <Badge
+                                    color="secondary"
+                                    variant="dot"
+                                    invisible={!filterSelectedOption}
+                                >
+                                    <Menu fontSize={'small'} />
+                                </Badge>
+                            </IconButton>
+                        </Grid>
+                    )}
+                </Grid>
+            </Grid>
+
             <Popover
                 id={popoverId}
                 open={isFilterOpened}
