@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
@@ -22,18 +22,15 @@ import {
     LOW_TAP_POSITION,
     SELECTED,
     STEPS,
-    STEPS_ALPHA,
-    STEPS_CONDUCTANCE,
-    STEPS_MODIFIED,
-    STEPS_RATIO,
-    STEPS_REACTANCE,
-    STEPS_RESISTANCE,
-    STEPS_SUSCEPTANCE,
     STEPS_TAP,
     TAP_POSITION,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import { computeHighTapPosition } from 'components/utils/utils';
+import {
+    compareStepsWithPreviousValues,
+    computeHighTapPosition,
+} from 'components/utils/utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 const TapChangerSteps = ({
     tapChanger,
@@ -48,6 +45,8 @@ const TapChangerSteps = ({
     handleImportRow,
     disabled,
     previousValues,
+    editData,
+    currentNode,
     isModification = false,
 }) => {
     const intl = useIntl();
@@ -65,10 +64,6 @@ const TapChangerSteps = ({
 
     const lowTapPosition = useWatch({
         name: `${tapChanger}.${LOW_TAP_POSITION}`,
-    });
-
-    const areStepsModified = useWatch({
-        name: `${tapChanger}.${STEPS_MODIFIED}`,
     });
 
     const [openCreateRuleDialog, setOpenCreateRuleDialog] = useState(false);
@@ -124,25 +119,20 @@ const TapChangerSteps = ({
         return tapRowsToAdd;
     }
 
-    const compareStepsWithPreviousValues = useCallback(
-        (tapSteps, previousValues) => {
-            if (previousValues === undefined) {
-                return false;
-            }
-            const previousTapSteps = previousValues?.[STEPS];
+    const tapStepsWatcher = useWatch({
+        name: `${tapChanger}.${STEPS}`,
+    });
 
-            if (tapSteps.length !== previousTapSteps?.length) {
-                return false;
-            }
-            return tapSteps.every((step, index) => {
-                const previousStep = previousTapSteps[index];
-                return Object.getOwnPropertyNames(previousStep).every((key) => {
-                    return parseFloat(step[key]) === previousStep[key];
-                });
-            });
-        },
-        []
-    );
+    const areStepsModified = useMemo(() => {
+        if (editData?.[STEPS] && isNodeBuilt(currentNode)) {
+            return true;
+        } else {
+            return !compareStepsWithPreviousValues(
+                tapStepsWatcher,
+                previousValues?.[STEPS]
+            );
+        }
+    }, [currentNode, editData, previousValues, tapStepsWatcher]);
 
     const resetTapNumbers = useCallback(
         (tapSteps, isModification) => {
@@ -153,13 +143,6 @@ const TapChangerSteps = ({
                 isModification && lowTapPosition === null
                     ? previousValues?.[LOW_TAP_POSITION]
                     : lowTapPosition;
-
-            if (
-                currentLowTapPosition !== previousValues?.[LOW_TAP_POSITION] ||
-                !compareStepsWithPreviousValues(currentTapRows, previousValues)
-            ) {
-                setValue(`${tapChanger}.${STEPS_MODIFIED}`, true);
-            }
 
             for (
                 let tapPosition = currentLowTapPosition, index = 0;
@@ -178,14 +161,7 @@ const TapChangerSteps = ({
                     : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
-        [
-            getValues,
-            tapChanger,
-            lowTapPosition,
-            previousValues,
-            compareStepsWithPreviousValues,
-            setValue,
-        ]
+        [getValues, tapChanger, lowTapPosition, previousValues, setValue]
     );
 
     // Adjust high tap position when low tap position change + remove red if value fixed
@@ -205,7 +181,6 @@ const TapChangerSteps = ({
     const handleResetButton = useCallback(() => {
         replace(previousValues?.[STEPS] ?? []);
         setValue(`${tapChanger}.${LOW_TAP_POSITION}`, null);
-        setValue(`${tapChanger}.${STEPS_MODIFIED}`, false);
         clearErrors(`${tapChanger}.${STEPS}`);
     }, [clearErrors, previousValues, replace, setValue, tapChanger]);
 
@@ -290,63 +265,29 @@ const TapChangerSteps = ({
         />
     );
 
-    const completedColumnsDefinition = useMemo(() => {
-        const createRuleButton = (
-            <Tooltip
-                title={intl.formatMessage({
-                    id: createRuleMessageId,
-                })}
-                placement="left"
-            >
-                <span>
-                    <IconButton
-                        onClick={() => setOpenCreateRuleDialog(true)}
-                        disabled={disabled || tapSteps.length === 0}
-                    >
-                        <AddchartIcon />
-                    </IconButton>
-                </span>
-            </Tooltip>
-        );
-        const columnsDef = !isModification
-            ? columnsDefinition
-            : columnsDefinition.map((columnDefinition) => {
-                  return {
-                      ...columnDefinition,
-                      handleChange: () => {
-                          !compareStepsWithPreviousValues(
-                              getValues(`${tapChanger}.${STEPS}`),
-                              previousValues
-                          )
-                              ? setValue(
-                                    `${tapChanger}.${STEPS_MODIFIED}`,
-                                    true
-                                )
-                              : setValue(
-                                    `${tapChanger}.${STEPS_MODIFIED}`,
-                                    false
-                                );
-                      },
-                  };
-              });
-        columnsDef[columnsDef.length - 1] = {
-            ...columnsDef[columnsDef.length - 1],
-            extra: createRuleButton,
-        };
-        return columnsDef;
-    }, [
-        columnsDefinition,
-        compareStepsWithPreviousValues,
-        createRuleMessageId,
-        disabled,
-        getValues,
-        intl,
-        isModification,
-        previousValues,
-        setValue,
-        tapChanger,
-        tapSteps.length,
-    ]);
+    const createRuleButton = (
+        <Tooltip
+            title={intl.formatMessage({
+                id: createRuleMessageId,
+            })}
+            placement="left"
+        >
+            <span>
+                <IconButton
+                    onClick={() => setOpenCreateRuleDialog(true)}
+                    disabled={disabled || tapSteps.length === 0}
+                >
+                    <AddchartIcon />
+                </IconButton>
+            </span>
+        </Tooltip>
+    );
+
+    const completedColumnsDefinition = columnsDefinition;
+    completedColumnsDefinition[completedColumnsDefinition.length - 1] = {
+        ...completedColumnsDefinition[completedColumnsDefinition.length - 1],
+        extra: createRuleButton,
+    };
 
     const getTapPreviousValue = useCallback(
         (rowIndex, column, arrayFormName, tapSteps) => {
@@ -356,22 +297,7 @@ const TapChangerSteps = ({
             if (step === undefined) {
                 return undefined;
             }
-            switch (column.dataKey) {
-                case STEPS_RESISTANCE:
-                    return step?.r;
-                case STEPS_REACTANCE:
-                    return step?.x;
-                case STEPS_CONDUCTANCE:
-                    return step?.g;
-                case STEPS_SUSCEPTANCE:
-                    return step?.b;
-                case STEPS_RATIO:
-                    return step?.rho;
-                case STEPS_ALPHA:
-                    return step?.alpha;
-                default:
-                    return undefined;
-            }
+            return step?.[column.dataKey];
         },
         [getValues]
     );

@@ -32,14 +32,13 @@ import {
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
     STEPS,
-    STEPS_MODIFIED,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
     fetchNetworkElementInfos,
@@ -85,6 +84,7 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerModificationDialogHeader from './two-windings-transformer-modification-dialog-header';
 import {
+    compareStepsWithPreviousValues,
     computeHighTapPosition,
     formatTemporaryLimits,
     toModificationOperation,
@@ -94,20 +94,21 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import RatioTapChangerPane, {
-    previousRegulationType,
-} from '../creation/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
-import {
-    getRatioTapChangerEmptyFormData,
-    getRatioTapChangerFormData,
-    getRatioTapChangerModificationValidationSchema,
-} from '../creation/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
-import PhaseTapChangerPane from '../creation/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
+import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerModificationValidationSchema,
-} from '../creation/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
+} from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
+import RatioTapChangerPane, {
+    previousRegulationType,
+} from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
+import {
+    getRatioTapChangerEmptyFormData,
+    getRatioTapChangerFormData,
+    getRatioTapChangerModificationValidationSchema,
+} from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -116,6 +117,17 @@ const emptyFormData = {
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
 };
+
+const formSchema = yup
+    .object()
+    .shape({
+        [EQUIPMENT_NAME]: yup.string(),
+        ...getCharacteristicsValidationSchema(true),
+        ...getLimitsValidationSchema(),
+        ...getRatioTapChangerModificationValidationSchema(),
+        ...getPhaseTapChangerModificationValidationSchema(),
+    })
+    .required();
 
 export const TwoWindingsTransformerModificationDialogTab = {
     CHARACTERISTICS_TAB: 0,
@@ -153,21 +165,6 @@ const TwoWindingsTransformerModificationDialog = ({
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState(null);
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-
-    const formSchema = useMemo(
-        () =>
-            yup
-                .object()
-                .shape({
-                    [EQUIPMENT_NAME]: yup.string(),
-                    ...getCharacteristicsValidationSchema(true),
-                    ...getLimitsValidationSchema(),
-                    ...getRatioTapChangerModificationValidationSchema(),
-                    ...getPhaseTapChangerModificationValidationSchema(),
-                })
-                .required(),
-        []
-    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -247,7 +244,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
                 ...getRatioTapChangerFormData({
                     enabled: twt?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
-                    stepsModified: !!twt?.[RATIO_TAP_CHANGER]?.[STEPS],
                     loadTapChangingCapabilities:
                         twt?.[RATIO_TAP_CHANGER]?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
@@ -368,28 +364,6 @@ const TwoWindingsTransformerModificationDialog = ({
         }
     }, [fromEditDataToFormValues, editData, twtToModify]);
 
-    const computePhaseTapChangerRegulationValue = (
-        phaseTapChangerFormValues,
-        currentRegulationMode
-    ) => {
-        const regulationMode =
-            phaseTapChangerFormValues?.[REGULATION_MODE] ||
-            currentRegulationMode;
-
-        switch (regulationMode) {
-            case PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id:
-                return phaseTapChangerFormValues?.[
-                    FLOW_SET_POINT_REGULATING_VALUE
-                ];
-            case PHASE_REGULATION_MODES.CURRENT_LIMITER.id:
-                return phaseTapChangerFormValues?.[
-                    CURRENT_LIMITER_REGULATING_VALUE
-                ];
-            default:
-                return undefined;
-        }
-    };
-
     const computeRatioTapChangerRegulating = (ratioTapChangerFormValues) => {
         return (
             ratioTapChangerFormValues?.[REGULATION_MODE] ===
@@ -450,6 +424,28 @@ const TwoWindingsTransformerModificationDialog = ({
         [twtToModify]
     );
 
+    const computePhaseTapChangerRegulationValue = (
+        phaseTapChangerFormValues,
+        currentRegulationMode
+    ) => {
+        const regulationMode =
+            phaseTapChangerFormValues?.[REGULATION_MODE] ||
+            currentRegulationMode;
+
+        switch (regulationMode) {
+            case PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id:
+                return phaseTapChangerFormValues?.[
+                    FLOW_SET_POINT_REGULATING_VALUE
+                ];
+            case PHASE_REGULATION_MODES.CURRENT_LIMITER.id:
+                return phaseTapChangerFormValues?.[
+                    CURRENT_LIMITER_REGULATING_VALUE
+                ];
+            default:
+                return undefined;
+        }
+    };
+
     const onSubmit = useCallback(
         (twt) => {
             const characteristics = twt[CHARACTERISTICS];
@@ -491,14 +487,21 @@ const TwoWindingsTransformerModificationDialog = ({
                 };
             }
 
-            const enableRatioTapChanger = twt[RATIO_TAP_CHANGER]?.[ENABLED];
-
             let ratioTap = undefined;
-            let ratioTapChangerSteps = twt[RATIO_TAP_CHANGER]?.[STEPS_MODIFIED]
-                ? twt[RATIO_TAP_CHANGER]?.[STEPS]
-                : undefined;
+            const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
+            const enableRatioTapChanger = ratioTapChangerFormValues?.[ENABLED];
+            const areStepsModified =
+                isNodeBuilt(currentNode) &&
+                editData?.[RATIO_TAP_CHANGER]?.[STEPS]
+                    ? true
+                    : !compareStepsWithPreviousValues(
+                          ratioTapChangerFormValues[STEPS],
+                          twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
+                      );
+            let ratioTapChangerSteps = !areStepsModified
+                ? null
+                : ratioTapChangerFormValues[STEPS];
             if (enableRatioTapChanger) {
-                const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
                 ratioTap = {
                     enabled: toModificationOperation(true),
                     lowTapPosition: toModificationOperation(
@@ -549,14 +552,21 @@ const TwoWindingsTransformerModificationDialog = ({
                 };
             }
 
-            const enablePhaseTapChanger = twt[PHASE_TAP_CHANGER]?.[ENABLED];
-
             let phaseTap = undefined;
-            let phaseTapChangerSteps = twt[PHASE_TAP_CHANGER]?.[STEPS_MODIFIED]
-                ? twt[PHASE_TAP_CHANGER]?.[STEPS]
-                : undefined;
+            const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
+            const enablePhaseTapChanger = phaseTapChangerFormValues?.[ENABLED];
+            const arePhaseStepsModified =
+                isNodeBuilt(currentNode) &&
+                editData?.[PHASE_TAP_CHANGER]?.[STEPS]
+                    ? true
+                    : !compareStepsWithPreviousValues(
+                          phaseTapChangerFormValues[STEPS],
+                          twtToModify?.[PHASE_TAP_CHANGER]?.[STEPS]
+                      );
+            let phaseTapChangerSteps = !arePhaseStepsModified
+                ? null
+                : phaseTapChangerFormValues[STEPS];
             if (enablePhaseTapChanger) {
-                const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
                 phaseTap = {
                     enabled: toModificationOperation(true),
                     regulationValue: toModificationOperation(

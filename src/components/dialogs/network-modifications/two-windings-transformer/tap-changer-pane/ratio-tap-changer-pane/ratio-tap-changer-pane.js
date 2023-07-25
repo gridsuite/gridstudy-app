@@ -20,10 +20,10 @@ import {
 import { useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { gridItem, VoltageAdornment } from '../../../../../dialogUtils';
+import { gridItem, VoltageAdornment } from '../../../../dialogUtils';
 import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import RegulatingTerminalForm from '../../../../../regulating-terminal/regulating-terminal-form';
+import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import {
     RATIO_REGULATION_MODES,
@@ -57,9 +57,10 @@ export const previousRegulationType = (previousValues) => {
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
     studyUuid,
-    currentNodeUuid,
+    currentNode,
     voltageLevelOptions = [],
     previousValues,
+    editData,
     isModification = false,
 }) => {
     const { trigger } = useFormContext();
@@ -270,7 +271,7 @@ const RatioTapChangerPane = ({
                 EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
             }
             studyUuid={studyUuid}
-            currentNodeUuid={currentNodeUuid}
+            currentNodeUuid={currentNode?.id}
             voltageLevelOptions={voltageLevelOptions}
             previousRegulatingTerminalValue={
                 previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId
@@ -351,6 +352,8 @@ const RatioTapChangerPane = ({
                 <RatioTapChangerPaneSteps
                     disabled={!ratioTapChangerEnabledWatcher}
                     previousValues={previousValues?.[RATIO_TAP_CHANGER]}
+                    editData={editData?.[RATIO_TAP_CHANGER]}
+                    currentNode={currentNode}
                     isModification={isModification}
                 />
             </Grid>

@@ -17,12 +17,14 @@ import {
 import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
-import { parseIntData } from '../../../../../dialogUtils';
-import { RATIO_TAP } from '../../two-windings-transformer-creation-dialog';
+import { parseIntData } from '../../../../dialogUtils';
+import { RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 
 const RatioTapChangerPaneSteps = ({
     disabled,
     previousValues,
+    editData,
+    currentNode,
     isModification = false,
 }) => {
     const intl = useIntl();
@@ -145,6 +147,8 @@ const RatioTapChangerPaneSteps = ({
             handleImportRow={handleImportRow}
             disabled={disabled}
             previousValues={previousValues}
+            editData={editData}
+            currentNode={currentNode}
             isModification={isModification}
         />
     );
