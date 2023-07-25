@@ -360,7 +360,7 @@
 
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "startLoadFlowError": "Une erreur est survenue lors du lancement du load flow",
-    "LoadFlowResultsCurrentViolations": "Contraintes de transit", 
+    "LoadFlowResultsCurrentViolations": "Contraintes de transit",
     "LoadFlowResultsVoltageViolations": "Contraintes de tension",
     "LoadFlowResultsStatus": "Statut",
 
@@ -836,10 +836,10 @@
     "HighTapRatio": "Rapport (prise max)",
     "ImportRegulationRule": "Importer une loi de régleur",
 
-    "AddRows": "Ajouter des lignes",
-    "DeleteRows": "Supprimer des lignes",
-    "MoveUpRows": "Monter des lignes",
-    "MoveDownRows": "Descendre des lignes",
+    "AddRows": "Ajouter",
+    "DeleteRows": "Supprimer",
+    "MoveUpRows": "Monter",
+    "MoveDownRows": "Descendre",
 
     "AddRowsDialogTitle": "Combien de lignes voulez-vous ajouter ?",
     "AddRowsButton": "Ajouter",
@@ -970,6 +970,7 @@
     "GeneratorsWithFixedActivePower": "Groupes non ajustables",
     "GeneratorFilter": "FILTRE GROUPE",
     "FrequencyReserve": "RESERVE FREQUENCE (%)",
+    "frequencyReserve": "Réserve fréquence",
     "GeneratorsFiltersFrequencyReserveToolTip": "Les saisies sont appliquées dans l’ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si un groupe est inclus dans plusieurs filtres)",
     "ReplacingLine": "Liaison de remplacement",
     "ConnectionPosition": "Position départ",
@@ -1056,5 +1057,7 @@
 
     "applyModifications": "Appliquer modifications",
     "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
-    "TableEquipmentModification": "Modification tabulaire d'équipement"
+    "TableEquipmentModification": "Modification tabulaire d'équipement",
+    "GeneratorAvailability": "Indisponibilité groupes",
+    "chooseElement": "Choisir un element"
 }

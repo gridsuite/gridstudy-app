@@ -834,10 +834,10 @@
     "HighTapRatio": "Ratio (high tap position)",
     "ImportRegulationRule": "Import regulation rule",
 
-    "AddRows": "Add rows",
-    "DeleteRows": "Delete rows",
-    "MoveUpRows": "Move up rows",
-    "MoveDownRows": "Move down rows",
+    "AddRows": "Add",
+    "DeleteRows": "Delete",
+    "MoveUpRows": "Move up",
+    "MoveDownRows": "Move down",
 
     "AddRowsDialogTitle": "How many rows do you want to add ?",
     "AddRowsButton": "Add",
@@ -967,6 +967,7 @@
     "GeneratorsWithFixedActivePower": "Generators with fixed active power",
     "GeneratorFilter": "GENERATOR FILTER",
     "FrequencyReserve": "FREQUENCY RESERVE (%)",
+    "frequencyReserve": "Frequency reserve",
     "GeneratorsFiltersFrequencyReserveToolTip": "User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry",
     "ReplacingLine": "Replacing line",
     "ConnectionPosition": "Connection position",
@@ -1033,5 +1034,7 @@
 
     "applyModifications": "Apply modifications",
     "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
-    "TableEquipmentModification": "Table equipment modification"
+    "TableEquipmentModification": "Table equipment modification",
+    "GeneratorAvailability": "Generator availability",
+    "chooseElement": "Choose element"
 }
