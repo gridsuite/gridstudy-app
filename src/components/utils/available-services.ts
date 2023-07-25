@@ -1,9 +1,9 @@
 interface AvailableServices {
-    'security-analysis-server': string,
-    'sensitivity-analysis-server': string,
-    'dynamic-simulation-server': string,
-    'shortcircuit-server': string,
-    'voltage-init-server': string,
+    'security-analysis-server': string;
+    'sensitivity-analysis-server': string;
+    'dynamic-simulation-server': string;
+    'shortcircuit-server': string;
+    'voltage-init-server': string;
 }
 
 export const AVAILABLE_SERVICES: AvailableServices = {
