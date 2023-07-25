@@ -258,9 +258,12 @@ export const useParametersBackend = (
 
     const [availableServices] = useParameterState(AVAILABLE_SERVICES);
 
-    const isAvailableService = useCallback((tab) => {
-        return availableServices.includes(tab);
-    }, [availableServices]);
+    const isAvailableService = useCallback(
+        (tab) => {
+            return availableServices.includes(tab);
+        },
+        [availableServices]
+    );
 
     const { snackError } = useSnackMessage();
 
@@ -535,9 +538,12 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [availableServices] = useParameterState(AVAILABLE_SERVICES);
 
-    const isAvailableService = (tab) => {
-        return availableServices.includes(tab);
-    };
+    const isAvailableService = useCallback(
+        (tab) => {
+            return availableServices.includes(tab);
+        },
+        [availableServices]
+    );
 
     const loadFlowParametersBackend = useParametersBackend(
         user,

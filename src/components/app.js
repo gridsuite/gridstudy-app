@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { AVAILABLE_SERVICES } from './utils/available-services.js';
+import { AVAILABLE_SERVICES } from './utils/available-services';
 import {
     Navigate,
     Route,
