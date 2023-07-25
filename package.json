@@ -1,6 +1,10 @@
 {
     "name": "gridstudy-app",
     "version": "0.1.0",
+    "engines": {
+        "npm": "<=6",
+        "node": ">=12 <=14"
+    },
     "homepage": ".",
     "private": true,
     "dependencies": {
