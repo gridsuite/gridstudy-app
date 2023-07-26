@@ -6,14 +6,14 @@
  */
 import { Grid, TextField } from '@mui/material';
 import { filledTextField, gridItem } from '../../dialogUtils';
-import { Event, EventDefinition } from './types/event.type';
+import { Event, EventDefinition, EventPropertyName } from './types/event.type';
 import React from 'react';
-import { makeComponentFor } from './util/make-component-utils';
+import { makeComponentFor } from './util/event-rhf';
 
 export type DynamicSimulationBasicEventFormProps = {
     equipmentId: string;
-    eventDefinition: EventDefinition | undefined;
-    eventValue?: Event | undefined;
+    eventDefinition?: EventDefinition;
+    eventValue?: Event;
 };
 
 export const DynamicSimulationEventForm = (
@@ -21,7 +21,9 @@ export const DynamicSimulationEventForm = (
 ) => {
     const { equipmentId, eventDefinition, eventValue } = props;
 
-    const propertyNames = eventDefinition ? Object.keys(eventDefinition) : [];
+    const propertyNames: EventPropertyName[] = (
+        eventDefinition ? Object.keys(eventDefinition) : []
+    ) as EventPropertyName[];
 
     const EquipmentIdField = (
         <TextField
@@ -38,13 +40,14 @@ export const DynamicSimulationEventForm = (
     );
 
     return (
-        <>
-            <Grid container spacing={2}>
+        <Grid container rowSpacing={2} spacing={2} paddingTop={2}>
+            <Grid container item spacing={2}>
                 {gridItem(EquipmentIdField, 8)}
             </Grid>
-            {propertyNames.map((propertyName) => (
-                <Grid container spacing={2}>
-                    {gridItem(
+            {/* event's properties defined in the eventDefinition   */}
+            <Grid container item spacing={2}>
+                {propertyNames.map((propertyName) =>
+                    gridItem(
                         makeComponentFor(
                             propertyName,
                             eventDefinition
@@ -53,9 +56,9 @@ export const DynamicSimulationEventForm = (
                             eventValue ? eventValue[propertyName] : undefined
                         ),
                         8
-                    )}
-                </Grid>
-            ))}
-        </>
+                    )
+                )}
+            </Grid>
+        </Grid>
     );
 };

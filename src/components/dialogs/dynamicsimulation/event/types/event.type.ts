@@ -5,8 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+export enum EventType {
+    DISCONNECT = 'Disconnect',
+    STEP = 'Step',
+    NODE_FAULT = 'NodeFault',
+}
+
+export type EventPropertyName = 'startTime' | 'disconnectOnly';
+
 export type Event = {
-    [key: string]: any;
+    [Property in EventPropertyName]: any;
 };
 
 export enum PrimitiveTypes {
@@ -21,12 +29,13 @@ export type EventPropertyDefinition = {
     type: PrimitiveTypes;
     labelId: string;
     isRequired?: boolean;
+    default?: any;
     values?: {
-        value: string;
+        id: string;
         label: string;
     }[];
 };
 
 export type EventDefinition = {
-    [key: string]: EventPropertyDefinition;
+    [Property in EventPropertyName]: EventPropertyDefinition;
 };

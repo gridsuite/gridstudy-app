@@ -14,25 +14,11 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { DynamicSimulationEventForm } from './dynamic-simulation-event-form';
-import { Event, PrimitiveTypes } from './types/event.type';
+import { Event, EventPropertyName, EventType } from './types/event.type';
 import yup from 'components/utils/yup-config';
 import { equipments } from '../../../network/network-equipments';
-
-export const START_TIME = 'startTime';
-export const SIDE = 'side';
-
-const formSchema = yup
-    .object()
-    .shape({
-        [START_TIME]: yup.number().required(),
-        [SIDE]: yup.string(),
-    })
-    .required();
-
-const emptyFormData = {
-    [START_TIME]: 0,
-    [SIDE]: null,
-};
+import { getSchema } from './util/event-yup';
+import { eventDefinitions } from './model/event.model';
 
 export type DynamicSimulationEventDialogProps = {
     studyUuid: string;
@@ -44,25 +30,6 @@ export type DynamicSimulationEventDialogProps = {
     editDataFetchStatus: string; // must be a string enum
     title: string;
 } & DialogProps;
-
-const DISCONNECT_EVENT_DEFINITION = {
-    [START_TIME]: {
-        type: PrimitiveTypes.FLOAT,
-        labelId: 'T Event',
-    },
-};
-
-enum EventType {
-    DISCONNECT = 'Disconnect',
-    STEP = 'Step',
-    NODE_FAULT = 'NodeFault',
-}
-
-const eventDefinitions = {
-    [EventType.DISCONNECT]: DISCONNECT_EVENT_DEFINITION,
-    [EventType.STEP]: undefined,
-    [EventType.NODE_FAULT]: undefined,
-};
 
 const getEventType = (equipmentType: string): EventType | undefined => {
     let eventType = undefined;
@@ -103,11 +70,6 @@ export const DynamicSimulationEventDialog = (
     });
     const open = defaultOpen !== undefined ? defaultOpen : waitingOpen;
 
-    const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
-    });
-
     // empty form
     const handleSetValuesAndEmptyOthers = useCallback(() => {}, []);
 
@@ -118,6 +80,53 @@ export const DynamicSimulationEventDialog = (
         () => getEventType(equipmentType),
         [equipmentType]
     );
+
+    const eventDefinition = useMemo(
+        () => (eventType ? eventDefinitions[eventType] : undefined),
+        [eventType]
+    );
+
+    // build formSchema from an event definition
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape(
+                    eventDefinition
+                        ? Object.entries(eventDefinition).reduce(
+                              (obj, [key, value]) => ({
+                                  ...obj,
+                                  [key]: getSchema(value),
+                              }),
+                              {}
+                          )
+                        : {}
+                )
+                .required(),
+        [eventDefinition]
+    );
+
+    // build default values from an event definition
+    const emptyFormData: {
+        [Property in EventPropertyName]?: any;
+    } = useMemo(
+        () =>
+            eventDefinition
+                ? Object.entries(eventDefinition).reduce(
+                      (obj, [key, value]) => ({
+                          ...obj,
+                          [key]: value.default,
+                      }),
+                      {}
+                  )
+                : {},
+        [eventDefinition]
+    );
+
+    const formMethods = useForm({
+        defaultValues: emptyFormData,
+        resolver: yupResolver(formSchema),
+    });
 
     return (
         <FormProvider {...{ validationSchema: formSchema, ...formMethods }}>

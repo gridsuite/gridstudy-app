@@ -7,28 +7,39 @@
 import { EventPropertyDefinition, PrimitiveTypes } from '../types/event.type';
 import React from 'react';
 import FloatInput from '../../../../utils/rhf-inputs/float-input';
+import SelectInput from '../../../../utils/rhf-inputs/select-input';
 
-const makeRenderFloatField =
-    () =>
-    (
-        propertyName: string,
-        propertyDefinition: EventPropertyDefinition | undefined,
-        propertyValue: any
-    ) =>
-        (
-            <FloatInput
-                name={propertyName}
-                label={propertyDefinition ? propertyDefinition.labelId : ''}
-                previousValue={propertyValue}
-                clearable={true}
-            />
-        );
+const renderFloatField = (
+    propertyName: string,
+    propertyDefinition: EventPropertyDefinition | undefined,
+    propertyValue: any
+) => (
+    <FloatInput
+        name={propertyName}
+        label={propertyDefinition ? propertyDefinition.labelId : ''}
+        previousValue={propertyValue}
+        clearable={true}
+    />
+);
+
+const renderEnumField = (
+    propertyName: string,
+    propertyDefinition: EventPropertyDefinition | undefined,
+    propertyValue: any
+) => (
+    <SelectInput
+        name={propertyName}
+        label={propertyDefinition ? propertyDefinition.labelId : ''}
+        previousValue={propertyValue}
+        options={propertyDefinition ? propertyDefinition.values ?? [] : []}
+    />
+);
 
 const DEFAULT_PRIMITIVE_RENDER = {
-    [PrimitiveTypes.ENUM]: undefined,
+    [PrimitiveTypes.ENUM]: renderEnumField,
     [PrimitiveTypes.BOOL]: undefined,
     [PrimitiveTypes.INTEGER]: undefined,
-    [PrimitiveTypes.FLOAT]: makeRenderFloatField(),
+    [PrimitiveTypes.FLOAT]: renderFloatField,
     [PrimitiveTypes.STRING]: undefined,
 };
 
