@@ -106,7 +106,7 @@ const Diagram = (props) => {
             height={shouldBeFullscreen ? props.fullscreenHeight : props.height}
             width={shouldBeFullscreen ? props.fullscreenWidth : props.width}
             // We disable the resizeBox if a diagram is in fullscreen
-            disableResize={fullScreenDiagram?.id}
+            disableResize={!!fullScreenDiagram?.id}
             // We hide this diagram if another diagram is in fullscreen mode.
             hide={shouldBeHidden}
         >

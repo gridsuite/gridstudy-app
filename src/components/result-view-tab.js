@@ -9,19 +9,20 @@ import clsx from 'clsx';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
-import LoadFlowResult from './loadflow-result';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
-import { ShortCircuitAnalysisResultTab } from './shortcircuit-analysis-result-tab';
+import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertInvalidNode from './utils/alert-invalid-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
+import { ResultsTabsLevel, useResultsTab } from './results/use-results-tab';
+import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 
 const useStyles = makeStyles(() => ({
@@ -48,8 +49,8 @@ const useStyles = makeStyles(() => ({
  * control results views
  * @param studyUuid : string uuid of study
  * @param currentNode : object current node
- * @param loadFlowInfos : object result of load flow
  * @param openVoltageLevelDiagram : function
+ * @param resultTabIndexRedirection : redirection to specific tab [RootTab, LevelOneTab, ...]
  * @param disabled
  * @returns {JSX.Element}
  * @constructor
@@ -57,11 +58,19 @@ const useStyles = makeStyles(() => ({
 export const ResultViewTab = ({
     studyUuid,
     currentNode,
-    loadFlowInfos,
     openVoltageLevelDiagram,
+    resultTabIndexRedirection,
     disabled,
 }) => {
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState(
+        resultTabIndexRedirection?.[ResultsTabsLevel.ROOT] ?? 0
+    );
+
+    useResultsTab(
+        resultTabIndexRedirection,
+        setTabIndex,
+        ResultsTabsLevel.ROOT
+    );
 
     const classes = useStyles();
 
@@ -72,8 +81,7 @@ export const ResultViewTab = ({
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.table}>
-                <LoadFlowResult
-                    result={loadFlowInfos?.loadFlowResult}
+                <LoadFlowResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                 />
@@ -119,8 +127,7 @@ export const ResultViewTab = ({
         return (
             <Paper className={classes.analysisResult}>
                 <ShortCircuitAnalysisResultTab
-                    studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id}
+                    resultTabIndexRedirection={resultTabIndexRedirection}
                 />
             </Paper>
         );
@@ -239,7 +246,6 @@ export const ResultViewTab = ({
 };
 
 ResultViewTab.propTypes = {
-    loadFlowInfos: PropTypes.object,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,

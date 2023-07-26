@@ -5,19 +5,60 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo } from 'react';
-import PropTypes from 'prop-types';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
-import { CustomAGGrid } from './dialogs/custom-aggrid';
 import { useTheme } from '@mui/styles';
-import { unitToKiloUnit } from '../utils/rounding';
+import { unitToKiloUnit } from 'utils/rounding';
+import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
+import {
+    GridReadyEvent,
+    IRowNode,
+    PostSortRowsParams,
+    RowClassParams,
+} from 'ag-grid-community';
+import { GridStudyTheme } from 'components/app-wrapper.type';
+import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 
-const ShortCircuitAnalysisResult = ({ result }) => {
+interface ShortCircuitAnalysisResultProps {
+    result: ShortcircuitAnalysisResult;
+}
+
+type ShortCircuitAnalysisAGGridResult =
+    | ShortCircuitAnalysisResultsFaultHeader
+    | ShortCircuitAnalysisResultsLimitViolation
+    | ShortCircuitAnalysisResultsFeederResult;
+
+interface ShortCircuitAnalysisResultsFaultHeader {
+    faultId: string;
+    elementId: string;
+    faultType: string;
+    shortCircuitPower: number;
+    current: number;
+    limitType?: string | null;
+    limitMin?: number | null;
+    limitMax?: number | null;
+    limitName?: string;
+}
+
+interface ShortCircuitAnalysisResultsLimitViolation {
+    current: number;
+    limitType?: string | null;
+    limitMin?: number | null;
+    limitMax?: number | null;
+    limitName?: string;
+}
+
+interface ShortCircuitAnalysisResultsFeederResult {
+    connectableId: string;
+    current: number;
+    linkedElementId: string;
+}
+
+const ShortCircuitAnalysisResult: FunctionComponent<
+    ShortCircuitAnalysisResultProps
+> = ({ result }) => {
     const intl = useIntl();
-    const theme = useTheme();
-
-    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+    const theme: GridStudyTheme = useTheme();
 
     const columns = useMemo(() => {
         return [
@@ -80,8 +121,12 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         ];
     }, [intl]);
 
-    const groupPostSort = (sortedRows, idField, linkedIdField) => {
-        const result = [];
+    const groupPostSort = (
+        sortedRows: IRowNode[],
+        idField: string,
+        linkedIdField: string
+    ) => {
+        const result: IRowNode[] = [];
         const idRows = sortedRows.filter((row) => row.data[idField] != null);
         idRows.forEach((idRow) => {
             result.push(idRow);
@@ -95,7 +140,7 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         return result;
     };
     const getRowStyle = useCallback(
-        (params) => {
+        (params: RowClassParams) => {
             if (!params?.data?.linkedElementId) {
                 return {
                     backgroundColor: theme.selectedRow.background,
@@ -105,8 +150,10 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         [theme.selectedRow.background]
     );
 
-    function flattenResult(shortCircuitAnalysisResult) {
-        const rows = [];
+    function flattenResult(
+        shortCircuitAnalysisResult: ShortcircuitAnalysisResult
+    ) {
+        const rows: ShortCircuitAnalysisAGGridResult[] = [];
         shortCircuitAnalysisResult?.faults?.forEach((faultResult) => {
             const fault = faultResult.fault;
             const limitViolations = faultResult.limitViolations;
@@ -176,12 +223,12 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         []
     );
 
-    const onGridReady = useCallback((params) => {
+    const onGridReady = useCallback((params: GridReadyEvent) => {
         if (params?.api) {
             params.api.sizeColumnsToFit();
         }
     }, []);
-    const handlePostSortRows = useCallback((params) => {
+    const handlePostSortRows = useCallback((params: PostSortRowsParams) => {
         const rows = params.nodes;
         Object.assign(
             rows,
@@ -193,30 +240,19 @@ const ShortCircuitAnalysisResult = ({ result }) => {
         const rows = flattenResult(result);
 
         return (
-            result &&
-            shortCircuitNotif && (
-                <CustomAGGrid
-                    rowData={rows}
-                    columnDefs={columns}
-                    getRowStyle={getRowStyle}
-                    onGridReady={onGridReady}
-                    enableCellTextSelection={true}
-                    postSortRows={handlePostSortRows}
-                    defaultColDef={defaultColDef}
-                />
-            )
+            <CustomAGGrid
+                rowData={rows}
+                defaultColDef={defaultColDef}
+                onGridReady={onGridReady}
+                getRowStyle={getRowStyle}
+                enableCellTextSelection={true}
+                postSortRows={handlePostSortRows}
+                columnDefs={columns}
+            />
         );
     };
 
-    return renderResult();
-};
-
-ShortCircuitAnalysisResult.defaultProps = {
-    result: null,
-};
-
-ShortCircuitAnalysisResult.propTypes = {
-    result: PropTypes.object,
+    return <>{renderResult()}</>;
 };
 
 export default ShortCircuitAnalysisResult;

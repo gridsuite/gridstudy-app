@@ -41,7 +41,7 @@ import yup from 'components/utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
-} from '../../../../../regulating-terminal/regulating-terminal-form-utils';
+} from '../../../../regulating-terminal/regulating-terminal-form-utils';
 import {
     RATIO_REGULATION_MODES,
     REGULATION_TYPES,
@@ -177,8 +177,75 @@ const ratioTapChangerValidationSchema = (id) => ({
     }),
 });
 
+const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
+    [id]: yup.object().shape({
+        [ENABLED]: yup.bool().required(),
+        [LOAD_TAP_CHANGING_CAPABILITIES]: yup.bool().nullable(),
+        [REGULATION_MODE]: yup.string().nullable(),
+        [REGULATION_TYPE]: yup.string().nullable(),
+        [REGULATION_SIDE]: yup.string().nullable(),
+        [TARGET_V]: yup
+            .number()
+            .nullable()
+            .positive('TargetVoltageGreaterThanZero'),
+        [TARGET_DEADBAND]: yup
+            .number()
+            .nullable()
+            .positive('TargetDeadbandGreaterThanZero'),
+        [LOW_TAP_POSITION]: yup.number().nullable(),
+        [HIGH_TAP_POSITION]: yup.number().nullable(),
+        [TAP_POSITION]: yup.number().nullable(),
+        [STEPS]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [STEPS_TAP]: yup.number().required(),
+                    [STEPS_RESISTANCE]: yup.number(),
+                    [STEPS_REACTANCE]: yup.number(),
+                    [STEPS_CONDUCTANCE]: yup.number(),
+                    [STEPS_SUSCEPTANCE]: yup.number(),
+                    [STEPS_RATIO]: yup.number(),
+                })
+            )
+            .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
+                const ratioArray = array.map((step) => step[STEPS_RATIO]);
+                return (
+                    areNumbersOrdered(ratioArray) &&
+                    areArrayElementsUnique(ratioArray)
+                );
+            }),
+        //regulating terminal fields
+        [VOLTAGE_LEVEL]: yup
+            .object()
+            .nullable()
+            .shape({
+                [ID]: yup.string(),
+                [NAME]: yup.string(),
+                [SUBSTATION_ID]: yup.string(),
+                [NOMINAL_VOLTAGE]: yup.string(),
+                [TOPOLOGY_KIND]: yup.string().nullable(),
+            }),
+
+        [EQUIPMENT]: yup
+            .object()
+            .nullable()
+            .shape({
+                [ID]: yup.string(),
+                [NAME]: yup.string().nullable(),
+                [TYPE]: yup.string(),
+            }),
+    }),
+});
+
 export const getRatioTapChangerValidationSchema = (id = RATIO_TAP_CHANGER) => {
     return ratioTapChangerValidationSchema(id);
+};
+
+export const getRatioTapChangerModificationValidationSchema = (
+    previousValues,
+    id = RATIO_TAP_CHANGER
+) => {
+    return ratioTapChangerModificationValidationSchema(previousValues, id);
 };
 
 const ratioTapChangerEmptyFormData = (id) => ({

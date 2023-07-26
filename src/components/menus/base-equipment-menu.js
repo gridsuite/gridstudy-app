@@ -165,7 +165,6 @@ const BaseEquipmentMenu = ({
     const equipmentsNotDeletable = [
         equipments.lccConverterStations,
         equipments.vscConverterStations,
-        equipments.hvdcLines,
     ];
 
     return (
@@ -205,14 +204,15 @@ const BaseEquipmentMenu = ({
                         }
                     </>
                 )}
-            {/* menus for equipment generator and load */}
+            {/* menus for equipment generator, load and shunt compensator */}
             {(equipmentType === equipments.generators ||
+                equipmentType === equipments.shuntCompensators ||
                 equipmentType === equipments.loads) && (
                 <ItemViewInForm
                     equipmentId={equipment.id}
                     equipmentType={equipmentType}
                     itemText={intl.formatMessage({
-                        id: 'edit',
+                        id: 'ModifyFromMenu',
                     })}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                 ></ItemViewInForm>
