@@ -859,8 +859,10 @@ export function fetchShortCircuitAnalysisResult(studyUuid, currentNodeUuid) {
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/shortcircuit/result';
-    console.debug(url);
-    return backendFetchJson(url);
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('mode', 'FULL');
+    console.debug(url + '?' + urlSearchParams.toString());
+    return backendFetchJson(url + '?' + urlSearchParams.toString());
 }
 
 // --- Voltage init API - BEGIN
