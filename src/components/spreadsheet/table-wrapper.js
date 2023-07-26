@@ -562,7 +562,7 @@ const TableWrapper = (props) => {
             const wrappedEditedData = {
                 data: editingData,
             };
-            Object.entries(priorValuesBuffer).forEach(([field]) => {
+            Object.entries(priorValuesBuffer).forEach(([field, value]) => {
                 const column = gridRef.current.columnApi.getColumn(field);
                 const val = column.colDef.valueGetter
                     ? column.colDef.valueGetter(wrappedEditedData)
