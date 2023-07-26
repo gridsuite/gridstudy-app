@@ -356,8 +356,6 @@
     "descWithFeederResult": "Avec apports",
     "descStudyType": "Type d'étude",
     "descTransient": "Transitoire",
-    "descSubTransient": "Sub-transitoire",
-
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "startLoadFlowError": "Une erreur est survenue lors du lancement du load flow",
     "LoadFlowResultsCurrentViolations": "Contraintes de transit",

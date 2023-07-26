@@ -145,14 +145,6 @@ const BasicShortCircuitParameters = ({
             type: TYPES.bool,
             description: 'descWithFeederResult',
         },
-        studyType: {
-            type: TYPES.enum,
-            description: 'descStudyType',
-            values: {
-                TRANSIENT: 'descTransient',
-                SUB_TRANSIENT: 'descSubTransient',
-            },
-        },
     };
 
     return makeComponentsFor(
