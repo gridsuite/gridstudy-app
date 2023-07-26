@@ -244,6 +244,7 @@ export const TabPanel = (props) => {
 const INITIAL_PROVIDERS = {};
 
 export const useParametersBackend = (
+    isAvailable,
     user,
     type,
     backendFetchProviders,
@@ -255,16 +256,6 @@ export const useParametersBackend = (
     backendFetchSpecificParameters
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
-
-    const [availableServices] = useParameterState(AVAILABLE_SERVICES);
-
-    const isAvailableService = useCallback(
-        (tab) => {
-            return availableServices.includes(tab);
-        },
-        [availableServices]
-    );
-
     const { snackError } = useSnackMessage();
 
     const [providers, setProviders] = useState(INITIAL_PROVIDERS);
@@ -390,7 +381,7 @@ export const useParametersBackend = (
     );
 
     useEffect(() => {
-        if (user !== null && isAvailableService(type)) {
+        if (user !== null && isAvailable) {
             backendFetchProviders()
                 .then((providers) => {
                     // we can consider the provider gotten from back will be also used as
@@ -408,7 +399,7 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [user, backendFetchProviders, type, snackError, isAvailableService]);
+    }, [user, backendFetchProviders, type, snackError, isAvailable]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -546,6 +537,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const loadFlowParametersBackend = useParametersBackend(
+        true,
         user,
         'LoadFlow',
         getLoadFlowProviders,
@@ -558,6 +550,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
+        isAvailableService('SecurityAnalysis'),
         user,
         'SecurityAnalysis',
         fetchSecurityAnalysisProviders,
@@ -569,6 +562,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const sensitivityAnalysisParametersBackend = useParametersBackend(
+        isAvailableService('SensitivityAnalysis'),
         user,
         'SensitivityAnalysis',
         fetchSensitivityAnalysisProviders,
