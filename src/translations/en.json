@@ -248,6 +248,8 @@
     "DynamicSimulationFetchVoltageLevelError": "An error occurred while fetching voltage levels",
     "DynamicSimulationFetchSubstationError": "An error occurred while fetching substations",
     "DynamicSimulationFetchEquipmentError": "An error occurred while fetching equipments",
+    "DynamicSimulationEventPropertyTEvent": "T Event",
+    "DynamicSimulationEventPropertySide": "Side",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",

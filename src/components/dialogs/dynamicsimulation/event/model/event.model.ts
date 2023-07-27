@@ -13,11 +13,13 @@ import {
 export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
     startTime: {
         type: PrimitiveTypes.FLOAT,
-        labelId: 'T Event',
+        label: 'DynamicSimulationEventPropertyTEvent',
+        isRequired: true,
+        unit: 's',
     },
     disconnectOnly: {
         type: PrimitiveTypes.ENUM,
-        labelId: '',
+        label: 'DynamicSimulationEventPropertySide',
         values: [
             {
                 label: 'OriginSide',

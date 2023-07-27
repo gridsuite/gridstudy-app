@@ -74,7 +74,7 @@ export const DynamicSimulationEventDialog = (
     const handleSetValuesAndEmptyOthers = useCallback(() => {}, []);
 
     // submit form
-    const handleSubmit = useCallback(() => {}, []);
+    const handleSubmit = useCallback((event: Event) => {}, []);
 
     const eventType = useMemo(
         () => getEventType(equipmentType),
@@ -136,7 +136,7 @@ export const DynamicSimulationEventDialog = (
                 onClear={handleSetValuesAndEmptyOthers}
                 onSave={handleSubmit}
                 aria-labelledby="dialog-event-configuration"
-                maxWidth={'sm'}
+                maxWidth={'xs'}
                 titleId={title}
                 open={open}
                 keepMounted={true}

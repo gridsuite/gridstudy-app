@@ -20,3 +20,5 @@ export function fetchDynamicSimulationProviders() {
     console.debug(url);
     return backendFetchJson(url);
 }
+
+export function saveEvent(event: Event) {}

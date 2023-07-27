@@ -11,6 +11,7 @@ import yup from '../../../../utils/yup-config';
 export const getSchema = (eventPropertyDefinition: EventPropertyDefinition) => {
     let schema: Schema;
 
+    // set type
     switch (eventPropertyDefinition.type) {
         case PrimitiveTypes.FLOAT:
             schema = yup.number();
@@ -27,6 +28,13 @@ export const getSchema = (eventPropertyDefinition: EventPropertyDefinition) => {
             break;
         default:
             schema = yup.number();
+    }
+
+    // set required
+    if (eventPropertyDefinition.isRequired) {
+        schema = schema.nullable().required();
+    } else {
+        schema = schema.nullable();
     }
 
     return schema;

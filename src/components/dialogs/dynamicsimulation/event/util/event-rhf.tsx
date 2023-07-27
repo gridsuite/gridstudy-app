@@ -16,9 +16,16 @@ const renderFloatField = (
 ) => (
     <FloatInput
         name={propertyName}
-        label={propertyDefinition ? propertyDefinition.labelId : ''}
+        label={propertyDefinition ? propertyDefinition.label : ''}
         previousValue={propertyValue}
         clearable={true}
+        adornment={
+            propertyDefinition
+                ? propertyDefinition.unit
+                    ? { position: 'end', text: propertyDefinition.unit }
+                    : {}
+                : {}
+        }
     />
 );
 
@@ -29,9 +36,10 @@ const renderEnumField = (
 ) => (
     <SelectInput
         name={propertyName}
-        label={propertyDefinition ? propertyDefinition.labelId : ''}
-        previousValue={propertyValue}
         options={propertyDefinition ? propertyDefinition.values ?? [] : []}
+        label={propertyDefinition ? propertyDefinition.label : ''}
+        size={'small'}
+        previousValue={propertyValue}
     />
 );
 

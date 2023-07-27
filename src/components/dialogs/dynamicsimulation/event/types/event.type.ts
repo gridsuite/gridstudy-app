@@ -27,15 +27,16 @@ export enum PrimitiveTypes {
 
 export type EventPropertyDefinition = {
     type: PrimitiveTypes;
-    labelId: string;
+    label: string;
     isRequired?: boolean;
     default?: any;
     values?: {
         id: string;
         label: string;
     }[];
+    unit?: string;
 };
 
 export type EventDefinition = {
-    [Property in EventPropertyName]: EventPropertyDefinition;
+    [Property in EventPropertyName]?: EventPropertyDefinition;
 };

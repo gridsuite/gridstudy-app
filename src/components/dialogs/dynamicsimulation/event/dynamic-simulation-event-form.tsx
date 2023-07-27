@@ -42,7 +42,7 @@ export const DynamicSimulationEventForm = (
     return (
         <Grid container rowSpacing={2} spacing={2} paddingTop={2}>
             <Grid container item spacing={2}>
-                {gridItem(EquipmentIdField, 8)}
+                {gridItem(EquipmentIdField, 12)}
             </Grid>
             {/* event's properties defined in the eventDefinition   */}
             <Grid container item spacing={2}>
@@ -55,7 +55,7 @@ export const DynamicSimulationEventForm = (
                                 : undefined,
                             eventValue ? eventValue[propertyName] : undefined
                         ),
-                        8
+                        12
                     )
                 )}
             </Grid>
