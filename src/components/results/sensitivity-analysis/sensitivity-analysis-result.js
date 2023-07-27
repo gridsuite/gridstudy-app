@@ -14,6 +14,9 @@ import {
     DATA_KEY_TO_SORT_KEY,
 } from './sensitivity-analysis-content';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
+import { getNoRowsMessage, getRows } from '../../utils/aggrid-rows-handler';
+import { useSelector } from 'react-redux';
+import { ComputingType } from '../../computing-status/computing-type';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -37,7 +40,21 @@ const SensitivityAnalysisResult = ({
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
-
+    const sensitivityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
+    const messages = useMemo(() => {
+        return {
+            noData: intl.formatMessage({
+                id: 'grid.noRowsToShow',
+            }),
+            noLimitViolation: intl.formatMessage({
+                id: 'grid.noLimitViolation',
+            }),
+            running: 'running',
+            failed: 'failed',
+        };
+    }, [intl]);
     const makeColumn = useCallback(
         (field, labelId, isNum = false) => {
             const { options: filterOptions = [] } =
@@ -132,17 +149,20 @@ const SensitivityAnalysisResult = ({
             params.api.sizeColumnsToFit();
         }
     }, []);
+    const message = getNoRowsMessage(messages, rows, sensitivityAnalysisStatus);
 
+    const rowsToShow = getRows(rows, sensitivityAnalysisStatus);
     return (
         <div style={{ flexGrow: 1 }}>
             <CustomAGGrid
                 ref={gridRef}
-                rowData={rows}
+                rowData={rowsToShow}
                 columnDefs={columnsDefs}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
                 onSortChanged={onSortChanged}
                 gridOptions={gridOptions}
+                overlayNoRowsTemplate={message}
             />
         </div>
     );
