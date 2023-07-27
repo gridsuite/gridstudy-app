@@ -225,6 +225,13 @@ const GeneratorModificationForm = ({
             </Grid>
 
             {/* Reactive limits part */}
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h4>
+                        <FormattedMessage id="ReactiveLimits" />
+                    </h4>
+                </Grid>
+            </Grid>
             <ReactiveLimitsForm
                 generatorToModify={generatorToModify}
                 updatePreviousReactiveCapabilityCurveTable={

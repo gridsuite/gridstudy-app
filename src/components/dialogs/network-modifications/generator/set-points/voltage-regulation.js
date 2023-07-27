@@ -125,10 +125,11 @@ const VoltageRegulation = ({
 
     return (
         <>
+            {gridItem(voltageSetPointField, 4)}
             {gridItem(voltageRegulationTypeField, 4)}
             <Box sx={{ width: '100%' }} />
             <Grid item xs={4} justifySelf={'end'} />
-            {gridItem(voltageSetPointField, 4)}
+
             <Box sx={{ width: '100%' }} />
             {isDistantRegulation && (
                 <>

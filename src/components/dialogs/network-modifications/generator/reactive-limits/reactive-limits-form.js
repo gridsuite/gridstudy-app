@@ -19,7 +19,6 @@ import { gridItem, ReactivePowerAdornment } from '../../../dialogUtils';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
-import { FormattedMessage } from 'react-intl';
 
 const headerIds = [
     'ActivePowerText',
@@ -85,13 +84,6 @@ const ReactiveLimitsForm = ({
 
     return (
         <>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h4>
-                        <FormattedMessage id="ReactiveLimits" />
-                    </h4>
-                </Grid>
-            </Grid>
             <Grid container spacing={2}>
                 {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
 

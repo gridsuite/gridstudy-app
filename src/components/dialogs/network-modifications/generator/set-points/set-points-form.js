@@ -40,11 +40,6 @@ const SetPointsForm = ({
         name: VOLTAGE_REGULATION,
     });
 
-    const isVoltageRegulationOn =
-        watchVoltageRegulation ||
-        (watchVoltageRegulation === null &&
-            previousValues?.voltageRegulatorOn === true);
-
     const previousRegulation = () => {
         if (previousValues?.voltageRegulatorOn) {
             return intl.formatMessage({ id: 'On' });
@@ -61,6 +56,16 @@ const SetPointsForm = ({
             label={'ActivePowerText'}
             adornment={ActivePowerAdornment}
             previousValue={previousValues?.targetP}
+            clearable={true}
+        />
+    );
+
+    const reactivePowerSetPointField = (
+        <FloatInput
+            name={REACTIVE_POWER_SET_POINT}
+            label={'ReactivePowerText'}
+            adornment={ReactivePowerAdornment}
+            previousValue={previousValues?.targetQ}
             clearable={true}
         />
     );
@@ -82,16 +87,6 @@ const SetPointsForm = ({
         </Box>
     );
 
-    const reactivePowerSetPointField = (
-        <FloatInput
-            name={REACTIVE_POWER_SET_POINT}
-            label={'ReactivePowerText'}
-            adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.targetQ}
-            clearable={true}
-        />
-    );
-
     const voltageRegulationFields = (
         <VoltageRegulation
             voltageLevelOptions={voltageLevelOptions}
@@ -106,6 +101,9 @@ const SetPointsForm = ({
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
                 {gridItem(activePowerSetPointField, 4)}
+                {gridItem(reactivePowerSetPointField, 4)}
+            </Grid>
+            <Grid container spacing={2} paddingTop={2}>
                 <Box sx={{ width: '100%' }} />
                 {gridItemWithTooltip(
                     voltageRegulationField,
@@ -117,9 +115,7 @@ const SetPointsForm = ({
                     4
                 )}
 
-                {isVoltageRegulationOn
-                    ? voltageRegulationFields
-                    : gridItem(reactivePowerSetPointField, 4)}
+                {voltageRegulationFields}
 
                 <Box sx={{ width: '100%' }} />
                 <FrequencyRegulation
