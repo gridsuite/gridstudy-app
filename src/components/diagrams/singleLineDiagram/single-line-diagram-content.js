@@ -650,7 +650,7 @@ function SingleLineDiagramContent(props) {
             {equipmentToConfigDynamicSimulationEvent && (
                 <DynamicSimulationEventDialog
                     studyUuid={studyUuid}
-                    currentNode={currentNode}
+                    currentNodeId={currentNode?.id}
                     equipmentId={
                         equipmentToConfigDynamicSimulationEvent.equipmentId
                     }

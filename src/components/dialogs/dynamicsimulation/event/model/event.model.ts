@@ -22,11 +22,11 @@ export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
         label: 'DynamicSimulationEventPropertySide',
         values: [
             {
-                label: 'OriginSide',
+                label: 'Branch.Side.ONE',
                 id: 'Branch.Side.ONE',
             },
             {
-                label: 'ExtremitySide',
+                label: 'Branch.Side.TWO',
                 id: 'Branch.Side.TWO',
             },
         ],

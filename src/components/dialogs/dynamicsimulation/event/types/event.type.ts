@@ -11,7 +11,7 @@ export enum EventType {
     NODE_FAULT = 'NodeFault',
 }
 
-export type EventPropertyName = 'startTime' | 'disconnectOnly';
+export type EventPropertyName = 'staticId' | 'startTime' | 'disconnectOnly';
 
 export type Event = {
     [Property in EventPropertyName]: any;

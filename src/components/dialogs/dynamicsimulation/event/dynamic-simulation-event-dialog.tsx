@@ -9,7 +9,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FetchStatus } from '../../../../utils/rest-api';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
@@ -19,10 +19,11 @@ import yup from 'components/utils/yup-config';
 import { equipments } from '../../../network/network-equipments';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions } from './model/event.model';
+import { saveEvent, getEvent } from '../../../../services/dynamic-simulation';
 
 export type DynamicSimulationEventDialogProps = {
     studyUuid: string;
-    currentNode: string;
+    currentNodeId: string;
     equipmentId: string;
     equipmentType: string; // must be a string enum
     isUpdate: boolean;
@@ -49,7 +50,7 @@ export const DynamicSimulationEventDialog = (
 ) => {
     const {
         studyUuid,
-        currentNode,
+        currentNodeId,
         equipmentId,
         equipmentType,
         isUpdate,
@@ -62,7 +63,7 @@ export const DynamicSimulationEventDialog = (
 
     const [selectedId, setSelectedId] = useState(equipmentId ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-    const [eventValue, setEventValue] = useState<Event>();
+    const [event, setEvent] = useState<Event>();
 
     const waitingOpen = useOpenShortWaitFetching({
         isDataFetched: true,
@@ -74,7 +75,17 @@ export const DynamicSimulationEventDialog = (
     const handleSetValuesAndEmptyOthers = useCallback(() => {}, []);
 
     // submit form
-    const handleSubmit = useCallback((event: Event) => {}, []);
+    const handleSubmit = useCallback((event: Event) => {
+        const eventWithId = { ...event, staticId: equipmentId };
+        saveEvent(studyUuid, currentNodeId, eventWithId)
+            .then((event) => {
+                console.log('Save successfully event : ', event);
+            })
+            .catch((error) => {
+                // should use snackError from useSnackMessage in common-ui
+                console.log('Error occurs when save an event');
+            });
+    }, []);
 
     const eventType = useMemo(
         () => getEventType(equipmentType),
@@ -128,6 +139,13 @@ export const DynamicSimulationEventDialog = (
         resolver: yupResolver(formSchema),
     });
 
+    // load event for equipment
+    useEffect(() => {
+        getEvent(studyUuid, currentNodeId, equipmentId).then((event) => {
+            setEvent(event);
+        });
+    }, []);
+
     return (
         <FormProvider {...{ validationSchema: formSchema, ...formMethods }}>
             <ModificationDialog
@@ -153,7 +171,7 @@ export const DynamicSimulationEventDialog = (
                     eventDefinition={
                         eventType ? eventDefinitions[eventType] : undefined
                     }
-                    eventValue={eventValue}
+                    event={event}
                 />
             </ModificationDialog>
         </FormProvider>

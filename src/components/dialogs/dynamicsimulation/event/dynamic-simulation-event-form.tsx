@@ -9,21 +9,24 @@ import { filledTextField, gridItem } from '../../dialogUtils';
 import { Event, EventDefinition, EventPropertyName } from './types/event.type';
 import React from 'react';
 import { makeComponentFor } from './util/event-rhf';
+import { useIntl } from 'react-intl';
 
 export type DynamicSimulationBasicEventFormProps = {
     equipmentId: string;
     eventDefinition?: EventDefinition;
-    eventValue?: Event;
+    event?: Event;
 };
 
 export const DynamicSimulationEventForm = (
     props: DynamicSimulationBasicEventFormProps
 ) => {
-    const { equipmentId, eventDefinition, eventValue } = props;
+    const { equipmentId, eventDefinition, event } = props;
 
     const propertyNames: EventPropertyName[] = (
         eventDefinition ? Object.keys(eventDefinition) : []
     ) as EventPropertyName[];
+
+    const intl = useIntl();
 
     const EquipmentIdField = (
         <TextField
@@ -46,18 +49,32 @@ export const DynamicSimulationEventForm = (
             </Grid>
             {/* event's properties defined in the eventDefinition   */}
             <Grid container item spacing={2}>
-                {propertyNames.map((propertyName) =>
-                    gridItem(
+                {propertyNames.map((propertyName) => {
+                    const propertyDefinition = eventDefinition
+                        ? eventDefinition[propertyName]
+                        : undefined;
+
+                    const hasEnumValues = propertyDefinition
+                        ? !!propertyDefinition.values
+                        : false;
+
+                    const propertyValue = event
+                        ? hasEnumValues
+                            ? intl.formatMessage({
+                                  id: event[propertyName],
+                              })
+                            : event[propertyName]
+                        : undefined;
+
+                    return gridItem(
                         makeComponentFor(
                             propertyName,
-                            eventDefinition
-                                ? eventDefinition[propertyName]
-                                : undefined,
-                            eventValue ? eventValue[propertyName] : undefined
+                            propertyDefinition,
+                            propertyValue
                         ),
                         12
-                    )
-                )}
+                    );
+                })}
             </Grid>
         </Grid>
     );

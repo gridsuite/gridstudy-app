@@ -251,6 +251,9 @@
     "DynamicSimulationEventPropertyTEvent": "T événement",
     "DynamicSimulationEventPropertySide": "Côté",
 
+    "Branch.Side.ONE": "Côté origine",
+    "Branch.Side.TWO": "Côté extrémité",
+
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
     "AddContingencyList": "Ajouter",
