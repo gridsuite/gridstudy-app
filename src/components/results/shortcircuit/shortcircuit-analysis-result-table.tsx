@@ -38,6 +38,8 @@ interface ShortCircuitAnalysisResultsFaultHeader {
     limitMin?: number | null;
     limitMax?: number | null;
     limitName?: string;
+    deltaIscIscMax?: number | null;
+    deltaIscIscMin?: number | null;
 }
 
 interface ShortCircuitAnalysisResultsLimitViolation {
@@ -176,10 +178,10 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 limitMax: unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
                 deltaIscIscMax:
                     faultResult.current -
-                    unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0),
                 deltaIscIscMin:
                     faultResult.current -
-                    unitToKiloUnit(faultResult.shortCircuitLimits.ipMin),
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0),
                 current: faultResult.current,
                 ...firstLimitViolation,
             });
