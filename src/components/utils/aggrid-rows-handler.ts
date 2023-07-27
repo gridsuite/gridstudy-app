@@ -11,7 +11,7 @@ export function getNoRowsMessage(
     messages: RunningStatusMessage,
     rows: any[],
     status: string
-): string | null {
+): string | undefined {
     switch (status) {
         case RunningStatus.IDLE:
             return messages.noData;
@@ -23,7 +23,7 @@ export function getNoRowsMessage(
             if (!rows || rows?.length === 0) {
                 return messages.noLimitViolation;
             }
-            return null;
+            return undefined;
         default:
             return messages.noData;
     }
