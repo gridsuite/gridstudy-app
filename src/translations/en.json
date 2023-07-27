@@ -1032,5 +1032,7 @@
     "muiTablePaginationFirst": "Go to the first page",
     "muiTablePaginationLast": "Go to the last page",
     "GeneratorAvailability": "Generator availability",
-    "chooseElement": "Choose element"
+    "chooseElement": "Choose element",
+    "grid.noRowsToShow": "No data",
+    "grid.noLimitViolation": "No limit violation"
 }

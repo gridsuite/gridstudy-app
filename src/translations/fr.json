@@ -1055,5 +1055,6 @@
     "muiTablePaginationFirst": "Aller à la première page",
     "muiTablePaginationLast": "Aller à la dernière page",
     "GeneratorAvailability": "Indisponibilité groupes",
-    "chooseElement": "Choisir un element"
+    "chooseElement": "Choisir un element",
+    "grid.noLimitViolation": "Pas de contrainte"
 }
