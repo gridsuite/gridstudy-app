@@ -792,7 +792,7 @@ export function DiagramPane({
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
+                studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult'
             ) {
                 //TODO reload data more intelligently
                 updateDiagramsByCurrentNode();

@@ -10,8 +10,9 @@ export const useSpreadsheetEquipments = (equipmentType) => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [errorMessage, setErrorMessage] = useState();
+    const loadflowNotif = useSelector((state) => state.loadflowNotif);
 
-    const shouldFetchEquipments = !equipments;
+    const shouldFetchEquipments = !equipments || loadflowNotif;
 
     useEffect(() => {
         if (shouldFetchEquipments) {
