@@ -20,7 +20,7 @@ export function getNoRowsMessage(
         case RunningStatus.FAILED:
             return messages.failed;
         case RunningStatus.SUCCEED:
-            if (!rows) {
+            if (!rows || rows?.length === 0) {
                 return messages.noLimitViolation;
             }
             return null;

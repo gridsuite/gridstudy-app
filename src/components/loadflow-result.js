@@ -20,6 +20,8 @@ import { useSelector } from 'react-redux';
 import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
 import { useTheme } from '@mui/styles';
+import { ComputingType } from './computing-status/computing-type';
+import { getNoRowsMessage, getRows } from './utils/aggrid-rows-handler';
 const LIMIT_TYPES = {
     HIGH_VOLTAGE: 'HIGH_VOLTAGE',
     LOW_VOLTAGE: 'LOW_VOLTAGE',
@@ -73,7 +75,21 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const limitReductionParam = useSelector((state) =>
         Number(state[PARAM_LIMIT_REDUCTION])
     );
-    const loadflowNotif = useSelector((state) => state.loadflowNotif);
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
+    const messages = useMemo(() => {
+        return {
+            noData: intl.formatMessage({
+                id: 'grid.noRowsToShow',
+            }),
+            noLimitViolation: intl.formatMessage({
+                id: 'grid.noLimitViolation',
+            }),
+            running: 'running',
+            failed: 'failed',
+        };
+    }, [intl]);
 
     useEffect(() => {
         const PERMANENT_LIMIT_NAME = 'permanent';
@@ -293,14 +309,22 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     }, [intl, formatLimitType]);
 
     function renderLoadFlowResult() {
+        const message = getNoRowsMessage(
+            messages,
+            result?.componentResults,
+            loadFlowStatus
+        );
+
+        const rowsToShow = getRows(result?.componentResults, loadFlowStatus);
         return (
             <CustomAGGrid
-                rowData={result.componentResults}
+                rowData={rowsToShow}
                 columnDefs={loadFlowResultColumns}
                 defaultColDef={defaultColDef}
                 enableCellTextSelection={true}
                 onGridReady={onGridReady}
                 getRowStyle={getRowStyle}
+                overlayNoRowsTemplate={message}
             />
         );
     }
@@ -330,26 +354,42 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             overloadedEquipment.limitType === LIMIT_TYPES.LOW_VOLTAGE
     );
     function renderLoadFlowCurrentViolations() {
+        const message = getNoRowsMessage(
+            messages,
+            currentViolations,
+            loadFlowStatus
+        );
+        const rowsToShow = getRows(currentViolations, loadFlowStatus);
+
         return (
             <CustomAGGrid
-                rowData={currentViolations}
+                rowData={rowsToShow}
                 defaultColDef={defaultColDef}
                 enableCellTextSelection={true}
                 columnDefs={loadFlowCurrentViolationsColumns}
                 onGridReady={onGridReady}
                 getRowStyle={getRowStyle}
+                overlayNoRowsTemplate={message}
             />
         );
     }
     function renderLoadFlowVoltageViolations() {
+        const message = getNoRowsMessage(
+            messages,
+            voltageViolations,
+            loadFlowStatus
+        );
+
+        const rowsToShow = getRows(voltageViolations, loadFlowStatus);
         return (
             <CustomAGGrid
-                rowData={voltageViolations}
+                rowData={rowsToShow}
                 defaultColDef={defaultColDef}
                 enableCellTextSelection={true}
                 columnDefs={loadFlowVoltageViolationsColumns}
                 onGridReady={onGridReady}
                 getRowStyle={getRowStyle}
+                overlayNoRowsTemplate={message}
             />
         );
     }
@@ -390,17 +430,10 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                 </div>
                 {tabIndex === 0 &&
                     overloadedEquipments &&
-                    loadflowNotif &&
                     result &&
                     renderLoadFlowCurrentViolations()}
-                {tabIndex === 1 &&
-                    loadflowNotif &&
-                    result &&
-                    renderLoadFlowVoltageViolations()}
-                {tabIndex === 2 &&
-                    loadflowNotif &&
-                    result &&
-                    renderLoadFlowResult()}
+                {tabIndex === 1 && result && renderLoadFlowVoltageViolations()}
+                {tabIndex === 2 && result && renderLoadFlowResult()}
             </>
         );
     }
