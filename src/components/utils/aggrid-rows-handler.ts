@@ -1,10 +1,11 @@
 import { RunningStatus } from './running-status';
 
 export interface RunningStatusMessage {
-    noData: string;
-    noLimitViolation: string;
+    noCalculation: string;
+    noLimitViolation?: string;
     running: string;
     failed: string;
+    noData?: string;
 }
 
 export function getNoRowsMessage(
@@ -14,18 +15,20 @@ export function getNoRowsMessage(
 ): string | undefined {
     switch (status) {
         case RunningStatus.IDLE:
-            return messages.noData;
+            return messages.noCalculation;
         case RunningStatus.RUNNING:
             return messages.running;
         case RunningStatus.FAILED:
             return messages.failed;
         case RunningStatus.SUCCEED:
             if (!rows || rows?.length === 0) {
-                return messages.noLimitViolation;
+                return messages.noData
+                    ? messages.noData
+                    : messages.noLimitViolation;
             }
             return undefined;
         default:
-            return messages.noData;
+            return messages.noCalculation;
     }
 }
 

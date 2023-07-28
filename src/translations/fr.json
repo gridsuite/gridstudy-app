@@ -1054,5 +1054,9 @@
     "muiTablePaginationLast": "Aller à la dernière page",
     "GeneratorAvailability": "Indisponibilité groupes",
     "chooseElement": "Choisir un element",
+    "grid.noCalculation": "Pas de calcul lancé",
+    "grid.failed": "Echec du calcul",
+    "grid.running": "Calcul en cours...",
     "grid.noLimitViolation": "Pas de contrainte"
+
 }

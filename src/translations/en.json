@@ -1032,5 +1032,8 @@
     "GeneratorAvailability": "Generator availability",
     "chooseElement": "Choose element",
     "grid.noRowsToShow": "No data",
+    "grid.noCalculation": "No calculation",
+    "grid.failed": "Calculation failed",
+    "grid.running": "In progress...",
     "grid.noLimitViolation": "No limit violation"
 }

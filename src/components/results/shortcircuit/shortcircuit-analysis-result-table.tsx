@@ -119,14 +119,18 @@ const ShortCircuitAnalysisResult: FunctionComponent<
 
     const messages = useMemo(() => {
         return {
+            noCalculation: intl.formatMessage({
+                id: 'grid.noCalculation',
+            }),
             noData: intl.formatMessage({
                 id: 'grid.noRowsToShow',
             }),
-            noLimitViolation: intl.formatMessage({
-                id: 'grid.noLimitViolation',
+            running: intl.formatMessage({
+                id: 'grid.running',
             }),
-            running: 'running',
-            failed: 'failed',
+            failed: intl.formatMessage({
+                id: 'grid.failed',
+            }),
         };
     }, [intl]);
     const groupPostSort = (

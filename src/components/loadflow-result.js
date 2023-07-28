@@ -80,14 +80,18 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     );
     const messages = useMemo(() => {
         return {
-            noData: intl.formatMessage({
-                id: 'grid.noRowsToShow',
+            noCalculation: intl.formatMessage({
+                id: 'grid.noCalculation',
             }),
             noLimitViolation: intl.formatMessage({
                 id: 'grid.noLimitViolation',
             }),
-            running: 'running',
-            failed: 'failed',
+            running: intl.formatMessage({
+                id: 'grid.running',
+            }),
+            failed: intl.formatMessage({
+                id: 'grid.failed',
+            }),
         };
     }, [intl]);
 
