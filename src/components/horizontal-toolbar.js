@@ -19,8 +19,10 @@ import {
     setModificationsDrawerOpen,
     STUDY_DISPLAY_MODE,
     setStudyDisplayMode,
+    setEventScenarioDrawerOpen,
 } from '../redux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
+import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 
 const useStyles = makeStyles((theme) => ({
     selected: {
@@ -49,8 +51,16 @@ export function HorizontalToolbar() {
         (state) => state.isModificationsDrawerOpen
     );
 
+    const isEventScenarioDrawerOpen = useSelector(
+        (state) => state.isEventScenarioDrawerOpen
+    );
+
     const toggleModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(!isModificationsDrawerOpen));
+    };
+
+    const toggleEventScenarioDrawer = () => {
+        dispatch(setEventScenarioDrawerOpen(!isEventScenarioDrawerOpen));
     };
 
     function setMapDisplay() {
@@ -75,6 +85,38 @@ export function HorizontalToolbar() {
             }}
         >
             <Tooltip
+                title={intl.formatMessage({
+                    id: 'DynamicSimulationEventScenario',
+                })}
+                placement="right"
+                arrow
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
+                classes={{ tooltip: classes.tooltip }}
+                style={{
+                    marginRight: '8px',
+                }}
+            >
+                <span>
+                    <IconButton
+                        size={'small'}
+                        className={
+                            isEventScenarioDrawerOpen
+                                ? classes.selected
+                                : classes.notSelected
+                        }
+                        disabled={
+                            studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
+                            currentNode === null ||
+                            currentNode?.type !== 'NETWORK_MODIFICATION'
+                        }
+                        onClick={toggleEventScenarioDrawer}
+                    >
+                        <OfflineBoltOutlinedIcon />
+                    </IconButton>
+                </span>
+            </Tooltip>
+            <Tooltip
                 title={intl.formatMessage({ id: 'NetworkModifications' })}
                 placement="right"
                 arrow
@@ -83,7 +125,6 @@ export function HorizontalToolbar() {
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginRight: '20px',
-                    marginLeft: '20px',
                 }}
             >
                 <span>

@@ -251,6 +251,7 @@
     "DynamicSimulationEventPropertyTEvent": "T Event",
     "DynamicSimulationEventPropertySide": "Side",
     "DynamicSimulationEventSaveError": "An error occurred while saving an event",
+    "DynamicSimulationEventScenario": "Event scenario",
 
     "Branch.Side.ONE": "Origin side",
     "Branch.Side.TWO": "Extremity side",

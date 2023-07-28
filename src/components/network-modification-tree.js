@@ -52,7 +52,7 @@ const NetworkModificationTree = ({
     prevTreeDisplay,
     onNodeContextMenu,
     studyUuid,
-    isModificationsDrawerOpen,
+    isStudyDrawerOpen,
 }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -128,7 +128,7 @@ const NetworkModificationTree = ({
     const intl = useIntl();
 
     useEffect(() => {
-        const nodeEditorShift = isModificationsDrawerOpen
+        const nodeEditorShift = isStudyDrawerOpen
             ? DRAWER_NODE_EDITOR_WIDTH
             : 0;
         const { x, y, zoom, setViewport, prevTreeDisplay } =
@@ -154,11 +154,11 @@ const NetworkModificationTree = ({
                 });
             }
         }
-    }, [studyMapTreeDisplay, isModificationsDrawerOpen]);
+    }, [studyMapTreeDisplay, isStudyDrawerOpen]);
 
     useEffect(() => {
         const { x, y, zoom, setViewport } = focusParams.current;
-        if (isModificationsDrawerOpen) {
+        if (isStudyDrawerOpen) {
             setViewport({
                 x: x - DRAWER_NODE_EDITOR_WIDTH / 2,
                 y: y,
@@ -171,7 +171,7 @@ const NetworkModificationTree = ({
                 zoom: zoom,
             });
         }
-    }, [isModificationsDrawerOpen]);
+    }, [isStudyDrawerOpen]);
 
     return (
         <Box flexGrow={1}>
@@ -256,5 +256,5 @@ NetworkModificationTree.propTypes = {
     prevTreeDisplay: PropTypes.object,
     onNodeContextMenu: PropTypes.func.isRequired,
     studyUuid: PropTypes.string.isRequired,
-    isModificationsDrawerOpen: PropTypes.bool.isRequired,
+    isStudyDrawerOpen: PropTypes.bool.isRequired,
 };

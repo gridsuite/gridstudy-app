@@ -42,6 +42,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
 import { BUILD_STATUS, UPDATE_TYPE } from './network/constants';
+import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -164,6 +165,11 @@ export const NetworkModificationTreePane = ({
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
     );
+    const isEventScenarioDrawerOpen = useSelector(
+        (state) => state.isEventScenarioDrawerOpen
+    );
+    const isStudyDrawerOpen =
+        isModificationsDrawerOpen || isEventScenarioDrawerOpen;
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const width = useStore((state) => state.width);
@@ -596,7 +602,7 @@ export const NetworkModificationTreePane = ({
                     onNodeContextMenu={onNodeContextMenu}
                     studyUuid={studyUuid}
                     studyMapTreeDisplay={studyMapTreeDisplay}
-                    isModificationsDrawerOpen={isModificationsDrawerOpen}
+                    isModificationsDrawerOpen={isStudyDrawerOpen}
                     prevTreeDisplay={prevTreeDisplay}
                 />
 
@@ -611,6 +617,19 @@ export const NetworkModificationTreePane = ({
                     }
                 >
                     <NodeEditor />
+                </StudyDrawer>
+
+                <StudyDrawer
+                    open={isEventScenarioDrawerOpen}
+                    drawerClassName={classes.nodeEditor}
+                    drawerShiftClassName={classes.nodeEditorShift}
+                    anchor={
+                        prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
+                            ? 'right'
+                            : 'left'
+                    }
+                >
+                    <ScenarioEditor />
                 </StudyDrawer>
             </Box>
             {createNodeMenu.display && (
