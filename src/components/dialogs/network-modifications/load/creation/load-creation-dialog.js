@@ -17,7 +17,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad, FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
@@ -36,6 +36,7 @@ import {
 import LoadCreationForm from './load-creation-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { createLoad } from '../../../../../services/study/network-modifications';
 
 /**
  * Dialog to create a load in the network
@@ -147,7 +148,7 @@ const LoadCreationDialog = ({
                 load[REACTIVE_POWER],
                 load.connectivity.voltageLevel.id,
                 load.connectivity.busOrBusbarSection.id,
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined,
                 load.connectivity?.connectionDirection ??
                     UNDEFINED_CONNECTION_DIRECTION,
