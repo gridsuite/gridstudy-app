@@ -10,10 +10,6 @@ import { Tabs, Tab, Grid, Button, DialogActions } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import {
-    getVoltageInitParameters,
-    updateVoltageInitParameters,
-} from 'utils/rest-api';
 import { useStyles, TabPanel, CloseButton } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
@@ -36,6 +32,10 @@ import {
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import clsx from 'clsx';
+import {
+    getVoltageInitParameters,
+    updateVoltageInitParameters,
+} from '../../../../services/study/voltage-init';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);

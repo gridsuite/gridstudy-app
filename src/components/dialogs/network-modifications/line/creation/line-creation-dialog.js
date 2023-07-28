@@ -39,11 +39,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import {
-    createLine,
-    fetchVoltageLevelsListInfos,
-    FetchStatus,
-} from 'utils/rest-api';
+import { fetchVoltageLevelsListInfos, FetchStatus } from 'utils/rest-api';
 
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import {
@@ -83,6 +79,7 @@ import TextInput from 'components/utils/rhf-inputs/text-input';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { createLine } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -344,7 +341,7 @@ const LineCreationDialog = ({
                 sanitizeLimitNames(
                     limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
                 ),
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined,
                 sanitizeString(
                     characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]
