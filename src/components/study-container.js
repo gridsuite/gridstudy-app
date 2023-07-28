@@ -53,6 +53,7 @@ import {
 } from '../services/directory-notification';
 import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
+import { CreateStudyDialog } from './create-study-dialog/create-study-dialog';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -234,7 +235,14 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
+    const [isImportStudyDialogDisplayed, setIsImportStudyDialogDisplayed] =
+        useState(false);
+
     const wsRef = useRef();
+
+    const closeImportStudyDialog = useCallback(() => {
+        setIsImportStudyDialogDisplayed(false);
+    });
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -302,6 +310,7 @@ export function StudyContainer({ view, onChangeTab }) {
             });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
+                console.log('NEWNOTIFICATION', eventData);
                 displayErrorNotifications(eventData);
                 dispatch(studyUpdated(eventData));
             };
@@ -480,10 +489,18 @@ export function StudyContainer({ view, onChangeTab }) {
                         headerId: 'StudyUnrecoverableStateRecreate',
                     });
                 } else {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'NetworkModificationTreeLoadError',
-                    });
+                    //TODO: improve the way we catch this error
+                    if (error.message.endsWith('BROKEN_STUDY')) {
+                        setIsImportStudyDialogDisplayed(true);
+                        snackError({
+                            headerId: 'StudyUnrecoverableState',
+                        });
+                    } else {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'NetworkModificationTreeLoadError',
+                        });
+                    }
                 }
             })
             .finally(() =>
@@ -680,6 +697,9 @@ export function StudyContainer({ view, onChangeTab }) {
                 onChangeTab={onChangeTab}
                 setErrorMessage={setErrorMessage}
             />
+            {isImportStudyDialogDisplayed && (
+                <CreateStudyDialog closeDialog={closeImportStudyDialog} />
+            )}
         </WaitingLoader>
     );
 }
