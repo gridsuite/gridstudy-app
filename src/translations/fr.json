@@ -1050,5 +1050,8 @@
     "muiTablePaginationPrevious": "Aller à la page précédente",
     "muiTablePaginationNext": "Aller à la page suivante",
     "muiTablePaginationFirst": "Aller à la première page",
-    "muiTablePaginationLast": "Aller à la dernière page"
+    "muiTablePaginationLast": "Aller à la dernière page",
+    "flowFlowSensitivityValueThreshold" : "Valeur du seuil de sensibilité (ΔMW ou ΔA / MW)",
+    "angleFlowSensitivityValueThreshold" : "Valeur du seuil de sensibilité (ΔMW ou ΔA / Δ°)",
+    "flowVoltageSensitivityValueThreshold": "Valeur du seuil de sensibilité (ΔkV / kV)"
 }

@@ -27,7 +27,9 @@ import {
 
 import {
     getSecurityAnalysisParameters,
+    getSensitivityAnalysisParameters,
     setSecurityAnalysisParameters,
+    setSensitivityAnalysisParameters,
 } from '../../../utils/rest-api';
 
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
@@ -552,7 +554,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         fetchSensitivityAnalysisProviders,
         fetchSensitivityAnalysisProvider,
         fetchDefaultSensitivityAnalysisProvider,
-        updateSensitivityAnalysisProvider
+        updateSensitivityAnalysisProvider,
+        getSensitivityAnalysisParameters,
+        setSensitivityAnalysisParameters
     );
 
     const useShortCircuitParameters = useGetShortCircuitParameters();

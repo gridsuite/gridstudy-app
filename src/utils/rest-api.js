@@ -2819,3 +2819,24 @@ export function setSecurityAnalysisParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
+export function getSensitivityAnalysisParameters(studyUuid) {
+    console.info('get sensitivity analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function setSensitivityAnalysisParameters(studyUuid, newParams) {
+    console.info('set sensitivity analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
+}
