@@ -16,7 +16,7 @@ export const useIsAnyNodeBuilding = () => {
     );
 
     useEffect(() => {
-        setAnyNodeBuilding(treeModel.isAnyNodeBuilding);
+        setAnyNodeBuilding(treeModel?.isAnyNodeBuilding);
     }, [treeModel]);
 
     return iAnyNodeBuild;
