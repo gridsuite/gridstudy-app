@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {
     backendFetch,
     backendFetchJson,
@@ -33,6 +40,21 @@ export function startSecurityAnalysis(
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
+}
+
+export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
+    console.info(
+        'Stopping security analysis on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' ...'
+    );
+    const stopSecurityAnalysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/security-analysis/stop';
+    console.debug(stopSecurityAnalysisUrl);
+    return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
 export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
@@ -84,4 +106,25 @@ export function fetchDefaultSecurityAnalysisProvider() {
     const url = PREFIX_STUDY_QUERIES + '/v1/security-analysis-default-provider';
     console.debug(url);
     return backendFetchText(url);
+}
+
+export function getSecurityAnalysisParameters(studyUuid) {
+    console.info('get security analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function setSecurityAnalysisParameters(studyUuid, newParams) {
+    console.info('set security analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
 }

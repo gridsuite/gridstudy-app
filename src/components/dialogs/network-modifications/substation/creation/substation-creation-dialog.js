@@ -24,10 +24,11 @@ import {
 } from 'components/utils/field-constants';
 import { getPropertiesSchema } from '../property/property-utils';
 import SubstationCreationForm from './substation-creation-form';
-import { createSubstation, FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { createSubstation } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
