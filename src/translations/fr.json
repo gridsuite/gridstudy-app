@@ -250,6 +250,7 @@
     "DynamicSimulationFetchEquipmentError": "Une erreur est survenue lors du chargement des ouvrages",
     "DynamicSimulationEventPropertyTEvent": "T événement",
     "DynamicSimulationEventPropertySide": "Côté",
+    "DynamicSimulationEventSaveError": "An error occurred while saving an event",
 
     "Branch.Side.ONE": "Côté origine",
     "Branch.Side.TWO": "Côté extrémité",

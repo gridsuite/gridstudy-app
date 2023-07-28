@@ -43,7 +43,7 @@ async function saveEventAsync(
         (elem) => elem.staticId === event.staticId
     );
 
-    if (foundIndex != -1) {
+    if (foundIndex !== -1) {
         // replace
         eventStore.splice(foundIndex, 1, event);
     } else {
@@ -91,10 +91,10 @@ async function deleteEventAsync(
         ? (JSON.parse(eventStoreJson) as Event[])
         : [];
     const foundIndex = eventStore.findIndex(
-        (elem) => elem.staticId == event.staticId
+        (elem) => elem.staticId === event.staticId
     );
 
-    if (foundIndex != -1) {
+    if (foundIndex !== -1) {
         // replace
         eventStore.splice(foundIndex, 1);
     }

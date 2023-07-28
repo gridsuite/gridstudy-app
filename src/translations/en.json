@@ -250,8 +250,10 @@
     "DynamicSimulationFetchEquipmentError": "An error occurred while fetching equipments",
     "DynamicSimulationEventPropertyTEvent": "T Event",
     "DynamicSimulationEventPropertySide": "Side",
-    "Branch.Side.ONE": "Origin Side",
-    "Branch.Side.TWO": "Extremity Side",
+    "DynamicSimulationEventSaveError": "An error occurred while saving an event",
+
+    "Branch.Side.ONE": "Origin side",
+    "Branch.Side.TWO": "Extremity side",
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",

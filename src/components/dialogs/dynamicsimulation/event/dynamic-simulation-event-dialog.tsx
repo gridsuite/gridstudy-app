@@ -20,6 +20,7 @@ import { equipments } from '../../../network/network-equipments';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions } from './model/event.model';
 import { saveEvent, getEvent } from '../../../../services/dynamic-simulation';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 export type DynamicSimulationEventDialogProps = {
     studyUuid: string;
@@ -65,6 +66,8 @@ export const DynamicSimulationEventDialog = (
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [event, setEvent] = useState<Event>();
 
+    const { snackError } = useSnackMessage();
+
     const waitingOpen = useOpenShortWaitFetching({
         isDataFetched: true,
         delay: FORM_LOADING_DELAY,
@@ -75,17 +78,24 @@ export const DynamicSimulationEventDialog = (
     const handleSetValuesAndEmptyOthers = useCallback(() => {}, []);
 
     // submit form
-    const handleSubmit = useCallback((event: Event) => {
-        const eventWithId = { ...event, staticId: equipmentId };
-        saveEvent(studyUuid, currentNodeId, eventWithId)
-            .then((event) => {
-                console.log('Save successfully event : ', event);
-            })
-            .catch((error) => {
-                // should use snackError from useSnackMessage in common-ui
-                console.log('Error occurs when save an event');
-            });
-    }, []);
+    const handleSubmit = useCallback(
+        (event: Event) => {
+            const eventWithId = { ...event, staticId: equipmentId };
+            saveEvent(studyUuid, currentNodeId, eventWithId)
+                .then((event) => {
+                    console.log('Save successfully event : ', event);
+                })
+                .catch((error) => {
+                    // should use snackError from useSnackMessage in common-ui
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'DynamicSimulationEventSaveError',
+                    });
+                    console.log('Error occurs when save an event');
+                });
+        },
+        [currentNodeId, equipmentId, snackError, studyUuid]
+    );
 
     const eventType = useMemo(
         () => getEventType(equipmentType),
@@ -144,7 +154,7 @@ export const DynamicSimulationEventDialog = (
         getEvent(studyUuid, currentNodeId, equipmentId).then((event) => {
             setEvent(event);
         });
-    }, []);
+    }, [currentNodeId, equipmentId, studyUuid]);
 
     return (
         <FormProvider {...{ validationSchema: formSchema, ...formMethods }}>
