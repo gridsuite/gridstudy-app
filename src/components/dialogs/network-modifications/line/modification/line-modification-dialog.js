@@ -27,11 +27,7 @@ import {
     TOTAL_SUSCEPTANCE,
 } from 'components/utils/field-constants';
 import { FormProvider, useForm } from 'react-hook-form';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    modifyLine,
-} from 'utils/rest-api';
+import { fetchNetworkElementInfos, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import yup from 'components/utils/yup-config';
@@ -62,6 +58,7 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { modifyLine } from '../../../../../services/study/network-modifications';
 export const LineCreationDialogTab = {
     CHARACTERISTICS_TAB: 0,
     LIMITS_TAB: 1,

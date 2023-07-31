@@ -14,13 +14,13 @@ import {
     SwitchWithLabel,
     useStyles,
 } from './parameters';
-import {
-    getShortCircuitParameters,
-    setShortCircuitParameters,
-} from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LabelledSlider, LineSeparator } from '../dialogUtils';
+import {
+    getShortCircuitParameters,
+    setShortCircuitParameters,
+} from '../../../services/study/short-circuit-analysis';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -144,14 +144,6 @@ const BasicShortCircuitParameters = ({
         withFeederResult: {
             type: TYPES.bool,
             description: 'descWithFeederResult',
-        },
-        studyType: {
-            type: TYPES.enum,
-            description: 'descStudyType',
-            values: {
-                TRANSIENT: 'descTransient',
-                SUB_TRANSIENT: 'descSubTransient',
-            },
         },
     };
 
