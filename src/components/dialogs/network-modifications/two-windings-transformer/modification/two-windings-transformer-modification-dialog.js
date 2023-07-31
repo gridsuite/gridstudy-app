@@ -370,7 +370,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const fillPhaseTapChangerRegulationAttributes = useCallback(
         (phaseTap, phaseTapChangerFormValues, twtToModify) => {
             const regulationMode =
-                phaseTapChangerFormValues?.[REGULATION_MODE] ||
+                phaseTapChangerFormValues?.[REGULATION_MODE] ??
                 getComputedPhaseTapChangerRegulationMode(
                     twtToModify?.[PHASE_TAP_CHANGER]
                 )?.id;
