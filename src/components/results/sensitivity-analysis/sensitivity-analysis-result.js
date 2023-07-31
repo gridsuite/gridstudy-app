@@ -14,7 +14,11 @@ import {
     DATA_KEY_TO_SORT_KEY,
 } from './sensitivity-analysis-content';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
-import { getNoRowsMessage, getRows } from '../../utils/aggrid-rows-handler';
+import {
+    getNoRowsMessage,
+    getRows,
+    useIntlResultStatusMessages,
+} from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 
@@ -43,22 +47,7 @@ const SensitivityAnalysisResult = ({
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-    const messages = useMemo(() => {
-        return {
-            noCalculation: intl.formatMessage({
-                id: 'grid.noCalculation',
-            }),
-            noData: intl.formatMessage({
-                id: 'grid.noRowsToShow',
-            }),
-            running: intl.formatMessage({
-                id: 'grid.running',
-            }),
-            failed: intl.formatMessage({
-                id: 'grid.failed',
-            }),
-        };
-    }, [intl]);
+    const messages = useIntlResultStatusMessages(intl, true);
     const makeColumn = useCallback(
         (field, labelId, isNum = false) => {
             const { options: filterOptions = [] } =

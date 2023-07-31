@@ -18,7 +18,11 @@ import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
 import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
 import { Button } from '@mui/material';
 import { useTheme } from '@mui/styles';
-import { getNoRowsMessage, getRows } from './utils/aggrid-rows-handler';
+import {
+    getNoRowsMessage,
+    getRows,
+    useIntlResultStatusMessages,
+} from './utils/aggrid-rows-handler';
 import { ComputingType } from './computing-status/computing-type';
 
 export const NMK_TYPE_RESULT = {
@@ -61,22 +65,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         (state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
-    const messages = useMemo(() => {
-        return {
-            noCalculation: intl.formatMessage({
-                id: 'grid.noCalculation',
-            }),
-            noLimitViolation: intl.formatMessage({
-                id: 'grid.noLimitViolation',
-            }),
-            running: intl.formatMessage({
-                id: 'grid.running',
-            }),
-            failed: intl.formatMessage({
-                id: 'grid.failed',
-            }),
-        };
-    }, [intl]);
+    const messages = useIntlResultStatusMessages(intl);
     const switchNmkTypeResult = () => {
         setNmkTypeResult(
             nmkTypeResult === NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES

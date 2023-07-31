@@ -1,4 +1,6 @@
 import { RunningStatus } from './running-status';
+import { IntlShape } from 'react-intl';
+import { useCallback, useMemo } from 'react';
 
 export interface RunningStatusMessage {
     noCalculation: string;
@@ -35,3 +37,29 @@ export function getNoRowsMessage(
 export function getRows(rows: any[], status: string): any[] {
     return status === RunningStatus.SUCCEED && rows ? rows : [];
 }
+export const useIntlResultStatusMessages = (
+    intl: IntlShape,
+    hasNoData: boolean = false
+) => {
+    const speceficMessage = useCallback(():
+        | { noData: string }
+        | { noLimitViolation: string } => {
+        if (hasNoData) {
+            return { noData: intl.formatMessage({ id: 'grid.noRowsToShow' }) };
+        }
+        return {
+            noLimitViolation: intl.formatMessage({
+                id: 'grid.noLimitViolation',
+            }),
+        };
+    }, [intl, hasNoData]);
+
+    return useMemo(() => {
+        return {
+            noCalculation: intl.formatMessage({ id: 'grid.noCalculation' }),
+            ...speceficMessage(),
+            running: intl.formatMessage({ id: 'grid.running' }),
+            failed: intl.formatMessage({ id: 'grid.failed' }),
+        };
+    }, [intl, speceficMessage]);
+};

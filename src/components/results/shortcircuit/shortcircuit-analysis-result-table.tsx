@@ -18,7 +18,11 @@ import {
 } from 'ag-grid-community';
 import { GridStudyTheme } from 'components/app-wrapper.type';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
-import { getNoRowsMessage, getRows } from '../../utils/aggrid-rows-handler';
+import {
+    getNoRowsMessage,
+    getRows,
+    useIntlResultStatusMessages,
+} from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
@@ -117,22 +121,7 @@ const ShortCircuitAnalysisResult: FunctionComponent<
             state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
     );
 
-    const messages = useMemo(() => {
-        return {
-            noCalculation: intl.formatMessage({
-                id: 'grid.noCalculation',
-            }),
-            noData: intl.formatMessage({
-                id: 'grid.noRowsToShow',
-            }),
-            running: intl.formatMessage({
-                id: 'grid.running',
-            }),
-            failed: intl.formatMessage({
-                id: 'grid.failed',
-            }),
-        };
-    }, [intl]);
+    const messages = useIntlResultStatusMessages(intl, true);
     const groupPostSort = (
         sortedRows: IRowNode[],
         idField: string,

@@ -21,7 +21,11 @@ import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
 import { useTheme } from '@mui/styles';
 import { ComputingType } from './computing-status/computing-type';
-import { getNoRowsMessage, getRows } from './utils/aggrid-rows-handler';
+import {
+    getNoRowsMessage,
+    getRows,
+    useIntlResultStatusMessages,
+} from './utils/aggrid-rows-handler';
 const LIMIT_TYPES = {
     HIGH_VOLTAGE: 'HIGH_VOLTAGE',
     LOW_VOLTAGE: 'LOW_VOLTAGE',
@@ -78,22 +82,7 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     const loadFlowStatus = useSelector(
         (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
-    const messages = useMemo(() => {
-        return {
-            noCalculation: intl.formatMessage({
-                id: 'grid.noCalculation',
-            }),
-            noLimitViolation: intl.formatMessage({
-                id: 'grid.noLimitViolation',
-            }),
-            running: intl.formatMessage({
-                id: 'grid.running',
-            }),
-            failed: intl.formatMessage({
-                id: 'grid.failed',
-            }),
-        };
-    }, [intl]);
+    const messages = useIntlResultStatusMessages(intl);
 
     useEffect(() => {
         const PERMANENT_LIMIT_NAME = 'permanent';
