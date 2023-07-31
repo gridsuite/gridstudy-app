@@ -17,11 +17,6 @@ import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Grid, Alert } from '@mui/material';
 import {
-    modifyGenerator,
-    modifyLoad,
-    requestNetworkChange,
-} from '../../utils/rest-api';
-import {
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_DEFINITION_INDEXES,
     TABLES_DEFINITIONS,
@@ -47,6 +42,11 @@ import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
+import {
+    modifyGenerator,
+    modifyLoad,
+    requestNetworkChange,
+} from '../../services/study/network-modifications';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited

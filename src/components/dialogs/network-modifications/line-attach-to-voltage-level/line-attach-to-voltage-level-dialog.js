@@ -25,7 +25,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { attachLine, FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
@@ -44,6 +44,7 @@ import {
 import { buildNewBusbarSections } from 'components/utils/utils';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
+import { attachLine } from '../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [ATTACHMENT_LINE_ID]: '',
@@ -237,8 +238,6 @@ const LineAttachToVoltageLevelDialog = ({
 
     const onVoltageLevelCreationDo = useCallback(
         ({
-            studyUuid,
-            currentNodeUuid,
             voltageLevelId,
             voltageLevelName,
             substationId,
