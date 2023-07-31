@@ -1032,7 +1032,7 @@
 
     "applyModifications": "Apply modifications",
     "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
-    "TableEquipmentModification": "Table equipment modification",
+    "VoltageInitModification": "Voltage init modification",
     "GeneratorAvailability": "Generator availability",
     "chooseElement": "Choose element"
 }

@@ -32,7 +32,7 @@ export const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
 };
 
-const TableEquipmentModificationDialog = ({
+const VoltageInitModificationDialog = ({
     editData,
     onClose,
     editDataFetchStatus,
@@ -114,14 +114,14 @@ const TableEquipmentModificationDialog = ({
             let rowData = [];
             if (editData) {
                 if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
-                    editData.modifications.forEach((m) => {
-                        let row = { ID: m.equipmentId };
+                    editData.generators.forEach((m) => {
+                        let row = { ID: m.generatorId };
                         if (m.voltageSetpoint) {
-                            row[VOLTAGE_SET_POINT] = m.voltageSetpoint.value;
+                            row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
                         }
                         if (m.reactivePowerSetpoint) {
                             row[REACTIVE_POWER_SET_POINT] =
-                                m.reactivePowerSetpoint.value;
+                                m.reactivePowerSetpoint;
                         }
                         rowData.push(row);
                     });
@@ -155,14 +155,14 @@ const TableEquipmentModificationDialog = ({
             onClose={onClose}
             onClear={handleClear}
             onSave={() => {}} // no modifications
-            aria-labelledby="dialog-table-equipment-modification"
+            aria-labelledby="dialog-voltage-init-modification"
             subtitle={equipmentTabs}
             PaperProps={{
                 sx: {
                     height: '90vh',
                 },
             }}
-            titleId={'TableEquipmentModification'}
+            titleId={'VoltageInitModification'}
             {...dialogProps}
             disabledSave={true}
             isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
@@ -172,9 +172,9 @@ const TableEquipmentModificationDialog = ({
     );
 };
 
-TableEquipmentModificationDialog.propTypes = {
+VoltageInitModificationDialog.propTypes = {
     onClose: PropTypes.func,
     editData: PropTypes.array,
 };
 
-export default TableEquipmentModificationDialog;
+export default VoltageInitModificationDialog;

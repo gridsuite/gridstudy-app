@@ -31,5 +31,5 @@
     "network_modifications/updatingModification": "Updating modification ...",
     "network_modifications/modifications": "Updating modification list ...",
     "network_modifications/GENERATION_DISPATCH": "Generation dispatch {computedLabel}",
-    "network_modifications/TABLE_EQUIPMENT_MODIFICATION": "Table equipment modification {computedLabel}"
+    "network_modifications/VOLTAGE_INIT_MODIFICATION": "Voltage init modification {computedLabel}"
 }

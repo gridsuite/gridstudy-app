@@ -50,21 +50,26 @@ const VoltageInitResult = ({ result, status }) => {
     const { snackError } = useSnackMessage();
 
     const [tabIndex, setTabIndex] = useState(0);
+    const [disabledApplyModifications, setDisableApplyModifications] = useState(
+        !result
+    );
 
     const intl = useIntl();
 
     const viNotif = useSelector((state) => state.voltageInitNotif);
 
     const applyModifications = useCallback(() => {
+        setDisableApplyModifications(true);
         cloneVoltageInitModifications(studyUuid, currentNode.id).catch(
             (errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errCloneVoltageInitModificationMsg',
                 });
+                setDisableApplyModifications(false);
             }
         );
-    }, [currentNode?.id, snackError, studyUuid]);
+    }, [currentNode?.id, snackError, studyUuid, setDisableApplyModifications]);
 
     function renderIndicatorsTable(indicators) {
         const rows = indicators
@@ -152,7 +157,7 @@ const VoltageInitResult = ({ result, status }) => {
                         <Button
                             variant="outlined"
                             onClick={applyModifications}
-                            disabled={!result}
+                            disabled={disabledApplyModifications}
                         >
                             <FormattedMessage id="applyModifications" />
                         </Button>
