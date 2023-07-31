@@ -159,7 +159,6 @@ const SensitivityAnalysisResult = ({
             suppressMovable: true,
             sortable: true,
             resizable: true,
-            flex: 1,
         }),
         []
     );
