@@ -132,7 +132,7 @@ const CustomHeaderComponent = ({
             >
                 <Autocomplete
                     multiple
-                    value={filterSelectedOptions || []}
+                    value={filterSelectedOptions}
                     isOptionEqualToValue={(option, value) =>
                         value === [] || option === value
                     }
