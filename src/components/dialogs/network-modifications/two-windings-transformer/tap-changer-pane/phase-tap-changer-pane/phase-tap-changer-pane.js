@@ -33,23 +33,12 @@ import SelectInput from 'components/utils/rhf-inputs/select-input';
 import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { getComputedPhaseTapChangerRegulationMode } from './phase-tap-changer-pane-utils';
+import {
+    getComputedPhaseTapChangerRegulationMode,
+    getComputedPreviousPhaseRegulationType,
+} from './phase-tap-changer-pane-utils';
 import { useMemo } from 'react';
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
-
-export const previousRegulationType = (previousValues) => {
-    if (!previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId) {
-        return null;
-    }
-    if (
-        previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId !==
-        previousValues?.id
-    ) {
-        return REGULATION_TYPES.DISTANT.id;
-    } else {
-        return REGULATION_TYPES.LOCAL.id;
-    }
-};
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -128,7 +117,7 @@ const PhaseTapChangerPane = ({
     const regulationType = useMemo(() => {
         return regulationTypeWatch
             ? regulationTypeWatch
-            : previousRegulationType(previousValues);
+            : getComputedPreviousPhaseRegulationType(previousValues);
     }, [regulationTypeWatch, previousValues]);
 
     const regulationMode = useMemo(() => {

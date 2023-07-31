@@ -92,23 +92,23 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getComputedPhaseTapChangerRegulationMode,
+    getComputedPreviousPhaseRegulationType,
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerModificationValidationSchema,
 } from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { modifyTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
-import RatioTapChangerPane, {
-    previousRegulationType,
-} from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import {
+    getComputedPreviousRatioRegulationType,
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
     getRatioTapChangerModificationValidationSchema,
 } from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
+import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -376,7 +376,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 )?.id;
             const regulationType =
                 phaseTapChangerFormValues?.[REGULATION_TYPE] ??
-                previousRegulationType(twtToModify);
+                getComputedPreviousPhaseRegulationType(twtToModify);
             if (
                 regulationMode &&
                 regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id
@@ -422,7 +422,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 ];
             const regulationType =
                 ratioTapChangerFormValues?.[REGULATION_TYPE] ??
-                previousRegulationType(twtToModify);
+                getComputedPreviousRatioRegulationType(twtToModify);
             if (loadTapChangingCapabilities) {
                 ratioTap.regulationType = toModificationOperation(
                     ratioTapChangerFormValues?.[REGULATION_TYPE]

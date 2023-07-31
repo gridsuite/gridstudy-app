@@ -343,3 +343,17 @@ export const getComputedPhaseTapChangerRegulationMode = (
         return PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL;
     }
 };
+
+export const getComputedPreviousPhaseRegulationType = (previousValues) => {
+    if (!previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId) {
+        return null;
+    }
+    if (
+        previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId !==
+        previousValues?.id
+    ) {
+        return REGULATION_TYPES.DISTANT.id;
+    } else {
+        return REGULATION_TYPES.LOCAL.id;
+    }
+};
