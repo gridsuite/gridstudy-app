@@ -35,6 +35,7 @@ import {
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import {
+    calculateCurvePointsToStore,
     completeReactiveCapabilityCurvePointsData,
     getRowEmptyFormData,
     insertEmptyRowAtSecondToLastIndex,
@@ -259,59 +260,11 @@ const BatteryModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const calculateCurvePointsToStore = useCallback(
-        (reactiveCapabilityCurve) => {
-            if (
-                reactiveCapabilityCurve.every(
-                    (point) =>
-                        point.p == null &&
-                        point.qminP == null &&
-                        point.qmaxP == null
-                )
-            ) {
-                return null;
-            } else {
-                const pointsToStore = [];
-                reactiveCapabilityCurve.forEach((point, index) => {
-                    if (point) {
-                        let pointToStore = {
-                            p: point?.[P],
-                            oldP:
-                                batteryToModify.reactiveCapabilityCurveTable?.[
-                                    index
-                                ]?.p ?? null,
-                            qminP: point?.qminP,
-                            oldQminP:
-                                batteryToModify.reactiveCapabilityCurveTable?.[
-                                    index
-                                ]?.qminP ?? null,
-                            qmaxP: point?.qmaxP,
-                            oldQmaxP:
-                                batteryToModify.reactiveCapabilityCurveTable?.[
-                                    index
-                                ]?.qmaxP ?? null,
-                        };
-                        pointsToStore.push(pointToStore);
-                    }
-                });
-                return pointsToStore.filter(
-                    (point) =>
-                        point.p != null ||
-                        point.oldP != null ||
-                        point.qmaxP != null ||
-                        point.oldQmaxP != null ||
-                        point.qminP != null ||
-                        point.oldQminP != null
-                );
-            }
-        },
-        [batteryToModify]
-    );
-
     const onSubmit = useCallback(
         (battery) => {
             const buildCurvePointsToStore = calculateCurvePointsToStore(
-                battery[REACTIVE_CAPABILITY_CURVE_TABLE]
+                battery[REACTIVE_CAPABILITY_CURVE_TABLE],
+                batteryToModify
             );
 
             const isFrequencyRegulationOn =
@@ -354,7 +307,6 @@ const BatteryModificationDialog = ({
         [
             selectedId,
             batteryToModify,
-            calculateCurvePointsToStore,
             studyUuid,
             currentNodeUuid,
             editData?.uuid,

@@ -55,6 +55,7 @@ import {
 } from '../../../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import {
+    calculateCurvePointsToStore,
     completeReactiveCapabilityCurvePointsData,
     getRowEmptyFormData,
     insertEmptyRowAtSecondToLastIndex,
@@ -319,55 +320,6 @@ const GeneratorModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const calculateCurvePointsToStore = useCallback(
-        (reactiveCapabilityCurve) => {
-            if (
-                reactiveCapabilityCurve.every(
-                    (point) =>
-                        point.p == null &&
-                        point.qminP == null &&
-                        point.qmaxP == null
-                )
-            ) {
-                return null;
-            } else {
-                const pointsToStore = [];
-                reactiveCapabilityCurve.forEach((point, index) => {
-                    if (point) {
-                        let pointToStore = {
-                            p: point?.[P],
-                            oldP:
-                                generatorToModify
-                                    .reactiveCapabilityCurveTable?.[index]?.p ??
-                                null,
-                            qminP: point?.qminP,
-                            oldQminP:
-                                generatorToModify
-                                    .reactiveCapabilityCurveTable?.[index]
-                                    ?.qminP ?? null,
-                            qmaxP: point?.qmaxP,
-                            oldQmaxP:
-                                generatorToModify
-                                    .reactiveCapabilityCurveTable?.[index]
-                                    ?.qmaxP ?? null,
-                        };
-                        pointsToStore.push(pointToStore);
-                    }
-                });
-                return pointsToStore.filter(
-                    (point) =>
-                        point.p != null ||
-                        point.oldP != null ||
-                        point.qmaxP != null ||
-                        point.oldQmaxP != null ||
-                        point.qminP != null ||
-                        point.oldQminP != null
-                );
-            }
-        },
-        [generatorToModify]
-    );
-
     const getPreviousRegulationType = useCallback(() => {
         if (generatorToModify?.voltageRegulationOn) {
             return generatorToModify?.regulatingTerminalVlId ||
@@ -382,7 +334,8 @@ const GeneratorModificationDialog = ({
     const onSubmit = useCallback(
         (generator) => {
             const buildCurvePointsToStore = calculateCurvePointsToStore(
-                generator[REACTIVE_CAPABILITY_CURVE_TABLE]
+                generator[REACTIVE_CAPABILITY_CURVE_TABLE],
+                generatorToModify
             );
 
             const isFrequencyRegulationOn =
@@ -464,7 +417,6 @@ const GeneratorModificationDialog = ({
             selectedId,
             generatorToModify,
             getPreviousRegulationType,
-            calculateCurvePointsToStore,
             studyUuid,
             currentNodeUuid,
             editData?.uuid,

@@ -162,3 +162,47 @@ export const insertEmptyRowAtSecondToLastIndex = (table) => {
         [Q_MIN_P]: null,
     });
 };
+
+export const calculateCurvePointsToStore = (
+    reactiveCapabilityCurve,
+    equipmentToModify
+) => {
+    if (
+        reactiveCapabilityCurve.every(
+            (point) =>
+                point.p == null && point.qminP == null && point.qmaxP == null
+        )
+    ) {
+        return null;
+    } else {
+        const pointsToStore = [];
+        reactiveCapabilityCurve.forEach((point, index) => {
+            if (point) {
+                let pointToStore = {
+                    p: point?.[P],
+                    oldP:
+                        equipmentToModify.reactiveCapabilityCurveTable?.[index]
+                            ?.p ?? null,
+                    qminP: point?.qminP,
+                    oldQminP:
+                        equipmentToModify.reactiveCapabilityCurveTable?.[index]
+                            ?.qminP ?? null,
+                    qmaxP: point?.qmaxP,
+                    oldQmaxP:
+                        equipmentToModify.reactiveCapabilityCurveTable?.[index]
+                            ?.qmaxP ?? null,
+                };
+                pointsToStore.push(pointToStore);
+            }
+        });
+        return pointsToStore.filter(
+            (point) =>
+                point.p != null ||
+                point.oldP != null ||
+                point.qmaxP != null ||
+                point.oldQmaxP != null ||
+                point.qminP != null ||
+                point.oldQminP != null
+        );
+    }
+};
