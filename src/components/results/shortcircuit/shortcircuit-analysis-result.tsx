@@ -9,10 +9,6 @@ import WaitingLoader from 'components/utils/waiting-loader';
 import ShortCircuitAnalysisResult from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
 import {
-    fetchOneBusShortCircuitAnalysisResult,
-    fetchShortCircuitAnalysisResult,
-} from 'utils/rest-api';
-import {
     ShortcircuitAnalysisResult,
     ShortcircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
@@ -21,6 +17,10 @@ import { ReduxState } from 'redux/reducer.type';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { FunctionComponent } from 'react';
+import {
+    fetchOneBusShortCircuitAnalysisResult,
+    fetchShortCircuitAnalysisResult,
+} from '../../../services/study/short-circuit-analysis';
 
 interface ShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortcircuitAnalysisType;

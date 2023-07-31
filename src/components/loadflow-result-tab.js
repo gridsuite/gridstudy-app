@@ -6,10 +6,10 @@
  */
 
 import { useNodeData } from './study-container';
-import { fetchLoadFlowResult } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 
 import LoadFlowResult from './loadflow-result';
+import { fetchLoadFlowResult } from '../services/study/loadflow';
 
 const loadflowResultInvalidations = ['loadflowResult'];
 

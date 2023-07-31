@@ -25,13 +25,6 @@ import {
     MenuItem,
 } from '@mui/material';
 
-import {
-    getSecurityAnalysisParameters,
-    getSensitivityAnalysisParameters,
-    setSecurityAnalysisParameters,
-    setSensitivityAnalysisParameters,
-} from '../../../utils/rest-api';
-
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 
 import {
@@ -64,6 +57,8 @@ import { fetchSensitivityAnalysisProviders } from '../../../services/sensitivity
 import {
     fetchDefaultSensitivityAnalysisProvider,
     fetchSensitivityAnalysisProvider,
+    getSensitivityAnalysisParameters,
+    setSensitivityAnalysisParameters,
     updateSensitivityAnalysisProvider,
 } from '../../../services/study/sensitivity-analysis';
 import {
@@ -76,6 +71,8 @@ import {
 import {
     fetchDefaultSecurityAnalysisProvider,
     fetchSecurityAnalysisProvider,
+    getSecurityAnalysisParameters,
+    setSecurityAnalysisParameters,
     updateSecurityAnalysisProvider,
 } from '../../../services/study/security-analysis';
 

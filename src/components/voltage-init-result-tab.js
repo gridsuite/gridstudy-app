@@ -6,11 +6,11 @@
  */
 
 import { useNodeData } from './study-container';
-import { fetchVoltageInitResult } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import VoltageInitResult from './voltage-init-result';
 import { useSelector } from 'react-redux';
 import { ComputingType } from './computing-status/computing-type';
+import { fetchVoltageInitResult } from '../services/study/voltage-init';
 
 const voltageInitResultInvalidations = ['voltageInitResult'];
 
