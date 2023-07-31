@@ -27,7 +27,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import { fetchNetworkElementInfos, modifyBattery } from 'utils/rest-api';
+import { fetchNetworkElementInfos } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import BatteryModificationForm from './battery-modification-form';
 import {
@@ -51,6 +51,7 @@ import {
     getFrequencyRegulationSchema,
     getFrequencyRegulationEmptyFormData,
 } from '../../../set-points/set-points-utils';
+import { modifyBattery } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
