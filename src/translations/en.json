@@ -356,8 +356,6 @@
     "descWithFeederResult": "With feeder results",
     "descStudyType": "Study type",
     "descTransient": "Transient",
-    "descSubTransient": "Sub-transient",
-
     "securityAnalysisError": "An error occurred while executing the security analysis",
     "startLoadFlowError": "An error occurred while starting the load flow",
     "LoadFlowResultsCurrentViolations": "Current violations",

@@ -41,7 +41,6 @@ import {
     fetchNetworkElementInfos,
     FetchStatus,
     fetchVoltageLevelsListInfos,
-    modifyTwoWindingsTransformer,
 } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
 import { sanitizeString } from '../../../dialogUtils';
@@ -90,6 +89,7 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { modifyTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 import RatioTapChangerPane, {
     previousRegulationType,
 } from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';

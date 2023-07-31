@@ -29,12 +29,7 @@ import withBranchMenu from '../../menus/branch-menu';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
-import {
-    deleteEquipment,
-    startShortCircuitAnalysis,
-    fetchNetworkElementInfos,
-    updateSwitchState,
-} from '../../../utils/rest-api';
+import { fetchNetworkElementInfos } from '../../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -45,6 +40,11 @@ import LoadModificationDialog from 'components/dialogs/network-modifications/loa
 import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
+import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
+import {
+    deleteEquipment,
+    updateSwitchState,
+} from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
 import { setComputingStatus } from 'redux/actions';
 import { ComputingType } from 'components/computing-status/computing-type';
@@ -56,6 +56,7 @@ import {
     EQUIPMENT_TYPES,
 } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -381,52 +382,37 @@ function SingleLineDiagramContent(props) {
     };
 
     const displayModificationDialog = () => {
+        let CurrentModificationDialog;
         switch (equipmentToModify.equipmentType) {
             case equipments.generators:
-                return (
-                    <GeneratorModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        onClose={() => closeModificationDialog()}
-                        defaultIdValue={equipmentToModify.equipmentId}
-                    />
-                );
+                CurrentModificationDialog = GeneratorModificationDialog;
+                break;
             case equipments.loads:
-                return (
-                    <LoadModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        onClose={() => closeModificationDialog()}
-                        defaultIdValue={equipmentToModify.equipmentId}
-                    />
-                );
+                CurrentModificationDialog = LoadModificationDialog;
+                break;
             case equipments.twoWindingsTransformers:
-                return (
-                    <TwoWindingsTransformerModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        defaultIdValue={equipmentToModify.equipmentId}
-                        isUpdate={true}
-                        onClose={() => closeModificationDialog()}
-                    />
-                );
+                CurrentModificationDialog =
+                    TwoWindingsTransformerModificationDialog;
+                break;
             case equipments.lines:
-                return (
-                    <LineModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        defaultIdValue={equipmentToModify.equipmentId}
-                        isUpdate={true}
-                        onClose={() => closeModificationDialog()}
-                    />
-                );
+                CurrentModificationDialog = LineModificationDialog;
+                break;
+            case equipments.shuntCompensators:
+                CurrentModificationDialog = ShuntCompensatorModificationDialog;
+                break;
             default:
                 return <></>;
         }
+        return (
+            <CurrentModificationDialog
+                open={true}
+                studyUuid={studyUuid}
+                currentNode={currentNode}
+                defaultIdValue={equipmentToModify.equipmentId}
+                isUpdate={true}
+                onClose={() => closeModificationDialog()}
+            />
+        );
     };
 
     const displayDeletionDialog = () => {
