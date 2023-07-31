@@ -38,6 +38,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
+import messages_fr_rte from '../translations/fr_rte.json';
 import networkModification_en from '../translations/network-modifications-en.json';
 import networkModification_fr from '../translations/network-modifications-fr.json';
 import exportParameters_en from '../translations/export-parameters-en.json';
@@ -124,6 +125,7 @@ const messages = {
     fr: {
         ...treeview_finder_fr,
         ...messages_fr,
+        ...messages_fr_rte,
         ...networkModification_fr,
         ...exportParameters_fr,
         ...report_viewer_fr,
