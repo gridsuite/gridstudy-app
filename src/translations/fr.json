@@ -356,11 +356,9 @@
     "descWithFeederResult": "Avec apports",
     "descStudyType": "Type d'étude",
     "descTransient": "Transitoire",
-    "descSubTransient": "Sub-transitoire",
-
     "securityAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de sécurité",
     "startLoadFlowError": "Une erreur est survenue lors du lancement du load flow",
-    "LoadFlowResultsCurrentViolations": "Contraintes de transit", 
+    "LoadFlowResultsCurrentViolations": "Contraintes de transit",
     "LoadFlowResultsVoltageViolations": "Contraintes de tension",
     "LoadFlowResultsStatus": "Statut",
 
@@ -836,10 +834,10 @@
     "HighTapRatio": "Rapport (prise max)",
     "ImportRegulationRule": "Importer une loi de régleur",
 
-    "AddRows": "Ajouter des lignes",
-    "DeleteRows": "Supprimer des lignes",
-    "MoveUpRows": "Monter des lignes",
-    "MoveDownRows": "Descendre des lignes",
+    "AddRows": "Ajouter",
+    "DeleteRows": "Supprimer",
+    "MoveUpRows": "Monter",
+    "MoveDownRows": "Descendre",
 
     "AddRowsDialogTitle": "Combien de lignes voulez-vous ajouter ?",
     "AddRowsButton": "Ajouter",
@@ -970,6 +968,7 @@
     "GeneratorsWithFixedActivePower": "Groupes non ajustables",
     "GeneratorFilter": "FILTRE GROUPE",
     "FrequencyReserve": "RESERVE FREQUENCE (%)",
+    "frequencyReserve": "Réserve fréquence",
     "GeneratorsFiltersFrequencyReserveToolTip": "Les saisies sont appliquées dans l’ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si un groupe est inclus dans plusieurs filtres)",
     "ReplacingLine": "Liaison de remplacement",
     "ConnectionPosition": "Position départ",
@@ -1052,5 +1051,7 @@
     "muiTablePaginationPrevious": "Aller à la page précédente",
     "muiTablePaginationNext": "Aller à la page suivante",
     "muiTablePaginationFirst": "Aller à la première page",
-    "muiTablePaginationLast": "Aller à la dernière page"
+    "muiTablePaginationLast": "Aller à la dernière page",
+    "GeneratorAvailability": "Indisponibilité groupes",
+    "chooseElement": "Choisir un element"
 }

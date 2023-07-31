@@ -27,7 +27,6 @@ import {
 import yup from 'components/utils/yup-config';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { linesAttachToSplitLines } from 'utils/rest-api';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 import LinesAttachToSplitLinesForm from './lines-attach-to-split-lines-form';
@@ -39,6 +38,7 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { FetchStatus } from 'utils/rest-api';
+import { linesAttachToSplitLines } from '../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [LINE_TO_ATTACH_TO_1_ID]: null,

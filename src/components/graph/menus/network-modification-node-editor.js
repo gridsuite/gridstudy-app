@@ -6,12 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    changeNetworkModificationOrder,
-    copyOrMoveModifications,
-    deleteModifications,
-    fetchNetworkModifications,
-} from '../../../utils/rest-api';
+import { copyOrMoveModifications } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
@@ -65,9 +60,14 @@ import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
+import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { fetchNetworkModification } from '../../../services/network-modification';
-import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
+import {
+    changeNetworkModificationOrder,
+    deleteModifications,
+    fetchNetworkModifications,
+} from '../../../services/study/network-modifications';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {

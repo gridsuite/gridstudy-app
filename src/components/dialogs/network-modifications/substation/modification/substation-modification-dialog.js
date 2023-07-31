@@ -22,11 +22,7 @@ import {
     ADDED,
 } from 'components/utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    modifySubstation,
-} from 'utils/rest-api';
+import { fetchNetworkElementInfos, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -35,6 +31,7 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { modifySubstation } from '../../../../../services/study/network-modifications';
 
 const checkUniquePropertiesNames = (properties) => {
     const validValues = properties.filter((v) => v?.name);

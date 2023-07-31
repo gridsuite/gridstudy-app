@@ -41,7 +41,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { fetchNetworkElementInfos, modifyGenerator } from 'utils/rest-api';
+import { fetchNetworkElementInfos } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
@@ -67,6 +67,7 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { modifyGenerator } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
