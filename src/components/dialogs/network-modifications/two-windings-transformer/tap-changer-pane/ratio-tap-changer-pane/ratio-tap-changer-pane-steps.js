@@ -147,7 +147,7 @@ const RatioTapChangerPaneSteps = ({
             handleImportRow={handleImportRow}
             disabled={disabled}
             previousValues={previousValues}
-            editData={editData}
+            editData={editData?.[RATIO_TAP_CHANGER]}
             currentNode={currentNode}
             isModification={isModification}
         />

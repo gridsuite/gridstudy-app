@@ -174,7 +174,7 @@ const PhaseTapChangerPaneSteps = ({
             handleImportRow={handleImportRow}
             disabled={disabled}
             previousValues={previousValues}
-            editData={editData}
+            editData={editData?.[PHASE_TAP_CHANGER]}
             currentNode={currentNode}
             isModification={isModification}
         />

@@ -53,7 +53,6 @@ import {
     PHASE_REGULATION_MODES,
     RATIO_REGULATION_MODES,
     REGULATION_TYPES,
-    SIDE,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
@@ -96,6 +95,7 @@ import {
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
+    getComputedPhaseTapChangerRegulationMode,
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerModificationValidationSchema,
@@ -172,25 +172,6 @@ const TwoWindingsTransformerModificationDialog = ({
     });
     const { reset } = formMethods;
 
-    const getRegulationTypeForEdit = (twt, tap) => {
-        return tap?.regulatingTerminalId?.value != null
-            ? tap?.regulatingTerminalId?.value === twt?.id
-                ? REGULATION_TYPES.LOCAL.id
-                : REGULATION_TYPES.DISTANT.id
-            : null;
-    };
-
-    const getTapSideForEdit = (twt, tap) => {
-        if (tap?.regulatingTerminalVlId?.value == null) {
-            return null;
-        }
-        return tap?.regulatingTerminalId?.value === twt?.id
-            ? tap?.regulatingTerminalVlId?.value === twt?.voltageLevelId1
-                ? SIDE.SIDE1.id
-                : SIDE.SIDE2.id
-            : null;
-    };
-
     const computeRatioTapChangerRegulationMode = (
         ratioTapChangerFormValues
     ) => {
@@ -251,14 +232,11 @@ const TwoWindingsTransformerModificationDialog = ({
                     regulationMode: computeRatioTapChangerRegulationMode(
                         twt?.[RATIO_TAP_CHANGER]
                     ),
-                    regulationType: getRegulationTypeForEdit(
-                        twtToModify,
-                        twt?.[RATIO_TAP_CHANGER]
-                    ),
-                    regulationSide: getTapSideForEdit(
-                        twtToModify,
-                        twt?.[RATIO_TAP_CHANGER]
-                    ),
+                    regulationType:
+                        twt?.[RATIO_TAP_CHANGER]?.[REGULATION_TYPE]?.value,
+                    regulationSide:
+                        twt?.[RATIO_TAP_CHANGER]?.[REGULATION_SIDE]?.value ??
+                        null,
                     targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V]?.value,
                     targetDeadband:
                         twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND]?.value,
@@ -282,17 +260,13 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value,
-                    stepsModified: !!twt?.[PHASE_TAP_CHANGER]?.[STEPS],
                     regulationMode:
                         twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
-                    regulationType: getRegulationTypeForEdit(
-                        twtToModify,
-                        twt?.[PHASE_TAP_CHANGER]
-                    ),
-                    regulationSide: getTapSideForEdit(
-                        twtToModify,
-                        twt?.[PHASE_TAP_CHANGER]
-                    ),
+                    regulationType:
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_TYPE]?.value,
+                    regulationSide:
+                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_SIDE]?.value ??
+                        null,
                     currentLimiterRegulatingValue:
                         twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value ===
                         PHASE_REGULATION_MODES.CURRENT_LIMITER.id
@@ -371,59 +345,6 @@ const TwoWindingsTransformerModificationDialog = ({
         );
     };
 
-    const computeRegulatingTerminalId = useCallback(
-        (tapChangerValue, currentTwtId) => {
-            const regulationType =
-                tapChangerValue?.[REGULATION_TYPE] ??
-                previousRegulationType(twtToModify);
-            if (regulationType === REGULATION_TYPES.LOCAL.id) {
-                return currentTwtId;
-            } else {
-                return tapChangerValue?.[EQUIPMENT]?.id;
-            }
-        },
-        [twtToModify]
-    );
-
-    const computeTapTerminalVlId = useCallback(
-        (tapChangerValue, vlId1, vlId2) => {
-            const regulationType =
-                tapChangerValue?.[REGULATION_TYPE] ??
-                previousRegulationType(twtToModify);
-            if (regulationType === REGULATION_TYPES.LOCAL.id) {
-                if (!tapChangerValue?.[REGULATION_SIDE]) {
-                    return undefined;
-                }
-                if (tapChangerValue?.[REGULATION_SIDE] === SIDE.SIDE1.id) {
-                    return vlId1;
-                } else {
-                    return vlId2;
-                }
-            } else {
-                return tapChangerValue?.[VOLTAGE_LEVEL]?.[ID];
-            }
-        },
-        [twtToModify]
-    );
-
-    const computeRegulatingTerminalType = useCallback(
-        (tapChangerValue) => {
-            if (tapChangerValue?.[EQUIPMENT]?.type) {
-                return tapChangerValue?.[EQUIPMENT]?.type;
-            }
-
-            const regulationType =
-                tapChangerValue?.[REGULATION_TYPE] ??
-                previousRegulationType(twtToModify);
-            if (regulationType === REGULATION_TYPES.LOCAL.id) {
-                return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
-            }
-
-            return undefined;
-        },
-        [twtToModify]
-    );
-
     const computePhaseTapChangerRegulationValue = (
         phaseTapChangerFormValues,
         currentRegulationMode
@@ -445,6 +366,99 @@ const TwoWindingsTransformerModificationDialog = ({
                 return undefined;
         }
     };
+
+    const fillPhaseTapChangerRegulationAttributes = useCallback(
+        (phaseTap, phaseTapChangerFormValues, twtToModify) => {
+            const regulationMode =
+                phaseTapChangerFormValues?.[REGULATION_MODE] ||
+                getComputedPhaseTapChangerRegulationMode(
+                    twtToModify?.[PHASE_TAP_CHANGER]
+                )?.id;
+            const regulationType =
+                phaseTapChangerFormValues?.[REGULATION_TYPE] ??
+                previousRegulationType(twtToModify);
+            if (
+                regulationMode &&
+                regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id
+            ) {
+                phaseTap.regulationType = toModificationOperation(
+                    phaseTapChangerFormValues?.[REGULATION_TYPE]
+                );
+                if (regulationType === REGULATION_TYPES.LOCAL.id) {
+                    phaseTap.regulationSide = toModificationOperation(
+                        phaseTapChangerFormValues?.[REGULATION_SIDE]
+                    );
+                } else if (regulationType === REGULATION_TYPES.DISTANT.id) {
+                    phaseTap.regulatingTerminalId = toModificationOperation(
+                        phaseTapChangerFormValues?.[EQUIPMENT]?.id
+                    );
+                    phaseTap.regulatingTerminalType = toModificationOperation(
+                        phaseTapChangerFormValues?.[EQUIPMENT]?.type
+                    );
+                    phaseTap.regulatingTerminalVlId = toModificationOperation(
+                        phaseTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID]
+                    );
+                }
+                phaseTap.regulationValue = toModificationOperation(
+                    computePhaseTapChangerRegulationValue(
+                        phaseTapChangerFormValues,
+                        twtToModify?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
+                    )
+                );
+                phaseTap.targetDeadband = toModificationOperation(
+                    phaseTapChangerFormValues[TARGET_DEADBAND]
+                );
+            }
+        },
+        []
+    );
+
+    const fillRatioTapChangerRegulationAttributes = useCallback(
+        (ratioTap, ratioTapChangerFormValues, twtToModify) => {
+            const loadTapChangingCapabilities =
+                ratioTapChangerFormValues?.[LOAD_TAP_CHANGING_CAPABILITIES] ??
+                twtToModify?.[RATIO_TAP_CHANGER]?.[
+                    LOAD_TAP_CHANGING_CAPABILITIES
+                ];
+            const regulationType =
+                ratioTapChangerFormValues?.[REGULATION_TYPE] ??
+                previousRegulationType(twtToModify);
+            if (loadTapChangingCapabilities) {
+                ratioTap.regulationType = toModificationOperation(
+                    ratioTapChangerFormValues?.[REGULATION_TYPE]
+                );
+                ratioTap.regulating = toModificationOperation(
+                    ratioTapChangerFormValues?.[REGULATION_MODE]
+                        ? computeRatioTapChangerRegulating(
+                              ratioTapChangerFormValues
+                          )
+                        : null
+                );
+                if (regulationType === REGULATION_TYPES.LOCAL.id) {
+                    ratioTap.regulationSide = toModificationOperation(
+                        ratioTapChangerFormValues?.[REGULATION_SIDE]
+                    );
+                } else if (regulationType === REGULATION_TYPES.DISTANT.id) {
+                    ratioTap.regulatingTerminalId = toModificationOperation(
+                        ratioTapChangerFormValues?.[EQUIPMENT]?.id
+                    );
+                    ratioTap.regulatingTerminalType = toModificationOperation(
+                        ratioTapChangerFormValues?.[EQUIPMENT]?.type
+                    );
+                    ratioTap.regulatingTerminalVlId = toModificationOperation(
+                        ratioTapChangerFormValues?.[VOLTAGE_LEVEL]?.[ID]
+                    );
+                }
+                ratioTap.targetV = toModificationOperation(
+                    ratioTapChangerFormValues?.[TARGET_V]
+                );
+                ratioTap.targetDeadband = toModificationOperation(
+                    ratioTapChangerFormValues?.[TARGET_DEADBAND]
+                );
+            }
+        },
+        []
+    );
 
     const onSubmit = useCallback(
         (twt) => {
@@ -490,7 +504,7 @@ const TwoWindingsTransformerModificationDialog = ({
             let ratioTap = undefined;
             const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
             const enableRatioTapChanger = ratioTapChangerFormValues?.[ENABLED];
-            const areStepsModified =
+            const areRatioStepsModified =
                 isNodeBuilt(currentNode) &&
                 editData?.[RATIO_TAP_CHANGER]?.[STEPS]
                     ? true
@@ -498,54 +512,30 @@ const TwoWindingsTransformerModificationDialog = ({
                           ratioTapChangerFormValues[STEPS],
                           twtToModify?.[RATIO_TAP_CHANGER]?.[STEPS]
                       );
-            let ratioTapChangerSteps = !areStepsModified
+            let ratioTapChangerSteps = !areRatioStepsModified
                 ? null
                 : ratioTapChangerFormValues[STEPS];
             if (enableRatioTapChanger) {
                 ratioTap = {
-                    enabled: toModificationOperation(true),
-                    lowTapPosition: toModificationOperation(
-                        ratioTapChangerFormValues?.[LOW_TAP_POSITION]
-                    ),
-                    tapPosition: toModificationOperation(
-                        ratioTapChangerFormValues?.[TAP_POSITION]
-                    ),
-                    targetDeadband: toModificationOperation(
-                        ratioTapChangerFormValues?.[TARGET_DEADBAND]
-                    ),
-                    targetV: toModificationOperation(
-                        ratioTapChangerFormValues?.[TARGET_V]
-                    ),
-                    loadTapChangingCapabilities: toModificationOperation(
+                    [ENABLED]: toModificationOperation(true),
+                    [LOAD_TAP_CHANGING_CAPABILITIES]: toModificationOperation(
                         ratioTapChangerFormValues?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
                         ]
                     ),
-                    regulating: toModificationOperation(
-                        ratioTapChangerFormValues?.[REGULATION_MODE]
-                            ? computeRatioTapChangerRegulating(
-                                  ratioTapChangerFormValues
-                              )
-                            : null
+                    [TAP_POSITION]: toModificationOperation(
+                        ratioTapChangerFormValues?.[TAP_POSITION]
                     ),
-                    regulatingTerminalId: toModificationOperation(
-                        computeRegulatingTerminalId(
-                            ratioTapChangerFormValues,
-                            selectedId
-                        )
+                    [LOW_TAP_POSITION]: toModificationOperation(
+                        ratioTapChangerFormValues?.[LOW_TAP_POSITION]
                     ),
-                    regulatingTerminalType: toModificationOperation(
-                        computeRegulatingTerminalType(ratioTapChangerFormValues)
-                    ),
-                    regulatingTerminalVlId: toModificationOperation(
-                        computeTapTerminalVlId(
-                            ratioTapChangerFormValues,
-                            twtToModify?.voltageLevelId1,
-                            twtToModify?.voltageLevelId2
-                        )
-                    ),
-                    steps: ratioTapChangerSteps,
+                    [STEPS]: ratioTapChangerSteps,
                 };
+                fillRatioTapChangerRegulationAttributes(
+                    ratioTap,
+                    ratioTapChangerFormValues,
+                    twtToModify
+                );
             } else {
                 ratioTap = {
                     enabled: toModificationOperation(false),
@@ -568,29 +558,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 : phaseTapChangerFormValues[STEPS];
             if (enablePhaseTapChanger) {
                 phaseTap = {
-                    enabled: toModificationOperation(true),
-                    regulationValue: toModificationOperation(
-                        computePhaseTapChangerRegulationValue(
-                            phaseTapChangerFormValues,
-                            twtToModify?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
-                        )
-                    ),
-                    regulatingTerminalId: toModificationOperation(
-                        computeRegulatingTerminalId(
-                            phaseTapChangerFormValues,
-                            selectedId
-                        )
-                    ),
-                    regulatingTerminalType: toModificationOperation(
-                        computeRegulatingTerminalType(phaseTapChangerFormValues)
-                    ),
-                    regulatingTerminalVlId: toModificationOperation(
-                        computeTapTerminalVlId(
-                            phaseTapChangerFormValues,
-                            twtToModify?.voltageLevelId1,
-                            twtToModify?.voltageLevelId2
-                        )
-                    ),
+                    [ENABLED]: toModificationOperation(true),
                     [REGULATION_MODE]: toModificationOperation(
                         phaseTapChangerFormValues[REGULATION_MODE]
                     ),
@@ -600,11 +568,13 @@ const TwoWindingsTransformerModificationDialog = ({
                     [LOW_TAP_POSITION]: toModificationOperation(
                         phaseTapChangerFormValues[LOW_TAP_POSITION]
                     ),
-                    [TARGET_DEADBAND]: toModificationOperation(
-                        phaseTapChangerFormValues[TARGET_DEADBAND]
-                    ),
                     [STEPS]: phaseTapChangerSteps,
                 };
+                fillPhaseTapChangerRegulationAttributes(
+                    phaseTap,
+                    phaseTapChangerFormValues,
+                    twtToModify
+                );
             } else {
                 phaseTap = {
                     enabled: toModificationOperation(false),
@@ -647,9 +617,8 @@ const TwoWindingsTransformerModificationDialog = ({
             studyUuid,
             currentNodeUuid,
             selectedId,
-            computeRegulatingTerminalId,
-            computeTapTerminalVlId,
-            computeRegulatingTerminalType,
+            fillRatioTapChangerRegulationAttributes,
+            fillPhaseTapChangerRegulationAttributes,
             snackError,
         ]
     );
