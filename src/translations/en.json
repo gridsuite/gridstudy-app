@@ -356,8 +356,6 @@
     "descWithFeederResult": "With feeder results",
     "descStudyType": "Study type",
     "descTransient": "Transient",
-    "descSubTransient": "Sub-transient",
-
     "securityAnalysisError": "An error occurred while executing the security analysis",
     "startLoadFlowError": "An error occurred while starting the load flow",
     "LoadFlowResultsCurrentViolations": "Current violations",
@@ -835,10 +833,10 @@
     "HighTapRatio": "Ratio (high tap position)",
     "ImportRegulationRule": "Import regulation rule",
 
-    "AddRows": "Add rows",
-    "DeleteRows": "Delete rows",
-    "MoveUpRows": "Move up rows",
-    "MoveDownRows": "Move down rows",
+    "AddRows": "Add",
+    "DeleteRows": "Delete",
+    "MoveUpRows": "Move up",
+    "MoveDownRows": "Move down",
 
     "AddRowsDialogTitle": "How many rows do you want to add ?",
     "AddRowsButton": "Add",
@@ -968,6 +966,7 @@
     "GeneratorsWithFixedActivePower": "Generators with fixed active power",
     "GeneratorFilter": "GENERATOR FILTER",
     "FrequencyReserve": "FREQUENCY RESERVE (%)",
+    "frequencyReserve": "Frequency reserve",
     "GeneratorsFiltersFrequencyReserveToolTip": "User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry",
     "ReplacingLine": "Replacing line",
     "ConnectionPosition": "Connection position",
@@ -1030,5 +1029,7 @@
     "muiTablePaginationPrevious": "Go to the previous page",
     "muiTablePaginationNext": "Go to the next page",
     "muiTablePaginationFirst": "Go to the first page",
-    "muiTablePaginationLast": "Go to the last page"
+    "muiTablePaginationLast": "Go to the last page",
+    "GeneratorAvailability": "Generator availability",
+    "chooseElement": "Choose element"
 }

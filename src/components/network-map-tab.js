@@ -9,7 +9,6 @@ import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
-    deleteEquipment,
     fetchLinePositions,
     fetchSubstationPositions,
 } from '../utils/rest-api';
@@ -39,6 +38,7 @@ import SubstationModificationDialog from './dialogs/network-modifications/substa
 import VoltageLevelModificationDialog from './dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import LineModificationDialog from './dialogs/network-modifications/line/modification/line-modification-dialog';
+import { deleteEquipment } from '../services/study/network-modifications';
 import EquipmentDeletionDialog from './dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 
 const INITIAL_POSITION = [0, 0];
@@ -355,15 +355,13 @@ export const NetworkMapTab = ({
 
     const getEquipmentsNotFoundIds = useCallback(
         (foundEquipmentPositions, allEquipments) => {
-            const notFoundEquipmentsIds = allEquipments
+            return allEquipments
                 .filter(
                     (s) =>
                         !foundEquipmentPositions.has(s.id) ||
                         temporaryGeoDataIdsRef.current.has(s.id)
                 )
                 .map((s) => s.id);
-
-            return notFoundEquipmentsIds;
         },
         []
     );
@@ -709,7 +707,7 @@ export const NetworkMapTab = ({
             }
 
             dispatch(resetMapReloaded());
-            const isFullReload = updatedSubstationsToSend ? false : true;
+            const isFullReload = !updatedSubstationsToSend;
             const [updatedSubstations, updatedLines, updatedHvdcLines] =
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
