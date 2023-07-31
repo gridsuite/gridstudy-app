@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export const SORT_WAYS = {
     asc: 1,
@@ -24,10 +24,10 @@ const getSortConfig = (dataKeyToSortKey, colKey, sortWay) => {
 };
 
 export const useAgGridSort = (dataKeyToSortKey, initSortConfig) => {
-    const { colKey, sortWay } = initSortConfig || {};
+    const { colKey: initColKey, sortWay: initSortWay } = initSortConfig || {};
 
     const [sortConfig, setSortConfig] = useState(
-        getSortConfig(dataKeyToSortKey, colKey, sortWay)
+        getSortConfig(dataKeyToSortKey, initColKey, initSortWay)
     );
 
     const onSortChanged = useCallback(
@@ -37,8 +37,9 @@ export const useAgGridSort = (dataKeyToSortKey, initSortConfig) => {
     );
 
     const initSort = useCallback(
-        () => setSortConfig(getSortConfig(dataKeyToSortKey, colKey, sortWay)),
-        [colKey, dataKeyToSortKey, sortWay]
+        (colKey) =>
+            setSortConfig(getSortConfig(dataKeyToSortKey, colKey, initSortWay)),
+        [dataKeyToSortKey, initSortWay]
     );
 
     return { onSortChanged, sortConfig, initSort };
