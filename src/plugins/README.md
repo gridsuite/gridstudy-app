@@ -47,5 +47,7 @@ const MyPluggableComponent = () => {
 
 Add your private translations to the following files to complete or overwrite existing translations
 
-* src/plugins/translations/en.json
-* src/plugins/translations/fr.json
+# import an object for traduction fr and en
+
+* src/plugins/translations/en
+* src/plugins/translations/fr

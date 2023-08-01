@@ -38,13 +38,11 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import messages_fr_rte from '../translations/fr_rte.json';
 import networkModification_en from '../translations/network-modifications-en.json';
 import networkModification_fr from '../translations/network-modifications-fr.json';
 import exportParameters_en from '../translations/export-parameters-en.json';
 import exportParameters_fr from '../translations/export-parameters-fr.json';
-import messages_plugins_en from '../plugins/translations/en.json';
-import messages_plugins_fr from '../plugins/translations/fr.json';
+import messages_plugins from '../plugins/translations';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
@@ -120,12 +118,11 @@ const messages = {
         ...element_search_en,
         ...equipment_search_en,
         ...card_error_boundary_en,
-        ...messages_plugins_en, // keep it at the end to allow translation overwritting
+        ...messages_plugins.en, // keep it at the end to allow translation overwritting
     },
     fr: {
         ...treeview_finder_fr,
         ...messages_fr,
-        ...messages_fr_rte,
         ...networkModification_fr,
         ...exportParameters_fr,
         ...report_viewer_fr,
@@ -135,7 +132,7 @@ const messages = {
         ...element_search_fr,
         ...equipment_search_fr,
         ...card_error_boundary_fr,
-        ...messages_plugins_fr, // keep it at the end to allow translation overwritting
+        ...messages_plugins.fr, // keep it at the end to allow translation overwritting
     },
 };
 
