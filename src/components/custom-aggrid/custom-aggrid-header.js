@@ -133,9 +133,6 @@ const CustomHeaderComponent = ({
                 <Autocomplete
                     multiple
                     value={filterSelectedOptions}
-                    isOptionEqualToValue={(option, value) =>
-                        value === [] || option === value
-                    }
                     options={filterOptions}
                     onChange={(_, data) => {
                         handleFilterChange(field, data);
