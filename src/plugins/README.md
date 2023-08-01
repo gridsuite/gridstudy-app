@@ -45,7 +45,31 @@ const MyPluggableComponent = () => {
 
 # How to overwrite translations
 
-Add your private translations to the following files to complete or overwrite existing translations
+Add your private translations to the following directory to complete or overwrite existing translations
 
-* src/plugins/translations/en.json
-* src/plugins/translations/fr.json
+* src/plugins/translations
+
+import your file and export an object messages_plugins for the translation in french or english
+in src/plugins/translations/index.js
+
+```diff
+import messages_plugins_fr from '../translations/fr.json';
++import my_plugins_fr from '../translations/my_plugins_fr.json';
+
+import messages_plugins_en from '../translations/en.json';
++import my_plugins_en from '../translations/my_plugins_en.json';
+
+const messages_plugins = {
+    fr: {
+        ...messages_plugins_fr,
++       ...my_plugins_fr,
+    },
+    en: {
+        ...messages_plugins_en,
++       ...my_plugins_en,
+    },
+};
+
+export default messages_plugins;
+
+```
