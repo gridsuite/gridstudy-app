@@ -38,6 +38,8 @@ interface ShortCircuitAnalysisResultsFaultHeader {
     limitMin?: number | null;
     limitMax?: number | null;
     limitName?: string;
+    deltaIscIscMax?: number | null;
+    deltaIscIscMin?: number | null;
 }
 
 interface ShortCircuitAnalysisResultsLimitViolation {
@@ -103,6 +105,18 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 numeric: true,
             },
             {
+                headerName: intl.formatMessage({ id: 'DeltaIscIscMax' }),
+                field: 'deltaIscIscMax',
+                fractionDigits: 1,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'DeltaIscIscMin' }),
+                field: 'deltaIscIscMin',
+                fractionDigits: 1,
+                numeric: true,
+            },
+            {
                 field: 'linkedElementId',
                 hide: true,
             },
@@ -161,14 +175,6 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                     limitType: intl.formatMessage({
                         id: lv.limitType,
                     }),
-                    limitMin:
-                        lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? unitToKiloUnit(lv.limit)
-                            : null,
-                    limitMax:
-                        lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? unitToKiloUnit(lv.limit)
-                            : null,
                     limitName: lv.limitName,
                 };
             }
@@ -177,6 +183,14 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 elementId: fault.elementId,
                 faultType: intl.formatMessage({ id: fault.faultType }),
                 shortCircuitPower: faultResult.shortCircuitPower,
+                limitMin: unitToKiloUnit(faultResult.shortCircuitLimits.ipMin),
+                limitMax: unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
+                deltaIscIscMax:
+                    faultResult.current -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0),
+                deltaIscIscMin:
+                    faultResult.current -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0),
                 current: faultResult.current,
                 ...firstLimitViolation,
             });
