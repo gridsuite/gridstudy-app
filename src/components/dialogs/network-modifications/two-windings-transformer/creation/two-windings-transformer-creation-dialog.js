@@ -48,7 +48,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createTwoWindingsTransformer, FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -97,6 +97,7 @@ import {
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
 import { computeHighTapPosition } from 'components/utils/utils';
+import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -484,27 +485,19 @@ const TwoWindingsTransformerCreationDialog = ({
     );
 
     const computeRatioTapChangerRegulating = (ratioTapChangerFormValues) => {
-        if (
+        return (
             ratioTapChangerFormValues?.[REGULATION_MODE] ===
             RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+        );
     };
 
     const computePhaseTapChangerRegulating = (phaseTapChangerFormValues) => {
-        if (
+        return (
             phaseTapChangerFormValues?.[REGULATION_MODE] ===
                 PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
             phaseTapChangerFormValues?.[REGULATION_MODE] ===
                 PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+        );
     };
 
     const computePhaseTapChangerRegulationValue = (
@@ -663,7 +656,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 ratioTap,
                 phaseTap,
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined,
                 sanitizeString(
                     characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]
