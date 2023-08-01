@@ -23,35 +23,40 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [sensiKindIndex, setSensiKindIndex] = useState(0);
     const [page, setPage] = useState(0);
 
-    const { updateFilter, filterSelector, initFilters, rowFilters } =
-        useRowFilter(DATA_KEY_TO_FILTER_KEY);
+    const { updateFilter, filterSelector, initFilters } = useRowFilter(
+        DATA_KEY_TO_FILTER_KEY
+    );
 
     // Add default sort on sensitivity col
-    const defaultSortColumn = DATA_KEY_TO_SORT_KEY.value;
+    const defaultSortColumn =
+        DATA_KEY_TO_SORT_KEY[nOrNkIndex ? 'valueAfter' : 'value'];
     const defaultSortOrder = SORT_WAYS.desc;
     const { onSortChanged, sortConfig, initSort } = useAgGridSort(
         DATA_KEY_TO_SORT_KEY,
-        { colKey: defaultSortColumn, sortWay: defaultSortOrder }
+        {
+            colKey: defaultSortColumn,
+            sortWay: defaultSortOrder,
+        }
     );
 
-    const initTable = () => {
+    const initTable = (nOrNkIndex) => {
         initFilters();
-        initSort();
+        initSort(DATA_KEY_TO_SORT_KEY[nOrNkIndex ? 'valueAfter' : 'value']);
 
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
-       for the page prop of MUI TablePagination if was not on the first page
-       for the prev sensiKindIndex */
+           for the page prop of MUI TablePagination if was not on the first page
+           for the prev sensiKindIndex */
         setPage(0);
     };
 
-    const handleSensiKindIndexChange = (index) => {
-        setSensiKindIndex(index);
-        initTable();
+    const handleSensiKindIndexChange = (newSensiKindIndex) => {
+        initTable(nOrNkIndex);
+        setSensiKindIndex(newSensiKindIndex);
     };
 
-    const handleSensiNOrNkIndexChange = (_, newTabIndexes) => {
-        setNOrNkIndex(newTabIndexes);
-        initTable();
+    const handleSensiNOrNkIndexChange = (event, newNOrNKIndex) => {
+        initTable(newNOrNKIndex);
+        setNOrNkIndex(newNOrNKIndex);
     };
 
     return (
@@ -71,7 +76,6 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                 nodeUuid={nodeUuid}
                 updateFilter={updateFilter}
                 filterSelector={filterSelector}
-                rowFilters={rowFilters}
                 onSortChanged={onSortChanged}
                 sortConfig={sortConfig}
                 page={page}
