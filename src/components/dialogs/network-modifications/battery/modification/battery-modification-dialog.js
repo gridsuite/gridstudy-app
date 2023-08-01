@@ -228,6 +228,10 @@ const BatteryModificationDialog = ({
                                     }
                                 }
                             }
+                            setValue(
+                                REACTIVE_CAPABILITY_CURVE_CHOICE,
+                                value?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
+                            );
                             setBatteryToModify({
                                 ...value,
                                 reactiveCapabilityCurveTable:
