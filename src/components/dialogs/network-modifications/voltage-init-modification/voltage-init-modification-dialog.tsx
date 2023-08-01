@@ -5,15 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import { FetchStatus } from '../../../../utils/rest-api';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import {
     REACTIVE_POWER_SET_POINT,
@@ -32,19 +35,50 @@ export const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
 };
 
-const VoltageInitModificationDialog = ({
-    editData,
-    onClose,
-    editDataFetchStatus,
-    ...dialogProps
-}) => {
+enum FetchStatus {
+    SUCCEED = 'SUCCEED',
+    FAILED = 'FAILED',
+    IDLE = 'IDLE',
+    RUNNING = 'RUNNING',
+}
+
+interface CloseFunction {
+    (): void;
+}
+
+interface RowData {
+    ID: string;
+    [VOLTAGE_SET_POINT]: number | undefined;
+    [REACTIVE_POWER_SET_POINT]: number | undefined;
+}
+
+interface GeneratorData {
+    generatorId: string;
+    voltageSetpoint: number | undefined;
+    reactivePowerSetpoint: number | undefined;
+}
+
+interface EditData {
+    generators: GeneratorData[];
+}
+
+interface VoltageInitModificationProps {
+    editData: EditData;
+    onClose: CloseFunction;
+    editDataFetchStatus: FetchStatus;
+    dialogProps: any;
+}
+
+const VoltageInitModificationDialog: FunctionComponent<
+    VoltageInitModificationProps
+> = ({ editData, onClose, editDataFetchStatus, dialogProps }) => {
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(EquipmentTypeTabs.GENERATOR_TAB);
 
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
 
-    const handleTabChange = useCallback((newValue) => {
+    const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
     }, []);
 
@@ -53,7 +87,7 @@ const VoltageInitModificationDialog = ({
             {
                 headerName: intl.formatMessage({ id: 'ID' }),
                 field: 'ID',
-                pinned: 'left',
+                pinned: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
@@ -92,7 +126,7 @@ const VoltageInitModificationDialog = ({
         </Box>
     );
 
-    const suppressKeyEvent = (params) => {
+    const suppressKeyEvent = (params: any) => {
         return !ALLOWED_KEYS.includes(params.event.key);
     };
 
@@ -104,18 +138,22 @@ const VoltageInitModificationDialog = ({
             lockPinned: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
-            suppressKeyboardEvent: (params) => suppressKeyEvent(params),
+            suppressKeyboardEvent: (params: any) => suppressKeyEvent(params),
         }),
         []
     );
 
     const displayTable = useCallback(
-        (currentTab) => {
-            let rowData = [];
+        (currentTab: number) => {
+            let rowData: RowData[] = [];
             if (editData) {
                 if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
-                    editData.generators.forEach((m) => {
-                        let row = { ID: m.generatorId };
+                    editData.generators.forEach((m: GeneratorData) => {
+                        let row: RowData = {
+                            ID: m.generatorId,
+                            [VOLTAGE_SET_POINT]: undefined,
+                            [REACTIVE_POWER_SET_POINT]: undefined,
+                        };
                         if (m.voltageSetpoint) {
                             row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
                         }
@@ -140,7 +178,7 @@ const VoltageInitModificationDialog = ({
         [editData, generatorsColumnDefs, defaultColDef]
     );
 
-    const open = useOpenShortWaitFetching({
+    const open: boolean = useOpenShortWaitFetching({
         isDataFetched:
             editDataFetchStatus === FetchStatus.SUCCEED ||
             editDataFetchStatus === FetchStatus.FAILED,
@@ -170,11 +208,6 @@ const VoltageInitModificationDialog = ({
             <div style={{ height: '100%' }}>{displayTable(tabIndex)}</div>
         </BasicModificationDialog>
     );
-};
-
-VoltageInitModificationDialog.propTypes = {
-    onClose: PropTypes.func,
-    editData: PropTypes.array,
 };
 
 export default VoltageInitModificationDialog;
