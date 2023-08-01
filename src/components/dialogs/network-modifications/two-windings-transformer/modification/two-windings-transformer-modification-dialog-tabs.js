@@ -12,7 +12,11 @@ import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerModificationDialogTab } from './two-windings-transformer-modification-dialog';
 import { useWatch } from 'react-hook-form';
-import { ENABLED, RATIO_TAP_CHANGER } from 'components/utils/field-constants';
+import {
+    ENABLED,
+    PHASE_TAP_CHANGER,
+    RATIO_TAP_CHANGER,
+} from 'components/utils/field-constants';
 
 const useStyles = makeStyles((theme) => ({
     tabWithError: {
@@ -31,6 +35,9 @@ const TwoWindingsTransformerModificationDialogTabs = ({
 }) => {
     const classes = useStyles();
 
+    const phaseTapChangerEnabledWatch = useWatch({
+        name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
+    });
     const ratioTapChangerEnabledWatch = useWatch({
         name: `${RATIO_TAP_CHANGER}.${ENABLED}`,
     });
@@ -83,6 +90,15 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                         TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB
                     )}
                     disabled={!ratioTapChangerEnabledWatch}
+                />
+                <Tab
+                    label={
+                        <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
+                    }
+                    className={getTabClass(
+                        TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB
+                    )}
+                    disabled={!phaseTapChangerEnabledWatch}
                 />
             </Tabs>
         </Grid>
