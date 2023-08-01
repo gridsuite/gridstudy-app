@@ -44,9 +44,9 @@ const SensitivityAnalysisResult = ({
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
                 {};
 
-            const filterSelectedOption =
+            const filterSelectedOptions =
                 DATA_KEY_TO_FILTER_KEY[field] &&
-                filterSelector?.[DATA_KEY_TO_FILTER_KEY[field]]?.[0];
+                filterSelector?.[DATA_KEY_TO_FILTER_KEY[field]];
 
             return {
                 field,
@@ -64,7 +64,7 @@ const SensitivityAnalysisResult = ({
                             newSortValue
                         ),
                     updateFilter,
-                    filterSelectedOption,
+                    filterSelectedOptions,
                 },
             };
         },

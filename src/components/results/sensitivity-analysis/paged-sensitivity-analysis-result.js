@@ -195,12 +195,6 @@ PagedSensitivityAnalysisResult.propTypes = {
     sortConfig: PropTypes.object,
     page: PropTypes.number.isRequired,
     setPage: PropTypes.func.isRequired,
-    rowFilters: PropTypes.arrayOf(
-        PropTypes.shape({
-            field: PropTypes.string.isRequired,
-            value: PropTypes.string.isRequired,
-        })
-    ).isRequired,
 };
 
 export default PagedSensitivityAnalysisResult;
