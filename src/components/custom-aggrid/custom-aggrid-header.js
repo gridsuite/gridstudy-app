@@ -98,10 +98,10 @@ const CustomHeaderComponent = ({
                         direction={'row'}
                         wrap={'nowrap'}
                     >
-                        <Grid item sx={6}>
+                        <Grid item xs={6}>
                             {displayName}
                         </Grid>
-                        <Grid item sx={6}>
+                        <Grid item xs={6}>
                             {isSortActive && sortWay && (
                                 <Grid item>
                                     <IconButton size={'small'}>
