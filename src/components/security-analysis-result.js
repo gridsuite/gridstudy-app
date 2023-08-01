@@ -262,14 +262,14 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         if (isContingency) {
             rowsMap.set('contingencies', []);
         }
-        // first reduce by main resource idField
+        // first index by main resource idField
         sortedRows.forEach((row) => {
             if (row.data[idField] != null) {
                 rowsMap.set(row.data[idField], [row]);
             }
         });
 
-        // then reduce by linked resource linkedElementId
+        // then index by linked resource linkedElementId
         let currentRows;
         sortedRows.forEach((row) => {
             if (

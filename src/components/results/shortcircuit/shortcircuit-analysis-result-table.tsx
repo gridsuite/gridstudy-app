@@ -128,15 +128,16 @@ const ShortCircuitAnalysisResult: FunctionComponent<
         idField: string,
         linkedIdField: string
     ) => {
+        // Because Map remembers the original insertion order of the keys.
         const rowsMap = new Map<string, IRowNode[]>();
-        // first reduce by main resource idField
+        // first index by main resource idField
         sortedRows.forEach((row) => {
             if (row.data[idField] != null) {
                 rowsMap.set(row.data[idField], [row]);
             }
         });
 
-        // then reduce by linked resource linkedIdField
+        // then index by linked resource linkedIdField
         let currentRows;
         sortedRows.forEach((row) => {
             if (row.data[idField] == null) {
