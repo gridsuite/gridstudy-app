@@ -263,7 +263,6 @@ const LineCreationDialog = ({
         elementType: EQUIPMENT_TYPES.LINE.type,
     });
 
-
     useEffect(() => {
         if (editData) {
             fromEditDataToFormValues(editData);
