@@ -83,18 +83,16 @@ const ReactiveLimitsForm = ({
     );
 
     return (
-        <>
-            <Grid container spacing={2}>
-                {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
+        <Grid container spacing={2}>
+            {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
 
-                {!isReactiveCapabilityCurveOn &&
-                    gridItem(minimumReactivePowerField, 4)}
-                {!isReactiveCapabilityCurveOn &&
-                    gridItem(maximumReactivePowerField, 4)}
-                {isReactiveCapabilityCurveOn &&
-                    gridItem(reactiveCapabilityCurveTableField, 12)}
-            </Grid>
-        </>
+            {!isReactiveCapabilityCurveOn &&
+                gridItem(minimumReactivePowerField, 4)}
+            {!isReactiveCapabilityCurveOn &&
+                gridItem(maximumReactivePowerField, 4)}
+            {isReactiveCapabilityCurveOn &&
+                gridItem(reactiveCapabilityCurveTableField, 12)}
+        </Grid>
     );
 };
 
