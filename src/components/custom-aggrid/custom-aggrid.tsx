@@ -62,10 +62,7 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
         const getLocaleText = useCallback(
             (params: GetLocaleTextParams) => {
                 const key = GRID_PREFIX + params.key;
-                return intl.formatMessage({
-                    id: key,
-                    defaultMessage: params.defaultValue,
-                });
+                return intl.formatMessage({ id: key }) || params.defaultValue;
             },
             [intl]
         );
