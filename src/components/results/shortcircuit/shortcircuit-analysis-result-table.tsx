@@ -128,19 +128,29 @@ const ShortCircuitAnalysisResult: FunctionComponent<
         idField: string,
         linkedIdField: string
     ) => {
-        const result: IRowNode[] = [];
-        const idRows = sortedRows.filter((row) => row.data[idField] != null);
-        idRows.forEach((idRow) => {
-            result.push(idRow);
-            result.push(
-                ...sortedRows.filter(
-                    (row) => row.data[linkedIdField] === idRow.data[idField]
-                )
-            );
+        // Because Map remembers the original insertion order of the keys.
+        const rowsMap = new Map<string, IRowNode[]>();
+        // first index by main resource idField
+        sortedRows.forEach((row) => {
+            if (row.data[idField] != null) {
+                rowsMap.set(row.data[idField], [row]);
+            }
         });
 
-        return result;
+        // then index by linked resource linkedIdField
+        let currentRows;
+        sortedRows.forEach((row) => {
+            if (row.data[idField] == null) {
+                currentRows = rowsMap.get(row.data[linkedIdField]);
+                if (currentRows) {
+                    currentRows.push(row);
+                    rowsMap.set(row.data[linkedIdField], currentRows);
+                }
+            }
+        });
+        return [...rowsMap.values()].flat();
     };
+
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
             if (!params?.data?.linkedElementId) {
