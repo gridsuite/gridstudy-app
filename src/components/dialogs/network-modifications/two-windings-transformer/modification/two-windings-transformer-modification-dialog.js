@@ -224,7 +224,9 @@ const TwoWindingsTransformerModificationDialog = ({
                     ),
                 }),
                 ...getRatioTapChangerFormData({
-                    enabled: twt?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value,
+                    enabled:
+                        twt?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value ??
+                        !!twtToModify?.ratioTapChanger,
                     loadTapChangingCapabilities:
                         twt?.[RATIO_TAP_CHANGER]?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
@@ -259,7 +261,9 @@ const TwoWindingsTransformerModificationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId?.value,
                 }),
                 ...getPhaseTapChangerFormData({
-                    enabled: twt?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value,
+                    enabled:
+                        twt?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value ??
+                        !!twtToModify?.phaseTapChanger,
                     regulationMode:
                         twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
                     regulationType:
@@ -503,7 +507,11 @@ const TwoWindingsTransformerModificationDialog = ({
 
             let ratioTap = undefined;
             const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
-            const enableRatioTapChanger = ratioTapChangerFormValues?.[ENABLED];
+            const enableRatioTapChanger =
+                ratioTapChangerFormValues?.[ENABLED] !==
+                !!twtToModify?.ratioTapChanger
+                    ? ratioTapChangerFormValues?.[ENABLED]
+                    : null;
             const areRatioStepsModified =
                 isNodeBuilt(currentNode) &&
                 editData?.[RATIO_TAP_CHANGER]?.[STEPS]
@@ -515,9 +523,9 @@ const TwoWindingsTransformerModificationDialog = ({
             let ratioTapChangerSteps = !areRatioStepsModified
                 ? null
                 : ratioTapChangerFormValues[STEPS];
-            if (enableRatioTapChanger) {
+            if (ratioTapChangerFormValues?.[ENABLED]) {
                 ratioTap = {
-                    [ENABLED]: toModificationOperation(true),
+                    [ENABLED]: toModificationOperation(enableRatioTapChanger),
                     [LOAD_TAP_CHANGING_CAPABILITIES]: toModificationOperation(
                         ratioTapChangerFormValues?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
@@ -538,13 +546,17 @@ const TwoWindingsTransformerModificationDialog = ({
                 );
             } else {
                 ratioTap = {
-                    enabled: toModificationOperation(false),
+                    enabled: toModificationOperation(enableRatioTapChanger),
                 };
             }
 
             let phaseTap = undefined;
             const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
-            const enablePhaseTapChanger = phaseTapChangerFormValues?.[ENABLED];
+            const enablePhaseTapChanger =
+                phaseTapChangerFormValues?.[ENABLED] !==
+                !!twtToModify?.phaseTapChanger
+                    ? phaseTapChangerFormValues?.[ENABLED]
+                    : null;
             const arePhaseStepsModified =
                 isNodeBuilt(currentNode) &&
                 editData?.[PHASE_TAP_CHANGER]?.[STEPS]
@@ -556,9 +568,9 @@ const TwoWindingsTransformerModificationDialog = ({
             let phaseTapChangerSteps = !arePhaseStepsModified
                 ? null
                 : phaseTapChangerFormValues[STEPS];
-            if (enablePhaseTapChanger) {
+            if (phaseTapChangerFormValues?.[ENABLED]) {
                 phaseTap = {
-                    [ENABLED]: toModificationOperation(true),
+                    [ENABLED]: toModificationOperation(enablePhaseTapChanger),
                     [REGULATION_MODE]: toModificationOperation(
                         phaseTapChangerFormValues[REGULATION_MODE]
                     ),
@@ -577,7 +589,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 );
             } else {
                 phaseTap = {
-                    enabled: toModificationOperation(false),
+                    enabled: toModificationOperation(enablePhaseTapChanger),
                 };
             }
 
