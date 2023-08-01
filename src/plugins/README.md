@@ -45,9 +45,8 @@ const MyPluggableComponent = () => {
 
 # How to overwrite translations
 
-Add your private translations to the following files to complete or overwrite existing translations
+Add your private translations to the following directory to complete or overwrite existing translations
 
-# import an object for traduction fr and en
+* src/plugins/translations
 
-* src/plugins/translations/en
-* src/plugins/translations/fr
+import an object messages_plugins for the traduction in frensh or english
