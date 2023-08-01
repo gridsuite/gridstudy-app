@@ -1030,5 +1030,7 @@
     "muiTablePaginationFirst": "Go to the first page",
     "muiTablePaginationLast": "Go to the last page",
     "GeneratorAvailability": "Generator availability",
-    "chooseElement": "Choose element"
+    "chooseElement": "Choose element",
+    "deleteNodeConfirmation": "Are you sure you want to delete this node \"{nodeName}\"?",
+    "deleteSubTreeConfirmation": "Are you sure you want to delete node \"{nodeName}\" and its sub-tree with {nodesNumber} nodes ?"
 }

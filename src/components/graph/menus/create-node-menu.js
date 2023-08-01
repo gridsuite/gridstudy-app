@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
 import { NestedMenuItem } from 'mui-nested-menu';
 import ChildMenuItem from './create-child-menu-item';
+import { CustomDialog } from '../../utils/custom-dialog';
 
 const CreateNodeMenu = ({
     position,
@@ -37,6 +38,8 @@ const CreateNodeMenu = ({
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
     );
+    const [show, setShow] = useState(false);
+    const [nodeAction, setNodeAction] = useState('');
 
     function buildNode() {
         handleBuildNode(activeNode);
@@ -69,8 +72,10 @@ const CreateNodeMenu = ({
     }
 
     function removeNode() {
-        handleNodeRemoval(activeNode);
-        handleClose();
+        //  handleNodeRemoval(activeNode);
+        // handleClose();
+        setShow(true);
+        setNodeAction('removenode');
     }
 
     function exportCaseOnNode() {
@@ -99,8 +104,10 @@ const CreateNodeMenu = ({
     }
 
     function removeSubtree() {
-        handleRemovalSubtree(activeNode);
-        handleClose();
+        //handleRemovalSubtree(activeNode);
+        // handleClose();
+        setShow(true);
+        setNodeAction('removeNetworkModificationSubtree');
     }
 
     function isNodePastingAllowed() {
@@ -276,20 +283,53 @@ const CreateNodeMenu = ({
         [intl, activeNode?.type]
     );
 
+    //todo: check if no nedd to move it to the top level
+    const content = intl.formatMessage(
+        {
+            id:
+                nodeAction === 'removeNetworkModificationSubtree'
+                    ? 'deleteSubTreeConfirmation'
+                    : 'deleteNodeConfirmation',
+        },
+        {
+            nodeName: activeNode?.data?.label,
+            nodesNumber: '4',
+        }
+    );
+
+    const handleOnValidate = useCallback(() => {
+        handleNodeRemoval(activeNode);
+        handleClose();
+        setShow(false);
+    }, [handleClose, handleNodeRemoval, activeNode]);
+
+    const handleOnClose = useCallback(() => {
+        setShow(false);
+        handleClose();
+    }, [handleClose]);
+
     return (
-        <Menu
-            anchorReference="anchorPosition"
-            anchorPosition={{
-                position: 'absolute',
-                left: position.x,
-                top: position.y,
-            }}
-            id="create-node-menu"
-            open={true}
-            onClose={handleClose}
-        >
-            {renderMenuItems(NODE_MENU_ITEMS)}
-        </Menu>
+        <>
+            <Menu
+                anchorReference="anchorPosition"
+                anchorPosition={{
+                    position: 'absolute',
+                    left: position.x,
+                    top: position.y,
+                }}
+                id="create-node-menu"
+                open={true}
+                onClose={handleClose}
+            >
+                {renderMenuItems(NODE_MENU_ITEMS)}
+            </Menu>
+            <CustomDialog
+                show={show}
+                content={content}
+                onValidate={handleOnValidate}
+                onClose={handleOnClose}
+            />
+        </>
     );
 };
 
