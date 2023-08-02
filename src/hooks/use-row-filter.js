@@ -63,7 +63,7 @@ export const useRowFilter = (filterSelectorKeys) => {
 
     const filterSelector = useMemo(() => {
         const result = rowFilters.reduce((selector, { field, value }) => {
-            selector[filterSelectorKeys[field]] = [value];
+            selector[filterSelectorKeys[field]] = value;
             return selector;
         }, {});
 
@@ -78,5 +78,5 @@ export const useRowFilter = (filterSelectorKeys) => {
         setRowFilters([]);
     }, []);
 
-    return { updateFilter, filterSelector, rowFilters, initFilters };
+    return { updateFilter, filterSelector, initFilters };
 };
