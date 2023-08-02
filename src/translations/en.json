@@ -1037,5 +1037,10 @@
     "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
     "VoltageInitModification": "Voltage init modification",
     "GeneratorAvailability": "Generator availability",
-    "chooseElement": "Choose element"
+    "chooseElement": "Choose element",
+    "grid.noRowsToShow": "No data",
+    "grid.noCalculation": "No calculation",
+    "grid.failed": "Calculation failed",
+    "grid.running": "In progress...",
+    "grid.noLimitViolation": "No limit violation"
 }

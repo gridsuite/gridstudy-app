@@ -52,7 +52,10 @@ const useStyles = makeStyles<GridStudyTheme, CustomAGGGridStyleProps>(
 
 export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
     (props, ref) => {
-        const { shouldHidePinnedHeaderRightBorder = false } = props;
+        const {
+            shouldHidePinnedHeaderRightBorder = false,
+            overlayNoRowsTemplate,
+        } = props;
         const theme: GridStudyTheme = useTheme();
         const classes = useStyles({ shouldHidePinnedHeaderRightBorder });
         const intl = useIntl();
@@ -76,6 +79,7 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     ref={ref}
                     getLocaleText={getLocaleText}
                     suppressPropertyNamesCheck={true}
+                    overlayNoRowsTemplate={overlayNoRowsTemplate}
                     {...props}
                 />
             </div>
