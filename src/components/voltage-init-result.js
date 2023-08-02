@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -37,9 +37,8 @@ const useStyles = makeStyles((theme) => ({
         color: red[500],
     },
     buttonApplyModifications: {
+        display: 'flex',
         position: 'relative',
-        top: 5,
-        left: 80,
     },
 }));
 
@@ -57,6 +56,10 @@ const VoltageInitResult = ({ result, status }) => {
     const intl = useIntl();
 
     const viNotif = useSelector((state) => state.voltageInitNotif);
+
+    useEffect(() => {
+        setDisableApplyModifications(!result);
+    }, [result, setDisableApplyModifications]);
 
     const applyModifications = useCallback(() => {
         setDisableApplyModifications(true);
