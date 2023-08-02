@@ -16,6 +16,58 @@ import { NestedMenuItem } from 'mui-nested-menu';
 import ChildMenuItem from './create-child-menu-item';
 import { CustomDialog } from '../../utils/custom-dialog';
 
+export const NodeActions = {
+    REMOVE_NODE: 'REMOVE_NODE',
+    REMOVE_SUBTREE: 'REMOVE_SUBTREE',
+    NO_ACTION: 'NO_ACTION',
+};
+var nbr = 0;
+
+export const getNodesFromSubTree = (treeModel, id) => {
+    const nodesMap = new Map();
+
+    if (treeModel?.treeNodes) {
+        const activeNodeChildren = treeModel?.treeNodes?.filter(
+            (item) => item?.data?.parentNodeUuid === id
+        );
+        // set selected id with thz values
+        //todo: calculat the nodes number
+        /* activeNodeChildren?.forEach((item) => {
+            if (nodesMap.has(id)) {
+                nodesMap.set(
+                    id,
+                    nodesMap.get(id)?.push({
+                        id: item?.id,
+                        parentId: item?.data?.parentNodeUuid,
+                    })
+                );
+            } else {
+                console.log('dd: ', [
+                    ...Array.from(nodesMap.values()),
+                    {
+                        id: item?.id,
+                        parentId: item?.data?.parentNodeUuid,
+                    },
+                ]);
+
+                nodesMap.set(id, [
+                    ...Array.from(nodesMap.values()),
+                    {
+                        id: item?.id,
+                        parentId: item?.data?.parentNodeUuid,
+                    },
+                ]);
+            }
+        });
+        console.log('nodesMap: ', JSON.stringify(nodesMap));
+for (let i = 0; activeNodeChildren?.length > i; i++) {
+            nbr++;
+            getNodesFromSubTree(treeModel, activeNodeChildren[i]?.id);
+        }*/
+    }
+    console.log('nbr: ', nbr);
+};
+
 const CreateNodeMenu = ({
     position,
     handleClose,
@@ -38,8 +90,11 @@ const CreateNodeMenu = ({
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
     );
-    const [show, setShow] = useState(false);
-    const [nodeAction, setNodeAction] = useState('');
+    const treeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
+
+    const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
 
     function buildNode() {
         handleBuildNode(activeNode);
@@ -72,10 +127,7 @@ const CreateNodeMenu = ({
     }
 
     function removeNode() {
-        //  handleNodeRemoval(activeNode);
-        // handleClose();
-        setShow(true);
-        setNodeAction('removenode');
+        setNodeAction(NodeActions.REMOVE_NODE);
     }
 
     function exportCaseOnNode() {
@@ -104,10 +156,7 @@ const CreateNodeMenu = ({
     }
 
     function removeSubtree() {
-        //handleRemovalSubtree(activeNode);
-        // handleClose();
-        setShow(true);
-        setNodeAction('removeNetworkModificationSubtree');
+        setNodeAction(NodeActions.REMOVE_SUBTREE);
     }
 
     function isNodePastingAllowed() {
@@ -283,28 +332,37 @@ const CreateNodeMenu = ({
         [intl, activeNode?.type]
     );
 
-    //todo: check if no nedd to move it to the top level
     const content = intl.formatMessage(
         {
             id:
-                nodeAction === 'removeNetworkModificationSubtree'
+                nodeAction === NodeActions.REMOVE_SUBTREE
                     ? 'deleteSubTreeConfirmation'
                     : 'deleteNodeConfirmation',
         },
         {
             nodeName: activeNode?.data?.label,
-            nodesNumber: '4',
+            nodesNumber: getNodesFromSubTree(treeModel, activeNode?.id),
         }
     );
 
     const handleOnValidate = useCallback(() => {
-        handleNodeRemoval(activeNode);
+        if (nodeAction === NodeActions.REMOVE_NODE) {
+            handleNodeRemoval(activeNode);
+        } else {
+            handleRemovalSubtree(activeNode);
+        }
         handleClose();
-        setShow(false);
-    }, [handleClose, handleNodeRemoval, activeNode]);
+        setNodeAction(NodeActions.NO_ACTION);
+    }, [
+        handleClose,
+        handleNodeRemoval,
+        handleRemovalSubtree,
+        activeNode,
+        nodeAction,
+    ]);
 
     const handleOnClose = useCallback(() => {
-        setShow(false);
+        setNodeAction(NodeActions.NO_ACTION);
         handleClose();
     }, [handleClose]);
 
@@ -323,12 +381,13 @@ const CreateNodeMenu = ({
             >
                 {renderMenuItems(NODE_MENU_ITEMS)}
             </Menu>
-            <CustomDialog
-                show={show}
-                content={content}
-                onValidate={handleOnValidate}
-                onClose={handleOnClose}
-            />
+            {nodeAction !== NodeActions.NO_ACTION && (
+                <CustomDialog
+                    content={content}
+                    onValidate={handleOnValidate}
+                    onClose={handleOnClose}
+                />
+            )}
         </>
     );
 };

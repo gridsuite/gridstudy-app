@@ -9,14 +9,12 @@ import {
 import Button from '@mui/material/Button';
 
 interface CustomDialogProps {
-    show: boolean;
     title?: string;
     content: React.ReactNode;
     onValidate: () => void;
     onClose: () => void;
 }
 export const CustomDialog: FunctionComponent<CustomDialogProps> = ({
-    show,
     title,
     content,
     onValidate,
@@ -34,8 +32,8 @@ export const CustomDialog: FunctionComponent<CustomDialogProps> = ({
     };
 
     return (
-        <Dialog open={show} onClose={onClose} maxWidth={'xs'} fullWidth={true}>
-            <DialogTitle id={'modal-title'}>{title}</DialogTitle>
+        <Dialog open={true} onClose={onClose} maxWidth={'xs'} fullWidth={true}>
+            {title && <DialogTitle id={'modal-title'}>{title}</DialogTitle>}
             <DialogContent>{content}</DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>
