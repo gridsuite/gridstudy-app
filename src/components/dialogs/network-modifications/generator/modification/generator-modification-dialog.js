@@ -459,15 +459,9 @@ const GeneratorModificationDialog = ({
                 generator[TRANSIENT_REACTANCE],
                 generator[TRANSFORMER_REACTANCE],
                 generator[VOLTAGE_REGULATION_TYPE],
-                isVoltageRegulationOn && isDistantRegulation
-                    ? generator[EQUIPMENT]?.id
-                    : null,
-                isVoltageRegulationOn && isDistantRegulation
-                    ? generator[EQUIPMENT]?.type
-                    : null,
-                isVoltageRegulationOn && isDistantRegulation
-                    ? generator[VOLTAGE_LEVEL]?.id
-                    : null,
+                isDistantRegulation ? generator[EQUIPMENT]?.id : null,
+                isDistantRegulation ? generator[EQUIPMENT]?.type : null,
+                isDistantRegulation ? generator[VOLTAGE_LEVEL]?.id : null,
                 isReactiveCapabilityCurveOn,
                 generator[FREQUENCY_REGULATION],
                 isFrequencyRegulationOn ? generator[DROOP] : null,

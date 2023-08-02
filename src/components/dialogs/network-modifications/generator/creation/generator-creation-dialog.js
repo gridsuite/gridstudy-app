@@ -269,9 +269,8 @@ const GeneratorCreationDialog = ({
             const isReactiveCapabilityCurveOn =
                 generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation =
-                generator[VOLTAGE_REGULATION] &&
                 generator[VOLTAGE_REGULATION_TYPE] ===
-                    REGULATION_TYPES.DISTANT.id;
+                REGULATION_TYPES.DISTANT.id;
 
             createGenerator(
                 studyUuid,

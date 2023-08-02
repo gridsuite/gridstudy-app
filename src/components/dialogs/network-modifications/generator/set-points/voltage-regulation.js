@@ -33,9 +33,6 @@ const VoltageRegulation = ({
 }) => {
     const intl = useIntl();
     const previousRegulationType = useMemo(() => {
-        if (!previousValues?.voltageRegulatorOn) {
-            return null;
-        }
         if (
             previousValues?.regulatingTerminalVlId ||
             previousValues?.regulatingTerminalConnectableId
