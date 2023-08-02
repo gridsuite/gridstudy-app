@@ -24,8 +24,11 @@ export default class NetworkModificationTreeModel {
         const parentIndex = this.treeNodes.findIndex(
             (node) => node.id === parentId
         );
+        //we have to add new nodes just after the parent node
+        //we can copy/paste a subBranch, add new node after the parent node or in a new subBranch
+        //but we can add only one node above the parent node
         this.treeNodes.splice(
-            parentIndex,
+            insertMode === 'BEFORE' ? parentIndex-1 : parentIndex,
             0,
             convertNodetoReactFlowModelNode(newNode, parentId)
         );
