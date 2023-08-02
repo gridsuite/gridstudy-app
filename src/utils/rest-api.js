@@ -203,6 +203,12 @@ export function getVoltageLevelSingleLineDiagram(
     );
 }
 
+export const checkNetworkExistence = (studyUuid) => {
+    const checkNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network`;
+
+    return backendFetch(checkNetworkExistenceUrl);
+};
+
 export function getSubstationSingleLineDiagram(
     studyUuid,
     currentNodeUuid,

@@ -16,6 +16,7 @@ import {
     fetchStudyExists,
     fetchCaseName,
     fetchAllEquipments,
+    checkNetworkExistence,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -219,6 +220,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const [errorMessage, setErrorMessage] = useState(undefined);
 
+    const [isStudyImporting, setIsStudyImporting] = useState(false);
+
     const [initialTitle] = useState(document.title);
 
     const dispatch = useDispatch();
@@ -310,7 +313,6 @@ export function StudyContainer({ view, onChangeTab }) {
             });
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
-                console.log('NEWNOTIFICATION', eventData);
                 displayErrorNotifications(eventData);
                 dispatch(studyUpdated(eventData));
             };
@@ -484,24 +486,10 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
             })
             .catch((error) => {
-                if (error.status === 404) {
-                    snackError({
-                        headerId: 'StudyUnrecoverableStateRecreate',
-                    });
-                } else {
-                    //TODO: improve the way we catch this error
-                    if (error.message.endsWith('BROKEN_STUDY')) {
-                        setIsImportStudyDialogDisplayed(true);
-                        snackError({
-                            headerId: 'StudyUnrecoverableState',
-                        });
-                    } else {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'NetworkModificationTreeLoadError',
-                        });
-                    }
-                }
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'NetworkModificationTreeLoadError',
+                });
             })
             .finally(() =>
                 console.debug('Network modification tree loading finished')
@@ -510,10 +498,26 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
     useEffect(() => {
-        if (studyUuid) {
-            loadTree();
+        if (studyUuid && !isStudyImporting) {
+            checkNetworkExistence(studyUuid)
+                .then(() => loadTree())
+                .catch((error) => {
+                    //TODO: improve the way we catch this error
+                    if (error.message.endsWith('BROKEN_STUDY')) {
+                        setIsStudyImporting(true);
+                        setIsImportStudyDialogDisplayed(true);
+                        snackError({
+                            headerId: 'StudyUnrecoverableState',
+                        });
+                    } else {
+                        snackError({
+                            headerId: 'ReimportingStudy',
+                        });
+                        setIsStudyImporting(true);
+                    }
+                });
         }
-    }, [studyUuid, loadTree]);
+    }, [studyUuid, loadTree, isStudyImporting]);
 
     function parseStudyNotification(studyUpdatedForce) {
         const payload = studyUpdatedForce.eventData.payload;
@@ -577,6 +581,14 @@ export function StudyContainer({ view, onChangeTab }) {
 
                     dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
+            } else if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
+                'studies'
+            ) {
+                snackInfo({
+                    headerId: 'StudyRecovered',
+                });
+                setIsStudyImporting(false);
             }
         }
     }, [studyUpdatedForce, currentNode?.id, studyUuid, dispatch]);
@@ -687,7 +699,7 @@ export function StudyContainer({ view, onChangeTab }) {
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || errorMessage}
-            loading={studyPending || !paramsLoaded} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+            loading={studyPending || !paramsLoaded || isStudyImporting} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
             message={'LoadingRemoteData'}
         >
             <StudyPane

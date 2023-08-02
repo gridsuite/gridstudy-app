@@ -19,21 +19,17 @@ export const importStudy = (
     studyUuid: UUID,
     importParameters: Record<string, any>
 ): Promise<BasicStudyInfos> => {
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('studyUuid', studyUuid);
-
     const importStudyUrl =
         PREFIX_STUDY_QUERIES +
-        '/v1/studies/cases/' +
-        encodeURIComponent(caseUuid) +
-        '?' +
-        urlSearchParams.toString();
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/cases/' +
+        encodeURIComponent(caseUuid);
 
     console.debug(importStudyUrl);
 
     return backendFetch(importStudyUrl, {
-        method: 'post',
-        body: JSON.stringify(importParameters),
+        method: 'put',
         headers: { 'Content-Type': 'application/json' },
     });
 };
