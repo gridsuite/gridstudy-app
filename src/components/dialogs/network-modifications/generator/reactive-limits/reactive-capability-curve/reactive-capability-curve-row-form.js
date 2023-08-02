@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import { P, Q_MAX_P, Q_MIN_P } from 'components/utils/field-constants';
 import {
     ActivePowerAdornment,

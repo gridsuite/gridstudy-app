@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchEquipmentsIds } from '../../../utils/rest-api';
 import { filledTextField, gridItem } from '../dialogUtils';
 import { Autocomplete, TextField } from '@mui/material';
-import { FieldLabel } from '../../utils/inputs/hooks-helpers';
+import { FieldLabel } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
 import { FormFiller } from '../commons/formFiller';
 import CircularProgress from '@mui/material/CircularProgress';

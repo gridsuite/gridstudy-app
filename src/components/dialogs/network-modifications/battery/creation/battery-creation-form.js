@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import {
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -24,7 +24,7 @@ import {
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import ReactiveLimitsForm from '../../generator/reactive-limits/reactive-limits-form';
 import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import FrequencyRegulation from '../../generator/set-points/frequency-regulation';

@@ -13,8 +13,8 @@ import {
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
 import React, { useMemo } from 'react';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
-import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
+import { FloatInput } from '@gridsuite/commons-ui';
+import { SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';

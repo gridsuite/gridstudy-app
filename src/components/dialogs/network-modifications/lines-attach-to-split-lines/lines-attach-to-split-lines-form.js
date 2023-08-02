@@ -7,7 +7,7 @@
 
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -23,7 +23,7 @@ import {
     fetchVoltageLevelsListInfos,
 } from 'utils/rest-api';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 
 const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
