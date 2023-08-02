@@ -81,6 +81,7 @@ import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    TABLES_DEFINITION_INDEXES,
     TABLES_NAMES_INDEXES,
 } from './spreadsheet/utils/config-tables';
 import { getComputedLanguage } from '../utils/language';
@@ -254,6 +255,23 @@ const App = () => {
                                     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
                                 )
                             );
+                            const reordredParams = JSON.parse(param.value);
+                            const tabDefinition = TABLES_DEFINITION_INDEXES.get(
+                                index
+                            ).columns.map((item) => item.id);
+                            if (
+                                tabDefinition.length !== reordredParams.length
+                            ) {
+                                const newParams = tabDefinition.filter(
+                                    (item) => !reordredParams.includes(item)
+                                );
+                                const reorderedParamValue = [
+                                    ...reordredParams,
+                                    ...newParams,
+                                ];
+                                param.value =
+                                    JSON.stringify(reorderedParamValue);
+                            }
                             reorderedColumnsParams[index] = {
                                 index: index,
                                 value: param.value,
