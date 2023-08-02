@@ -1055,6 +1055,10 @@
     "muiTablePaginationNext": "Aller à la page suivante",
     "muiTablePaginationFirst": "Aller à la première page",
     "muiTablePaginationLast": "Aller à la dernière page",
+
+    "applyModifications": "Appliquer modifications",
+    "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
+    "VoltageInitModification": "Modification plan de tension",
     "GeneratorAvailability": "Indisponibilité groupes",
     "chooseElement": "Choisir un element"
 }
