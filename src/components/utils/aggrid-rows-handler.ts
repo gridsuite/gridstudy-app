@@ -41,7 +41,7 @@ export const useIntlResultStatusMessages = (
     intl: IntlShape,
     hasNoData: boolean = false
 ) => {
-    const speceficMessage = useCallback(():
+    const specificMessage = useCallback(():
         | { noData: string }
         | { noLimitViolation: string } => {
         if (hasNoData) {
@@ -57,9 +57,9 @@ export const useIntlResultStatusMessages = (
     return useMemo(() => {
         return {
             noCalculation: intl.formatMessage({ id: 'grid.noCalculation' }),
-            ...speceficMessage(),
+            ...specificMessage(),
             running: intl.formatMessage({ id: 'grid.running' }),
             failed: intl.formatMessage({ id: 'grid.failed' }),
         };
-    }, [intl, speceficMessage]);
+    }, [intl, specificMessage]);
 };

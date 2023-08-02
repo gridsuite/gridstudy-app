@@ -421,12 +421,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
                         </Tabs>
                     </div>
                 </div>
-                {tabIndex === 0 &&
-                    overloadedEquipments &&
-                    result &&
-                    renderLoadFlowCurrentViolations()}
-                {tabIndex === 1 && result && renderLoadFlowVoltageViolations()}
-                {tabIndex === 2 && result && renderLoadFlowResult()}
+                {tabIndex === 0 && renderLoadFlowCurrentViolations()}
+                {tabIndex === 1 && renderLoadFlowVoltageViolations()}
+                {tabIndex === 2 && renderLoadFlowResult()}
             </>
         );
     }
