@@ -307,3 +307,22 @@ export const getRatioTapChangerFormData = (
         }),
     },
 });
+
+export const getComputedPreviousRatioRegulationType = (previousValues) => {
+    if (
+        !previousValues?.[RATIO_TAP_CHANGER]?.[
+            LOAD_TAP_CHANGING_CAPABILITIES
+        ] ||
+        !previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId
+    ) {
+        return null;
+    }
+    if (
+        previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId !==
+        previousValues?.id
+    ) {
+        return REGULATION_TYPES.DISTANT.id;
+    } else {
+        return REGULATION_TYPES.LOCAL.id;
+    }
+};

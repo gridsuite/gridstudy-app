@@ -27,7 +27,7 @@ const CustomHeaderComponent = ({
     sortConfig,
     onSortChanged,
     updateFilter,
-    filterSelectedOption,
+    filterSelectedOptions = [],
 }) => {
     const { colKey, sortWay } = sortConfig || {};
     const isSortActive = colKey === field;
@@ -71,7 +71,7 @@ const CustomHeaderComponent = ({
     const popoverId = isFilterOpened ? `${field}-filter-popover` : undefined;
     const isFilterActive = !!filterOptions.length;
     const isFilterIconDisplayed =
-        isHoveringHeader || !!filterSelectedOption || isFilterOpened;
+        isHoveringHeader || !!filterSelectedOptions.length || isFilterOpened;
 
     return (
         <Grid
@@ -98,10 +98,16 @@ const CustomHeaderComponent = ({
                         direction={'row'}
                         wrap={'nowrap'}
                     >
-                        <Grid item xs={6}>
+                        <Grid
+                            item
+                            sx={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}
+                        >
                             {displayName}
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs>
                             {isSortActive && sortWay && (
                                 <Grid item>
                                     <IconButton size={'small'}>
@@ -126,7 +132,7 @@ const CustomHeaderComponent = ({
                                 <Badge
                                     color="secondary"
                                     variant="dot"
-                                    invisible={!filterSelectedOption}
+                                    invisible={!filterSelectedOptions}
                                 >
                                     <Menu fontSize={'small'} />
                                 </Badge>
@@ -151,10 +157,8 @@ const CustomHeaderComponent = ({
                 }}
             >
                 <Autocomplete
-                    value={filterSelectedOption || ''}
-                    isOptionEqualToValue={(option, value) =>
-                        value === '' || option === value
-                    }
+                    multiple
+                    value={filterSelectedOptions}
                     options={filterOptions}
                     onChange={(_, data) => {
                         handleFilterChange(field, data);
@@ -183,7 +187,7 @@ CustomHeaderComponent.propTypes = {
     }).isRequired,
     onSortChanged: PropTypes.func.isRequired,
     updateFilter: PropTypes.func.isRequired,
-    filterSelectedOption: PropTypes.string,
+    filterSelectedOptions: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default CustomHeaderComponent;
