@@ -1032,6 +1032,10 @@
     "muiTablePaginationNext": "Go to the next page",
     "muiTablePaginationFirst": "Go to the first page",
     "muiTablePaginationLast": "Go to the last page",
+
+    "applyModifications": "Apply modifications",
+    "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
+    "VoltageInitModification": "Voltage init modification",
     "GeneratorAvailability": "Generator availability",
     "chooseElement": "Choose element",
     "grid.noRowsToShow": "No data",
