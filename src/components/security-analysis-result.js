@@ -18,6 +18,12 @@ import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
 import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
 import { Button } from '@mui/material';
 import { useTheme } from '@mui/styles';
+import {
+    getNoRowsMessage,
+    getRows,
+    useIntlResultStatusMessages,
+} from './utils/aggrid-rows-handler';
+import { ComputingType } from './computing-status/computing-type';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -55,8 +61,11 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
 
     const intl = useIntl();
 
-    const saNotif = useSelector((state) => state.saNotif);
+    const securityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+    );
 
+    const messages = useIntlResultStatusMessages(intl);
     const switchNmkTypeResult = () => {
         setNmkTypeResult(
             nmkTypeResult === NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
@@ -115,7 +124,6 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         }),
         []
     );
-
     function renderTableN(preContingencyResult) {
         // extend data with loading
         const rows =
@@ -133,12 +141,21 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 }
             );
 
+        const message = getNoRowsMessage(
+            messages,
+            rows,
+            securityAnalysisStatus
+        );
+
+        const rowsToShow = getRows(rows, securityAnalysisStatus);
+
         return (
             <CustomAGGrid
-                rowData={rows}
+                rowData={rowsToShow}
                 columnDefs={columns}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
+                overlayNoRowsTemplate={message}
             />
         );
     }
@@ -257,29 +274,40 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         linkedElementId,
         isContingency
     ) => {
-        const result = [];
-        //get all groups ids
-        const idRows = sortedRows.filter((row) => row.data[idField] != null);
+        // Because Map remembers the original insertion order of the keys.
+        const rowsMap = new Map();
         if (isContingency) {
-            //get all rows with no id group and add them at the beginning.
-            const unconvergerRows = sortedRows.filter(
-                (row) => !row.data[linkedElementId] && !row.data[idField]
-            );
-            result.push(...unconvergerRows);
+            rowsMap.set('contingencies', []);
         }
-        //for each of those groups
-        idRows.forEach((idRow) => {
-            //add group's parent first
-            result.push(idRow);
-            //then add all elements which belongs to this group
-            result.push(
-                ...sortedRows.filter(
-                    (row) => row.data[linkedElementId] === idRow.data[idField]
-                )
-            );
+        // first index by main resource idField
+        sortedRows.forEach((row) => {
+            if (row.data[idField] != null) {
+                rowsMap.set(row.data[idField], [row]);
+            }
         });
 
-        return result;
+        // then index by linked resource linkedElementId
+        let currentRows;
+        sortedRows.forEach((row) => {
+            if (
+                isContingency &&
+                !row.data[linkedElementId] &&
+                !row.data[idField]
+            ) {
+                currentRows = rowsMap.get('contingencies');
+                if (currentRows) {
+                    currentRows.push(row);
+                    rowsMap.set('contingencies', currentRows);
+                }
+            } else if (row.data[idField] == null) {
+                currentRows = rowsMap.get(row.data[linkedElementId]);
+                if (currentRows) {
+                    currentRows.push(row);
+                    rowsMap.set(row.data[linkedElementId], currentRows);
+                }
+            }
+        });
+        return [...rowsMap.values()].flat();
     };
 
     const handlePostSortRows = (params, isFromContingency) => {
@@ -310,14 +338,23 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     );
     function renderTableNmKContingencies(postContingencyResults) {
         const rows = flattenNmKresultsContingencies(postContingencyResults);
+        const message = getNoRowsMessage(
+            messages,
+            rows,
+            securityAnalysisStatus
+        );
+
+        const rowsToShow = getRows(rows, securityAnalysisStatus);
+
         return (
             <CustomAGGrid
-                rowData={rows}
+                rowData={rowsToShow}
                 columnDefs={columnsNmKContingencies}
                 postSortRows={(params) => handlePostSortRows(params, true)}
                 defaultColDef={defaultColDef}
                 getRowStyle={(params) => getRowStyle(params, true)}
                 onGridReady={onGridReady}
+                overlayNoRowsTemplate={message}
             />
         );
     }
@@ -461,14 +498,22 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
 
     function renderTableNmKConstraints(postContingencyResults) {
         const rows = flattenNmKresultsConstraints(postContingencyResults);
+        const message = getNoRowsMessage(
+            messages,
+            rows,
+            securityAnalysisStatus
+        );
+        const rowsToShow = getRows(rows, securityAnalysisStatus);
+
         return (
             <CustomAGGrid
-                rowData={rows}
+                rowData={rowsToShow}
                 columnDefs={nmKConstraintsColumns}
                 postSortRows={(params) => handlePostSortRows(params, false)}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
                 getRowStyle={(params) => getRowStyle(params, false)}
+                overlayNoRowsTemplate={message}
             />
         );
     }
@@ -517,21 +562,15 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     )}
                 </div>
                 <div style={{ flexGrow: 1 }}>
-                    {saNotif &&
-                        result?.preContingencyResult &&
-                        tabIndex === 0 &&
+                    {tabIndex === 0 &&
                         renderTableN(result?.preContingencyResult)}
-                    {saNotif &&
-                        result?.postContingencyResults &&
-                        tabIndex === 1 &&
+                    {tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
                         renderTableNmKContingencies(
                             result?.postContingencyResults
                         )}
-                    {saNotif &&
-                        result?.postContingencyResults &&
-                        tabIndex === 1 &&
+                    {tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
                         renderTableNmKConstraints(

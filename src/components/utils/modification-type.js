@@ -87,4 +87,7 @@ export const MODIFICATION_TYPES = {
     GENERATION_DISPATCH: {
         type: 'GENERATION_DISPATCH',
     },
+    VOLTAGE_INIT_MODIFICATION: {
+        type: 'VOLTAGE_INIT_MODIFICATION',
+    },
 };

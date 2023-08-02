@@ -27,7 +27,7 @@ const CustomHeaderComponent = ({
     sortConfig,
     onSortChanged,
     updateFilter,
-    filterSelectedOption,
+    filterSelectedOptions = [],
 }) => {
     const { colKey, sortWay } = sortConfig || {};
     const isSortActive = colKey === field;
@@ -71,13 +71,14 @@ const CustomHeaderComponent = ({
     const popoverId = isFilterOpened ? `${field}-filter-popover` : undefined;
     const isFilterActive = !!filterOptions.length;
     const isFilterIconDisplayed =
-        isHoveringHeader || !!filterSelectedOption || isFilterOpened;
+        isHoveringHeader || !!filterSelectedOptions.length || isFilterOpened;
 
     return (
         <Grid
             container
             alignItems="center"
             sx={{ height: '100%' }}
+            justifyContent="space-between"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
@@ -87,35 +88,60 @@ const CustomHeaderComponent = ({
                 direction={'row'}
                 alignItems={'center'}
                 sx={{ height: '100%' }}
-                xs={10}
                 onClick={handleSortChange}
             >
-                <Grid item>{displayName}</Grid>
-                {isSortActive && sortWay && (
-                    <Grid item>
-                        <IconButton size={'small'}>
-                            {sortWay === 1 ? (
-                                <ArrowUpward fontSize={'small'} />
-                            ) : (
-                                <ArrowDownward fontSize={'small'} />
-                            )}
-                        </IconButton>
-                    </Grid>
-                )}
-            </Grid>
-            {isFilterActive && isFilterIconDisplayed && (
-                <Grid item xs={2}>
-                    <IconButton size={'small'} onClick={handleShowFilter}>
-                        <Badge
-                            color="secondary"
-                            variant="dot"
-                            invisible={!filterSelectedOption}
+                <Grid item xs={11}>
+                    <Grid
+                        container
+                        alignItems={'center'}
+                        sx={{ height: '100%' }}
+                        direction={'row'}
+                        wrap={'nowrap'}
+                    >
+                        <Grid
+                            item
+                            sx={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}
                         >
-                            <Menu fontSize={'small'} />
-                        </Badge>
-                    </IconButton>
+                            {displayName}
+                        </Grid>
+                        <Grid item xs>
+                            {isSortActive && sortWay && (
+                                <Grid item>
+                                    <IconButton size={'small'}>
+                                        {sortWay === 1 ? (
+                                            <ArrowUpward fontSize={'small'} />
+                                        ) : (
+                                            <ArrowDownward fontSize={'small'} />
+                                        )}
+                                    </IconButton>
+                                </Grid>
+                            )}
+                        </Grid>
+                    </Grid>
                 </Grid>
-            )}
+                <Grid item xs={1}>
+                    {isFilterActive && isFilterIconDisplayed && (
+                        <Grid item>
+                            <IconButton
+                                size={'small'}
+                                onClick={handleShowFilter}
+                            >
+                                <Badge
+                                    color="secondary"
+                                    variant="dot"
+                                    invisible={!filterSelectedOptions}
+                                >
+                                    <Menu fontSize={'small'} />
+                                </Badge>
+                            </IconButton>
+                        </Grid>
+                    )}
+                </Grid>
+            </Grid>
+
             <Popover
                 id={popoverId}
                 open={isFilterOpened}
@@ -131,10 +157,8 @@ const CustomHeaderComponent = ({
                 }}
             >
                 <Autocomplete
-                    value={filterSelectedOption || ''}
-                    isOptionEqualToValue={(option, value) =>
-                        value === '' || option === value
-                    }
+                    multiple
+                    value={filterSelectedOptions}
                     options={filterOptions}
                     onChange={(_, data) => {
                         handleFilterChange(field, data);
@@ -163,7 +187,7 @@ CustomHeaderComponent.propTypes = {
     }).isRequired,
     onSortChanged: PropTypes.func.isRequired,
     updateFilter: PropTypes.func.isRequired,
-    filterSelectedOption: PropTypes.string,
+    filterSelectedOptions: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default CustomHeaderComponent;

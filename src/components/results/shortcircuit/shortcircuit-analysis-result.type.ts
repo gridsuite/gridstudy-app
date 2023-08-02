@@ -26,10 +26,16 @@ export interface SCAResultFaultFeederResult {
     current: number;
 }
 
+interface SCAShortCircuitLimits {
+    ipMin: number;
+    ipMax: number;
+}
+
 export interface SCAResultFault {
     fault: SCAResultFaultFault;
     current: number;
     shortCircuitPower: number;
+    shortCircuitLimits: SCAShortCircuitLimits;
     limitViolations: SCAResultFaultLimitViolation[];
     feederResults: SCAResultFaultFeederResult[];
 }
