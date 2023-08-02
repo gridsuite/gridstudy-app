@@ -16,6 +16,7 @@ import {
     NAME,
     NOMINAL_VOLTAGE,
     PHASE_TAP_CHANGER,
+    REGULATING,
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
@@ -189,8 +190,74 @@ const phaseTapChangerValidationSchema = (id) => ({
     }),
 });
 
+const phaseTapChangerModificationValidationSchema = (id) => ({
+    [id]: yup.object().shape({
+        [ENABLED]: yup.bool().required(),
+        [REGULATION_MODE]: yup.string().nullable(),
+        [REGULATION_TYPE]: yup.string().nullable(),
+        [REGULATION_SIDE]: yup.string().nullable(),
+        [CURRENT_LIMITER_REGULATING_VALUE]: yup
+            .number()
+            .nullable()
+            .positive('CurrentLimiterGreaterThanZero'),
+        [FLOW_SET_POINT_REGULATING_VALUE]: yup.number().nullable(),
+        [TARGET_DEADBAND]: yup
+            .number()
+            .nullable()
+            .positive('TargetDeadbandGreaterThanZero'),
+        [LOW_TAP_POSITION]: yup.number().nullable(),
+        [HIGH_TAP_POSITION]: yup.number().nullable(),
+        [TAP_POSITION]: yup.number().nullable(),
+        [STEPS]: yup
+            .array()
+            .of(
+                yup.object().shape({
+                    [STEPS_TAP]: yup.number().required(),
+                    [STEPS_RESISTANCE]: yup.number(),
+                    [STEPS_REACTANCE]: yup.number(),
+                    [STEPS_CONDUCTANCE]: yup.number(),
+                    [STEPS_SUSCEPTANCE]: yup.number(),
+                    [STEPS_RATIO]: yup.number(),
+                    [STEPS_ALPHA]: yup.number(),
+                })
+            )
+            .test('distinctOrderedAlpha', 'PhaseShiftValuesError', (array) => {
+                const alphaArray = array.map((step) => step[STEPS_ALPHA]);
+                return (
+                    areNumbersOrdered(alphaArray) &&
+                    areArrayElementsUnique(alphaArray)
+                );
+            }),
+        //regulating terminal fields
+        [VOLTAGE_LEVEL]: yup
+            .object()
+            .nullable()
+            .shape({
+                [ID]: yup.string(),
+                [NAME]: yup.string(),
+                [SUBSTATION_ID]: yup.string(),
+                [NOMINAL_VOLTAGE]: yup.string(),
+                [TOPOLOGY_KIND]: yup.string().nullable(),
+            }),
+        [EQUIPMENT]: yup
+            .object()
+            .nullable()
+            .shape({
+                [ID]: yup.string(),
+                [NAME]: yup.string().nullable(),
+                [TYPE]: yup.string(),
+            }),
+    }),
+});
+
 export const getPhaseTapChangerValidationSchema = (id = PHASE_TAP_CHANGER) => {
     return phaseTapChangerValidationSchema(id);
+};
+
+export const getPhaseTapChangerModificationValidationSchema = (
+    id = PHASE_TAP_CHANGER
+) => {
+    return phaseTapChangerModificationValidationSchema(id);
 };
 
 const phaseTapChangerEmptyFormData = (id) => ({
@@ -252,3 +319,41 @@ export const getPhaseTapChangerFormData = (
         }),
     },
 });
+
+export const getComputedPhaseTapChangerRegulationMode = (
+    phaseTapChangerFormValues
+) => {
+    if (
+        phaseTapChangerFormValues?.[REGULATION_MODE] ===
+            PHASE_REGULATION_MODES.FIXED_TAP.id ||
+        phaseTapChangerFormValues?.[REGULATING] === false
+    ) {
+        return PHASE_REGULATION_MODES.FIXED_TAP;
+    } else if (
+        phaseTapChangerFormValues?.[REGULATION_MODE] ===
+            PHASE_REGULATION_MODES.CURRENT_LIMITER.id &&
+        phaseTapChangerFormValues?.[REGULATING] === true
+    ) {
+        return PHASE_REGULATION_MODES.CURRENT_LIMITER;
+    } else if (
+        phaseTapChangerFormValues?.[REGULATION_MODE] ===
+            PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
+        phaseTapChangerFormValues?.[REGULATING] === true
+    ) {
+        return PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL;
+    }
+};
+
+export const getComputedPreviousPhaseRegulationType = (previousValues) => {
+    if (!previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId) {
+        return null;
+    }
+    if (
+        previousValues?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId !==
+        previousValues?.id
+    ) {
+        return REGULATION_TYPES.DISTANT.id;
+    } else {
+        return REGULATION_TYPES.LOCAL.id;
+    }
+};

@@ -46,6 +46,8 @@ interface ShortCircuitAnalysisResultsFaultHeader {
     limitMin?: number | null;
     limitMax?: number | null;
     limitName?: string;
+    deltaIscIscMax?: number | null;
+    deltaIscIscMin?: number | null;
 }
 
 interface ShortCircuitAnalysisResultsLimitViolation {
@@ -111,6 +113,18 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 numeric: true,
             },
             {
+                headerName: intl.formatMessage({ id: 'DeltaIscIscMax' }),
+                field: 'deltaIscIscMax',
+                fractionDigits: 1,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'DeltaIscIscMin' }),
+                field: 'deltaIscIscMin',
+                fractionDigits: 1,
+                numeric: true,
+            },
+            {
                 field: 'linkedElementId',
                 hide: true,
             },
@@ -127,19 +141,29 @@ const ShortCircuitAnalysisResult: FunctionComponent<
         idField: string,
         linkedIdField: string
     ) => {
-        const result: IRowNode[] = [];
-        const idRows = sortedRows.filter((row) => row.data[idField] != null);
-        idRows.forEach((idRow) => {
-            result.push(idRow);
-            result.push(
-                ...sortedRows.filter(
-                    (row) => row.data[linkedIdField] === idRow.data[idField]
-                )
-            );
+        // Because Map remembers the original insertion order of the keys.
+        const rowsMap = new Map<string, IRowNode[]>();
+        // first index by main resource idField
+        sortedRows.forEach((row) => {
+            if (row.data[idField] != null) {
+                rowsMap.set(row.data[idField], [row]);
+            }
         });
 
-        return result;
+        // then index by linked resource linkedIdField
+        let currentRows;
+        sortedRows.forEach((row) => {
+            if (row.data[idField] == null) {
+                currentRows = rowsMap.get(row.data[linkedIdField]);
+                if (currentRows) {
+                    currentRows.push(row);
+                    rowsMap.set(row.data[linkedIdField], currentRows);
+                }
+            }
+        });
+        return [...rowsMap.values()].flat();
     };
+
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
             if (!params?.data?.linkedElementId) {
@@ -165,14 +189,6 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                     limitType: intl.formatMessage({
                         id: lv.limitType,
                     }),
-                    limitMin:
-                        lv.limitType === 'LOW_SHORT_CIRCUIT_CURRENT'
-                            ? unitToKiloUnit(lv.limit)
-                            : null,
-                    limitMax:
-                        lv.limitType === 'HIGH_SHORT_CIRCUIT_CURRENT'
-                            ? unitToKiloUnit(lv.limit)
-                            : null,
                     limitName: lv.limitName,
                 };
             }
@@ -181,6 +197,14 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 elementId: fault.elementId,
                 faultType: intl.formatMessage({ id: fault.faultType }),
                 shortCircuitPower: faultResult.shortCircuitPower,
+                limitMin: unitToKiloUnit(faultResult.shortCircuitLimits.ipMin),
+                limitMax: unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
+                deltaIscIscMax:
+                    faultResult.current -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0),
+                deltaIscIscMin:
+                    faultResult.current -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0),
                 current: faultResult.current,
                 ...firstLimitViolation,
             });

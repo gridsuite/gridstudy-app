@@ -274,29 +274,40 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         linkedElementId,
         isContingency
     ) => {
-        const result = [];
-        //get all groups ids
-        const idRows = sortedRows.filter((row) => row.data[idField] != null);
+        // Because Map remembers the original insertion order of the keys.
+        const rowsMap = new Map();
         if (isContingency) {
-            //get all rows with no id group and add them at the beginning.
-            const unconvergerRows = sortedRows.filter(
-                (row) => !row.data[linkedElementId] && !row.data[idField]
-            );
-            result.push(...unconvergerRows);
+            rowsMap.set('contingencies', []);
         }
-        //for each of those groups
-        idRows.forEach((idRow) => {
-            //add group's parent first
-            result.push(idRow);
-            //then add all elements which belongs to this group
-            result.push(
-                ...sortedRows.filter(
-                    (row) => row.data[linkedElementId] === idRow.data[idField]
-                )
-            );
+        // first index by main resource idField
+        sortedRows.forEach((row) => {
+            if (row.data[idField] != null) {
+                rowsMap.set(row.data[idField], [row]);
+            }
         });
 
-        return result;
+        // then index by linked resource linkedElementId
+        let currentRows;
+        sortedRows.forEach((row) => {
+            if (
+                isContingency &&
+                !row.data[linkedElementId] &&
+                !row.data[idField]
+            ) {
+                currentRows = rowsMap.get('contingencies');
+                if (currentRows) {
+                    currentRows.push(row);
+                    rowsMap.set('contingencies', currentRows);
+                }
+            } else if (row.data[idField] == null) {
+                currentRows = rowsMap.get(row.data[linkedElementId]);
+                if (currentRows) {
+                    currentRows.push(row);
+                    rowsMap.set(row.data[linkedElementId], currentRows);
+                }
+            }
+        });
+        return [...rowsMap.values()].flat();
     };
 
     const handlePostSortRows = (params, isFromContingency) => {

@@ -867,6 +867,7 @@ export function modifyTwoWindingsTransformer(
     currentLimit1,
     currentLimit2,
     ratioTapChanger,
+    phaseTapChanger,
     isUpdate,
     modificationUuid
 ) {
@@ -902,6 +903,7 @@ export function modifyTwoWindingsTransformer(
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
             ratioTapChanger: ratioTapChanger,
+            phaseTapChanger: phaseTapChanger,
         }),
     });
 }
