@@ -11,7 +11,7 @@ import {
     gridItemWithTooltip,
     GridSection,
     ReactivePowerAdornment,
-} from '../../../dialogUtils';
+} from '../dialogUtils';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
 import React from 'react';
@@ -32,7 +32,7 @@ const SetPointsForm = ({
     studyUuid,
     currentNodeUuid,
     voltageLevelOptions,
-    isGeneratorModification = false,
+    isEquipmentModification = false,
     previousValues,
 }) => {
     const intl = useIntl();
@@ -65,7 +65,7 @@ const SetPointsForm = ({
         />
     );
 
-    const voltageRegulationField = isGeneratorModification ? (
+    const voltageRegulationField = isEquipmentModification ? (
         <Box>
             <CheckboxNullableInput
                 name={VOLTAGE_REGULATION}
@@ -123,7 +123,7 @@ const SetPointsForm = ({
 
                 <Box sx={{ width: '100%' }} />
                 <FrequencyRegulation
-                    isGeneratorModification={isGeneratorModification}
+                    isEquipmentModification={isEquipmentModification}
                     previousValues={previousValues}
                 />
             </Grid>

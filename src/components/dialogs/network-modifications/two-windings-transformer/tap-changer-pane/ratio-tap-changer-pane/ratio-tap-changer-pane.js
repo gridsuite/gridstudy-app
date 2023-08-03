@@ -33,25 +33,8 @@ import {
 import SelectInput from 'components/utils/rhf-inputs/select-input';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
-
-export const previousRegulationType = (previousValues) => {
-    if (
-        !previousValues?.[RATIO_TAP_CHANGER]?.[
-            LOAD_TAP_CHANGING_CAPABILITIES
-        ] ||
-        !previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId
-    ) {
-        return null;
-    }
-    if (
-        previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId !==
-        previousValues?.id
-    ) {
-        return REGULATION_TYPES.DISTANT.id;
-    } else {
-        return REGULATION_TYPES.LOCAL.id;
-    }
-};
+import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
+import { getComputedPreviousRatioRegulationType } from './ratio-tap-changer-pane-utils';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
@@ -151,7 +134,7 @@ const RatioTapChangerPane = ({
     const regulationType = useMemo(() => {
         return regulationTypeWatch
             ? regulationTypeWatch
-            : previousRegulationType(previousValues);
+            : getComputedPreviousRatioRegulationType(previousValues);
     }, [previousValues, regulationTypeWatch]);
 
     // we want to update the validation of these fields when they become optionals to remove the red alert
@@ -275,16 +258,9 @@ const RatioTapChangerPane = ({
             previousRegulatingTerminalValue={
                 previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId
             }
-            previousEquipmentSectionTypeValue={
+            previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
                 previousValues?.[RATIO_TAP_CHANGER]
-                    ?.regulatingTerminalConnectableType
-                    ? previousValues?.[RATIO_TAP_CHANGER]
-                          ?.regulatingTerminalConnectableType +
-                      ' : ' +
-                      previousValues?.[RATIO_TAP_CHANGER]
-                          ?.regulatingTerminalConnectableId
-                    : null
-            }
+            )}
         />
     );
 
