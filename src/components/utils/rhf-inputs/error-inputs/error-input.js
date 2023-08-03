@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useController } from 'react-hook-form';
+import { useController, useFormState } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const ErrorInput = ({ name, InputField }) => {
     const {
@@ -15,6 +15,10 @@ const ErrorInput = ({ name, InputField }) => {
     } = useController({
         name,
     });
+
+    const { isSubmitted } = useFormState();
+
+    const errorRef = useRef(null); 
 
     const errorProps = (errorMsg) => {
         if (typeof errorMsg === 'string') {
@@ -32,11 +36,19 @@ const ErrorInput = ({ name, InputField }) => {
         return {};
     };
 
+    useEffect(() => {
+        if (isSubmitted && error && errorRef?.current) {
+            errorRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [isSubmitted]);
+
     return (
         error?.message && (
-            <InputField
-                message={<FormattedMessage {...errorProps(error?.message)} />}
-            />
+            <div ref={errorRef}>
+                <InputField
+                    message={<FormattedMessage {...errorProps(error?.message)} />}
+                />
+            </div>
         )
     );
 };
