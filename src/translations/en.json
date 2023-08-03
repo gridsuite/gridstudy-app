@@ -270,14 +270,14 @@
     "SensitivityAtNode": "Sensitivity at nodes",
     "ValRefInkWBeforeContingency": "Reference active power (MW) before contingency",
     "DeltaInkWBeforeContingency": "Sensitivity (ΔMW / MW ou Δ°) before contingency",
-    "ValRefInkABeforeContingency": "Reference current (MA) before contingency",
-    "DeltaInkABeforeContingency": "Sensitivity (ΔMA / MW ou Δ°) before contingency",
+    "ValRefInkABeforeContingency": "Reference current (A) before contingency",
+    "DeltaInkABeforeContingency": "Sensitivity (ΔA / MW ou Δ°) before contingency",
     "ValRefInkVBeforeContingency": "Reference voltage (kV) before contingency",
     "DeltaInkVBeforeContingency": "Sensitivity (ΔkV / ΔkV) before contingency",
     "ValRefInkW": "Reference active power (MW)",
     "DeltaInkW": "Sensitivity (ΔMW / MW or Δ°)",
-    "ValRefInkA": "Reference current (MA)",
-    "DeltaInkA": "Sensitivity (ΔMA / MW or Δ°)",
+    "ValRefInkA": "Reference current (A)",
+    "DeltaInkA": "Sensitivity (ΔA / MW or Δ°)",
     "ValRefInkV": "Reference voltage (kV)",
     "DeltaInkV": "Sensitivity (ΔkV / ΔkV)",
 
@@ -1032,6 +1032,15 @@
     "muiTablePaginationNext": "Go to the next page",
     "muiTablePaginationFirst": "Go to the first page",
     "muiTablePaginationLast": "Go to the last page",
+
+    "applyModifications": "Apply modifications",
+    "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
+    "VoltageInitModification": "Voltage init modification",
     "GeneratorAvailability": "Generator availability",
-    "chooseElement": "Choose element"
+    "chooseElement": "Choose element",
+    "grid.noRowsToShow": "No data",
+    "grid.noCalculation": "No calculation",
+    "grid.failed": "Calculation failed",
+    "grid.running": "In progress...",
+    "grid.noLimitViolation": "No limit violation"
 }

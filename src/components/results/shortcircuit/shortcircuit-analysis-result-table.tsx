@@ -18,6 +18,14 @@ import {
 } from 'ag-grid-community';
 import { GridStudyTheme } from 'components/app-wrapper.type';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
+import {
+    getNoRowsMessage,
+    getRows,
+    useIntlResultStatusMessages,
+} from '../../utils/aggrid-rows-handler';
+import { useSelector } from 'react-redux';
+import { ComputingType } from '../../computing-status/computing-type';
+import { ReduxState } from '../../../redux/reducer.type';
 
 interface ShortCircuitAnalysisResultProps {
     result: ShortcircuitAnalysisResult;
@@ -122,7 +130,12 @@ const ShortCircuitAnalysisResult: FunctionComponent<
             },
         ];
     }, [intl]);
+    const shortCircuitAnalysisStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
+    );
 
+    const messages = useIntlResultStatusMessages(intl, true);
     const groupPostSort = (
         sortedRows: IRowNode[],
         idField: string,
@@ -250,16 +263,23 @@ const ShortCircuitAnalysisResult: FunctionComponent<
 
     const renderResult = () => {
         const rows = flattenResult(result);
+        const message = getNoRowsMessage(
+            messages,
+            rows,
+            shortCircuitAnalysisStatus
+        );
+        const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 
         return (
             <CustomAGGrid
-                rowData={rows}
+                rowData={rowsToShow}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
                 getRowStyle={getRowStyle}
                 enableCellTextSelection={true}
                 postSortRows={handlePostSortRows}
                 columnDefs={columns}
+                overlayNoRowsTemplate={message}
             />
         );
     };
