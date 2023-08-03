@@ -129,7 +129,7 @@
     "ReactivePowerSide3": "q3 (MVar)",
     "ActivePowerControl": "Active power control",
     "TargetP": "target P (MW)",
-    "TargetQ": "target Q (MW)",
+    "TargetQ": "target Q (MVar)",
     "RatioTap": "Ratio tap",
     "PhaseTap": "Phase tap",
     "RatioTap1": "Ratio tap 1",
