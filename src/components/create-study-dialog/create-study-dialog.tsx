@@ -57,19 +57,11 @@ export const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
         []
     );
 
-    // @PathVariable("caseUuid") UUID caseUuid,
-    // @RequestParam(required = false, value = "studyUuid") UUID studyUuid,
-    // @RequestParam(required = false, value = "duplicateCase", defaultValue = "false") Boolean duplicateCase,
-    // @RequestBody(required = false) Map<String, Object> importParameters,
-    // @RequestHeader(HEADER_USER_ID) String userId
-
-    const handleCreateNewStudy = () => {
+    const handleCreateNewStudy = useCallback(() => {
         if (generatedCaseUuid) {
             importStudy(generatedCaseUuid, studyUuid, currentParameters)
                 .then(() => {
                     closeDialog();
-                    //oldTempCaseUuid.current = null;
-                    // handleCloseDialog();
                 })
                 .catch((error) => {
                     // snackError({
@@ -79,40 +71,26 @@ export const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
                     //         studyName,
                     //     },
                     // });
-                })
-                .finally(() => {
-                    // setTempCaseUuid(null);
-                    // dispatch(removeUploadingElement(uploadingStudy));
                 });
         }
-    };
+    }, [currentParameters, generatedCaseUuid, closeDialog, studyUuid]);
 
-    const getCaseImportParams = useCallback(
-        (caseUuid: UUID) => {
-            getCaseImportParameters(caseUuid)
-                .then((result) => {
-                    // sort possible values alphabetically to display select options sorted
-                    result.parameters = result.parameters?.map((p) => {
-                        p.possibleValues = p.possibleValues?.sort((a, b) =>
-                            a.localeCompare(b)
-                        );
-                        return p;
-                    });
-                    setFormatWithParameters(result.parameters);
-                    // setIsParamsOk(true);
-                })
-                .catch(() => {
-                    setFormatWithParameters([]);
-                    // setIsParamsOk(false);
-                    // setCreateStudyErr(
-                    //     intl.formatMessage({ id: 'parameterLoadingProblem' })
-                    // );
+    const getCaseImportParams = useCallback((caseUuid: UUID) => {
+        getCaseImportParameters(caseUuid)
+            .then((result) => {
+                // sort possible values alphabetically to display select options sorted
+                result.parameters = result.parameters?.map((p) => {
+                    p.possibleValues = p.possibleValues?.sort((a, b) =>
+                        a.localeCompare(b)
+                    );
+                    return p;
                 });
-        },
-        [
-            /*intl*/
-        ]
-    );
+                setFormatWithParameters(result.parameters);
+            })
+            .catch(() => {
+                setFormatWithParameters([]);
+            });
+    }, []);
 
     useEffect(() => {
         if (selectedFile) {
@@ -121,32 +99,13 @@ export const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
                 .then((caseUuid) => {
                     setGeneratedCaseUuid(caseUuid);
                     getCaseImportParams(caseUuid);
-                    // setCreateStudyErr('');
                 })
-                .catch((error) => {
-                    // setTempCaseUuid(null);
-                    // handleFileUploadError(error, setCreateStudyErr);
-                    // dispatch(selectFile(null));
-                    // setFormatWithParameters([]);
-                    // setProvidedCaseFileOk(false);
-                })
+                .catch((error) => {})
                 .finally(() => {
                     setUploadingFileInProgress(false);
-                    // setFileCheckedCase(true);
                 });
         }
-    }, [
-        selectedFile,
-        getCaseImportParams,
-        // open,
-        // dispatch,
-        // selectedDirectory?.elementName,
-        // providedExistingCase,
-        // getCaseImportParams,
-        // handleFileUploadError,
-        // setStudyName,
-        // setProvidedCaseFileOk,
-    ]);
+    }, [selectedFile, getCaseImportParams]);
 
     return (
         <Dialog
@@ -156,7 +115,7 @@ export const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
             open={true}
         >
             <DialogTitle id="form-dialog-title">
-                <FormattedMessage id="createNewStudy" />
+                <FormattedMessage id="importNewSituation" />
             </DialogTitle>
             <DialogContent>
                 <UploadFileButton

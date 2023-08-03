@@ -203,10 +203,16 @@ export function getVoltageLevelSingleLineDiagram(
     );
 }
 
-export const checkNetworkExistence = (studyUuid) => {
-    const checkNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network`;
+export const fetchNetworkExistence = (studyUuid, reimportNetworkIfNotFound) => {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append(
+        'reimportNetworkIfNotFound',
+        reimportNetworkIfNotFound
+    );
 
-    return backendFetch(checkNetworkExistenceUrl);
+    const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network?${urlSearchParams.toString()}`;
+
+    return backendFetch(fetchNetworkExistenceUrl);
 };
 
 export function getSubstationSingleLineDiagram(

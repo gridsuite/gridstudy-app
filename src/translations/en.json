@@ -1031,5 +1031,8 @@
     "muiTablePaginationFirst": "Go to the first page",
     "muiTablePaginationLast": "Go to the last page",
     "GeneratorAvailability": "Generator availability",
-    "chooseElement": "Choose element"
+    "chooseElement": "Choose element",
+    "StudyRecovered": "Study network has been reimported successfully",
+    "ReimportingStudy": "Impossible to get the study network. Reconstruction of the network from the initial situation...",
+    "importNewSituation": "Import situation"
 }

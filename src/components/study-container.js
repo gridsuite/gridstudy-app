@@ -16,7 +16,7 @@ import {
     fetchStudyExists,
     fetchCaseName,
     fetchAllEquipments,
-    checkNetworkExistence,
+    fetchNetworkExistence,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -195,6 +195,7 @@ function usePrevious(value) {
 }
 
 export const UPDATE_TYPE_HEADER = 'updateType';
+const UPDATE_TYPE_STUDY_REIMPORT_DONE = 'study_reimport_done';
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
@@ -220,7 +221,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const [errorMessage, setErrorMessage] = useState(undefined);
 
-    const [isStudyImporting, setIsStudyImporting] = useState(false);
+    const [isStudyNetworkFound, setIsStudyNetworkFound] = useState(false);
 
     const [initialTitle] = useState(document.title);
 
@@ -245,7 +246,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const closeImportStudyDialog = useCallback(() => {
         setIsImportStudyDialogDisplayed(false);
-    });
+    }, []);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -497,14 +498,19 @@ export function StudyContainer({ view, onChangeTab }) {
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
-    useEffect(() => {
-        if (studyUuid && !isStudyImporting) {
-            checkNetworkExistence(studyUuid)
-                .then(() => loadTree())
+    const checkNetworkExistenceAndReimportIfNotFound = useCallback(
+        (successCallback) => {
+            fetchNetworkExistence(studyUuid, true)
+                .then(() => {
+                    successCallback && successCallback();
+                    setIsStudyNetworkFound(true);
+                    loadTree();
+                })
                 .catch((error) => {
                     //TODO: improve the way we catch this error
+                    console.log(error);
                     if (error.message.endsWith('BROKEN_STUDY')) {
-                        setIsStudyImporting(true);
+                        setIsStudyNetworkFound(false);
                         setIsImportStudyDialogDisplayed(true);
                         snackError({
                             headerId: 'StudyUnrecoverableState',
@@ -513,11 +519,22 @@ export function StudyContainer({ view, onChangeTab }) {
                         snackError({
                             headerId: 'ReimportingStudy',
                         });
-                        setIsStudyImporting(true);
+                        setIsStudyNetworkFound(false);
                     }
                 });
+        },
+        [studyUuid, loadTree, snackError]
+    );
+
+    useEffect(() => {
+        if (studyUuid && !isStudyNetworkFound) {
+            checkNetworkExistenceAndReimportIfNotFound();
         }
-    }, [studyUuid, loadTree, isStudyImporting]);
+    }, [
+        isStudyNetworkFound,
+        checkNetworkExistenceAndReimportIfNotFound,
+        studyUuid,
+    ]);
 
     function parseStudyNotification(studyUpdatedForce) {
         const payload = studyUpdatedForce.eventData.payload;
@@ -581,17 +598,29 @@ export function StudyContainer({ view, onChangeTab }) {
 
                     dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
-            } else if (
-                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'studies'
-            ) {
-                snackInfo({
-                    headerId: 'StudyRecovered',
-                });
-                setIsStudyImporting(false);
             }
         }
     }, [studyUpdatedForce, currentNode?.id, studyUuid, dispatch]);
+
+    // study_reimport_done notification
+    // checking another time if we can find network, if we do, we display a snackbar info
+    useEffect(() => {
+        if (
+            studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] ===
+            UPDATE_TYPE_STUDY_REIMPORT_DONE
+        ) {
+            const successCallback = () =>
+                snackInfo({
+                    headerId: 'StudyRecovered',
+                });
+
+            checkNetworkExistenceAndReimportIfNotFound(successCallback);
+        }
+    }, [
+        studyUpdatedForce,
+        checkNetworkExistenceAndReimportIfNotFound,
+        snackInfo,
+    ]);
 
     //handles map automatic mode network reload
     useEffect(() => {
@@ -697,22 +726,24 @@ export function StudyContainer({ view, onChangeTab }) {
     ]);
 
     return (
-        <WaitingLoader
-            errMessage={studyErrorMessage || errorMessage}
-            loading={studyPending || !paramsLoaded || isStudyImporting} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
-            message={'LoadingRemoteData'}
-        >
-            <StudyPane
-                studyUuid={studyUuid}
-                currentNode={currentNode}
-                view={view}
-                onChangeTab={onChangeTab}
-                setErrorMessage={setErrorMessage}
-            />
+        <>
+            <WaitingLoader
+                errMessage={studyErrorMessage || errorMessage}
+                loading={studyPending || !paramsLoaded || !isStudyNetworkFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+                message={'LoadingRemoteData'}
+            >
+                <StudyPane
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    view={view}
+                    onChangeTab={onChangeTab}
+                    setErrorMessage={setErrorMessage}
+                />
+            </WaitingLoader>
             {isImportStudyDialogDisplayed && (
                 <CreateStudyDialog closeDialog={closeImportStudyDialog} />
             )}
-        </WaitingLoader>
+        </>
     );
 }
 
