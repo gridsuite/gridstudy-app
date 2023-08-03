@@ -305,7 +305,10 @@ export const NetworkMapTab = ({
                     'LCC'
             ) {
                 // only hvdc line with LCC requires a Dialog (to select MCS)
-                handleOpenDeletionDialog(equipmentId, EQUIPMENT_TYPES.HVDC_LINE.type);
+                handleOpenDeletionDialog(
+                    equipmentId,
+                    EQUIPMENT_TYPES.HVDC_LINE.type
+                );
             } else {
                 deleteEquipment(
                     studyUuid,
@@ -887,11 +890,14 @@ export const NetworkMapTab = ({
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
-                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.HVDC_LINE.type &&
+                {equipmentMenu.equipmentType ===
+                    EQUIPMENT_TYPES.HVDC_LINE.type &&
                     withEquipment(MenuHvdcLine)}
-                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.SUBSTATION.type &&
+                {equipmentMenu.equipmentType ===
+                    EQUIPMENT_TYPES.SUBSTATION.type &&
                     withEquipment(MenuSubstation)}
-                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type &&
+                {equipmentMenu.equipmentType ===
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type &&
                     withEquipment(MenuVoltageLevel)}
             </>
         );
@@ -933,14 +939,24 @@ export const NetworkMapTab = ({
                 showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE.type)
             }
             onHvdcLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.HVDC_LINE.type)
+                showEquipmentMenu(
+                    equipment,
+                    x,
+                    y,
+                    EQUIPMENT_TYPES.HVDC_LINE.type
+                )
             }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.SUBSTATION.type)
+                showEquipmentMenu(
+                    equipment,
+                    x,
+                    y,
+                    EQUIPMENT_TYPES.SUBSTATION.type
+                )
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}

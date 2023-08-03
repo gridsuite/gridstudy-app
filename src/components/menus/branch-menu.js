@@ -364,7 +364,8 @@ const withBranchMenu =
                         }
                     />
                 </MenuItem>
-                {(equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type ||
+                {(equipmentType ===
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type ||
                     equipmentType === EQUIPMENT_TYPES.LINE.type) && (
                     <MenuItem
                         className={classes.menuItem}
