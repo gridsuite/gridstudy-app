@@ -986,7 +986,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'TransientReactanceOhm',
+                id: 'TransientReactance',
                 field: 'transientReactance',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -995,34 +995,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'TransformerReactance',
                 field: 'stepUpTransformerReactance',
-                numeric: true,
-                filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
-            },
-            {
-                id: 'PlannedActivePowerSetPointMW',
-                field: 'plannedActivePowerSetPoint',
-                numeric: true,
-                filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
-            },
-            {
-                id: 'MarginalCost',
-                field: 'marginalCost',
-                numeric: true,
-                filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
-            },
-            {
-                id: 'PlannedOutageRate',
-                field: 'plannedOutageRate',
-                numeric: true,
-                filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
-            },
-            {
-                id: 'ForcedOutageRate',
-                field: 'forcedOutageRate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
