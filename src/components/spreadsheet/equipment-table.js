@@ -13,6 +13,7 @@ import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
+const DEFAULT_ROW_HEIGHT_WITH_PROPERTIES = 65;
 
 export const EquipmentTable = ({
     rowData,
@@ -85,11 +86,21 @@ export const EquipmentTable = ({
         };
     }, [network, topPinnedData]);
 
-    const getRowHeight = useCallback(
-        (params) =>
-            params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
-        []
-    );
+    const getRowHeight = useCallback((params) => {
+        if (params.data?.properties) {
+            let properties = Object.keys(params.data.properties);
+
+            if (properties.length > 0) {
+                return properties.length > 1
+                    ? DEFAULT_ROW_HEIGHT_WITH_PROPERTIES
+                    : DEFAULT_ROW_HEIGHT;
+            }
+        } else {
+            return params.node.rowPinned
+                ? PINNED_ROW_HEIGHT
+                : DEFAULT_ROW_HEIGHT;
+        }
+    }, []);
 
     return (
         <>
