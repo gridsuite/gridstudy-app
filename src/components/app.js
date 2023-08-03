@@ -259,9 +259,7 @@ const App = () => {
                             const tabDefinition = TABLES_DEFINITION_INDEXES.get(
                                 index
                             ).columns.map((item) => item.id);
-                            if (
-                                tabDefinition.length !== reordredParams.length
-                            ) {
+                            if (tabDefinition.length > reordredParams.length) {
                                 const newParams = tabDefinition.filter(
                                     (item) => !reordredParams.includes(item)
                                 );
