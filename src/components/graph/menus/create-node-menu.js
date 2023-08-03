@@ -21,51 +21,35 @@ export const NodeActions = {
     REMOVE_SUBTREE: 'REMOVE_SUBTREE',
     NO_ACTION: 'NO_ACTION',
 };
-var nbr = 0;
+
+export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
+    const children = treeModel?.treeNodes?.filter((node) =>
+        sourceNodeIds?.includes(node?.data?.parentNodeUuid)
+    );
+    if (children?.length > 0) {
+        children?.forEach((item) => {
+            allChildren?.push({ ...item });
+        });
+        const ids = children?.map((el) => el.id);
+        // get next level of children
+        getNodeChildren(treeModel, ids, allChildren);
+    }
+};
 
 export const getNodesFromSubTree = (treeModel, id) => {
-    const nodesMap = new Map();
-
     if (treeModel?.treeNodes) {
-        const activeNodeChildren = treeModel?.treeNodes?.filter(
+        // get the top level children of the active node.
+        const activeNodeDirectChildren = treeModel?.treeNodes?.filter(
             (item) => item?.data?.parentNodeUuid === id
         );
-        // set selected id with thz values
-        //todo: calculat the nodes number
-        /* activeNodeChildren?.forEach((item) => {
-            if (nodesMap.has(id)) {
-                nodesMap.set(
-                    id,
-                    nodesMap.get(id)?.push({
-                        id: item?.id,
-                        parentId: item?.data?.parentNodeUuid,
-                    })
-                );
-            } else {
-                console.log('dd: ', [
-                    ...Array.from(nodesMap.values()),
-                    {
-                        id: item?.id,
-                        parentId: item?.data?.parentNodeUuid,
-                    },
-                ]);
-
-                nodesMap.set(id, [
-                    ...Array.from(nodesMap.values()),
-                    {
-                        id: item?.id,
-                        parentId: item?.data?.parentNodeUuid,
-                    },
-                ]);
-            }
+        const allChildren = [];
+        activeNodeDirectChildren?.forEach((child) => {
+            allChildren.push(child);
+            // get the children of each child
+            getNodeChildren(treeModel, [child?.id], allChildren);
         });
-        console.log('nodesMap: ', JSON.stringify(nodesMap));
-for (let i = 0; activeNodeChildren?.length > i; i++) {
-            nbr++;
-            getNodesFromSubTree(treeModel, activeNodeChildren[i]?.id);
-        }*/
+        return allChildren?.length;
     }
-    console.log('nbr: ', nbr);
 };
 
 const CreateNodeMenu = ({
