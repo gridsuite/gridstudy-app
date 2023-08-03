@@ -62,6 +62,8 @@ import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modi
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
 import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
+import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
+
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
     changeNetworkModificationOrder,
@@ -374,6 +376,12 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(GenerationDispatchDialog),
                 },
             ],
+        },
+        {
+            id: 'VOLTAGE_INIT_MODIFICATION',
+            label: 'VoltageInitModification',
+            hide: true,
+            action: () => adapt(VoltageInitModificationDialog),
         },
     ];
 

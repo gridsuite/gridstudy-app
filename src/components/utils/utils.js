@@ -135,6 +135,18 @@ export const compareStepsWithPreviousValues = (tapSteps, previousValues) => {
     });
 };
 
+export const getTapChangerEquipmentSectionTypeValue = (tapChanger) => {
+    if (!tapChanger?.regulatingTerminalConnectableType) {
+        return null;
+    } else {
+        return (
+            tapChanger?.regulatingTerminalConnectableType +
+            ' : ' +
+            tapChanger?.regulatingTerminalConnectableId
+        );
+    }
+};
+
 export function calculateResistance(distance, linearResistance) {
     if (
         distance === undefined ||
