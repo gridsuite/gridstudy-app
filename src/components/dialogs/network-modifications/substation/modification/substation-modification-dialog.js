@@ -22,11 +22,7 @@ import {
     ADDED,
 } from 'components/utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    modifySubstation,
-} from 'utils/rest-api';
+import { fetchNetworkElementInfos, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -35,6 +31,7 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { modifySubstation } from '../../../../../services/study/network-modifications';
 
 const checkUniquePropertiesNames = (properties) => {
     const validValues = properties.filter((v) => v?.name);
@@ -52,6 +49,7 @@ const formSchema = yup.object().shape({
     [COUNTRY]: yup.string().nullable(),
     [ADDITIONAL_PROPERTIES]: yup
         .array()
+        .nullable()
         .of(
             yup.object().shape({
                 [NAME]: yup.string().nullable().required(),
@@ -68,9 +66,12 @@ const formSchema = yup.object().shape({
                 [ADDED]: yup.boolean(),
             })
         )
-        .test('checkUniqueProperties', 'DuplicatedProps', (values) =>
-            checkUniquePropertiesNames(values)
-        ),
+        .test('checkUniqueProperties', 'DuplicatedProps', (values) => {
+            if (values) {
+                return checkUniquePropertiesNames(values);
+            }
+            return true;
+        }),
 });
 
 const getPropertiesFromModification = (properties) => {
@@ -259,7 +260,7 @@ const SubstationModificationDialog = ({
                 substation[COUNTRY],
                 !!editData,
                 editData?.uuid,
-                substation[ADDITIONAL_PROPERTIES].filter(
+                substation[ADDITIONAL_PROPERTIES]?.filter(
                     (p) => p[VALUE] != null || p[DELETION_MARK]
                 )
             ).catch((error) => {

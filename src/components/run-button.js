@@ -68,9 +68,6 @@ const RunButton = (props) => {
             props.getStatus(props.runnables[0]) !==
                 RunningStatus.SUCCEED); /* Load flow button's status must SUCCEED */
 
-    let selectionDisabled =
-        props.disabled || (selectedIndex === 0 && isRunning());
-
     function handleActionOnRunnable() {
         props.actionOnRunnable.action(getRunnable());
     }
@@ -87,7 +84,7 @@ const RunButton = (props) => {
             onClick={handleClick}
             runningStatus={getRunningStatus()}
             buttonDisabled={buttonDisabled}
-            selectionDisabled={selectionDisabled}
+            selectionDisabled={props.disabled}
             text={
                 props.getText
                     ? props.getText(getRunnable(), getRunningStatus())

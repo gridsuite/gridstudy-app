@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {
     backendFetch,
     backendFetchJson,
@@ -15,29 +22,6 @@ export function getDefaultLoadFlowProvider() {
         PREFIX_STUDY_QUERIES + '/v1/loadflow-default-provider';
     console.debug(getDefaultLoadFlowProviderUrl);
     return backendFetchText(getDefaultLoadFlowProviderUrl);
-}
-
-export function fetchLoadFlowInfos(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching loadflow infos (status and result) for '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const fetchLoadFlowInfosUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/infos';
-    return backendFetchJson(fetchLoadFlowInfosUrl);
-}
-
-export function startLoadFlow(studyUuid, currentNodeUuid) {
-    console.info(
-        'Running loadflow on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            '...'
-    );
-    const startLoadFlowUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/run';
-    console.debug(startLoadFlowUrl);
-    return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
 export function setLoadFlowParameters(studyUuid, newParams) {
@@ -83,4 +67,50 @@ export function setLoadFlowProvider(studyUuid, newProvider) {
         },
         body: newProvider,
     });
+}
+
+export function startLoadFlow(studyUuid, currentNodeUuid) {
+    console.info(
+        'Running loadflow on ' +
+            studyUuid +
+            ' and node ' +
+            currentNodeUuid +
+            '...'
+    );
+    const startLoadFlowUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/run';
+    console.debug(startLoadFlowUrl);
+    return backendFetch(startLoadFlowUrl, { method: 'put' });
+}
+
+export function stopLoadFlow(studyUuid, currentNodeUuid) {
+    console.info(
+        `Stopping loadFlow on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const stopLoadFlowUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/stop';
+    console.debug(stopLoadFlowUrl);
+    return backendFetch(stopLoadFlowUrl, { method: 'put' });
+}
+
+export function fetchLoadFlowStatus(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching loadFlow status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/loadflow/status';
+    console.debug(url);
+    return backendFetchText(url);
+}
+
+export function fetchLoadFlowResult(studyUuid, currentNodeUuid) {
+    console.info(
+        `Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/loadflow/result';
+    console.debug(url);
+    return backendFetchJson(url);
 }

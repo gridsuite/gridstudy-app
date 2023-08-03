@@ -5,10 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ComputingType } from 'components/computing-status/computing-type';
+import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 
 export interface ReduxState {
     studyUpdated: StudyUpdated;
+    shortCircuitNotif: boolean;
+    studyUuid: UUID;
+    currentTreeNode: CurrentTreeNode;
+    computingStatus: ComputingStatus;
 }
 
 export interface StudyUpdatedEventDataHeader {
@@ -30,4 +36,30 @@ export interface StudyUpdatedEventData {
 export interface StudyUpdated {
     force: 0 | 1;
     eventData: StudyUpdatedEventData;
+}
+
+export interface CurrentTreeNodeData {
+    parentNodeUuid: UUID;
+    label: string;
+    description: string;
+    buildStatus: string;
+    readonly: boolean;
+}
+
+export interface CurrentTreeNode {
+    id: UUID;
+    type: string;
+    data: CurrentTreeNodeData;
+    targetPosition: string;
+    sourcePosition: string;
+}
+
+export interface ComputingStatus {
+    [ComputingType.LOADFLOW]: RunningStatus;
+    [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
+    [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
+    [ComputingType.SHORTCIRCUIT_ANALYSIS]: RunningStatus;
+    [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus;
+    [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
+    [ComputingType.VOLTAGE_INIT]: RunningStatus;
 }

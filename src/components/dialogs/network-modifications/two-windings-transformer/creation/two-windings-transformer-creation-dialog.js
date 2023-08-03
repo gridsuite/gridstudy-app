@@ -39,7 +39,6 @@ import {
     SERIES_REACTANCE,
     SERIES_RESISTANCE,
     STEPS,
-    STEPS_TAP,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
@@ -49,11 +48,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import {
-    createTwoWindingsTransformer,
-    FetchStatus,
-    fetchVoltageLevelsListInfos,
-} from 'utils/rest-api';
+import { FetchStatus, fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -69,18 +64,18 @@ import {
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
-import PhaseTapChangerPane from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
+import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerValidationSchema,
-} from './tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
-import RatioTapChangerPane from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
+} from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
+import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
     getRatioTapChangerValidationSchema,
-} from './tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+} from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import TwoWindingsTransformerCreationDialogTabs from './two-windings-transformer-creation-dialog-tabs';
 import TwoWindingsTransformerCreationCharacteristicsPane from './characteristics-pane/two-windings-transformer-creation-characteristics-pane';
 import {
@@ -104,6 +99,8 @@ import {
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
+import { computeHighTapPosition } from 'components/utils/utils';
+import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -179,13 +176,6 @@ const TwoWindingsTransformerCreationDialog = ({
         } else {
             return RATIO_REGULATION_MODES.FIXED_RATIO.id;
         }
-    };
-
-    const computeHighTapPosition = (steps) => {
-        const values = steps?.map((step) => step[STEPS_TAP]);
-        return Array.isArray(values) && values.length > 0
-            ? Math.max(...values)
-            : null;
     };
 
     const getTapSideForEdit = (twt, tap) => {
@@ -511,27 +501,19 @@ const TwoWindingsTransformerCreationDialog = ({
     );
 
     const computeRatioTapChangerRegulating = (ratioTapChangerFormValues) => {
-        if (
+        return (
             ratioTapChangerFormValues?.[REGULATION_MODE] ===
             RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+        );
     };
 
     const computePhaseTapChangerRegulating = (phaseTapChangerFormValues) => {
-        if (
+        return (
             phaseTapChangerFormValues?.[REGULATION_MODE] ===
                 PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
             phaseTapChangerFormValues?.[REGULATION_MODE] ===
                 PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
-        ) {
-            return true;
-        } else {
-            return false;
-        }
+        );
     };
 
     const computePhaseTapChangerRegulationValue = (
@@ -690,7 +672,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 ratioTap,
                 phaseTap,
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined,
                 sanitizeString(
                     characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]

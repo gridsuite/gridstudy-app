@@ -6,12 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    changeNetworkModificationOrder,
-    copyOrMoveModifications,
-    deleteModifications,
-    fetchNetworkModifications,
-} from '../../../utils/rest-api';
+import { copyOrMoveModifications } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
@@ -64,11 +59,17 @@ import { UPDATE_TYPE } from 'components/network/constants';
 import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
+import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
+
 import { fetchNetworkModification } from '../../../services/network-modification';
+import {
+    changeNetworkModificationOrder,
+    deleteModifications,
+    fetchNetworkModifications,
+} from '../../../services/study/network-modifications';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
-import { useParameterState } from '../../dialogs/parameters/parameters';
-import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -178,8 +179,6 @@ const NetworkModificationNodeEditor = () => {
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef();
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);
         setCopiedModifications((oldCopiedModifications) => {
@@ -233,12 +232,17 @@ const NetworkModificationNodeEditor = () => {
             label: 'Create',
             subItems: [
                 {
+                    id: MODIFICATION_TYPES.BATTERY_CREATION.type,
+                    label: 'BATTERY',
+                    action: () => adapt(BatteryCreationDialog),
+                },
+                {
                     id: MODIFICATION_TYPES.LOAD_CREATION.type,
                     label: 'LOAD',
                     action: () => adapt(LoadCreationDialog),
                 },
                 {
-                    id: MODIFICATION_TYPES.GENERATOR_CREATION.type,
+                    id: 'GENERATOR_CREATION',
                     label: 'GENERATOR',
                     action: () => adapt(GeneratorCreationDialog),
                 },
@@ -286,7 +290,6 @@ const NetworkModificationNodeEditor = () => {
                 },
                 {
                     id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
-                    hide: !enableDeveloperMode,
                     label: 'ShuntCompensator',
                     action: () => adapt(ShuntCompensatorModificationDialog),
                 },
@@ -315,7 +318,7 @@ const NetworkModificationNodeEditor = () => {
             ],
         },
         {
-            id: MODIFICATION_TYPES.EQUIPMENT_DELETION.type,
+            id: 'EQUIPMENT_DELETION',
             label: 'DeleteContingencyList',
             action: () => adapt(EquipmentDeletionDialog),
         },
@@ -370,6 +373,12 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(GenerationDispatchDialog),
                 },
             ],
+        },
+        {
+            id: 'VOLTAGE_INIT_MODIFICATION',
+            label: 'VoltageInitModification',
+            hide: true,
+            action: () => adapt(VoltageInitModificationDialog),
         },
     ];
 

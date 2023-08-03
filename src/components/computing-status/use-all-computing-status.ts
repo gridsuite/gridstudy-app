@@ -12,17 +12,22 @@ import {
     getShortCircuitAnalysisRunningStatus,
     getDynamicSimulationRunningStatus,
     getVoltageInitRunningStatus,
+    getLoadFlowRunningStatus,
 } from '../utils/running-status';
 
-import {
-    fetchShortCircuitAnalysisStatus,
-    fetchVoltageInitStatus,
-} from '../../utils/rest-api';
 import { UUID } from 'crypto';
 import { ComputingType } from './computing-type';
 import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
 import { fetchDynamicSimulationStatus } from '../../services/study/dynamic-simulation';
+import {
+    fetchOneBusShortCircuitAnalysisStatus,
+    fetchShortCircuitAnalysisStatus,
+} from '../../services/study/short-circuit-analysis';
+import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
+import { fetchLoadFlowStatus } from '../../services/study/loadflow';
+
+const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
 const securityAnalysisStatusInvalidations = [
     'securityAnalysis_status',
@@ -35,6 +40,10 @@ const sensitivityAnalysisStatusInvalidations = [
 const shortCircuitAnalysisStatusInvalidations = [
     'shortCircuitAnalysis_status',
     'shortCircuitAnalysis_failed',
+];
+const oneBusShortCircuitAnalysisStatusInvalidations = [
+    'oneBusShortCircuitAnalysis_status',
+    'oneBusShortCircuitAnalysis_failed',
 ];
 const dynamicSimulationStatusInvalidations = [
     'dynamicSimulation_status',
@@ -50,6 +59,15 @@ export const useAllComputingStatus = (
     studyUuid: UUID,
     currentNodeUuid: UUID
 ): void => {
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        fetchLoadFlowStatus,
+        loadFlowStatusInvalidations,
+        getLoadFlowRunningStatus,
+        ComputingType.LOADFLOW
+    );
+
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
@@ -75,6 +93,15 @@ export const useAllComputingStatus = (
         shortCircuitAnalysisStatusInvalidations,
         getShortCircuitAnalysisRunningStatus,
         ComputingType.SHORTCIRCUIT_ANALYSIS
+    );
+
+    useComputingStatus(
+        studyUuid,
+        currentNodeUuid,
+        fetchOneBusShortCircuitAnalysisStatus,
+        oneBusShortCircuitAnalysisStatusInvalidations,
+        getShortCircuitAnalysisRunningStatus,
+        ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
     );
 
     useComputingStatus(

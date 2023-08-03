@@ -22,13 +22,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import {
-    energiseBranchEnd,
-    fetchNetworkElementInfos,
-    lockoutBranch,
-    switchOnBranch,
-    tripBranch,
-} from '../../utils/rest-api';
+import { fetchNetworkElementInfos } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
@@ -39,8 +33,14 @@ import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
+import {
+    energiseBranchEnd,
+    lockoutBranch,
+    switchOnBranch,
+    tripBranch,
+} from '../../services/study/network-modifications';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     menuItem: {
         // NestedMenu item manages only label prop of string type
         // It fix paddings itself then we must force this padding
@@ -79,8 +79,6 @@ const withBranchMenu =
             switch (equipmentType) {
                 case EQUIPMENT_TYPES.LINE.type:
                     return 'Line';
-                case EQUIPMENT_TYPES.HVDC_LINE.type:
-                    return 'HvdcLine';
                 case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
                     return '2WTransformer';
                 default:
@@ -92,8 +90,6 @@ const withBranchMenu =
             switch (equipmentType) {
                 case EQUIPMENT_TYPES.LINE.type:
                     return EQUIPMENT_TYPES.LINE.type;
-                case EQUIPMENT_TYPES.HVDC_LINE.type:
-                    return EQUIPMENT_TYPES.HVDC_LINE.type;
                 case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
                     return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
                 default:
@@ -227,30 +223,28 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.type && (
-                    <MenuItem
-                        className={classes.menuItem}
-                        onClick={() => handleTrip()}
-                        disabled={
-                            !isNodeEditable ||
-                            branch.branchStatus === 'FORCED_OUTAGE'
-                        }
-                    >
-                        <ListItemIcon>
-                            <OfflineBoltOutlinedIcon />
-                        </ListItemIcon>
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() => handleTrip()}
+                    disabled={
+                        !isNodeEditable ||
+                        branch.branchStatus === 'FORCED_OUTAGE'
+                    }
+                >
+                    <ListItemIcon>
+                        <OfflineBoltOutlinedIcon />
+                    </ListItemIcon>
 
-                        <ListItemText
-                            primary={
-                                <Typography noWrap>
-                                    {intl.formatMessage({
-                                        id: getTranslationKey('Trip'),
-                                    })}
-                                </Typography>
-                            }
-                        />
-                    </MenuItem>
-                )}
+                    <ListItemText
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({
+                                    id: getTranslationKey('Trip'),
+                                })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
                 {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
                         className={classes.menuItem}
@@ -346,34 +340,31 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.type && (
-                    <MenuItem
-                        className={classes.menuItem}
-                        onClick={() =>
-                            handleDeleteEquipment(
-                                getFeederTypeFromEquipmentType(equipmentType),
-                                equipment.id
-                            )
-                        }
-                        disabled={!isNodeEditable}
-                    >
-                        <ListItemIcon>
-                            <DeleteIcon />
-                        </ListItemIcon>
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() =>
+                        handleDeleteEquipment(
+                            getFeederTypeFromEquipmentType(equipmentType),
+                            equipment.id
+                        )
+                    }
+                    disabled={!isNodeEditable}
+                >
+                    <ListItemIcon>
+                        <DeleteIcon />
+                    </ListItemIcon>
 
-                        <ListItemText
-                            primary={
-                                <Typography noWrap>
-                                    {intl.formatMessage({
-                                        id: 'DeleteFromMenu',
-                                    })}
-                                </Typography>
-                            }
-                        />
-                    </MenuItem>
-                )}
-                {(equipmentType ===
-                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type ||
+                    <ListItemText
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({
+                                    id: 'DeleteFromMenu',
+                                })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
+                {(equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type ||
                     equipmentType === EQUIPMENT_TYPES.LINE.type) && (
                     <MenuItem
                         className={classes.menuItem}

@@ -25,11 +25,6 @@ import {
     MenuItem,
 } from '@mui/material';
 
-import {
-    getSecurityAnalysisParameters,
-    setSecurityAnalysisParameters,
-} from '../../../utils/rest-api';
-
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 
 import {
@@ -74,13 +69,25 @@ import {
 import {
     fetchDefaultSecurityAnalysisProvider,
     fetchSecurityAnalysisProvider,
+    getSecurityAnalysisParameters,
+    setSecurityAnalysisParameters,
     updateSecurityAnalysisProvider,
 } from '../../../services/study/security-analysis';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
-        <Button onClick={hideParameters} className={classeStyleName}>
-            <FormattedMessage id="close" />
+        <LabelledButton
+            callback={hideParameters}
+            label={'close'}
+            name={classeStyleName}
+        />
+    );
+};
+
+export const LabelledButton = ({ callback, label, name }) => {
+    return (
+        <Button onClick={callback} className={name}>
+            <FormattedMessage id={label} />
         </Button>
     );
 };
@@ -210,14 +217,6 @@ export const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.error.main,
     },
 }));
-
-export const LabelledButton = ({ callback, label, name }) => {
-    return (
-        <Button onClick={callback} className={name}>
-            <FormattedMessage id={label} />
-        </Button>
-    );
-};
 
 export const TabPanel = (props) => {
     const { children, value, index, keepState, ...other } = props;
