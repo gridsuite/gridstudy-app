@@ -23,14 +23,14 @@ export const NodeActions = {
 };
 
 export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
-    const children = treeModel?.treeNodes?.filter((node) =>
-        sourceNodeIds?.includes(node?.data?.parentNodeUuid)
+    const children = treeModel.treeNodes.filter((node) =>
+        sourceNodeIds.includes(node.data.parentNodeUuid)
     );
-    if (children?.length > 0) {
-        children?.forEach((item) => {
+    if (children.length > 0) {
+        children.forEach((item) => {
             allChildren?.push({ ...item });
         });
-        const ids = children?.map((el) => el.id);
+        const ids = children.map((el) => el.id);
         // get next level of children
         getNodeChildren(treeModel, ids, allChildren);
     }
@@ -39,16 +39,16 @@ export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
 export const getNodesFromSubTree = (treeModel, id) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
-        const activeNodeDirectChildren = treeModel?.treeNodes?.filter(
-            (item) => item?.data?.parentNodeUuid === id
+        const activeNodeDirectChildren = treeModel.treeNodes.filter(
+            (item) => item.data.parentNodeUuid === id
         );
         const allChildren = [];
-        activeNodeDirectChildren?.forEach((child) => {
+        activeNodeDirectChildren.forEach((child) => {
             allChildren.push(child);
             // get the children of each child
-            getNodeChildren(treeModel, [child?.id], allChildren);
+            getNodeChildren(treeModel, [child.id], allChildren);
         });
-        return allChildren?.length;
+        return allChildren.length;
     }
 };
 
@@ -328,6 +328,10 @@ const CreateNodeMenu = ({
             nodesNumber: getNodesFromSubTree(treeModel, activeNode?.id),
         }
     );
+    const handleOnClose = useCallback(() => {
+        setNodeAction(NodeActions.NO_ACTION);
+        handleClose();
+    }, [handleClose]);
 
     const handleOnValidate = useCallback(() => {
         if (nodeAction === NodeActions.REMOVE_NODE) {
@@ -335,20 +339,14 @@ const CreateNodeMenu = ({
         } else {
             handleRemovalSubtree(activeNode);
         }
-        handleClose();
-        setNodeAction(NodeActions.NO_ACTION);
+        handleOnClose();
     }, [
-        handleClose,
+        handleOnClose,
         handleNodeRemoval,
         handleRemovalSubtree,
         activeNode,
         nodeAction,
     ]);
-
-    const handleOnClose = useCallback(() => {
-        setNodeAction(NodeActions.NO_ACTION);
-        handleClose();
-    }, [handleClose]);
 
     return (
         <>
