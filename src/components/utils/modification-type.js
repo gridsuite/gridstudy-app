@@ -18,6 +18,9 @@ export const MODIFICATION_TYPES = {
     BATTERY_CREATION: {
         type: 'BATTERY_CREATION',
     },
+    BATTERY_MODIFICATION: {
+        type: 'BATTERY_MODIFICATION',
+    },
     GENERATOR_CREATION: {
         type: 'GENERATOR_CREATION',
     },

@@ -636,7 +636,7 @@
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Each active power value must be a valid unique number.",
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Each active power value must be within the min P and max P values.",
     "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Each minimum reactive power value must be inferior or equal to the corresponding maximum reactive power value.",
-
+    "BatteryModificationError": "Error while modifying battery",
     "ModifyLine": "Modify line",
     "CreateLine": "Create line",
     "Characteristics": "Characteristics",
