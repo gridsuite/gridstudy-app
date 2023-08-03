@@ -166,7 +166,7 @@ const GeneratorModificationForm = ({
     const plannedActivePowerSetPointField = (
         <FloatInput
             name={PLANNED_ACTIVE_POWER_SET_POINT}
-            label={'PlannedActivePowerSetPoint'}
+            label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
             previousValue={generatorToModify?.plannedActivePowerSetPoint}
             clearable={true}
