@@ -636,7 +636,7 @@
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Chaque valeur de puissance active doit être un nombre unique et valide.",
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Chaque valeur de puissance active doit être comprise entre les valeurs P min et P max.",
     "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Chaque valeur de puissance réactive minimale doit être inférieur ou égale à la puissance réactive maximale correspondante.",
-
+    "BatteryModificationError": "Erreur lors de la modification d'une batterie ",
     "ModifyLine": "Modifier une ligne",
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
@@ -1055,8 +1055,16 @@
     "muiTablePaginationNext": "Aller à la page suivante",
     "muiTablePaginationFirst": "Aller à la première page",
     "muiTablePaginationLast": "Aller à la dernière page",
+
+    "applyModifications": "Appliquer modifications",
+    "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
+    "VoltageInitModification": "Modification plan de tension",
     "GeneratorAvailability": "Indisponibilité groupes",
     "chooseElement": "Choisir un element",
+    "grid.noCalculation": "Pas de calcul lancé",
+    "grid.failed": "Echec du calcul",
+    "grid.running": "Calcul en cours...",
+    "grid.noLimitViolation": "Pas de contrainte",
     "deleteNodeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud  \"{nodeName}\"?",
     "deleteSubTreeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud \"{nodeName}\" et son sous-arbre contenant {nodesNumber} nœuds ?"
 }

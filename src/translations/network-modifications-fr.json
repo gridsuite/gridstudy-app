@@ -14,6 +14,7 @@
     "network_modifications/LOAD_CREATION": "Création de la charge {computedLabel}",
     "network_modifications/LOAD_MODIFICATION": "Modification de la charge {computedLabel}",
     "network_modifications/BATTERY_CREATION": "Création de batterie {computedLabel}",
+    "network_modifications/BATTERY_MODIFICATION": "Modification de batterie {computedLabel}",
     "network_modifications/GENERATOR_CREATION": "Création du générateur {computedLabel}",
     "network_modifications/GENERATOR_MODIFICATION": "Modification du générateur {computedLabel}",
     "network_modifications/LINE_CREATION": "Création de la ligne {computedLabel}",
@@ -30,5 +31,6 @@
     "network_modifications/deletingModification": "Suppression de la modification en cours ...",
     "network_modifications/updatingModification": "Mise à jour de la modification en cours ...",
     "network_modifications/modifications": "Mise à jour de la liste des modifications en cours ...",
-    "network_modifications/GENERATION_DISPATCH": "Démarrage de groupes {computedLabel}"
+    "network_modifications/GENERATION_DISPATCH": "Démarrage de groupes {computedLabel}",
+    "network_modifications/VOLTAGE_INIT_MODIFICATION": "Initialisation du plan de tension {computedLabel}"
 }

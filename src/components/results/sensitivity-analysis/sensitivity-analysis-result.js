@@ -15,6 +15,13 @@ import {
 } from './sensitivity-analysis-content';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
+import {
+    getNoRowsMessage,
+    getRows,
+    useIntlResultStatusMessages,
+} from '../../utils/aggrid-rows-handler';
+import { useSelector } from 'react-redux';
+import { ComputingType } from '../../computing-status/computing-type';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -38,7 +45,10 @@ const SensitivityAnalysisResult = ({
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
-
+    const sensitivityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
+    const messages = useIntlResultStatusMessages(intl, true);
     const makeColumn = useCallback(
         ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
             const { options: filterOptions = [] } =
@@ -172,18 +182,21 @@ const SensitivityAnalysisResult = ({
             params.api.sizeColumnsToFit();
         }
     }, []);
+    const message = getNoRowsMessage(messages, rows, sensitivityAnalysisStatus);
 
+    const rowsToShow = getRows(rows, sensitivityAnalysisStatus);
     return (
         <div style={{ flexGrow: 1 }}>
             <CustomAGGrid
                 ref={gridRef}
-                rowData={rows}
+                rowData={rowsToShow}
                 columnDefs={columnsDefs}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
                 onSortChanged={onSortChanged}
                 gridOptions={gridOptions}
                 tooltipShowDelay={TOOLTIP_DELAY}
+                overlayNoRowsTemplate={message}
             />
         </div>
     );
