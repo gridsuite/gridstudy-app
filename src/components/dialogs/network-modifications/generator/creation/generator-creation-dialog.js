@@ -63,11 +63,11 @@ import {
 import {
     getSetPointsEmptyFormData,
     getSetPointsSchema,
-} from '../set-points/set-points-utils';
+} from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
-} from '../reactive-limits/reactive-limits-utils';
+} from '../../../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';

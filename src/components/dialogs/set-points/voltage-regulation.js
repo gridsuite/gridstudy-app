@@ -18,8 +18,8 @@ import {
     gridItem,
     percentageTextField,
     VoltageAdornment,
-} from '../../../dialogUtils';
-import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
+} from '../dialogUtils';
+import RegulatingTerminalForm from '../regulating-terminal/regulating-terminal-form';
 import { Box } from '@mui/system';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';

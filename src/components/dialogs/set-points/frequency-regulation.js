@@ -9,7 +9,7 @@ import {
     gridItem,
     gridItemWithTooltip,
     percentageTextField,
-} from '../../../dialogUtils';
+} from '../dialogUtils';
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
 import React, { useMemo } from 'react';
@@ -20,7 +20,7 @@ import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
 
-const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
+const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
     const intl = useIntl();
     const watchFrequencyRegulation = useWatch({
         name: FREQUENCY_REGULATION,
@@ -38,7 +38,7 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
         }
     }, [intl, previousValues]);
 
-    const frequencyRegulationField = isGeneratorModification ? (
+    const frequencyRegulationField = isEquipmentModification ? (
         /** wrappe with box to avoid warning */
         <Box>
             <CheckboxNullableInput
@@ -68,7 +68,7 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
 
     return (
         <>
-            {isGeneratorModification
+            {isEquipmentModification
                 ? gridItemWithTooltip(
                       frequencyRegulationField,
                       watchFrequencyRegulation !== null ? (
@@ -85,7 +85,7 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
 };
 
 FrequencyRegulation.propTypes = {
-    isGeneratorModification: PropTypes.bool,
+    isEquipmentModification: PropTypes.bool,
 };
 
 export default FrequencyRegulation;

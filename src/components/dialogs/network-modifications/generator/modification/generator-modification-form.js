@@ -36,8 +36,8 @@ import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
-import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
-import SetPointsForm from '../set-points/set-points-form';
+import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
 
@@ -233,7 +233,7 @@ const GeneratorModificationForm = ({
                 </Grid>
             </Grid>
             <ReactiveLimitsForm
-                generatorToModify={generatorToModify}
+                equipmentToModify={generatorToModify}
                 updatePreviousReactiveCapabilityCurveTable={
                     updatePreviousReactiveCapabilityCurveTable
                 }
@@ -244,7 +244,7 @@ const GeneratorModificationForm = ({
                 studyUuid={studyUuid}
                 currentNodeUuid={currentNodeUuid}
                 voltageLevelOptions={voltageLevelOptions}
-                isGeneratorModification={true}
+                isEquipmentModification={true}
                 previousValues={generatorToModify}
             />
 

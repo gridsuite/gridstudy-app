@@ -15,7 +15,7 @@ import {
 import { REACTIVE_LIMIT_TYPES } from 'components/network/constants';
 import React from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import { gridItem, ReactivePowerAdornment } from '../../../dialogUtils';
+import { gridItem, ReactivePowerAdornment } from '../dialogUtils';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
@@ -27,7 +27,7 @@ const headerIds = [
 ];
 
 const ReactiveLimitsForm = ({
-    generatorToModify,
+    equipmentToModify,
     updatePreviousReactiveCapabilityCurveTable,
 }) => {
     const reactiveCapabilityCurveChoice = useWatch({
@@ -52,7 +52,7 @@ const ReactiveLimitsForm = ({
             label={'MinimumReactivePower'}
             adornment={ReactivePowerAdornment}
             previousValue={
-                generatorToModify?.minMaxReactiveLimits?.minimumReactivePower
+                equipmentToModify?.minMaxReactiveLimits?.minimumReactivePower
             }
             clearable={true}
         />
@@ -64,7 +64,7 @@ const ReactiveLimitsForm = ({
             label={'MaximumReactivePower'}
             adornment={ReactivePowerAdornment}
             previousValue={
-                generatorToModify?.minMaxReactiveLimits?.maximumReactivePower
+                equipmentToModify?.minMaxReactiveLimits?.maximumReactivePower
             }
             clearable={true}
         />
@@ -75,7 +75,7 @@ const ReactiveLimitsForm = ({
             id={REACTIVE_CAPABILITY_CURVE_TABLE}
             tableHeadersIds={headerIds}
             isReactiveCapabilityCurveOn={isReactiveCapabilityCurveOn}
-            previousValues={generatorToModify?.reactiveCapabilityCurvePoints}
+            previousValues={equipmentToModify?.reactiveCapabilityCurvePoints}
             updatePreviousReactiveCapabilityCurveTable={
                 updatePreviousReactiveCapabilityCurveTable
             }
