@@ -90,7 +90,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
                     <FormControl className={classes.formChipItems2}>
                         {elements.map((item, index) => (
                             <Chip
-                                key={item}
+                                key={item.id}
                                 size="small"
                                 onDelete={() => {
                                     remove(index);
