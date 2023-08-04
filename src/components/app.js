@@ -255,20 +255,30 @@ const App = () => {
                                     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
                                 )
                             );
-                            const reordredParams = JSON.parse(param.value);
-                            const tabDefinition = TABLES_DEFINITION_INDEXES.get(
-                                index
-                            ).columns.map((item) => item.id);
-                            if (tabDefinition.length > reordredParams.length) {
-                                const newParams = tabDefinition.filter(
-                                    (item) => !reordredParams.includes(item)
+                            const equipmentReorderedColumns = JSON.parse(
+                                param.value
+                            );
+                            const equipmentAllColumns =
+                                TABLES_DEFINITION_INDEXES.get(
+                                    index
+                                ).columns.map((item) => item.id);
+                            if (
+                                equipmentAllColumns.length >
+                                equipmentReorderedColumns.length
+                            ) {
+                                const newColumns = equipmentAllColumns.filter(
+                                    (item) =>
+                                        !equipmentReorderedColumns.includes(
+                                            item
+                                        )
                                 );
-                                const reorderedParamValue = [
-                                    ...reordredParams,
-                                    ...newParams,
+                                const equipmentAllReorderedColumns = [
+                                    ...equipmentReorderedColumns,
+                                    ...newColumns,
                                 ];
-                                param.value =
-                                    JSON.stringify(reorderedParamValue);
+                                param.value = JSON.stringify(
+                                    equipmentAllReorderedColumns
+                                );
                             }
                             reorderedColumnsParams[index] = {
                                 index: index,
