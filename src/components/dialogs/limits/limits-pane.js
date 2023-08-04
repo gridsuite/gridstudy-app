@@ -227,7 +227,7 @@ const LimitsPane = ({
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <h3 className={classes.h3}>
-                        <FormattedMessage id={'Side1'} />
+                        <FormattedMessage id={'OriginSide'} />
                     </h3>
                 </Grid>
             </Grid>
@@ -250,7 +250,7 @@ const LimitsPane = ({
                 getPreviousValue={getTemporaryLimitPreviousValue}
                 isValueModified={isTemporaryLimitModified}
             />
-            <GridSection title="Side2" />
+            <GridSection title="ExtremitySide" />
             <Grid container spacing={2}>
                 {gridItem(permanentCurrentLimit2Field, 4)}
             </Grid>

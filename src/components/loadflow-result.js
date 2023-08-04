@@ -88,9 +88,9 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         const PERMANENT_LIMIT_NAME = 'permanent';
         const convertSide = (side) => {
             return side === 'ONE'
-                ? intl.formatMessage({ id: 'CurrentViolationSide1' })
+                ? intl.formatMessage({ id: 'OriginSide' })
                 : side === 'TWO'
-                ? intl.formatMessage({ id: 'CurrentViolationSide2' })
+                ? intl.formatMessage({ id: 'ExtremitySide' })
                 : undefined;
         };
         const convertLimitName = (limitName) => {

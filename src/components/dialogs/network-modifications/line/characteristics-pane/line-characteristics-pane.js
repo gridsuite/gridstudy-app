@@ -139,11 +139,11 @@ const LineCharacteristicsPane = ({
                             </h3>
                         </Grid>
                     </Grid>
-                    <GridSection title="Side1" heading="4" />
+                    <GridSection title="OriginSide" heading="4" />
                     <Grid container spacing={2}>
                         {gridItem(connectivity1Field, 12)}
                     </Grid>
-                    <GridSection title="Side2" heading="4" />
+                    <GridSection title="ExtremitySide" heading="4" />
                     <Grid container spacing={2}>
                         {gridItem(connectivity2Field, 12)}
                     </Grid>
@@ -154,12 +154,12 @@ const LineCharacteristicsPane = ({
                 {gridItem(seriesResistanceField, 4)}
                 {gridItem(seriesReactanceField, 4)}
             </Grid>
-            <GridSection title="Side1" heading="4" />
+            <GridSection title="OriginSide" heading="4" />
             <Grid container spacing={2}>
                 {gridItem(shuntConductance1Field, 4)}
                 {gridItem(shuntSusceptance1Field, 4)}
             </Grid>
-            <GridSection title="Side2" heading="4" />
+            <GridSection title="ExtremitySide" heading="4" />
             <Grid container spacing={2}>
                 {gridItem(shuntConductance2Field, 4)}
                 {gridItem(shuntSusceptance2Field, 4)}

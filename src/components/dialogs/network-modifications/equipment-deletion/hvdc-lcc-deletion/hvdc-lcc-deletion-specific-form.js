@@ -67,7 +67,7 @@ const HvdcLccDeletionSpecificForm = () => {
 
     const mscOnsideOne = (
         <ShuntCompensatorSelectionForm
-            title="Side1"
+            title="OriginSide"
             arrayFormName={`${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`}
             mcsRows={mcsRows1}
         />
@@ -75,7 +75,7 @@ const HvdcLccDeletionSpecificForm = () => {
 
     const mscOnsideTwo = (
         <ShuntCompensatorSelectionForm
-            title="Side2"
+            title="ExtremitySide"
             arrayFormName={`${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`}
             mcsRows={mcsRows2}
         />
