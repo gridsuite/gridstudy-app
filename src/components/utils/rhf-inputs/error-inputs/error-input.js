@@ -18,7 +18,7 @@ const ErrorInput = ({ name, InputField }) => {
 
     const { isSubmitted } = useFormState();
 
-    const errorRef = useRef(null); 
+    const errorRef = useRef(null);
 
     const errorProps = (errorMsg) => {
         if (typeof errorMsg === 'string') {
@@ -40,16 +40,20 @@ const ErrorInput = ({ name, InputField }) => {
         if (isSubmitted && error && errorRef?.current) {
             errorRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [isSubmitted]);
+    }, [error, isSubmitted]);
 
     return (
-        error?.message && (
-            <div ref={errorRef}>
-                <InputField
-                    message={<FormattedMessage {...errorProps(error?.message)} />}
-                />
-            </div>
-        )
+        <>
+            {error?.message && (
+                <div ref={errorRef}>
+                    <InputField
+                        message={
+                            <FormattedMessage {...errorProps(error?.message)} />
+                        }
+                    />
+                </div>
+            )}
+        </>
     );
 };
 
