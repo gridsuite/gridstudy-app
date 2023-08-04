@@ -5,18 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useController, useFormState } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useRef } from 'react';
 
 const ErrorInput = ({ name, InputField }) => {
     const {
         fieldState: { error },
+        formState: { isSubmitted },
     } = useController({
         name,
     });
-
-    const { isSubmitted } = useFormState();
 
     const errorRef = useRef(null);
 
