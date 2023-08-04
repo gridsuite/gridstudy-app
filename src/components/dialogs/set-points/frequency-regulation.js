@@ -26,14 +26,6 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
         name: FREQUENCY_REGULATION,
     });
 
-    const isFrequencyRegulationOn = useMemo(
-        () =>
-            watchFrequencyRegulation === true ||
-            (watchFrequencyRegulation === null &&
-                previousValues?.activePowerControlOn === true),
-        [watchFrequencyRegulation, previousValues?.activePowerControlOn]
-    );
-
     const previousFrequencyRegulation = useMemo(() => {
         if (previousValues?.activePowerControlOn) {
             return intl.formatMessage({ id: 'On' });
@@ -87,7 +79,7 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
                       4
                   )
                 : gridItem(frequencyRegulationField, 4)}
-            {isFrequencyRegulationOn && gridItem(droopField, 4)}
+            {gridItem(droopField, 4)}
         </>
     );
 };
