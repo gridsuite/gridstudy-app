@@ -12,7 +12,7 @@ import React, { useEffect, useRef } from 'react';
 const ErrorInput = ({ name, InputField }) => {
     const {
         fieldState: { error },
-        formState: { isSubmitted },
+        formState: { isSubmitting },
     } = useController({
         name,
     });
@@ -36,10 +36,12 @@ const ErrorInput = ({ name, InputField }) => {
     };
 
     useEffect(() => {
-        if (isSubmitted && error && errorRef?.current) {
+        // the scroll should be done only when the form is submitting
+        if (error && errorRef.current) {
             errorRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [error, isSubmitted]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isSubmitting]);
 
     return (
         <>
