@@ -51,6 +51,9 @@ const SensitivityAnalysisResult = ({
     const messages = useIntlResultStatusMessages(intl, true);
     const makeColumn = useCallback(
         ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
+            const { colKey, sortWay } = sortConfig || {};
+            const isSortActive = colKey === field;
+
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
                 {};
@@ -77,6 +80,7 @@ const SensitivityAnalysisResult = ({
                     updateFilter,
                     filterSelectedOptions,
                 },
+                minWidth: isSortActive && sortWay ? 95 : 65,
                 maxWidth: maxWidth,
                 wrapHeaderText: true,
                 autoHeaderHeight: true,
@@ -169,6 +173,7 @@ const SensitivityAnalysisResult = ({
             suppressMovable: true,
             sortable: true,
             resizable: true,
+            flex: 1,
         }),
         []
     );
