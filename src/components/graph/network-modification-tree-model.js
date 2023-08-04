@@ -36,7 +36,6 @@ export default class NetworkModificationTreeModel {
         const referenceNodeIndex = referenceNodeId
             ? this.treeNodes.findIndex((node) => node.id === referenceNodeId)
             : null;
-        console.log('SBO', insertMode);
         switch (insertMode) {
             case 'BEFORE': {
                 // We need to insert the node just before the active(reference) node
