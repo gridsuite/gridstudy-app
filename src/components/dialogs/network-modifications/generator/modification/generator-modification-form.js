@@ -35,11 +35,11 @@ import {
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const GeneratorModificationForm = ({
     studyUuid,

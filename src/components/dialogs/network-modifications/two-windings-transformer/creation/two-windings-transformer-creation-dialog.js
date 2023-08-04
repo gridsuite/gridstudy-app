@@ -48,7 +48,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FetchStatus, fetchVoltageLevelsListInfos } from 'utils/rest-api';
+import { FetchStatus } from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -101,6 +101,7 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
 import { computeHighTapPosition } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 /**
  * Dialog to create a two windings transformer in the network

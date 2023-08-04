@@ -15,7 +15,6 @@ import {
     fetchNetworkModificationTree,
     fetchStudyExists,
     fetchCaseName,
-    fetchAllEquipments,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -53,6 +52,7 @@ import {
 } from '../services/directory-notification';
 import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
+import { fetchAllEquipments } from '../services/study/network-map';
 
 function isWorthUpdate(
     studyUpdatedForce,

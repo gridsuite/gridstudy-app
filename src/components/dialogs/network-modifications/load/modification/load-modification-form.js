@@ -24,13 +24,14 @@ import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
-import { fetchNetworkElementInfos, FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from 'utils/rest-api';
 import { useIntl } from 'react-intl';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { TextField } from '@mui/material';
+import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 
 const LoadModificationForm = ({
     currentNode,
