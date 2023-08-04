@@ -105,6 +105,16 @@ export function toModificationOperation(value) {
         : null;
 }
 
+export function toModificationUnsetOperation(value) {
+    if (value === null) {
+        return null;
+    }
+
+    return value === 0 || value === false || value
+        ? { value: value, op: 'SET' }
+        : { op: 'UNSET' };
+}
+
 export const formatTemporaryLimits = (temporaryLimits) =>
     temporaryLimits?.map((limit) => {
         return {
