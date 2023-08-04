@@ -63,13 +63,8 @@ const getVoltageRegulationEmptyFormData = (isEquipmentModification) => ({
 });
 
 const getVoltageRegulationSchema = (isEquipmentModification) => ({
-    [VOLTAGE_REGULATION_TYPE]: yup
-        .string()
-        .nullable()
-        .when([VOLTAGE_REGULATION], {
-            is: (value) => !isEquipmentModification && !value,
-            then: (schema) => schema.required(),
-        }),
+    [VOLTAGE_REGULATION_TYPE]: yup.string().nullable(),
+
     [VOLTAGE_SET_POINT]: yup
         .number()
         .nullable()

@@ -1060,6 +1060,7 @@
     "grid.noCalculation": "Pas de calcul lancé",
     "grid.failed": "Echec du calcul",
     "grid.running": "Calcul en cours...",
-    "grid.noLimitViolation": "Pas de contrainte"
-
+    "grid.noLimitViolation": "Pas de contrainte",
+    "deleteNodeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud  \"{nodeName}\"?",
+    "deleteSubTreeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud \"{nodeName}\" et son sous-arbre contenant {nodesNumber} nœuds ?"
 }
