@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
-import { useStyles } from '../../../../dialogUtils';
+import { useStyles } from '../../dialogUtils';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
 import ErrorInput from 'components/utils/rhf-inputs/error-inputs/error-input';
