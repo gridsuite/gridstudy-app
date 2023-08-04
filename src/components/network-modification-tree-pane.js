@@ -152,6 +152,8 @@ export const NetworkModificationTreePane = ({
     }, [broadcastChannel]);
 
     const [activeNode, setActiveNode] = useState(null);
+    const activeNodeRef = useRef();
+    activeNodeRef.current = activeNode;
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
@@ -225,7 +227,12 @@ export const NetworkModificationTreePane = ({
                         networkModificationTreeNodeAdded(
                             node,
                             studyUpdatedForce.eventData.headers['parentNode'],
-                            studyUpdatedForce.eventData.headers['insertMode']
+                            studyUpdatedForce.eventData.headers['insertMode'],
+                            activeNodeRef.current.id // WARNING !
+                            // we should absolutly get the reference node from the notification here
+                            // because we could change the activeNode before receiving the notification or worse
+                            // if someone else on the same study add a node if we don't have the same active node,
+                            // it will cause unexpected results
                         )
                     );
                 });

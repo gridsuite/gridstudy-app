@@ -282,7 +282,8 @@ export const reducer = createReducer(initialState, {
             newModel.addChild(
                 action.networkModificationTreeNode,
                 action.parentNodeId,
-                action.insertMode
+                action.insertMode,
+                action.referenceNodeId
             );
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;

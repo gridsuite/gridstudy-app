@@ -8,6 +8,16 @@
 import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode } from './util/model-functions';
 
+// Function to count children nodes for a given parentId recursively in an array of nodes.
+function countNodes(nodes, parentId) {
+    return nodes.reduce((acc, n) => {
+        if (n.data.parentNodeUuid === parentId) {
+            acc += 1 + countNodes(nodes, n.id); // this node + its children
+        }
+        return acc;
+    }, 0);
+}
+
 export default class NetworkModificationTreeModel {
     treeNodes = [];
     treeEdges = [];
@@ -19,19 +29,51 @@ export default class NetworkModificationTreeModel {
         this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
     }
 
-    addChild(newNode, parentId, insertMode) {
-        // Add node
-        const parentIndex = this.treeNodes.findIndex(
-            (node) => node.id === parentId
-        );
-        //we have to add new nodes just after the parent node
-        //we can copy/paste a subBranch, add new node after the parent node or in a new subBranch
-        //but we can add only one node above the parent node
-        this.treeNodes.splice(
-            insertMode === 'BEFORE' ? parentIndex-1 : parentIndex,
-            0,
-            convertNodetoReactFlowModelNode(newNode, parentId)
-        );
+    addChild(newNode, parentId, insertMode, referenceNodeId) {
+        // we have to keep a precise order of nodes in the array to avoid gettings children
+        // nodes before their parents when building graph in dagre library which have uncontrolled results
+        // We also need to do this to keep a correct order when inserting nodes and not loose the user.
+        const referenceNodeIndex = referenceNodeId
+            ? this.treeNodes.findIndex((node) => node.id === referenceNodeId)
+            : null;
+        console.log('SBO', insertMode);
+        switch (insertMode) {
+            case 'BEFORE': {
+                // We need to insert the node just before the active(reference) node
+                this.treeNodes.splice(
+                    referenceNodeIndex,
+                    0,
+                    convertNodetoReactFlowModelNode(newNode, parentId)
+                );
+                break;
+            }
+            case 'AFTER': {
+                // We need to insert the node just after the active(reference) node
+                this.treeNodes.splice(
+                    referenceNodeIndex + 1,
+                    0,
+                    convertNodetoReactFlowModelNode(newNode, parentId)
+                );
+                break;
+            }
+            case 'CHILD': {
+                // We need to insert the node after all children of the active(reference) node
+                const nbChildren = countNodes(this.treeNodes, referenceNodeId);
+                this.treeNodes.splice(
+                    referenceNodeIndex + nbChildren + 1,
+                    0,
+                    convertNodetoReactFlowModelNode(newNode, parentId)
+                );
+                break;
+            }
+            default: {
+                // Just push nodes in order
+                this.treeNodes.push(
+                    convertNodetoReactFlowModelNode(newNode, parentId)
+                );
+                break;
+            }
+        }
         // Add edge between node and its parent
         this.treeEdges.push({
             id: 'e' + parentId + '-' + newNode.id,
@@ -60,19 +102,22 @@ export default class NetworkModificationTreeModel {
                 });
             });
 
-            // fix old children nodes parentUuid when inserting new nodes
-            const nextEdges = filteredEdges.map((edge) => {
-                if (newNode.childrenIds.includes(edge.id)) {
-                    edge.data = {
-                        ...edge.data,
+            // overwrite old children nodes parentUuid when inserting new nodes
+            const nextNodes = this.treeNodes.map((node) => {
+                if (newNode.childrenIds.includes(node.id)) {
+                    node.data = {
+                        ...node.data,
                         parentNodeUuid: newNode.id,
                     };
                 }
-                return edge;
+                return node;
             });
 
-            this.treeEdges = nextEdges;
+            this.treeNodes = nextNodes;
+            this.treeEdges = filteredEdges;
         }
+
+        // Add children of this node recursively
         if (newNode.children) {
             newNode.children.forEach((child) => {
                 this.addChild(child, newNode.id);
