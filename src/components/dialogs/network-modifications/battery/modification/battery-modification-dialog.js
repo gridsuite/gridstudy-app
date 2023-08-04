@@ -136,7 +136,7 @@ const BatteryModificationDialog = ({
                     ? 'CURVE'
                     : 'MINMAX',
                 [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                    editData?.reactiveCapabilityCurvePoints.length > 0
+                    editData?.reactiveCapabilityCurvePoints?.length > 0
                         ? completeReactiveCapabilityCurvePointsData(
                               editData?.reactiveCapabilityCurvePoints
                           )

@@ -93,6 +93,7 @@ const SetPointsForm = ({
             currentNodeUuid={currentNodeUuid}
             studyUuid={studyUuid}
             previousValues={previousValues}
+            isEquipmentModification={isEquipmentModification}
         />
     );
 
