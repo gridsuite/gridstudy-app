@@ -59,13 +59,13 @@ import {
 import { isNodeBuilt } from './graph/util/model-functions';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
+import { ComputingType } from './computing-status/computing-type';
+import { RunningStatus } from './utils/running-status';
+import { fetchNetworkElementInfos } from '../services/study/network';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
-import { ComputingType } from './computing-status/computing-type';
-import { RunningStatus } from './utils/running-status';
-import { fetchNetworkElementInfos } from '../services/study/network';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {

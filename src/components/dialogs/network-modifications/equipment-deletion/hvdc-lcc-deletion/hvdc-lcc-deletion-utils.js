@@ -15,7 +15,6 @@ import {
 import { useCallback } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-
 import { fetchHvdcLineWithShuntCompensators } from '../../../../../services/study/network-map';
 
 const useHvdcLccDeletion = () => {

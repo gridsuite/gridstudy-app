@@ -37,7 +37,6 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
-
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode }) => {

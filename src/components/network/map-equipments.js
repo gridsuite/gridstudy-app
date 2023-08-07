@@ -7,13 +7,13 @@
 
 import { mapEquipmentsCreated } from '../../redux/actions';
 import { equipments } from './network-equipments';
-import { EQUIPMENT_TYPES } from '../utils/equipment-types';
-import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
 } from '../../services/study/network';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
