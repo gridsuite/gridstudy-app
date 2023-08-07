@@ -89,15 +89,24 @@ const CustomHeaderComponent = ({
                 alignItems={'center'}
                 wrap={'nowrap'}
                 sx={{ height: '100%' }}
-                onClick={handleSortChange}
             >
-                <Grid item xs={12}>
+                <Grid
+                    container
+                    alignItems={'center'}
+                    sx={{ height: '100%' }}
+                    direction={'row'}
+                    wrap={'nowrap'}
+                >
                     <Grid
                         container
                         alignItems={'center'}
-                        sx={{ height: '100%', display: 'flex' }}
                         direction={'row'}
                         wrap={'nowrap'}
+                        onClick={handleSortChange}
+                        sx={{
+                            height: '100%',
+                            overflow: 'hidden',
+                        }}
                     >
                         <Grid
                             item
@@ -108,14 +117,9 @@ const CustomHeaderComponent = ({
                         >
                             {displayName}
                         </Grid>
-                        <Grid item xs>
+                        <Grid item>
                             {isSortActive && sortWay && (
-                                <Grid
-                                    item
-                                    sx={{
-                                        overflow: 'visible',
-                                    }}
-                                >
+                                <Grid item>
                                     <IconButton size={'small'}>
                                         {sortWay === 1 ? (
                                             <ArrowUpward fontSize={'small'} />
@@ -126,34 +130,33 @@ const CustomHeaderComponent = ({
                                 </Grid>
                             )}
                         </Grid>
-                        <Grid
-                            item
-                            sx={{
-                                flexGrow: 0,
-                                overflow: 'visible',
-                            }}
-                        >
-                            {isFilterActive && isFilterIconDisplayed && (
-                                <Grid item>
-                                    <IconButton
-                                        size={'small'}
-                                        onClick={handleShowFilter}
+                    </Grid>
+                    <Grid
+                        item
+                        sx={{
+                            overflow: 'visible',
+                        }}
+                    >
+                        {isFilterActive && isFilterIconDisplayed && (
+                            <Grid item>
+                                <IconButton
+                                    size={'small'}
+                                    onClick={handleShowFilter}
+                                >
+                                    <Badge
+                                        color="secondary"
+                                        variant={
+                                            filterSelectedOptions?.length
+                                                ? 'dot'
+                                                : null
+                                        }
+                                        invisible={!filterSelectedOptions}
                                     >
-                                        <Badge
-                                            color="secondary"
-                                            variant={
-                                                filterSelectedOptions?.length
-                                                    ? 'dot'
-                                                    : null
-                                            }
-                                            invisible={!filterSelectedOptions}
-                                        >
-                                            <Menu fontSize={'small'} />
-                                        </Badge>
-                                    </IconButton>
-                                </Grid>
-                            )}
-                        </Grid>
+                                        <Menu fontSize={'small'} />
+                                    </Badge>
+                                </IconButton>
+                            </Grid>
+                        )}
                     </Grid>
                 </Grid>
             </Grid>
