@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadEquipments } from 'redux/actions';
 
-export const useSpreadsheetEquipments = (equipmentType) => {
+export const useSpreadsheetEquipments = (definitionType) => {
     const dispatch = useDispatch();
     const equipments = useSelector(
-        (state) => state.spreadsheetNetwork[equipmentType.resource]
+        (state) => state.spreadsheetNetwork[definitionType.type.type]
     );
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
@@ -17,7 +17,7 @@ export const useSpreadsheetEquipments = (equipmentType) => {
         if (shouldFetchEquipments) {
             setErrorMessage();
             Promise.all(
-                equipmentType.type.fetchers.map((fetcher) =>
+                definitionType.type.fetchers.map((fetcher) =>
                     fetcher(studyUuid, currentNode.id)
                 )
             )
@@ -25,7 +25,7 @@ export const useSpreadsheetEquipments = (equipmentType) => {
                     const fetchedEquipments = results.flat();
                     dispatch(
                         loadEquipments(
-                            equipmentType.resource,
+                            definitionType.type.type,
                             fetchedEquipments
                         )
                     );
@@ -35,7 +35,7 @@ export const useSpreadsheetEquipments = (equipmentType) => {
                 });
         }
     }, [
-        equipmentType,
+        definitionType,
         shouldFetchEquipments,
         studyUuid,
         currentNode.id,
