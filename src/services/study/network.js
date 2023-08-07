@@ -6,7 +6,10 @@
  */
 
 import { getStudyUrlWithNodeUuid } from './index';
-import { backendFetchJson } from '../../utils/rest-api';
+import {
+    backendFetchJson,
+    getRequestParamFromList,
+} from '../../utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
@@ -54,8 +57,8 @@ export function fetchBusesForVoltageLevel(
     console.info(
         `Fetching buses of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('inUpstreamBuiltParentNode', true);
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
 
     const fetchBusesUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -76,8 +79,8 @@ export function fetchBusbarSectionsForVoltageLevel(
     console.info(
         `Fetching busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('inUpstreamBuiltParentNode', true);
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
 
     const fetchBusbarSectionsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -138,18 +141,19 @@ export function fetchNetworkElementsInfos(
         `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
     );
 
-    let urlSearchParams = new URLSearchParams();
+    const substationsIdsParams = getRequestParamFromList(
+        substationsIds,
+        'substationsIds'
+    );
+
+    const urlSearchParams = new URLSearchParams(substationsIdsParams);
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
             inUpstreamBuiltParentNode
         );
     }
-    if (substationsIds !== undefined && substationsIds.length > 0) {
-        substationsIds.forEach((id) =>
-            urlSearchParams.append('substationsIds', id)
-        );
-    }
+
     urlSearchParams.append('elementType', elementType);
     urlSearchParams.append('infoType', infoType);
 
@@ -157,7 +161,7 @@ export function fetchNetworkElementsInfos(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/elements' +
         '?' +
-        urlSearchParams.toString();
+        urlSearchParams;
     console.debug(fetchElementsUrl);
 
     return backendFetchJson(fetchElementsUrl);
@@ -174,7 +178,7 @@ export function fetchNetworkElementInfos(
     console.info(
         `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
-    let urlSearchParams = new URLSearchParams();
+    const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
