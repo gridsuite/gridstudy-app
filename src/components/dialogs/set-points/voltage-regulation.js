@@ -30,12 +30,10 @@ const VoltageRegulation = ({
     currentNodeUuid,
     voltageLevelOptions,
     previousValues,
+    isEquipmentModification,
 }) => {
     const intl = useIntl();
     const previousRegulationType = useMemo(() => {
-        if (!previousValues?.voltageRegulatorOn) {
-            return null;
-        }
         if (
             previousValues?.regulatingTerminalVlId ||
             previousValues?.regulatingTerminalConnectableId
@@ -51,19 +49,16 @@ const VoltageRegulation = ({
     });
 
     const translatedPreviousRegulationLabel = useMemo(() => {
-        switch (previousRegulationType) {
-            case REGULATION_TYPES.LOCAL.id:
-                return intl.formatMessage({
-                    id: REGULATION_TYPES.LOCAL.label,
-                });
-            case REGULATION_TYPES.DISTANT.id:
-                return intl.formatMessage({
-                    id: REGULATION_TYPES.DISTANT.label,
-                });
-            default:
-                return null;
+        if (
+            isEquipmentModification &&
+            REGULATION_TYPES[previousRegulationType]
+        ) {
+            return intl.formatMessage({
+                id: REGULATION_TYPES[previousRegulationType].label,
+            });
         }
-    }, [intl, previousRegulationType]);
+        return null;
+    }, [intl, isEquipmentModification, previousRegulationType]);
 
     const isDistantRegulation = useMemo(() => {
         return (
@@ -125,10 +120,11 @@ const VoltageRegulation = ({
 
     return (
         <>
+            {gridItem(voltageSetPointField, 4)}
             {gridItem(voltageRegulationTypeField, 4)}
             <Box sx={{ width: '100%' }} />
             <Grid item xs={4} justifySelf={'end'} />
-            {gridItem(voltageSetPointField, 4)}
+
             <Box sx={{ width: '100%' }} />
             {isDistantRegulation && (
                 <>

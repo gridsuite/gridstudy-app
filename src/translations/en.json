@@ -643,10 +643,6 @@
     "Side": "Side",
     "Side1": "Side 1",
     "Side2": "Side 2",
-    "CurrentViolationSide1": "1",
-    "CurrentViolationSide2": "2",
-    "OriginSide": "Side 1",
-    "ExtremitySide": "Side 2",
     "SeriesResistanceText": "Series resistance",
     "SeriesReactanceText": "Series reactance",
     "ShuntConductanceText": "Shunt conductance",
@@ -1042,5 +1038,7 @@
     "grid.noCalculation": "No calculation",
     "grid.failed": "Calculation failed",
     "grid.running": "In progress...",
-    "grid.noLimitViolation": "No limit violation"
+    "grid.noLimitViolation": "No limit violation",
+    "deleteNodeConfirmation": "Are you sure you want to delete this node \"{nodeName}\"?",
+    "deleteSubTreeConfirmation": "Are you sure you want to delete node \"{nodeName}\" and its sub-tree with {nodesNumber} nodes ?"
 }
