@@ -10,6 +10,7 @@ import {
     ENABLED,
     EQUIPMENT_NAME,
     RATIO_TAP_CHANGER,
+    PHASE_TAP_CHANGER,
 } from 'components/utils/field-constants';
 import React from 'react';
 import { filledTextField, gridItem } from '../../../dialogUtils';
@@ -50,11 +51,19 @@ const TwoWindingsTransformerModificationDialogHeader = ({
         />
     );
 
+    const phaseTapChangerEnabledField = (
+        <SwitchInput
+            name={`${PHASE_TAP_CHANGER}.${ENABLED}`}
+            label="WithPhaseTapChanger"
+        />
+    );
+
     return (
         <Grid container item spacing={2}>
             {gridItem(twoWindingsTransformerIdField, 4)}
             {gridItem(twoWindingsTransformerNameField, 4)}
             {gridItem(ratioTapChangerEnabledField, 2)}
+            {gridItem(phaseTapChangerEnabledField, 2)}
         </Grid>
     );
 };

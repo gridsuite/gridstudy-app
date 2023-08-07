@@ -54,7 +54,6 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
-import { createGenerator } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import {
     FORM_LOADING_DELAY,
@@ -64,14 +63,15 @@ import {
 import {
     getSetPointsEmptyFormData,
     getSetPointsSchema,
-} from '../set-points/set-points-utils';
+} from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
-} from '../reactive-limits/reactive-limits-utils';
+} from '../../../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { createGenerator } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -269,9 +269,8 @@ const GeneratorCreationDialog = ({
             const isReactiveCapabilityCurveOn =
                 generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation =
-                generator[VOLTAGE_REGULATION] &&
                 generator[VOLTAGE_REGULATION_TYPE] ===
-                    REGULATION_TYPES.DISTANT.id;
+                REGULATION_TYPES.DISTANT.id;
 
             createGenerator(
                 studyUuid,

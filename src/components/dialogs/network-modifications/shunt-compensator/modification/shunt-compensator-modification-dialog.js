@@ -26,7 +26,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
     fetchNetworkElementInfos,
     FetchStatus,
-    modifyShuntCompensator,
 } from '../../../../../utils/rest-api';
 import ModificationDialog from '../../../commons/modificationDialog';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
@@ -39,6 +38,7 @@ import {
 } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
+import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

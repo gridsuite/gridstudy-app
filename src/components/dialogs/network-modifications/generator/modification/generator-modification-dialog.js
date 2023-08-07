@@ -41,23 +41,26 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { fetchNetworkElementInfos, modifyGenerator } from 'utils/rest-api';
+import { fetchNetworkElementInfos } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import {
     getSetPointsEmptyFormData,
     getSetPointsSchema,
-} from '../set-points/set-points-utils';
+} from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
-} from '../reactive-limits/reactive-limits-utils';
+} from '../../../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import {
+    calculateCurvePointsToStore,
+    completeReactiveCapabilityCurvePointsData,
     getRowEmptyFormData,
+    insertEmptyRowAtSecondToLastIndex,
     REMOVE,
-} from '../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FetchStatus } from 'utils/rest-api';
 import {
@@ -65,6 +68,7 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { modifyGenerator } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -137,25 +141,6 @@ const GeneratorModificationDialog = ({
     const [generatorToModify, setGeneratorToModify] = useState();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    //in order to work properly, react hook form needs all fields to be set at least to null
-    const completeReactiveCapabilityCurvePointsData = (
-        reactiveCapabilityCurvePoints
-    ) => {
-        reactiveCapabilityCurvePoints.map((rcc) => {
-            if (!(P in rcc)) {
-                rcc[P] = null;
-            }
-            if (!(Q_MAX_P in rcc)) {
-                rcc[Q_MAX_P] = null;
-            }
-            if (!(Q_MIN_P in rcc)) {
-                rcc[Q_MIN_P] = null;
-            }
-            return rcc;
-        });
-        return reactiveCapabilityCurvePoints;
-    };
-
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -206,7 +191,7 @@ const GeneratorModificationDialog = ({
                     ? 'CURVE'
                     : 'MINMAX',
                 [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                    editData?.reactiveCapabilityCurvePoints.length > 0
+                    editData?.reactiveCapabilityCurvePoints?.length > 0
                         ? completeReactiveCapabilityCurvePointsData(
                               editData?.reactiveCapabilityCurvePoints
                           )
@@ -252,14 +237,6 @@ const GeneratorModificationDialog = ({
                 ...previousValue,
                 reactiveCapabilityCurvePoints: newRccValues,
             };
-        });
-    };
-
-    const insertEmptyRowAtSecondToLastIndex = (table) => {
-        table.splice(table.length - 1, 0, {
-            [P]: null,
-            [Q_MAX_P]: null,
-            [Q_MIN_P]: null,
         });
     };
 
@@ -343,55 +320,6 @@ const GeneratorModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const calculateCurvePointsToStore = useCallback(
-        (reactiveCapabilityCurve) => {
-            if (
-                reactiveCapabilityCurve.every(
-                    (point) =>
-                        point.p == null &&
-                        point.qminP == null &&
-                        point.qmaxP == null
-                )
-            ) {
-                return null;
-            } else {
-                const pointsToStore = [];
-                reactiveCapabilityCurve.forEach((point, index) => {
-                    if (point) {
-                        let pointToStore = {
-                            p: point?.[P],
-                            oldP:
-                                generatorToModify
-                                    .reactiveCapabilityCurveTable?.[index]?.p ??
-                                null,
-                            qminP: point?.qminP,
-                            oldQminP:
-                                generatorToModify
-                                    .reactiveCapabilityCurveTable?.[index]
-                                    ?.qminP ?? null,
-                            qmaxP: point?.qmaxP,
-                            oldQmaxP:
-                                generatorToModify
-                                    .reactiveCapabilityCurveTable?.[index]
-                                    ?.qmaxP ?? null,
-                        };
-                        pointsToStore.push(pointToStore);
-                    }
-                });
-                return pointsToStore.filter(
-                    (point) =>
-                        point.p != null ||
-                        point.oldP != null ||
-                        point.qmaxP != null ||
-                        point.oldQmaxP != null ||
-                        point.qminP != null ||
-                        point.oldQminP != null
-                );
-            }
-        },
-        [generatorToModify]
-    );
-
     const getPreviousRegulationType = useCallback(() => {
         if (generatorToModify?.voltageRegulationOn) {
             return generatorToModify?.regulatingTerminalVlId ||
@@ -406,7 +334,8 @@ const GeneratorModificationDialog = ({
     const onSubmit = useCallback(
         (generator) => {
             const buildCurvePointsToStore = calculateCurvePointsToStore(
-                generator[REACTIVE_CAPABILITY_CURVE_TABLE]
+                generator[REACTIVE_CAPABILITY_CURVE_TABLE],
+                generatorToModify
             );
 
             const isFrequencyRegulationOn =
@@ -458,15 +387,9 @@ const GeneratorModificationDialog = ({
                 generator[TRANSIENT_REACTANCE],
                 generator[TRANSFORMER_REACTANCE],
                 generator[VOLTAGE_REGULATION_TYPE],
-                isVoltageRegulationOn && isDistantRegulation
-                    ? generator[EQUIPMENT]?.id
-                    : null,
-                isVoltageRegulationOn && isDistantRegulation
-                    ? generator[EQUIPMENT]?.type
-                    : null,
-                isVoltageRegulationOn && isDistantRegulation
-                    ? generator[VOLTAGE_LEVEL]?.id
-                    : null,
+                isDistantRegulation ? generator[EQUIPMENT]?.id : null,
+                isDistantRegulation ? generator[EQUIPMENT]?.type : null,
+                isDistantRegulation ? generator[VOLTAGE_LEVEL]?.id : null,
                 isReactiveCapabilityCurveOn,
                 generator[FREQUENCY_REGULATION],
                 isFrequencyRegulationOn ? generator[DROOP] : null,
@@ -488,7 +411,6 @@ const GeneratorModificationDialog = ({
             selectedId,
             generatorToModify,
             getPreviousRegulationType,
-            calculateCurvePointsToStore,
             studyUuid,
             currentNodeUuid,
             editData?.uuid,

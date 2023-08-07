@@ -18,7 +18,7 @@ import {
 import yup from 'components/utils/yup-config';
 
 export const getReactiveLimitsEmptyFormData = (
-    isGeneratorModification = false
+    isEquipmentModification = false
 ) => ({
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
     [MINIMUM_REACTIVE_POWER]: null,
@@ -26,14 +26,14 @@ export const getReactiveLimitsEmptyFormData = (
     ...getReactiveCapabilityCurveEmptyFormData(REACTIVE_CAPABILITY_CURVE_TABLE),
 });
 
-export const getReactiveLimitsSchema = (isGeneratorModification = false) => ({
+export const getReactiveLimitsSchema = (isEquipmentModification = false) => ({
     [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
     [MINIMUM_REACTIVE_POWER]: yup
         .number()
         .nullable()
         .when([MAXIMUM_REACTIVE_POWER], {
             is: (maximumReactivePower) =>
-                !isGeneratorModification && maximumReactivePower != null,
+                !isEquipmentModification && maximumReactivePower != null,
             then: (schema) => schema.required(),
         }),
     [MAXIMUM_REACTIVE_POWER]: yup
@@ -41,11 +41,11 @@ export const getReactiveLimitsSchema = (isGeneratorModification = false) => ({
         .nullable()
         .when([MINIMUM_REACTIVE_POWER], {
             is: (minimumReactivePower) =>
-                !isGeneratorModification && minimumReactivePower != null,
+                !isEquipmentModification && minimumReactivePower != null,
             then: (schema) => schema.required(),
         }),
     ...getReactiveCapabilityCurveValidationSchema(
         REACTIVE_CAPABILITY_CURVE_TABLE,
-        isGeneratorModification
+        isEquipmentModification
     ),
 });

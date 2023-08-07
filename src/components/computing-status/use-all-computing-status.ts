@@ -15,17 +15,17 @@ import {
     getLoadFlowRunningStatus,
 } from '../utils/running-status';
 
-import {
-    fetchShortCircuitAnalysisStatus,
-    fetchVoltageInitStatus,
-    fetchOneBusShortCircuitAnalysisStatus,
-    fetchLoadFlowStatus,
-} from '../../utils/rest-api';
 import { UUID } from 'crypto';
 import { ComputingType } from './computing-type';
 import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
 import { fetchDynamicSimulationStatus } from '../../services/study/dynamic-simulation';
+import {
+    fetchOneBusShortCircuitAnalysisStatus,
+    fetchShortCircuitAnalysisStatus,
+} from '../../services/study/short-circuit-analysis';
+import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
+import { fetchLoadFlowStatus } from '../../services/study/loadflow';
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
