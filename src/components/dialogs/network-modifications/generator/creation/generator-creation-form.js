@@ -176,6 +176,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             </Grid>
 
             {/* Reactive limits part */}
+            <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm />
 
             {/* Set points part */}
