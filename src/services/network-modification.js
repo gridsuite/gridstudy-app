@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson } from '../utils/rest-api';
+import { backendFetch, backendFetchJson } from './utils';
 
 const PREFIX_NETWORK_MODIFICATION_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/network-modification`;
 

@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson } from '../../utils/rest-api';
 import { getStudyUrl } from './index';
+import { backendFetch, backendFetchJson } from '../utils';
 
 export function copySubtree(
     sourceStudyUuid,
@@ -158,6 +158,23 @@ export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
     console.info('Fetching network modification tree node : ', nodeUuid);
     const url =
         getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid);
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchNetworkModificationTree(studyUuid) {
+    console.info('Fetching network modification tree');
+    const url = getStudyUrl(studyUuid) + '/tree';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchNetworkModificationSubtree(studyUuid, parentNodeUuid) {
+    console.info('Fetching network modification tree node : ', parentNodeUuid);
+    const url =
+        getStudyUrl(studyUuid) +
+        '/subtree?parentNodeUuid=' +
+        encodeURIComponent(parentNodeUuid);
     console.debug(url);
     return backendFetchJson(url);
 }

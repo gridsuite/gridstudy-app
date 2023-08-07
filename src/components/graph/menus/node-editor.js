@@ -15,7 +15,7 @@ import { EditableTitle } from './editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { setModificationsDrawerOpen } from '../../../redux/actions';
-import { updateTreeNode } from '../../../services/study/tree';
+import { updateTreeNode } from '../../../services/study/tree-subtree';
 
 const useStyles = makeStyles((theme) => ({
     paper: {

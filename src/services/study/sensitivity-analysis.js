@@ -6,15 +6,11 @@
  */
 
 import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-} from '../../utils/rest-api';
-import {
     PREFIX_STUDY_QUERIES,
     getStudyUrl,
     getStudyUrlWithNodeUuid,
 } from './index';
+import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startSensitivityAnalysis(
     studyUuid,

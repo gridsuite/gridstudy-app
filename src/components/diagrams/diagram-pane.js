@@ -15,7 +15,6 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../utils/config-params';
-import { fetchSvg, getNetworkAreaDiagramUrl } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -55,6 +54,7 @@ import {
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
 } from '../../services/study/network';
+import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {

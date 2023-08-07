@@ -13,7 +13,6 @@ import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { fetchLimitViolations } from '../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
@@ -26,6 +25,7 @@ import {
     getRows,
     useIntlResultStatusMessages,
 } from './utils/aggrid-rows-handler';
+import { fetchLimitViolations } from '../services/study';
 const LIMIT_TYPES = {
     HIGH_VOLTAGE: 'HIGH_VOLTAGE',
     LOW_VOLTAGE: 'LOW_VOLTAGE',

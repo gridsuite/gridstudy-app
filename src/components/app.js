@@ -55,7 +55,6 @@ import {
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
 
-import { fetchDefaultParametersValues } from '../utils/rest-api';
 import {
     APP_NAME,
     COMMON_APP_NAME,
@@ -92,6 +91,7 @@ import {
     fetchConfigParameter,
     fetchConfigParameters,
 } from '../services/config';
+import { fetchDefaultParametersValues } from '../services/utils';
 
 const noUserManager = { instance: null, error: null };
 

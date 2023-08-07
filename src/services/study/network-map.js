@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, getQueryParamsList } from '../../utils/rest-api';
 import { getStudyUrlWithNodeUuid } from './index';
+import { backendFetchJson, getQueryParamsList } from '../utils';
 
 export function fetchHvdcLineWithShuntCompensators(
     studyUuid,
@@ -50,7 +50,7 @@ export function fetchVoltageLevelEquipments(
     console.info(
         `Fetching equipments of study '${studyUuid}' and node '${currentNodeUuid}' and voltage level '${voltageLevelId}' with substations ids '${substationsIds}'...`
     );
-    let urlSearchParams = new URLSearchParams();
+    const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',

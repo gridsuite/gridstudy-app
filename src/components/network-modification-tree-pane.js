@@ -7,11 +7,6 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    getUniqueNodeName,
-    buildNode,
-    fetchNetworkModificationSubtree,
-} from '../utils/rest-api';
-import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
     networkModificationTreeNodesRemoved,
@@ -42,8 +37,10 @@ import {
     cutTreeNode,
     deleteSubtree,
     deleteTreeNode,
+    fetchNetworkModificationSubtree,
     fetchNetworkModificationTreeNode,
-} from '../services/study/tree';
+} from '../services/study/tree-subtree';
+import { buildNode, getUniqueNodeName } from '../services/study';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {

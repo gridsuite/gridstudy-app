@@ -5,12 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-} from '../../utils/rest-api';
 import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
+import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startVoltageInit(studyUuid, currentNodeUuid) {
     console.info(

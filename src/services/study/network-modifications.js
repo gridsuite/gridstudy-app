@@ -7,17 +7,13 @@
 
 import { MODIFICATION_TYPES } from '../../components/utils/modification-type';
 import { toModificationOperation } from '../../components/utils/utils';
-import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-} from '../../utils/rest-api';
 import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import {
     BRANCH_SIDE,
     BRANCH_STATUS_ACTION,
 } from '../../components/network/constants';
+import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function changeNetworkModificationOrder(
     studyUuid,

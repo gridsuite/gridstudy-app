@@ -33,9 +33,9 @@ import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import { fetchMapBoxToken } from 'utils/rest-api';
 import EquipmentPopover from '.././tooltips/equipment-popover';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { fetchMapBoxToken } from '../../services/utils';
 
 const useStyles = makeStyles((theme) => ({
     mapManualRefreshBackdrop: {

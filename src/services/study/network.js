@@ -7,13 +7,14 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import {
-    backendFetchJson,
-    getRequestParamFromList,
-} from '../../utils/rest-api';
-import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../components/utils/equipment-types';
+import {
+    backendFetchJson,
+    getRequestParamFromList,
+    getUrlWithToken,
+} from '../utils';
 
 /* voltage-levels */
 export function getVoltageLevelSingleLineDiagram(
@@ -431,4 +432,13 @@ export function fetchStaticVarCompensators(
         EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
+}
+
+/* export-network */
+export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/export-network/' +
+        exportFormat;
+    return getUrlWithToken(url);
 }

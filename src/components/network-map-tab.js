@@ -8,10 +8,6 @@
 import NetworkMap from './network/network-map';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import {
-    fetchLinePositions,
-    fetchSubstationPositions,
-} from '../utils/rest-api';
 import GeoData from './network/geo-data';
 import { equipments } from './network/network-equipments';
 import withBranchMenu from './menus/branch-menu';
@@ -40,6 +36,10 @@ import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import LineModificationDialog from './dialogs/network-modifications/line/modification/line-modification-dialog';
 import { deleteEquipment } from '../services/study/network-modifications';
 import EquipmentDeletionDialog from './dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import {
+    fetchLinePositions,
+    fetchSubstationPositions,
+} from '../services/study/geo-data';
 
 const INITIAL_POSITION = [0, 0];
 

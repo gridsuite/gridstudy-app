@@ -6,7 +6,7 @@
  */
 import { APP_NAME } from '../utils/config-params';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { getUrlWithToken, getWsBase } from '../utils/rest-api';
+import { getUrlWithToken, getWsBase } from './utils';
 
 const PREFIX_CONFIG_NOTIFICATION_WS = `${process.env.REACT_APP_WS_GATEWAY}/config-notification`;
 
