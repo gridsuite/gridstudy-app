@@ -18,13 +18,14 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { modifyLoad, FetchStatus } from 'utils/rest-api';
+import { FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { modifyLoad } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -107,7 +108,7 @@ const LoadModificationDialog = ({
                 load?.reactivePower,
                 undefined,
                 undefined,
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined
             ).catch((error) => {
                 snackError({
