@@ -255,31 +255,6 @@ const App = () => {
                                     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
                                 )
                             );
-                            const equipmentReorderedColumns = JSON.parse(
-                                param.value
-                            );
-                            const equipmentAllColumns =
-                                TABLES_DEFINITION_INDEXES.get(
-                                    index
-                                ).columns.map((item) => item.id);
-                            if (
-                                equipmentAllColumns.length >
-                                equipmentReorderedColumns.length
-                            ) {
-                                const newColumns = equipmentAllColumns.filter(
-                                    (item) =>
-                                        !equipmentReorderedColumns.includes(
-                                            item
-                                        )
-                                );
-                                const equipmentAllReorderedColumns = [
-                                    ...equipmentReorderedColumns,
-                                    ...newColumns,
-                                ];
-                                param.value = JSON.stringify(
-                                    equipmentAllReorderedColumns
-                                );
-                            }
                             reorderedColumnsParams[index] = {
                                 index: index,
                                 value: param.value,
@@ -289,17 +264,81 @@ const App = () => {
                 }
             });
             if (dispatchDisplayedColumns) {
-                dispatch(changeDisplayedColumns(displayedColumnsParams));
+                checkEquipmentsColumns(
+                    displayedColumnsParams,
+                    reorderedColumnsParams
+                );
+                if (dispatchReorderedColumns) {
+                    dispatch(changeDisplayedColumns(displayedColumnsParams));
+                }
             }
             if (dispatchLockedColumns) {
                 dispatch(changeLockedColumns(lockedColumnsParams));
             }
             if (dispatchReorderedColumns) {
+                checkEquipmentsColumns(reorderedColumnsParams, null);
+                // checkEquipmentColumns(reorderedColumnsParams);
                 dispatch(changeReorderedColumns(reorderedColumnsParams));
             }
         },
         [dispatch]
     );
+
+    function checkEquipmentsColumns(
+        displayedColumnsParams,
+        reorderedColumnsParams
+    ) {
+        for (let item of displayedColumnsParams) {
+            let equipmentNewColumns;
+            let equipmentDeletedColumns;
+            let updatedEquipmentColumns;
+            if (item && 'value' in item) {
+                let index = item['index'];
+                const equipmentColumns = JSON.parse(item['value']);
+                const equipmentAllColumns = TABLES_DEFINITION_INDEXES.get(
+                    index
+                ).columns.map((item) => item.id);
+                if (reorderedColumnsParams && reorderedColumnsParams[index]) {
+                    const reorderedColumns = JSON.parse(
+                        reorderedColumnsParams[index].value
+                    );
+                    equipmentNewColumns = equipmentAllColumns.filter(
+                        (item) =>
+                            !equipmentColumns.includes(item) &&
+                            !reorderedColumns.includes(item)
+                    );
+                    equipmentDeletedColumns = equipmentColumns.filter(
+                        (item) => !equipmentAllColumns.includes(item)
+                    );
+
+                    updatedEquipmentColumns = equipmentColumns.filter(
+                        (item) => !equipmentDeletedColumns.includes(item)
+                    );
+                    updatedEquipmentColumns = [
+                        ...updatedEquipmentColumns,
+                        ...equipmentNewColumns,
+                    ];
+                    item['value'] = JSON.stringify(updatedEquipmentColumns);
+                } else {
+                    equipmentNewColumns = equipmentAllColumns.filter(
+                        (item) => !equipmentColumns.includes(item)
+                    );
+                    equipmentDeletedColumns = equipmentColumns.filter(
+                        (item) => !equipmentAllColumns.includes(item)
+                    );
+
+                    updatedEquipmentColumns = equipmentColumns.filter(
+                        (item) => !equipmentDeletedColumns.includes(item)
+                    );
+                    updatedEquipmentColumns = [
+                        ...updatedEquipmentColumns,
+                        ...equipmentNewColumns,
+                    ];
+                    item['value'] = JSON.stringify(updatedEquipmentColumns);
+                }
+            }
+        }
+    }
 
     const connectNotificationsUpdateConfig = useCallback(() => {
         const ws = connectNotificationsWsUpdateConfig();
