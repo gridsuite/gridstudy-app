@@ -87,16 +87,26 @@ const CustomHeaderComponent = ({
                 item
                 direction={'row'}
                 alignItems={'center'}
+                wrap={'nowrap'}
                 sx={{ height: '100%' }}
-                onClick={handleSortChange}
             >
-                <Grid item xs={11}>
+                <Grid
+                    container
+                    alignItems={'center'}
+                    sx={{ height: '100%' }}
+                    direction={'row'}
+                    wrap={'nowrap'}
+                >
                     <Grid
                         container
                         alignItems={'center'}
-                        sx={{ height: '100%' }}
                         direction={'row'}
                         wrap={'nowrap'}
+                        onClick={handleSortChange}
+                        sx={{
+                            height: '100%',
+                            overflow: 'hidden',
+                        }}
                     >
                         <Grid
                             item
@@ -107,7 +117,7 @@ const CustomHeaderComponent = ({
                         >
                             {displayName}
                         </Grid>
-                        <Grid item xs>
+                        <Grid item>
                             {isSortActive && sortWay && (
                                 <Grid item>
                                     <IconButton size={'small'}>
@@ -121,24 +131,33 @@ const CustomHeaderComponent = ({
                             )}
                         </Grid>
                     </Grid>
-                </Grid>
-                <Grid item xs={1}>
-                    {isFilterActive && isFilterIconDisplayed && (
-                        <Grid item>
-                            <IconButton
-                                size={'small'}
-                                onClick={handleShowFilter}
-                            >
-                                <Badge
-                                    color="secondary"
-                                    variant="dot"
-                                    invisible={!filterSelectedOptions}
+                    <Grid
+                        item
+                        sx={{
+                            overflow: 'visible',
+                        }}
+                    >
+                        {isFilterActive && isFilterIconDisplayed && (
+                            <Grid item>
+                                <IconButton
+                                    size={'small'}
+                                    onClick={handleShowFilter}
                                 >
-                                    <Menu fontSize={'small'} />
-                                </Badge>
-                            </IconButton>
-                        </Grid>
-                    )}
+                                    <Badge
+                                        color="secondary"
+                                        variant={
+                                            filterSelectedOptions?.length
+                                                ? 'dot'
+                                                : null
+                                        }
+                                        invisible={!filterSelectedOptions}
+                                    >
+                                        <Menu fontSize={'small'} />
+                                    </Badge>
+                                </IconButton>
+                            </Grid>
+                        )}
+                    </Grid>
                 </Grid>
             </Grid>
 
