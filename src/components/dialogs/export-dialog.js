@@ -57,7 +57,19 @@ const ExportDialog = ({
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
-                setFormatsWithParameters(formats);
+                // we check if the param is for extension, in that case we select all possible values by default.
+                // the only way for the moment to check if the param is for extension, is by checking his type is STRING_LIST.
+                // Only extensions has STRING_LIST as a type for the moment.
+                //TODO to be removed when extensions param default value corrected in backend to include all possible values
+                const newFormats = Object.values(formats).map((f) => {
+                    return f.parameters.map((p) => {
+                        if (p.type === 'STRING_LIST' && !p.defaultValue) {
+                            p.defaultValue = p.possibleValues;
+                        }
+                        return p;
+                    });
+                });
+                setFormatsWithParameters(newFormats);
             });
         }
     }, [open]);
