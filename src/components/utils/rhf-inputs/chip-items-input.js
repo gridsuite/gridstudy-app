@@ -70,26 +70,31 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
         setTextEntered(e.target.value);
     };
 
+    const styles = {
+        chipContainer: {
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap',
+            flexDirection: 'row',
+            border: '2px solid lightgray',
+            borderRadius: '4px',
+            overflow: 'hidden',
+            borderColor: error?.message ? 'error.main' : null,
+        },
+        chipItem: {
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap',
+            flexDirection: 'row',
+            marginTop: 0,
+            padding: 1,
+            overflow: 'hidden',
+        },
+    };
+
     return (
         <>
-            <FormControl
-                // className={clsx(classes.formChipItems1, {
-                //     [classes.formChipItemsError]: error?.message,
-                // })}
-
-                sx={{
-                    display: 'flex',
-                    gap: '8px',
-                    flexWrap: 'wrap',
-                    flexDirection: 'row',
-                    border: '2px solid lightgray',
-                    padding: 1,
-                    borderRadius: '4px',
-                    overflow: 'hidden',
-                    borderColor: error?.message ? 'error.main' : null,
-                }}
-                error={!!error?.message}
-            >
+            <FormControl sx={styles.chipContainer} error={!!error?.message}>
                 {elements?.length === 0 && label && (
                     <FieldLabel
                         label={label}
@@ -103,17 +108,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
                     />
                 )}
                 {elements?.length > 0 && (
-                    <FormControl
-                        sx={{
-                            display: 'flex',
-                            gap: '8px',
-                            flexWrap: 'wrap',
-                            flexDirection: 'row',
-                            marginTop: 0,
-                            padding: 1,
-                            overflow: 'hidden',
-                        }}
-                    >
+                    <FormControl sx={styles.chipItem}>
                         {elements.map((item, index) => (
                             <Chip
                                 key={item.id}
@@ -141,9 +136,9 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
                     InputProps={{
                         disableUnderline: true,
                         style: {
-                            marginTop: 6,
+                            marginTop: '5px',
                             height: '30px',
-                            left: '3px',
+                            marginLeft: '10px',
                         },
                     }}
                     value={textEntered}
