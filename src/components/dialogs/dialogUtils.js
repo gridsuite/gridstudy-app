@@ -71,28 +71,6 @@ export const useStyles = makeStyles((theme) => ({
     addDirectoryElements: {
         marginTop: -5,
     },
-    formChipItems1: {
-        display: 'flex',
-        gap: '8px',
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-        border: '2px solid lightgray',
-        padding: 4,
-        borderRadius: '4px',
-        overflow: 'hidden',
-    },
-    formChipItemsError: {
-        borderColor: theme.palette.error.main,
-    },
-    formChipItems2: {
-        display: 'flex',
-        gap: '8px',
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-        marginTop: 0,
-        padding: 4,
-        overflow: 'hidden',
-    },
 }));
 
 export const MicroSusceptanceAdornment = {

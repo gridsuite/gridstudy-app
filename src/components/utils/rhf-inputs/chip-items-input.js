@@ -6,12 +6,10 @@
  */
 
 import FormControl from '@mui/material/FormControl';
-import clsx from 'clsx';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import React, { useCallback, useState } from 'react';
-import { useStyles } from '../../dialogs/dialogUtils';
 import { useController, useFieldArray, useFormContext } from 'react-hook-form';
 import ErrorInput from './error-inputs/error-input';
 import MidFormError from './error-inputs/mid-form-error';
@@ -23,7 +21,6 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
     const [textEntered, setTextEntered] = useState('');
     const { snackError } = useSnackMessage();
 
-    const classes = useStyles();
     const {
         fields: elements,
         append,
@@ -62,6 +59,13 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
         }
     };
 
+    const onBlur = () => {
+        if (textEntered.length > 0) {
+            addItem(textEntered);
+            setTextEntered('');
+        }
+    };
+
     const handleChange = (e) => {
         setTextEntered(e.target.value);
     };
@@ -69,9 +73,21 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
     return (
         <>
             <FormControl
-                className={clsx(classes.formChipItems1, {
-                    [classes.formChipItemsError]: error?.message,
-                })}
+                // className={clsx(classes.formChipItems1, {
+                //     [classes.formChipItemsError]: error?.message,
+                // })}
+
+                sx={{
+                    display: 'flex',
+                    gap: '8px',
+                    flexWrap: 'wrap',
+                    flexDirection: 'row',
+                    border: '2px solid lightgray',
+                    padding: 1,
+                    borderRadius: '4px',
+                    overflow: 'hidden',
+                    borderColor: error?.message ? 'error.main' : null,
+                }}
                 error={!!error?.message}
             >
                 {elements?.length === 0 && label && (
@@ -87,7 +103,17 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
                     />
                 )}
                 {elements?.length > 0 && (
-                    <FormControl className={classes.formChipItems2}>
+                    <FormControl
+                        sx={{
+                            display: 'flex',
+                            gap: '8px',
+                            flexWrap: 'wrap',
+                            flexDirection: 'row',
+                            marginTop: 0,
+                            padding: 1,
+                            overflow: 'hidden',
+                        }}
+                    >
                         {elements.map((item, index) => (
                             <Chip
                                 key={item.id}
@@ -115,13 +141,15 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
                     InputProps={{
                         disableUnderline: true,
                         style: {
+                            marginTop: 6,
                             height: '30px',
-                            left: '5px',
+                            left: '3px',
                         },
                     }}
                     value={textEntered}
                     onKeyDown={keyPress}
                     onChange={handleChange}
+                    onBlur={onBlur}
                 ></TextField>
             </FormControl>
             {!hideErrorMessage && (
