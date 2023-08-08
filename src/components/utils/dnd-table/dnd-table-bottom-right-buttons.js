@@ -33,10 +33,7 @@ const DndTableBottomRightButtons = ({
         name: arrayFormName,
     });
 
-    const noRowsSelected =
-        currentRows === undefined
-            ? false
-            : !currentRows.some((row) => row[SELECTED]);
+    const noRowsSelected = !currentRows.some((row) => row[SELECTED]);
     const firstRowSelected = currentRows[0]?.[SELECTED];
     const lastRowSelected = currentRows[currentRows.length - 1]?.[SELECTED];
 
