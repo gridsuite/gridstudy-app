@@ -11,8 +11,13 @@ import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, {
+    FunctionComponent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertInvalidNode from './utils/alert-invalid-node';
@@ -24,9 +29,14 @@ import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
-import { ResultsTabsLevel, useResultsTab } from './results/use-results-tab';
+import {
+    ResultsTabsLevel,
+    ResultTabIndexRedirection,
+    useResultsTab,
+} from './results/use-results-tab';
 import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
+import { AvailableServices } from './utils/available-services';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -48,17 +58,33 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+interface IResultViewTabProps {
+    studyUuid: string;
+    currentNode: Partial<{ id: string }>;
+    openVoltageLevelDiagram: any;
+    resultTabIndexRedirection: ResultTabIndexRedirection;
+    disabled: boolean;
+}
+
+interface IService {
+    id: string;
+    label: string;
+    isAvailable: boolean;
+    enableDeveloperMode: boolean;
+    renderResult: React.ReactElement;
+}
+
 /**
  * control results views
  * @param studyUuid : string uuid of study
  * @param currentNode : object current node
  * @param openVoltageLevelDiagram : function
- * @param resultTabIndexRedirection : redirection to specific tab [RootTab, LevelOneTab, ...]
+ * @param resultTabIndexRedirection : ResultTabIndexRedirection to specific tab [RootTab, LevelOneTab, ...]
  * @param disabled
  * @returns {JSX.Element}
  * @constructor
  */
-export const ResultViewTab = ({
+export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     studyUuid,
     currentNode,
     openVoltageLevelDiagram,
@@ -83,7 +109,7 @@ export const ResultViewTab = ({
     const [availableServices] = useParameterState(AVAILABLE_SERVICES);
 
     const isAvailable = useCallback(
-        (tab) => {
+        (tab: string) => {
             return !!availableServices.includes(tab);
         },
         [availableServices]
@@ -128,7 +154,7 @@ export const ResultViewTab = ({
             <Paper className={classes.analysisResult}>
                 <SensitivityAnalysisResultTab
                     studyUuid={studyUuid}
-                    nodeUuid={currentNode?.id}
+                    nodeUuid={currentNode?.id!}
                 />
             </Paper>
         );
@@ -155,7 +181,7 @@ export const ResultViewTab = ({
         );
     }, [studyUuid, currentNode, classes]);
 
-    const services = useMemo(() => {
+    const services: IService[] = useMemo(() => {
         return [
             {
                 id: 'LoadFlow',
@@ -167,35 +193,45 @@ export const ResultViewTab = ({
             {
                 id: 'SecurityAnalysis',
                 label: 'SecurityAnalysis',
-                isAvailable: isAvailable('SecurityAnalysis'),
+                isAvailable: isAvailable(
+                    AvailableServices['security-analysis-server']
+                ),
                 enableDeveloperMode: true,
                 renderResult: renderSecurityAnalysisResult,
             },
             {
                 id: 'SensitivityAnalysis',
                 label: 'SensitivityAnalysis',
-                isAvailable: isAvailable('SensitivityAnalysis'),
+                isAvailable: isAvailable(
+                    AvailableServices['sensitivity-analysis-server']
+                ),
                 enableDeveloperMode: true,
                 renderResult: renderSensitivityAnalysisResult,
             },
             {
                 id: 'ShortCircuit',
                 label: 'ShortCircuitAnalysis',
-                isAvailable: isAvailable('ShortCircuit'),
+                isAvailable: isAvailable(
+                    AvailableServices['shortcircuit-server']
+                ),
                 enableDeveloperMode: enableDeveloperMode,
                 renderResult: renderShortCircuitAnalysisResult,
             },
             {
                 id: 'DynamicSimulation',
                 label: 'DynamicSimulation',
-                isAvailable: isAvailable('DynamicSimulation'),
+                isAvailable: isAvailable(
+                    AvailableServices['dynamic-simulation-server']
+                ),
                 enableDeveloperMode: enableDeveloperMode,
                 renderResult: renderDynamicSimulationResult,
             },
             {
                 id: 'VoltageInit',
                 label: 'VoltageInit',
-                isAvailable: isAvailable('VoltageInit'),
+                isAvailable: isAvailable(
+                    AvailableServices['voltage-init-server']
+                ),
                 enableDeveloperMode: enableDeveloperMode,
                 renderResult: renderVoltageInitResult,
             },
@@ -211,7 +247,7 @@ export const ResultViewTab = ({
         renderLoadFlowResult,
     ]);
 
-    const renderTab = (service) => {
+    const renderTab = (service: IService) => {
         return (
             service.isAvailable &&
             service.enableDeveloperMode && (
@@ -225,25 +261,33 @@ export const ResultViewTab = ({
             )
         );
     };
-    const renderTabPanelLazy = (service) => {
+    const renderTabPanelLazy: (service: IService) => React.ReactElement = (
+        service: IService
+    ) => {
         return (
-            service.isAvailable && (
-                <TabPanelLazy
-                    key={service.id}
-                    className={classes.tabPanel}
-                    selected={!disabled}
-                >
-                    {service.renderResult}
-                </TabPanelLazy>
-            )
+            <>
+                {service.isAvailable && (
+                    <TabPanelLazy
+                        key={service.id}
+                        className={classes.tabPanel}
+                        selected={!disabled}
+                    >
+                        {service.renderResult}
+                    </TabPanelLazy>
+                )}
+            </>
         );
     };
 
     const selectedService = useMemo(() => {
-        const displayedServices = services.filter(
+        const displayedServices: IService[] = services.filter(
             (service) => service.isAvailable
         );
-        return displayedServices.find((service, key) => tabIndex === key);
+        const result = displayedServices.find(
+            (service, key) => tabIndex === key
+        );
+
+        return result!;
     }, [services, tabIndex]);
 
     useEffect(() => {
@@ -268,11 +312,4 @@ export const ResultViewTab = ({
             {renderTabPanelLazy(selectedService)}
         </Paper>
     );
-};
-
-ResultViewTab.propTypes = {
-    openVoltageLevelDiagram: PropTypes.func.isRequired,
-    currentNode: PropTypes.object,
-    studyUuid: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
 };
