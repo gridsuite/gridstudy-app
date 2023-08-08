@@ -76,6 +76,7 @@ import {
     setSecurityAnalysisParameters,
     updateSecurityAnalysisProvider,
 } from '../../../services/study/security-analysis';
+import { AvailableServices } from '../../utils/available-services';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -547,7 +548,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
-        isAvailableService('SecurityAnalysis'),
+        isAvailableService(AvailableServices['security-analysis-server']),
         user,
         'SecurityAnalysis',
         fetchSecurityAnalysisProviders,
@@ -559,7 +560,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const sensitivityAnalysisParametersBackend = useParametersBackend(
-        isAvailableService('SensitivityAnalysis'),
+        isAvailableService(AvailableServices['sensitivity-analysis-server']),
         user,
         'SensitivityAnalysis',
         fetchSensitivityAnalysisProviders,
@@ -728,7 +729,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 />
                             )}
                         </TabPanel>
-                        {isAvailableService('SecurityAnalysis') && (
+                        {isAvailableService(
+                            TAB_VALUES.securityAnalysisParamsTabValue
+                        ) && (
                             <TabPanel
                                 value={tabValue}
                                 index={

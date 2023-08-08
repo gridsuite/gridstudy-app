@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { AVAILABLE_SERVICES } from './utils/available-services';
+import { AvailableServices } from './utils/available-services';
 import {
     Navigate,
     Route,
@@ -378,11 +378,9 @@ const App = () => {
                     .then((services) => {
                         services.forEach((service, offset) => {
                             if (
-                                Object.keys(AVAILABLE_SERVICES).includes(
-                                    service
-                                )
+                                Object.keys(AvailableServices).includes(service)
                             ) {
-                                services[offset] = AVAILABLE_SERVICES[service];
+                                services[offset] = AvailableServices[service];
                             }
                         });
                         dispatch(setAvailableServices(services));
