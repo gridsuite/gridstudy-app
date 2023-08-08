@@ -57,19 +57,23 @@ const ExportDialog = ({
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
-                // we check if the param is for extension, in that case we select all possible values by default.
-                // the only way for the moment to check if the param is for extension, is by checking his type is STRING_LIST.
-                // Only extensions has STRING_LIST as a type for the moment.
+                // we check if the param is for extension, if it is, we select all possible values by default.
+                // the only way for the moment to check if the param is for extension, is by checking his type is name.
                 //TODO to be removed when extensions param default value corrected in backend to include all possible values
-                const newFormats = Object.values(formats).map((f) => {
+                console.log('prev formats', formats);
+                Object.values(formats).map((f) => {
                     return f.parameters.map((p) => {
-                        if (p.type === 'STRING_LIST' && !p.defaultValue) {
+                        if (
+                            p.type === 'STRING_LIST' &&
+                            p?.name?.endsWith('extensions')
+                        ) {
                             p.defaultValue = p.possibleValues;
                         }
                         return p;
                     });
                 });
-                setFormatsWithParameters(newFormats);
+                console.log('formats : ', formats);
+                setFormatsWithParameters(formats);
             });
         }
     }, [open]);
@@ -200,6 +204,9 @@ const ExportDialog = ({
                         initValues={currentParameters}
                         onChange={onChange}
                         variant="standard"
+                        useSelectionDialog={(param) =>
+                            param.possibleValues.length > 15
+                        }
                     />
                 </Collapse>
                 {exportStudyErr !== '' && (
