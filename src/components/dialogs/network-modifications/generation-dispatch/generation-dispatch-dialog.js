@@ -75,7 +75,11 @@ const getGeneratorsFrequencyReserveSchema = (id) => ({
 const getSubstationsGeneratorsOrderingSchema = (id) => ({
     [id]: yup.array().of(
         yup.object().shape({
-            [SUBSTATION_IDS]: yup.array().of(yup.string().required()),
+            [SUBSTATION_IDS]: yup
+                .array()
+                .of(yup.string().required())
+                .min(1)
+                .required(),
         })
     ),
 });
