@@ -9,6 +9,7 @@ import {
     EventType,
     PrimitiveTypes,
 } from '../types/event.type';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
 export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
     startTime: {
@@ -37,4 +38,17 @@ export const eventDefinitions = {
     [EventType.DISCONNECT]: DISCONNECT_EVENT_DEFINITION,
     [EventType.STEP]: undefined,
     [EventType.NODE_FAULT]: undefined,
+};
+
+export const getEventType = (equipmentType: string): EventType | undefined => {
+    let eventType = undefined;
+    switch (equipmentType) {
+        case EQUIPMENT_TYPES.LINE.type:
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
+            eventType = EventType.DISCONNECT;
+            break;
+        default:
+    }
+
+    return eventType;
 };

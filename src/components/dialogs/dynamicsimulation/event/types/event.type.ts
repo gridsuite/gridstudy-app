@@ -10,11 +10,15 @@ export enum EventType {
     STEP = 'Step',
     NODE_FAULT = 'NodeFault',
 }
-
-export type EventPropertyName = 'staticId' | 'startTime' | 'disconnectOnly';
+export type EventPropertyName =
+    | 'equipmentType'
+    | 'eventType'
+    | 'staticId'
+    | 'startTime'
+    | 'disconnectOnly';
 
 export type Event = {
-    [Property in EventPropertyName]: any;
+    [Property in EventPropertyName]?: any;
 };
 
 export enum PrimitiveTypes {

@@ -54,6 +54,7 @@ import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
+    getRealEquipmentType,
 } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
@@ -342,7 +343,7 @@ function SingleLineDiagramContent(props) {
             setDynamicSimulationEventDialogTitle(dialogTitle);
             setEquipmentToConfigDynamicSimulationEvent({
                 equipmentId,
-                equipmentType,
+                equipmentType: getRealEquipmentType(equipmentType),
             });
         },
         []

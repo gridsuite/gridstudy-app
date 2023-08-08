@@ -42,6 +42,7 @@ import {
 } from '../../services/study/network-modifications';
 import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 
 const useStyles = makeStyles(() => ({
     menuItem: {
@@ -262,7 +263,13 @@ const withBranchMenu =
                                     equipment.id,
                                     equipmentType,
                                     intl.formatMessage({
-                                        id: getTranslationKey('Trip'),
+                                        id: getTranslationKey(
+                                            getEventType(
+                                                getRealEquipmentType(
+                                                    equipmentType
+                                                )
+                                            )
+                                        ),
                                     })
                                 )
                             }
@@ -279,7 +286,13 @@ const withBranchMenu =
                                 primary={
                                     <Typography noWrap>
                                         {intl.formatMessage({
-                                            id: getTranslationKey('Trip'),
+                                            id: getTranslationKey(
+                                                getEventType(
+                                                    getRealEquipmentType(
+                                                        equipmentType
+                                                    )
+                                                )
+                                            ),
                                         })}
                                         {' ('}
                                         {intl.formatMessage({

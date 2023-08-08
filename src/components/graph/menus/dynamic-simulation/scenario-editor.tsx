@@ -8,13 +8,13 @@
 import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import { lighten, darken, Theme } from '@mui/material/styles';
-import NetworkModificationNodeEditor from '../network-modification-node-editor';
 import { EditableTitle } from '../editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { setEventScenarioDrawerOpen } from '../../../../redux/actions';
 import { useIntl } from 'react-intl';
 import { ReduxState } from '../../../../redux/reducer.type';
+import EventModificationScenarioEditor from './event-modification-scenario-editor';
 
 const useStyles = makeStyles((theme: Theme) => ({
     paper: {
@@ -53,7 +53,7 @@ const ScenarioEditor = (props: ScenarioEditorProps) => {
                 }
                 onClose={closeEventScenarioDrawer}
             />
-            <NetworkModificationNodeEditor />
+            <EventModificationScenarioEditor />
         </div>
     );
 };

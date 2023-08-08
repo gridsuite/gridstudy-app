@@ -58,6 +58,23 @@ async function saveEventAsync(
     return event;
 }
 
+async function getEventsAsync(
+    studyUuid: string,
+    nodeUuid: string,
+    syncTime?: number
+) {
+    await new Promise((resolve) => setTimeout(resolve, syncTime ?? 1000));
+
+    const eventStoreJson = localStorage.getItem(
+        EVENT_STORE_KEY + studyUuid + nodeUuid
+    );
+    const eventStore = eventStoreJson
+        ? (JSON.parse(eventStoreJson) as Event[])
+        : [];
+
+    return eventStore;
+}
+
 async function getEventAsync(
     studyUuid: string,
     nodeUuid: string,
@@ -80,7 +97,7 @@ async function getEventAsync(
 async function deleteEventAsync(
     studyUuid: string,
     nodeUuid: string,
-    event: Event,
+    events: Event[],
     syncTime?: number
 ) {
     await new Promise((resolve) => setTimeout(resolve, syncTime ?? 1000));
@@ -90,25 +107,53 @@ async function deleteEventAsync(
     const eventStore = eventStoreJson
         ? (JSON.parse(eventStoreJson) as Event[])
         : [];
-    const foundIndex = eventStore.findIndex(
-        (elem) => elem.staticId === event.staticId
-    );
 
-    if (foundIndex !== -1) {
-        // replace
-        eventStore.splice(foundIndex, 1);
-    }
+    events.forEach((event) => {
+        const foundIndex = eventStore.findIndex(
+            (elem) => elem.staticId === event.staticId
+        );
+
+        if (foundIndex !== -1) {
+            // replace
+            eventStore.splice(foundIndex, 1);
+        }
+    });
 
     localStorage.setItem(
         EVENT_STORE_KEY + studyUuid + nodeUuid,
         JSON.stringify(eventStore)
     );
 
-    return event;
+    return events;
+}
+
+async function changeEventOrderAsync(
+    studyUuid: string,
+    nodeUuid: string,
+    itemUuid: string,
+    beforeUuid: string,
+    syncTime?: number
+) {
+    await new Promise((resolve) => setTimeout(resolve, syncTime ?? 1000));
+    const eventStoreJson = localStorage.getItem(
+        EVENT_STORE_KEY + studyUuid + nodeUuid
+    );
+    const eventStore = eventStoreJson
+        ? (JSON.parse(eventStoreJson) as Event[])
+        : [];
+
+    localStorage.setItem(
+        EVENT_STORE_KEY + studyUuid + nodeUuid,
+        JSON.stringify(eventStore)
+    );
 }
 
 export function saveEvent(studyUuid: string, nodeUuid: string, event: Event) {
     return saveEventAsync(studyUuid, nodeUuid, event, 1000);
+}
+
+export function getEvents(studyUuid: string, nodeUuid: string) {
+    return getEventsAsync(studyUuid, nodeUuid, 1000);
 }
 
 export function getEvent(
@@ -117,4 +162,27 @@ export function getEvent(
     equipmentId: string
 ) {
     return getEventAsync(studyUuid, nodeUuid, equipmentId, 1000);
+}
+
+export function deleteEvent(
+    studyUuid: string,
+    nodeUuid: string,
+    events: Event[]
+) {
+    return deleteEventAsync(studyUuid, nodeUuid, events, 1000);
+}
+
+export function changeEventOrder(
+    studyUuid: string,
+    nodeUuid: string,
+    itemUuid: string,
+    beforeUuid: string
+) {
+    return changeEventOrderAsync(
+        studyUuid,
+        nodeUuid,
+        itemUuid,
+        beforeUuid,
+        1000
+    );
 }

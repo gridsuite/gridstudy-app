@@ -14,11 +14,10 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { DynamicSimulationEventForm } from './dynamic-simulation-event-form';
-import { Event, EventPropertyName, EventType } from './types/event.type';
+import { Event, EventPropertyName } from './types/event.type';
 import yup from 'components/utils/yup-config';
-import { equipments } from '../../../network/network-equipments';
 import { getSchema } from './util/event-yup';
-import { eventDefinitions } from './model/event.model';
+import { eventDefinitions, getEventType } from './model/event.model';
 import { saveEvent, getEvent } from '../../../../services/dynamic-simulation';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
@@ -32,19 +31,6 @@ export type DynamicSimulationEventDialogProps = {
     editDataFetchStatus: string; // must be a string enum
     title: string;
 } & DialogProps;
-
-const getEventType = (equipmentType: string): EventType | undefined => {
-    let eventType = undefined;
-    switch (equipmentType) {
-        case equipments.lines:
-        case equipments.twoWindingsTransformers:
-            eventType = EventType.DISCONNECT;
-            break;
-        default:
-    }
-
-    return eventType;
-};
 
 export const DynamicSimulationEventDialog = (
     props: DynamicSimulationEventDialogProps
@@ -77,10 +63,20 @@ export const DynamicSimulationEventDialog = (
     // empty form
     const handleSetValuesAndEmptyOthers = useCallback(() => {}, []);
 
+    const eventType = useMemo(
+        () => getEventType(equipmentType),
+        [equipmentType]
+    );
+
     // submit form
     const handleSubmit = useCallback(
         (event: Event) => {
-            const eventWithId = { ...event, staticId: equipmentId };
+            const eventWithId = {
+                ...event,
+                staticId: equipmentId,
+                equipmentType,
+                eventType,
+            };
             saveEvent(studyUuid, currentNodeId, eventWithId)
                 .then((event) => {
                     console.log('Save successfully event : ', event);
@@ -94,12 +90,14 @@ export const DynamicSimulationEventDialog = (
                     console.log('Error occurs when save an event');
                 });
         },
-        [currentNodeId, equipmentId, snackError, studyUuid]
-    );
-
-    const eventType = useMemo(
-        () => getEventType(equipmentType),
-        [equipmentType]
+        [
+            currentNodeId,
+            equipmentId,
+            equipmentType,
+            snackError,
+            studyUuid,
+            eventType,
+        ]
     );
 
     const eventDefinition = useMemo(
@@ -151,7 +149,9 @@ export const DynamicSimulationEventDialog = (
 
     // load event for equipment
     useEffect(() => {
+        setDataFetchStatus(FetchStatus.RUNNING);
         getEvent(studyUuid, currentNodeId, equipmentId).then((event) => {
+            setDataFetchStatus(FetchStatus.SUCCEED);
             setEvent(event);
         });
     }, [currentNodeId, equipmentId, studyUuid]);

@@ -607,7 +607,9 @@ export const NetworkModificationTreePane = ({
                 />
 
                 <StudyDrawer
-                    open={isModificationsDrawerOpen}
+                    open={
+                        isModificationsDrawerOpen || isEventScenarioDrawerOpen
+                    }
                     drawerClassName={classes.nodeEditor}
                     drawerShiftClassName={classes.nodeEditorShift}
                     anchor={
@@ -616,20 +618,8 @@ export const NetworkModificationTreePane = ({
                             : 'left'
                     }
                 >
-                    <NodeEditor />
-                </StudyDrawer>
-
-                <StudyDrawer
-                    open={isEventScenarioDrawerOpen}
-                    drawerClassName={classes.nodeEditor}
-                    drawerShiftClassName={classes.nodeEditorShift}
-                    anchor={
-                        prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
-                            ? 'right'
-                            : 'left'
-                    }
-                >
-                    <ScenarioEditor />
+                    {isModificationsDrawerOpen && <NodeEditor />}
+                    {isEventScenarioDrawerOpen && <ScenarioEditor />}
                 </StudyDrawer>
             </Box>
             {createNodeMenu.display && (
