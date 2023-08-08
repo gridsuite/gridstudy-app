@@ -341,12 +341,12 @@ const GeneratorModificationDialog = ({
             const isFrequencyRegulationOn =
                 generator[FREQUENCY_REGULATION] === true ||
                 (generator[FREQUENCY_REGULATION] === null &&
-                    generatorToModify.activePowerControlOn === true);
+                    generatorToModify?.activePowerControlOn === true);
 
             const isVoltageRegulationOn =
                 generator[VOLTAGE_REGULATION] === true ||
                 (generator[VOLTAGE_REGULATION] === null &&
-                    generatorToModify.voltageRegulatorOn);
+                    generatorToModify?.voltageRegulatorOn);
 
             const isReactiveCapabilityCurveOn =
                 generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
