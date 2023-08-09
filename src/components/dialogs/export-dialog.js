@@ -60,9 +60,8 @@ const ExportDialog = ({
                 // we check if the param is for extension, if it is, we select all possible values by default.
                 // the only way for the moment to check if the param is for extension, is by checking his type is name.
                 //TODO to be removed when extensions param default value corrected in backend to include all possible values
-                console.log('prev formats', formats);
-                Object.values(formats).map((f) => {
-                    return f.parameters.map((p) => {
+                Object.values(formats).forEach((f) => {
+                    f.parameters = f.parameters.map((p) => {
                         if (
                             p.type === 'STRING_LIST' &&
                             p?.name?.endsWith('extensions')
@@ -72,7 +71,6 @@ const ExportDialog = ({
                         return p;
                     });
                 });
-                console.log('formats : ', formats);
                 setFormatsWithParameters(formats);
             });
         }
@@ -204,8 +202,8 @@ const ExportDialog = ({
                         initValues={currentParameters}
                         onChange={onChange}
                         variant="standard"
-                        useSelectionDialog={(param) =>
-                            param.possibleValues.length > 15
+                        selectionWithDialog={(param) =>
+                            param?.possibleValues?.length > 15
                         }
                     />
                 </Collapse>
