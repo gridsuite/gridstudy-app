@@ -11,7 +11,7 @@ import {
     ActivePowerAdornment,
     gridItem,
     ReactivePowerAdornment,
-} from '../../../../dialogUtils';
+} from '../../dialogUtils';
 import React from 'react';
 
 const ReactiveCapabilityCurveRowForm = ({

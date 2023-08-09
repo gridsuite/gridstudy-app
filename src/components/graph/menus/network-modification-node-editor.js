@@ -60,6 +60,7 @@ import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
+import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 
@@ -69,6 +70,7 @@ import {
     deleteModifications,
     fetchNetworkModifications,
 } from '../../../services/study/network-modifications';
+import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 
 const useStyles = makeStyles((theme) => ({
     listContainer: {
@@ -231,12 +233,12 @@ const NetworkModificationNodeEditor = () => {
             label: 'Create',
             subItems: [
                 {
-                    id: 'BATTERY_CREATION',
+                    id: MODIFICATION_TYPES.BATTERY_CREATION.type,
                     label: 'BATTERY',
                     action: () => adapt(BatteryCreationDialog),
                 },
                 {
-                    id: 'LOAD_CREATION',
+                    id: MODIFICATION_TYPES.LOAD_CREATION.type,
                     label: 'LOAD',
                     action: () => adapt(LoadCreationDialog),
                 },
@@ -246,27 +248,28 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(GeneratorCreationDialog),
                 },
                 {
-                    id: 'SHUNT_COMPENSATOR_CREATION',
+                    id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
                     label: 'ShuntCompensator',
                     action: () => adapt(ShuntCompensatorCreationDialog),
                 },
                 {
-                    id: 'LINE_CREATION',
+                    id: MODIFICATION_TYPES.LINE_CREATION.type,
                     label: 'LINE',
                     action: () => adapt(LineCreationDialog),
                 },
                 {
-                    id: 'TWO_WINDINGS_TRANSFORMER_CREATION',
+                    id: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION
+                        .type,
                     label: 'TWO_WINDINGS_TRANSFORMER',
                     action: () => adapt(TwoWindingsTransformerCreationDialog),
                 },
                 {
-                    id: 'VOLTAGE_LEVEL_CREATION',
+                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
                     label: 'VOLTAGE_LEVEL',
                     action: () => adapt(VoltageLevelCreationDialog),
                 },
                 {
-                    id: 'SUBSTATION_CREATION',
+                    id: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
                     label: 'SUBSTATION',
                     action: () => adapt(SubstationCreationDialog),
                 },
@@ -277,38 +280,44 @@ const NetworkModificationNodeEditor = () => {
             label: 'ModifyFromMenu',
             subItems: [
                 {
-                    id: 'LOAD_MODIFICATION',
+                    id: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
+                    label: 'BATTERY',
+                    action: () => adapt(BatteryModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
                     label: 'LOAD',
                     action: () => adapt(LoadModificationDialog),
                 },
                 {
-                    id: 'GENERATOR_MODIFICATION',
+                    id: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
                     label: 'GENERATOR',
                     action: () => adapt(GeneratorModificationDialog),
                 },
                 {
-                    id: 'SHUNT_COMPENSATOR_MODIFICATION',
+                    id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
                     label: 'ShuntCompensator',
                     action: () => adapt(ShuntCompensatorModificationDialog),
                 },
                 {
-                    id: 'LINE_MODIFICATION',
+                    id: MODIFICATION_TYPES.LINE_MODIFICATION.type,
                     label: 'LINE',
                     action: () => adapt(LineModificationDialog),
                 },
                 {
-                    id: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
+                    id: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION
+                        .type,
                     label: 'TWO_WINDINGS_TRANSFORMER',
                     action: () =>
                         adapt(TwoWindingsTransformerModificationDialog),
                 },
                 {
-                    id: 'VOLTAGE_LEVEL_MODIFICATION',
+                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
                     label: 'VoltageLevel',
                     action: () => adapt(VoltageLevelModificationDialog),
                 },
                 {
-                    id: 'SUBSTATION_MODIFICATION',
+                    id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
                     label: 'SUBSTATION',
                     action: () => adapt(SubstationModificationDialog),
                 },
@@ -324,27 +333,27 @@ const NetworkModificationNodeEditor = () => {
             label: 'AttachingAndSplittingLines',
             subItems: [
                 {
-                    id: 'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
+                    id: MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type,
                     label: 'LineSplitWithVoltageLevel',
                     action: () => adapt(LineSplitWithVoltageLevelDialog),
                 },
                 {
-                    id: 'LINE_ATTACH_TO_VOLTAGE_LEVEL',
+                    id: MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type,
                     label: 'LineAttachToVoltageLevel',
                     action: () => adapt(LineAttachToVoltageLevelDialog),
                 },
                 {
-                    id: 'LINES_ATTACH_TO_SPLIT_LINES',
+                    id: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
                     label: 'LinesAttachToSplitLines',
                     action: () => adapt(LinesAttachToSplitLinesDialog),
                 },
                 {
-                    id: 'DELETE_VOLTAGE_LEVEL_ON_LINE',
+                    id: MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type,
                     label: 'DeleteVoltageLevelOnLine',
                     action: () => adapt(DeleteVoltageLevelOnLineDialog),
                 },
                 {
-                    id: 'DELETE_ATTACHING_LINE',
+                    id: MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type,
                     label: 'DeleteAttachingLine',
                     action: () => adapt(DeleteAttachingLineDialog),
                 },
@@ -355,17 +364,17 @@ const NetworkModificationNodeEditor = () => {
             label: 'GenerationAndLoad',
             subItems: [
                 {
-                    id: 'GENERATOR_SCALING',
+                    id: MODIFICATION_TYPES.GENERATOR_SCALING.type,
                     label: 'GeneratorScaling',
                     action: () => adapt(GeneratorScalingDialog),
                 },
                 {
-                    id: 'LOAD_SCALING',
+                    id: MODIFICATION_TYPES.LOAD_SCALING.type,
                     label: 'LoadScaling',
                     action: () => adapt(LoadScalingDialog),
                 },
                 {
-                    id: 'GENERATION_DISPATCH',
+                    id: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
                     label: 'GenerationDispatch',
                     action: () => adapt(GenerationDispatchDialog),
                 },

@@ -11,7 +11,7 @@ import {
     gridItemWithTooltip,
     GridSection,
     ReactivePowerAdornment,
-} from '../../../dialogUtils';
+} from '../dialogUtils';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
 import React from 'react';
@@ -32,18 +32,13 @@ const SetPointsForm = ({
     studyUuid,
     currentNodeUuid,
     voltageLevelOptions,
-    isGeneratorModification = false,
+    isEquipmentModification = false,
     previousValues,
 }) => {
     const intl = useIntl();
     const watchVoltageRegulation = useWatch({
         name: VOLTAGE_REGULATION,
     });
-
-    const isVoltageRegulationOn =
-        watchVoltageRegulation ||
-        (watchVoltageRegulation === null &&
-            previousValues?.voltageRegulatorOn === true);
 
     const previousRegulation = () => {
         if (previousValues?.voltageRegulatorOn) {
@@ -65,7 +60,17 @@ const SetPointsForm = ({
         />
     );
 
-    const voltageRegulationField = isGeneratorModification ? (
+    const reactivePowerSetPointField = (
+        <FloatInput
+            name={REACTIVE_POWER_SET_POINT}
+            label={'ReactivePowerText'}
+            adornment={ReactivePowerAdornment}
+            previousValue={previousValues?.targetQ}
+            clearable={true}
+        />
+    );
+
+    const voltageRegulationField = isEquipmentModification ? (
         <Box>
             <CheckboxNullableInput
                 name={VOLTAGE_REGULATION}
@@ -82,22 +87,13 @@ const SetPointsForm = ({
         </Box>
     );
 
-    const reactivePowerSetPointField = (
-        <FloatInput
-            name={REACTIVE_POWER_SET_POINT}
-            label={'ReactivePowerText'}
-            adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.targetQ}
-            clearable={true}
-        />
-    );
-
     const voltageRegulationFields = (
         <VoltageRegulation
             voltageLevelOptions={voltageLevelOptions}
             currentNodeUuid={currentNodeUuid}
             studyUuid={studyUuid}
             previousValues={previousValues}
+            isEquipmentModification={isEquipmentModification}
         />
     );
 
@@ -106,6 +102,9 @@ const SetPointsForm = ({
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
                 {gridItem(activePowerSetPointField, 4)}
+                {gridItem(reactivePowerSetPointField, 4)}
+            </Grid>
+            <Grid container spacing={2} paddingTop={2}>
                 <Box sx={{ width: '100%' }} />
                 {gridItemWithTooltip(
                     voltageRegulationField,
@@ -117,13 +116,11 @@ const SetPointsForm = ({
                     4
                 )}
 
-                {isVoltageRegulationOn
-                    ? voltageRegulationFields
-                    : gridItem(reactivePowerSetPointField, 4)}
+                {voltageRegulationFields}
 
                 <Box sx={{ width: '100%' }} />
                 <FrequencyRegulation
-                    isGeneratorModification={isGeneratorModification}
+                    isEquipmentModification={isEquipmentModification}
                     previousValues={previousValues}
                 />
             </Grid>

@@ -14,6 +14,7 @@
     "network_modifications/LOAD_CREATION": "Création de la charge {computedLabel}",
     "network_modifications/LOAD_MODIFICATION": "Modification de la charge {computedLabel}",
     "network_modifications/BATTERY_CREATION": "Création de batterie {computedLabel}",
+    "network_modifications/BATTERY_MODIFICATION": "Modification de batterie {computedLabel}",
     "network_modifications/GENERATOR_CREATION": "Création du générateur {computedLabel}",
     "network_modifications/GENERATOR_MODIFICATION": "Modification du générateur {computedLabel}",
     "network_modifications/LINE_CREATION": "Création de la ligne {computedLabel}",

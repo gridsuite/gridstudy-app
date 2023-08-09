@@ -115,17 +115,19 @@ const PhaseTapChangerPane = ({
     };
 
     const regulationType = useMemo(() => {
-        return regulationTypeWatch
-            ? regulationTypeWatch
-            : getComputedPreviousPhaseRegulationType(previousValues);
+        return (
+            regulationTypeWatch ||
+            getComputedPreviousPhaseRegulationType(previousValues)
+        );
     }, [regulationTypeWatch, previousValues]);
 
     const regulationMode = useMemo(() => {
-        return regulationModeWatch
-            ? regulationModeWatch
-            : getComputedPhaseTapChangerRegulationMode(
-                  previousValues?.[PHASE_TAP_CHANGER]
-              )?.id;
+        return (
+            regulationModeWatch ||
+            getComputedPhaseTapChangerRegulationMode(
+                previousValues?.[PHASE_TAP_CHANGER]
+            )?.id
+        );
     }, [regulationModeWatch, previousValues]);
 
     const regulationEnabled = useMemo(() => {
@@ -213,7 +215,12 @@ const PhaseTapChangerPane = ({
         <FloatInput
             name={`${id}.${TARGET_DEADBAND}`}
             label="Deadband"
-            adornment={ActivePowerAdornment}
+            adornment={
+                regulationMode ===
+                PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
+                    ? ActivePowerAdornment
+                    : AmpereAdornment
+            }
             formProps={{
                 disabled: !regulationEnabled,
             }}

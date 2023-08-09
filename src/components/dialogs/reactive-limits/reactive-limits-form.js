@@ -15,11 +15,10 @@ import {
 import { REACTIVE_LIMIT_TYPES } from 'components/network/constants';
 import React from 'react';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { gridItem, ReactivePowerAdornment } from '../../../dialogUtils';
+import { gridItem, ReactivePowerAdornment } from '../dialogUtils';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
-import { FormattedMessage } from 'react-intl';
 
 const headerIds = [
     'ActivePowerText',
@@ -28,7 +27,7 @@ const headerIds = [
 ];
 
 const ReactiveLimitsForm = ({
-    generatorToModify,
+    equipmentToModify,
     updatePreviousReactiveCapabilityCurveTable,
 }) => {
     const reactiveCapabilityCurveChoice = useWatch({
@@ -53,7 +52,7 @@ const ReactiveLimitsForm = ({
             label={'MinimumReactivePower'}
             adornment={ReactivePowerAdornment}
             previousValue={
-                generatorToModify?.minMaxReactiveLimits?.minimumReactivePower
+                equipmentToModify?.minMaxReactiveLimits?.minimumReactivePower
             }
             clearable={true}
         />
@@ -65,7 +64,7 @@ const ReactiveLimitsForm = ({
             label={'MaximumReactivePower'}
             adornment={ReactivePowerAdornment}
             previousValue={
-                generatorToModify?.minMaxReactiveLimits?.maximumReactivePower
+                equipmentToModify?.minMaxReactiveLimits?.maximumReactivePower
             }
             clearable={true}
         />
@@ -76,7 +75,7 @@ const ReactiveLimitsForm = ({
             id={REACTIVE_CAPABILITY_CURVE_TABLE}
             tableHeadersIds={headerIds}
             isReactiveCapabilityCurveOn={isReactiveCapabilityCurveOn}
-            previousValues={generatorToModify?.reactiveCapabilityCurvePoints}
+            previousValues={equipmentToModify?.reactiveCapabilityCurvePoints}
             updatePreviousReactiveCapabilityCurveTable={
                 updatePreviousReactiveCapabilityCurveTable
             }
@@ -84,25 +83,16 @@ const ReactiveLimitsForm = ({
     );
 
     return (
-        <>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h4>
-                        <FormattedMessage id="ReactiveLimits" />
-                    </h4>
-                </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-                {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
+        <Grid container spacing={2}>
+            {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
 
-                {!isReactiveCapabilityCurveOn &&
-                    gridItem(minimumReactivePowerField, 4)}
-                {!isReactiveCapabilityCurveOn &&
-                    gridItem(maximumReactivePowerField, 4)}
-                {isReactiveCapabilityCurveOn &&
-                    gridItem(reactiveCapabilityCurveTableField, 12)}
-            </Grid>
-        </>
+            {!isReactiveCapabilityCurveOn &&
+                gridItem(minimumReactivePowerField, 4)}
+            {!isReactiveCapabilityCurveOn &&
+                gridItem(maximumReactivePowerField, 4)}
+            {isReactiveCapabilityCurveOn &&
+                gridItem(reactiveCapabilityCurveTableField, 12)}
+        </Grid>
     );
 };
 
