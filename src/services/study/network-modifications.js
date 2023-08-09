@@ -6,7 +6,10 @@
  */
 
 import { MODIFICATION_TYPES } from '../../components/utils/modification-type';
-import { toModificationOperation } from '../../components/utils/utils';
+import {
+    toModificationOperation,
+    toModificationUnsetOperation,
+} from '../../components/utils/utils';
 import {
     backendFetch,
     backendFetchJson,
@@ -489,9 +492,11 @@ export function modifyGenerator(
         maxActivePower: toModificationOperation(maximumActivePower),
         ratedNominalPower: toModificationOperation(ratedNominalPower),
         activePowerSetpoint: toModificationOperation(activePowerSetpoint),
-        reactivePowerSetpoint: toModificationOperation(reactivePowerSetpoint),
+        reactivePowerSetpoint: toModificationUnsetOperation(
+            reactivePowerSetpoint
+        ),
         voltageRegulationOn: toModificationOperation(voltageRegulation),
-        voltageSetpoint: toModificationOperation(voltageSetpoint),
+        voltageSetpoint: toModificationUnsetOperation(voltageSetpoint),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         qPercent: toModificationOperation(qPercent),
