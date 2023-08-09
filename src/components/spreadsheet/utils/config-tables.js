@@ -74,6 +74,7 @@ export const TABLES_DEFINITIONS = {
                 },
                 tooltipComponent: CustomTooltipKeyValue,
                 tooltipValueGetter: toolTipValueGetterProperties,
+                minWidth: 300,
             },
         ],
     },

@@ -87,18 +87,20 @@ export const EquipmentTable = ({
     }, [network, topPinnedData]);
 
     const getRowHeight = useCallback((params) => {
-        if (params.data?.properties) {
-            let properties = Object.keys(params.data.properties);
+        const propertiesLength = params.data?.properties
+            ? Object.keys(params.data.properties).length
+            : 0;
 
-            if (properties.length > 0) {
-                return properties.length > 1
-                    ? DEFAULT_ROW_HEIGHT_WITH_PROPERTIES
-                    : DEFAULT_ROW_HEIGHT;
-            }
+        if (propertiesLength > 1) {
+            return DEFAULT_ROW_HEIGHT_WITH_PROPERTIES;
+        }
+        if (propertiesLength === 1) {
+            return DEFAULT_ROW_HEIGHT;
+        }
+        if (params.node.rowPinned) {
+            return PINNED_ROW_HEIGHT;
         } else {
-            return params.node.rowPinned
-                ? PINNED_ROW_HEIGHT
-                : DEFAULT_ROW_HEIGHT;
+            return DEFAULT_ROW_HEIGHT;
         }
     }, []);
 
