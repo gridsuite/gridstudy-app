@@ -40,6 +40,7 @@ const DeleteEquipmentForm = ({
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const editedIdRef = useRef(null);
+    const currentTypeRef = useRef(null);
 
     const watchType = useWatch({
         name: TYPE,
@@ -72,9 +73,12 @@ const DeleteEquipmentForm = ({
     }, []);
 
     useEffect(() => {
-        let ignore = false;
         setEquipmentsOptions([]);
-        if (watchType?.fetchers?.length) {
+        if (watchType) {
+            if (watchType.type !== currentTypeRef.current) {
+                currentTypeRef.current = watchType.type;
+            }
+            let ignore = false;
             fetchEquipmentsIds(
                 studyUuid,
                 currentNode?.id,
@@ -94,10 +98,10 @@ const DeleteEquipmentForm = ({
                         headerId: 'equipmentsLoadingError',
                     });
                 });
+            return () => {
+                ignore = true;
+            };
         }
-        return () => {
-            ignore = true;
-        };
     }, [studyUuid, currentNode?.id, watchType, snackError]);
 
     useEffect(() => {
@@ -108,9 +112,14 @@ const DeleteEquipmentForm = ({
                 editedIdRef.current = editDataEquipmentId;
                 return;
             }
+            if (watchEquipmentId && watchEquipmentId === editedIdRef.current) {
+                // we still are at first edit, dont change anything
+                return;
+            }
+
             if (
                 watchEquipmentId &&
-                watchType?.type === EQUIPMENT_TYPES.HVDC_LINE.type
+                currentTypeRef.current === EQUIPMENT_TYPES.HVDC_LINE.type
             ) {
                 // need specific update related to HVDC LCC deletion (for MCS lists)
                 hvdcLccSpecificUpdate(
@@ -125,7 +134,6 @@ const DeleteEquipmentForm = ({
     }, [
         studyUuid,
         currentNode?.id,
-        watchType?.type,
         watchEquipmentId,
         snackError,
         setValue,
