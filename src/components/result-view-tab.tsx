@@ -36,7 +36,7 @@ import {
 } from './results/use-results-tab';
 import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
-import { AvailableServices } from './utils/available-services';
+import { OptionalServices } from './utils/optional-services';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -109,8 +109,8 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const [availableServices] = useParameterState(AVAILABLE_SERVICES);
 
     const isAvailable = useCallback(
-        (tab: string) => {
-            return !!availableServices.includes(tab);
+        (tab: OptionalServices) => {
+            return Object.values(availableServices).includes(tab);
         },
         [availableServices]
     );
@@ -193,45 +193,35 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'SecurityAnalysis',
                 label: 'SecurityAnalysis',
-                isAvailable: isAvailable(
-                    AvailableServices['security-analysis-server']
-                ),
+                isAvailable: isAvailable(OptionalServices.SecurityAnalysis),
                 enableDeveloperMode: true,
                 renderResult: renderSecurityAnalysisResult,
             },
             {
                 id: 'SensitivityAnalysis',
                 label: 'SensitivityAnalysis',
-                isAvailable: isAvailable(
-                    AvailableServices['sensitivity-analysis-server']
-                ),
+                isAvailable: isAvailable(OptionalServices.SensitivityAnalysis),
                 enableDeveloperMode: true,
                 renderResult: renderSensitivityAnalysisResult,
             },
             {
                 id: 'ShortCircuit',
                 label: 'ShortCircuitAnalysis',
-                isAvailable: isAvailable(
-                    AvailableServices['shortcircuit-server']
-                ),
+                isAvailable: isAvailable(OptionalServices.ShortCircuit),
                 enableDeveloperMode: enableDeveloperMode,
                 renderResult: renderShortCircuitAnalysisResult,
             },
             {
                 id: 'DynamicSimulation',
                 label: 'DynamicSimulation',
-                isAvailable: isAvailable(
-                    AvailableServices['dynamic-simulation-server']
-                ),
+                isAvailable: isAvailable(OptionalServices.DynamicSimulation),
                 enableDeveloperMode: enableDeveloperMode,
                 renderResult: renderDynamicSimulationResult,
             },
             {
                 id: 'VoltageInit',
                 label: 'VoltageInit',
-                isAvailable: isAvailable(
-                    AvailableServices['voltage-init-server']
-                ),
+                isAvailable: isAvailable(OptionalServices.VoltageInit),
                 enableDeveloperMode: enableDeveloperMode,
                 renderResult: renderVoltageInitResult,
             },

@@ -76,7 +76,7 @@ import {
     setSecurityAnalysisParameters,
     updateSecurityAnalysisProvider,
 } from '../../../services/study/security-analysis';
-import { AvailableServices } from '../../utils/available-services';
+import { OptionalServices } from '../../utils/optional-services';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -529,7 +529,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const isAvailableService = useCallback(
         (tab) => {
-            return availableServices.includes(tab);
+            return Object.values(availableServices).includes(tab);
         },
         [availableServices]
     );
@@ -548,7 +548,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
-        isAvailableService(AvailableServices['security-analysis-server']),
+        isAvailableService(OptionalServices.SecurityAnalysis),
         user,
         'SecurityAnalysis',
         fetchSecurityAnalysisProviders,
@@ -560,7 +560,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const sensitivityAnalysisParametersBackend = useParametersBackend(
-        isAvailableService(AvailableServices['sensitivity-analysis-server']),
+        isAvailableService(OptionalServices.SensitivityAnalysis),
         user,
         'SensitivityAnalysis',
         fetchSensitivityAnalysisProviders,

@@ -55,6 +55,7 @@ import {
     startVoltageInit,
     stopVoltageInit,
 } from '../services/study/voltage-init';
+import { OptionalServices } from './utils/optional-services';
 
 export function RunButtonContainer({
     studyUuid,
@@ -453,28 +454,36 @@ export function RunButtonContainer({
         return runnableName;
     };
 
+    const isAvailableService = useCallback(
+        (serviceName) => {
+            return Object.values(availableServices).includes(serviceName);
+        },
+        [availableServices]
+    );
+
     const runnables = useMemo(() => {
         return [
             runnable[ComputingType.LOADFLOW],
-            ...(availableServices.includes('SecurityAnalysis')
+            ...(isAvailableService(OptionalServices.SecurityAnalysis)
                 ? [runnable[ComputingType.SECURITY_ANALYSIS]]
                 : []),
-            ...(availableServices.includes('SensitivityAnalysis')
+            ...(isAvailableService(OptionalServices.SensitivityAnalysis)
                 ? [runnable[ComputingType.SENSITIVITY_ANALYSIS]]
                 : []),
-            ...(availableServices.includes('ShortCircuit') &&
+            ...(isAvailableService(OptionalServices.ShortCircuit) &&
             enableDeveloperMode
                 ? [runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]]
                 : []),
-            ...(availableServices.includes('DynamicSimulation') &&
+            ...(isAvailableService(OptionalServices.DynamicSimulation) &&
             enableDeveloperMode
                 ? [runnable[ComputingType.DYNAMIC_SIMULATION]]
                 : []),
-            ...(availableServices.includes('VoltageInit') && enableDeveloperMode
+            ...(isAvailableService(OptionalServices.VoltageInit) &&
+            enableDeveloperMode
                 ? [runnable[ComputingType.VOLTAGE_INIT]]
                 : []),
         ];
-    }, [availableServices, runnable, enableDeveloperMode]);
+    }, [isAvailableService, runnable, enableDeveloperMode]);
 
     useEffect(() => {
         setIsComputationRunning(

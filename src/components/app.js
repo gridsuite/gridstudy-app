@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { AvailableServices } from './utils/available-services';
+import { getEndpointNameByServerName } from './utils/optional-services';
 import {
     Navigate,
     Route,
@@ -376,14 +376,16 @@ const App = () => {
             const fetchAvailableOptionalServices =
                 getAvailableOptionalServices()
                     .then((services) => {
-                        services.forEach((service, offset) => {
-                            if (
-                                Object.keys(AvailableServices).includes(service)
-                            ) {
-                                services[offset] = AvailableServices[service];
-                            }
-                        });
-                        dispatch(setAvailableServices(services));
+                        const endpoints = services.reduce(
+                            (accumulator, service) => {
+                                accumulator.push(
+                                    getEndpointNameByServerName(service)
+                                );
+                                return accumulator;
+                            },
+                            []
+                        );
+                        dispatch(setAvailableServices(endpoints));
                     })
                     .catch((error) => {
                         snackError({
