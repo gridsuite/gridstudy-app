@@ -85,6 +85,7 @@ export function fetchShortCircuitAnalysisResult(
     );
 
     const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('mode', 'FULL');
     type && urlSearchParams.append('type', type);
 
     const url =

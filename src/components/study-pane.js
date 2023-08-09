@@ -291,6 +291,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     equipmentChanged={tableEquipment.changed}
                     disabled={disabled}
                     visible={props.view === StudyView.SPREADSHEET}
+                    loadFlowStatus={loadFlowStatus}
                 />
             </Paper>
         );
