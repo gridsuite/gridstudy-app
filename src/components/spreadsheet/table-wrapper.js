@@ -294,7 +294,7 @@ const TableWrapper = (props) => {
     );
 
     const { equipments, errorMessage } = useSpreadsheetEquipments(
-        TABLES_DEFINITION_INDEXES.get(tabIndex)
+        TABLES_DEFINITION_INDEXES.get(tabIndex).type
     );
 
     useEffect(() => {
