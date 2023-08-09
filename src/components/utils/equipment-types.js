@@ -21,7 +21,6 @@ import {
     fetchVoltageLevels,
     fetchVscConverterStations,
 } from 'utils/rest-api';
-import { equipments } from '../network/network-equipments';
 
 export const EQUIPMENT_INFOS_TYPES = {
     LIST: { type: 'LIST' },
@@ -96,15 +95,4 @@ export const EQUIPMENT_TYPES = {
         type: 'SWITCH',
         fetchers: [],
     },
-};
-
-export const getRealEquipmentType = (equipmentType) => {
-    switch (equipmentType) {
-        case equipments.lines:
-            return EQUIPMENT_TYPES.LINE.type;
-        case equipments.twoWindingsTransformers:
-            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
-        default:
-            break;
-    }
 };
