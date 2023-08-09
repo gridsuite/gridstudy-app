@@ -14,6 +14,14 @@ import {
     DATA_KEY_TO_SORT_KEY,
 } from './sensitivity-analysis-content';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
+import { TOOLTIP_DELAY } from 'utils/UIconstants';
+import {
+    getNoRowsMessage,
+    getRows,
+    useIntlResultStatusMessages,
+} from '../../utils/aggrid-rows-handler';
+import { useSelector } from 'react-redux';
+import { ComputingType } from '../../computing-status/computing-type';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -37,9 +45,15 @@ const SensitivityAnalysisResult = ({
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
-
+    const sensitivityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
+    const messages = useIntlResultStatusMessages(intl, true);
     const makeColumn = useCallback(
-        (field, labelId, isNum = false) => {
+        ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
+            const { colKey, sortWay } = sortConfig || {};
+            const isSortActive = colKey === field;
+
             const { options: filterOptions = [] } =
                 filtersDef.find((filterDef) => filterDef?.field === field) ||
                 {};
@@ -66,6 +80,13 @@ const SensitivityAnalysisResult = ({
                     updateFilter,
                     filterSelectedOptions,
                 },
+                minWidth: isSortActive && sortWay ? 95 : 65,
+                maxWidth: maxWidth,
+                wrapHeaderText: true,
+                autoHeaderHeight: true,
+                pinned: pinned,
+                headerTooltip: intl.formatMessage({ id: labelId }),
+                tooltipField: intl.formatMessage({ id: field }),
             };
         },
         [
@@ -82,31 +103,63 @@ const SensitivityAnalysisResult = ({
         const returnedTable = [];
 
         returnedTable.push(
-            makeColumn(
-                'funcId',
-                sensiToIndex < 2 ? 'SupervisedBranches' : 'BusBarBus'
-            )
+            makeColumn({
+                field: 'funcId',
+                labelId: sensiToIndex < 2 ? 'SupervisedBranches' : 'BusBarBus',
+                pinned: true,
+                maxWidth: 350,
+            })
         );
-        returnedTable.push(makeColumn('varId', 'VariablesToSimulate'));
+        returnedTable.push(
+            makeColumn({
+                field: 'varId',
+                labelId: 'VariablesToSimulate',
+                pinned: true,
+            })
+        );
 
         if (nOrNkIndex === 1) {
-            returnedTable.push(makeColumn('contingencyId', 'ContingencyId'));
+            returnedTable.push(
+                makeColumn({
+                    field: 'contingencyId',
+                    labelId: 'ContingencyId',
+                    pinned: true,
+                })
+            );
         }
 
         const suffix1 = 'In' + ['kW', 'kA', 'kV'][sensiToIndex];
         const suffix = suffix1 + (nOrNkIndex !== 1 ? '' : 'BeforeContingency');
 
         returnedTable.push(
-            makeColumn('functionReference', 'ValRef' + suffix, true)
+            makeColumn({
+                field: 'functionReference',
+                labelId: 'ValRef' + suffix,
+                isNum: true,
+            })
         );
-        returnedTable.push(makeColumn('value', 'Delta' + suffix, true));
+        returnedTable.push(
+            makeColumn({
+                field: 'value',
+                labelId: 'Delta' + suffix,
+                isNum: true,
+            })
+        );
 
         if (nOrNkIndex === 1) {
             returnedTable.push(
-                makeColumn('functionReferenceAfter', 'ValRef' + suffix1, true)
+                makeColumn({
+                    field: 'functionReferenceAfter',
+                    labelId: 'ValRef' + suffix1,
+                    isNum: true,
+                })
             );
             returnedTable.push(
-                makeColumn('valueAfter', 'Delta' + suffix1, true)
+                makeColumn({
+                    field: 'valueAfter',
+                    labelId: 'Delta' + suffix1,
+                    isNum: true,
+                })
             );
         }
 
@@ -119,6 +172,8 @@ const SensitivityAnalysisResult = ({
         () => ({
             suppressMovable: true,
             sortable: true,
+            resizable: true,
+            flex: 1,
         }),
         []
     );
@@ -132,17 +187,21 @@ const SensitivityAnalysisResult = ({
             params.api.sizeColumnsToFit();
         }
     }, []);
+    const message = getNoRowsMessage(messages, rows, sensitivityAnalysisStatus);
 
+    const rowsToShow = getRows(rows, sensitivityAnalysisStatus);
     return (
         <div style={{ flexGrow: 1 }}>
             <CustomAGGrid
                 ref={gridRef}
-                rowData={rows}
+                rowData={rowsToShow}
                 columnDefs={columnsDefs}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
                 onSortChanged={onSortChanged}
                 gridOptions={gridOptions}
+                tooltipShowDelay={TOOLTIP_DELAY}
+                overlayNoRowsTemplate={message}
             />
         </div>
     );

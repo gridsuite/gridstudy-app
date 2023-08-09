@@ -78,6 +78,7 @@ const CustomHeaderComponent = ({
             container
             alignItems="center"
             sx={{ height: '100%' }}
+            justifyContent="space-between"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
@@ -86,36 +87,80 @@ const CustomHeaderComponent = ({
                 item
                 direction={'row'}
                 alignItems={'center'}
+                wrap={'nowrap'}
                 sx={{ height: '100%' }}
-                xs={10}
-                onClick={handleSortChange}
             >
-                <Grid item>{displayName}</Grid>
-                {isSortActive && sortWay && (
-                    <Grid item>
-                        <IconButton size={'small'}>
-                            {sortWay === 1 ? (
-                                <ArrowUpward fontSize={'small'} />
-                            ) : (
-                                <ArrowDownward fontSize={'small'} />
-                            )}
-                        </IconButton>
-                    </Grid>
-                )}
-            </Grid>
-            {isFilterActive && isFilterIconDisplayed && (
-                <Grid item xs={2}>
-                    <IconButton size={'small'} onClick={handleShowFilter}>
-                        <Badge
-                            color="secondary"
-                            variant="dot"
-                            invisible={!filterSelectedOptions.length}
+                <Grid
+                    container
+                    alignItems={'center'}
+                    sx={{ height: '100%' }}
+                    direction={'row'}
+                    wrap={'nowrap'}
+                >
+                    <Grid
+                        container
+                        alignItems={'center'}
+                        direction={'row'}
+                        wrap={'nowrap'}
+                        onClick={handleSortChange}
+                        sx={{
+                            height: '100%',
+                            overflow: 'hidden',
+                        }}
+                    >
+                        <Grid
+                            item
+                            sx={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}
                         >
-                            <Menu fontSize={'small'} />
-                        </Badge>
-                    </IconButton>
+                            {displayName}
+                        </Grid>
+                        <Grid item>
+                            {isSortActive && sortWay && (
+                                <Grid item>
+                                    <IconButton size={'small'}>
+                                        {sortWay === 1 ? (
+                                            <ArrowUpward fontSize={'small'} />
+                                        ) : (
+                                            <ArrowDownward fontSize={'small'} />
+                                        )}
+                                    </IconButton>
+                                </Grid>
+                            )}
+                        </Grid>
+                    </Grid>
+                    <Grid
+                        item
+                        sx={{
+                            overflow: 'visible',
+                        }}
+                    >
+                        {isFilterActive && isFilterIconDisplayed && (
+                            <Grid item>
+                                <IconButton
+                                    size={'small'}
+                                    onClick={handleShowFilter}
+                                >
+                                    <Badge
+                                        color="secondary"
+                                        variant={
+                                            filterSelectedOptions?.length
+                                                ? 'dot'
+                                                : null
+                                        }
+                                        invisible={!filterSelectedOptions}
+                                    >
+                                        <Menu fontSize={'small'} />
+                                    </Badge>
+                                </IconButton>
+                            </Grid>
+                        )}
+                    </Grid>
                 </Grid>
-            )}
+            </Grid>
+
             <Popover
                 id={popoverId}
                 open={isFilterOpened}

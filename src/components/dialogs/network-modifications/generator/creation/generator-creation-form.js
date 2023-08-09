@@ -35,8 +35,8 @@ import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
-import SetPointsForm from '../set-points/set-points-form';
+import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import SetPointsForm from '../../../set-points/set-points-form';
 import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
@@ -175,6 +175,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             </Grid>
 
             {/* Reactive limits part */}
+            <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm />
 
             {/* Set points part */}
