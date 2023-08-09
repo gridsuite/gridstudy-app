@@ -9,8 +9,8 @@ import React, { useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
 import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import { TYPES } from './util/make-component-utils';
-import { makeComponentFor } from './util/make-component-utils';
+import { TYPES, getValue } from './util/make-component-utils';
+import { DoubleEditor } from './load-flow-parameters';
 
 export const SensitivityAnalysisParameters = ({
     hideParameters,
@@ -112,15 +112,15 @@ const SensitivityAnalysisFields = ({
 
     const sensiParams = {
         flowFlowSensitivityValueThreshold: {
-            type: TYPES.float,
+            type: TYPES.double,
             description: 'flowFlowSensitivityValueThreshold',
         },
         angleFlowSensitivityValueThreshold: {
-            type: TYPES.float,
+            type: TYPES.double,
             description: 'angleFlowSensitivityValueThreshold',
         },
         flowVoltageSensitivityValueThreshold: {
-            type: TYPES.float,
+            type: TYPES.double,
             description: 'flowVoltageSensitivityValueThreshold',
         },
     };
@@ -144,7 +144,21 @@ function resetParametersAndRefresh(resetParameters, setResetRevision) {
 function makeComponentsFor(defParams, params, setter) {
     return Object.keys(defParams).map((key) => (
         <Grid container spacing={1} paddingTop={1} key={key}>
-            {makeComponentFor(defParams[key], key, params, setter)}
+            {SensitivityParamField(defParams[key], key, params, setter)}
         </Grid>
     ));
+}
+function SensitivityParamField(defParam, key, params, setter) {
+    function updateValues(newval) {
+        setter({ ...params, [key]: newval });
+    }
+    const value = getValue(params, key);
+    return (
+        <DoubleEditor
+            initValue={value}
+            label={defParam.description}
+            callback={updateValues}
+            checkIsTwoDigitAfterDecimal
+        />
+    );
 }
