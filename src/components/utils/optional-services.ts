@@ -6,9 +6,9 @@ export enum OptionalServices {
     VoltageInit = 'VoltageInit',
 }
 
-export const getEndpointNameByServerName: (serverName: string) => any = (
+export const getOptionalServiceByServerName = (
     serverName: string
-) => {
+): OptionalServices | undefined => {
     switch (serverName) {
         case 'security-analysis-server':
             return OptionalServices.SecurityAnalysis;

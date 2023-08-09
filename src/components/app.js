@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getEndpointNameByServerName } from './utils/optional-services';
+import { getOptionalServiceByServerName } from './utils/optional-services';
 import {
     Navigate,
     Route,
@@ -379,7 +379,7 @@ const App = () => {
                         const endpoints = services.reduce(
                             (accumulator, service) => {
                                 accumulator.push(
-                                    getEndpointNameByServerName(service)
+                                    getOptionalServiceByServerName(service)
                                 );
                                 return accumulator;
                             },
