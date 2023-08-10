@@ -28,7 +28,6 @@ import withBranchMenu from '../../menus/branch-menu';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
-import { fetchNetworkElementInfos } from '../../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -56,6 +55,7 @@ import {
 } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
+import { fetchNetworkElementInfos } from '../../../services/study/network';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 
 function SingleLineDiagramContent(props) {

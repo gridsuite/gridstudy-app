@@ -5,16 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-} from '../../utils/rest-api';
 import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import {
     getShortcircuitAnalysisTypeFromEnum,
     ShortcircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
+import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     console.info(

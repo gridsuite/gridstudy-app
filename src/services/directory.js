@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, getRequestParamFromList } from '../utils/rest-api';
+import { backendFetchJson, getRequestParamFromList } from './utils';
 
 const PREFIX_DIRECTORY_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/directory`;
 

@@ -8,7 +8,6 @@
 import { FormProvider, useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FetchStatus } from '../../../../utils/rest-api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
@@ -20,6 +19,7 @@ import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
 import { saveEvent, getEvent } from '../../../../services/dynamic-simulation';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { FetchStatus } from '../../../../services/utils';
 
 export type DynamicSimulationEventDialogProps = {
     studyUuid: string;

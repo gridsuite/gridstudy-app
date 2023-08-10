@@ -23,7 +23,6 @@ import {
     setModificationsInProgress,
 } from '../../../../redux/actions';
 import { UPDATE_TYPE } from 'components/network/constants';
-import { FetchStatus } from 'utils/rest-api';
 
 import { Theme } from '@mui/material/styles';
 import { ReduxState, StudyUpdated } from '../../../../redux/reducer.type';
@@ -39,6 +38,7 @@ import {
 } from '../../../../services/dynamic-simulation';
 import { EventListItem } from './event-list-item';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
+import { FetchStatus } from '../../../../services/utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
     listContainer: {

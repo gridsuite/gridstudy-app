@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson } from '../utils/rest-api';
 import { Event } from '../components/dialogs/dynamicsimulation/event/types/event.type';
+import { backendFetchJson } from './utils';
 
 const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/dynamic-simulation`;
 
