@@ -6,12 +6,12 @@
  */
 
 import { useNodeData } from './study-container';
-import { fetchLineOrTransformer } from '../utils/rest-api';
 import WaitingLoader from './utils/waiting-loader';
 import SecurityAnalysisResult from './security-analysis-result';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 import { fetchSecurityAnalysisResult } from '../services/study/security-analysis';
+import { fetchLineOrTransformer } from '../services/study/network-map';
 
 const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
 

@@ -25,12 +25,13 @@ import {
     SHUNT_SUSCEPTANCE_1,
     SHUNT_SUSCEPTANCE_2,
 } from 'components/utils/field-constants';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import { unitToMicroUnit } from 'utils/rounding';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     h3: {
         marginTop: 0,
         marginBottom: 0,
@@ -41,12 +42,25 @@ const LineCharacteristicsPane = ({
     id = CHARACTERISTICS,
     studyUuid,
     currentNode,
-    voltageLevelOptions,
     displayConnectivity,
     lineToModify,
     clearableFields = false,
 }) => {
     const classes = useStyles();
+
+    const currentNodeUuid = currentNode.id;
+    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
+    useEffect(() => {
+        if (studyUuid && currentNodeUuid) {
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
+                (values) => {
+                    setVoltageLevelOptions(
+                        values.sort((a, b) => a.id.localeCompare(b.id))
+                    );
+                }
+            );
+        }
+    }, [studyUuid, currentNodeUuid]);
 
     const seriesResistanceField = (
         <FloatInput

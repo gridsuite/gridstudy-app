@@ -6,12 +6,11 @@
  */
 
 import { MODIFICATION_TYPES } from '../../components/utils/modification-type';
-import { toModificationOperation } from '../../components/utils/utils';
 import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-} from '../../utils/rest-api';
+    toModificationOperation,
+    toModificationUnsetOperation,
+} from '../../components/utils/utils';
+import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import {
@@ -153,7 +152,8 @@ export function generationDispatch(
     defaultOutageRate,
     generatorsWithoutOutage,
     generatorsWithFixedActivePower,
-    generatorsFrequencyReserve
+    generatorsFrequencyReserve,
+    substationsGeneratorsOrdering
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
@@ -162,6 +162,7 @@ export function generationDispatch(
         generatorsWithoutOutage: generatorsWithoutOutage,
         generatorsWithFixedSupply: generatorsWithFixedActivePower,
         generatorsFrequencyReserve: generatorsFrequencyReserve,
+        substationsGeneratorsOrdering: substationsGeneratorsOrdering,
     });
 
     let generationDispatchUrl =
@@ -489,9 +490,11 @@ export function modifyGenerator(
         maxActivePower: toModificationOperation(maximumActivePower),
         ratedNominalPower: toModificationOperation(ratedNominalPower),
         activePowerSetpoint: toModificationOperation(activePowerSetpoint),
-        reactivePowerSetpoint: toModificationOperation(reactivePowerSetpoint),
+        reactivePowerSetpoint: toModificationUnsetOperation(
+            reactivePowerSetpoint
+        ),
         voltageRegulationOn: toModificationOperation(voltageRegulation),
-        voltageSetpoint: toModificationOperation(voltageSetpoint),
+        voltageSetpoint: toModificationUnsetOperation(voltageSetpoint),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         qPercent: toModificationOperation(qPercent),
