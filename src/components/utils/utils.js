@@ -105,6 +105,15 @@ export function toModificationOperation(value) {
         : null;
 }
 
+export function toModificationUnsetOperation(value) {
+    if (value === null) {
+        return null;
+    }
+    return value === 0 || value === false || value
+        ? { value: value, op: 'SET' }
+        : { op: 'UNSET' };
+}
+
 export const formatTemporaryLimits = (temporaryLimits) =>
     temporaryLimits?.map((limit) => {
         return {
@@ -133,6 +142,18 @@ export const compareStepsWithPreviousValues = (tapSteps, previousValues) => {
             return parseFloat(step[key]) === previousStep[key];
         });
     });
+};
+
+export const getTapChangerEquipmentSectionTypeValue = (tapChanger) => {
+    if (!tapChanger?.regulatingTerminalConnectableType) {
+        return null;
+    } else {
+        return (
+            tapChanger?.regulatingTerminalConnectableType +
+            ' : ' +
+            tapChanger?.regulatingTerminalConnectableId
+        );
+    }
 };
 
 export function calculateResistance(distance, linearResistance) {

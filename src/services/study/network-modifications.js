@@ -6,7 +6,10 @@
  */
 
 import { MODIFICATION_TYPES } from '../../components/utils/modification-type';
-import { toModificationOperation } from '../../components/utils/utils';
+import {
+    toModificationOperation,
+    toModificationUnsetOperation,
+} from '../../components/utils/utils';
 import {
     backendFetch,
     backendFetchJson,
@@ -153,7 +156,8 @@ export function generationDispatch(
     defaultOutageRate,
     generatorsWithoutOutage,
     generatorsWithFixedActivePower,
-    generatorsFrequencyReserve
+    generatorsFrequencyReserve,
+    substationsGeneratorsOrdering
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
@@ -162,6 +166,7 @@ export function generationDispatch(
         generatorsWithoutOutage: generatorsWithoutOutage,
         generatorsWithFixedSupply: generatorsWithFixedActivePower,
         generatorsFrequencyReserve: generatorsFrequencyReserve,
+        substationsGeneratorsOrdering: substationsGeneratorsOrdering,
     });
 
     let generationDispatchUrl =
@@ -281,6 +286,65 @@ export function createBattery(
             participate: frequencyRegulation,
             droop,
         }),
+    });
+}
+
+export function modifyBattery(
+    studyUuid,
+    currentNodeUuid,
+    batteryId,
+    name,
+    minimumActivePower,
+    maximumActivePower,
+    activePowerSetpoint,
+    reactivePowerSetpoint,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    modificationId,
+    frequencyRegulation,
+    droop,
+    isReactiveCapabilityCurveOn,
+    maximumReactivePower,
+    minimumReactivePower,
+    reactiveCapabilityCurve
+) {
+    let modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (modificationId) {
+        modificationUrl += '/' + encodeURIComponent(modificationId);
+        console.info('Updating battery modification');
+    } else {
+        console.info('Creating battery modification');
+    }
+
+    const batteryModification = {
+        type: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
+        equipmentId: batteryId,
+        equipmentName: toModificationOperation(name),
+        voltageLevelId: toModificationOperation(voltageLevelId),
+        busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+        minActivePower: toModificationOperation(minimumActivePower),
+        maxActivePower: toModificationOperation(maximumActivePower),
+        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
+        reactivePowerSetpoint: toModificationOperation(reactivePowerSetpoint),
+        reactiveCapabilityCurve: toModificationOperation(
+            isReactiveCapabilityCurveOn
+        ),
+        participate: toModificationOperation(frequencyRegulation),
+        droop: toModificationOperation(droop),
+        maximumReactivePower: toModificationOperation(maximumReactivePower),
+        minimumReactivePower: toModificationOperation(minimumReactivePower),
+        reactiveCapabilityCurvePoints: reactiveCapabilityCurve,
+    };
+    return backendFetchText(modificationUrl, {
+        method: modificationId ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(batteryModification),
     });
 }
 
@@ -430,9 +494,11 @@ export function modifyGenerator(
         maxActivePower: toModificationOperation(maximumActivePower),
         ratedNominalPower: toModificationOperation(ratedNominalPower),
         activePowerSetpoint: toModificationOperation(activePowerSetpoint),
-        reactivePowerSetpoint: toModificationOperation(reactivePowerSetpoint),
+        reactivePowerSetpoint: toModificationUnsetOperation(
+            reactivePowerSetpoint
+        ),
         voltageRegulationOn: toModificationOperation(voltageRegulation),
-        voltageSetpoint: toModificationOperation(voltageSetpoint),
+        voltageSetpoint: toModificationUnsetOperation(voltageSetpoint),
         voltageLevelId: toModificationOperation(voltageLevelId),
         busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
         qPercent: toModificationOperation(qPercent),
@@ -867,6 +933,7 @@ export function modifyTwoWindingsTransformer(
     currentLimit1,
     currentLimit2,
     ratioTapChanger,
+    phaseTapChanger,
     isUpdate,
     modificationUuid
 ) {
@@ -902,6 +969,7 @@ export function modifyTwoWindingsTransformer(
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
             ratioTapChanger: ratioTapChanger,
+            phaseTapChanger: phaseTapChanger,
         }),
     });
 }

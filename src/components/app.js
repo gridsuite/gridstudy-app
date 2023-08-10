@@ -81,6 +81,7 @@ import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    TABLES_DEFINITION_INDEXES,
     TABLES_NAMES_INDEXES,
 } from './spreadsheet/utils/config-tables';
 import { getComputedLanguage } from '../utils/language';
@@ -263,17 +264,78 @@ const App = () => {
                 }
             });
             if (dispatchDisplayedColumns) {
+                if (dispatchReorderedColumns) {
+                    cleanEquipmentsColumnsParamsWithNewAndDeleted(
+                        displayedColumnsParams,
+                        reorderedColumnsParams
+                    );
+                }
                 dispatch(changeDisplayedColumns(displayedColumnsParams));
             }
             if (dispatchLockedColumns) {
+                if (dispatchReorderedColumns) {
+                    cleanEquipmentsColumnsParamsWithNewAndDeleted(
+                        lockedColumnsParams,
+                        reorderedColumnsParams,
+                        true
+                    );
+                }
                 dispatch(changeLockedColumns(lockedColumnsParams));
             }
             if (dispatchReorderedColumns) {
+                cleanEquipmentsColumnsParamsWithNewAndDeleted(
+                    reorderedColumnsParams,
+                    reorderedColumnsParams
+                );
                 dispatch(changeReorderedColumns(reorderedColumnsParams));
             }
         },
         [dispatch]
     );
+
+    function cleanEquipmentsColumnsParamsWithNewAndDeleted(
+        equipmentsColumnsParams,
+        reorderedColumnsParams,
+        deletedOnly = false
+    ) {
+        for (let param of equipmentsColumnsParams) {
+            if (!param) {
+                continue;
+            }
+
+            let index = param.index;
+
+            const equipmentAllColumnsIds = TABLES_DEFINITION_INDEXES.get(
+                index
+            ).columns.map((item) => item.id);
+
+            let equipmentReorderedColumnsIds = JSON.parse(
+                reorderedColumnsParams[index].value
+            );
+            let equipmentNewColumnsIds = equipmentAllColumnsIds.filter(
+                (item) => !equipmentReorderedColumnsIds.includes(item)
+            );
+
+            let equipmentsParamColumnIds = JSON.parse(
+                equipmentsColumnsParams[index].value
+            );
+
+            // Remove deleted ids
+            let equipmentsNewParamColumnIds = equipmentsParamColumnIds.filter(
+                (item) => equipmentAllColumnsIds.includes(item)
+            );
+
+            // Update columns
+            if (deletedOnly) {
+                param.value = JSON.stringify([...equipmentsNewParamColumnIds]);
+            } else {
+                param.value = JSON.stringify([
+                    ...equipmentsNewParamColumnIds,
+                    ...equipmentNewColumnsIds,
+                ]);
+            }
+        }
+    }
 
     const connectNotificationsUpdateConfig = useCallback(() => {
         const ws = connectNotificationsWsUpdateConfig();

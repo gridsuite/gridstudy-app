@@ -593,7 +593,7 @@ export function StudyContainer({ view, onChangeTab }) {
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'loadflow'
+                'loadflowResult'
             ) {
                 dispatch(resetEquipmentsPostLoadflow());
             }
