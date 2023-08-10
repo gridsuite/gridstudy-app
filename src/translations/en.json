@@ -109,6 +109,7 @@
     "ID": "ID",
     "Name": "Name",
     "Country": "Country",
+    "Properties": "Properties",
     "SubstationId": "Substation ID",
     "VoltageLevelId": "Voltage level ID",
     "VoltageLevelIdSide1": "Voltage level ID 1",
@@ -1029,7 +1030,9 @@
     "muiTablePaginationNext": "Go to the next page",
     "muiTablePaginationFirst": "Go to the first page",
     "muiTablePaginationLast": "Go to the last page",
-
+    "flowFlowSensitivityValueThreshold" : "Sensitivity value threshold (ΔMW ou ΔA / MW)",
+    "angleFlowSensitivityValueThreshold" : "Sensitivity value threshold (ΔMW ou ΔA / Δ°)",
+    "flowVoltageSensitivityValueThreshold": "Sensitivity value threshold (ΔkV / kV)",
     "applyModifications": "Apply modifications",
     "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
     "VoltageInitModification": "Voltage init modification",

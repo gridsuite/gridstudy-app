@@ -16,8 +16,8 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
-import { useDoubleValue, useInputForm } from '../../utils/inputs/input-hooks';
-import { filledTextField, gridItem, GridSection } from '../dialogUtils';
+import { useInputForm } from '../../utils/inputs/input-hooks';
+import { GridSection } from '../dialogUtils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import DialogActions from '@mui/material/DialogActions';
 import makeStyles from '@mui/styles/makeStyles';
@@ -32,7 +32,6 @@ import {
     fetchConfigParameter,
     updateConfigParameter,
 } from '../../../services/config';
-import { getSensiDefaultResultsThreshold } from '../../../services/sensitivity-analysis';
 
 export const INJECTION_DISTRIBUTION_TYPES = [
     { id: 'PROPORTIONAL', label: 'Proportional' },
@@ -48,7 +47,6 @@ export const SENSITIVITY_TYPES = [
 
 const SENSI_PARAMETER_PREFIX_IN_DATABASE = 'sensi.';
 
-const PARAMETER_RESULTS_THRESHOLD = 'resultsThreshold';
 const PARAMETER_SENSI_INJECTIONS_SET = 'sensiInjectionsSet';
 const PARAMETER_SENSI_INJECTIONS = 'sensiInjections';
 const PARAMETER_SENSI_HVDCS = 'sensiHVDCs';
@@ -123,28 +121,12 @@ const SensiParametersSelector = (props) => {
 
     const inputForm = useInputForm();
 
-    const [defaultResultsThreshold, setDefaultResultsThreshold] =
-        useState(null);
-    const [paramResultsThreshold, setParamResultsThreshold] = useState(null);
     const [paramSensiInjectionsSet, setParamSensiInjectionsSet] =
         useState(null);
     const [paramSensiInjections, setParamSensiInjections] = useState(null);
     const [paramSensiHVDCs, setParamSensiHVDCs] = useState(null);
     const [paramSensiPSTs, setParamSensiPSTs] = useState(null);
     const [paramSensiNodes, setParamSensiNodes] = useState(null);
-
-    const [resultsThreshold, resultsThresholdField] = useDoubleValue({
-        label: PARAMETER_RESULTS_THRESHOLD,
-        validation: {
-            isFieldRequired: true,
-            isFieldNumeric: true,
-            valueGreaterThanOrEqualTo: defaultResultsThreshold,
-            errorMsgId: 'ResultsThresholdGreaterOrEqualDefaultValue',
-        },
-        inputForm: inputForm,
-        defaultValue: paramResultsThreshold,
-        formProps: filledTextField,
-    });
 
     const [sensiInjectionsSet, SensiInjectionsSetsField] =
         useSensitivityFactors({
@@ -184,10 +166,6 @@ const SensiParametersSelector = (props) => {
     const handleStart = () => {
         if (inputForm.validate()) {
             handleSaveSensiConfigurationParam(
-                PARAMETER_RESULTS_THRESHOLD,
-                resultsThreshold
-            );
-            handleSaveSensiConfigurationParam(
                 PARAMETER_SENSI_INJECTIONS_SET,
                 sensiInjectionsSet
             );
@@ -207,7 +185,6 @@ const SensiParametersSelector = (props) => {
 
             // we provide to the sensitivity analysis service only the checked items in the configuration
             const sensiConfiguration = {
-                resultsThreshold: resultsThreshold,
                 sensitivityInjectionsSets: sensiInjectionsSet.filter(
                     (e) => e.checked
                 ),
@@ -253,18 +230,6 @@ const SensiParametersSelector = (props) => {
     );
 
     useEffect(() => {
-        // get default results threshold value
-        getSensiDefaultResultsThreshold()
-            .then((value) => setDefaultResultsThreshold(value))
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'defaultSensiResultsThresholdRetrievingError',
-                });
-            });
-    }, [snackError]);
-
-    useEffect(() => {
         fetchSensiConfigurationParam(PARAMETER_SENSI_INJECTIONS_SET).then((p) =>
             setParamSensiInjectionsSet(p)
         );
@@ -286,16 +251,6 @@ const SensiParametersSelector = (props) => {
         );
     }, [fetchSensiConfigurationParam]);
 
-    useEffect(() => {
-        defaultResultsThreshold &&
-            fetchSensiConfigurationParam(PARAMETER_RESULTS_THRESHOLD).then(
-                (p) =>
-                    setParamResultsThreshold(
-                        p ? parseFloat(p) : defaultResultsThreshold
-                    )
-            );
-    }, [defaultResultsThreshold, fetchSensiConfigurationParam]);
-
     return (
         <>
             <Dialog
@@ -311,7 +266,6 @@ const SensiParametersSelector = (props) => {
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} direction="column" item xs={12}>
-                        <Grid item>{gridItem(resultsThresholdField, 3)}</Grid>
                         <GridSection title="SensitivityBranches" heading="3" />
                         <GridSection
                             title="SensitivityInjectionsSet"
