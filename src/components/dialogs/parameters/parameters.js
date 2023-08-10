@@ -57,6 +57,8 @@ import { fetchSensitivityAnalysisProviders } from '../../../services/sensitivity
 import {
     fetchDefaultSensitivityAnalysisProvider,
     fetchSensitivityAnalysisProvider,
+    getSensitivityAnalysisParameters,
+    setSensitivityAnalysisParameters,
     updateSensitivityAnalysisProvider,
 } from '../../../services/study/sensitivity-analysis';
 import {
@@ -551,7 +553,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         fetchSensitivityAnalysisProviders,
         fetchSensitivityAnalysisProvider,
         fetchDefaultSensitivityAnalysisProvider,
-        updateSensitivityAnalysisProvider
+        updateSensitivityAnalysisProvider,
+        getSensitivityAnalysisParameters,
+        setSensitivityAnalysisParameters
     );
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
