@@ -52,6 +52,7 @@ const convertDuration = (duration) => {
 };
 
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
+    console.log('result: ', result);
     const useStyles = makeStyles((theme) => ({
         cell: {
             display: 'flex',
