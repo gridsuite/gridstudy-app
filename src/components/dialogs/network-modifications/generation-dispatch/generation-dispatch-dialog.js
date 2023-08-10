@@ -24,13 +24,13 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FetchStatus } from 'utils/rest-api';
 import yup from 'components/utils/yup-config';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import { generationDispatch } from '../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../services/utils';
 
 const emptyFormData = {
     [LOSS_COEFFICIENT]: null,

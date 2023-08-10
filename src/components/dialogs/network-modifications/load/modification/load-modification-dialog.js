@@ -18,7 +18,6 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
@@ -26,6 +25,7 @@ import LoadModificationForm from './load-modification-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

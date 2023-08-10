@@ -22,11 +22,11 @@ import {
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { fetchNetworkElementInfos } from 'utils/rest-api';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
 import makeStyles from '@mui/styles/makeStyles';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
+import { fetchNetworkElementInfos } from '../../services/study/network';
 
 const useStyles = makeStyles((theme) => ({
     tableCells: {

@@ -21,7 +21,7 @@ import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/r
 import PhaseTapChangerPane from '../../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import React, { useEffect, useState } from 'react';
 import LimitsPane from '../../../../limits/limits-pane';
-import { fetchVoltageLevelsListInfos } from '../../../../../../utils/rest-api';
+import { fetchVoltageLevelsListInfos } from '../../../../../../services/study/network';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
