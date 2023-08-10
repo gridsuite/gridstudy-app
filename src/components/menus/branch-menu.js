@@ -22,7 +22,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import { fetchNetworkElementInfos } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
@@ -39,6 +38,7 @@ import {
     switchOnBranch,
     tripBranch,
 } from '../../services/study/network-modifications';
+import { fetchNetworkElementInfos } from '../../services/study/network';
 
 const useStyles = makeStyles(() => ({
     menuItem: {

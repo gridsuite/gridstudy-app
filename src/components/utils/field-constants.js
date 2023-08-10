@@ -213,6 +213,8 @@ export const GENERATORS_WITH_FIXED_ACTIVE_POWER =
 export const GENERATORS_FREQUENCY_RESERVES = 'generatorsFrequencyReserve';
 export const GENERATORS_FILTERS = 'generatorsFilters';
 export const FREQUENCY_RESERVE = 'frequencyReserve';
+export const SUBSTATIONS_GENERATORS_ORDERING = 'substationsGeneratorsOrdering';
+export const SUBSTATION_IDS = 'substationIds';
 
 // voltage init
 export const VOLTAGE_LIMITS = 'voltageLimits';

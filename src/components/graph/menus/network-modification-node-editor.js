@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { copyOrMoveModifications } from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
@@ -56,7 +55,6 @@ import GenerationDispatchDialog from 'components/dialogs/network-modifications/g
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { UPDATE_TYPE } from 'components/network/constants';
-import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -70,6 +68,8 @@ import {
     deleteModifications,
     fetchNetworkModifications,
 } from '../../../services/study/network-modifications';
+import { FetchStatus } from '../../../services/utils';
+import { copyOrMoveModifications } from '../../../services/study';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 
 const useStyles = makeStyles((theme) => ({

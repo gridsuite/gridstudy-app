@@ -23,10 +23,6 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import yup from '../../../../utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-} from '../../../../../utils/rest-api';
 import ModificationDialog from '../../../commons/modificationDialog';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
@@ -39,6 +35,8 @@ import {
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { isNodeBuilt } from '../../../../graph/util/model-functions';
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
+import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

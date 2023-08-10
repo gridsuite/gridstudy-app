@@ -28,7 +28,8 @@ import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import HvdcLccDeletionSpecificForm from './hvdc-lcc-deletion/hvdc-lcc-deletion-specific-form';
 import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
-import { fetchEquipmentsIds } from '../../../../utils/rest-api';
+
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
 const richTypeEquals = (a, b) => a.type === b.type;
 

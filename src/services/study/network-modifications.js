@@ -10,11 +10,7 @@ import {
     toModificationOperation,
     toModificationUnsetOperation,
 } from '../../components/utils/utils';
-import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-} from '../../utils/rest-api';
+import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import {
@@ -156,7 +152,8 @@ export function generationDispatch(
     defaultOutageRate,
     generatorsWithoutOutage,
     generatorsWithFixedActivePower,
-    generatorsFrequencyReserve
+    generatorsFrequencyReserve,
+    substationsGeneratorsOrdering
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
@@ -165,6 +162,7 @@ export function generationDispatch(
         generatorsWithoutOutage: generatorsWithoutOutage,
         generatorsWithFixedSupply: generatorsWithFixedActivePower,
         generatorsFrequencyReserve: generatorsFrequencyReserve,
+        substationsGeneratorsOrdering: substationsGeneratorsOrdering,
     });
 
     let generationDispatchUrl =

@@ -5,12 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-} from '../../utils/rest-api';
 import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
+import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startVoltageInit(studyUuid, currentNodeUuid) {
     console.info(
@@ -80,4 +76,15 @@ export function getVoltageInitParameters(studyUuid) {
         getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(getVoltageInitParams);
     return backendFetchJson(getVoltageInitParams);
+}
+
+export function cloneVoltageInitModifications(studyUuid, currentNodeId) {
+    console.info('cloning voltage init modifications');
+    const cloneVoltageInitModificationsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeId) +
+        '/voltage-init/modifications';
+
+    return backendFetch(cloneVoltageInitModificationsUrl, {
+        method: 'PUT',
+    });
 }

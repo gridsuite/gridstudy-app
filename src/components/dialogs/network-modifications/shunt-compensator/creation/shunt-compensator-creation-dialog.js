@@ -46,8 +46,8 @@ import {
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
-import { FetchStatus } from 'utils/rest-api';
 import { createShuntCompensator } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
