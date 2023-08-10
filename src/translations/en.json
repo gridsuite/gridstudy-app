@@ -967,6 +967,7 @@
     "FrequencyReserve": "FREQUENCY RESERVE (%)",
     "frequencyReserve": "Frequency reserve",
     "GeneratorsFiltersFrequencyReserveToolTip": "User entries are applied one after another starting at the top of the list. If a generator is included in more than one filter, an entry can therefore be replaced by a subsequent entry",
+    "GeneratorsOrdering": "Substations hierarchy",
     "ReplacingLine": "Replacing line",
     "ConnectionPosition": "Connection position",
     "DisplayTakenPositions": "Display taken positions",
