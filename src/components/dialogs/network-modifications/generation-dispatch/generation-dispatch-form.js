@@ -24,6 +24,7 @@ import { elementType } from '@gridsuite/commons-ui';
 import FrequencyReservePane from './frequency-reserve-pane';
 import { FormattedMessage } from 'react-intl';
 import { FieldLabel } from '../../../utils/inputs/hooks-helpers';
+import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
 
 const GenerationDispatchForm = () => {
     const handleCoefficientValueChange = (id, value) => {
@@ -115,6 +116,10 @@ const GenerationDispatchForm = () => {
                 <Grid item xs={12}>
                     <FrequencyReservePane />
                 </Grid>
+            </Grid>
+            <GridSection title="GeneratorsOrdering" />
+            <Grid container direction="column" spacing={2} alignItems="start">
+                <SubstationsGeneratorsOrderingPane />
             </Grid>
         </Box>
     );
