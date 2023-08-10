@@ -35,9 +35,9 @@ export default class NetworkModificationTreeModel {
         // we have to keep a precise order of nodes in the array to avoid gettings children
         // nodes before their parents when building graph in dagre library which have uncontrolled results
         // We also need to do this to keep a correct order when inserting nodes and not loose the user.
-        const referenceNodeIndex = referenceNodeId
-            ? this.treeNodes.findIndex((node) => node.id === referenceNodeId)
-            : null;
+        const referenceNodeIndex = this.treeNodes.findIndex(
+            (node) => node.id === referenceNodeId
+        );
         switch (insertMode) {
             case NodeInsertionMethods.Before: {
                 // We need to insert the node just before the active(reference) node
