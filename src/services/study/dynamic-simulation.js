@@ -6,16 +6,17 @@
  */
 
 import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-    getRequestParamFromList,
-} from '../../utils/rest-api';
-import {
     getStudyUrl,
     getStudyUrlWithNodeUuid,
     PREFIX_STUDY_QUERIES,
 } from './index';
+
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    getRequestParamFromList,
+} from '../utils';
 
 export function getDynamicMappings(studyUuid) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);

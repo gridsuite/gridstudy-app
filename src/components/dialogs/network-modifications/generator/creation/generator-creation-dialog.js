@@ -69,9 +69,9 @@ import {
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { createGenerator } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
