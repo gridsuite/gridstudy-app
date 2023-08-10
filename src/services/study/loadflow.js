@@ -6,15 +6,11 @@
  */
 
 import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-} from '../../utils/rest-api';
-import {
     getStudyUrl,
     getStudyUrlWithNodeUuid,
     PREFIX_STUDY_QUERIES,
 } from './index';
+import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function getDefaultLoadFlowProvider() {
     console.info('get default load flow provier');

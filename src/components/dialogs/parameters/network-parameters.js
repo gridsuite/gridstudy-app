@@ -18,9 +18,9 @@ import {
     useParameterState,
     useStyles,
 } from './parameters';
-import { fetchDefaultParametersValues } from '../../../utils/rest-api';
 import { LineSeparator } from '../dialogUtils';
 import Alert from '@mui/material/Alert';
+import { fetchDefaultParametersValues } from '../../../services/utils';
 
 export const FluxConventions = {
     IIDM: 'iidm',
