@@ -5,7 +5,7 @@ import { loadEquipments } from 'redux/actions';
 export const useSpreadsheetEquipments = (equipmentType) => {
     const dispatch = useDispatch();
     const equipments = useSelector(
-        (state) => state.spreadsheetNetwork[equipmentType.resource]
+        (state) => state.spreadsheetNetwork[equipmentType.type]
     );
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
@@ -17,17 +17,14 @@ export const useSpreadsheetEquipments = (equipmentType) => {
         if (shouldFetchEquipments) {
             setErrorMessage();
             Promise.all(
-                equipmentType.type.fetchers.map((fetcher) =>
+                equipmentType.fetchers.map((fetcher) =>
                     fetcher(studyUuid, currentNode.id)
                 )
             )
                 .then((results) => {
                     const fetchedEquipments = results.flat();
                     dispatch(
-                        loadEquipments(
-                            equipmentType.resource,
-                            fetchedEquipments
-                        )
+                        loadEquipments(equipmentType.type, fetchedEquipments)
                     );
                 })
                 .catch((err) => {

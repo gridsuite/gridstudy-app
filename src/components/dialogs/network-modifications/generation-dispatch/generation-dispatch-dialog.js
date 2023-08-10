@@ -18,6 +18,8 @@ import {
     GENERATORS_FILTERS,
     GENERATORS_FREQUENCY_RESERVES,
     FREQUENCY_RESERVE,
+    SUBSTATIONS_GENERATORS_ORDERING,
+    SUBSTATION_IDS,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
@@ -36,6 +38,7 @@ const emptyFormData = {
     [GENERATORS_WITHOUT_OUTAGE]: [],
     [GENERATORS_WITH_FIXED_ACTIVE_POWER]: [],
     [GENERATORS_FREQUENCY_RESERVES]: [],
+    [SUBSTATIONS_GENERATORS_ORDERING]: [],
 };
 
 const getGeneratorsFiltersSchema = (id) => ({
@@ -69,6 +72,18 @@ const getGeneratorsFrequencyReserveSchema = (id) => ({
     ),
 });
 
+const getSubstationsGeneratorsOrderingSchema = (id) => ({
+    [id]: yup.array().of(
+        yup.object().shape({
+            [SUBSTATION_IDS]: yup
+                .array()
+                .of(yup.string().required())
+                .min(1)
+                .required(),
+        })
+    ),
+});
+
 const formSchema = yup
     .object()
     .shape({
@@ -82,6 +97,9 @@ const formSchema = yup
         ...getGeneratorsFiltersSchema(GENERATORS_WITHOUT_OUTAGE),
         ...getGeneratorsFiltersSchema(GENERATORS_WITH_FIXED_ACTIVE_POWER),
         ...getGeneratorsFrequencyReserveSchema(GENERATORS_FREQUENCY_RESERVES),
+        ...getSubstationsGeneratorsOrderingSchema(
+            SUBSTATIONS_GENERATORS_ORDERING
+        ),
     })
     .required();
 
@@ -114,6 +132,9 @@ const GenerationDispatchDialog = ({
                 [GENERATORS_FREQUENCY_RESERVES]: addSelectedFieldToRows(
                     generation.generatorsFrequencyReserve
                 ),
+                [SUBSTATIONS_GENERATORS_ORDERING]: addSelectedFieldToRows(
+                    generation.substationsGeneratorsOrdering
+                ),
             });
         },
         [reset]
@@ -135,7 +156,8 @@ const GenerationDispatchDialog = ({
                 generation?.defaultOutageRate,
                 generation[GENERATORS_WITHOUT_OUTAGE],
                 generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
-                generation[GENERATORS_FREQUENCY_RESERVES]
+                generation[GENERATORS_FREQUENCY_RESERVES],
+                generation[SUBSTATIONS_GENERATORS_ORDERING]
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
