@@ -26,8 +26,8 @@ import React, { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import FrequencyRegulation from '../../../set-points/frequency-regulation';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 const BatteryCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;

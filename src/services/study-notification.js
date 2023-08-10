@@ -7,7 +7,7 @@
 
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
-import { getUrlWithToken, getWsBase } from '../utils/rest-api';
+import { getUrlWithToken, getWsBase } from './utils';
 
 const PREFIX_STUDY_NOTIFICATION_WS = `${process.env.REACT_APP_WS_GATEWAY}/study-notification`;
 

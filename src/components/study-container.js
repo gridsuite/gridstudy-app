@@ -12,12 +12,6 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
-    fetchNetworkModificationTree,
-    fetchStudyExists,
-    fetchCaseName,
-    fetchAllEquipments,
-} from '../utils/rest-api';
-import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
     openStudy,
@@ -53,6 +47,9 @@ import {
 } from '../services/directory-notification';
 import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
+import { fetchAllEquipments } from '../services/study/network-map';
+import { fetchCaseName, fetchStudyExists } from '../services/study';
+import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 
 function isWorthUpdate(
     studyUpdatedForce,

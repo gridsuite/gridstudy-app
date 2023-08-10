@@ -20,7 +20,7 @@ import {
     fetchTwoWindingsTransformers,
     fetchVoltageLevels,
     fetchVscConverterStations,
-} from 'utils/rest-api';
+} from '../../services/study/network';
 
 export const EQUIPMENT_INFOS_TYPES = {
     LIST: { type: 'LIST' },

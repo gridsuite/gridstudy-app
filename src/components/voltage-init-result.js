@@ -17,8 +17,8 @@ import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import Button from '@mui/material/Button';
 import { useParams } from 'react-router-dom';
-import { cloneVoltageInitModifications } from 'utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { cloneVoltageInitModifications } from '../services/study/voltage-init';
 
 const useStyles = makeStyles((theme) => ({
     container: {

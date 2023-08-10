@@ -27,7 +27,6 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import { fetchNetworkElementInfos } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import BatteryModificationForm from './battery-modification-form';
 import {
@@ -42,7 +41,6 @@ import {
     REMOVE,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
@@ -53,6 +51,8 @@ import {
     getFrequencyRegulationEmptyFormData,
 } from '../../../set-points/set-points-utils';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
+import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

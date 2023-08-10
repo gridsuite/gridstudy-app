@@ -29,7 +29,7 @@ import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
 import { unitToMicroUnit } from 'utils/rounding';
-import { fetchVoltageLevelsListInfos } from '../../../../../utils/rest-api';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const useStyles = makeStyles(() => ({
     h3: {
