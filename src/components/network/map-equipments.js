@@ -279,7 +279,11 @@ export default class MapEquipments {
         if (fullReload) {
             this.lines = [];
         }
-        this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
+        this.lines = this.updateEquipments(
+            this.lines,
+            lines,
+            EQUIPMENT_TYPES.LINE.type
+        );
         this.completeLinesInfos(fullReload ? [] : lines);
     }
 
@@ -290,7 +294,7 @@ export default class MapEquipments {
         this.hvdcLines = this.updateEquipments(
             this.hvdcLines,
             hvdcLines,
-            equipments.hvdcLines
+            EQUIPMENT_TYPES.HVDC_LINE.type
         );
         this.completeHvdcLinesInfos(fullReload ? [] : hvdcLines);
     }

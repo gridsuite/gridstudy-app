@@ -7,7 +7,7 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
@@ -48,6 +48,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -63,13 +64,11 @@ import {
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
-import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import {
     getPhaseTapChangerEmptyFormData,
     getPhaseTapChangerFormData,
     getPhaseTapChangerValidationSchema,
 } from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
-import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import {
     getRatioTapChangerEmptyFormData,
     getRatioTapChangerFormData,
@@ -90,7 +89,6 @@ import {
     PERMANENT_LIMIT,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants.js';
-import LimitsPane from '../../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
     getLimitsFormData,
@@ -100,8 +98,6 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
 import { computeHighTapPosition } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -167,7 +163,6 @@ const TwoWindingsTransformerCreationDialog = ({
     );
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dialogWidth, setDialogWidth] = useState('xl');
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     const computeRatioTapChangerRegulationMode = (
         ratioTapChangerFormValues
@@ -472,18 +467,6 @@ const TwoWindingsTransformerCreationDialog = ({
     });
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
-
-    useEffect(() => {
         if (editData) {
             fromEditDataToFormValues(editData);
         }
@@ -757,57 +740,11 @@ const TwoWindingsTransformerCreationDialog = ({
                 }
                 {...dialogProps}
             >
-                <Box
-                    hidden={
-                        tabIndex !==
-                        TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
-                    }
-                    p={1}
-                >
-                    <TwoWindingsTransformerCreationCharacteristicsPane
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        voltageLevelOptions={voltageLevelOptions}
-                    />
-                </Box>
-
-                <Box
-                    hidden={
-                        tabIndex !==
-                        TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
-                    }
-                    p={1}
-                >
-                    <LimitsPane />
-                </Box>
-
-                <Box
-                    hidden={
-                        tabIndex !==
-                        TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB
-                    }
-                    p={1}
-                >
-                    <RatioTapChangerPane
-                        studyUuid={studyUuid}
-                        currentNodeUuid={currentNodeUuid}
-                        voltageLevelOptions={voltageLevelOptions}
-                    />
-                </Box>
-
-                <Box
-                    hidden={
-                        tabIndex !==
-                        TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB
-                    }
-                    p={1}
-                >
-                    <PhaseTapChangerPane
-                        studyUuid={studyUuid}
-                        currentNodeUuid={currentNodeUuid}
-                        voltageLevelOptions={voltageLevelOptions}
-                    />
-                </Box>
+                <TwoWindingsTransformerCreationCharacteristicsPane
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    tabIndex={tabIndex}
+                />
 
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
