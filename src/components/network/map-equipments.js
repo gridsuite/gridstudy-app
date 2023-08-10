@@ -6,7 +6,6 @@
  */
 
 import { mapEquipmentsCreated } from '../../redux/actions';
-import { equipments } from './network-equipments';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,

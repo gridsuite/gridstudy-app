@@ -39,8 +39,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { FetchStatus } from 'utils/rest-api';
-
+import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
@@ -80,8 +79,6 @@ import { formatTemporaryLimits } from 'components/utils/utils';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createLine } from '../../../../../services/study/network-modifications';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
