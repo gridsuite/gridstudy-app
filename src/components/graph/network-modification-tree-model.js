@@ -7,7 +7,7 @@
 
 import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode } from './util/model-functions';
-import { NodeInsertionMethods } from '../utils/node-insertion-methods';
+import { NodeInsertModes } from '../utils/node-insert-modes';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
@@ -39,7 +39,7 @@ export default class NetworkModificationTreeModel {
             (node) => node.id === referenceNodeId
         );
         switch (insertMode) {
-            case NodeInsertionMethods.Before: {
+            case NodeInsertModes.Before: {
                 // We need to insert the node just before the active(reference) node
                 this.treeNodes.splice(
                     referenceNodeIndex,
@@ -48,7 +48,7 @@ export default class NetworkModificationTreeModel {
                 );
                 break;
             }
-            case NodeInsertionMethods.After: {
+            case NodeInsertModes.After: {
                 // We need to insert the node just after the active(reference) node
                 this.treeNodes.splice(
                     referenceNodeIndex + 1,
@@ -57,7 +57,7 @@ export default class NetworkModificationTreeModel {
                 );
                 break;
             }
-            case NodeInsertionMethods.NewBranch: {
+            case NodeInsertModes.NewBranch: {
                 // We need to insert the node after all children of the active(reference) node
                 const nbChildren = countNodes(this.treeNodes, referenceNodeId);
                 this.treeNodes.splice(
@@ -84,8 +84,8 @@ export default class NetworkModificationTreeModel {
         });
 
         if (
-            insertMode === NodeInsertionMethods.Before ||
-            insertMode === NodeInsertionMethods.After
+            insertMode === NodeInsertModes.Before ||
+            insertMode === NodeInsertModes.After
         ) {
             // remove previous edges between parent and node children
             const filteredEdges = this.treeEdges.filter((edge) => {
