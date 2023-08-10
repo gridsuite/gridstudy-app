@@ -623,7 +623,7 @@
     "Droop": "Droop",
     "PlannedActivePowerSetPointForm": "Planning active power set point",
     "PlannedActivePowerSetPoint": "Planning P (MW)",
-    "MarginalCost": "cost",
+    "MarginalCost": "Cost",
     "PlannedOutageRate": "Planning outage rate",
     "ForcedOutageRate": "Forced outage rate",
     "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
