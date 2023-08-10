@@ -109,6 +109,7 @@
     "ID": "ID",
     "Name": "Nom",
     "Country": "Pays",
+    "Properties": "Propriétés",
     "SubstationId": "ID Site",
     "VoltageLevelId": "ID Poste",
     "VoltageLevelIdSide1": "ID Poste 1",
