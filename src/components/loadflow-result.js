@@ -428,7 +428,6 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
             </>
         );
     }
-
     return renderLoadFlowResultTabs();
 };
 

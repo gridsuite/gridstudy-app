@@ -15,6 +15,7 @@ export interface ReduxState {
     studyUuid: UUID;
     currentTreeNode: CurrentTreeNode;
     computingStatus: ComputingStatus;
+    limitReduction: number;
 }
 
 export interface StudyUpdatedEventDataHeader {

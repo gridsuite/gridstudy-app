@@ -22,8 +22,9 @@ import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simu
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
 import { ResultsTabsLevel, useResultsTab } from './results/use-results-tab';
-import { LoadFlowResultTab } from './loadflow-result-tab';
+//import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
+import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 
 const useStyles = makeStyles(() => ({
     div: {

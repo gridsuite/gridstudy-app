@@ -4,20 +4,18 @@ import Tab from '@mui/material/Tab';
 import { FormattedMessage } from 'react-intl/lib';
 import makeStyles from '@mui/styles/makeStyles';
 import { green, red } from '@mui/material/colors';
-import { LoadFlowResult } from './load-flow-result.type';
-
-interface LoadflowResultProps {
-    result: LoadFlowResult;
-    studyUuid: string;
-    nodeUuid: string;
-}
+import { LoadflowResultProps } from './load-flow-result.type';
+import { GridStudyTheme } from '../../app-wrapper.type';
+import { LoadFlowResult } from './load-flow-result';
+import { useNodeData } from '../../study-container';
+import { fetchLoadFlowResult } from '../../../services/study/loadflow';
+import WaitingLoader from '../../utils/waiting-loader';
 
 export const LoadFlowResultTab: FunctionComponent<LoadflowResultProps> = ({
-    result,
     studyUuid,
     nodeUuid,
 }) => {
-    const useStyles = makeStyles((theme) => ({
+    const useStyles = makeStyles<GridStudyTheme>((theme) => ({
         cell: {
             display: 'flex',
             alignItems: 'center',
@@ -33,14 +31,22 @@ export const LoadFlowResultTab: FunctionComponent<LoadflowResultProps> = ({
             color: red[500],
         },
     }));
+    const loadflowResultInvalidations = ['loadflowResult'];
 
+    const [loadflowResult, isWaiting] = useNodeData(
+        studyUuid,
+        nodeUuid,
+        fetchLoadFlowResult,
+        loadflowResultInvalidations
+    );
     const classes = useStyles();
     const [tabIndex, setTabIndex] = useState<number>(0);
     // todo : check this
+    console.log('loadflowResult: ', JSON.stringify(loadflowResult));
     return (
         <>
-            <div className={classes.succeed}>
-                <div className={classes.cell}>
+            <div className={classes.container}>
+                <div className={classes.tabs}>
                     <Tabs
                         value={tabIndex}
                         onChange={(event, newTabIndex) =>
@@ -71,7 +77,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadflowResultProps> = ({
                     </Tabs>
                 </div>
             </div>
-            {rendercontent()}
+            <WaitingLoader message={'LoadingRemoteData'} loading={isWaiting}>
+                <LoadFlowResult
+                    result={loadflowResult}
+                    studyUuid={studyUuid}
+                    nodeUuid={nodeUuid}
+                    tabIndex={tabIndex}
+                />
+            </WaitingLoader>
         </>
     );
 };
