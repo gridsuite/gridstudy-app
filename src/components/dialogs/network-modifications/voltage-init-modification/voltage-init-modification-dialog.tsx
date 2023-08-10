@@ -220,10 +220,16 @@ const VoltageInitModificationDialog: FunctionComponent<
                     editData.transformers.forEach((m: TransformerData) => {
                         let row: TransformerRowData = {
                             ID: m.transformerId,
-                            [RATIO_TAP_CHANGER_POSITION]:
-                                m.ratioTapChangerPosition,
-                            [LEG_SIDE]: m.legSide ?? undefined,
+                            [RATIO_TAP_CHANGER_POSITION]: undefined,
+                            [LEG_SIDE]: undefined,
                         };
+                        if (m.ratioTapChangerPosition) {
+                            row[RATIO_TAP_CHANGER_POSITION] =
+                                m.ratioTapChangerPosition;
+                        }
+                        if (m.legSide) {
+                            row[LEG_SIDE] = m.legSide;
+                        }
                         rowData.push(row);
                     });
                 }
