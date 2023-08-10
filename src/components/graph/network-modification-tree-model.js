@@ -7,16 +7,18 @@
 
 import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode } from './util/model-functions';
+import { NodeInsertionMethods } from '../utils/node-insertion-methods';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
-function countNodes(nodes, parentId) {
+// TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
+const countNodes = (nodes, parentId) => {
     return nodes.reduce((acc, n) => {
         if (n.data.parentNodeUuid === parentId) {
             acc += 1 + countNodes(nodes, n.id); // this node + its children
         }
         return acc;
     }, 0);
-}
+};
 
 export default class NetworkModificationTreeModel {
     treeNodes = [];
@@ -37,7 +39,7 @@ export default class NetworkModificationTreeModel {
             ? this.treeNodes.findIndex((node) => node.id === referenceNodeId)
             : null;
         switch (insertMode) {
-            case 'BEFORE': {
+            case NodeInsertionMethods.Before: {
                 // We need to insert the node just before the active(reference) node
                 this.treeNodes.splice(
                     referenceNodeIndex,
@@ -46,7 +48,7 @@ export default class NetworkModificationTreeModel {
                 );
                 break;
             }
-            case 'AFTER': {
+            case NodeInsertionMethods.After: {
                 // We need to insert the node just after the active(reference) node
                 this.treeNodes.splice(
                     referenceNodeIndex + 1,
@@ -55,7 +57,7 @@ export default class NetworkModificationTreeModel {
                 );
                 break;
             }
-            case 'CHILD': {
+            case NodeInsertionMethods.NewBranch: {
                 // We need to insert the node after all children of the active(reference) node
                 const nbChildren = countNodes(this.treeNodes, referenceNodeId);
                 this.treeNodes.splice(
@@ -81,7 +83,10 @@ export default class NetworkModificationTreeModel {
             type: 'smoothstep',
         });
 
-        if (insertMode === 'BEFORE' || insertMode === 'AFTER') {
+        if (
+            insertMode === NodeInsertionMethods.Before ||
+            insertMode === NodeInsertionMethods.After
+        ) {
             // remove previous edges between parent and node children
             const filteredEdges = this.treeEdges.filter((edge) => {
                 return (

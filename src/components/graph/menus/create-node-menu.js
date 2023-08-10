@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
 import { NestedMenuItem } from 'mui-nested-menu';
 import ChildMenuItem from './create-child-menu-item';
+import { NodeInsertionMethods } from '../../utils/node-insertion-methods';
 
 const CreateNodeMenu = ({
     position,
@@ -150,17 +151,26 @@ const CreateNodeMenu = ({
             subMenuItems: {
                 CREATE_MODIFICATION_NODE: {
                     onRoot: true,
-                    action: () => createNetworkModificationNode('CHILD'),
+                    action: () =>
+                        createNetworkModificationNode(
+                            NodeInsertionMethods.NewBranch
+                        ),
                     id: 'createNetworkModificationNodeInNewBranch',
                 },
                 INSERT_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
-                    action: () => createNetworkModificationNode('BEFORE'),
+                    action: () =>
+                        createNetworkModificationNode(
+                            NodeInsertionMethods.Before
+                        ),
                     id: 'insertNetworkModificationNodeAbove',
                 },
                 INSERT_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
-                    action: () => createNetworkModificationNode('AFTER'),
+                    action: () =>
+                        createNetworkModificationNode(
+                            NodeInsertionMethods.After
+                        ),
                     id: 'insertNetworkModificationNodeBelow',
                 },
             },
@@ -187,19 +197,28 @@ const CreateNodeMenu = ({
             subMenuItems: {
                 PASTE_MODIFICATION_NODE: {
                     onRoot: true,
-                    action: () => pasteNetworkModificationNode('CHILD'),
+                    action: () =>
+                        pasteNetworkModificationNode(
+                            NodeInsertionMethods.NewBranch
+                        ),
                     id: 'pasteNetworkModificationNodeInNewBranch',
                     disabled: !isNodePastingAllowed(),
                 },
                 PASTE_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
-                    action: () => pasteNetworkModificationNode('BEFORE'),
+                    action: () =>
+                        pasteNetworkModificationNode(
+                            NodeInsertionMethods.Before
+                        ),
                     id: 'pasteNetworkModificationNodeAbove',
                     disabled: !isNodePastingAllowed(),
                 },
                 PASTE_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
-                    action: () => pasteNetworkModificationNode('AFTER'),
+                    action: () =>
+                        pasteNetworkModificationNode(
+                            NodeInsertionMethods.After
+                        ),
                     id: 'pasteNetworkModificationNodeBelow',
                     disabled: !isNodePastingAllowed(),
                 },

@@ -128,6 +128,7 @@ import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
+import { NodeInsertionMethods } from '../components/utils/node-insertion-methods';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -1121,7 +1122,7 @@ function unravelSubTree(treeModel, subtreeParentId, node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
-        treeModel.addChild(node, subtreeParentId, 'AFTER');
+        treeModel.addChild(node, subtreeParentId, NodeInsertionMethods.After);
 
         if (node.children.length > 0) {
             node.children.forEach((child) => {

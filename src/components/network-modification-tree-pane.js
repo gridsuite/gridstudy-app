@@ -152,8 +152,6 @@ export const NetworkModificationTreePane = ({
     }, [broadcastChannel]);
 
     const [activeNode, setActiveNode] = useState(null);
-    const activeNodeRef = useRef();
-    activeNodeRef.current = activeNode;
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
