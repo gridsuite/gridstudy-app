@@ -106,12 +106,18 @@ const DeleteEquipmentForm = ({
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            if (editDataEquipmentId && !editedIdRef.current) {
-                // In case of edition, don't dynamically change the form on first render.
-                // Keep user data as it is stored in database (cf editData)
-                editedIdRef.current = editDataEquipmentId;
-                return;
+            if (editDataEquipmentId) {
+                if (editedIdRef.current === null) {
+                    // In case of edition, don't dynamically change the form on first render.
+                    // Keep user data as it is stored in database (cf editData)
+                    editedIdRef.current = editDataEquipmentId;
+                    return;
+                } else if (watchEquipmentId !== editedIdRef.current) {
+                    // we have changed eqptId, leave the "fisrt edit" mode
+                    editedIdRef.current = '';
+                }
             }
+
             if (watchEquipmentId && watchEquipmentId === editedIdRef.current) {
                 // we still are at first edit, dont change anything
                 return;
