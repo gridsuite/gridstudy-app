@@ -14,46 +14,26 @@ import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
     DROOP,
-    ENERGY_SOURCE,
-    EQUIPMENT,
     EQUIPMENT_NAME,
-    FORCED_OUTAGE_RATE,
     FREQUENCY_REGULATION,
-    MARGINAL_COST,
     MAXIMUM_ACTIVE_POWER,
     MAXIMUM_REACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
     MINIMUM_REACTIVE_POWER,
     P,
-    PLANNED_ACTIVE_POWER_SET_POINT,
-    PLANNED_OUTAGE_RATE,
     Q_MAX_P,
     Q_MIN_P,
-    Q_PERCENT,
-    RATED_NOMINAL_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_POWER_SET_POINT,
-    TRANSFORMER_REACTANCE,
-    TRANSIENT_REACTANCE,
-    VOLTAGE_LEVEL,
-    VOLTAGE_REGULATION,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import { fetchNetworkElementInfos } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
-import { REGULATION_TYPES } from 'components/network/constants';
-import GeneratorModificationForm from './generator-modification-form';
-import {
-    getSetPointsEmptyFormData,
-    getSetPointsSchema,
-} from '../../../set-points/set-points-utils';
+import BatteryModificationForm from './battery-modification-form';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
-import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import {
     calculateCurvePointsToStore,
     completeReactiveCapabilityCurvePointsData,
@@ -68,22 +48,20 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import { modifyGenerator } from '../../../../../services/study/network-modifications';
+import {
+    getFrequencyRegulationSchema,
+    getFrequencyRegulationEmptyFormData,
+} from '../../../set-points/set-points-utils';
+import { modifyBattery } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
-    [ENERGY_SOURCE]: null,
     [MAXIMUM_ACTIVE_POWER]: null,
     [MINIMUM_ACTIVE_POWER]: null,
-    [RATED_NOMINAL_POWER]: null,
-    [TRANSIENT_REACTANCE]: null,
-    [TRANSFORMER_REACTANCE]: null,
-    [PLANNED_ACTIVE_POWER_SET_POINT]: null,
-    [MARGINAL_COST]: null,
-    [PLANNED_OUTAGE_RATE]: null,
-    [FORCED_OUTAGE_RATE]: null,
-    ...getSetPointsEmptyFormData(true),
+    [ACTIVE_POWER_SET_POINT]: null,
+    [REACTIVE_POWER_SET_POINT]: null,
     ...getReactiveLimitsEmptyFormData(true),
+    ...getFrequencyRegulationEmptyFormData(true),
 };
 
 const formSchema = yup
@@ -91,7 +69,6 @@ const formSchema = yup
     .shape(
         {
             [EQUIPMENT_NAME]: yup.string(),
-            [ENERGY_SOURCE]: yup.string().nullable(),
             [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
             [MINIMUM_ACTIVE_POWER]: yup
                 .number()
@@ -104,31 +81,18 @@ const formSchema = yup
                             'MinActivePowerLessThanMaxActivePower'
                         ),
                 }),
-            [RATED_NOMINAL_POWER]: yup.number().nullable(),
-            [TRANSIENT_REACTANCE]: yup.number().nullable(),
-            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-            [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-            [MARGINAL_COST]: yup.number().nullable(),
-            [PLANNED_OUTAGE_RATE]: yup
-                .number()
-                .nullable()
-                .min(0, 'RealPercentage')
-                .max(1, 'RealPercentage'),
-            [FORCED_OUTAGE_RATE]: yup
-                .number()
-                .nullable()
-                .min(0, 'RealPercentage')
-                .max(1, 'RealPercentage'),
-            ...getSetPointsSchema(true),
+            [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+            [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
             ...getReactiveLimitsSchema(true),
+            ...getFrequencyRegulationSchema(true),
         },
         [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
     )
     .required();
 
-const GeneratorModificationDialog = ({
-    editData, // contains data when we try to edit an existing hypothesis from the current node's list
-    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
+const BatteryModificationDialog = ({
+    editData,
+    defaultIdValue,
     currentNode,
     studyUuid,
     isUpdate,
@@ -138,7 +102,7 @@ const GeneratorModificationDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
-    const [generatorToModify, setGeneratorToModify] = useState();
+    const [batteryToModify, setBatteryToModify] = useState();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     const formMethods = useForm({
@@ -155,37 +119,18 @@ const GeneratorModificationDialog = ({
             }
             reset({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                [ENERGY_SOURCE]: editData?.energySource?.value ?? null,
                 [MAXIMUM_ACTIVE_POWER]: editData?.maxActivePower?.value ?? null,
                 [MINIMUM_ACTIVE_POWER]: editData?.minActivePower?.value ?? null,
-                [RATED_NOMINAL_POWER]:
-                    editData?.ratedNominalPower?.value ?? null,
                 [ACTIVE_POWER_SET_POINT]:
                     editData?.activePowerSetpoint?.value ?? null,
-                [VOLTAGE_REGULATION]:
-                    editData?.voltageRegulationOn?.value ?? null,
-                [VOLTAGE_SET_POINT]: editData?.voltageSetpoint?.value ?? null,
                 [REACTIVE_POWER_SET_POINT]:
                     editData?.reactivePowerSetpoint?.value ?? null,
-                [PLANNED_ACTIVE_POWER_SET_POINT]:
-                    editData?.plannedActivePowerSetPoint?.value ?? null,
-                [MARGINAL_COST]: editData?.marginalCost?.value ?? null,
-                [PLANNED_OUTAGE_RATE]:
-                    editData?.plannedOutageRate?.value ?? null,
-                [FORCED_OUTAGE_RATE]: editData?.forcedOutageRate?.value ?? null,
                 [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
-                [TRANSIENT_REACTANCE]:
-                    editData?.transientReactance?.value ?? null,
-                [TRANSFORMER_REACTANCE]:
-                    editData?.stepUpTransformerReactance?.value ?? null,
-                [VOLTAGE_REGULATION_TYPE]:
-                    editData?.voltageRegulationType?.value ?? null,
                 [MINIMUM_REACTIVE_POWER]:
                     editData?.minimumReactivePower?.value ?? null,
                 [MAXIMUM_REACTIVE_POWER]:
                     editData?.maximumReactivePower?.value ?? null,
-                [Q_PERCENT]: editData?.qPercent?.value ?? null,
                 [REACTIVE_CAPABILITY_CURVE_CHOICE]: editData
                     ?.reactiveCapabilityCurve?.value
                     ? 'CURVE'
@@ -196,11 +141,6 @@ const GeneratorModificationDialog = ({
                               editData?.reactiveCapabilityCurvePoints
                           )
                         : [getRowEmptyFormData(), getRowEmptyFormData()],
-                ...getRegulatingTerminalFormData({
-                    equipmentId: editData?.regulatingTerminalId?.value,
-                    equipmentType: editData?.regulatingTerminalType?.value,
-                    voltageLevelId: editData?.regulatingTerminalVlId?.value,
-                }),
             });
         },
         [reset]
@@ -224,7 +164,7 @@ const GeneratorModificationDialog = ({
     );
 
     const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
-        setGeneratorToModify((previousValue) => {
+        setBatteryToModify((previousValue) => {
             const newRccValues = previousValue?.reactiveCapabilityCurvePoints;
             action === REMOVE
                 ? newRccValues.splice(index, 1)
@@ -247,7 +187,7 @@ const GeneratorModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    EQUIPMENT_TYPES.GENERATOR.type,
+                    EQUIPMENT_TYPES.BATTERY.type,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -259,7 +199,7 @@ const GeneratorModificationDialog = ({
                             const previousReactiveCapabilityCurveTable =
                                 value.reactiveCapabilityCurvePoints;
                             // on first render, we need to adjust the UI for the reactive capability curve table
-                            // we need to check if the generator we fetch has reactive capability curve table
+                            // we need to check if the battery we fetch has reactive capability curve table
                             if (previousReactiveCapabilityCurveTable) {
                                 const currentReactiveCapabilityCurveTable =
                                     getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
@@ -288,7 +228,11 @@ const GeneratorModificationDialog = ({
                                     }
                                 }
                             }
-                            setGeneratorToModify({
+                            setValue(
+                                REACTIVE_CAPABILITY_CURVE_CHOICE,
+                                value?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
+                            );
+                            setBatteryToModify({
                                 ...value,
                                 reactiveCapabilityCurveTable:
                                     previousReactiveCapabilityCurveTable,
@@ -297,12 +241,12 @@ const GeneratorModificationDialog = ({
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
-                        setGeneratorToModify(null);
+                        setBatteryToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
                     });
             } else {
                 setValuesAndEmptyOthers();
-                setGeneratorToModify(null);
+                setBatteryToModify(null);
             }
         },
         [
@@ -320,97 +264,53 @@ const GeneratorModificationDialog = ({
         }
     }, [selectedId, onEquipmentIdChange]);
 
-    const getPreviousRegulationType = useCallback(() => {
-        if (generatorToModify?.voltageRegulationOn) {
-            return generatorToModify?.regulatingTerminalVlId ||
-                generatorToModify?.regulatingTerminalConnectableId
-                ? REGULATION_TYPES.DISTANT.id
-                : REGULATION_TYPES.LOCAL.id;
-        } else {
-            return null;
-        }
-    }, [generatorToModify]);
-
     const onSubmit = useCallback(
-        (generator) => {
+        (battery) => {
             const buildCurvePointsToStore = calculateCurvePointsToStore(
-                generator[REACTIVE_CAPABILITY_CURVE_TABLE],
-                generatorToModify
+                battery[REACTIVE_CAPABILITY_CURVE_TABLE],
+                batteryToModify
             );
 
             const isFrequencyRegulationOn =
-                generator[FREQUENCY_REGULATION] === true ||
-                (generator[FREQUENCY_REGULATION] === null &&
-                    generatorToModify?.activePowerControlOn === true);
-
-            const isVoltageRegulationOn =
-                generator[VOLTAGE_REGULATION] === true ||
-                (generator[VOLTAGE_REGULATION] === null &&
-                    generatorToModify?.voltageRegulatorOn);
+                battery[FREQUENCY_REGULATION] === true ||
+                (battery[FREQUENCY_REGULATION] === null &&
+                    batteryToModify?.activePowerControlOn === true);
 
             const isReactiveCapabilityCurveOn =
-                generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+                battery[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
-            const isDistantRegulation =
-                generator?.[VOLTAGE_REGULATION_TYPE] ===
-                    REGULATION_TYPES.DISTANT.id ||
-                (generator[VOLTAGE_REGULATION_TYPE] === null &&
-                    getPreviousRegulationType() ===
-                        REGULATION_TYPES.DISTANT.id);
-
-            modifyGenerator(
+            modifyBattery(
                 studyUuid,
                 currentNodeUuid,
                 selectedId,
-                sanitizeString(generator[EQUIPMENT_NAME]),
-                generator[ENERGY_SOURCE],
-                generator[MINIMUM_ACTIVE_POWER],
-                generator[MAXIMUM_ACTIVE_POWER],
-                generator[RATED_NOMINAL_POWER],
-                generator[ACTIVE_POWER_SET_POINT],
-                !isVoltageRegulationOn
-                    ? generator[REACTIVE_POWER_SET_POINT]
-                    : null,
-                generator[VOLTAGE_REGULATION],
-
-                isVoltageRegulationOn ? generator[VOLTAGE_SET_POINT] : null,
+                sanitizeString(battery[EQUIPMENT_NAME]),
+                battery[MINIMUM_ACTIVE_POWER],
+                battery[MAXIMUM_ACTIVE_POWER],
+                battery[ACTIVE_POWER_SET_POINT],
+                battery[REACTIVE_POWER_SET_POINT],
                 undefined,
                 undefined,
                 editData?.uuid,
-                isVoltageRegulationOn && isDistantRegulation
-                    ? generator[Q_PERCENT]
-                    : null,
-                generator[PLANNED_ACTIVE_POWER_SET_POINT],
-                generator[MARGINAL_COST],
-                generator[PLANNED_OUTAGE_RATE],
-                generator[FORCED_OUTAGE_RATE],
-                generator[TRANSIENT_REACTANCE],
-                generator[TRANSFORMER_REACTANCE],
-                generator[VOLTAGE_REGULATION_TYPE],
-                isDistantRegulation ? generator[EQUIPMENT]?.id : null,
-                isDistantRegulation ? generator[EQUIPMENT]?.type : null,
-                isDistantRegulation ? generator[VOLTAGE_LEVEL]?.id : null,
+                battery[FREQUENCY_REGULATION],
+                isFrequencyRegulationOn ? battery[DROOP] : null,
                 isReactiveCapabilityCurveOn,
-                generator[FREQUENCY_REGULATION],
-                isFrequencyRegulationOn ? generator[DROOP] : null,
                 isReactiveCapabilityCurveOn
                     ? null
-                    : generator[MAXIMUM_REACTIVE_POWER],
+                    : battery[MAXIMUM_REACTIVE_POWER],
                 isReactiveCapabilityCurveOn
                     ? null
-                    : generator[MINIMUM_REACTIVE_POWER],
+                    : battery[MINIMUM_REACTIVE_POWER],
                 isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'GeneratorModificationError',
+                    headerId: 'BatteryModificationError',
                 });
             });
         },
         [
             selectedId,
-            generatorToModify,
-            getPreviousRegulationType,
+            batteryToModify,
             studyUuid,
             currentNodeUuid,
             editData?.uuid,
@@ -425,7 +325,7 @@ const GeneratorModificationDialog = ({
                 editDataFetchStatus === FetchStatus.FAILED) &&
                 (dataFetchStatus === FetchStatus.SUCCEED ||
                     dataFetchStatus === FetchStatus.FAILED)),
-        delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in GeneratorModificationForm and right after receiving the editData without waiting
+        delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in BatteryModificationForm and right after receiving the editData without waiting
     });
 
     return (
@@ -438,9 +338,9 @@ const GeneratorModificationDialog = ({
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modification-generator"
+                aria-labelledby="dialog-modification-battery"
                 maxWidth={'md'}
-                titleId="ModifyGenerator"
+                titleId="ModifyBattery"
                 open={open}
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
@@ -457,16 +357,14 @@ const GeneratorModificationDialog = ({
                         currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.GENERATOR.type}
+                        equipmentType={EQUIPMENT_TYPES.BATTERY.type}
                         fillerHeight={17}
                     />
                 )}
                 {selectedId != null && (
-                    <GeneratorModificationForm
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
+                    <BatteryModificationForm
                         equipmentId={selectedId}
-                        generatorToModify={generatorToModify}
+                        batteryToModify={batteryToModify}
                         updatePreviousReactiveCapabilityCurveTable={
                             updatePreviousReactiveCapabilityCurveTable
                         }
@@ -477,4 +375,4 @@ const GeneratorModificationDialog = ({
     );
 };
 
-export default GeneratorModificationDialog;
+export default BatteryModificationDialog;

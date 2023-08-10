@@ -93,6 +93,9 @@ export const formatCell = (props) => {
         tooltipValue = value;
         value = parseFloat(value).toFixed(props.colDef.fractionDigits);
     }
+    if (props.colDef.numeric && isNaN(value)) {
+        value = null;
+    }
     return { value: value, tooltip: tooltipValue };
 };
 
