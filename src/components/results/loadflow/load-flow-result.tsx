@@ -24,12 +24,16 @@ import { ComputingType } from '../../computing-status/computing-type';
 //import { useSnackMessage } from '@gridsuite/commons-ui/lib';
 import { ReduxState } from '../../../redux/reducer.type';
 import { fetchLimitViolations } from '../../../utils/rest-api';
-import { convertDuration, makeData } from './load-flow-result-utils';
+import {
+    loadFlowCurrentViolationsColumnsDefinition,
+    loadFlowResultColumnsDefinition,
+    loadFlowVoltageViolationsColumnsDefinition,
+    makeData,
+} from './load-flow-result-utils';
 import {
     GridReadyEvent,
     ICellRendererParams,
     RowClassParams,
-    ValueFormatterParams,
 } from 'ag-grid-community';
 import { GridStudyTheme } from '../../app-wrapper.type';
 import { useTheme } from '@mui/styles';
@@ -60,12 +64,12 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         },
     }));
     const classes = useStyles();
-
+    const theme: GridStudyTheme = useTheme();
     const intl = useIntl();
+
     const [overloadedEquipments, setOverloadedEquipments] = useState<
         OverloadedEquipment[]
     >([]);
-    const theme: GridStudyTheme = useTheme();
 
     const limitReductionParam = useSelector((state: ReduxState) =>
         Number(state[PARAM_LIMIT_REDUCTION])
@@ -74,6 +78,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
     );
     // const { snackError } = useSnackMessage();
+
     const defaultColDef = useMemo(
         () => ({
             filter: true,
@@ -87,88 +92,15 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         }),
         []
     );
+
     const loadFlowCurrentViolationsColumns = useMemo(() => {
-        return [
-            {
-                headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
-                field: 'name',
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'LimitNameCurrentViolation',
-                }),
-                field: 'limitName',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'LimitSide' }),
-                field: 'side',
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'LimitAcceptableDuration',
-                }),
-                field: 'acceptableDuration',
-                valueFormatter: (value: ValueFormatterParams) =>
-                    convertDuration(value.data.acceptableDuration),
-            },
-            {
-                headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
-                field: 'limit',
-                valueFormatter: (params: ValueFormatterParams) =>
-                    params.value.toFixed(1),
-            },
-            {
-                headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
-                field: 'value',
-                numeric: true,
-                valueFormatter: (params: ValueFormatterParams) =>
-                    params.value.toFixed(1),
-            },
-            {
-                headerName: intl.formatMessage({ id: 'Loading' }),
-                field: 'overload',
-                numeric: true,
-                fractionDigits: 0,
-                valueFormatter: (params: ValueFormatterParams) =>
-                    params.value.toFixed(1),
-            },
-        ];
+        return loadFlowCurrentViolationsColumnsDefinition(intl);
     }, [intl]);
-    const formatLimitType = useCallback(
-        (limitType: string) => {
-            return limitType in LimitTypes
-                ? intl.formatMessage({ id: limitType })
-                : limitType;
-        },
-        [intl]
-    );
+
     const loadFlowVoltageViolationsColumns = useMemo(() => {
-        return [
-            {
-                headerName: intl.formatMessage({ id: 'VoltageLevel' }),
-                field: 'name',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'Violation' }),
-                field: 'limitType',
-                valueFormatter: (params: ValueFormatterParams) =>
-                    formatLimitType(params.value),
-            },
-            {
-                headerName: intl.formatMessage({ id: 'VoltageViolationLimit' }),
-                field: 'limit',
-                valueFormatter: (params: ValueFormatterParams) =>
-                    params.value.toFixed(1),
-            },
-            {
-                headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
-                field: 'value',
-                numeric: true,
-                valueFormatter: (params: ValueFormatterParams) =>
-                    params.value.toFixed(1),
-            },
-        ];
-    }, [intl, formatLimitType]);
+        return loadFlowVoltageViolationsColumnsDefinition(intl);
+    }, [intl]);
+
     const StatusCellRender = useCallback(
         (cellData: ICellRendererParams) => {
             const status = cellData.value;
@@ -199,47 +131,15 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         [classes.cell]
     );
     const loadFlowResultColumns = useMemo(() => {
-        return [
-            {
-                headerName: intl.formatMessage({
-                    id: 'connectedComponentNum',
-                }),
-                field: 'connectedComponentNum',
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'synchronousComponentNum',
-                }),
-                field: 'synchronousComponentNum',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'status' }),
-                field: 'status',
-                cellRenderer: StatusCellRender,
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'iterationCount',
-                }),
-                field: 'iterationCount',
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'slackBusId',
-                }),
-                field: 'slackBusId',
-            },
-            {
-                headerName: intl.formatMessage({
-                    id: 'slackBusActivePowerMismatch',
-                }),
-                field: 'slackBusActivePowerMismatch',
-                cellRenderer: NumberRenderer,
-            },
-        ];
+        return loadFlowResultColumnsDefinition(
+            intl,
+            StatusCellRender,
+            NumberRenderer
+        );
     }, [intl, NumberRenderer, StatusCellRender]);
 
     const messages = useIntlResultStatusMessages(intl);
+
     useEffect(() => {
         if (result) {
             fetchLimitViolations(
@@ -294,7 +194,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             loadFlowStatus
         );
         const rowsToShow = getRows(currentViolations, loadFlowStatus);
-        console.log('rowsToShow: ', rowsToShow);
         return (
             <CustomAGGrid
                 rowData={rowsToShow}
