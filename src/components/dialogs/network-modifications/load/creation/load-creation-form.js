@@ -26,7 +26,8 @@ import FloatInput from 'components/utils/rhf-inputs/float-input';
 import SelectInput from 'components/utils/rhf-inputs/select-input';
 import TextInput from 'components/utils/rhf-inputs/text-input';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
+
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

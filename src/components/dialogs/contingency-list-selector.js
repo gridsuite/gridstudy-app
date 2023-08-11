@@ -15,7 +15,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
 import CheckboxList from '../utils/checkbox-list';
-import { fetchContingencyCount } from '../../utils/rest-api';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
@@ -27,6 +26,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
 import { updateConfigParameter } from '../../services/config';
 import { fetchContingencyAndFiltersLists } from '../../services/directory';
+import { fetchContingencyCount } from '../../services/study';
 
 function makeButton(onClick, message, disabled) {
     return (

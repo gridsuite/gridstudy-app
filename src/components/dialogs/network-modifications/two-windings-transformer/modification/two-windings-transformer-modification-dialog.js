@@ -40,11 +40,6 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    fetchVoltageLevelsListInfos,
-} from 'utils/rest-api';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding.js';
 import { sanitizeString } from '../../../dialogUtils';
 import {
@@ -109,6 +104,11 @@ import {
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
+import {
+    fetchNetworkElementInfos,
+    fetchVoltageLevelsListInfos,
+} from '../../../../../services/study/network';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

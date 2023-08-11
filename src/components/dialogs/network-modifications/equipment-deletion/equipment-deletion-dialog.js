@@ -15,7 +15,6 @@ import {
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
 import React, { useCallback, useEffect } from 'react';
-import { FetchStatus } from 'utils/rest-api';
 import ModificationDialog from '../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
@@ -23,6 +22,7 @@ import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipment } from '../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../services/utils';
 
 const formSchema = yup
     .object()
@@ -33,7 +33,7 @@ const formSchema = yup
     .required();
 
 const emptyFormData = {
-    [TYPE]: EQUIPMENT_TYPES.LINE,
+    [TYPE]: null,
     [EQUIPMENT_ID]: null,
     [DELETION_SPECIFIC_DATA]: null,
 };

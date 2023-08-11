@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson } from '../utils/rest-api';
+import { backendFetchJson } from './utils';
 
 const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/security-analysis`;
 

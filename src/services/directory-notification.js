@@ -6,7 +6,7 @@
  */
 
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { getToken, getUrlWithToken, getWsBase } from '../utils/rest-api';
+import { getToken, getUrlWithToken, getWsBase } from './utils';
 
 const PREFIX_DIRECTORY_NOTIFICATION_WS = `${process.env.REACT_APP_WS_GATEWAY}/directory-notification`;
 
