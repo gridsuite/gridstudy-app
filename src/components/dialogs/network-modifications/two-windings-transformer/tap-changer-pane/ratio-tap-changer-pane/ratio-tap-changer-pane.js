@@ -170,6 +170,7 @@ const RatioTapChangerPane = ({
             name={`${id}.${REGULATION_MODE}`}
             label={'RegulationMode'}
             options={Object.values(RATIO_REGULATION_MODES)}
+            size={'small'}
             disabled={
                 !ratioTapChangerEnabledWatcher ||
                 !isRatioTapLoadTapChangingCapabilitiesOn
