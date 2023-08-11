@@ -35,6 +35,7 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
+import BatteryModificationDialog from '../../dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
@@ -56,8 +57,6 @@ import {
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
-import BatteryModificationDialog from '../../dialogs/network-modifications/battery/modification/battery-modification-dialog';
-
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
     const classes = useDiagramStyles();
