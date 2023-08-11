@@ -142,7 +142,7 @@ const GeneratorModificationForm = ({
     const transientReactanceField = (
         <FloatInput
             name={TRANSIENT_REACTANCE}
-            label={'TransientReactance'}
+            label={'TransientReactanceForm'}
             adornment={OhmAdornment}
             previousValue={generatorToModify?.transientReactance}
             clearable={true}
@@ -152,7 +152,7 @@ const GeneratorModificationForm = ({
     const transformerReactanceField = (
         <FloatInput
             name={TRANSFORMER_REACTANCE}
-            label={'TransformerReactance'}
+            label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
             previousValue={
                 isNaN(generatorToModify?.stepUpTransformerReactance)
@@ -166,7 +166,7 @@ const GeneratorModificationForm = ({
     const plannedActivePowerSetPointField = (
         <FloatInput
             name={PLANNED_ACTIVE_POWER_SET_POINT}
-            label={'PlannedActivePowerSetPoint'}
+            label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
             previousValue={generatorToModify?.plannedActivePowerSetPoint}
             clearable={true}
