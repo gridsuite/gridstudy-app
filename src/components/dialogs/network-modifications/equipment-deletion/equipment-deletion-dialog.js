@@ -33,7 +33,7 @@ const formSchema = yup
     .required();
 
 const emptyFormData = {
-    [TYPE]: EQUIPMENT_TYPES.LINE,
+    [TYPE]: null,
     [EQUIPMENT_ID]: null,
     [DELETION_SPECIFIC_DATA]: null,
 };
