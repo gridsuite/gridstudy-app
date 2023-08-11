@@ -56,6 +56,7 @@ import {
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
+import BatteryModificationDialog from '../../dialogs/network-modifications/battery/modification/battery-modification-dialog';
 
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
@@ -383,6 +384,9 @@ function SingleLineDiagramContent(props) {
     const displayModificationDialog = () => {
         let CurrentModificationDialog;
         switch (equipmentToModify.equipmentType) {
+            case EQUIPMENT_TYPES.BATTERY.type:
+                CurrentModificationDialog = BatteryModificationDialog;
+                break;
             case EQUIPMENT_TYPES.GENERATOR.type:
                 CurrentModificationDialog = GeneratorModificationDialog;
                 break;
