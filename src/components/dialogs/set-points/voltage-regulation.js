@@ -113,7 +113,11 @@ const VoltageRegulation = ({
             name={Q_PERCENT}
             label={'QPercentText'}
             adornment={percentageTextField}
-            previousValue={previousValues?.qPercent}
+            previousValue={
+                !isNaN(previousValues?.qPercent)
+                    ? previousValues?.qPercent
+                    : null
+            }
             clearable={true}
         />
     );
