@@ -230,7 +230,10 @@ export const NetworkModificationTreePane = ({
                         networkModificationTreeNodeAdded(
                             node,
                             studyUpdatedForce.eventData.headers['parentNode'],
-                            studyUpdatedForce.eventData.headers['insertMode']
+                            studyUpdatedForce.eventData.headers['insertMode'],
+                            studyUpdatedForce.eventData.headers[
+                                'referenceNodeUuid'
+                            ]
                         )
                     );
                 });
