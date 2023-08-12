@@ -61,9 +61,13 @@ export const DynamicSimulationEventForm = (
                     const propertyValue = event
                         ? hasEnumValues
                             ? intl.formatMessage({
-                                  id: event[propertyName],
+                                  id: event.properties.find(
+                                      (elem) => elem.name === propertyName
+                                  )?.value,
                               })
-                            : event[propertyName]
+                            : event.properties.find(
+                                  (elem) => elem.name === propertyName
+                              )?.value
                         : undefined;
 
                     return gridItem(

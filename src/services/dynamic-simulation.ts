@@ -7,6 +7,8 @@
 
 import { Event } from '../components/dialogs/dynamicsimulation/event/types/event.type';
 import { backendFetchJson } from './utils';
+import { UUID, randomUUID } from 'crypto';
+import { getStudyUrlWithNodeUuid } from './study';
 
 const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/dynamic-simulation`;
 
@@ -22,7 +24,27 @@ export function fetchDynamicSimulationProviders() {
     return backendFetchJson(url);
 }
 
+// --- REAL Event API - BEGIN
+
+export function fetchDynamicSimulationEvents(
+    studyUuid: UUID,
+    nodeUuid: UUID
+): Promise<Event> {
+    console.info(
+        `Fetching dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/dynamic-simulation/events';
+
+    console.debug(url);
+
+    return backendFetchJson(url);
+}
+
 // -- Event API - BEGIN
+
 const EVENT_STORE_KEY = 'event_store_key';
 
 async function saveEventAsync(
@@ -39,16 +61,14 @@ async function saveEventAsync(
     const eventStore = eventStoreJson
         ? (JSON.parse(eventStoreJson) as Event[])
         : [];
-    const foundIndex = eventStore.findIndex(
-        (elem) => elem.staticId === event.staticId
-    );
+    const foundIndex = eventStore.findIndex((elem) => elem.id === event.id);
 
     if (foundIndex !== -1) {
         // replace
         eventStore.splice(foundIndex, 1, event);
     } else {
         // put a new
-        eventStore.push(event);
+        eventStore.push({ id: randomUUID(), ...event });
     }
 
     localStorage.setItem(
@@ -89,7 +109,11 @@ async function getEventAsync(
     const eventStore = eventStoreJson
         ? (JSON.parse(eventStoreJson) as Event[])
         : [];
-    const foundEvent = eventStore.find((elem) => elem.staticId === equipmentId);
+    const foundEvent = eventStore.find((elem) =>
+        elem.properties.some(
+            (item) => item.name === 'staticId' && item.value === equipmentId
+        )
+    );
 
     return foundEvent;
 }
@@ -109,9 +133,7 @@ async function deleteEventAsync(
         : [];
 
     events.forEach((event) => {
-        const foundIndex = eventStore.findIndex(
-            (elem) => elem.staticId === event.staticId
-        );
+        const foundIndex = eventStore.findIndex((elem) => elem.id === event.id);
 
         if (foundIndex !== -1) {
             // replace
@@ -130,8 +152,8 @@ async function deleteEventAsync(
 async function changeEventOrderAsync(
     studyUuid: string,
     nodeUuid: string,
-    itemUuid: string,
-    beforeUuid: string,
+    itemUuid?: UUID,
+    beforeUuid?: UUID,
     syncTime?: number
 ) {
     await new Promise((resolve) => setTimeout(resolve, syncTime ?? 1000));
@@ -175,8 +197,8 @@ export function deleteEvent(
 export function changeEventOrder(
     studyUuid: string,
     nodeUuid: string,
-    itemUuid: string,
-    beforeUuid: string
+    itemUuid?: UUID,
+    beforeUuid?: UUID
 ) {
     return changeEventOrderAsync(
         studyUuid,

@@ -29,7 +29,7 @@ import { ReduxState, StudyUpdated } from '../../../../redux/reducer.type';
 import { UUID } from 'crypto';
 import {
     Event,
-    EventPropertyName,
+    EventType,
 } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import {
     changeEventOrder,
@@ -137,7 +137,7 @@ const EventModificationScenarioEditor = () => {
 
     const [editDialogOpen, setEditDialogOpen] = useState<
         | {
-              eventType: string;
+              eventType?: EventType;
               equipmentId: UUID;
               equipmentType: string;
           }
@@ -292,7 +292,7 @@ const EventModificationScenarioEditor = () => {
         );
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
-    function removeNullFields(data: Event) {
+    /*function removeNullFields(data: Event) {
         let dataTemp = data;
         if (dataTemp) {
             (Object.keys(dataTemp) as EventPropertyName[]).forEach((key) => {
@@ -310,13 +310,15 @@ const EventModificationScenarioEditor = () => {
             });
         }
         return dataTemp;
-    }
+    }*/
 
     const doEditEvent = (event: Event) => {
         setIsUpdate(true);
         setEditDialogOpen({
             eventType: event.eventType,
-            equipmentId: event.staticId,
+            equipmentId: event.properties.find(
+                (elem) => elem.name === 'staticId'
+            )?.value as UUID,
             equipmentType: event.equipmentType,
         });
         //setEditDataFetchStatus(FetchStatus.RUNNING);
@@ -350,7 +352,7 @@ const EventModificationScenarioEditor = () => {
             }
             const res = [...events];
             const [item] = res.splice(source.index, 1);
-            const before = res[destination?.index ?? source.index]?.staticId;
+            const before = res[destination?.index ?? source.index]?.id;
             res.splice(
                 destination ? destination.index : events.length,
                 0,
@@ -362,7 +364,7 @@ const EventModificationScenarioEditor = () => {
             changeEventOrder(
                 studyUuid ?? '',
                 currentNode.id,
-                item.staticId,
+                item.id,
                 before
             ).catch((error) => {
                 snackError({

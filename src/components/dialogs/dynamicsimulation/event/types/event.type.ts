@@ -4,22 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { UUID } from 'crypto';
 
 export enum EventType {
     DISCONNECT = 'Disconnect',
     STEP = 'Step',
     NODE_FAULT = 'NodeFault',
 }
-export type EventPropertyName =
-    | 'equipmentType'
-    | 'eventType'
-    | 'staticId'
-    | 'startTime'
-    | 'disconnectOnly';
 
-export type Event = {
-    [Property in EventPropertyName]?: any;
-};
+export type EventPropertyName = 'staticId' | 'startTime' | 'disconnectOnly';
 
 export enum PrimitiveTypes {
     ENUM = 'ENUM',
@@ -44,3 +37,17 @@ export type EventPropertyDefinition = {
 export type EventDefinition = {
     [Property in EventPropertyName]?: EventPropertyDefinition;
 };
+
+export interface EventProperty {
+    name: EventPropertyName;
+    value: string;
+    type: PrimitiveTypes;
+}
+
+export interface Event {
+    id?: UUID;
+    equipmentType: string;
+    eventType?: EventType;
+    eventOrder: number;
+    properties: EventProperty[];
+}

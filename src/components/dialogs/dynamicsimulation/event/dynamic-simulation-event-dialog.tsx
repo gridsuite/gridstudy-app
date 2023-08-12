@@ -13,11 +13,16 @@ import { useOpenShortWaitFetching } from '../../commons/handle-modification-form
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
 import { DynamicSimulationEventForm } from './dynamic-simulation-event-form';
-import { Event, EventPropertyName } from './types/event.type';
+import {
+    Event,
+    EventProperty,
+    EventPropertyName,
+    PrimitiveTypes,
+} from './types/event.type';
 import yup from 'components/utils/yup-config';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
-import { saveEvent, getEvent } from '../../../../services/dynamic-simulation';
+import { getEvent, saveEvent } from '../../../../services/dynamic-simulation';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
 
@@ -68,16 +73,44 @@ export const DynamicSimulationEventDialog = (
         [equipmentType]
     );
 
+    const eventDefinition = useMemo(
+        () => (eventType ? eventDefinitions[eventType] : undefined),
+        [eventType]
+    );
+
     // submit form
     const handleSubmit = useCallback(
-        (event: Event) => {
-            const eventWithId = {
-                ...event,
-                staticId: equipmentId,
+        (formObj: { [KEY in EventPropertyName]: any }) => {
+            // formObj to EventProperty[]
+            const properties: EventProperty[] = Object.entries(formObj).reduce(
+                (arr, [key, value]) => [
+                    ...arr,
+                    {
+                        name: key,
+                        value: value,
+                        type: eventDefinition
+                            ? eventDefinition[key as EventPropertyName]?.type
+                            : PrimitiveTypes.STRING,
+                    } as EventProperty,
+                ],
+                [
+                    {
+                        name: 'staticId',
+                        value: equipmentId,
+                        type: PrimitiveTypes.STRING,
+                    },
+                ] as EventProperty[]
+            );
+
+            const submitEvent: Event = {
+                id: event?.id,
                 equipmentType,
                 eventType,
+                eventOrder: event?.eventOrder ?? 0,
+                properties,
             };
-            saveEvent(studyUuid, currentNodeId, eventWithId)
+
+            saveEvent(studyUuid, currentNodeId, submitEvent)
                 .then((event) => {
                     console.log('Save successfully event : ', event);
                 })
@@ -98,11 +131,6 @@ export const DynamicSimulationEventDialog = (
             studyUuid,
             eventType,
         ]
-    );
-
-    const eventDefinition = useMemo(
-        () => (eventType ? eventDefinitions[eventType] : undefined),
-        [eventType]
     );
 
     // build formSchema from an event definition
