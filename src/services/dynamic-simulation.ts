@@ -7,8 +7,44 @@
 
 import { Event } from '../components/dialogs/dynamicsimulation/event/types/event.type';
 import { backendFetchJson } from './utils';
-import { UUID, randomUUID } from 'crypto';
 import { getStudyUrlWithNodeUuid } from './study';
+
+function generateUUID() {
+    // Public Domain/MIT
+    var d = new Date().getTime(); //Timestamp
+    var d2 =
+        (typeof performance !== 'undefined' &&
+            performance.now &&
+            performance.now() * 1000) ||
+        0; //Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+        /[xy]/g,
+        function (c) {
+            var r = Math.random() * 16; //random number between 0 and 16
+            if (d > 0) {
+                //Use timestamp until depleted
+                r = (d + r) % 16 | 0;
+                d = Math.floor(d / 16);
+            } else {
+                //Use microseconds since page-load if supported
+                r = (d2 + r) % 16 | 0;
+                d2 = Math.floor(d2 / 16);
+            }
+            return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+        }
+    );
+}
+
+function getMaxOrderByNodeId(eventStore: Event[]) {
+    if (eventStore.length === 0) {
+        return -1; // mean undefined
+    }
+
+    // sort by eventOrder then get the last event
+    return eventStore.sort((a, b) => a.eventOrder - b.eventOrder)[
+        eventStore.length - 1
+    ].eventOrder;
+}
 
 const PREFIX_DYNAMIC_SIMULATION_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/dynamic-simulation`;
 
@@ -27,8 +63,8 @@ export function fetchDynamicSimulationProviders() {
 // --- REAL Event API - BEGIN
 
 export function fetchDynamicSimulationEvents(
-    studyUuid: UUID,
-    nodeUuid: UUID
+    studyUuid: string,
+    nodeUuid: string
 ): Promise<Event> {
     console.info(
         `Fetching dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`
@@ -68,7 +104,11 @@ async function saveEventAsync(
         eventStore.splice(foundIndex, 1, event);
     } else {
         // put a new
-        eventStore.push({ id: randomUUID(), ...event });
+        eventStore.push({
+            ...event,
+            id: generateUUID(),
+            eventOrder: getMaxOrderByNodeId(eventStore) + 1,
+        });
     }
 
     localStorage.setItem(
@@ -152,8 +192,8 @@ async function deleteEventAsync(
 async function changeEventOrderAsync(
     studyUuid: string,
     nodeUuid: string,
-    itemUuid?: UUID,
-    beforeUuid?: UUID,
+    itemUuid?: string,
+    beforeUuid?: string,
     syncTime?: number
 ) {
     await new Promise((resolve) => setTimeout(resolve, syncTime ?? 1000));
@@ -197,8 +237,8 @@ export function deleteEvent(
 export function changeEventOrder(
     studyUuid: string,
     nodeUuid: string,
-    itemUuid?: UUID,
-    beforeUuid?: UUID
+    itemUuid?: string,
+    beforeUuid?: string
 ) {
     return changeEventOrderAsync(
         studyUuid,

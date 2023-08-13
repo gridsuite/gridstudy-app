@@ -102,13 +102,20 @@ export const DynamicSimulationEventDialog = (
                 ] as EventProperty[]
             );
 
-            const submitEvent: Event = {
-                id: event?.id,
-                equipmentType,
-                eventType,
-                eventOrder: event?.eventOrder ?? 0,
-                properties,
-            };
+            const submitEvent: Event = event
+                ? {
+                      // existing event for the equipment => override only properties
+                      ...event,
+                      properties,
+                  }
+                : {
+                      // create a new event for the equipment
+                      nodeId: currentNodeId,
+                      equipmentType,
+                      eventType,
+                      eventOrder: 0,
+                      properties,
+                  };
 
             saveEvent(studyUuid, currentNodeId, submitEvent)
                 .then((event) => {
@@ -130,6 +137,8 @@ export const DynamicSimulationEventDialog = (
             snackError,
             studyUuid,
             eventType,
+            event,
+            eventDefinition,
         ]
     );
 
