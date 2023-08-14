@@ -58,23 +58,19 @@ export const DynamicSimulationEventForm = (
                         ? !!propertyDefinition.values
                         : false;
 
-                    const propertyValue = event
-                        ? hasEnumValues
-                            ? intl.formatMessage({
-                                  id: event.properties.find(
-                                      (elem) => elem.name === propertyName
-                                  )?.value,
-                              })
-                            : event.properties.find(
-                                  (elem) => elem.name === propertyName
-                              )?.value
-                        : undefined;
+                    const propertyValue = event?.properties.find(
+                        (elem) => elem.name === propertyName
+                    )?.value;
 
                     return gridItem(
                         makeComponentFor(
                             propertyName,
                             propertyDefinition,
-                            propertyValue
+                            propertyValue && hasEnumValues
+                                ? intl.formatMessage({
+                                      id: propertyValue,
+                                  })
+                                : propertyValue
                         ),
                         12
                     );

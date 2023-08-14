@@ -32,9 +32,9 @@ import {
     EventType,
 } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import {
-    changeEventOrder,
-    deleteEvent,
-    getEvents,
+    deleteDynamicSimulationEvents,
+    fetchDynamicSimulationEvents,
+    moveDynamicSimulationEvent,
 } from '../../../../services/dynamic-simulation';
 import { EventListItem } from './event-list-item';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
@@ -138,7 +138,7 @@ const EventModificationScenarioEditor = () => {
     const [editDialogOpen, setEditDialogOpen] = useState<
         | {
               eventType?: EventType;
-              equipmentId: UUID;
+              equipmentId: string;
               equipmentType: string;
           }
         | undefined
@@ -202,7 +202,7 @@ const EventModificationScenarioEditor = () => {
             return;
         }
         setLaunchLoader(true);
-        getEvents(studyUuid ?? '', currentNode.id)
+        fetchDynamicSimulationEvents(studyUuid ?? '', currentNode.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -282,14 +282,16 @@ const EventModificationScenarioEditor = () => {
 
     const doDeleteEvent = useCallback(() => {
         const selectedEvents = [...selectedItems.values()];
-        deleteEvent(studyUuid ?? '', currentNode.id, selectedEvents).catch(
-            (errMsg) => {
-                snackError({
-                    messageTxt: errMsg,
-                    headerId: 'DynamicSimulationEventDeleteError',
-                });
-            }
-        );
+        deleteDynamicSimulationEvents(
+            studyUuid ?? '',
+            currentNode.id,
+            selectedEvents
+        ).catch((errMsg) => {
+            snackError({
+                messageTxt: errMsg,
+                headerId: 'DynamicSimulationEventDeleteError',
+            });
+        });
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
     /*function removeNullFields(data: Event) {
@@ -316,13 +318,11 @@ const EventModificationScenarioEditor = () => {
         setIsUpdate(true);
         setEditDialogOpen({
             eventType: event.eventType,
-            equipmentId: event.properties.find(
-                (elem) => elem.name === 'staticId'
-            )?.value as UUID,
+            equipmentId: event.equipmentId,
             equipmentType: event.equipmentType,
         });
         //setEditDataFetchStatus(FetchStatus.RUNNING);
-        /*getEvent(studyUuid ?? '', currentNode.id, event.staticId)
+        /*getEvent(studyUuid ?? '', currentNode.id, event.equipmentId)
             .then((event) => {
                 //remove all null values to avoid showing a "null" in the forms
                 setEditData(event ? removeNullFields(event) : undefined);
@@ -352,7 +352,8 @@ const EventModificationScenarioEditor = () => {
             }
             const res = [...events];
             const [item] = res.splice(source.index, 1);
-            const before = res[destination?.index ?? source.index]?.id;
+            const before = res[destination?.index ?? source.index]?.uuid || '';
+
             res.splice(
                 destination ? destination.index : events.length,
                 0,
@@ -361,10 +362,10 @@ const EventModificationScenarioEditor = () => {
 
             /* doing the local change before update to server */
             setEvents(res);
-            changeEventOrder(
+            moveDynamicSimulationEvent(
                 studyUuid ?? '',
                 currentNode.id,
-                item.id,
+                item.uuid,
                 before
             ).catch((error) => {
                 snackError({
@@ -407,11 +408,11 @@ const EventModificationScenarioEditor = () => {
                                 values={events}
                                 initialSelection={[]}
                                 itemComparator={(a, b) =>
-                                    a.staticId === b.staticId
+                                    a.eventOrder === b.eventOrder
                                 }
                                 itemRenderer={(props: any) => (
                                     <EventListItem
-                                        key={props.item.staticId}
+                                        key={props.item.equipmentId}
                                         onEdit={doEditEvent}
                                         isDragging={isDragging}
                                         isOneNodeBuilding={isAnyNodeBuilding}

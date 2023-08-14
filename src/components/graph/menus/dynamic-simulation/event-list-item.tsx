@@ -7,7 +7,7 @@
 
 import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import Divider from '@mui/material/Divider';
 import EditIcon from '@mui/icons-material/Edit';
@@ -72,21 +72,14 @@ export const EventListItem = ({
 
     const toggle = useCallback(() => handleToggle(item), [item, handleToggle]);
 
-    const staticId = useMemo(
-        () =>
-            item.properties.find((elem) => elem.name === 'staticId')?.value ??
-            '',
-        [item]
-    );
-
     useEffect(() => {
         if (!studyUuid || !currentNode || !item) {
             return;
         }
         setComputedValues({
-            computedLabel: <strong>{staticId}</strong>,
+            computedLabel: <strong>{item.equipmentId}</strong>,
         });
-    }, [item, staticId, studyUuid, currentNode]);
+    }, [item, studyUuid, currentNode]);
 
     const getLabel = useCallback(() => {
         if (!item || !computedValues) {
@@ -104,7 +97,7 @@ export const EventListItem = ({
 
     return (
         <Draggable
-            draggableId={staticId}
+            draggableId={item.equipmentId}
             index={index}
             isDragDisabled={isOneNodeBuilding}
         >
@@ -116,7 +109,7 @@ export const EventListItem = ({
                     onMouseLeave={() => setHover(false)}
                 >
                     <ListItem
-                        key={staticId}
+                        key={item.equipmentId}
                         {...props}
                         className={classes.listItem}
                     >

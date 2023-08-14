@@ -44,8 +44,9 @@ export interface EventProperty {
 }
 
 export interface Event {
-    id?: string;
+    uuid?: string;
     nodeId: string;
+    equipmentId: string;
     equipmentType: string;
     eventType?: EventType;
     eventOrder: number;

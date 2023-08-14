@@ -22,7 +22,10 @@ import {
 import yup from 'components/utils/yup-config';
 import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
-import { getEvent, saveEvent } from '../../../../services/dynamic-simulation';
+import {
+    fetchDynamicSimulationEvent,
+    saveDynamicSimulationEvent,
+} from '../../../../services/dynamic-simulation';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
 
@@ -82,14 +85,19 @@ export const DynamicSimulationEventDialog = (
     const handleSubmit = useCallback(
         (formObj: { [KEY in EventPropertyName]: any }) => {
             // formObj to EventProperty[]
-            const properties: EventProperty[] = Object.entries(formObj).reduce(
-                (arr, [key, value]) => [
+            const propertyNames = Object.keys(
+                eventDefinition ?? {}
+            ) as EventPropertyName[];
+
+            const properties = propertyNames.reduce(
+                (arr, propertyName) => [
                     ...arr,
                     {
-                        name: key,
-                        value: value,
+                        name: propertyName,
+                        value: formObj[propertyName],
                         type: eventDefinition
-                            ? eventDefinition[key as EventPropertyName]?.type
+                            ? eventDefinition[propertyName as EventPropertyName]
+                                  ?.type
                             : PrimitiveTypes.STRING,
                     } as EventProperty,
                 ],
@@ -111,24 +119,25 @@ export const DynamicSimulationEventDialog = (
                 : {
                       // create a new event for the equipment
                       nodeId: currentNodeId,
+                      equipmentId,
                       equipmentType,
                       eventType,
                       eventOrder: 0,
                       properties,
                   };
 
-            saveEvent(studyUuid, currentNodeId, submitEvent)
-                .then((event) => {
-                    console.log('Save successfully event : ', event);
-                })
-                .catch((error) => {
-                    // should use snackError from useSnackMessage in common-ui
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'DynamicSimulationEventSaveError',
-                    });
-                    console.log('Error occurs when save an event');
+            saveDynamicSimulationEvent(
+                studyUuid,
+                currentNodeId,
+                submitEvent
+            ).catch((error) => {
+                // should use snackError from useSnackMessage in common-ui
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'DynamicSimulationEventSaveError',
                 });
+                console.log('Error occurs when save an event');
+            });
         },
         [
             currentNodeId,
@@ -187,10 +196,12 @@ export const DynamicSimulationEventDialog = (
     // load event for equipment
     useEffect(() => {
         setDataFetchStatus(FetchStatus.RUNNING);
-        getEvent(studyUuid, currentNodeId, equipmentId).then((event) => {
-            setDataFetchStatus(FetchStatus.SUCCEED);
-            setEvent(event);
-        });
+        fetchDynamicSimulationEvent(studyUuid, currentNodeId, equipmentId).then(
+            (event) => {
+                setDataFetchStatus(FetchStatus.SUCCEED);
+                setEvent(event);
+            }
+        );
     }, [currentNodeId, equipmentId, studyUuid]);
 
     return (

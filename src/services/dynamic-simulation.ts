@@ -6,7 +6,11 @@
  */
 
 import { Event } from '../components/dialogs/dynamicsimulation/event/types/event.type';
-import { backendFetchJson } from './utils';
+import {
+    backendFetch,
+    backendFetchJson,
+    getRequestParamFromList,
+} from './utils';
 import { getStudyUrlWithNodeUuid } from './study';
 
 function generateUUID() {
@@ -65,7 +69,7 @@ export function fetchDynamicSimulationProviders() {
 export function fetchDynamicSimulationEvents(
     studyUuid: string,
     nodeUuid: string
-): Promise<Event> {
+): Promise<Event[]> {
     console.info(
         `Fetching dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`
     );
@@ -79,6 +83,114 @@ export function fetchDynamicSimulationEvents(
     return backendFetchJson(url);
 }
 
+export function fetchDynamicSimulationEvent(
+    studyUuid: string,
+    nodeUuid: string,
+    equipmentId: string
+): Promise<Event> {
+    console.info(
+        `Fetching dynamic simulation event with '${equipmentId}' on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        `/dynamic-simulation/events/search/equipment-id/${equipmentId}`;
+
+    console.debug(url);
+
+    return backendFetchJson(url);
+}
+
+export function saveDynamicSimulationEvent(
+    studyUuid: string,
+    nodeUuid: string,
+    event: Event
+) {
+    console.info(
+        `Saving dynamic simulation event on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        `/dynamic-simulation/events/`;
+    console.debug(url);
+
+    if (event.uuid) {
+        // update an existing event
+        return backendFetch(url, {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(event),
+        });
+    } else {
+        // create a new event
+        return backendFetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(event),
+        });
+    }
+}
+
+export function moveDynamicSimulationEvent(
+    studyUuid: string,
+    nodeUuid: string,
+    itemUuid?: string,
+    beforeUuid?: string
+) {
+    console.info(
+        `Move dynamic simulation event on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        `/dynamic-simulation/events/move/${itemUuid}?beforeUuid=${beforeUuid}`;
+
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function deleteDynamicSimulationEvents(
+    studyUuid: string,
+    nodeUuid: string,
+    events: Event[]
+) {
+    console.info(
+        `Delete dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`
+    );
+
+    const eventIdsParams = getRequestParamFromList(
+        events.map((event) => event.uuid),
+        'eventUuids'
+    );
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        `/dynamic-simulation/events?${eventIdsParams}`;
+
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'DELETE',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
 // -- Event API - BEGIN
 
 const EVENT_STORE_KEY = 'event_store_key';
@@ -97,7 +209,7 @@ async function saveEventAsync(
     const eventStore = eventStoreJson
         ? (JSON.parse(eventStoreJson) as Event[])
         : [];
-    const foundIndex = eventStore.findIndex((elem) => elem.id === event.id);
+    const foundIndex = eventStore.findIndex((elem) => elem.uuid === event.uuid);
 
     if (foundIndex !== -1) {
         // replace
@@ -106,7 +218,7 @@ async function saveEventAsync(
         // put a new
         eventStore.push({
             ...event,
-            id: generateUUID(),
+            uuid: generateUUID(),
             eventOrder: getMaxOrderByNodeId(eventStore) + 1,
         });
     }
@@ -149,10 +261,8 @@ async function getEventAsync(
     const eventStore = eventStoreJson
         ? (JSON.parse(eventStoreJson) as Event[])
         : [];
-    const foundEvent = eventStore.find((elem) =>
-        elem.properties.some(
-            (item) => item.name === 'staticId' && item.value === equipmentId
-        )
+    const foundEvent = eventStore.find(
+        (elem) => elem.equipmentId === equipmentId
     );
 
     return foundEvent;
@@ -173,7 +283,9 @@ async function deleteEventAsync(
         : [];
 
     events.forEach((event) => {
-        const foundIndex = eventStore.findIndex((elem) => elem.id === event.id);
+        const foundIndex = eventStore.findIndex(
+            (elem) => elem.uuid === event.uuid
+        );
 
         if (foundIndex !== -1) {
             // replace
