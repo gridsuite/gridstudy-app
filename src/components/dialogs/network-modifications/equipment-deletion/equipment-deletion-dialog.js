@@ -73,7 +73,6 @@ const EquipmentDeletionDialog = ({
             reset({
                 [TYPE]: EQUIPMENT_TYPES[editData.equipmentType],
                 [EQUIPMENT_ID]: editData.equipmentId,
-                [DELETION_SPECIFIC_DATA]: editData[DELETION_SPECIFIC_DATA],
             });
         },
         [reset]
@@ -152,7 +151,7 @@ const EquipmentDeletionDialog = ({
                 <DeleteEquipmentForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    editDataEquipmentId={editData?.equipmentId}
+                    editData={editData}
                 />
             </ModificationDialog>
         </FormProvider>

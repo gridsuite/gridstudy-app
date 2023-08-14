@@ -28,17 +28,59 @@ const useHvdcLccDeletion = () => {
     const { snackError } = useSnackMessage();
 
     const updateMscLists = useCallback(
-        (hvdcLineData) => {
-            if (hvdcLineData?.mcsOnSide1 || hvdcLineData?.mcsOnSide2) {
+        (hvdcLineData, editData) => {
+            function mergeMcsLists(dynamicList, editList) {
+                if (!dynamicList && !editList) {
+                    return [];
+                } else if (!dynamicList) {
+                    // TODO: we should refactor modification-server to store only selected MCS
+                    return editList.filter((item) => item.connectedToHvdc);
+                } else if (!editList) {
+                    return dynamicList;
+                }
+                const mergedList = dynamicList.map((obj) => {
+                    return { ...obj, connectedToHvdc: false };
+                });
+                // now overwrite dynamic values with edited modification values
+                const dynamicIds = dynamicList.map((obj) => obj.id);
+                for (let editObj of editList.values()) {
+                    if (dynamicIds.includes(editObj.id)) {
+                        const mergedObj = mergedList.find(
+                            (obj) => obj.id === editObj.id
+                        );
+                        if (mergedObj) {
+                            // TODO: we should refactor modification-server to store only selected MCS
+                            mergedObj.connectedToHvdc = editObj.connectedToHvdc;
+                        }
+                    } else if (editObj.connectedToHvdc) {
+                        // if a selected edit data does not exist at this time, we add/display it anyway
+                        mergedList.push(editObj);
+                    }
+                }
+                return mergedList;
+            }
+
+            if (
+                hvdcLineData?.mcsOnSide1 ||
+                hvdcLineData?.mcsOnSide2 ||
+                editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide1 ||
+                editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide2
+            ) {
                 setValue(
                     `${DELETION_SPECIFIC_DATA}.${DELETION_SPECIFIC_TYPE}`,
                     HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE
                 );
                 replaceMcsList1(
-                    hvdcLineData?.mcsOnSide1 ? hvdcLineData.mcsOnSide1 : []
+                    mergeMcsLists(
+                        hvdcLineData?.mcsOnSide1,
+                        editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide1
+                    )
                 );
                 replaceMcsList2(
-                    hvdcLineData?.mcsOnSide2 ? hvdcLineData.mcsOnSide2 : []
+                    mergeMcsLists(
+                        hvdcLineData?.mcsOnSide2,
+                        editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide2
+                    )
                 );
             } else {
                 setValue(DELETION_SPECIFIC_DATA, null);
@@ -48,10 +90,10 @@ const useHvdcLccDeletion = () => {
     );
 
     const specificUpdate = useCallback(
-        (studyUuid, nodeId, equipmentId) => {
+        (studyUuid, nodeId, equipmentId, editData) => {
             fetchHvdcLineWithShuntCompensators(studyUuid, nodeId, equipmentId)
                 .then((hvdcLineData) => {
-                    updateMscLists(hvdcLineData);
+                    updateMscLists(hvdcLineData, editData);
                 })
                 .catch((error) => {
                     setValue(DELETION_SPECIFIC_DATA, null);
