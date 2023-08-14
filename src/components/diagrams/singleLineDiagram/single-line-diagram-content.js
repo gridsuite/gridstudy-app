@@ -344,7 +344,7 @@ function SingleLineDiagramContent(props) {
                 equipmentType,
             });
         },
-        []
+        [closeEquipmentMenu]
     );
 
     const handleCloseDynamicSimulationEventDialog = useCallback(() => {
