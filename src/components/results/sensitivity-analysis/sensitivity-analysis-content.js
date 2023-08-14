@@ -10,7 +10,7 @@ export const FUNCTION_TYPES = [
     'BRANCH_CURRENT_1',
     'BUS_VOLTAGE',
 ];
-export const PAGE_OPTIONS = [10, 25, 100, { label: 'All', value: -1 }];
+export const PAGE_OPTIONS = [2, 5, 10, 25, 100, { label: 'All', value: -1 }];
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[1];
 export const DATA_KEY_TO_FILTER_KEY = {
     funcId: 'functionIds',

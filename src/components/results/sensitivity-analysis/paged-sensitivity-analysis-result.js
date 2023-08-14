@@ -18,7 +18,10 @@ import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import LoaderWithOverlay from '../../utils/loader-with-overlay';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import { fetchSensitivityAnalysisResult } from '../../../services/study/sensitivity-analysis';
+import {
+    fetchPagedSensitivityAnalysisResult,
+    fetchSensitivityAnalysisResult
+} from "../../../services/study/sensitivity-analysis";
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
@@ -114,8 +117,11 @@ const PagedSensitivityAnalysisResult = ({
             ...sortSelector,
         };
 
-        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
+        console.log('filterSelector ', filterSelector);
+        console.log('sortSelector ', sortSelector)
+        fetchPagedSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
             .then((res) => {
+                console.log('result : ', result);
                 const { filteredSensitivitiesCount = 0 } = res || {};
 
                 setResult(res);
