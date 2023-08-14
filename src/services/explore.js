@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, getRequestParamFromList } from './utils';
+import { backendFetch, backendFetchJson, getRequestParamFromList } from './utils';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/explore`;
 
@@ -39,4 +39,40 @@ export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/metadata?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function createFilter(newFilter, name, parentDirectoryUuid) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', '');
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES +
+            '/v1/explore/filters?' +
+            urlSearchParams.toString(),
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newFilter),
+        }
+    );
+}
+
+export function saveFilter(filter, name) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    const body = JSON.stringify(filter);
+
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES +
+            '/v1/explore/filters/' +
+            filter.id +
+            '?' +
+            urlSearchParams.toString(),
+        {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+        }
+    );
 }

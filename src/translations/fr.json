@@ -1066,5 +1066,9 @@
     "grid.running": "Calcul en cours...",
     "grid.noLimitViolation": "Pas de contrainte",
     "deleteNodeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud  \"{nodeName}\"?",
-    "deleteSubTreeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud \"{nodeName}\" et son sous-arbre contenant {nodesNumber} nœuds ?"
+    "deleteSubTreeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud \"{nodeName}\" et son sous-arbre contenant {nodesNumber} nœuds ?",
+    "createNewFilter": "Créer un filtre",
+    "editFilter" : "Editer un filtre",
+    "CriteriaBased": "Par critères",
+    "ExplicitNaming": "Par nommage"
 }

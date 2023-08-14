@@ -153,3 +153,8 @@ export const SWITCH_TYPE = {
     BREAKER: { id: 'BREAKER', label: 'Breaker' },
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
 };
+
+export const FILTER_TYPE = {
+    CRITERIA_BASED: { id: 'CRITERIA', label: 'CriteriaBased' },
+    EXPLICIT_NAMING: { id: 'IDENTIFIER_LIST', label: 'ExplicitNaming' },
+};

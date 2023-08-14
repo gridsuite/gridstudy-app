@@ -41,6 +41,7 @@ import {
     fetchNetworkModificationTreeNode,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName } from '../services/study';
+import { CreateFilterDialog } from './dialogs/filter/creation/filter-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -485,6 +486,7 @@ export const NetworkModificationTreePane = ({
     );
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
+    const [openCreateFilterDialog, setOpenCreateFilterDialog] = useState(false);
 
     const handleClickExportStudy = (url) => {
         window.open(url, DownloadIframe);
@@ -584,6 +586,10 @@ export const NetworkModificationTreePane = ({
         [studyUuid, dispatch, snackError]
     );
 
+    const handleCreateNewFilter = () => {
+        setOpenCreateFilterDialog(true);
+    };
+
     return (
         <>
             <Box
@@ -629,6 +635,7 @@ export const NetworkModificationTreePane = ({
                     handleCutSubtree={handleCutSubtree}
                     handleCopySubtree={handleCopySubtree}
                     handlePasteSubtree={handlePasteSubtree}
+                    handleCreateNewFilter={handleCreateNewFilter}
                 />
             )}
             {openExportDialog && (
@@ -640,6 +647,18 @@ export const NetworkModificationTreePane = ({
                     nodeUuid={activeNode.id}
                     title={intlRef.current.formatMessage({
                         id: 'exportNetwork',
+                    })}
+                />
+            )}
+            {openCreateFilterDialog && (
+                <CreateFilterDialog
+                    open={openCreateFilterDialog}
+                    onClose={() => setOpenCreateFilterDialog(false)}
+                    onClick={handleClickExportStudy}
+                    studyUuid={studyUuid}
+                    nodeUuid={activeNode.id}
+                    title={intlRef.current.formatMessage({
+                        id: 'createNewFilter',
                     })}
                 />
             )}

@@ -233,3 +233,11 @@ export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
 export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
 export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const MCS_SELECTED = 'connectedToHvdc';
+
+export const CRITERIA_BASED = 'criteriaBased';
+export const EQUIPMENT_TYPE = 'equipmentType';
+export const NOMINAL_VOLTAGE_1 = 'nominalVoltage1';
+export const NOMINAL_VOLTAGE_2 = 'nominalVoltage2';
+export const NOMINAL_VOLTAGE_3 = 'nominalVoltage3';
+export const VALUE_1 = 'value1';
+export const VALUE_2 = 'value2';
