@@ -1,13 +1,16 @@
-import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-} from '../../utils/rest-api';
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {
     PREFIX_STUDY_QUERIES,
     getStudyUrl,
     getStudyUrlWithNodeUuid,
 } from './index';
+import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startSensitivityAnalysis(
     studyUuid,
@@ -108,4 +111,25 @@ export function fetchDefaultSensitivityAnalysisProvider() {
     const url = `${PREFIX_STUDY_QUERIES}/v1/sensitivity-analysis-default-provider`;
     console.debug(url);
     return backendFetchText(url);
+}
+
+export function getSensitivityAnalysisParameters(studyUuid) {
+    console.info('get sensitivity analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function setSensitivityAnalysisParameters(studyUuid, newParams) {
+    console.info('set sensitivity analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
 }

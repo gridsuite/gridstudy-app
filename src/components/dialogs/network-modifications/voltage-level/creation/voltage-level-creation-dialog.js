@@ -34,7 +34,6 @@ import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createVoltageLevel } from 'utils/rest-api';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
@@ -44,7 +43,8 @@ import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
+import { createVoltageLevel } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 
 /**
  * Dialog to create a load in the network
@@ -213,7 +213,7 @@ const VoltageLevelCreationDialog = ({
                     return e.switchKind;
                 }),
                 couplingDevices: voltageLevel[COUPLING_OMNIBUS],
-                isUpdate: editData ? true : false,
+                isUpdate: !!editData,
                 modificationUuid: editData?.uuid,
             }).catch((error) => {
                 snackError({

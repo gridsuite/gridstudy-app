@@ -22,7 +22,6 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { divideLine, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
@@ -41,6 +40,8 @@ import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import { buildNewBusbarSections } from 'components/utils/utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { divideLine } from '../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../services/utils';
 
 const emptyFormData = {
     [LINE1_ID]: '',
@@ -161,8 +162,6 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const onVoltageLevelCreationDo = useCallback(
         ({
-            studyUuid,
-            currentNodeUuid,
             voltageLevelId,
             voltageLevelName,
             substationId,

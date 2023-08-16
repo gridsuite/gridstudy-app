@@ -1,14 +1,22 @@
-import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-    getRequestParamFromList,
-} from '../../utils/rest-api';
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {
     getStudyUrl,
     getStudyUrlWithNodeUuid,
     PREFIX_STUDY_QUERIES,
 } from './index';
+
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    getRequestParamFromList,
+} from '../utils';
 
 export function getDynamicMappings(studyUuid) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);

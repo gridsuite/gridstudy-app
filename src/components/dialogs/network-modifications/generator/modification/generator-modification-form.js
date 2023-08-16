@@ -35,11 +35,11 @@ import {
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
-import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
-import SetPointsForm from '../set-points/set-points-form';
+import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const GeneratorModificationForm = ({
     studyUuid,
@@ -142,7 +142,7 @@ const GeneratorModificationForm = ({
     const transientReactanceField = (
         <FloatInput
             name={TRANSIENT_REACTANCE}
-            label={'TransientReactance'}
+            label={'TransientReactanceForm'}
             adornment={OhmAdornment}
             previousValue={generatorToModify?.transientReactance}
             clearable={true}
@@ -152,7 +152,7 @@ const GeneratorModificationForm = ({
     const transformerReactanceField = (
         <FloatInput
             name={TRANSFORMER_REACTANCE}
-            label={'TransformerReactance'}
+            label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
             previousValue={
                 isNaN(generatorToModify?.stepUpTransformerReactance)
@@ -166,7 +166,7 @@ const GeneratorModificationForm = ({
     const plannedActivePowerSetPointField = (
         <FloatInput
             name={PLANNED_ACTIVE_POWER_SET_POINT}
-            label={'PlannedActivePowerSetPoint'}
+            label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
             previousValue={generatorToModify?.plannedActivePowerSetPoint}
             clearable={true}
@@ -225,8 +225,15 @@ const GeneratorModificationForm = ({
             </Grid>
 
             {/* Reactive limits part */}
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h4>
+                        <FormattedMessage id="ReactiveLimits" />
+                    </h4>
+                </Grid>
+            </Grid>
             <ReactiveLimitsForm
-                generatorToModify={generatorToModify}
+                equipmentToModify={generatorToModify}
                 updatePreviousReactiveCapabilityCurveTable={
                     updatePreviousReactiveCapabilityCurveTable
                 }
@@ -237,7 +244,7 @@ const GeneratorModificationForm = ({
                 studyUuid={studyUuid}
                 currentNodeUuid={currentNodeUuid}
                 voltageLevelOptions={voltageLevelOptions}
-                isGeneratorModification={true}
+                isEquipmentModification={true}
                 previousValues={generatorToModify}
             />
 

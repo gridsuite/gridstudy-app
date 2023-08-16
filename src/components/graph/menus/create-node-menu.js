@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -14,6 +14,44 @@ import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
 import { NestedMenuItem } from 'mui-nested-menu';
 import ChildMenuItem from './create-child-menu-item';
+import { NodeInsertModes } from '../../utils/node-insert-modes';
+import { CustomDialog } from '../../utils/custom-dialog';
+
+export const NodeActions = {
+    REMOVE_NODE: 'REMOVE_NODE',
+    REMOVE_SUBTREE: 'REMOVE_SUBTREE',
+    NO_ACTION: 'NO_ACTION',
+};
+
+export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
+    const children = treeModel.treeNodes.filter((node) =>
+        sourceNodeIds.includes(node.data.parentNodeUuid)
+    );
+    if (children.length > 0) {
+        children.forEach((item) => {
+            allChildren?.push({ ...item });
+        });
+        const ids = children.map((el) => el.id);
+        // get next level of children
+        getNodeChildren(treeModel, ids, allChildren);
+    }
+};
+
+export const getNodesFromSubTree = (treeModel, id) => {
+    if (treeModel?.treeNodes) {
+        // get the top level children of the active node.
+        const activeNodeDirectChildren = treeModel.treeNodes.filter(
+            (item) => item.data.parentNodeUuid === id
+        );
+        const allChildren = [];
+        activeNodeDirectChildren.forEach((child) => {
+            allChildren.push(child);
+            // get the children of each child
+            getNodeChildren(treeModel, [child.id], allChildren);
+        });
+        return allChildren.length;
+    }
+};
 
 const CreateNodeMenu = ({
     position,
@@ -37,6 +75,11 @@ const CreateNodeMenu = ({
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
     );
+    const treeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
+
+    const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
 
     function buildNode() {
         handleBuildNode(activeNode);
@@ -69,8 +112,7 @@ const CreateNodeMenu = ({
     }
 
     function removeNode() {
-        handleNodeRemoval(activeNode);
-        handleClose();
+        setNodeAction(NodeActions.REMOVE_NODE);
     }
 
     function exportCaseOnNode() {
@@ -99,8 +141,7 @@ const CreateNodeMenu = ({
     }
 
     function removeSubtree() {
-        handleRemovalSubtree(activeNode);
-        handleClose();
+        setNodeAction(NodeActions.REMOVE_SUBTREE);
     }
 
     function isNodePastingAllowed() {
@@ -150,17 +191,22 @@ const CreateNodeMenu = ({
             subMenuItems: {
                 CREATE_MODIFICATION_NODE: {
                     onRoot: true,
-                    action: () => createNetworkModificationNode('CHILD'),
+                    action: () =>
+                        createNetworkModificationNode(
+                            NodeInsertModes.NewBranch
+                        ),
                     id: 'createNetworkModificationNodeInNewBranch',
                 },
                 INSERT_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
-                    action: () => createNetworkModificationNode('BEFORE'),
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.Before),
                     id: 'insertNetworkModificationNodeAbove',
                 },
                 INSERT_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
-                    action: () => createNetworkModificationNode('AFTER'),
+                    action: () =>
+                        createNetworkModificationNode(NodeInsertModes.After),
                     id: 'insertNetworkModificationNodeBelow',
                 },
             },
@@ -187,19 +233,22 @@ const CreateNodeMenu = ({
             subMenuItems: {
                 PASTE_MODIFICATION_NODE: {
                     onRoot: true,
-                    action: () => pasteNetworkModificationNode('CHILD'),
+                    action: () =>
+                        pasteNetworkModificationNode(NodeInsertModes.NewBranch),
                     id: 'pasteNetworkModificationNodeInNewBranch',
                     disabled: !isNodePastingAllowed(),
                 },
                 PASTE_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
-                    action: () => pasteNetworkModificationNode('BEFORE'),
+                    action: () =>
+                        pasteNetworkModificationNode(NodeInsertModes.Before),
                     id: 'pasteNetworkModificationNodeAbove',
                     disabled: !isNodePastingAllowed(),
                 },
                 PASTE_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
-                    action: () => pasteNetworkModificationNode('AFTER'),
+                    action: () =>
+                        pasteNetworkModificationNode(NodeInsertModes.After),
                     id: 'pasteNetworkModificationNodeBelow',
                     disabled: !isNodePastingAllowed(),
                 },
@@ -276,20 +325,61 @@ const CreateNodeMenu = ({
         [intl, activeNode?.type]
     );
 
+    const content = intl.formatMessage(
+        {
+            id:
+                nodeAction === NodeActions.REMOVE_SUBTREE
+                    ? 'deleteSubTreeConfirmation'
+                    : 'deleteNodeConfirmation',
+        },
+        {
+            nodeName: activeNode?.data?.label,
+            nodesNumber: getNodesFromSubTree(treeModel, activeNode?.id),
+        }
+    );
+    const handleOnClose = useCallback(() => {
+        setNodeAction(NodeActions.NO_ACTION);
+        handleClose();
+    }, [handleClose]);
+
+    const handleOnValidate = useCallback(() => {
+        if (nodeAction === NodeActions.REMOVE_NODE) {
+            handleNodeRemoval(activeNode);
+        } else {
+            handleRemovalSubtree(activeNode);
+        }
+        handleOnClose();
+    }, [
+        handleOnClose,
+        handleNodeRemoval,
+        handleRemovalSubtree,
+        activeNode,
+        nodeAction,
+    ]);
+
     return (
-        <Menu
-            anchorReference="anchorPosition"
-            anchorPosition={{
-                position: 'absolute',
-                left: position.x,
-                top: position.y,
-            }}
-            id="create-node-menu"
-            open={true}
-            onClose={handleClose}
-        >
-            {renderMenuItems(NODE_MENU_ITEMS)}
-        </Menu>
+        <>
+            <Menu
+                anchorReference="anchorPosition"
+                anchorPosition={{
+                    position: 'absolute',
+                    left: position.x,
+                    top: position.y,
+                }}
+                id="create-node-menu"
+                open={true}
+                onClose={handleClose}
+            >
+                {renderMenuItems(NODE_MENU_ITEMS)}
+            </Menu>
+            {nodeAction !== NodeActions.NO_ACTION && (
+                <CustomDialog
+                    content={content}
+                    onValidate={handleOnValidate}
+                    onClose={handleOnClose}
+                />
+            )}
+        </>
     );
 };
 

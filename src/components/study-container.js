@@ -12,13 +12,6 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
-    fetchNetworkModificationTree,
-    fetchStudyExists,
-    fetchCaseName,
-    fetchAllEquipments,
-    fetchNetworkExistence,
-} from '../utils/rest-api';
-import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
     openStudy,
@@ -55,6 +48,10 @@ import {
 import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { CreateStudyDialog } from './create-study-dialog/create-study-dialog';
+import { fetchAllEquipments } from '../services/study/network-map';
+import { fetchCaseName, fetchStudyExists } from '../services/study';
+import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { fetchNetworkExistence } from '../services/study/network';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -651,7 +648,7 @@ export function StudyContainer({ view, onChangeTab }) {
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'loadflow'
+                'loadflowResult'
             ) {
                 dispatch(resetEquipmentsPostLoadflow());
             }

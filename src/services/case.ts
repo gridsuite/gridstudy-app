@@ -1,5 +1,5 @@
 import { UUID } from 'crypto';
-import { backendFetchJson } from 'utils/rest-api';
+import { backendFetchJson } from './utils';
 
 const PREFIX_CASE_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/case`;
 

@@ -35,9 +35,9 @@ import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
-import SetPointsForm from '../set-points/set-points-form';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
+import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import SetPointsForm from '../../../set-points/set-points-form';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
@@ -119,7 +119,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const transientReactanceField = (
         <FloatInput
             name={TRANSIENT_REACTANCE}
-            label={'TransientReactance'}
+            label={'TransientReactanceForm'}
             adornment={OhmAdornment}
         />
     );
@@ -127,7 +127,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const transformerReactanceField = (
         <FloatInput
             name={TRANSFORMER_REACTANCE}
-            label={'TransformerReactance'}
+            label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
         />
     );
@@ -135,7 +135,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const plannedActivePowerSetPointField = (
         <FloatInput
             name={PLANNED_ACTIVE_POWER_SET_POINT}
-            label={'PlannedActivePowerSetPoint'}
+            label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
         />
     );
@@ -175,6 +175,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             </Grid>
 
             {/* Reactive limits part */}
+            <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm />
 
             {/* Set points part */}

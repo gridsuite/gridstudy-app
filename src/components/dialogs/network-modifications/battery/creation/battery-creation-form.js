@@ -25,9 +25,9 @@ import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import FloatInput from 'components/utils/rhf-inputs/float-input';
-import ReactiveLimitsForm from '../../generator/reactive-limits/reactive-limits-form';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
-import FrequencyRegulation from '../../generator/set-points/frequency-regulation';
+import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import FrequencyRegulation from '../../../set-points/frequency-regulation';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 const BatteryCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
@@ -123,6 +123,7 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
             </Grid>
 
             {/* Reactive limits part */}
+            <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm />
 
             {/* Set points part */}

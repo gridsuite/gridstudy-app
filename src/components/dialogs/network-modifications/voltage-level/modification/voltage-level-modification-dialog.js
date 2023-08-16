@@ -21,11 +21,6 @@ import {
 import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    fetchNetworkElementInfos,
-    FetchStatus,
-    modifyVoltageLevel,
-} from 'utils/rest-api';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
@@ -34,6 +29,9 @@ import {
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
+import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',

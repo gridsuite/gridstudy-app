@@ -28,7 +28,6 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls, fetchNetworkElementInfos } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
@@ -59,12 +58,14 @@ import {
 import { isNodeBuilt } from './graph/util/model-functions';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
+import { ComputingType } from './computing-status/computing-type';
+import { RunningStatus } from './utils/running-status';
+import { fetchNetworkElementInfos } from '../services/study/network';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
-import { ComputingType } from './computing-status/computing-type';
-import { RunningStatus } from './utils/running-status';
+import { fetchAppsAndUrls } from '../services/utils';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {

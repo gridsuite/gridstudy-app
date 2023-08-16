@@ -6,7 +6,7 @@
 
 import { UUID } from 'crypto';
 import { PREFIX_STUDY_QUERIES } from '.';
-import { backendFetch } from 'utils/rest-api';
+import { backendFetch } from '../utils';
 
 interface BasicStudyInfos {
     uniqueId: string;

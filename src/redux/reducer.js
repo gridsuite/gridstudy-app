@@ -128,6 +128,7 @@ import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
+import { NodeInsertModes } from '../components/utils/node-insert-modes';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -161,20 +162,20 @@ const initialComputingStatus = {
 };
 
 const initialSpreadsheetNetworkState = {
-    substations: null,
-    lines: null,
-    twoWindingsTransformers: null,
-    threeWindingsTransformers: null,
-    generators: null,
-    loads: null,
-    batteries: null,
-    danglingLines: null,
-    hvdcLines: null,
-    lccConverterStations: null,
-    vscConverterStations: null,
-    shuntCompensators: null,
-    staticVarCompensators: null,
-    voltageLevels: null,
+    [EQUIPMENT_TYPES.SUBSTATION.type]: null,
+    [EQUIPMENT_TYPES.VOLTAGE_LEVEL.type]: null,
+    [EQUIPMENT_TYPES.LINE.type]: null,
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type]: null,
+    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type]: null,
+    [EQUIPMENT_TYPES.GENERATOR.type]: null,
+    [EQUIPMENT_TYPES.LOAD.type]: null,
+    [EQUIPMENT_TYPES.BATTERY.type]: null,
+    [EQUIPMENT_TYPES.DANGLING_LINE.type]: null,
+    [EQUIPMENT_TYPES.HVDC_LINE.type]: null,
+    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type]: null,
+    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type]: null,
+    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type]: null,
+    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type]: null,
 };
 
 const initialState = {
@@ -282,7 +283,8 @@ export const reducer = createReducer(initialState, {
             newModel.addChild(
                 action.networkModificationTreeNode,
                 action.parentNodeId,
-                action.insertMode
+                action.insertMode,
+                action.referenceNodeId
             );
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
@@ -931,25 +933,32 @@ export const reducer = createReducer(initialState, {
 
         // equipmentType : type of equipment updated
         // equipments : list of updated equipments of type <equipmentType>
-        for (const [equipmentType, equipments] of Object.entries(
+        for (const [updateType, equipments] of Object.entries(
             updatedEquipments
         )) {
+            const equipmentType = getEquipmentTypeFromUpdateType(updateType);
             const currentEquipment = state.spreadsheetNetwork[equipmentType];
 
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
             if (currentEquipment != null) {
                 //since substations data contains voltage level ones, they have to be treated separatly
-                if (equipmentType === 'substations') {
+                if (equipmentType === EQUIPMENT_TYPES.SUBSTATION.type) {
                     const [updatedSubtations, updatedVoltageLevels] =
                         updateSubstationsAndVoltageLevels(
-                            state.spreadsheetNetwork.substations,
-                            state.spreadsheetNetwork.voltageLevels,
+                            state.spreadsheetNetwork[
+                                EQUIPMENT_TYPES.SUBSTATION.type
+                            ],
+                            state.spreadsheetNetwork[
+                                EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
+                            ],
                             equipments
                         );
 
-                    state.spreadsheetNetwork.substations = updatedSubtations;
-                    state.spreadsheetNetwork.voltageLevels =
-                        updatedVoltageLevels;
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION.type] =
+                        updatedSubtations;
+                    state.spreadsheetNetwork[
+                        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
+                    ] = updatedVoltageLevels;
                 } else {
                     state.spreadsheetNetwork[equipmentType] = updateEquipments(
                         currentEquipment,
@@ -961,18 +970,17 @@ export const reducer = createReducer(initialState, {
     },
     [DELETE_EQUIPMENT]: (state, action) => {
         const equipmentToDeleteId = action.equipmentId;
-        const equipmentToDeleteType = fromEquipmentTypeToSpreadsheetNetworkType(
-            action.equipmentType
-        );
+        const equipmentToDeleteType = action.equipmentType;
 
         const currentEquipments =
             state.spreadsheetNetwork[equipmentToDeleteType];
         if (currentEquipments != null) {
             // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
-            if (action.equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type) {
-                const currentSubstations = state.spreadsheetNetwork.substations;
+            if (equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type) {
+                const currentSubstations =
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION.type];
                 if (currentSubstations != null) {
-                    state.spreadsheetNetwork.substations =
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION.type] =
                         updateSubstationAfterVLDeletion(
                             currentSubstations,
                             equipmentToDeleteId
@@ -992,9 +1000,12 @@ export const reducer = createReducer(initialState, {
     [RESET_EQUIPMENTS_POST_LOADFLOW]: (state) => {
         state.spreadsheetNetwork = {
             ...initialSpreadsheetNetworkState,
-            substations: state.spreadsheetNetwork.substations,
-            voltageLevels: state.spreadsheetNetwork.voltageLevels,
-            hvdcLines: state.spreadsheetNetwork.hvdcLines,
+            [EQUIPMENT_TYPES.SUBSTATION.type]:
+                state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION.type],
+            [EQUIPMENT_TYPES.VOLTAGE_LEVEL.type]:
+                state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL.type],
+            [EQUIPMENT_TYPES.HVDC_LINE.type]:
+                state.spreadsheetNetwork[EQUIPMENT_TYPES.HVDC_LINE.type],
         };
     },
     [SET_COMPUTING_STATUS]: (state, action) => {
@@ -1016,36 +1027,36 @@ function updateSubstationAfterVLDeletion(currentSubstations, VLToDeleteId) {
     return currentSubstations;
 }
 
-function fromEquipmentTypeToSpreadsheetNetworkType(equipmentType) {
-    switch (equipmentType) {
-        case EQUIPMENT_TYPES.LINE.type:
-            return 'lines';
-        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
-            return 'twoWindingsTransformers';
-        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type:
-            return 'threeWindingsTransformers';
-        case EQUIPMENT_TYPES.GENERATOR.type:
-            return 'generators';
-        case EQUIPMENT_TYPES.LOAD.type:
-            return 'loads';
-        case EQUIPMENT_TYPES.BATTERY.type:
-            return 'batteries';
-        case EQUIPMENT_TYPES.DANGLING_LINE.type:
-            return 'danglingLines';
-        case EQUIPMENT_TYPES.HVDC_LINE.type:
-            return 'hvdcLines';
-        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type:
-            return 'lccConverterStations';
-        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type:
-            return 'vscConverterStations';
-        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type:
-            return 'shuntCompensators';
-        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type:
-            return 'staticVarCompensators';
-        case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
-            return 'voltageLevels';
-        case EQUIPMENT_TYPES.SUBSTATION.type:
-            return 'substations';
+function getEquipmentTypeFromUpdateType(updateType) {
+    switch (updateType) {
+        case 'lines':
+            return EQUIPMENT_TYPES.LINE.type;
+        case 'twoWindingsTransformers':
+            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
+        case 'threeWindingsTransformers':
+            return EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type;
+        case 'generators':
+            return EQUIPMENT_TYPES.GENERATOR.type;
+        case 'loads':
+            return EQUIPMENT_TYPES.LOAD.type;
+        case 'batteries':
+            return EQUIPMENT_TYPES.BATTERY.type;
+        case 'danglingLines':
+            return EQUIPMENT_TYPES.DANGLING_LINE.type;
+        case 'hvdcLines':
+            return EQUIPMENT_TYPES.HVDC_LINE.type;
+        case 'lccConverterStations':
+            return EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type;
+        case 'vscConverterStations':
+            return EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type;
+        case 'shuntCompensators':
+            return EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type;
+        case 'staticVarCompensators':
+            return EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type;
+        case 'voltageLevels':
+            return EQUIPMENT_TYPES.VOLTAGE_LEVEL.type;
+        case 'substations':
+            return EQUIPMENT_TYPES.SUBSTATION.type;
         default:
             return;
     }
@@ -1120,7 +1131,7 @@ function unravelSubTree(treeModel, subtreeParentId, node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
-        treeModel.addChild(node, subtreeParentId, 'AFTER');
+        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After);
 
         if (node.children.length > 0) {
             node.children.forEach((child) => {

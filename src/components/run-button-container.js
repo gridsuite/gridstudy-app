@@ -9,14 +9,6 @@ import SensiParametersSelector from './dialogs/sensi/sensi-parameters-selector';
 import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-    startShortCircuitAnalysis,
-    stopSecurityAnalysis,
-    stopShortCircuitAnalysis,
-    startVoltageInit,
-    stopVoltageInit,
-    stopLoadFlow,
-} from '../utils/rest-api';
 import { RunningStatus } from './utils/running-status';
 
 import ContingencyListSelector from './dialogs/contingency-list-selector';
@@ -46,9 +38,20 @@ import {
     startDynamicSimulation,
     stopDynamicSimulation,
 } from '../services/study/dynamic-simulation';
-import { startLoadFlow } from '../services/study/loadflow';
+import { startLoadFlow, stopLoadFlow } from '../services/study/loadflow';
 
-import { startSecurityAnalysis } from '../services/study/security-analysis';
+import {
+    startSecurityAnalysis,
+    stopSecurityAnalysis,
+} from '../services/study/security-analysis';
+import {
+    startShortCircuitAnalysis,
+    stopShortCircuitAnalysis,
+} from '../services/study/short-circuit-analysis';
+import {
+    startVoltageInit,
+    stopVoltageInit,
+} from '../services/study/voltage-init';
 
 export function RunButtonContainer({
     studyUuid,

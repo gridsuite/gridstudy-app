@@ -39,12 +39,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import {
-    createLine,
-    fetchVoltageLevelsListInfos,
-    FetchStatus,
-} from 'utils/rest-api';
-
+import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
@@ -83,6 +78,7 @@ import TextInput from 'components/utils/rhf-inputs/text-input';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { createLine } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -102,7 +98,6 @@ export const LineCreationDialogTab = {
  * @param editData the data to edit
  * @param onCreateLine callback to customize line creation process
  * @param displayConnectivity to display connectivity section or not
- * @param voltageLevelOptionsPromise a promise that will bring available voltage levels
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
@@ -113,7 +108,6 @@ const LineCreationDialog = ({
     currentNode,
     onCreateLine = createLine,
     displayConnectivity = true,
-    voltageLevelOptionsPromise,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -125,7 +119,6 @@ const LineCreationDialog = ({
         LineCreationDialogTab.CHARACTERISTICS_TAB
     );
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] =
         useState(false);
@@ -270,18 +263,6 @@ const LineCreationDialog = ({
     });
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
-
-    useEffect(() => {
         if (editData) {
             fromEditDataToFormValues(editData);
         }
@@ -344,7 +325,7 @@ const LineCreationDialog = ({
                 sanitizeLimitNames(
                     limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
                 ),
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined,
                 sanitizeString(
                     characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]
@@ -461,7 +442,6 @@ const LineCreationDialog = ({
                         displayConnectivity={displayConnectivity}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        voltageLevelOptions={voltageLevelOptions}
                     />
                 </Box>
 

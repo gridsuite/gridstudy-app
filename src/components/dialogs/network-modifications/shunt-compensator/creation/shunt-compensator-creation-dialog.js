@@ -25,7 +25,6 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createShuntCompensator } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
@@ -47,7 +46,8 @@ import {
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
 import ShuntCompensatorCreationForm from './shunt-compensator-creation-form';
-import { FetchStatus } from 'utils/rest-api';
+import { createShuntCompensator } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -183,7 +183,7 @@ const ShuntCompensatorCreationDialog = ({
                     ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
                     : null,
                 shuntCompensator[CONNECTIVITY],
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined,
                 shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
                     UNDEFINED_CONNECTION_DIRECTION,

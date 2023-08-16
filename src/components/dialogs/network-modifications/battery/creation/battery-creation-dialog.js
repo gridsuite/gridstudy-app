@@ -40,7 +40,6 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import BatteryCreationForm from './battery-creation-form';
-import { createBattery, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import {
     FORM_LOADING_DELAY,
@@ -49,11 +48,13 @@ import {
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsSchema,
-} from '../../generator/reactive-limits/reactive-limits-utils';
+} from '../../../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { getFrequencyRegulationSchema } from '../../generator/set-points/set-points-utils';
+import { getFrequencyRegulationSchema } from '../../../set-points/set-points-utils';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import PropTypes from 'prop-types';
+import { createBattery } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',

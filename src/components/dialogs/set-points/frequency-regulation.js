@@ -9,7 +9,7 @@ import {
     gridItem,
     gridItemWithTooltip,
     percentageTextField,
-} from '../../../dialogUtils';
+} from '../dialogUtils';
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
 import React, { useMemo } from 'react';
@@ -20,19 +20,11 @@ import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
 
-const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
+const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
     const intl = useIntl();
     const watchFrequencyRegulation = useWatch({
         name: FREQUENCY_REGULATION,
     });
-
-    const isFrequencyRegulationOn = useMemo(
-        () =>
-            watchFrequencyRegulation === true ||
-            (watchFrequencyRegulation === null &&
-                previousValues?.activePowerControlOn === true),
-        [watchFrequencyRegulation, previousValues?.activePowerControlOn]
-    );
 
     const previousFrequencyRegulation = useMemo(() => {
         if (previousValues?.activePowerControlOn) {
@@ -46,7 +38,7 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
         }
     }, [intl, previousValues]);
 
-    const frequencyRegulationField = isGeneratorModification ? (
+    const frequencyRegulationField = isEquipmentModification ? (
         /** wrappe with box to avoid warning */
         <Box>
             <CheckboxNullableInput
@@ -69,14 +61,16 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
             name={DROOP}
             label={'Droop'}
             adornment={percentageTextField}
-            previousValue={previousValues?.droop}
+            previousValue={
+                !isNaN(previousValues?.droop) ? previousValues?.droop : null
+            }
             clearable={true}
         />
     );
 
     return (
         <>
-            {isGeneratorModification
+            {isEquipmentModification
                 ? gridItemWithTooltip(
                       frequencyRegulationField,
                       watchFrequencyRegulation !== null ? (
@@ -87,13 +81,13 @@ const FrequencyRegulation = ({ isGeneratorModification, previousValues }) => {
                       4
                   )
                 : gridItem(frequencyRegulationField, 4)}
-            {isFrequencyRegulationOn && gridItem(droopField, 4)}
+            {gridItem(droopField, 4)}
         </>
     );
 };
 
 FrequencyRegulation.propTypes = {
-    isGeneratorModification: PropTypes.bool,
+    isEquipmentModification: PropTypes.bool,
 };
 
 export default FrequencyRegulation;

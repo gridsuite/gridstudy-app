@@ -15,12 +15,6 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../utils/config-params';
-import {
-    fetchSvg,
-    getSubstationSingleLineDiagram,
-    getVoltageLevelSingleLineDiagram,
-    getNetworkAreaDiagramUrl,
-} from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -56,6 +50,11 @@ import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
+import {
+    getSubstationSingleLineDiagram,
+    getVoltageLevelSingleLineDiagram,
+} from '../../services/study/network';
+import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -792,7 +791,8 @@ export function DiagramPane({
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'loadflowResult'
             ) {
                 //TODO reload data more intelligently
                 updateDiagramsByCurrentNode();
