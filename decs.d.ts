@@ -1,13 +1,14 @@
 declare module '@gridsuite/commons-ui' {
     import { CaseImportParameters } from 'services/network-conversion';
+    import { TextFieldProps } from '@mui/material';
 
-    type TextFieldVariants = 'outlined' | 'standard' | 'filled';
+    type TextFieldVariant = Pick<TextFieldProps, 'variant'>;
 
     interface FlatParametersProps {
         paramsAsArray: CaseImportParameters[];
         initValues: Map<string, string>;
         onChange: (paramName: string, value: any, isEdit: boolean) => void;
-        variant?: TextFieldVariants;
+        variant?: TextFieldVariant;
         showSeparator?: boolean;
     }
 
