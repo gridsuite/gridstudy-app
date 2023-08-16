@@ -22,7 +22,10 @@ import {
     removeNotificationByNode,
     setModificationsInProgress,
 } from '../../../../redux/actions';
-import { UPDATE_TYPE } from 'components/network/constants';
+import {
+    EVENT_CRUD_FINISHED,
+    EventCrudType,
+} from 'components/network/constants.type';
 
 import { Theme } from '@mui/material/styles';
 import { ReduxState, StudyUpdated } from '../../../../redux/reducer.type';
@@ -179,17 +182,20 @@ const EventModificationScenarioEditor = () => {
         (study: StudyUpdated) => {
             let messageId = '';
             if (
-                study.eventData.headers['updateType'] === 'creatingInProgress'
+                study.eventData.headers['updateType'] ===
+                EventCrudType.EVENT_CREATING_IN_PROGRESS
             ) {
-                messageId = 'network_modifications/creatingModification';
+                messageId = 'DynamicSimulationEventCreating';
             } else if (
-                study.eventData.headers['updateType'] === 'updatingInProgress'
+                study.eventData.headers['updateType'] ===
+                EventCrudType.EVENT_UPDATING_IN_PROGRESS
             ) {
-                messageId = 'network_modifications/updatingModification';
+                messageId = 'DynamicSimulationEventUpdating';
             } else if (
-                study.eventData.headers['updateType'] === 'deletingInProgress'
+                study.eventData.headers['updateType'] ===
+                EventCrudType.EVENT_DELETING_IN_PROGRESS
             ) {
-                messageId = 'network_modifications/deletingModification';
+                messageId = 'DynamicSimulationEventDeleting';
             }
             fillNotification(study, messageId);
         },
@@ -223,16 +229,16 @@ const EventModificationScenarioEditor = () => {
     }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
 
     useEffect(() => {
-        // first time with currentNode initialized then fetch modifications
-        // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
-        // OR next time if currentNodeId changed then fetch modifications
+        // first time with currentNode initialized then fetch events
+        // (because if currentNode is not initialized, doFetchEvents silently does nothing)
+        // OR next time if currentNodeId changed then fetch events
         if (
             currentNode &&
             (!currentNodeIdRef.current ||
                 currentNodeIdRef.current !== currentNode.id)
         ) {
             currentNodeIdRef.current = currentNode.id;
-            // Current node has changed then clear the modifications list
+            // Current node has changed then clear the events list
             setEvents([]);
             doFetchEvents();
         }
@@ -248,7 +254,7 @@ const EventModificationScenarioEditor = () => {
             }
 
             if (
-                UPDATE_TYPE.includes(
+                Object.values<string>(EventCrudType).includes(
                     studyUpdatedForce.eventData.headers['updateType'] ?? ''
                 )
             ) {
@@ -260,11 +266,11 @@ const EventModificationScenarioEditor = () => {
             // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                'UPDATE_FINISHED'
+                EVENT_CRUD_FINISHED
             ) {
-                // fetch modifications because it must have changed
-                // Do not clear the modifications list, because currentNode is the concerned one
-                // this allow to append new modifications to the existing list.
+                // fetch events because it must have changed
+                // Do not clear the events list, because currentNode is the concerned one
+                // this allows to append new events to the existing list.
                 doFetchEvents();
                 dispatch(
                     removeNotificationByNode([
