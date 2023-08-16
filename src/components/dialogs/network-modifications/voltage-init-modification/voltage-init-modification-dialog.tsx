@@ -190,6 +190,10 @@ const VoltageInitModificationDialog: FunctionComponent<
         }
     }, []);
 
+    function check(x: number | undefined) {
+        return x != null && 0 <= x;
+    }
+
     const displayTable = useCallback(
         (currentTab: number) => {
             if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
@@ -201,10 +205,10 @@ const VoltageInitModificationDialog: FunctionComponent<
                             [VOLTAGE_SET_POINT]: undefined,
                             [REACTIVE_POWER_SET_POINT]: undefined,
                         };
-                        if (m.voltageSetpoint) {
+                        if (check(m.voltageSetpoint)) {
                             row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
                         }
-                        if (m.reactivePowerSetpoint) {
+                        if (check(m.reactivePowerSetpoint)) {
                             row[REACTIVE_POWER_SET_POINT] =
                                 m.reactivePowerSetpoint;
                         }
@@ -230,7 +234,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                             [RATIO_TAP_CHANGER_POSITION]: undefined,
                             [LEG_SIDE]: undefined,
                         };
-                        if (m.ratioTapChangerPosition) {
+                        if (check(m.ratioTapChangerPosition)) {
                             row[RATIO_TAP_CHANGER_POSITION] =
                                 m.ratioTapChangerPosition;
                         }
