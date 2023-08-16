@@ -13,15 +13,12 @@ import {
     FUNCTION_TYPES,
     PAGE_OPTIONS,
 } from './sensitivity-analysis-content';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import LoaderWithOverlay from '../../utils/loader-with-overlay';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import {
-    fetchPagedSensitivityAnalysisResult,
-    fetchSensitivityAnalysisResult
-} from "../../../services/study/sensitivity-analysis";
+import { fetchSensitivityAnalysisResult } from '../../../services/study/sensitivity-analysis';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
@@ -108,20 +105,21 @@ const PagedSensitivityAnalysisResult = ({
                   }
                 : {};
 
+        console.log('page : ', page);
+        console.log('rowsPerPage :', rowsPerPage);
+        console.log("filterSelector ", filterSelector, sortSelector);
         const selector = {
             isJustBefore: !nOrNkIndex,
             functionType: FUNCTION_TYPES[sensiKindIndex],
             offset: page * rowsPerPage,
-            chunkSize: rowsPerPage,
+            pageNumber: page,
+            pageSize: rowsPerPage,
             ...filterSelector,
             ...sortSelector,
         };
 
-        console.log('filterSelector ', filterSelector);
-        console.log('sortSelector ', sortSelector)
-        fetchPagedSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
+        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
             .then((res) => {
-                console.log('result : ', result);
                 const { filteredSensitivitiesCount = 0 } = res || {};
 
                 setResult(res);

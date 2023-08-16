@@ -82,38 +82,6 @@ export function fetchSensitivityAnalysisResult(
         currentNodeUuid
     )}/sensitivity-analysis/result?${urlSearchParams}`;
     console.debug(url);
-    console.log('test url : ', url);
-    return backendFetchJson(url);
-}
-
-export function fetchPagedSensitivityAnalysisResult(
-  studyUuid,
-  currentNodeUuid,
-  selector,
-  sort,
-  pageNumber,
-  pageSize
-) {
-    console.info(
-      `Fetching sensitivity analysis on ${studyUuid} and node ${currentNodeUuid}  ...`
-    );
-
-    // Add params to Url
-    const pageable = {
-        pageNumber: 0,
-        pageSize: 3,
-    }
-    const urlSearchParams = new URLSearchParams();
-    const jsoned = JSON.stringify(selector);
-    urlSearchParams.append('selector', jsoned);
-    urlSearchParams.append('pageNumber', 0);
-    urlSearchParams.append('pageSize', 3);
-
-    const url = `${getStudyUrlWithNodeUuid(
-      studyUuid,
-      currentNodeUuid
-    )}/sensitivity-analysis/result/paged?${urlSearchParams}`;
-    console.debug(url);
     return backendFetchJson(url);
 }
 
