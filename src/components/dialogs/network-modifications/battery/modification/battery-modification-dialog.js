@@ -271,11 +271,6 @@ const BatteryModificationDialog = ({
                 batteryToModify
             );
 
-            const isFrequencyRegulationOn =
-                battery[FREQUENCY_REGULATION] === true ||
-                (battery[FREQUENCY_REGULATION] === null &&
-                    batteryToModify?.activePowerControlOn === true);
-
             const isReactiveCapabilityCurveOn =
                 battery[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
@@ -292,7 +287,7 @@ const BatteryModificationDialog = ({
                 undefined,
                 editData?.uuid,
                 battery[FREQUENCY_REGULATION],
-                isFrequencyRegulationOn ? battery[DROOP] : null,
+                battery[DROOP],
                 isReactiveCapabilityCurveOn,
                 isReactiveCapabilityCurveOn
                     ? null
