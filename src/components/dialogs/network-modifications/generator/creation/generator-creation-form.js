@@ -119,7 +119,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const transientReactanceField = (
         <FloatInput
             name={TRANSIENT_REACTANCE}
-            label={'TransientReactance'}
+            label={'TransientReactanceForm'}
             adornment={OhmAdornment}
         />
     );
@@ -127,7 +127,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const transformerReactanceField = (
         <FloatInput
             name={TRANSFORMER_REACTANCE}
-            label={'TransformerReactance'}
+            label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
         />
     );
@@ -135,7 +135,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const plannedActivePowerSetPointField = (
         <FloatInput
             name={PLANNED_ACTIVE_POWER_SET_POINT}
-            label={'PlannedActivePowerSetPoint'}
+            label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
         />
     );

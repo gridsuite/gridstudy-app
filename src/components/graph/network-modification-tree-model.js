@@ -7,6 +7,18 @@
 
 import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode } from './util/model-functions';
+import { NodeInsertModes } from '../utils/node-insert-modes';
+
+// Function to count children nodes for a given parentId recursively in an array of nodes.
+// TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
+const countNodes = (nodes, parentId) => {
+    return nodes.reduce((acc, n) => {
+        if (n.data.parentNodeUuid === parentId) {
+            acc += 1 + countNodes(nodes, n.id); // this node + its children
+        }
+        return acc;
+    }, 0);
+};
 
 export default class NetworkModificationTreeModel {
     treeNodes = [];
@@ -19,9 +31,50 @@ export default class NetworkModificationTreeModel {
         this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
     }
 
-    addChild(newNode, parentId, insertMode) {
-        // Add node
-        this.treeNodes.push(convertNodetoReactFlowModelNode(newNode, parentId));
+    addChild(newNode, parentId, insertMode, referenceNodeId) {
+        // we have to keep a precise order of nodes in the array to avoid gettings children
+        // nodes before their parents when building graph in dagre library which have uncontrolled results
+        // We also need to do this to keep a correct order when inserting nodes and not loose the user.
+        const referenceNodeIndex = this.treeNodes.findIndex(
+            (node) => node.id === referenceNodeId
+        );
+        switch (insertMode) {
+            case NodeInsertModes.Before: {
+                // We need to insert the node just before the active(reference) node
+                this.treeNodes.splice(
+                    referenceNodeIndex,
+                    0,
+                    convertNodetoReactFlowModelNode(newNode, parentId)
+                );
+                break;
+            }
+            case NodeInsertModes.After: {
+                // We need to insert the node just after the active(reference) node
+                this.treeNodes.splice(
+                    referenceNodeIndex + 1,
+                    0,
+                    convertNodetoReactFlowModelNode(newNode, parentId)
+                );
+                break;
+            }
+            case NodeInsertModes.NewBranch: {
+                // We need to insert the node after all children of the active(reference) node
+                const nbChildren = countNodes(this.treeNodes, referenceNodeId);
+                this.treeNodes.splice(
+                    referenceNodeIndex + nbChildren + 1,
+                    0,
+                    convertNodetoReactFlowModelNode(newNode, parentId)
+                );
+                break;
+            }
+            default: {
+                // Just push nodes in order
+                this.treeNodes.push(
+                    convertNodetoReactFlowModelNode(newNode, parentId)
+                );
+                break;
+            }
+        }
         // Add edge between node and its parent
         this.treeEdges.push({
             id: 'e' + parentId + '-' + newNode.id,
@@ -30,7 +83,10 @@ export default class NetworkModificationTreeModel {
             type: 'smoothstep',
         });
 
-        if (insertMode === 'BEFORE' || insertMode === 'AFTER') {
+        if (
+            insertMode === NodeInsertModes.Before ||
+            insertMode === NodeInsertModes.After
+        ) {
             // remove previous edges between parent and node children
             const filteredEdges = this.treeEdges.filter((edge) => {
                 return (
@@ -50,19 +106,22 @@ export default class NetworkModificationTreeModel {
                 });
             });
 
-            // fix old children nodes parentUuid when inserting new nodes
-            const nextEdges = filteredEdges.map((edge) => {
-                if (newNode.childrenIds.includes(edge.id)) {
-                    edge.data = {
-                        ...edge.data,
+            // overwrite old children nodes parentUuid when inserting new nodes
+            const nextNodes = this.treeNodes.map((node) => {
+                if (newNode.childrenIds.includes(node.id)) {
+                    node.data = {
+                        ...node.data,
                         parentNodeUuid: newNode.id,
                     };
                 }
-                return edge;
+                return node;
             });
 
-            this.treeEdges = nextEdges;
+            this.treeNodes = nextNodes;
+            this.treeEdges = filteredEdges;
         }
+
+        // Add children of this node recursively
         if (newNode.children) {
             newNode.children.forEach((child) => {
                 this.addChild(child, newNode.id);
