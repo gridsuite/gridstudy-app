@@ -295,15 +295,6 @@ export const reducer = createReducer(initialState, {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
-
-            // only true when creating root node
-            // used when recreating broken study
-            if (!action.parentNodeId && !action.insertMode) {
-                synchCurrentTreeNode(
-                    state,
-                    action.networkModificationTreeNode.id
-                );
-            }
         }
     },
 

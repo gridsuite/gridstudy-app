@@ -14,7 +14,7 @@ import {
 } from 'services/network-conversion';
 import { UUID } from 'crypto';
 import { UploadFileButton } from './upload-file-button';
-import { createCaseWithoutDirectoryElementCreation } from 'services/case';
+import { createCase } from 'services/case';
 import { importStudy } from 'services/study/study';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
@@ -95,7 +95,7 @@ export const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
     useEffect(() => {
         if (selectedFile) {
             setUploadingFileInProgress(true);
-            createCaseWithoutDirectoryElementCreation(selectedFile)
+            createCase(selectedFile)
                 .then((caseUuid) => {
                     setGeneratedCaseUuid(caseUuid);
                     getCaseImportParams(caseUuid);

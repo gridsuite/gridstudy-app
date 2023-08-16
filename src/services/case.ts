@@ -3,9 +3,7 @@ import { backendFetchJson } from 'utils/rest-api';
 
 const PREFIX_CASE_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/case`;
 
-export function createCaseWithoutDirectoryElementCreation(
-    selectedFile: File
-): Promise<UUID> {
+export function createCase(selectedFile: File): Promise<UUID> {
     const createCaseUrl = PREFIX_CASE_QUERIES + '/v1/cases';
     const formData = new FormData();
     formData.append('file', selectedFile);
