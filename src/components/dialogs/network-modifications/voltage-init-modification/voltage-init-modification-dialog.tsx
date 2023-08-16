@@ -184,6 +184,12 @@ const VoltageInitModificationDialog: FunctionComponent<
         []
     );
 
+    const onGridReady = useCallback((params: any) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
+
     const displayTable = useCallback(
         (currentTab: number) => {
             if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
@@ -212,6 +218,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={generatorsColumnDefs}
                         rowSelection="single"
+                        onGridReady={onGridReady}
                     />
                 );
             } else if (currentTab === EquipmentTypeTabs.TRANSFORMER_TAB) {
@@ -240,11 +247,18 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={transformersColumnDefs}
                         rowSelection="single"
+                        onGridReady={onGridReady}
                     />
                 );
             }
         },
-        [editData, generatorsColumnDefs, transformersColumnDefs, defaultColDef]
+        [
+            editData,
+            generatorsColumnDefs,
+            transformersColumnDefs,
+            defaultColDef,
+            onGridReady,
+        ]
     );
 
     const open: boolean = useOpenShortWaitFetching({
@@ -257,7 +271,6 @@ const VoltageInitModificationDialog: FunctionComponent<
     return (
         <BasicModificationDialog
             fullWidth
-            maxWidth="md"
             open={open}
             onClose={onClose}
             onClear={handleClear}
