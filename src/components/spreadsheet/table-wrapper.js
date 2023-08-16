@@ -378,6 +378,7 @@ const TableWrapper = (props) => {
             if (selectedRow) {
                 setScrollToIndex(selectedRow.rowIndex);
                 gridRef.current.api?.ensureNodeVisible(selectedRow, 'top');
+                selectedRow.setSelected(true, true);
                 gridRef.current.api?.redrawRows(selectedRow);
             }
         }
@@ -390,7 +391,13 @@ const TableWrapper = (props) => {
             !manualTabSwitch
         ) {
             const definition = TABLES_DEFINITION_TYPES.get(props.equipmentType);
-            setTabIndex(definition.index); // select the right table type
+            if (tabIndex === definition.index) {
+                // already in expected tab => explicit call to scroll to expected row
+                scrollToEquipmentIndex();
+            } else {
+                // select the right table type. This will trigger handleRowDataUpdated + scrollToEquipmentIndex
+                setTabIndex(definition.index);
+            }
         } else if (manualTabSwitch) {
             setScrollToIndex();
         }
@@ -399,6 +406,8 @@ const TableWrapper = (props) => {
         props.equipmentType,
         props.equipmentChanged,
         manualTabSwitch,
+        tabIndex,
+        scrollToEquipmentIndex,
     ]);
 
     const handleGridReady = useCallback(() => {
