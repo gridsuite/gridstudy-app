@@ -206,6 +206,7 @@ const BaseEquipmentMenu = ({
                 )}
             {/* menus for equipment generator, load and shunt compensator */}
             {(equipmentType === EQUIPMENT_TYPES.GENERATOR.type ||
+                equipmentType === EQUIPMENT_TYPES.BATTERY.type ||
                 equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type ||
                 equipmentType === EQUIPMENT_TYPES.LOAD.type) && (
                 <ItemViewInForm
