@@ -1045,6 +1045,7 @@
     "StudyRecovered": "Study network has been reimported successfully",
     "ReimportingStudy": "Impossible to get the study network. Reconstruction of the network from the initial situation...",
     "importNewSituation": "Import situation",
+    "studyCreationError": "Error when creating study",
     "grid.noRowsToShow": "No data",
     "grid.noCalculation": "No calculation",
     "grid.failed": "Calculation failed",

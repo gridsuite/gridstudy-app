@@ -505,7 +505,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 })
                 .catch((error) => {
                     //TODO: improve the way we catch this error
-                    console.log(error);
                     if (error.message.endsWith('BROKEN_STUDY')) {
                         setIsStudyNetworkFound(false);
                         setIsImportStudyDialogDisplayed(true);

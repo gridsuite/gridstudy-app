@@ -1068,6 +1068,7 @@
     "StudyRecovered": "Le réseau de l'étude a été réimporté avec succès",
     "ReimportingStudy": "Impossible de récupérer le réseau de l'étude. Reconstruction du réseau à partir de la situation initiale...",
     "importNewSituation": "Import situation",
+    "studyCreationError": "Erreur lors de la création de l'étude",
     "grid.noCalculation": "Pas de calcul lancé",
     "grid.failed": "Echec du calcul",
     "grid.running": "Calcul en cours...",

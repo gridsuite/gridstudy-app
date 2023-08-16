@@ -18,6 +18,7 @@ import { createCase } from 'services/case';
 import { importStudy } from 'services/study/study';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 interface CreateStudyDialogProps {
     closeDialog: () => void;
@@ -26,6 +27,7 @@ interface CreateStudyDialogProps {
 export const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
     closeDialog,
 }) => {
+    const { snackError } = useSnackMessage();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [currentParameters, setCurrentParameters] = useState<
         Record<string, any>
@@ -64,16 +66,19 @@ export const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
                     closeDialog();
                 })
                 .catch((error) => {
-                    // snackError({
-                    //     messageTxt: error.message,
-                    //     headerId: 'studyCreationError',
-                    //     headerValues: {
-                    //         studyName,
-                    //     },
-                    // });
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'studyCreationError',
+                    });
                 });
         }
-    }, [currentParameters, generatedCaseUuid, closeDialog, studyUuid]);
+    }, [
+        currentParameters,
+        generatedCaseUuid,
+        closeDialog,
+        snackError,
+        studyUuid,
+    ]);
 
     const getCaseImportParams = useCallback((caseUuid: UUID) => {
         getCaseImportParameters(caseUuid)
