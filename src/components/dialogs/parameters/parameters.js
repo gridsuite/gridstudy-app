@@ -254,13 +254,8 @@ export const useParametersBackend = (
 
     const { snackError } = useSnackMessage();
 
-    const [providers, setProviders] = useState(INITIAL_PROVIDERS);
-    const providersRef = useRef();
-    providersRef.current = providers;
-
-    const [provider, setProvider] = useState(null);
-    const providerRef = useRef();
-    providerRef.current = provider;
+    const providersRef = useRef(INITIAL_PROVIDERS);
+    const providerRef = useRef(null);
 
     const [params, setParams] = useState(null);
 
@@ -288,7 +283,7 @@ export const useParametersBackend = (
     const updateProvider = useCallback(
         (newProvider) => {
             backendUpdateProvider(studyUuid, newProvider)
-                .then(() => setProvider(newProvider))
+                .then(() => (providerRef.current = newProvider))
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -386,7 +381,7 @@ export const useParametersBackend = (
                         obj[v] = v;
                         return obj;
                     }, {});
-                    setProviders(providersObj);
+                    providersRef.current = providersObj;
                 })
                 .catch((error) => {
                     snackError({
@@ -415,7 +410,7 @@ export const useParametersBackend = (
                 .then((provider) => {
                     // if provider is not defined or not among allowed values, it's set to default value
                     if (provider in providersRef.current) {
-                        setProvider(provider);
+                        providerRef.current = provider;
                     } else {
                         resetProvider();
                     }
@@ -452,8 +447,8 @@ export const useParametersBackend = (
     ]);
 
     return [
-        providers,
-        provider,
+        providersRef.current,
+        providerRef.current,
         updateProvider,
         resetProvider,
         params,
