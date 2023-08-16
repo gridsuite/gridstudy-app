@@ -69,13 +69,54 @@ export function fetchOneBusShortCircuitAnalysisStatus(
     );
 }
 
-export function fetchShortCircuitAnalysisResult(
+export function fetchShortCircuitAnalysisResult({
     studyUuid,
     currentNodeUuid,
+    selector = {},
     type = getShortcircuitAnalysisTypeFromEnum(
         ShortcircuitAnalysisType.ALL_BUSES
-    )
+    ),
+}) {
+    console.info(
+        `Fetching ${type} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const urlSearchParams = new URLSearchParams();
+
+    urlSearchParams.append('mode', 'FULL');
+
+    if (type) {
+        urlSearchParams.append('type', type);
+    }
+
+    const { page = '0', sort, size } = selector;
+
+    urlSearchParams.append('page', page);
+
+    if (sort) {
+        urlSearchParams.append('sort', sort);
+    }
+    if (size) {
+        urlSearchParams.append('size', size);
+    }
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/results/fault_results/paged?' +
+        urlSearchParams.toString();
+
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchOneBusShortCircuitAnalysisResult(
+    studyUuid,
+    currentNodeUuid
 ) {
+    const type = getShortcircuitAnalysisTypeFromEnum(
+        ShortcircuitAnalysisType.ONE_BUS
+    );
+
     console.info(
         `Fetching ${type} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
@@ -90,17 +131,6 @@ export function fetchShortCircuitAnalysisResult(
         urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
-}
-
-export function fetchOneBusShortCircuitAnalysisResult(
-    studyUuid,
-    currentNodeUuid
-) {
-    return fetchShortCircuitAnalysisResult(
-        studyUuid,
-        currentNodeUuid,
-        getShortcircuitAnalysisTypeFromEnum(ShortcircuitAnalysisType.ONE_BUS)
-    );
 }
 
 export function getShortCircuitParameters(studyUuid) {

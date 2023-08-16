@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
-
 export interface SCAResultFaultFault {
     id: string;
     elementId: string;
@@ -40,11 +38,46 @@ export interface SCAResultFault {
     feederResults: SCAResultFaultFeederResult[];
 }
 
-export interface ShortcircuitAnalysisResult {
-    resultUuid: UUID;
-    writeTimeStamp: Date;
-    faults: SCAResultFault[];
-}
+type Pageable = {
+    sort: {
+        sorted: boolean;
+        empty: boolean;
+        unsorted: boolean;
+    };
+    pageNumber: number;
+    pageSize: number;
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+};
+
+export type ShortcircuitAnalysisResult = {
+    content: SCAResultFault[];
+    pageable: Pageable;
+    last: boolean;
+    totalPages: number;
+    totalElements: number;
+    first: boolean;
+    size: number;
+    number: number;
+    sort: {
+        sorted: boolean;
+        empty: boolean;
+        unsorted: boolean;
+    };
+    numberOfElements: number;
+    empty: boolean;
+};
+
+export type ShortCircuitAnalysisFetch = (
+    studyUuid: string,
+    nodeId: string,
+    selector?: {
+        page?: number;
+        size?: number;
+        sort?: string;
+    }
+) => Promise<any>;
 
 export enum ShortcircuitAnalysisResultTabs {
     ALL_BUSES = 0,

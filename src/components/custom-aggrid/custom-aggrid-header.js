@@ -23,13 +23,14 @@ const FILTER_TEXT_FIELD_WIDTH = '250px';
 const CustomHeaderComponent = ({
     field,
     displayName,
-    filterOptions,
-    sortConfig,
+    filterOptions = [],
+    sortConfig = {},
     onSortChanged,
     updateFilter,
     filterSelectedOptions = [],
+    isSortable = true,
 }) => {
-    const { colKey, sortWay } = sortConfig || {};
+    const { colKey, sortWay } = sortConfig;
     const isSortActive = colKey === field;
 
     const [filterAnchorEl, setFilterAnchorEl] = useState(null);
@@ -45,18 +46,24 @@ const CustomHeaderComponent = ({
     };
 
     const handleFilterChange = (field, data) => {
-        updateFilter(field, data);
+        if (typeof updateFilter === 'function') {
+            updateFilter(field, data);
+        }
     };
 
     const handleSortChange = () => {
-        let newSort = null;
-        if (!isSortActive || !sortWay) {
-            newSort = 1;
-        } else if (sortWay > 0) {
-            newSort = -1;
-        }
+        if (isSortable) {
+            let newSort = null;
+            if (!isSortActive || !sortWay) {
+                newSort = 1;
+            } else if (sortWay > 0) {
+                newSort = -1;
+            }
 
-        onSortChanged(newSort);
+            if (typeof onSortChanged === 'function') {
+                onSortChanged(newSort);
+            }
+        }
     };
 
     const handleMouseEnter = () => {
@@ -88,7 +95,9 @@ const CustomHeaderComponent = ({
                 direction={'row'}
                 alignItems={'center'}
                 wrap={'nowrap'}
-                sx={{ height: '100%' }}
+                sx={{
+                    height: '100%',
+                }}
             >
                 <Grid
                     container
@@ -117,19 +126,25 @@ const CustomHeaderComponent = ({
                         >
                             {displayName}
                         </Grid>
-                        <Grid item>
-                            {isSortActive && sortWay && (
-                                <Grid item>
-                                    <IconButton size={'small'}>
-                                        {sortWay === 1 ? (
-                                            <ArrowUpward fontSize={'small'} />
-                                        ) : (
-                                            <ArrowDownward fontSize={'small'} />
-                                        )}
-                                    </IconButton>
-                                </Grid>
-                            )}
-                        </Grid>
+                        {isSortable && (
+                            <Grid item>
+                                {isSortActive && sortWay && (
+                                    <Grid item>
+                                        <IconButton size={'small'}>
+                                            {sortWay === 1 ? (
+                                                <ArrowUpward
+                                                    fontSize={'small'}
+                                                />
+                                            ) : (
+                                                <ArrowDownward
+                                                    fontSize={'small'}
+                                                />
+                                            )}
+                                        </IconButton>
+                                    </Grid>
+                                )}
+                            </Grid>
+                        )}
                     </Grid>
                     <Grid
                         item
@@ -196,17 +211,18 @@ const CustomHeaderComponent = ({
 CustomHeaderComponent.propTypes = {
     field: PropTypes.string.isRequired,
     displayName: PropTypes.string.isRequired,
-    filterOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+    filterOptions: PropTypes.arrayOf(PropTypes.string),
     sortConfig: PropTypes.shape({
         colKey: PropTypes.string,
         selector: PropTypes.shape({
             sortKeysWithWeightAndDirection: PropTypes.object,
         }),
         sortWay: PropTypes.number,
-    }).isRequired,
-    onSortChanged: PropTypes.func.isRequired,
-    updateFilter: PropTypes.func.isRequired,
+    }),
+    onSortChanged: PropTypes.func,
+    updateFilter: PropTypes.func,
     filterSelectedOptions: PropTypes.arrayOf(PropTypes.string),
+    isSortable: PropTypes.bool,
 };
 
 export default CustomHeaderComponent;
