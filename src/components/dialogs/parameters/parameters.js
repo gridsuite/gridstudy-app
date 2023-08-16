@@ -43,7 +43,7 @@ import { SecurityAnalysisParameters } from './security-analysis-parameters';
 import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import {
-    AVAILABLE_SERVICES,
+    UNAVAILABLE_OPTIONAL_SERVICES,
     PARAM_DEVELOPER_MODE,
 } from '../../../utils/config-params';
 import {
@@ -76,7 +76,8 @@ import {
     setSecurityAnalysisParameters,
     updateSecurityAnalysisProvider,
 } from '../../../services/study/security-analysis';
-import { OptionalServices } from '../../utils/optional-services';
+import { OptionalServicesNames } from '../../utils/optional-services';
+import { isUnavailableService } from '../../utils/utils';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -242,7 +243,7 @@ export const TabPanel = (props) => {
 const INITIAL_PROVIDERS = {};
 
 export const useParametersBackend = (
-    isAvailable,
+    isUnavailable,
     user,
     type,
     backendFetchProviders,
@@ -379,7 +380,7 @@ export const useParametersBackend = (
     );
 
     useEffect(() => {
-        if (user !== null && isAvailable) {
+        if (user !== null && !isUnavailable) {
             backendFetchProviders()
                 .then((providers) => {
                     // we can consider the provider gotten from back will be also used as
@@ -397,7 +398,7 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [user, backendFetchProviders, type, snackError, isAvailable]);
+    }, [user, backendFetchProviders, type, snackError, isUnavailable]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -525,17 +526,12 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [availableServices] = useParameterState(AVAILABLE_SERVICES);
-
-    const isAvailableService = useCallback(
-        (tab) => {
-            return Object.values(availableServices).includes(tab);
-        },
-        [availableServices]
+    const [unavailableOptionalServices] = useParameterState(
+        UNAVAILABLE_OPTIONAL_SERVICES
     );
 
     const loadFlowParametersBackend = useParametersBackend(
-        true,
+        false,
         user,
         'LoadFlow',
         getLoadFlowProviders,
@@ -548,7 +544,10 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
-        isAvailableService(OptionalServices.SecurityAnalysis),
+        isUnavailableService(
+            unavailableOptionalServices,
+            OptionalServicesNames.SecurityAnalysis
+        ),
         user,
         'SecurityAnalysis',
         fetchSecurityAnalysisProviders,
@@ -560,7 +559,10 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const sensitivityAnalysisParametersBackend = useParametersBackend(
-        isAvailableService(OptionalServices.SensitivityAnalysis),
+        isUnavailableService(
+            unavailableOptionalServices,
+            OptionalServicesNames.SensitivityAnalysis
+        ),
         user,
         'SensitivityAnalysis',
         fetchSensitivityAnalysisProviders,
@@ -627,7 +629,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             label={<FormattedMessage id="LoadFlow" />}
                             value={TAB_VALUES.lfParamsTabValue}
                         />
-                        {isAvailableService(
+                        {!isUnavailableService(
+                            unavailableOptionalServices,
                             TAB_VALUES.securityAnalysisParamsTabValue
                         ) && (
                             <Tab
@@ -640,7 +643,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 }
                             />
                         )}
-                        {isAvailableService(
+                        {!isUnavailableService(
+                            unavailableOptionalServices,
                             TAB_VALUES.sensitivityAnalysisParamsTabValue
                         ) && (
                             <Tab
@@ -653,7 +657,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 }
                             />
                         )}
-                        {isAvailableService(
+                        {!isUnavailableService(
+                            unavailableOptionalServices,
                             TAB_VALUES.shortCircuitParamsTabValue
                         ) &&
                             enableDeveloperMode && (
@@ -667,7 +672,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     }
                                 />
                             )}
-                        {isAvailableService(
+                        {!isUnavailableService(
+                            unavailableOptionalServices,
                             TAB_VALUES.dynamicSimulationParamsTabValue
                         ) &&
                             enableDeveloperMode && (
@@ -681,7 +687,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     }
                                 />
                             )}
-                        {isAvailableService(
+                        {!isUnavailableService(
+                            unavailableOptionalServices,
                             TAB_VALUES.voltageInitParamsTabValue
                         ) &&
                             enableDeveloperMode && (
@@ -729,7 +736,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 />
                             )}
                         </TabPanel>
-                        {isAvailableService(
+                        {!isUnavailableService(
+                            unavailableOptionalServices,
                             TAB_VALUES.securityAnalysisParamsTabValue
                         ) && (
                             <TabPanel
@@ -749,21 +757,31 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 )}
                             </TabPanel>
                         )}
-                        <TabPanel
-                            value={tabValue}
-                            index={TAB_VALUES.sensitivityAnalysisParamsTabValue}
-                            keepState
-                        >
-                            {studyUuid && (
-                                <SensitivityAnalysisParameters
-                                    hideParameters={hideParameters}
-                                    parametersBackend={
-                                        sensitivityAnalysisParametersBackend
-                                    }
-                                />
-                            )}
-                        </TabPanel>
-                        {
+                        {!isUnavailableService(
+                            unavailableOptionalServices,
+                            TAB_VALUES.sensitivityAnalysisParamsTabValue
+                        ) && (
+                            <TabPanel
+                                value={tabValue}
+                                index={
+                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
+                                }
+                                keepState
+                            >
+                                {studyUuid && (
+                                    <SensitivityAnalysisParameters
+                                        hideParameters={hideParameters}
+                                        parametersBackend={
+                                            sensitivityAnalysisParametersBackend
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )}
+                        {!isUnavailableService(
+                            unavailableOptionalServices,
+                            TAB_VALUES.shortCircuitParamsTabValue
+                        ) &&
                             //To be removed when ShortCircuit is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel
@@ -782,9 +800,11 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                         />
                                     )}
                                 </TabPanel>
-                            )
-                        }
-                        {
+                            )}
+                        {!isUnavailableService(
+                            unavailableOptionalServices,
+                            TAB_VALUES.dynamicSimulationParamsTabValue
+                        ) &&
                             //To be removed when DynamicSimulation is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel
@@ -800,9 +820,11 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                         />
                                     )}
                                 </TabPanel>
-                            )
-                        }
-                        {
+                            )}
+                        {!isUnavailableService(
+                            unavailableOptionalServices,
+                            TAB_VALUES.voltageInitParamsTabValue
+                        ) &&
                             //To be removed when DynamicSimulation is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel
@@ -820,8 +842,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                         />
                                     )}
                                 </TabPanel>
-                            )
-                        }
+                            )}
                         <TabPanel
                             value={tabValue}
                             index={TAB_VALUES.advancedParamsTabValue}

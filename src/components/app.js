@@ -8,7 +8,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getOptionalServiceByServerName } from './utils/optional-services';
+import {
+    getOptionalServiceByServerName,
+    OptionalServicesStatus,
+} from './utils/optional-services';
 import {
     Navigate,
     Route,
@@ -42,7 +45,7 @@ import {
     selectMapManualRefresh,
     selectEnableDeveloperMode,
     setParamsLoaded,
-    setAvailableServices,
+    setUnavailableOptionalServices,
 } from '../redux/actions';
 
 import {
@@ -58,7 +61,7 @@ import { FormattedMessage } from 'react-intl';
 
 import {
     fetchDefaultParametersValues,
-    getAvailableOptionalServices,
+    getOptionalServices,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -373,26 +376,37 @@ const App = () => {
                 }
             );
 
-            const fetchAvailableOptionalServices =
-                getAvailableOptionalServices()
-                    .then((services) => {
-                        const endpoints = services.reduce(
-                            (accumulator, service) => {
-                                accumulator.push(
-                                    getOptionalServiceByServerName(service)
-                                );
-                                return accumulator;
-                            },
-                            []
-                        );
-                        dispatch(setAvailableServices(endpoints));
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'optionalServicesRetrievingError',
-                        });
+            const fetchOptionalServices = getOptionalServices()
+                .then((services) => {
+                    const unavailableOptionalServices = services.reduce(
+                        (accumulator, service) => {
+                            if (
+                                service.status === OptionalServicesStatus.Down
+                            ) {
+                                accumulator.push({
+                                    ...service,
+                                    name: getOptionalServiceByServerName(
+                                        service.name
+                                    ),
+                                });
+                            }
+                            return accumulator;
+                        },
+                        []
+                    );
+                    console.log('MMT', unavailableOptionalServices);
+                    dispatch(
+                        setUnavailableOptionalServices(
+                            unavailableOptionalServices
+                        )
+                    );
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'optionalServicesRetrievingError',
                     });
+                });
 
             // Dispatch globally when all params are loaded to allow easy waiting.
             // This might not be necessary but allows to gradually migrate parts
@@ -401,7 +415,7 @@ const App = () => {
             Promise.all([
                 fetchCommonConfigPromise,
                 fetchAppConfigPromise,
-                fetchAvailableOptionalServices,
+                fetchOptionalServices,
             ])
                 .then(() => {
                     dispatch(setParamsLoaded());

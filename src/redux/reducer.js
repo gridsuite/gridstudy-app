@@ -91,7 +91,7 @@ import {
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_POST_LOADFLOW,
     SET_COMPUTING_STATUS,
-    SET_AVAILABLE_SERVICES,
+    SET_UNAVAILABLE_OPTIONAL_SERVICES,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -120,7 +120,7 @@ import {
     PARAM_FLUX_CONVENTION,
     PARAM_DEVELOPER_MODE,
     PARAMS_LOADED,
-    AVAILABLE_SERVICES,
+    UNAVAILABLE_OPTIONAL_SERVICES,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -150,7 +150,7 @@ const paramsInitialState = {
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
-    [AVAILABLE_SERVICES]: [],
+    [UNAVAILABLE_OPTIONAL_SERVICES]: [],
 };
 
 const initialComputingStatus = {
@@ -488,7 +488,7 @@ export const reducer = createReducer(initialState, {
         state.authenticationRouterError = action.authenticationRouterError;
     },
 
-    [RESET_AUTHENTICATION_ROUTER_ERROR]: (state) => {
+    [RESET_AUTHENTICATION_ROUTER_ERROR]: (state, action) => {
         state.authenticationRouterError = null;
     },
 
@@ -1003,8 +1003,8 @@ export const reducer = createReducer(initialState, {
     [SET_COMPUTING_STATUS]: (state, action) => {
         state.computingStatus[action.computingType] = action.runningStatus;
     },
-    [SET_AVAILABLE_SERVICES]: (state, action) => {
-        state.availableServices = action.availableServices;
+    [SET_UNAVAILABLE_OPTIONAL_SERVICES]: (state, action) => {
+        state.unavailableOptionalServices = action.unavailableOptionalServices;
     },
 });
 

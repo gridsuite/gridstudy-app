@@ -1156,9 +1156,9 @@ export function cloneVoltageInitModifications(studyUuid, currentNodeId) {
     });
 }
 
-export function getAvailableOptionalServices() {
+export function getOptionalServices() {
     console.info('get available optional services');
-    const url = PREFIX_STUDY_QUERIES + '/v1/optional-up-services';
+    const url = PREFIX_STUDY_QUERIES + '/v1/optional-services';
     console.debug(url);
     return backendFetchJson(url);
 }

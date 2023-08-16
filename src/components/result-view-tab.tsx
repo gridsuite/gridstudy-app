@@ -11,18 +11,12 @@ import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
-import React, {
-    FunctionComponent,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertInvalidNode from './utils/alert-invalid-node';
 import {
-    AVAILABLE_SERVICES,
+    UNAVAILABLE_OPTIONAL_SERVICES,
     PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
@@ -36,7 +30,8 @@ import {
 } from './results/use-results-tab';
 import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
-import { OptionalServices } from './utils/optional-services';
+import { OptionalServicesNames } from './utils/optional-services';
+import { isUnavailableService } from './utils/utils';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -69,7 +64,7 @@ interface IResultViewTabProps {
 interface IService {
     id: string;
     label: string;
-    isAvailable: boolean;
+    isUnavailable: boolean;
     enableDeveloperMode: boolean;
     renderResult: React.ReactElement;
 }
@@ -106,13 +101,8 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const intl = useIntl();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [availableServices] = useParameterState(AVAILABLE_SERVICES);
-
-    const isAvailable = useCallback(
-        (tab: OptionalServices) => {
-            return Object.values(availableServices).includes(tab);
-        },
-        [availableServices]
+    const [unavailableOptionalServices] = useParameterState(
+        UNAVAILABLE_OPTIONAL_SERVICES
     );
 
     const renderLoadFlowResult = useMemo(() => {
@@ -186,48 +176,63 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'LoadFlow',
                 label: 'LoadFlow',
-                isAvailable: true,
+                isUnavailable: false,
                 enableDeveloperMode: true,
                 renderResult: renderLoadFlowResult,
             },
             {
                 id: 'SecurityAnalysis',
                 label: 'SecurityAnalysis',
-                isAvailable: isAvailable(OptionalServices.SecurityAnalysis),
+                isUnavailable: isUnavailableService(
+                    unavailableOptionalServices,
+                    OptionalServicesNames.SecurityAnalysis
+                ),
                 enableDeveloperMode: true,
                 renderResult: renderSecurityAnalysisResult,
             },
             {
                 id: 'SensitivityAnalysis',
                 label: 'SensitivityAnalysis',
-                isAvailable: isAvailable(OptionalServices.SensitivityAnalysis),
+                isUnavailable: isUnavailableService(
+                    unavailableOptionalServices,
+                    OptionalServicesNames.SensitivityAnalysis
+                ),
                 enableDeveloperMode: true,
                 renderResult: renderSensitivityAnalysisResult,
             },
             {
                 id: 'ShortCircuit',
                 label: 'ShortCircuitAnalysis',
-                isAvailable: isAvailable(OptionalServices.ShortCircuit),
+                isUnavailable: isUnavailableService(
+                    unavailableOptionalServices,
+                    OptionalServicesNames.ShortCircuit
+                ),
                 enableDeveloperMode: enableDeveloperMode,
                 renderResult: renderShortCircuitAnalysisResult,
             },
             {
                 id: 'DynamicSimulation',
                 label: 'DynamicSimulation',
-                isAvailable: isAvailable(OptionalServices.DynamicSimulation),
+                isUnavailable: isUnavailableService(
+                    unavailableOptionalServices,
+                    OptionalServicesNames.DynamicSimulation
+                ),
                 enableDeveloperMode: enableDeveloperMode,
                 renderResult: renderDynamicSimulationResult,
             },
             {
                 id: 'VoltageInit',
                 label: 'VoltageInit',
-                isAvailable: isAvailable(OptionalServices.VoltageInit),
+                isUnavailable: isUnavailableService(
+                    unavailableOptionalServices,
+                    OptionalServicesNames.VoltageInit
+                ),
                 enableDeveloperMode: enableDeveloperMode,
                 renderResult: renderVoltageInitResult,
             },
         ];
     }, [
-        isAvailable,
+        unavailableOptionalServices,
         enableDeveloperMode,
         renderDynamicSimulationResult,
         renderSecurityAnalysisResult,
@@ -239,10 +244,10 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 
     const renderTab = (service: IService) => {
         return (
-            service.isAvailable &&
+            !service.isUnavailable &&
             service.enableDeveloperMode && (
                 <Tab
-                    key={service.id}
+                    key={service.id + 'tab'}
                     label={intl.formatMessage({
                         id: service.label,
                     })}
@@ -256,9 +261,9 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     ) => {
         return (
             <>
-                {service.isAvailable && (
+                {!service.isUnavailable && (
                     <TabPanelLazy
-                        key={service.id}
+                        key={service.id + 'tabPanel'}
                         className={classes.tabPanel}
                         selected={!disabled}
                     >
@@ -271,7 +276,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 
     const selectedService = useMemo(() => {
         const displayedServices: IService[] = services.filter(
-            (service) => service.isAvailable
+            (service) => !service.isUnavailable
         );
         const result = displayedServices.find(
             (service, key) => tabIndex === key

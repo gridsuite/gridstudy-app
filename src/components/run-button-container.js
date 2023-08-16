@@ -25,7 +25,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
-    AVAILABLE_SERVICES,
+    UNAVAILABLE_OPTIONAL_SERVICES,
     PARAM_DEVELOPER_MODE,
 } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
@@ -55,7 +55,8 @@ import {
     startVoltageInit,
     stopVoltageInit,
 } from '../services/study/voltage-init';
-import { OptionalServices } from './utils/optional-services';
+import { OptionalServicesNames } from './utils/optional-services';
+import { isUnavailableService } from './utils/utils';
 
 export function RunButtonContainer({
     studyUuid,
@@ -118,7 +119,9 @@ export function RunButtonContainer({
     const dispatch = useDispatch();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [availableServices] = useParameterState(AVAILABLE_SERVICES);
+    const [unavailableOptionalServices] = useParameterState(
+        UNAVAILABLE_OPTIONAL_SERVICES
+    );
 
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
@@ -454,36 +457,41 @@ export function RunButtonContainer({
         return runnableName;
     };
 
-    const isAvailableService = useCallback(
-        (serviceName) => {
-            return Object.values(availableServices).includes(serviceName);
-        },
-        [availableServices]
-    );
-
     const runnables = useMemo(() => {
         return [
             runnable[ComputingType.LOADFLOW],
-            ...(isAvailableService(OptionalServices.SecurityAnalysis)
+            ...(!isUnavailableService(
+                unavailableOptionalServices,
+                OptionalServicesNames.SecurityAnalysis
+            )
                 ? [runnable[ComputingType.SECURITY_ANALYSIS]]
                 : []),
-            ...(isAvailableService(OptionalServices.SensitivityAnalysis)
+            ...(!isUnavailableService(
+                unavailableOptionalServices,
+                OptionalServicesNames.SensitivityAnalysis
+            )
                 ? [runnable[ComputingType.SENSITIVITY_ANALYSIS]]
                 : []),
-            ...(isAvailableService(OptionalServices.ShortCircuit) &&
-            enableDeveloperMode
+            ...(!isUnavailableService(
+                unavailableOptionalServices,
+                OptionalServicesNames.ShortCircuit
+            ) && enableDeveloperMode
                 ? [runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]]
                 : []),
-            ...(isAvailableService(OptionalServices.DynamicSimulation) &&
-            enableDeveloperMode
+            ...(!isUnavailableService(
+                unavailableOptionalServices,
+                OptionalServicesNames.DynamicSimulation
+            ) && enableDeveloperMode
                 ? [runnable[ComputingType.DYNAMIC_SIMULATION]]
                 : []),
-            ...(isAvailableService(OptionalServices.VoltageInit) &&
-            enableDeveloperMode
+            ...(!isUnavailableService(
+                unavailableOptionalServices,
+                OptionalServicesNames.VoltageInit
+            ) && enableDeveloperMode
                 ? [runnable[ComputingType.VOLTAGE_INIT]]
                 : []),
         ];
-    }, [isAvailableService, runnable, enableDeveloperMode]);
+    }, [unavailableOptionalServices, runnable, enableDeveloperMode]);
 
     useEffect(() => {
         setIsComputationRunning(

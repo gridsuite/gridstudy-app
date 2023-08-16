@@ -19,6 +19,7 @@ import {
     LabelledButton,
     TabPanel,
     useParametersBackend,
+    useParameterState,
     useStyles,
 } from '../parameters';
 import NetworkParameters from './network-parameters';
@@ -31,6 +32,9 @@ import {
     updateDynamicSimulationParameters,
     updateDynamicSimulationProvider,
 } from '../../../../services/study/dynamic-simulation';
+import { UNAVAILABLE_OPTIONAL_SERVICES } from '../../../../utils/config-params';
+import { isUnavailableService } from '../../../utils/utils';
+import { OptionalServicesNames } from '../../../utils/optional-services';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',
@@ -42,6 +46,9 @@ const TAB_VALUES = {
 
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const classes = useStyles();
+    const [unavailableOptionalServices] = useParameterState(
+        UNAVAILABLE_OPTIONAL_SERVICES
+    );
 
     const [
         providers,
@@ -52,7 +59,10 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         updateParameters,
         resetParameters,
     ] = useParametersBackend(
-        true,
+        isUnavailableService(
+            unavailableOptionalServices,
+            OptionalServicesNames.DynamicSimulation
+        ),
         user,
         'DynamicSimulation',
         fetchDynamicSimulationProviders,

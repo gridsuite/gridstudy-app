@@ -1,25 +1,28 @@
-export enum OptionalServices {
+export enum OptionalServicesNames {
     SecurityAnalysis = 'SecurityAnalysis',
     SensitivityAnalysis = 'SensitivityAnalysis',
     DynamicSimulation = 'DynamicSimulation',
     ShortCircuit = 'ShortCircuit',
     VoltageInit = 'VoltageInit',
 }
-
+export enum OptionalServicesStatus {
+    Up = 'UP',
+    Down = 'DOWN',
+}
 export const getOptionalServiceByServerName = (
     serverName: string
-): OptionalServices | undefined => {
+): OptionalServicesNames | undefined => {
     switch (serverName) {
         case 'security-analysis-server':
-            return OptionalServices.SecurityAnalysis;
+            return OptionalServicesNames.SecurityAnalysis;
         case 'sensitivity-analysis-server':
-            return OptionalServices.SensitivityAnalysis;
+            return OptionalServicesNames.SensitivityAnalysis;
         case 'dynamic-simulation-server':
-            return OptionalServices.DynamicSimulation;
+            return OptionalServicesNames.DynamicSimulation;
         case 'shortcircuit-server':
-            return OptionalServices.ShortCircuit;
+            return OptionalServicesNames.ShortCircuit;
         case 'voltage-init-server':
-            return OptionalServices.VoltageInit;
+            return OptionalServicesNames.VoltageInit;
         default:
             return;
     }
