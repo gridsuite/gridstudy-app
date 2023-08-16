@@ -43,7 +43,7 @@ const useStyles = makeStyles<GridStudyTheme, CustomAGGGridStyleProps>(
 
             // hides right border for header of "Edit" column due to column being pinned
             '& .ag-pinned-left-header': {
-                borderRight: (props) =>
+                borderRight: (props: CustomAGGGridStyleProps) =>
                     props.shouldHidePinnedHeaderRightBorder ? 'none' : '',
             },
         },
