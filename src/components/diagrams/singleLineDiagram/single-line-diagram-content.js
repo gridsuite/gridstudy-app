@@ -35,6 +35,7 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
+import BatteryModificationDialog from '../../dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
@@ -413,6 +414,9 @@ function SingleLineDiagramContent(props) {
     const displayModificationDialog = () => {
         let CurrentModificationDialog;
         switch (equipmentToModify.equipmentType) {
+            case EQUIPMENT_TYPES.BATTERY.type:
+                CurrentModificationDialog = BatteryModificationDialog;
+                break;
             case EQUIPMENT_TYPES.GENERATOR.type:
                 CurrentModificationDialog = GeneratorModificationDialog;
                 break;
