@@ -219,7 +219,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
 
     const toolTipValueGetterValues = (params) => {
         if (
-            params?.data?.contingencyId &&
+            params.data?.contingencyId &&
             params.data?.contingencyEquipmentsIds
         ) {
             const values = Object.values(params.data?.contingencyEquipmentsIds);
@@ -229,9 +229,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                 title: null,
                 values: valuesToDisplay,
             };
-        } else {
-            return null;
         }
+        return null;
     };
 
     const columnsNmKContingencies = useMemo(() => {

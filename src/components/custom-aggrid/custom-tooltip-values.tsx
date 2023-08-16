@@ -6,7 +6,7 @@ const CustomTooltipValues: FunctionComponent<ITooltipParams> = (props) => {
     const values: string[] = props?.value?.values;
     return (
         <>
-            {values && values.length && (
+            {values?.length && (
                 <Tooltip title={props?.data?.value?.title}>
                     <Grid
                         container
