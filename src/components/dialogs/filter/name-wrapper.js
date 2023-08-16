@@ -7,12 +7,12 @@
 import React, { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { elementExists } from '../../utils/rest-api';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 import { useDebounce } from '@gridsuite/commons-ui';
+import { elementExists } from 'services/explore';
 
 const NameWrapper = ({
     initialValue = '',

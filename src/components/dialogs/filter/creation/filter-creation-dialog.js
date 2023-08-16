@@ -189,8 +189,8 @@ const CreateFilterDialog = ({ open, onClose }) => {
             removeOptional={true}
             disabledSave={!filterNameValid}
         >
-            <NameWrapper
-                titleMessage="nameProperty"
+            {/* <NameWrapper
+                titleMessage="Name"
                 contentType={elementType.FILTER}
                 handleNameValidation={handleNameChange}
             >
@@ -207,7 +207,7 @@ const CreateFilterDialog = ({ open, onClose }) => {
                         <ExplicitNamingFilterForm />
                     )}
                 </Grid>
-            </NameWrapper>
+            </NameWrapper> */}
         </CustomMuiDialog>
     );
 };

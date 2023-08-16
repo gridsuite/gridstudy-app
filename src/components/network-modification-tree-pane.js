@@ -41,7 +41,7 @@ import {
     fetchNetworkModificationTreeNode,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName } from '../services/study';
-import { CreateFilterDialog } from './dialogs/filter/creation/filter-creation-dialog';
+import CreateFilterDialog from './dialogs/filter/creation/filter-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -657,12 +657,6 @@ export const NetworkModificationTreePane = ({
                 <CreateFilterDialog
                     open={openCreateFilterDialog}
                     onClose={() => setOpenCreateFilterDialog(false)}
-                    onClick={handleClickExportStudy}
-                    studyUuid={studyUuid}
-                    nodeUuid={activeNode.id}
-                    title={intlRef.current.formatMessage({
-                        id: 'createNewFilter',
-                    })}
                 />
             )}
             <iframe

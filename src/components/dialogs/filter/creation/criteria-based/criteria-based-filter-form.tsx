@@ -6,10 +6,16 @@ import {
     getCriteriaBasedSchema,
 } from '../criteria-based/criteria-based-utils';
 import Grid from '@mui/material/Grid';
-import { CRITERIA_BASED, ENERGY_SOURCE } from 'components/utils/field-constants';
+import {
+    CRITERIA_BASED,
+    ENERGY_SOURCE,
+} from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { FILTER_PROPERTIES } from '../../filter-property';
 import CriteriaBasedForm from './criteria-based-form';
+import FilterProperties, {
+    filterPropertiesYupSchema,
+} from '../../filter-properties';
 
 export const criteriaBasedFilterSchema = getCriteriaBasedSchema({
     [ENERGY_SOURCE]: yup.string().nullable(),

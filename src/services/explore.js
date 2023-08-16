@@ -5,10 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch, backendFetchJson, getRequestParamFromList } from './utils';
+import {
+    backendFetch,
+    backendFetchJson,
+    getRequestParamFromList,
+} from './utils';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/explore`;
-
+const PREFIX_DIRECTORY_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/directory`;
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     console.info('Fetching elements metadata');
 
@@ -73,6 +77,19 @@ export function saveFilter(filter, name) {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
             body,
+        }
+    );
+}
+
+export function elementExists(directoryUuid, elementName, type) {
+    const existsElementUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
+
+    console.debug(existsElementUrl);
+    return backendFetch(existsElementUrl, { method: 'head' }).then(
+        (response) => {
+            return response.status !== 204; // HTTP 204 : No-content
         }
     );
 }

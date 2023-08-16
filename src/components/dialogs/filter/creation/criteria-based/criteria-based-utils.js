@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CountriesInput from '../../../utils/rhf-inputs/select-inputs/countries-input';
 import {
     COUNTRIES,
     COUNTRIES_1,
@@ -16,14 +15,15 @@ import {
     NOMINAL_VOLTAGE_1,
     NOMINAL_VOLTAGE_2,
     NOMINAL_VOLTAGE_3,
-} from '../../../utils/field-constants';
+} from 'components/utils/field-constants';
 import RangeInput, {
     DEFAULT_RANGE_VALUE,
     getRangeInputDataForm,
     getRangeInputSchema,
-} from '../../../utils/rhf-inputs/range-input';
-import yup from '../../../utils/yup-config';
-import SelectInput from '../../../utils/rhf-inputs/select-inputs/select-input';
+} from 'components/utils/rhf-inputs/range-input';
+import SelectInput from 'components/utils/rhf-inputs/select-input';
+import CountriesInput from 'components/utils/rhf-inputs/select-inputs/countries-input';
+import yup from 'components/utils/yup-config';
 
 const countries = {
     renderer: CountriesInput,

@@ -1,24 +1,19 @@
 import React, { useCallback, useMemo } from 'react';
-import {
-    EQUIPMENT_ID,
-    EQUIPMENT_TYPE,
-    FILTER_TYPE,
-} from '../../utils/field-constants';
-import yup from '../../utils/yup-config';
-import CustomAgGridTable, {
-    ROW_DRAGGING_SELECTION_COLUMN_DEF,
-} from '../../utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { FILTER_EQUIPMENTS } from '../commons/criteria-based/criteria-based-utils';
 import Grid from '@mui/material/Grid';
-import SelectInput from '../../utils/rhf-inputs/select-inputs/select-input';
+import yup from 'components/utils/yup-config';
+import { EQUIPMENT_ID, EQUIPMENT_TYPE } from 'components/utils/field-constants';
+import { FILTER_TYPE } from 'components/network/constants';
+import CustomAgGridTable, {
+    ROW_DRAGGING_SELECTION_COLUMN_DEF,
+} from 'components/utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
 import { ValueParserParams } from 'ag-grid-community';
-import { Generator, Load } from '../../../utils/equipment-types';
-import { FilterType } from '../../../utils/elementType';
-import { NumericEditor } from '../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numericEditor';
-import { toFloatOrNullValue } from '../../utils/dialog-utils';
-import InputWithPopupConfirmation from '../../utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
+import { NumericEditor } from 'components/utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numeric-editor';
+import { toFloatOrNullValue } from 'components/dialogs/dialogUtils';
+import InputWithPopupConfirmation from 'components/utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
+import SelectInput from 'components/utils/rhf-inputs/select-input';
+import { FILTER_EQUIPMENTS } from '../criteria-based/criteria-based-utils';
 
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
 export const DISTRIBUTION_KEY = 'distributionKey';
@@ -34,8 +29,8 @@ export const explicitNamingFilterSchema = {
         )
         // we remove empty lines
         .compact((row) => !row[DISTRIBUTION_KEY] && !row[EQUIPMENT_ID])
-        .when([FILTER_TYPE], {
-            is: FilterType.EXPLICIT_NAMING.id,
+        .when(['filterType'], {
+            is: FILTER_TYPE.EXPLICIT_NAMING.id,
             then: (schema) =>
                 schema.min(1, 'emptyFilterError').when([EQUIPMENT_TYPE], {
                     is: (equipmentType: string) =>
@@ -70,7 +65,7 @@ export const explicitNamingFilterSchema = {
 };
 
 function isGeneratorOrLoad(equipmentType: string): boolean {
-    return equipmentType === Generator.type || equipmentType === Load.type;
+    return equipmentType === 'GENERATOR' || equipmentType === 'LOAD';
 }
 
 interface FilterTableRow {

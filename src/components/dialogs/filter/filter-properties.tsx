@@ -1,3 +1,4 @@
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import React, { useEffect, useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import AddIcon from '@mui/icons-material/Add';
@@ -18,7 +19,6 @@ import { ListItem } from '@mui/material';
 import { FILTER_TYPE } from 'components/network/constants';
 import { areArrayElementsUnique } from 'components/utils/utils';
 import { fetchAppsAndUrls } from 'services/utils';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 
 export const FILTER_PROPERTIES = 'freeProperties';
 
