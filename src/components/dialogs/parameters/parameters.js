@@ -379,8 +379,6 @@ export const useParametersBackend = (
     );
 
     useEffect(() => {
-        console.log('MMT ', type);
-        console.log('MMT ', isUnavailable);
         if (user !== null && isUnavailable !== null && !isUnavailable) {
             backendFetchProviders()
                 .then((providers) => {

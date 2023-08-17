@@ -116,7 +116,7 @@ export function RunButtonContainer({
     const dispatch = useDispatch();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [unavailableOptionalServices] = useSelector(
+    const unavailableOptionalServices = useSelector(
         (state) => state.unavailableOptionalServices
     );
 
