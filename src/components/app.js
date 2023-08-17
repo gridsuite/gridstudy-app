@@ -443,11 +443,9 @@ const App = () => {
                             if (
                                 service.status === OptionalServicesStatus.Down
                             ) {
-                                accumulator.push({
-                                    name: getOptionalServiceByServerName(
-                                        service.name
-                                    ),
-                                });
+                                accumulator.push(
+                                    getOptionalServiceByServerName(service.name)
+                                );
                             }
                             return accumulator;
                         },
