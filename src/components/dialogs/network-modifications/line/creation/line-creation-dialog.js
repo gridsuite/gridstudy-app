@@ -144,7 +144,7 @@ const LineCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
+    const { reset, setValue, formState : {errors, isSubmitting} } = formMethods;
 
     const fromSearchCopyToFormValues = (line) => {
         reset(
@@ -349,13 +349,41 @@ const LineCreationDialog = ({
         [editData, studyUuid, currentNodeUuid, snackError, onCreateLine]
     );
 
-    const onValidationError = (errors) => {
+    //scroll to the first array error (limits) when submitting the form
+    useEffect(() => {
+        if (isSubmitting && errors && Object.keys(errors).length > 0) {
+            if (
+                tabIndexesWithError.includes(
+                    LineCreationDialogTab.LIMITS_TAB
+                ) &&
+                tabIndex === LineCreationDialogTab.LIMITS_TAB
+            ) {
+                let firstArrayWithErrors = Object.keys(errors[LIMITS])[0];
+                let temporaryLimitsErrors =
+                    errors[LIMITS][firstArrayWithErrors]?.[TEMPORARY_LIMITS];
+                if (temporaryLimitsErrors?.ref) {
+                    //case where ErrorInput is rendered
+                    let errorId = temporaryLimitsErrors.ref.name;
+                    let errorInput = document.getElementById(errorId);
+                    errorInput.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest',
+                    });
+                }
+            }
+        }
+    }, [tabIndexesWithError, errors, isSubmitting, tabIndex]);
+
+    const onValidationError = (errorsObj) => {
         let tabsInError = [];
-        if (errors?.[LIMITS] !== undefined) {
+        if (errorsObj?.[CHARACTERISTICS] !== undefined) {
+            tabsInError.push(LineCreationDialogTab.CHARACTERISTICS_TAB);
+        }
+        if (errorsObj?.[LIMITS] !== undefined) {
             tabsInError.push(LineCreationDialogTab.LIMITS_TAB);
         }
-        if (errors?.[CHARACTERISTICS] !== undefined) {
-            tabsInError.push(LineCreationDialogTab.CHARACTERISTICS_TAB);
+        if (tabsInError.length > 0 && errorsObj?.[TAB_HEADER] === undefined) {
+            setTabIndex(tabsInError[0]);
         }
         setTabIndexesWithError(tabsInError);
     };

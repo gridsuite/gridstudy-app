@@ -7,17 +7,15 @@
 
 import { useController } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 
 const ErrorInput = ({ name, InputField }) => {
     const {
-        fieldState: { error },
-        formState: { isSubmitting },
+        fieldState: { error }
     } = useController({
         name,
     });
 
-    const errorRef = useRef(null);
 
     const errorProps = (errorMsg) => {
         if (typeof errorMsg === 'string') {
@@ -35,18 +33,10 @@ const ErrorInput = ({ name, InputField }) => {
         return {};
     };
 
-    useEffect(() => {
-        // the scroll should be done only when the form is submitting
-        if (error && errorRef.current) {
-            errorRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isSubmitting]);
-
     return (
         <>
             {error?.message && (
-                <div ref={errorRef}>
+                <div id={name}>
                     <InputField
                         message={
                             <FormattedMessage {...errorProps(error?.message)} />
