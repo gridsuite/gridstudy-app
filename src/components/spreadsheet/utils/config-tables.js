@@ -10,6 +10,8 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
+import { SensiProperties } from 'components/spreadsheet/utils/sensi-properties';
+import CustomTooltipKeyValue from './customTooltipKeyValue';
 
 const generateTapPositions = (params) => {
     return params
@@ -38,6 +40,11 @@ export const DEFAULT_SORT_ORDER = 'asc';
 
 export const EDIT_COLUMN = 'edit';
 
+const toolTipValueGetterProperties = (params) => {
+    const properties = params.data?.properties;
+    return properties ? { title: null, properties: { ...properties } } : null;
+};
+
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,
@@ -56,6 +63,16 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Country',
                 field: 'countryName',
+            },
+            {
+                id: 'Properties',
+                field: 'properties',
+                cellRendererSelector: () => {
+                    return { component: SensiProperties };
+                },
+                tooltipComponent: CustomTooltipKeyValue,
+                tooltipValueGetter: toolTipValueGetterProperties,
+                minWidth: 300,
             },
         ],
     },
@@ -977,6 +994,48 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingTerminal',
                 field: 'regulatingTerminal',
                 getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'TransientReactance',
+                field: 'transientReactance',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+            },
+            {
+                id: 'TransformerReactance',
+                field: 'stepUpTransformerReactance',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+            },
+            {
+                id: 'PlannedActivePowerSetPoint',
+                field: 'plannedActivePowerSetPoint',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+            },
+            {
+                id: 'MarginalCost',
+                field: 'marginalCost',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+            },
+            {
+                id: 'PlannedOutageRate',
+                field: 'plannedOutageRate',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+            },
+            {
+                id: 'ForcedOutageRate',
+                field: 'forcedOutageRate',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
             },
         ],
     },

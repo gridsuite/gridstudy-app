@@ -7,12 +7,13 @@
 
 import React, { useMemo, useCallback } from 'react';
 import { useTheme } from '@mui/styles';
-import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
+import { useIntl } from 'react-intl';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
+const DEFAULT_ROW_HEIGHT_WITH_PROPERTIES = 65;
 
 export const EquipmentTable = ({
     rowData,
@@ -32,7 +33,7 @@ export const EquipmentTable = ({
     shouldHidePinnedHeaderRightBorder,
 }) => {
     const theme = useTheme();
-
+    const intl = useIntl();
     const getRowStyle = useCallback(
         (params) => {
             if (params.rowIndex === scrollToIndex) {
@@ -85,52 +86,67 @@ export const EquipmentTable = ({
         };
     }, [network, topPinnedData]);
 
-    const getRowHeight = useCallback(
-        (params) =>
-            params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
-        []
-    );
+    const getRowHeight = useCallback((params) => {
+        const propertiesLength = params.data?.properties
+            ? Object.keys(params.data.properties).length
+            : 0;
+
+        if (propertiesLength > 1) {
+            return DEFAULT_ROW_HEIGHT_WITH_PROPERTIES;
+        }
+        if (propertiesLength === 1) {
+            return DEFAULT_ROW_HEIGHT;
+        }
+        if (params.node.rowPinned) {
+            return PINNED_ROW_HEIGHT;
+        } else {
+            return DEFAULT_ROW_HEIGHT;
+        }
+    }, []);
+
+    const rowsToShow = useMemo(() => {
+        return fetched && rowData.length > 0 ? rowData : [];
+    }, [rowData, fetched]);
+
+    const message = useMemo(() => {
+        if (!fetched) {
+            return intl.formatMessage({ id: 'LoadingRemoteData' });
+        }
+        if (fetched && rowData.length === 0) {
+            return intl.formatMessage({ id: 'grid.noRowsToShow' });
+        }
+        return undefined;
+    }, [rowData, fetched, intl]);
 
     return (
-        <>
-            {!fetched ? (
-                <div>
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        loadingMessageText={'LoadingRemoteData'}
-                    />
-                </div>
-            ) : (
-                <CustomAGGrid
-                    ref={gridRef}
-                    getRowId={getRowId}
-                    rowData={rowData}
-                    pinnedTopRowData={topPinnedData}
-                    debounceVerticalScrollbar={true}
-                    getRowStyle={getRowStyle}
-                    columnDefs={columnData}
-                    defaultColDef={defaultColDef}
-                    enableCellTextSelection={true}
-                    undoRedoCellEditing={true}
-                    editType={'fullRow'}
-                    onCellValueChanged={handleCellEditing}
-                    onRowValueChanged={handleRowEditing}
-                    onRowDataUpdated={handleRowDataUpdated}
-                    onRowEditingStopped={handleEditingStopped}
-                    onColumnMoved={handleColumnDrag}
-                    suppressDragLeaveHidesColumns={true}
-                    suppressColumnVirtualisation={true}
-                    suppressClickEdit={true}
-                    context={gridContext}
-                    onGridReady={handleGridReady}
-                    onBodyScroll={handleBodyScroll}
-                    shouldHidePinnedHeaderRightBorder={
-                        shouldHidePinnedHeaderRightBorder
-                    }
-                    getRowHeight={getRowHeight}
-                />
-            )}
-        </>
+        <CustomAGGrid
+            ref={gridRef}
+            getRowId={getRowId}
+            rowData={rowsToShow}
+            pinnedTopRowData={topPinnedData}
+            debounceVerticalScrollbar={true}
+            getRowStyle={getRowStyle}
+            columnDefs={columnData}
+            defaultColDef={defaultColDef}
+            enableCellTextSelection={true}
+            undoRedoCellEditing={true}
+            editType={'fullRow'}
+            onCellValueChanged={handleCellEditing}
+            onRowValueChanged={handleRowEditing}
+            onRowDataUpdated={handleRowDataUpdated}
+            onRowEditingStopped={handleEditingStopped}
+            onColumnMoved={handleColumnDrag}
+            suppressDragLeaveHidesColumns={true}
+            suppressColumnVirtualisation={true}
+            suppressClickEdit={true}
+            context={gridContext}
+            onGridReady={handleGridReady}
+            onBodyScroll={handleBodyScroll}
+            shouldHidePinnedHeaderRightBorder={
+                shouldHidePinnedHeaderRightBorder
+            }
+            getRowHeight={getRowHeight}
+            overlayNoRowsTemplate={message}
+        />
     );
 };

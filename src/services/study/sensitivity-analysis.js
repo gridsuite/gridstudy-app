@@ -6,15 +6,11 @@
  */
 
 import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-} from '../../utils/rest-api';
-import {
     PREFIX_STUDY_QUERIES,
     getStudyUrl,
     getStudyUrlWithNodeUuid,
 } from './index';
+import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startSensitivityAnalysis(
     studyUuid,
@@ -115,4 +111,25 @@ export function fetchDefaultSensitivityAnalysisProvider() {
     const url = `${PREFIX_STUDY_QUERIES}/v1/sensitivity-analysis-default-provider`;
     console.debug(url);
     return backendFetchText(url);
+}
+
+export function getSensitivityAnalysisParameters(studyUuid) {
+    console.info('get sensitivity analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function setSensitivityAnalysisParameters(studyUuid, newParams) {
+    console.info('set sensitivity analysis parameters');
+    const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newParams),
+    });
 }

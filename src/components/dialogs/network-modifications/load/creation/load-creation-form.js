@@ -26,7 +26,8 @@ import { FloatInput } from '@gridsuite/commons-ui';
 import { SelectInput } from '@gridsuite/commons-ui';
 import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
+
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

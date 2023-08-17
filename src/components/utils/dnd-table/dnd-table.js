@@ -34,6 +34,7 @@ import { FieldErrorAlert } from '@gridsuite/commons-ui';
 import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import DirectoryItemsInput from '../rhf-inputs/directory-items-input';
+import ChipItemsInput from '../rhf-inputs/chip-items-input';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -110,7 +111,7 @@ function EditableTableCell({
                     {...props}
                 />
             )}
-            {!column.numeric && !column.directoryItems && (
+            {!column.numeric && !column.directoryItems && !column.chipItems && (
                 <TableTextInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     {...props}
@@ -122,6 +123,12 @@ function EditableTableCell({
                     equipmentTypes={column.equipmentTypes}
                     elementType={column.elementType}
                     titleId={column.titleId}
+                    hideErrorMessage={true}
+                />
+            )}
+            {column.chipItems && (
+                <ChipItemsInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     hideErrorMessage={true}
                 />
             )}

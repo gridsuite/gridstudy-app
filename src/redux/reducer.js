@@ -128,6 +128,7 @@ import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
+import { NodeInsertModes } from '../components/utils/node-insert-modes';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -282,7 +283,8 @@ export const reducer = createReducer(initialState, {
             newModel.addChild(
                 action.networkModificationTreeNode,
                 action.parentNodeId,
-                action.insertMode
+                action.insertMode,
+                action.referenceNodeId
             );
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
@@ -1129,7 +1131,7 @@ function unravelSubTree(treeModel, subtreeParentId, node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
-        treeModel.addChild(node, subtreeParentId, 'AFTER');
+        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After);
 
         if (node.children.length > 0) {
             node.children.forEach((child) => {

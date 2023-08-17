@@ -28,7 +28,6 @@ import withBranchMenu from '../../menus/branch-menu';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
-import { fetchNetworkElementInfos } from '../../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -36,6 +35,7 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
+import BatteryModificationDialog from '../../dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
@@ -56,7 +56,7 @@ import {
 } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
-
+import { fetchNetworkElementInfos } from '../../../services/study/network';
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
     const classes = useDiagramStyles();
@@ -383,6 +383,9 @@ function SingleLineDiagramContent(props) {
     const displayModificationDialog = () => {
         let CurrentModificationDialog;
         switch (equipmentToModify.equipmentType) {
+            case EQUIPMENT_TYPES.BATTERY.type:
+                CurrentModificationDialog = BatteryModificationDialog;
+                break;
             case EQUIPMENT_TYPES.GENERATOR.type:
                 CurrentModificationDialog = GeneratorModificationDialog;
                 break;

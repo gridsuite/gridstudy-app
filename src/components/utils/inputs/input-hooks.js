@@ -46,13 +46,13 @@ import {
     genHelperError,
     genHelperPreviousValue,
 } from '@gridsuite/commons-ui';
-import { isNodeExists } from '../../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useAutocompleteField } from './use-autocomplete-field';
 import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
 import clsx from 'clsx';
+import { isNodeExists } from '../../../services/study';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());

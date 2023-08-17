@@ -18,13 +18,11 @@ import {
     REPLACING_LINE_2_NAME,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import {
-    fetchEquipmentsIds,
-    fetchVoltageLevelsListInfos,
-} from 'utils/rest-api';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
 import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
 const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

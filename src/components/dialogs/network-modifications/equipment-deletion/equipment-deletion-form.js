@@ -27,7 +27,8 @@ import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import HvdcLccDeletionSpecificForm from './hvdc-lcc-deletion/hvdc-lcc-deletion-specific-form';
 import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
-import { fetchEquipmentsIds } from '../../../../utils/rest-api';
+
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
 const richTypeEquals = (a, b) => a.type === b.type;
 
@@ -39,6 +40,7 @@ const DeleteEquipmentForm = ({
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const editedIdRef = useRef(null);
+    const currentTypeRef = useRef(null);
 
     const watchType = useWatch({
         name: TYPE,
@@ -71,9 +73,12 @@ const DeleteEquipmentForm = ({
     }, []);
 
     useEffect(() => {
-        let ignore = false;
         setEquipmentsOptions([]);
-        if (watchType?.fetchers?.length) {
+        if (watchType) {
+            if (watchType.type !== currentTypeRef.current) {
+                currentTypeRef.current = watchType.type;
+            }
+            let ignore = false;
             fetchEquipmentsIds(
                 studyUuid,
                 currentNode?.id,
@@ -93,23 +98,34 @@ const DeleteEquipmentForm = ({
                         headerId: 'equipmentsLoadingError',
                     });
                 });
+            return () => {
+                ignore = true;
+            };
         }
-        return () => {
-            ignore = true;
-        };
     }, [studyUuid, currentNode?.id, watchType, snackError]);
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            if (editDataEquipmentId && !editedIdRef.current) {
-                // In case of edition, don't dynamically change the form on first render.
-                // Keep user data as it is stored in database (cf editData)
-                editedIdRef.current = editDataEquipmentId;
+            if (editDataEquipmentId) {
+                if (editedIdRef.current === null) {
+                    // In case of edition, don't dynamically change the form on first render.
+                    // Keep user data as it is stored in database (cf editData)
+                    editedIdRef.current = editDataEquipmentId;
+                    return;
+                } else if (watchEquipmentId !== editedIdRef.current) {
+                    // we have changed eqptId, leave the "fisrt edit" mode
+                    editedIdRef.current = '';
+                }
+            }
+
+            if (watchEquipmentId && watchEquipmentId === editedIdRef.current) {
+                // we still are at first edit, dont change anything
                 return;
             }
+
             if (
                 watchEquipmentId &&
-                watchType?.type === EQUIPMENT_TYPES.HVDC_LINE.type
+                currentTypeRef.current === EQUIPMENT_TYPES.HVDC_LINE.type
             ) {
                 // need specific update related to HVDC LCC deletion (for MCS lists)
                 hvdcLccSpecificUpdate(
@@ -124,7 +140,6 @@ const DeleteEquipmentForm = ({
     }, [
         studyUuid,
         currentNode?.id,
-        watchType?.type,
         watchEquipmentId,
         snackError,
         setValue,

@@ -61,7 +61,9 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
             name={DROOP}
             label={'Droop'}
             adornment={percentageTextField}
-            previousValue={previousValues?.droop}
+            previousValue={
+                !isNaN(previousValues?.droop) ? previousValues?.droop : null
+            }
             clearable={true}
         />
     );
