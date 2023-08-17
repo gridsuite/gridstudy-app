@@ -239,6 +239,12 @@ export const TabPanel = (props) => {
 
 const INITIAL_PROVIDERS = {};
 
+const FETCHING_STATUS = {
+    NOT_STARTED: 'not_started',
+    FETCHING: 'fetching',
+    FINISHED: 'finished',
+};
+
 export const useParametersBackend = (
     user,
     type,
@@ -255,8 +261,9 @@ export const useParametersBackend = (
     const { snackError } = useSnackMessage();
 
     const providersRef = useRef(INITIAL_PROVIDERS);
-    const providerRef = useRef(null);
+    const [provider, setProvider] = useState();
 
+    const [fetching, setFetching] = useState(FETCHING_STATUS.NOT_STARTED);
     const [params, setParams] = useState(null);
 
     const [specificParamsDescription, setSpecificParamsDescription] =
@@ -283,7 +290,9 @@ export const useParametersBackend = (
     const updateProvider = useCallback(
         (newProvider) => {
             backendUpdateProvider(studyUuid, newProvider)
-                .then(() => (providerRef.current = newProvider))
+                .then(() => {
+                    setProvider(newProvider);
+                })
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -297,13 +306,13 @@ export const useParametersBackend = (
     const resetProvider = useCallback(() => {
         backendFetchDefaultProvider()
             .then((defaultProvider) => {
-                const providerNames = Object.keys(providersRef.current);
+                const providerNames = Object.keys(provider);
                 if (providerNames.length > 0) {
                     const newProvider =
                         defaultProvider in providersRef.current
                             ? defaultProvider
                             : providerNames[0];
-                    if (newProvider !== providerRef.current) {
+                    if (newProvider !== provider) {
                         updateProvider(newProvider);
                     }
                 }
@@ -314,7 +323,13 @@ export const useParametersBackend = (
                     headerId: 'fetchDefault' + type + 'ProviderError',
                 });
             });
-    }, [type, backendFetchDefaultProvider, updateProvider, snackError]);
+    }, [
+        backendFetchDefaultProvider,
+        provider,
+        updateProvider,
+        snackError,
+        type,
+    ]);
 
     const updateParameter = useCallback(
         (newParams) => {
@@ -373,6 +388,7 @@ export const useParametersBackend = (
 
     useEffect(() => {
         if (user !== null) {
+            setFetching(FETCHING_STATUS.FETCHING);
             backendFetchProviders()
                 .then((providers) => {
                     // we can consider the provider gotten from back will be also used as
@@ -389,6 +405,7 @@ export const useParametersBackend = (
                         headerId: 'fetch' + type + 'ProvidersError',
                     });
                 });
+            setFetching(FETCHING_STATUS.FINISHED);
         }
     }, [user, backendFetchProviders, type, snackError]);
 
@@ -406,21 +423,23 @@ export const useParametersBackend = (
                         });
                     });
             }
-            backendFetchProvider(studyUuid)
-                .then((provider) => {
-                    // if provider is not defined or not among allowed values, it's set to default value
-                    if (provider in providersRef.current) {
-                        providerRef.current = provider;
-                    } else {
-                        resetProvider();
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'fetch' + type + 'ProviderError',
+            if (fetching === FETCHING_STATUS.FINISHED) {
+                backendFetchProvider(studyUuid)
+                    .then((provider) => {
+                        // if provider is not defined or not among allowed values, it's set to default value
+                        if (provider in providersRef.current) {
+                            setProvider(provider);
+                        } else {
+                            resetProvider();
+                        }
+                    })
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'fetch' + type + 'ProviderError',
+                        });
                     });
-                });
+            }
             if (backendFetchSpecificParameters) {
                 backendFetchSpecificParameters()
                     .then((specificParams) => {
@@ -444,11 +463,12 @@ export const useParametersBackend = (
         snackError,
         resetProvider,
         setParams,
+        fetching,
     ]);
 
     return [
         providersRef.current,
-        providerRef.current,
+        provider,
         updateProvider,
         resetProvider,
         params,
