@@ -394,7 +394,6 @@ const App = () => {
                         },
                         []
                     );
-                    console.log('MMT', unavailableOptionalServices);
                     dispatch(
                         setUnavailableOptionalServices(
                             unavailableOptionalServices
