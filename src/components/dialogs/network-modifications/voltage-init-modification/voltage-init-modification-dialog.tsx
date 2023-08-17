@@ -191,7 +191,7 @@ const VoltageInitModificationDialog: FunctionComponent<
     }, []);
 
     function check(x: number | undefined) {
-        return x != null && 0 <= x;
+        return x != null && 0 <= Math.abs(x);
     }
 
     const displayTable = useCallback(
