@@ -15,10 +15,7 @@ import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertInvalidNode from './utils/alert-invalid-node';
-import {
-    UNAVAILABLE_OPTIONAL_SERVICES,
-    PARAM_DEVELOPER_MODE,
-} from '../utils/config-params';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './results/common/tab-panel-lazy';
@@ -32,6 +29,8 @@ import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import { OptionalServicesNames } from './utils/optional-services';
 import { isUnavailableService } from './utils/utils';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../redux/reducer.type';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -101,8 +100,8 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const intl = useIntl();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [unavailableOptionalServices] = useParameterState(
-        UNAVAILABLE_OPTIONAL_SERVICES
+    const unavailableOptionalServices = useSelector(
+        (state: ReduxState) => state.unavailableOptionalServices
     );
 
     const renderLoadFlowResult = useMemo(() => {

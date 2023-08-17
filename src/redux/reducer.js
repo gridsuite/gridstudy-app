@@ -120,7 +120,6 @@ import {
     PARAM_FLUX_CONVENTION,
     PARAM_DEVELOPER_MODE,
     PARAMS_LOADED,
-    UNAVAILABLE_OPTIONAL_SERVICES,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -150,7 +149,6 @@ const paramsInitialState = {
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
     [PARAMS_LOADED]: false,
-    [UNAVAILABLE_OPTIONAL_SERVICES]: [],
 };
 
 const initialComputingStatus = {
@@ -222,6 +220,7 @@ const initialState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     computingStatus: { ...initialComputingStatus },
+    unavailableOptionalServices: null,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode

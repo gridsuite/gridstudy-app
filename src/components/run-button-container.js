@@ -24,10 +24,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    UNAVAILABLE_OPTIONAL_SERVICES,
-    PARAM_DEVELOPER_MODE,
-} from '../utils/config-params';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
@@ -119,8 +116,8 @@ export function RunButtonContainer({
     const dispatch = useDispatch();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [unavailableOptionalServices] = useParameterState(
-        UNAVAILABLE_OPTIONAL_SERVICES
+    const [unavailableOptionalServices] = useSelector(
+        (state) => state.unavailableOptionalServices
     );
 
     const isModificationsInProgress = useSelector(

@@ -384,7 +384,6 @@ const App = () => {
                                 service.status === OptionalServicesStatus.Down
                             ) {
                                 accumulator.push({
-                                    ...service,
                                     name: getOptionalServiceByServerName(
                                         service.name
                                     ),
