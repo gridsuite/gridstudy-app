@@ -59,6 +59,7 @@ const DirectoryItemsInput = ({
         (values) => {
             values.forEach((value) => {
                 const { icon, children, ...otherElementAttributes } = value;
+
                 // check if element is already present
                 if (
                     getValues(name).find(

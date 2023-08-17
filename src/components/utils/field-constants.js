@@ -213,19 +213,23 @@ export const GENERATORS_WITH_FIXED_ACTIVE_POWER =
 export const GENERATORS_FREQUENCY_RESERVES = 'generatorsFrequencyReserve';
 export const GENERATORS_FILTERS = 'generatorsFilters';
 export const FREQUENCY_RESERVE = 'frequencyReserve';
+export const SUBSTATIONS_GENERATORS_ORDERING = 'substationsGeneratorsOrdering';
+export const SUBSTATION_IDS = 'substationIds';
 
 // voltage init
 export const VOLTAGE_LIMITS = 'voltageLimits';
 export const FIXED_GENERATORS = 'constantQGenerators';
 export const VARIABLE_TRANSFORMERS = 'variableTwoWindingsTransformers';
 export const VARIABLE_SHUNT_COMPENSATORS = 'variableShuntCompensators';
+export const RATIO_TAP_CHANGER_POSITION = 'ratioTapChangerPosition';
+export const LEG_SIDE = 'legSide';
 
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
 
 // HVDC deletion
-export const DELETION_SPECIFIC_DATA = 'specificEquipmentInfos';
+export const DELETION_SPECIFIC_DATA = 'equipmentInfos';
 export const DELETION_SPECIFIC_TYPE = 'specificType';
 export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
 export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
