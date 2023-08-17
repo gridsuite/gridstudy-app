@@ -21,6 +21,8 @@ import { FORM_LOADING_DELAY } from '../../../network/constants';
 import {
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_SET_POINT,
+    RATIO_TAP_CHANGER_POSITION,
+    LEG_SIDE,
 } from '../../../utils/field-constants';
 
 export const ALLOWED_KEYS = [
@@ -33,6 +35,7 @@ export const ALLOWED_KEYS = [
 
 export const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
+    TRANSFORMER_TAB: 1,
 };
 
 enum FetchStatus {
@@ -46,10 +49,16 @@ interface CloseFunction {
     (): void;
 }
 
-interface RowData {
+interface GeneratorRowData {
     ID: string;
     [VOLTAGE_SET_POINT]: number | undefined;
     [REACTIVE_POWER_SET_POINT]: number | undefined;
+}
+
+interface TransformerRowData {
+    ID: string;
+    [RATIO_TAP_CHANGER_POSITION]: number | undefined;
+    [LEG_SIDE]: number | undefined;
 }
 
 interface GeneratorData {
@@ -58,8 +67,15 @@ interface GeneratorData {
     reactivePowerSetpoint: number | undefined;
 }
 
+interface TransformerData {
+    transformerId: string;
+    ratioTapChangerPosition: number | undefined;
+    legSide: number | undefined;
+}
+
 interface EditData {
     generators: GeneratorData[];
+    transformers: TransformerData[];
 }
 
 interface VoltageInitModificationProps {
@@ -106,6 +122,30 @@ const VoltageInitModificationDialog: FunctionComponent<
         ];
     }, [intl]);
 
+    const transformersColumnDefs = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'ID' }),
+                field: 'ID',
+                pinned: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'RatioTapChangerPosition',
+                }),
+                field: RATIO_TAP_CHANGER_POSITION,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Leg' }),
+                field: LEG_SIDE,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+        ];
+    }, [intl]);
+
     const equipmentTabs = (
         <Box
             sx={{
@@ -121,6 +161,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                     onChange={(event, newValue) => handleTabChange(newValue)}
                 >
                     <Tab label={<FormattedMessage id="Generators" />} />
+                    <Tab label={<FormattedMessage id="Transformers" />} />
                 </Tabs>
             </Grid>
         </Box>
@@ -143,39 +184,85 @@ const VoltageInitModificationDialog: FunctionComponent<
         []
     );
 
+    const onGridReady = useCallback((params: any) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
+
+    function check(x: number | undefined) {
+        return x != null && 0 <= Math.abs(x);
+    }
+
     const displayTable = useCallback(
         (currentTab: number) => {
-            let rowData: RowData[] = [];
-            if (editData) {
-                if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
+            if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
+                let rowData: GeneratorRowData[] = [];
+                if (editData) {
                     editData.generators.forEach((m: GeneratorData) => {
-                        let row: RowData = {
+                        let row: GeneratorRowData = {
                             ID: m.generatorId,
                             [VOLTAGE_SET_POINT]: undefined,
                             [REACTIVE_POWER_SET_POINT]: undefined,
                         };
-                        if (m.voltageSetpoint) {
+                        if (check(m.voltageSetpoint)) {
                             row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
                         }
-                        if (m.reactivePowerSetpoint) {
+                        if (check(m.reactivePowerSetpoint)) {
                             row[REACTIVE_POWER_SET_POINT] =
                                 m.reactivePowerSetpoint;
                         }
                         rowData.push(row);
                     });
                 }
-            }
 
-            return (
-                <CustomAGGrid
-                    rowData={rowData}
-                    defaultColDef={defaultColDef}
-                    columnDefs={generatorsColumnDefs}
-                    rowSelection="single"
-                />
-            );
+                return (
+                    <CustomAGGrid
+                        rowData={rowData}
+                        defaultColDef={defaultColDef}
+                        columnDefs={generatorsColumnDefs}
+                        rowSelection="single"
+                        onGridReady={onGridReady}
+                    />
+                );
+            } else if (currentTab === EquipmentTypeTabs.TRANSFORMER_TAB) {
+                let rowData: TransformerRowData[] = [];
+                if (editData) {
+                    editData.transformers.forEach((m: TransformerData) => {
+                        let row: TransformerRowData = {
+                            ID: m.transformerId,
+                            [RATIO_TAP_CHANGER_POSITION]: undefined,
+                            [LEG_SIDE]: undefined,
+                        };
+                        if (check(m.ratioTapChangerPosition)) {
+                            row[RATIO_TAP_CHANGER_POSITION] =
+                                m.ratioTapChangerPosition;
+                        }
+                        if (m.legSide) {
+                            row[LEG_SIDE] = m.legSide;
+                        }
+                        rowData.push(row);
+                    });
+                }
+
+                return (
+                    <CustomAGGrid
+                        rowData={rowData}
+                        defaultColDef={defaultColDef}
+                        columnDefs={transformersColumnDefs}
+                        rowSelection="single"
+                        onGridReady={onGridReady}
+                    />
+                );
+            }
         },
-        [editData, generatorsColumnDefs, defaultColDef]
+        [
+            editData,
+            generatorsColumnDefs,
+            transformersColumnDefs,
+            defaultColDef,
+            onGridReady,
+        ]
     );
 
     const open: boolean = useOpenShortWaitFetching({
@@ -188,7 +275,6 @@ const VoltageInitModificationDialog: FunctionComponent<
     return (
         <BasicModificationDialog
             fullWidth
-            maxWidth="md"
             open={open}
             onClose={onClose}
             onClear={handleClear}
