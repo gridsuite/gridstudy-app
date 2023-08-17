@@ -77,11 +77,12 @@ export const SingleLineDiagramParameters = ({
                         [SubstationLayout.HORIZONTAL]:
                             'HorizontalSubstationLayout',
                         [SubstationLayout.VERTICAL]: 'VerticalSubstationLayout',
-                        [SubstationLayout.SMART]: 'SmartSubstationLayout',
-                        [SubstationLayout.SMARTHORIZONTALCOMPACTION]:
-                            'SmartWithHorizontalCompactionSubstationLayout',
-                        [SubstationLayout.SMARTVERTICALCOMPACTION]:
-                            'SmartWithVerticalCompactionSubstationLayout',
+                        // the following layouts are not yet supported
+                        //[SubstationLayout.SMART]: 'SmartSubstationLayout',
+                        //[SubstationLayout.SMARTHORIZONTALCOMPACTION]:
+                        //'SmartWithHorizontalCompactionSubstationLayout',
+                        //[SubstationLayout.SMARTVERTICALCOMPACTION]:
+                        //'SmartWithVerticalCompactionSubstationLayout',
                     }}
                 />
                 <LineSeparator />

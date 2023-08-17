@@ -75,6 +75,12 @@ interface VscConverterStationRowData {
     [REACTIVE_POWER_SET_POINT]: number | undefined;
 }
 
+interface TransformerRowData {
+    ID: string;
+    [RATIO_TAP_CHANGER_POSITION]: number | undefined;
+    [LEG_SIDE]: number | undefined;
+}
+
 interface GeneratorData {
     generatorId: string;
     voltageSetpoint: number | undefined;
@@ -266,6 +272,16 @@ const VoltageInitModificationDialog: FunctionComponent<
         []
     );
 
+    const onGridReady = useCallback((params: any) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
+
+    function check(x: number | undefined) {
+        return x != null && 0 <= Math.abs(x);
+    }
+
     const displayTable = useCallback(
         (currentTab: number) => {
             if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
@@ -277,10 +293,10 @@ const VoltageInitModificationDialog: FunctionComponent<
                             [VOLTAGE_SET_POINT]: undefined,
                             [REACTIVE_POWER_SET_POINT]: undefined,
                         };
-                        if (m.voltageSetpoint) {
+                        if (check(m.voltageSetpoint)) {
                             row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
                         }
-                        if (m.reactivePowerSetpoint) {
+                        if (check(m.reactivePowerSetpoint)) {
                             row[REACTIVE_POWER_SET_POINT] =
                                 m.reactivePowerSetpoint;
                         }
@@ -294,6 +310,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={generatorsColumnDefs}
                         rowSelection="single"
+                        onGridReady={onGridReady}
                     />
                 );
             } else if (currentTab === EquipmentTypeTabs.TRANSFORMER_TAB) {
@@ -305,7 +322,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                             [RATIO_TAP_CHANGER_POSITION]: undefined,
                             [LEG_SIDE]: undefined,
                         };
-                        if (m.ratioTapChangerPosition) {
+                        if (check(m.ratioTapChangerPosition)) {
                             row[RATIO_TAP_CHANGER_POSITION] =
                                 m.ratioTapChangerPosition;
                         }
@@ -322,6 +339,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={transformersColumnDefs}
                         rowSelection="single"
+                        onGridReady={onGridReady}
                     />
                 );
             } else if (
@@ -336,10 +354,10 @@ const VoltageInitModificationDialog: FunctionComponent<
                                 [VOLTAGE_SET_POINT]: undefined,
                                 [REACTIVE_POWER_SET_POINT]: undefined,
                             };
-                            if (m.voltageSetpoint) {
+                            if (check(m.voltageSetpoint)) {
                                 row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
                             }
-                            if (m.reactivePowerSetpoint) {
+                            if (check(m.reactivePowerSetpoint)) {
                                 row[REACTIVE_POWER_SET_POINT] =
                                     m.reactivePowerSetpoint;
                             }
@@ -354,6 +372,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={staticVarCompensatorsColumnDefs}
                         rowSelection="single"
+                        onGridReady={onGridReady}
                     />
                 );
             } else if (
@@ -368,10 +387,10 @@ const VoltageInitModificationDialog: FunctionComponent<
                                 [VOLTAGE_SET_POINT]: undefined,
                                 [REACTIVE_POWER_SET_POINT]: undefined,
                             };
-                            if (m.voltageSetpoint) {
+                            if (check(m.voltageSetpoint)) {
                                 row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
                             }
-                            if (m.reactivePowerSetpoint) {
+                            if (check(m.reactivePowerSetpoint)) {
                                 row[REACTIVE_POWER_SET_POINT] =
                                     m.reactivePowerSetpoint;
                             }
@@ -386,6 +405,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={vscConverterStationsColumnDefs}
                         rowSelection="single"
+                        onGridReady={onGridReady}
                     />
                 );
             }
@@ -397,6 +417,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             staticVarCompensatorsColumnDefs,
             vscConverterStationsColumnDefs,
             defaultColDef,
+            onGridReady,
         ]
     );
 
@@ -410,7 +431,6 @@ const VoltageInitModificationDialog: FunctionComponent<
     return (
         <BasicModificationDialog
             fullWidth
-            maxWidth="md"
             open={open}
             onClose={onClose}
             onClear={handleClear}
