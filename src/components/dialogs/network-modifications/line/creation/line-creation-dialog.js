@@ -144,7 +144,11 @@ const LineCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, formState : {errors, isSubmitting} } = formMethods;
+    const {
+        reset,
+        setValue,
+        formState: { errors, isSubmitting },
+    } = formMethods;
 
     const fromSearchCopyToFormValues = (line) => {
         reset(

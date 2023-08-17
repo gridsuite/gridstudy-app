@@ -11,11 +11,10 @@ import React from 'react';
 
 const ErrorInput = ({ name, InputField }) => {
     const {
-        fieldState: { error }
+        fieldState: { error },
     } = useController({
         name,
     });
-
 
     const errorProps = (errorMsg) => {
         if (typeof errorMsg === 'string') {
