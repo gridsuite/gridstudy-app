@@ -918,6 +918,10 @@
     "TargetVPoint3": "Consigne tension (KV) 3",
     "VoltageSetpointKV": "Consigne tension (KV)",
     "ReactivePowerSetpointMVAR": "Consigne de reactif (MVAR)",
+    "RatioTapChangerPosition": "Prise régleur",
+    "Leg": "Enroulement",
+    "Transformers": "Transformateurs",
+
     "EmptyList/bbs": "La liste de jeux de barres est vide",
     "EmptyList/connections": "La liste de connexions est vide",
     "EmptyList/variations": "La liste des variations est vide",
