@@ -59,9 +59,7 @@ import {
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
 
-import {
-    getOptionalServices,
-} from '../utils/rest-api';
+import { getOptionalServices } from '../services/study/index';
 import {
     APP_NAME,
     COMMON_APP_NAME,
