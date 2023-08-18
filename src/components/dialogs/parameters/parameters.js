@@ -306,7 +306,7 @@ export const useParametersBackend = (
     const resetProvider = useCallback(() => {
         backendFetchDefaultProvider()
             .then((defaultProvider) => {
-                const providerNames = Object.keys(provider);
+                const providerNames = Object.keys(providersRef.current);
                 if (providerNames.length > 0) {
                     const newProvider =
                         defaultProvider in providersRef.current
@@ -423,7 +423,7 @@ export const useParametersBackend = (
                         });
                     });
             }
-            if (fetching === FETCHING_STATUS.FINISHED) {
+            if (fetching === FETCHING_STATUS.FINISHED && !provider) {
                 backendFetchProvider(studyUuid)
                     .then((provider) => {
                         // if provider is not defined or not among allowed values, it's set to default value
@@ -464,6 +464,7 @@ export const useParametersBackend = (
         resetProvider,
         setParams,
         fetching,
+        provider,
     ]);
 
     return [
