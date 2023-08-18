@@ -144,7 +144,7 @@ const ShuntCompensatorModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode?.id,
-                    EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
+                    EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -257,7 +257,7 @@ const ShuntCompensatorModificationDialog = ({
                         currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type}
+                        equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR}
                         fillerHeight={5}
                     />
                 )}

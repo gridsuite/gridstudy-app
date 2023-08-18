@@ -26,7 +26,7 @@ import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
 import { fetchElementsMetadata } from '../../../../../services/explore';
 
-const GENERATORS = [EQUIPMENT_TYPES.GENERATOR.type];
+const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 
 const VariationForm = ({ name, index }) => {
     const { snackError } = useSnackMessage();

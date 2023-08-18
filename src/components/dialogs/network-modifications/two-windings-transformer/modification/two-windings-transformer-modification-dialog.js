@@ -679,7 +679,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -793,9 +793,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={
-                            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
-                        }
+                        equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
                     />
                 )}
                 {selectedId != null && (

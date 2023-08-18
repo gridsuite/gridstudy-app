@@ -217,7 +217,7 @@ const SubstationModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    EQUIPMENT_TYPES.SUBSTATION.type,
+                    EQUIPMENT_TYPES.SUBSTATION,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -312,7 +312,7 @@ const SubstationModificationDialog = ({
                         currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.SUBSTATION.type}
+                        equipmentType={EQUIPMENT_TYPES.SUBSTATION}
                         fillerHeight={5}
                     />
                 )}

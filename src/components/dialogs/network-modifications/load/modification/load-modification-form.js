@@ -49,7 +49,7 @@ const LoadModificationForm = ({
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNodeUuid,
-                EQUIPMENT_TYPES.LOAD.type,
+                EQUIPMENT_TYPES.LOAD,
                 EQUIPMENT_INFOS_TYPES.FORM.type,
                 equipmentId,
                 true

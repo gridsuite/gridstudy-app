@@ -272,7 +272,7 @@ const NetworkMap = (props) => {
                         equipmentInfos={tooltip.equipmentInfos}
                         anchorEl={divRef.current}
                         equipmentId={tooltip.equipmentId}
-                        equipmentType={EQUIPMENT_TYPES.LINE.type}
+                        equipmentType={EQUIPMENT_TYPES.LINE}
                         loadFlowStatus={props.loadFlowStatus}
                     />
                 </div>

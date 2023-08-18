@@ -33,7 +33,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
                 studyUuid,
                 currentNode?.id,
                 undefined,
-                EQUIPMENT_TYPES.LINE.type,
+                EQUIPMENT_TYPES.LINE,
                 true
             )
                 .then((values) => {
