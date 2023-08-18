@@ -25,6 +25,7 @@ import { ResultsTabsLevel, useResultsTab } from './results/use-results-tab';
 //import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
+import { SecurityAnalysisTab } from './results/securityanalysis/security-analysis-tab';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -93,7 +94,7 @@ export const ResultViewTab = ({
     function renderSecurityAnalysisResult() {
         return (
             <Paper className={classes.table}>
-                <SecurityAnalysisResultTab
+                <SecurityAnalysisTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}

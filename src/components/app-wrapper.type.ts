@@ -12,4 +12,9 @@ export interface GridStudyTheme extends DefaultTheme {
     selectedRow: {
         background: string;
     };
+
+    spacing(number: number): (props: {}) => number;
+    link: {
+        color: string;
+    };
 }

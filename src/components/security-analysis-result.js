@@ -126,6 +126,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     );
     function renderTableN(preContingencyResult) {
         // extend data with loading
+        console.log('preContingencyResult : ', preContingencyResult);
+
         const rows =
             preContingencyResult?.limitViolationsResult?.limitViolations?.map(
                 (limitViolation) => {
@@ -337,6 +339,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         [theme.selectedRow.background]
     );
     function renderTableNmKContingencies(postContingencyResults) {
+        console.log('postContingencyResults : ', postContingencyResults);
         const rows = flattenNmKresultsContingencies(postContingencyResults);
         const message = getNoRowsMessage(
             messages,
@@ -497,6 +500,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     }, [intl, SubjectIdRenderer]);
 
     function renderTableNmKConstraints(postContingencyResults) {
+        console.log('postContingencyResults nmk: ', postContingencyResults);
         const rows = flattenNmKresultsConstraints(postContingencyResults);
         const message = getNoRowsMessage(
             messages,
