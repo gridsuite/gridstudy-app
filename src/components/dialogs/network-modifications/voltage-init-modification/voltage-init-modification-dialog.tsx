@@ -272,7 +272,7 @@ const VoltageInitModificationDialog: FunctionComponent<
         []
     );
 
-    const onGridReady = useCallback((params: any) => {
+    const onRowDataUpdated = useCallback((params: any) => {
         if (params.api) {
             params.api.sizeColumnsToFit();
         }
@@ -310,7 +310,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={generatorsColumnDefs}
                         rowSelection="single"
-                        onGridReady={onGridReady}
+                        onRowDataUpdated={onRowDataUpdated}
                     />
                 );
             } else if (currentTab === EquipmentTypeTabs.TRANSFORMER_TAB) {
@@ -339,7 +339,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={transformersColumnDefs}
                         rowSelection="single"
-                        onGridReady={onGridReady}
+                        onRowDataUpdated={onRowDataUpdated}
                     />
                 );
             } else if (
@@ -372,7 +372,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={staticVarCompensatorsColumnDefs}
                         rowSelection="single"
-                        onGridReady={onGridReady}
+                        onRowDataUpdated={onRowDataUpdated}
                     />
                 );
             } else if (
@@ -405,7 +405,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={vscConverterStationsColumnDefs}
                         rowSelection="single"
-                        onGridReady={onGridReady}
+                        onRowDataUpdated={onRowDataUpdated}
                     />
                 );
             }
@@ -417,7 +417,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             staticVarCompensatorsColumnDefs,
             vscConverterStationsColumnDefs,
             defaultColDef,
-            onGridReady,
+            onRowDataUpdated,
         ]
     );
 
@@ -431,6 +431,7 @@ const VoltageInitModificationDialog: FunctionComponent<
     return (
         <BasicModificationDialog
             fullWidth
+            maxWidth="md"
             open={open}
             onClose={onClose}
             onClear={handleClear}
