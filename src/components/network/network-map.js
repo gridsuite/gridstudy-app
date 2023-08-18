@@ -16,7 +16,7 @@ import {
 import { FlyToInterpolator } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
 
-import { makeStyles, useTheme } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import { decomposeColor } from '@mui/material/styles';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 
@@ -28,7 +28,7 @@ import { RunningStatus } from '../utils/running-status';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { Button } from '@mui/material';
+import { Button, useTheme } from '@mui/material';
 import { PARAM_MAP_MANUAL_REFRESH } from '../../utils/config-params';
 import { isNodeBuilt } from '../graph/util/model-functions';
 import MapEquipments from './map-equipments';

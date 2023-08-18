@@ -7,7 +7,7 @@
 
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
 import {
