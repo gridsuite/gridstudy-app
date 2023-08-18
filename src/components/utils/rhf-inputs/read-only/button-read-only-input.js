@@ -9,7 +9,7 @@ import { useController } from 'react-hook-form';
 import { InputAdornment, TextField } from '@mui/material';
 import { genHelperError } from '../../inputs/hooks-helpers';
 import PropTypes from 'prop-types';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material';
 
 export function ButtonReadOnlyInput({ name, isNumerical = false, children }) {
     const theme = useTheme();
