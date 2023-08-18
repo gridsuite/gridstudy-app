@@ -1,3 +1,6 @@
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../redux/reducer.type';
+
 export enum OptionalServicesNames {
     SecurityAnalysis = 'SecurityAnalysis',
     SensitivityAnalysis = 'SensitivityAnalysis',
@@ -26,4 +29,15 @@ export const getOptionalServiceByServerName = (
         default:
             return;
     }
+};
+export const useServiceUnavailabilty = (
+    serviceName: OptionalServicesNames
+): boolean | null => {
+    const unavailableOptionalServices = useSelector(
+        (state: ReduxState) => state.unavailableOptionalServices
+    );
+    return (
+        unavailableOptionalServices &&
+        unavailableOptionalServices.includes(serviceName)
+    );
 };

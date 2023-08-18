@@ -75,8 +75,10 @@ import {
     setSecurityAnalysisParameters,
     updateSecurityAnalysisProvider,
 } from '../../../services/study/security-analysis';
-import { OptionalServicesNames } from '../../utils/optional-services';
-import { isUnavailableService } from '../../utils/utils';
+import {
+    OptionalServicesNames,
+    useServiceUnavailabilty,
+} from '../../utils/optional-services';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -525,8 +527,21 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const unavailableOptionalServices = useSelector(
-        (state) => state.unavailableOptionalServices
+
+    const securityAnalysisUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.SecurityAnalysis
+    );
+    const sensitivityAnalysisUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.SensitivityAnalysis
+    );
+    const dynamicSimulationUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.DynamicSimulation
+    );
+    const voltageInitUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.VoltageInit
+    );
+    const shortCircuitUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.ShortCircuit
     );
 
     const loadFlowParametersBackend = useParametersBackend(
@@ -543,10 +558,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
-        isUnavailableService(
-            unavailableOptionalServices,
-            OptionalServicesNames.SecurityAnalysis
-        ),
+        securityAnalysisUnavailability,
         user,
         'SecurityAnalysis',
         fetchSecurityAnalysisProviders,
@@ -558,10 +570,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const sensitivityAnalysisParametersBackend = useParametersBackend(
-        isUnavailableService(
-            unavailableOptionalServices,
-            OptionalServicesNames.SensitivityAnalysis
-        ),
+        sensitivityAnalysisUnavailability,
         user,
         'SensitivityAnalysis',
         fetchSensitivityAnalysisProviders,
@@ -630,10 +639,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             label={<FormattedMessage id="LoadFlow" />}
                             value={TAB_VALUES.lfParamsTabValue}
                         />
-                        {!isUnavailableService(
-                            unavailableOptionalServices,
-                            OptionalServicesNames.SecurityAnalysis
-                        ) && (
+                        {!securityAnalysisUnavailability && (
                             <Tab
                                 disabled={!studyUuid}
                                 label={
@@ -644,10 +650,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 }
                             />
                         )}
-                        {!isUnavailableService(
-                            unavailableOptionalServices,
-                            OptionalServicesNames.SensitivityAnalysis
-                        ) && (
+                        {!sensitivityAnalysisUnavailability && (
                             <Tab
                                 disabled={!studyUuid}
                                 label={
@@ -658,25 +661,14 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 }
                             />
                         )}
-                        {!isUnavailableService(
-                            unavailableOptionalServices,
-                            OptionalServicesNames.ShortCircuit
-                        ) &&
-                            enableDeveloperMode && (
-                                <Tab
-                                    disabled={!studyUuid}
-                                    label={
-                                        <FormattedMessage id="ShortCircuit" />
-                                    }
-                                    value={
-                                        TAB_VALUES.shortCircuitParamsTabValue
-                                    }
-                                />
-                            )}
-                        {!isUnavailableService(
-                            unavailableOptionalServices,
-                            OptionalServicesNames.DynamicSimulation
-                        ) &&
+                        {!shortCircuitUnavailability && enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={<FormattedMessage id="ShortCircuit" />}
+                                value={TAB_VALUES.shortCircuitParamsTabValue}
+                            />
+                        )}
+                        {!dynamicSimulationUnavailability &&
                             enableDeveloperMode && (
                                 <Tab
                                     disabled={!studyUuid}
@@ -688,19 +680,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     }
                                 />
                             )}
-                        {!isUnavailableService(
-                            unavailableOptionalServices,
-                            OptionalServicesNames.VoltageInit
-                        ) &&
-                            enableDeveloperMode && (
-                                <Tab
-                                    disabled={!studyUuid}
-                                    label={
-                                        <FormattedMessage id="VoltageInit" />
-                                    }
-                                    value={TAB_VALUES.voltageInitParamsTabValue}
-                                />
-                            )}
+                        {!voltageInitUnavailability && enableDeveloperMode && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={<FormattedMessage id="VoltageInit" />}
+                                value={TAB_VALUES.voltageInitParamsTabValue}
+                            />
+                        )}
                         <Tab
                             label={<FormattedMessage id="Advanced" />}
                             value={TAB_VALUES.advancedParamsTabValue}
@@ -737,10 +723,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 />
                             )}
                         </TabPanel>
-                        {!isUnavailableService(
-                            unavailableOptionalServices,
-                            OptionalServicesNames.SecurityAnalysis
-                        ) && (
+                        {!securityAnalysisUnavailability && (
                             <TabPanel
                                 value={tabValue}
                                 index={
@@ -758,10 +741,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 )}
                             </TabPanel>
                         )}
-                        {!isUnavailableService(
-                            unavailableOptionalServices,
-                            OptionalServicesNames.SensitivityAnalysis
-                        ) && (
+                        {!sensitivityAnalysisUnavailability && (
                             <TabPanel
                                 value={tabValue}
                                 index={
@@ -779,10 +759,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 )}
                             </TabPanel>
                         )}
-                        {!isUnavailableService(
-                            unavailableOptionalServices,
-                            OptionalServicesNames.ShortCircuit
-                        ) &&
+                        {!shortCircuitUnavailability &&
                             //To be removed when ShortCircuit is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel
@@ -802,10 +779,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     )}
                                 </TabPanel>
                             )}
-                        {!isUnavailableService(
-                            unavailableOptionalServices,
-                            OptionalServicesNames.DynamicSimulation
-                        ) &&
+                        {!dynamicSimulationUnavailability &&
                             //To be removed when DynamicSimulation is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel
@@ -822,10 +796,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     )}
                                 </TabPanel>
                             )}
-                        {!isUnavailableService(
-                            unavailableOptionalServices,
-                            OptionalServicesNames.VoltageInit
-                        ) &&
+                        {!voltageInitUnavailability &&
                             //To be removed when DynamicSimulation is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel

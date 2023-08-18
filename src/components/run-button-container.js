@@ -52,8 +52,10 @@ import {
     startVoltageInit,
     stopVoltageInit,
 } from '../services/study/voltage-init';
-import { OptionalServicesNames } from './utils/optional-services';
-import { isUnavailableService } from './utils/utils';
+import {
+    OptionalServicesNames,
+    useServiceUnavailabilty,
+} from './utils/optional-services';
 
 export function RunButtonContainer({
     studyUuid,
@@ -116,12 +118,25 @@ export function RunButtonContainer({
     const dispatch = useDispatch();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const unavailableOptionalServices = useSelector(
-        (state) => state.unavailableOptionalServices
-    );
 
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
+    );
+
+    const securityAnalysisUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.SecurityAnalysis
+    );
+    const sensitivityAnalysisUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.SensitivityAnalysis
+    );
+    const dynamicSimulationUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.DynamicSimulation
+    );
+    const voltageInitUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.VoltageInit
+    );
+    const shortCircuitUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.ShortCircuit
     );
 
     const runnable = useMemo(() => {
@@ -457,38 +472,31 @@ export function RunButtonContainer({
     const runnables = useMemo(() => {
         return [
             runnable[ComputingType.LOADFLOW],
-            ...(!isUnavailableService(
-                unavailableOptionalServices,
-                OptionalServicesNames.SecurityAnalysis
-            )
+            ...(!securityAnalysisUnavailability
                 ? [runnable[ComputingType.SECURITY_ANALYSIS]]
                 : []),
-            ...(!isUnavailableService(
-                unavailableOptionalServices,
-                OptionalServicesNames.SensitivityAnalysis
-            )
+            ...(!sensitivityAnalysisUnavailability
                 ? [runnable[ComputingType.SENSITIVITY_ANALYSIS]]
                 : []),
-            ...(!isUnavailableService(
-                unavailableOptionalServices,
-                OptionalServicesNames.ShortCircuit
-            ) && enableDeveloperMode
+            ...(!shortCircuitUnavailability && enableDeveloperMode
                 ? [runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]]
                 : []),
-            ...(!isUnavailableService(
-                unavailableOptionalServices,
-                OptionalServicesNames.DynamicSimulation
-            ) && enableDeveloperMode
+            ...(!dynamicSimulationUnavailability && enableDeveloperMode
                 ? [runnable[ComputingType.DYNAMIC_SIMULATION]]
                 : []),
-            ...(!isUnavailableService(
-                unavailableOptionalServices,
-                OptionalServicesNames.VoltageInit
-            ) && enableDeveloperMode
+            ...(!voltageInitUnavailability && enableDeveloperMode
                 ? [runnable[ComputingType.VOLTAGE_INIT]]
                 : []),
         ];
-    }, [unavailableOptionalServices, runnable, enableDeveloperMode]);
+    }, [
+        dynamicSimulationUnavailability,
+        securityAnalysisUnavailability,
+        sensitivityAnalysisUnavailability,
+        shortCircuitUnavailability,
+        voltageInitUnavailability,
+        runnable,
+        enableDeveloperMode,
+    ]);
 
     useEffect(() => {
         setIsComputationRunning(

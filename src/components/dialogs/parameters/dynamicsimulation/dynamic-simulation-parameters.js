@@ -31,9 +31,10 @@ import {
     updateDynamicSimulationParameters,
     updateDynamicSimulationProvider,
 } from '../../../../services/study/dynamic-simulation';
-import { isUnavailableService } from '../../../utils/utils';
-import { OptionalServicesNames } from '../../../utils/optional-services';
-import { useSelector } from 'react-redux';
+import {
+    OptionalServicesNames,
+    useServiceUnavailabilty,
+} from '../../../utils/optional-services';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',
@@ -45,8 +46,9 @@ const TAB_VALUES = {
 
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const classes = useStyles();
-    const unavailableOptionalServices = useSelector(
-        (state) => state.unavailableOptionalServices
+
+    const dynamicSimulationUnavailability = useServiceUnavailabilty(
+        OptionalServicesNames.DynamicSimulation
     );
 
     const [
@@ -58,10 +60,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         updateParameters,
         resetParameters,
     ] = useParametersBackend(
-        isUnavailableService(
-            unavailableOptionalServices,
-            OptionalServicesNames.DynamicSimulation
-        ),
+        dynamicSimulationUnavailability,
         user,
         'DynamicSimulation',
         fetchDynamicSimulationProviders,

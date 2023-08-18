@@ -216,8 +216,3 @@ export const replaceAllDefaultValues = (arrayParams, oldValue, newValue) => {
         }, [])
     );
 };
-export const isUnavailableService = (unavailableOptionalServices, tab) => {
-    return (
-        unavailableOptionalServices && unavailableOptionalServices.includes(tab)
-    );
-};
