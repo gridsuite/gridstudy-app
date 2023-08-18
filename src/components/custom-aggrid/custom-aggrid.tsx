@@ -6,7 +6,8 @@
  */
 
 import React, { useCallback } from 'react';
-import { makeStyles, useTheme } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
+import { useTheme } from '@mui/material';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import clsx from 'clsx';
 import { useIntl } from 'react-intl';
