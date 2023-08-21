@@ -47,7 +47,7 @@ import {
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import { GridStudyTheme } from '../../app-wrapper.type';
+import { Theme } from '@mui/material';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -55,7 +55,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     nodeUuid,
     tabIndex,
 }) => {
-    const useStyles = makeStyles<GridStudyTheme>((theme) => ({
+    const useStyles = makeStyles<Theme>((theme) => ({
         cell: {
             display: 'flex',
             alignItems: 'center',
@@ -72,7 +72,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         },
     }));
     const classes = useStyles();
-    const theme: GridStudyTheme = useTheme();
+    const theme = useTheme();
     const intl = useIntl();
 
     const [overloadedEquipments, setOverloadedEquipments] = useState<

@@ -15,10 +15,10 @@ import { FormattedMessage } from 'react-intl';
 
 import { SecurityAnalysisTableN } from './security-analysis-result-tableN';
 import makeStyles from '@mui/styles/makeStyles';
-import { GridStudyTheme } from '../../app-wrapper.type';
+import { Theme } from '@mui/material';
 import { SecurityAnalysisResultTableNmK } from './security-analysis-result-tableNmK';
 import { NMK_TYPE_RESULT } from './security-analysis-result-utils';
-const useStyles = makeStyles<GridStudyTheme>((theme) => ({
+const useStyles = makeStyles<Theme>((theme) => ({
     container: {
         display: 'flex',
         position: 'relative',
@@ -36,7 +36,7 @@ const useStyles = makeStyles<GridStudyTheme>((theme) => ({
         color: theme.link.color,
     },
 }));
-export const SecurityAnalusisResult: FunctionComponent<
+export const SecurityAnalysisResult: FunctionComponent<
     SecurityAnalysisResultProps
 > = ({ result, onClickNmKConstraint }) => {
     const classes = useStyles();

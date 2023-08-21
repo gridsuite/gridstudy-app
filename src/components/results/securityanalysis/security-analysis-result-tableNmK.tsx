@@ -12,7 +12,7 @@ import {
     PostContingencyResultProps,
     ResultConstraint,
 } from './security-analysis.type';
-import { GridStudyTheme } from '../../app-wrapper.type';
+import { Theme } from '@mui/material';
 import { useTheme } from '@mui/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { IntlShape, useIntl } from 'react-intl';
@@ -44,8 +44,8 @@ import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 export const SecurityAnalysisResultTableNmK: FunctionComponent<
     PostContingencyResultProps
 > = ({ postContingencyResults, onClickNmKConstraint, nmkTypeResult }) => {
-    const theme: GridStudyTheme = useTheme();
-    const useStyles = makeStyles<GridStudyTheme>((theme) => ({
+    const theme = useTheme();
+    const useStyles = makeStyles<Theme>((theme) => ({
         button: {
             color: theme.link.color,
         },

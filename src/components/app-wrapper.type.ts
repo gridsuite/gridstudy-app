@@ -5,16 +5,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DefaultTheme } from '@mui/styles';
+import { Theme } from '@mui/material/styles';
 
-export interface GridStudyTheme extends DefaultTheme {
-    aggrid: string;
-    selectedRow: {
-        background: string;
-    };
+// used to customize mui theme
+// https://mui.com/material-ui/customization/theming/#typescript
+declare module '@mui/material/styles' {
+    interface Theme {
+        aggrid: string;
+        selectedRow: {
+            background: string;
+        };
+        link: {
+            color: string;
+        };
+    }
 
-    spacing(number: number): (props: {}) => number;
-    link: {
-        color: string;
-    };
+    interface ThemeOptions {
+        aggrid: string;
+        selectedRow: {
+            background: string;
+        };
+        link: {
+            color: string;
+        };
+    }
+}
+
+// used to accept properties from muiV4 like spacing, palette...
+// https://mui.com/material-ui/migration/troubleshooting/#types-property-quot-palette-quot-quot-spacing-quot-does-not-exist-on-type-defaulttheme
+declare module '@mui/styles/defaultTheme' {
+    interface DefaultTheme extends Theme {}
 }

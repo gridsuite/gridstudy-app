@@ -12,7 +12,7 @@ import { FormattedMessage } from 'react-intl/lib';
 import makeStyles from '@mui/styles/makeStyles';
 import { green, red } from '@mui/material/colors';
 import { LoadflowResultProps } from './load-flow-result.type';
-import { GridStudyTheme } from '../../app-wrapper.type';
+import { Theme } from '@mui/material';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
 import { fetchLoadFlowResult } from '../../../services/study/loadflow';
@@ -22,7 +22,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadflowResultProps> = ({
     studyUuid,
     nodeUuid,
 }) => {
-    const useStyles = makeStyles<GridStudyTheme>((theme) => ({
+    const useStyles = makeStyles<Theme>((theme) => ({
         cell: {
             display: 'flex',
             alignItems: 'center',
