@@ -39,7 +39,9 @@ export const recreateStudyNetworkFromExistingCase = (
     });
 };
 
-export const recreateStudyNetwork = (studyUuid: UUID): Promise<BasicStudyInfos> => {
+export const recreateStudyNetwork = (
+    studyUuid: UUID
+): Promise<BasicStudyInfos> => {
     const recreateStudyUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +

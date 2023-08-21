@@ -514,7 +514,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         recreateStudyNetwork(studyUuid)
                             .then(() => {
                                 snackError({
-                                    headerId: 'reimportingNetworkStudy',
+                                    headerId: 'recreatingNetworkStudy',
                                 });
                             })
                             .catch((error) => {
@@ -531,7 +531,7 @@ export function StudyContainer({ view, onChangeTab }) {
                                     // unknown error when trying to recreate network from study case
                                     setErrorMessage(
                                         intlRef.current.formatMessage({
-                                            id: 'networkReimportError',
+                                            id: 'networkRecreationError',
                                         })
                                     );
                                 }

@@ -79,7 +79,7 @@ export const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'networkReimportError',
+                        headerId: 'networkRecreationError',
                     });
                 });
         }
