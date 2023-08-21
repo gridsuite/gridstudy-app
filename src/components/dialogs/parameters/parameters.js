@@ -77,7 +77,8 @@ import {
 } from '../../../services/study/security-analysis';
 import {
     OptionalServicesNames,
-    useServiceUnavailabilty,
+    OptionalServicesStatus,
+    useServiceAvailabilityStatus,
 } from '../../utils/optional-services';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
@@ -244,7 +245,7 @@ export const TabPanel = (props) => {
 const INITIAL_PROVIDERS = {};
 
 export const useParametersBackend = (
-    isUnavailable,
+    parameterAvailabilityStatus,
     user,
     type,
     backendFetchProviders,
@@ -381,7 +382,10 @@ export const useParametersBackend = (
     );
 
     useEffect(() => {
-        if (user !== null && isUnavailable !== null && !isUnavailable) {
+        if (
+            user !== null &&
+            parameterAvailabilityStatus === OptionalServicesStatus.Up
+        ) {
             backendFetchProviders()
                 .then((providers) => {
                     // we can consider the provider gotten from back will be also used as
@@ -399,7 +403,13 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [user, backendFetchProviders, type, snackError, isUnavailable]);
+    }, [
+        user,
+        backendFetchProviders,
+        type,
+        snackError,
+        parameterAvailabilityStatus,
+    ]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -528,24 +538,24 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const securityAnalysisUnavailability = useServiceUnavailabilty(
+    const securityAnalysisAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.SecurityAnalysis
     );
-    const sensitivityAnalysisUnavailability = useServiceUnavailabilty(
+    const sensitivityAnalysisAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
-    const dynamicSimulationUnavailability = useServiceUnavailabilty(
+    const dynamicSimulationAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.DynamicSimulation
     );
-    const voltageInitUnavailability = useServiceUnavailabilty(
+    const voltageInitAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.VoltageInit
     );
-    const shortCircuitUnavailability = useServiceUnavailabilty(
+    const shortCircuitAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.ShortCircuit
     );
 
     const loadFlowParametersBackend = useParametersBackend(
-        false,
+        OptionalServicesStatus.Up,
         user,
         'LoadFlow',
         getLoadFlowProviders,
@@ -558,7 +568,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
-        securityAnalysisUnavailability,
+        securityAnalysisAvailability,
         user,
         'SecurityAnalysis',
         fetchSecurityAnalysisProviders,
@@ -570,7 +580,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const sensitivityAnalysisParametersBackend = useParametersBackend(
-        sensitivityAnalysisUnavailability,
+        sensitivityAnalysisAvailability,
         user,
         'SensitivityAnalysis',
         fetchSensitivityAnalysisProviders,
@@ -639,7 +649,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             label={<FormattedMessage id="LoadFlow" />}
                             value={TAB_VALUES.lfParamsTabValue}
                         />
-                        {!securityAnalysisUnavailability && (
+                        {securityAnalysisAvailability ===
+                            OptionalServicesStatus.Up && (
                             <Tab
                                 disabled={!studyUuid}
                                 label={
@@ -650,7 +661,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 }
                             />
                         )}
-                        {!sensitivityAnalysisUnavailability && (
+                        {sensitivityAnalysisAvailability ===
+                            OptionalServicesStatus.Up && (
                             <Tab
                                 disabled={!studyUuid}
                                 label={
@@ -661,14 +673,21 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 }
                             />
                         )}
-                        {!shortCircuitUnavailability && enableDeveloperMode && (
-                            <Tab
-                                disabled={!studyUuid}
-                                label={<FormattedMessage id="ShortCircuit" />}
-                                value={TAB_VALUES.shortCircuitParamsTabValue}
-                            />
-                        )}
-                        {!dynamicSimulationUnavailability &&
+                        {shortCircuitAvailability ===
+                            OptionalServicesStatus.Up &&
+                            enableDeveloperMode && (
+                                <Tab
+                                    disabled={!studyUuid}
+                                    label={
+                                        <FormattedMessage id="ShortCircuit" />
+                                    }
+                                    value={
+                                        TAB_VALUES.shortCircuitParamsTabValue
+                                    }
+                                />
+                            )}
+                        {dynamicSimulationAvailability ===
+                            OptionalServicesStatus.Up &&
                             enableDeveloperMode && (
                                 <Tab
                                     disabled={!studyUuid}
@@ -680,13 +699,17 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     }
                                 />
                             )}
-                        {!voltageInitUnavailability && enableDeveloperMode && (
-                            <Tab
-                                disabled={!studyUuid}
-                                label={<FormattedMessage id="VoltageInit" />}
-                                value={TAB_VALUES.voltageInitParamsTabValue}
-                            />
-                        )}
+                        {voltageInitAvailability ===
+                            OptionalServicesStatus.Up &&
+                            enableDeveloperMode && (
+                                <Tab
+                                    disabled={!studyUuid}
+                                    label={
+                                        <FormattedMessage id="VoltageInit" />
+                                    }
+                                    value={TAB_VALUES.voltageInitParamsTabValue}
+                                />
+                            )}
                         <Tab
                             label={<FormattedMessage id="Advanced" />}
                             value={TAB_VALUES.advancedParamsTabValue}
@@ -723,7 +746,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 />
                             )}
                         </TabPanel>
-                        {!securityAnalysisUnavailability && (
+                        {securityAnalysisAvailability ===
+                            OptionalServicesStatus.Up && (
                             <TabPanel
                                 value={tabValue}
                                 index={
@@ -741,7 +765,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 )}
                             </TabPanel>
                         )}
-                        {!sensitivityAnalysisUnavailability && (
+                        {sensitivityAnalysisAvailability ===
+                            OptionalServicesStatus.Up && (
                             <TabPanel
                                 value={tabValue}
                                 index={
@@ -759,7 +784,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 )}
                             </TabPanel>
                         )}
-                        {!shortCircuitUnavailability &&
+                        {shortCircuitAvailability ===
+                            OptionalServicesStatus.Up &&
                             //To be removed when ShortCircuit is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel
@@ -779,7 +805,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     )}
                                 </TabPanel>
                             )}
-                        {!dynamicSimulationUnavailability &&
+                        {dynamicSimulationAvailability ===
+                            OptionalServicesStatus.Up &&
                             //To be removed when DynamicSimulation is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel
@@ -796,7 +823,8 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     )}
                                 </TabPanel>
                             )}
-                        {!voltageInitUnavailability &&
+                        {voltageInitAvailability ===
+                            OptionalServicesStatus.Up &&
                             //To be removed when DynamicSimulation is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel

@@ -8,10 +8,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    getOptionalServiceByServerName,
-    OptionalServicesStatus,
-} from './utils/optional-services';
+import { getOptionalServiceByServerName } from './utils/optional-services';
 import {
     Navigate,
     Route,
@@ -438,18 +435,15 @@ const App = () => {
 
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
-                    const unavailableOptionalServices = services.reduce(
-                        (accumulator, service) => {
-                            if (
-                                service.status === OptionalServicesStatus.Down
-                            ) {
-                                accumulator.push(
-                                    getOptionalServiceByServerName(service.name)
-                                );
-                            }
-                            return accumulator;
-                        },
-                        []
+                    const unavailableOptionalServices = services.map(
+                        (service) => {
+                            return {
+                                ...service,
+                                name: getOptionalServiceByServerName(
+                                    service.name
+                                ),
+                            };
+                        }
                     );
                     dispatch(
                         setUnavailableOptionalServices(

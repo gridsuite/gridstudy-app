@@ -12,6 +12,11 @@ export enum OptionalServicesStatus {
     Up = 'UP',
     Down = 'DOWN',
 }
+
+export interface IOptionalService {
+    name: OptionalServicesNames;
+    status: OptionalServicesStatus;
+}
 export const getOptionalServiceByServerName = (
     serverName: string
 ): OptionalServicesNames | undefined => {
@@ -30,14 +35,14 @@ export const getOptionalServiceByServerName = (
             return;
     }
 };
-export const useServiceUnavailabilty = (
+export const useServiceAvailabilityStatus = (
     serviceName: OptionalServicesNames
-): boolean | null => {
+): OptionalServicesStatus | undefined => {
     const unavailableOptionalServices = useSelector(
         (state: ReduxState) => state.unavailableOptionalServices
     );
-    return (
-        unavailableOptionalServices &&
-        unavailableOptionalServices.includes(serviceName)
+    const optionalService = unavailableOptionalServices?.find(
+        (service) => service.name === serviceName
     );
+    return optionalService?.status;
 };

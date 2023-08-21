@@ -33,7 +33,7 @@ import {
 } from '../../../../services/study/dynamic-simulation';
 import {
     OptionalServicesNames,
-    useServiceUnavailabilty,
+    useServiceAvailabilityStatus,
 } from '../../../utils/optional-services';
 
 const TAB_VALUES = {
@@ -47,7 +47,7 @@ const TAB_VALUES = {
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const classes = useStyles();
 
-    const dynamicSimulationUnavailability = useServiceUnavailabilty(
+    const dynamicSimulationAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.DynamicSimulation
     );
 
@@ -60,7 +60,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         updateParameters,
         resetParameters,
     ] = useParametersBackend(
-        dynamicSimulationUnavailability,
+        dynamicSimulationAvailability,
         user,
         'DynamicSimulation',
         fetchDynamicSimulationProviders,

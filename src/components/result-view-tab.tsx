@@ -29,7 +29,8 @@ import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import {
     OptionalServicesNames,
-    useServiceUnavailabilty,
+    OptionalServicesStatus,
+    useServiceAvailabilityStatus,
 } from './utils/optional-services';
 import { CurrentTreeNode } from '../redux/reducer.type';
 import { UUID } from 'crypto';
@@ -102,19 +103,19 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const securityAnalysisUnavailability = useServiceUnavailabilty(
+    const securityAnalysisAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.SecurityAnalysis
     );
-    const sensitivityAnalysisUnavailability = useServiceUnavailabilty(
+    const sensitivityAnalysisUnavailability = useServiceAvailabilityStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
-    const dynamicSimulationUnavailability = useServiceUnavailabilty(
+    const dynamicSimulationAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.DynamicSimulation
     );
-    const voltageInitUnavailability = useServiceUnavailabilty(
+    const voltageInitAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.VoltageInit
     );
-    const shortCircuitUnavailability = useServiceUnavailabilty(
+    const shortCircuitAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.ShortCircuit
     );
 
@@ -195,7 +196,8 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'SecurityAnalysis',
                 label: 'SecurityAnalysis',
-                displayed: !securityAnalysisUnavailability,
+                displayed:
+                    securityAnalysisAvailability === OptionalServicesStatus.Up,
                 renderResult: renderSecurityAnalysisResult,
             },
             {
@@ -207,29 +209,34 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'ShortCircuit',
                 label: 'ShortCircuitAnalysis',
-                displayed: enableDeveloperMode && !shortCircuitUnavailability,
+                displayed:
+                    enableDeveloperMode &&
+                    shortCircuitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderShortCircuitAnalysisResult,
             },
             {
                 id: 'DynamicSimulation',
                 label: 'DynamicSimulation',
                 displayed:
-                    enableDeveloperMode && !dynamicSimulationUnavailability,
+                    enableDeveloperMode &&
+                    dynamicSimulationAvailability === OptionalServicesStatus.Up,
                 renderResult: renderDynamicSimulationResult,
             },
             {
                 id: 'VoltageInit',
                 label: 'VoltageInit',
-                displayed: enableDeveloperMode && !voltageInitUnavailability,
+                displayed:
+                    enableDeveloperMode &&
+                    voltageInitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderVoltageInitResult,
             },
         ];
     }, [
         sensitivityAnalysisUnavailability,
-        securityAnalysisUnavailability,
-        dynamicSimulationUnavailability,
-        voltageInitUnavailability,
-        shortCircuitUnavailability,
+        securityAnalysisAvailability,
+        dynamicSimulationAvailability,
+        voltageInitAvailability,
+        shortCircuitAvailability,
         enableDeveloperMode,
         renderDynamicSimulationResult,
         renderSecurityAnalysisResult,

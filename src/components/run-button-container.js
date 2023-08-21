@@ -54,7 +54,8 @@ import {
 } from '../services/study/voltage-init';
 import {
     OptionalServicesNames,
-    useServiceUnavailabilty,
+    OptionalServicesStatus,
+    useServiceAvailabilityStatus,
 } from './utils/optional-services';
 
 export function RunButtonContainer({
@@ -123,19 +124,19 @@ export function RunButtonContainer({
         (state) => state.isModificationsInProgress
     );
 
-    const securityAnalysisUnavailability = useServiceUnavailabilty(
+    const securityAnalysisAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.SecurityAnalysis
     );
-    const sensitivityAnalysisUnavailability = useServiceUnavailabilty(
+    const sensitivityAnalysisUnavailability = useServiceAvailabilityStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
-    const dynamicSimulationUnavailability = useServiceUnavailabilty(
+    const dynamicSimulationAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.DynamicSimulation
     );
-    const voltageInitUnavailability = useServiceUnavailabilty(
+    const voltageInitAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.VoltageInit
     );
-    const shortCircuitUnavailability = useServiceUnavailabilty(
+    const shortCircuitAvailability = useServiceAvailabilityStatus(
         OptionalServicesNames.ShortCircuit
     );
 
@@ -472,28 +473,31 @@ export function RunButtonContainer({
     const runnables = useMemo(() => {
         return [
             runnable[ComputingType.LOADFLOW],
-            ...(!securityAnalysisUnavailability
+            ...(securityAnalysisAvailability === OptionalServicesStatus.Up
                 ? [runnable[ComputingType.SECURITY_ANALYSIS]]
                 : []),
-            ...(!sensitivityAnalysisUnavailability
+            ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [runnable[ComputingType.SENSITIVITY_ANALYSIS]]
                 : []),
-            ...(!shortCircuitUnavailability && enableDeveloperMode
+            ...(shortCircuitAvailability === OptionalServicesStatus.Up &&
+            enableDeveloperMode
                 ? [runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]]
                 : []),
-            ...(!dynamicSimulationUnavailability && enableDeveloperMode
+            ...(dynamicSimulationAvailability === OptionalServicesStatus.Up &&
+            enableDeveloperMode
                 ? [runnable[ComputingType.DYNAMIC_SIMULATION]]
                 : []),
-            ...(!voltageInitUnavailability && enableDeveloperMode
+            ...(voltageInitAvailability === OptionalServicesStatus.Up &&
+            enableDeveloperMode
                 ? [runnable[ComputingType.VOLTAGE_INIT]]
                 : []),
         ];
     }, [
-        dynamicSimulationUnavailability,
-        securityAnalysisUnavailability,
+        dynamicSimulationAvailability,
+        securityAnalysisAvailability,
         sensitivityAnalysisUnavailability,
-        shortCircuitUnavailability,
-        voltageInitUnavailability,
+        shortCircuitAvailability,
+        voltageInitAvailability,
         runnable,
         enableDeveloperMode,
     ]);

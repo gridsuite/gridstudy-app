@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setComputingStatus } from 'redux/actions';
 import { ComputingType } from './computing-type';
 import { ReduxState, StudyUpdated } from 'redux/reducer.type';
+import { OptionalServicesStatus } from '../utils/optional-services';
 
 interface UseComputingStatusProps {
     (
@@ -21,7 +22,8 @@ interface UseComputingStatusProps {
         fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
         invalidations: string[],
         resultConversion: (x: string) => RunningStatus,
-        computingType: ComputingType
+        computingType: ComputingType,
+        optionalServiceAvailabilityStatus?: OptionalServicesStatus
     ): void;
 }
 
@@ -78,6 +80,7 @@ function isWorthUpdate(
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
+ * @param optionalServiceAvailabilityStatus service availability status
  */
 export const useComputingStatus: UseComputingStatusProps = (
     studyUuid,
@@ -85,7 +88,8 @@ export const useComputingStatus: UseComputingStatusProps = (
     fetcher,
     invalidations,
     resultConversion,
-    computingType
+    computingType,
+    optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const studyUpdatedForce = useSelector(
@@ -130,7 +134,11 @@ export const useComputingStatus: UseComputingStatusProps = (
 
     /* initial fetch and update */
     useEffect(() => {
-        if (!studyUuid || !nodeUuid) {
+        if (
+            !studyUuid ||
+            !nodeUuid ||
+            optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up
+        ) {
             return;
         }
 
@@ -153,5 +161,6 @@ export const useComputingStatus: UseComputingStatusProps = (
         invalidations,
         studyUpdatedForce,
         studyUuid,
+        optionalServiceAvailabilityStatus,
     ]);
 };
