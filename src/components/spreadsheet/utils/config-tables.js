@@ -103,6 +103,90 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
             },
+            {
+                id: 'LowVoltageLimitkV',
+                field: 'lowVoltageLimit',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                changeCmd: 'equipment.setLowVoltageLimit({})\n',
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        maxExpression: 'highVoltageLimit',
+                        defaultValue: params.data.lowVoltageLimit,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'HighVoltageLimitkV',
+                field: 'highVoltageLimit',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                changeCmd: 'equipment.setHighVoltageLimit({})\n',
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        minExpression: 'lowVoltageLimit',
+                        defaultValue: params.data.highVoltageLimit,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'IpMin',
+                field: 'ipMin',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                changeCmd: 'equipment.setIpMin({})\n',
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        maxExpression: 'ipMax',
+                        defaultValue: params.data.ipMin,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'IpMax',
+                field: 'ipMax',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                changeCmd: 'equipment.setIpMax({})\n',
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        minExpression: 'ipMin',
+                        defaultValue: params.data.ipMax,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        data: params.data,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
