@@ -22,7 +22,7 @@ import {
 import { UUID } from 'crypto';
 import { UploadFileButton } from './upload-file-button';
 import { createCase } from 'services/case';
-import { recreateStudyFromExistingCase } from 'services/study/study';
+import { recreateStudyNetworkFromExistingCase } from 'services/study/study';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -68,7 +68,7 @@ export const CreateStudyDialog: FunctionComponent<CreateStudyDialogProps> = ({
 
     const handleCreateNewStudy = useCallback(() => {
         if (generatedCaseUuid) {
-            recreateStudyFromExistingCase(
+            recreateStudyNetworkFromExistingCase(
                 generatedCaseUuid,
                 studyUuid,
                 currentParameters

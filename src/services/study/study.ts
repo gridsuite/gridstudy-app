@@ -15,7 +15,7 @@ interface BasicStudyInfos {
     userId: string;
 }
 
-export const recreateStudyFromExistingCase = (
+export const recreateStudyNetworkFromExistingCase = (
     caseUuid: UUID,
     studyUuid: UUID,
     importParameters: Record<string, any>
@@ -39,7 +39,7 @@ export const recreateStudyFromExistingCase = (
     });
 };
 
-export const recreateStudy = (studyUuid: UUID): Promise<BasicStudyInfos> => {
+export const recreateStudyNetwork = (studyUuid: UUID): Promise<BasicStudyInfos> => {
     const recreateStudyUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +

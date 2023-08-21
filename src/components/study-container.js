@@ -52,7 +52,7 @@ import { fetchAllEquipments } from '../services/study/network-map';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence } from '../services/study/network';
-import { recreateStudy } from 'services/study/study';
+import { recreateStudyNetwork } from 'services/study/study';
 import { HttpStatusCode } from 'utils/http-status-code';
 
 function isWorthUpdate(
@@ -194,7 +194,8 @@ function usePrevious(value) {
 }
 
 export const UPDATE_TYPE_HEADER = 'updateType';
-const UPDATE_TYPE_STUDY_REIMPORT_DONE = 'study_reimport_done';
+const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE =
+    'study_network_recreation_done';
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
@@ -498,7 +499,7 @@ export function StudyContainer({ view, onChangeTab }) {
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
-    const checkNetworkExistenceAndReimportIfNotFound = useCallback(
+    const checkNetworkExistenceAndRecreateIfNotFound = useCallback(
         (successCallback) => {
             fetchNetworkExistence(studyUuid)
                 .then((response) => {
@@ -510,7 +511,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         // response.state === NO_CONTENT
                         // if network is not found, we try to recreate study network from existing case
                         setIsStudyNetworkFound(false);
-                        recreateStudy(studyUuid)
+                        recreateStudyNetwork(studyUuid)
                             .then(() => {
                                 snackError({
                                     headerId: 'reimportingNetworkStudy',
@@ -521,12 +522,13 @@ export function StudyContainer({ view, onChangeTab }) {
                                     error.status ===
                                     HttpStatusCode.FAILED_DEPENDENCY
                                 ) {
+                                    // when trying to recreate study network, if case can't be found (424 error), we let the user select a new one
                                     setIsImportStudyDialogDisplayed(true);
                                     snackError({
                                         headerId: 'StudyUnrecoverableState',
                                     });
                                 } else {
-                                    // unknown error when trying to reimport network from study case
+                                    // unknown error when trying to recreate network from study case
                                     setErrorMessage(
                                         intlRef.current.formatMessage({
                                             id: 'networkReimportError',
@@ -550,11 +552,11 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUuid && !isStudyNetworkFound) {
-            checkNetworkExistenceAndReimportIfNotFound();
+            checkNetworkExistenceAndRecreateIfNotFound();
         }
     }, [
         isStudyNetworkFound,
-        checkNetworkExistenceAndReimportIfNotFound,
+        checkNetworkExistenceAndRecreateIfNotFound,
         studyUuid,
     ]);
 
@@ -624,23 +626,23 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUpdatedForce, currentNode?.id, studyUuid, dispatch]);
 
-    // study_reimport_done notification
+    // study_network_recreation_done notification
     // checking another time if we can find network, if we do, we display a snackbar info
     useEffect(() => {
         if (
             studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] ===
-            UPDATE_TYPE_STUDY_REIMPORT_DONE
+            UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE
         ) {
             const successCallback = () =>
                 snackInfo({
                     headerId: 'studyNetworkRecovered',
                 });
 
-            checkNetworkExistenceAndReimportIfNotFound(successCallback);
+            checkNetworkExistenceAndRecreateIfNotFound(successCallback);
         }
     }, [
         studyUpdatedForce,
-        checkNetworkExistenceAndReimportIfNotFound,
+        checkNetworkExistenceAndRecreateIfNotFound,
         snackInfo,
     ]);
 
