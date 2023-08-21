@@ -53,6 +53,7 @@ import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence } from '../services/study/network';
 import { recreateStudy } from 'services/study/study';
+import { HttpStatusCode } from 'utils/http-status-code';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -167,7 +168,7 @@ function useStudy(studyUuidRequest) {
                 setStudyUuid(studyUuidRequest);
             })
             .catch((error) => {
-                if (error.status === 404) {
+                if (error.status === HttpStatusCode.NOT_FOUND) {
                     setErrMessage(
                         intlRef.current.formatMessage(
                             { id: 'studyNotFound' },
@@ -201,6 +202,7 @@ const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
+    const intlRef = useIntlRef();
 
     const [studyUuid, studyPending, studyErrorMessage] = useStudy(
         decodeURIComponent(useParams().studyUuid)
@@ -506,26 +508,43 @@ export function StudyContainer({ view, onChangeTab }) {
                 })
                 .catch((error) => {
                     // if network is not found, we try to recreate study network from existing case
-                    if (error.status === 404) {
+                    if (error.status === HttpStatusCode.NOT_FOUND) {
                         setIsStudyNetworkFound(false);
                         recreateStudy(studyUuid)
                             .then(() => {
                                 snackError({
-                                    headerId: 'ReimportingStudy',
+                                    headerId: 'reimportingNetworkStudy',
                                 });
                             })
                             .catch((error) => {
-                                if (error.status === 424) {
+                                if (
+                                    error.status ===
+                                    HttpStatusCode.FAILED_DEPENDENCY
+                                ) {
                                     setIsImportStudyDialogDisplayed(true);
                                     snackError({
                                         headerId: 'StudyUnrecoverableState',
                                     });
+                                } else {
+                                    // unknown error when trying to reimport network from study case
+                                    setErrorMessage(
+                                        intlRef.current.formatMessage({
+                                            id: 'networkReimportError',
+                                        })
+                                    );
                                 }
                             });
+                    } else {
+                        // unknown error when fetching network
+                        setErrorMessage(
+                            intlRef.current.formatMessage({
+                                id: 'fetchNetworkError',
+                            })
+                        );
                     }
                 });
         },
-        [studyUuid, loadTree, snackError]
+        [studyUuid, loadTree, snackError, intlRef]
     );
 
     useEffect(() => {
@@ -613,7 +632,7 @@ export function StudyContainer({ view, onChangeTab }) {
         ) {
             const successCallback = () =>
                 snackInfo({
-                    headerId: 'StudyRecovered',
+                    headerId: 'studyNetworkRecovered',
                 });
 
             checkNetworkExistenceAndReimportIfNotFound(successCallback);
