@@ -29,6 +29,7 @@ export interface PreContingencyResult {
 }
 export interface Contingency {
     id: string;
+    elements: { id: string }[];
 }
 export interface PostContingencyResult {
     contingency: Contingency;
@@ -62,6 +63,7 @@ export interface NmKConstraintRow {
 
 export interface ResultContingencie {
     contingencyId?: string;
+    contingencyEquipmentsIds?: string[];
     computationStatus?: string;
     subjectId?: string;
     limitType?: string;

@@ -28,7 +28,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
-import { fetchLimitViolations } from '../../../utils/rest-api';
+
 import {
     loadFlowCurrentViolationsColumnsDefinition,
     loadFlowResultColumnsDefinition,
@@ -48,6 +48,7 @@ import {
 } from '../../utils/aggrid-rows-handler';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { Theme } from '@mui/material';
+import { fetchLimitViolations } from '../../../services/study';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,

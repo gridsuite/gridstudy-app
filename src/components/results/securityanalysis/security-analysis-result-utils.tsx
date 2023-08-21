@@ -14,8 +14,10 @@ import { IntlShape } from 'react-intl';
 import {
     ICellRendererParams,
     IRowNode,
+    ITooltipParams,
     ValueFormatterParams,
 } from 'ag-grid-community';
+import { FunctionComponent } from 'react';
 
 export const computeLoading = (
     limitViolation: LimitViolationFromBack
@@ -72,6 +74,10 @@ export const flattenNmKresultsContingencies = (
         ) {
             rows.push({
                 contingencyId: postContingencyResult.contingency.id,
+                contingencyEquipmentsIds:
+                    postContingencyResult.contingency.elements.map(
+                        (element) => element.id
+                    ),
                 computationStatus: postContingencyResult.status,
                 violationCount:
                     postContingencyResult.limitViolationsResult.limitViolations
@@ -101,12 +107,18 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
         cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined
+    ) => React.JSX.Element | undefined,
+    customTooltipValues: FunctionComponent<ITooltipParams>,
+    toolTipValueGetterValues: (
+        params: ITooltipParams
+    ) => { title: null; values: string | undefined } | null
 ) => {
     return [
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
+            tooltipComponent: customTooltipValues,
+            tooltipValueGetter: toolTipValueGetterValues,
         },
         {
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -236,6 +248,10 @@ export const flattenNmKresultsConstraints = (
 
                     contingencies.push({
                         contingencyId: postContingencyResult.contingency.id,
+                        contingencyEquipmentsIds:
+                            postContingencyResult.contingency.elements.map(
+                                (element) => element.id
+                            ),
                         computationStatus: postContingencyResult.status,
                         constraintId: limitViolation.subjectId,
                         limitType: intl.formatMessage({
@@ -261,6 +277,7 @@ export const flattenNmKresultsConstraints = (
         contingencies?.forEach((contingency: ResultConstraint) => {
             rows.push({
                 contingencyId: contingency.contingencyId,
+                contingencyEquipmentsIds: contingency.contingencyEquipmentsIds,
                 computationStatus: contingency.computationStatus,
                 constraintId: contingency.constraintId,
                 limitType: contingency.limitType,
@@ -282,7 +299,11 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
         cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined
+    ) => React.JSX.Element | undefined,
+    customTooltipValues: FunctionComponent<ITooltipParams>,
+    toolTipValueGetterValues: (
+        params: ITooltipParams
+    ) => { title: null; values: string | undefined } | null
 ) => {
     return [
         {
@@ -293,6 +314,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
+            tooltipComponent: customTooltipValues,
+            tooltipValueGetter: toolTipValueGetterValues,
         },
         {
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),

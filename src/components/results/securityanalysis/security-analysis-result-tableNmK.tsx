@@ -27,6 +27,7 @@ import { ComputingType } from '../../computing-status/computing-type';
 import {
     GridReadyEvent,
     ICellRendererParams,
+    ITooltipParams,
     PostSortRowsParams,
     RowClassParams,
 } from 'ag-grid-community';
@@ -40,6 +41,7 @@ import {
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
+import CustomTooltipValues from '../../custom-aggrid/custom-tooltip-values';
 
 export const SecurityAnalysisResultTableNmK: FunctionComponent<
     PostContingencyResultProps
@@ -127,16 +129,36 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
         );
     };
 
+    const toolTipValueGetterValues = (params: ITooltipParams) => {
+        if (
+            params.data?.contingencyId &&
+            params.data?.contingencyEquipmentsIds
+        ) {
+            const values = Object.values(params.data?.contingencyEquipmentsIds);
+            const valuesToDisplay = values?.join(', ');
+
+            return {
+                title: null,
+                values: valuesToDisplay,
+            };
+        }
+        return null;
+    };
+
     const securityAnalysisColumns = useMemo(() => {
         if (isFromContingency) {
             return securityAnalysisTableNmKContingenciesColumnsDefinition(
                 intl,
-                SubjectIdRenderer
+                SubjectIdRenderer,
+                CustomTooltipValues,
+                toolTipValueGetterValues
             );
         }
         return securityAnalysisTableNmKConstraintsColumnsDefinition(
             intl,
-            SubjectIdRenderer
+            SubjectIdRenderer,
+            CustomTooltipValues,
+            toolTipValueGetterValues
         );
     }, [intl, SubjectIdRenderer, isFromContingency]);
 

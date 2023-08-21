@@ -12,11 +12,11 @@ import {
 } from './security-analysis.type';
 import { useNodeData } from '../../study-container';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
-import { fetchLineOrTransformer } from '../../../utils/rest-api';
 import WaitingLoader from '../../utils/waiting-loader';
 import { SecurityAnalysisResult } from './security-analysis-result';
 import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchLineOrTransformer } from '../../../services/study/network-map';
 
 export const SecurityAnalysisTab: FunctionComponent<
     SecurityAnalysisTabProps
