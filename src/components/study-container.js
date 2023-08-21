@@ -52,6 +52,7 @@ import { fetchAllEquipments } from '../services/study/network-map';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence } from '../services/study/network';
+import { recreateStudy } from 'services/study/study';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -497,25 +498,30 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const checkNetworkExistenceAndReimportIfNotFound = useCallback(
         (successCallback) => {
-            fetchNetworkExistence(studyUuid, true)
+            fetchNetworkExistence(studyUuid)
                 .then(() => {
                     successCallback && successCallback();
                     setIsStudyNetworkFound(true);
                     loadTree();
                 })
                 .catch((error) => {
-                    //TODO: improve the way we catch this error
-                    if (error.message.endsWith('BROKEN_STUDY')) {
+                    // if network is not found, we try to recreate study network from existing case
+                    if (error.status === 404) {
                         setIsStudyNetworkFound(false);
-                        setIsImportStudyDialogDisplayed(true);
-                        snackError({
-                            headerId: 'StudyUnrecoverableState',
-                        });
-                    } else {
-                        snackError({
-                            headerId: 'ReimportingStudy',
-                        });
-                        setIsStudyNetworkFound(false);
+                        recreateStudy(studyUuid)
+                            .then(() => {
+                                snackError({
+                                    headerId: 'ReimportingStudy',
+                                });
+                            })
+                            .catch((error) => {
+                                if (error.status === 424) {
+                                    setIsImportStudyDialogDisplayed(true);
+                                    snackError({
+                                        headerId: 'StudyUnrecoverableState',
+                                    });
+                                }
+                            });
                     }
                 });
         },

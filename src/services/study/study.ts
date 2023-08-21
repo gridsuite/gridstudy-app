@@ -14,21 +14,40 @@ interface BasicStudyInfos {
     userId: string;
 }
 
-export const importStudy = (
+export const recreateStudyFromExistingCase = (
     caseUuid: UUID,
     studyUuid: UUID,
     importParameters: Record<string, any>
 ): Promise<BasicStudyInfos> => {
-    const importStudyUrl =
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('caseUuid', caseUuid);
+
+    const recreateStudyUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
-        '/cases/' +
-        encodeURIComponent(caseUuid);
+        '/network?' +
+        urlSearchParams.toString();
 
-    console.debug(importStudyUrl);
+    console.debug(recreateStudyUrl);
 
-    return backendFetch(importStudyUrl, {
+    return backendFetch(recreateStudyUrl, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(importParameters),
+    });
+};
+
+export const recreateStudy = (studyUuid: UUID): Promise<BasicStudyInfos> => {
+    const recreateStudyUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/network';
+
+    console.debug(recreateStudyUrl);
+
+    return backendFetch(recreateStudyUrl, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
     });

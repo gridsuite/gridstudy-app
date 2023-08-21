@@ -1,10 +1,8 @@
 import { FlatParameters } from '@gridsuite/commons-ui';
-import { makeStyles } from '@mui/styles';
-import { GridStudyTheme } from 'components/app-wrapper.type';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { AdvancedParameterButton } from './advanced-parameter-button';
 import { CaseImportParameters } from 'services/network-conversion';
-import { Divider } from '@mui/material';
+import { Box, Divider, Theme } from '@mui/material';
 
 export interface ImportParametersProps {
     formatWithParameters: CaseImportParameters[];
@@ -12,17 +10,16 @@ export interface ImportParametersProps {
     onChange: (paramName: string, value: any, isEdit: boolean) => void;
 }
 
-const useStyles = makeStyles<GridStudyTheme>((theme) => ({
-    paramDivider: {
+const styles = {
+    paramDivider: (theme: Theme) => ({
         marginTop: theme.spacing(2),
-    },
-}));
+    }),
+};
 
 export const ImportParameters: FunctionComponent<ImportParametersProps> = (
     props
 ) => {
     const { formatWithParameters, onChange, currentParameters } = props;
-    const classes = useStyles();
 
     const [areParamsDisplayed, setAreParamsDisplayed] = useState(false);
 
@@ -32,9 +29,9 @@ export const ImportParameters: FunctionComponent<ImportParametersProps> = (
 
     return (
         <>
-            <Divider className={classes.paramDivider} />
-            <div
-                style={{
+            <Divider sx={styles.paramDivider} />
+            <Box
+                sx={{
                     marginTop: '10px',
                 }}
             >
@@ -52,7 +49,7 @@ export const ImportParameters: FunctionComponent<ImportParametersProps> = (
                         variant="standard"
                     />
                 )}
-            </div>
+            </Box>
         </>
     );
 };

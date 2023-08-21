@@ -435,16 +435,10 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export const fetchNetworkExistence = (studyUuid, reimportNetworkIfNotFound) => {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append(
-        'reimportNetworkIfNotFound',
-        reimportNetworkIfNotFound
-    );
+export const fetchNetworkExistence = (studyUuid) => {
+    const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network`;
 
-    const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network?${urlSearchParams.toString()}`;
-
-    return backendFetch(fetchNetworkExistenceUrl);
+    return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
 };
 
 /* export-network */
