@@ -411,18 +411,6 @@ export const useParametersBackend = (
 
     useEffect(() => {
         if (studyUuid) {
-            if (backendFetchParameters) {
-                backendFetchParameters(studyUuid)
-                    .then((params) => {
-                        setParams(params);
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'fetch' + type + 'ParametersError',
-                        });
-                    });
-            }
             if (fetching === FETCHING_STATUS.FINISHED && !provider) {
                 backendFetchProvider(studyUuid)
                     .then((provider) => {
@@ -440,32 +428,46 @@ export const useParametersBackend = (
                         });
                     });
             }
-            if (backendFetchSpecificParameters) {
-                backendFetchSpecificParameters()
-                    .then((specificParams) => {
-                        setSpecificParamsDescription(specificParams);
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId:
-                                'fetch' + type + 'SpecificParametersError',
-                        });
-                    });
-            }
         }
     }, [
-        type,
-        backendFetchParameters,
-        backendFetchSpecificParameters,
         backendFetchProvider,
-        studyUuid,
-        snackError,
-        resetProvider,
-        setParams,
         fetching,
         provider,
+        resetProvider,
+        snackError,
+        studyUuid,
+        type,
     ]);
+
+    useEffect(() => {
+        if (studyUuid && backendFetchSpecificParameters) {
+            backendFetchSpecificParameters()
+                .then((specificParams) => {
+                    setSpecificParamsDescription(specificParams);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'fetch' + type + 'SpecificParametersError',
+                    });
+                });
+        }
+    }, [backendFetchSpecificParameters, snackError, studyUuid, type]);
+
+    useEffect(() => {
+        if (studyUuid && backendFetchParameters) {
+            backendFetchParameters(studyUuid)
+                .then((params) => {
+                    setParams(params);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'fetch' + type + 'ParametersError',
+                    });
+                });
+        }
+    }, [backendFetchParameters, snackError, studyUuid, type]);
 
     return [
         providersRef.current,
