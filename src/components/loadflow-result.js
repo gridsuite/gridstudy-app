@@ -18,7 +18,7 @@ import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
 import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material';
 import { ComputingType } from './computing-status/computing-type';
 import {
     getNoRowsMessage,
