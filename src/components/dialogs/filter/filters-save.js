@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_ID, NAME } from 'components/utils/field-constants';
+import { EQUIPMENT_IDD, NAME } from 'components/utils/field-constants';
 import { DISTRIBUTION_KEY } from './creation/explicit-naming/explicit-naming-filter-form';
 import { createFilter, saveFilter } from 'services/explore';
-import { FILTER_TYPE } from 'components/network/constants';
+import { FILTER_TYPES } from 'components/network/constants';
 import { frontToBackTweak } from './creation/criteria-based/criteria-based-filter-dialog-utils';
 
 export const saveExplicitNamingFilter = (
@@ -27,18 +27,18 @@ export const saveExplicitNamingFilter = (
         equipmentType === 'GENERATOR' || equipmentType === 'LOAD';
     if (isGeneratorOrLoad) {
         cleanedTableValues = tableValues.map((row) => ({
-            [EQUIPMENT_ID]: row[EQUIPMENT_ID],
+            [EQUIPMENT_IDD]: row[EQUIPMENT_IDD],
             [DISTRIBUTION_KEY]: row[DISTRIBUTION_KEY],
         }));
     } else {
         cleanedTableValues = tableValues.map((row) => ({
-            [EQUIPMENT_ID]: row[EQUIPMENT_ID],
+            [EQUIPMENT_IDD]: row[EQUIPMENT_IDD],
         }));
     }
     if (isFilterCreation) {
         createFilter(
             {
-                type: FILTER_TYPE.EXPLICIT_NAMING.id,
+                type: FILTER_TYPES.EXPLICIT_NAMING.id,
                 equipmentType: equipmentType,
                 filterEquipmentsAttributes: cleanedTableValues,
             },
@@ -55,7 +55,7 @@ export const saveExplicitNamingFilter = (
         saveFilter(
             {
                 id: id,
-                type: FILTER_TYPE.EXPLICIT_NAMING.id,
+                type: FILTER_TYPES.EXPLICIT_NAMING.id,
                 equipmentType: equipmentType,
                 filterEquipmentsAttributes: cleanedTableValues,
             },

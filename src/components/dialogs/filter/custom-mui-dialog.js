@@ -4,9 +4,9 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    Grid,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { Grid } from 'ag-grid-community';
 import { FormProvider } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import SubmitButton from '../commons/submitButton';

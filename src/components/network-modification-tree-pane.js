@@ -42,6 +42,7 @@ import {
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName } from '../services/study';
 import CreateFilterDialog from './dialogs/filter/creation/filter-creation-dialog';
+import EditFilterDialog from './dialogs/filter/modification/filter-edition-dialog';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -490,6 +491,7 @@ export const NetworkModificationTreePane = ({
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
     const [openCreateFilterDialog, setOpenCreateFilterDialog] = useState(false);
+    const [openEditFilterDialog, setOpenEditFilterDialog] = useState(false);
 
     const handleClickExportStudy = (url) => {
         window.open(url, DownloadIframe);
@@ -592,6 +594,9 @@ export const NetworkModificationTreePane = ({
     const handleCreateNewFilter = () => {
         setOpenCreateFilterDialog(true);
     };
+    const handleEditFilter = () => {
+        setOpenEditFilterDialog(true);
+    };
 
     return (
         <>
@@ -639,6 +644,7 @@ export const NetworkModificationTreePane = ({
                     handleCopySubtree={handleCopySubtree}
                     handlePasteSubtree={handlePasteSubtree}
                     handleCreateNewFilter={handleCreateNewFilter}
+                    handleEditFilter={handleEditFilter}
                 />
             )}
             {openExportDialog && (
@@ -657,6 +663,12 @@ export const NetworkModificationTreePane = ({
                 <CreateFilterDialog
                     open={openCreateFilterDialog}
                     onClose={() => setOpenCreateFilterDialog(false)}
+                />
+            )}
+            {openEditFilterDialog && (
+                <EditFilterDialog
+                    open={openEditFilterDialog}
+                    onClose={() => setOpenEditFilterDialog(false)}
                 />
             )}
             <iframe

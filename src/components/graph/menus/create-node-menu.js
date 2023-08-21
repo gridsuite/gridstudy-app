@@ -70,6 +70,7 @@ const CreateNodeMenu = ({
     handleCopySubtree,
     handlePasteSubtree,
     handleCreateNewFilter,
+    handleEditFilter,
 }) => {
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -180,6 +181,11 @@ const CreateNodeMenu = ({
 
     function createNewFilter() {
         handleCreateNewFilter();
+        handleClose();
+    }
+
+    function editFilter() {
+        handleEditFilter();
         handleClose();
     }
 
@@ -307,7 +313,7 @@ const CreateNodeMenu = ({
         },
         EDIT_FILTER: {
             onRoot: false,
-            action: () => removeSubtree(),
+            action: () => editFilter(),
             id: 'editFilter',
             disabled: activeNode?.id !== currentNode?.id,
         },

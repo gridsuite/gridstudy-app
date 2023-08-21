@@ -24,7 +24,7 @@ import {
     PROPERTY_VALUES_2,
 } from '../../filter-property';
 import { getCriteriaBasedFormData } from './criteria-based-utils';
-import { FILTER_TYPE } from 'components/network/constants';
+import { FILTER_TYPES } from 'components/network/constants';
 
 /**
  * Transform
@@ -91,7 +91,7 @@ export const backToFrontTweak = (response) => {
  */
 export const frontToBackTweak = (id, filter) => {
     const filterProperties = filter[CRITERIA_BASED][FILTER_PROPERTIES];
-    const ret = { id, type: FILTER_TYPE.CRITERIA_BASED.id };
+    const ret = { id, type: FILTER_TYPES.CRITERIA_BASED.id };
     const eff = {
         [EQUIPMENT_TYPE]: filter[EQUIPMENT_TYPE],
         ...cleanNominalVoltages(filter[CRITERIA_BASED]),

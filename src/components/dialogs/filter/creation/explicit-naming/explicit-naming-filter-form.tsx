@@ -3,8 +3,12 @@ import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import yup from 'components/utils/yup-config';
-import { EQUIPMENT_ID, EQUIPMENT_TYPE } from 'components/utils/field-constants';
-import { FILTER_TYPE } from 'components/network/constants';
+import {
+    EQUIPMENT_IDD,
+    EQUIPMENT_TYPE,
+    FILTER_TYPE,
+} from 'components/utils/field-constants';
+import { FILTER_TYPES } from 'components/network/constants';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
 } from 'components/utils/rhf-inputs/ag-grid-table-rhf/custom-ag-grid-table';
@@ -23,14 +27,14 @@ export const explicitNamingFilterSchema = {
         .array()
         .of(
             yup.object().shape({
-                [EQUIPMENT_ID]: yup.string().nullable(),
+                [EQUIPMENT_IDD]: yup.string().nullable(),
                 [DISTRIBUTION_KEY]: yup.number().nullable(),
             })
         )
         // we remove empty lines
-        .compact((row) => !row[DISTRIBUTION_KEY] && !row[EQUIPMENT_ID])
-        .when(['filterType'], {
-            is: FILTER_TYPE.EXPLICIT_NAMING.id,
+        .compact((row) => !row[DISTRIBUTION_KEY] && !row[EQUIPMENT_IDD])
+        .when([FILTER_TYPE], {
+            is: FILTER_TYPES.EXPLICIT_NAMING.id,
             then: (schema) =>
                 schema.min(1, 'emptyFilterError').when([EQUIPMENT_TYPE], {
                     is: (equipmentType: string) =>
@@ -42,7 +46,7 @@ export const explicitNamingFilterSchema = {
                                 'distributionKeyWithMissingIdError',
                                 (array) => {
                                     return !array!.some(
-                                        (row) => !row[EQUIPMENT_ID]
+                                        (row) => !row[EQUIPMENT_IDD]
                                     );
                                 }
                             )
@@ -69,12 +73,12 @@ function isGeneratorOrLoad(equipmentType: string): boolean {
 }
 
 interface FilterTableRow {
-    [EQUIPMENT_ID]: string;
+    [EQUIPMENT_IDD]: string;
     [DISTRIBUTION_KEY]: number | null;
 }
 
 const defaultRowData: FilterTableRow = {
-    [EQUIPMENT_ID]: '',
+    [EQUIPMENT_IDD]: '',
     [DISTRIBUTION_KEY]: null,
 };
 
@@ -99,8 +103,8 @@ function ExplicitNamingFilterForm() {
         const columnDefs: any[] = [
             ...ROW_DRAGGING_SELECTION_COLUMN_DEF,
             {
-                headerName: intl.formatMessage({ id: EQUIPMENT_ID }),
-                field: EQUIPMENT_ID,
+                headerName: intl.formatMessage({ id: 'equipmentId' }),
+                field: EQUIPMENT_IDD,
                 editable: true,
                 singleClickEdit: true,
                 valueParser: (params: ValueParserParams) =>
@@ -109,7 +113,7 @@ function ExplicitNamingFilterForm() {
         ];
         if (forGeneratorOrLoad) {
             columnDefs.push({
-                headerName: intl.formatMessage({ id: DISTRIBUTION_KEY }),
+                headerName: intl.formatMessage({ id: 'distributionKey' }),
                 field: DISTRIBUTION_KEY,
                 editable: true,
                 singleClickEdit: true,
@@ -128,9 +132,9 @@ function ExplicitNamingFilterForm() {
     );
 
     const csvFileHeaders = useMemo(() => {
-        const csvFileHeaders = [intl.formatMessage({ id: EQUIPMENT_ID })];
+        const csvFileHeaders = [intl.formatMessage({ id: 'equipmentId' })];
         if (forGeneratorOrLoad) {
-            csvFileHeaders.push(intl.formatMessage({ id: DISTRIBUTION_KEY }));
+            csvFileHeaders.push(intl.formatMessage({ id: 'distributionKey' }));
         }
         return csvFileHeaders;
     }, [intl, forGeneratorOrLoad]);
@@ -139,7 +143,7 @@ function ExplicitNamingFilterForm() {
         if (csvData) {
             return csvData.map((value: any) => {
                 return {
-                    [EQUIPMENT_ID]: value[0]?.trim(),
+                    [EQUIPMENT_IDD]: value[0]?.trim(),
                     [DISTRIBUTION_KEY]: toFloatOrNullValue(value[1]?.trim()),
                 };
             });
@@ -150,7 +154,7 @@ function ExplicitNamingFilterForm() {
 
     const openConfirmationPopup = () => {
         return getValues(FILTER_EQUIPMENTS_ATTRIBUTES).some(
-            (row: FilterTableRow) => row[DISTRIBUTION_KEY] || row[EQUIPMENT_ID]
+            (row: FilterTableRow) => row[DISTRIBUTION_KEY] || row[EQUIPMENT_IDD]
         );
     };
 

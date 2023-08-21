@@ -246,3 +246,5 @@ export const COUNTRIES_1 = 'countries1';
 export const COUNTRIES_2 = 'countries2';
 export const OPERATION_TYPE = 'type';
 export const AG_GRID_ROW_UUID = 'agGridRowUuid';
+export const FILTER_TYPE = 'filterType';
+export const EQUIPMENT_IDD = 'equipmentID';

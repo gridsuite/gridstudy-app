@@ -125,6 +125,9 @@ const DirectoryItemSelector = (props) => {
                 setRootDirectories(nrs);
                 nodeMap.current = mdr;
                 setData(convertRoots(nrs));
+                if (props?.getRootDirectorys) {
+                    props?.getRootDirectorys(nrs);
+                }
             })
             .catch((error) => {
                 snackError({
@@ -132,7 +135,7 @@ const DirectoryItemSelector = (props) => {
                     headerId: 'DirectoryItemSelector',
                 });
             });
-    }, [convertRoots, props.types, snackError]);
+    }, [convertRoots, props, snackError]);
 
     useEffect(() => {
         if (props.open) {
@@ -223,10 +226,10 @@ const DirectoryItemSelector = (props) => {
 
     return (
         <TreeViewFinder
-            multiselect={true}
+            multiselect={props.multiselect}
             onTreeBrowse={fetchDirectory}
             data={data}
-            onlyLeaves={true}
+            onlyLeaves={props.onlyLeaves}
             sortMethod={sortHandlingDirectories}
             {...props}
         />

@@ -32,6 +32,7 @@ const TextInput = ({
     previousValue,
     clearable,
     customAdornment,
+    size = 'small',
 }) => {
     const classes = useStyles();
     const { validationSchema, getValues, removeOptional } = useFormContext();
@@ -68,7 +69,7 @@ const TextInput = ({
     return (
         <Field
             key={id ? id : label}
-            size="small"
+            size={size}
             fullWidth
             id={id ? id : label}
             label={fieldLabel}

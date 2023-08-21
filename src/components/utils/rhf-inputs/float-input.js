@@ -41,6 +41,7 @@ const FloatInput = (props) => {
             acceptValue={isFloatNumber}
             outputTransform={outputTransform}
             inputTransform={inputTransform}
+            size={props?.size ?? 'small'}
             {...props}
         />
     );

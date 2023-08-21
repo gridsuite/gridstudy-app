@@ -5,13 +5,16 @@
 //  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //  */
 
-import { Grid } from 'ag-grid-community';
 import CustomMuiDialog from '../custom-mui-dialog';
 import NameWrapper from '../name-wrapper';
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
 import RadioInput from 'components/utils/rhf-inputs/radio-input';
-import { FILTER_TYPE } from 'components/network/constants';
-import { EQUIPMENT_TYPE, NAME } from 'components/utils/field-constants';
+import { FILTER_TYPES } from 'components/network/constants';
+import {
+    EQUIPMENT_TYPE,
+    FILTER_TYPE,
+    NAME,
+} from 'components/utils/field-constants';
 import CriteriaBasedFilterForm, {
     criteriaBasedFilterEmptyFormData,
     criteriaBasedFilterSchema,
@@ -23,7 +26,7 @@ import ExplicitNamingFilterForm, {
 } from './explicit-naming/explicit-naming-filter-form';
 import yup from 'components/utils/yup-config';
 import { useSelector } from 'react-redux';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -31,84 +34,15 @@ import {
     saveExplicitNamingFilter,
 } from '../filters-save';
 import PropTypes from 'prop-types';
-// import {
-//     Alert,
-//     Button,
-//     Dialog,
-//     DialogActions,
-//     DialogContent,
-//     DialogTitle,
-// } from '@mui/material';
-// import { FunctionComponent, useEffect } from 'react';
-// import { FormattedMessage } from 'react-intl';
-// import { FilterCreationForm } from './filter-creation-form';
-// import { useValidNodeName } from 'components/utils/inputs/input-hooks';
-// import React from 'react';
-// import { useSelector } from 'react-redux';
-
-// type FilterDialogProps = {
-//     title: string;
-//     open: boolean;
-//     onClose: Function;
-//     value: string;
-//     studyUuid: string;
-// };
-// export const CreateFilterDialog: FunctionComponent<FilterDialogProps> = (
-//     props,
-//     context
-// ) => {
-//     const { title, open, onClose, value, studyUuid } = props;
-//     const [triggerReset, setTriggerReset] = React.useState(false);
-//     const [nameError, nameField, isNameOK, currentValue] = useValidNodeName({
-//         studyUuid,
-//         defaultValue: value,
-//         triggerReset,
-//     });
-//     useEffect(() => setTriggerReset(false), []);
-
-//     const handleClose = () => {
-//         setTriggerReset(nameField.props.value !== value);
-//         onClose();
-//     };
-//     return (
-//         <>
-//             <Dialog
-//                 fullWidth
-//                 maxWidth="sm"
-//                 open={open}
-//                 onClose={handleClose}
-//                 aria-labelledby="dialog-create-filter"
-//             >
-//                 <DialogTitle>{title}</DialogTitle>
-//                 <DialogContent>
-//                     {nameField}
-//                     {!isNameOK && nameError !== undefined && (
-//                         <Alert severity="error">{nameError}</Alert>
-//                     )}
-//                 </DialogContent>
-//                 <DialogActions>
-//                     <Button onClick={handleClose}>
-//                         <FormattedMessage id="cancel" />
-//                     </Button>
-//                     <Button variant="outlined">
-//                         <FormattedMessage id="export" />
-//                     </Button>
-//                 </DialogActions>
-//             </Dialog>
-//         </>
-//     );
-// };
-
-/**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
+import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
+import DirectoryItemSelector from 'components/directory-item-selector';
+import { useIntl } from 'react-intl/lib';
+import { fetchPath } from 'services/directory';
 
 const emptyFormData = {
     [NAME]: null,
-    [FILTER_TYPE]: FILTER_TYPE.CRITERIA_BASED.id,
+    [FILTER_TYPE]: FILTER_TYPES.EXPLICIT_NAMING.id,
     [EQUIPMENT_TYPE]: null,
     ...criteriaBasedFilterEmptyFormData,
     ...explicitNamingFilterEmptyFormData,
@@ -127,9 +61,16 @@ const formSchema = yup
     .required();
 
 const CreateFilterDialog = ({ open, onClose }) => {
+    const intl = useIntl();
     const { snackError } = useSnackMessage();
-    const activeDirectory = useSelector((state) => state.activeDirectory);
+    const [defaultFolder, setDefaultFolder] = useState({
+        id: null,
+        name: null,
+    });
     const [filterNameValid, setFilterNameValid] = useState(false);
+    const [openDirectoryFolders, setOpenDirectoryFolders] = useState(false);
+    const [isChoosedFolderChanged, setIsChoosedFolderChanged] = useState(false);
+    const studyUuid = useSelector((state) => state.studyUuid);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -143,9 +84,26 @@ const CreateFilterDialog = ({ open, onClose }) => {
         setValue(NAME, newName);
     };
 
+    const fetchDefaultDirectoryForStudy = useCallback(() => {
+        fetchPath(studyUuid).then((res) => {
+            if (res) {
+                setDefaultFolder({
+                    id: res[1].elementUuid,
+                    name: res[1].elementName,
+                });
+            }
+        });
+    }, [studyUuid]);
+
+    useEffect(() => {
+        if (studyUuid) {
+            fetchDefaultDirectoryForStudy();
+        }
+    }, [fetchDefaultDirectoryForStudy, studyUuid]);
+
     const onSubmit = useCallback(
         (filterForm) => {
-            if (filterForm[FILTER_TYPE] === FILTER_TYPE.EXPLICIT_NAMING.id) {
+            if (filterForm[FILTER_TYPE] === FILTER_TYPES.EXPLICIT_NAMING.id) {
                 saveExplicitNamingFilter(
                     filterForm[FILTER_EQUIPMENTS_ATTRIBUTES],
                     true,
@@ -157,15 +115,15 @@ const CreateFilterDialog = ({ open, onClose }) => {
                             messageTxt: error,
                         });
                     },
-                    activeDirectory,
+                    defaultFolder.id,
                     onClose
                 );
             } else if (
-                filterForm[FILTER_TYPE] === FILTER_TYPE.CRITERIA_BASED.id
+                filterForm[FILTER_TYPE] === FILTER_TYPES.CRITERIA_BASED.id
             ) {
                 saveCriteriaBasedFilter(
                     filterForm,
-                    activeDirectory,
+                    defaultFolder.id,
                     onClose,
                     (error) => {
                         snackError({
@@ -175,9 +133,44 @@ const CreateFilterDialog = ({ open, onClose }) => {
                 );
             }
         },
-        [activeDirectory, snackError, onClose]
+        [defaultFolder.id, onClose, snackError]
     );
 
+    const handleChangeFolder = () => {
+        setOpenDirectoryFolders(true);
+    };
+
+    const setSelectedFolder = (folder) => {
+        if (folder && folder.length > 0) {
+            if (folder[0].id !== defaultFolder.id) {
+                setDefaultFolder({
+                    id: folder[0].id,
+                    name: folder[0].name,
+                });
+                setIsChoosedFolderChanged(true);
+            }
+        }
+        setOpenDirectoryFolders(false);
+    };
+
+    const folderChooser = (
+        <Grid container item>
+            <Grid item>
+                <Button onClick={handleChangeFolder} variant="contained">
+                    <FormattedMessage id={'showSelectDirectoryDialog'} />
+                </Button>
+            </Grid>
+            <Typography m={1} component="span">
+                <Box fontWeight={'fontWeightBold'}>
+                    {defaultFolder == null ? (
+                        <CircularProgress />
+                    ) : (
+                        defaultFolder.name
+                    )}
+                </Box>
+            </Typography>
+        </Grid>
+    );
     return (
         <CustomMuiDialog
             open={open}
@@ -189,25 +182,37 @@ const CreateFilterDialog = ({ open, onClose }) => {
             removeOptional={true}
             disabledSave={!filterNameValid}
         >
-            {/* <NameWrapper
+            <NameWrapper
                 titleMessage="Name"
                 contentType={elementType.FILTER}
                 handleNameValidation={handleNameChange}
+                activeDirectory={defaultFolder.id}
+                isChoosedFolderChanged={isChoosedFolderChanged}
             >
                 <Grid container spacing={2} marginTop={'auto'}>
+                    {folderChooser}
                     <Grid item>
                         <RadioInput
-                            name={'filterType'}
-                            options={Object.values(FILTER_TYPE)}
+                            name={FILTER_TYPE}
+                            options={Object.values(FILTER_TYPES)}
                         />
                     </Grid>
-                    {filterType === FILTER_TYPE.CRITERIA_BASED.id ? (
+
+                    {filterType === FILTER_TYPES.CRITERIA_BASED.id ? (
                         <CriteriaBasedFilterForm />
                     ) : (
                         <ExplicitNamingFilterForm />
                     )}
                 </Grid>
-            </NameWrapper> */}
+            </NameWrapper>
+            <DirectoryItemSelector
+                open={openDirectoryFolders}
+                onClose={setSelectedFolder}
+                types={[]}
+                title={intl.formatMessage({ id: 'chooseFolder' })}
+                onlyLeaves={false}
+                multiselect={false}
+            />
         </CustomMuiDialog>
     );
 };

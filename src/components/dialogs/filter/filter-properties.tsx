@@ -11,12 +11,16 @@ import FilterProperty, {
     PROPERTY_VALUES_1,
     PROPERTY_VALUES_2,
 } from './filter-property';
-import { CRITERIA_BASED, EQUIPMENT_TYPE } from '../../utils/field-constants';
+import {
+    CRITERIA_BASED,
+    EQUIPMENT_TYPE,
+    FILTER_TYPE,
+} from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
 import ErrorInput from '../../utils/rhf-inputs/error-inputs/error-input';
 import FieldErrorAlert from '../../utils/rhf-inputs/error-inputs/field-error-alert';
 import { ListItem } from '@mui/material';
-import { FILTER_TYPE } from 'components/network/constants';
+import { FILTER_TYPES } from 'components/network/constants';
 import { areArrayElementsUnique } from 'components/utils/utils';
 import { fetchAppsAndUrls } from 'services/utils';
 
@@ -29,8 +33,8 @@ function propertyValuesTest(
 ) {
     // with context.from[length - 1], we can access to the root fields of the form
     const rootLevelForm = context.from![context.from!.length - 1];
-    const filterType = rootLevelForm.value['filterType'];
-    if (filterType !== FILTER_TYPE.CRITERIA_BASED.id) {
+    const filterType = rootLevelForm.value[FILTER_TYPE];
+    if (filterType !== FILTER_TYPES.CRITERIA_BASED.id) {
         // we don't test if we are not in a criteria based form
         return true;
     }
@@ -85,8 +89,8 @@ export const filterPropertiesYupSchema = {
             (properties, context) => {
                 // with context.from[length - 1], we can access to the root fields of the form
                 const rootLevelForm = context.from![context.from!.length - 1];
-                const filterType = rootLevelForm.value['filterType'];
-                if (filterType !== FILTER_TYPE.CRITERIA_BASED.id) {
+                const filterType = rootLevelForm.value[FILTER_TYPE];
+                if (filterType !== FILTER_TYPES.CRITERIA_BASED.id) {
                     // we don't test if we are not in a criteria based form
                     return true;
                 }

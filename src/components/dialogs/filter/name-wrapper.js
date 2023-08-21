@@ -4,9 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import CheckIcon from '@mui/icons-material/Check';
 import TextField from '@mui/material/TextField';
@@ -20,12 +19,13 @@ const NameWrapper = ({
     contentType,
     children,
     handleNameValidation,
+    activeDirectory,
+    isChoosedFolderChanged,
 }) => {
     const [value, setValue] = useState(initialValue);
     const [loadingCheckName, setLoadingCheckName] = useState(false);
     const intl = useIntl();
     const [errorMessage, setErrorMessage] = React.useState('');
-    const activeDirectory = useSelector((state) => state.activeDirectory);
 
     const setFormState = useCallback(
         (errorMessage, isNameValid, name) => {
@@ -87,11 +87,14 @@ const NameWrapper = ({
     );
     const debouncedUpdateFormState = useDebounce(updateFormState, 700);
 
-    const handleNameChanges = (name) => {
-        setValue(name);
-        setLoadingCheckName(true);
-        debouncedUpdateFormState(name);
-    };
+    const handleNameChanges = useCallback(
+        (name) => {
+            setValue(name);
+            setLoadingCheckName(true);
+            debouncedUpdateFormState(name);
+        },
+        [debouncedUpdateFormState]
+    );
 
     const renderNameStatus = () => {
         const showOk = value !== '' && !loadingCheckName && errorMessage === '';
@@ -107,6 +110,12 @@ const NameWrapper = ({
             </div>
         );
     };
+
+    useEffect(() => {
+        if (isChoosedFolderChanged) {
+            handleNameChanges(value);
+        }
+    }, [handleNameChanges, isChoosedFolderChanged, value]);
 
     return (
         <>

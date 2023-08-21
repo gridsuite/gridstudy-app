@@ -154,7 +154,7 @@ export const SWITCH_TYPE = {
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
 };
 
-export const FILTER_TYPE = {
+export const FILTER_TYPES = {
     CRITERIA_BASED: { id: 'CRITERIA', label: 'CriteriaBased' },
     EXPLICIT_NAMING: { id: 'IDENTIFIER_LIST', label: 'ExplicitNaming' },
 };

@@ -3,9 +3,8 @@ import { OPERATION_TYPE, VALUE_1, VALUE_2 } from '../field-constants';
 import yup from '../yup-config';
 import { useMemo } from 'react';
 import FloatInput from './float-input';
-import { FormControl, InputLabel } from '@mui/material';
+import { FormControl, Grid, InputLabel } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { Grid } from 'ag-grid-community';
 import MuiSelectInput from './select-inputs/mui-select-input';
 
 const style = {
@@ -70,6 +69,7 @@ const RangeInput = ({ name, label }) => {
         <FloatInput
             label={''}
             name={`${name}.${VALUE_1}`}
+            size="medium"
             clearable={false}
             formProps={{
                 placeholder: isOperationTypeRange ? 'Min' : '',
@@ -82,6 +82,7 @@ const RangeInput = ({ name, label }) => {
             name={`${name}.${VALUE_2}`}
             clearable={false}
             label={''}
+            size="medium"
             formProps={{
                 placeholder: 'Max',
             }}
