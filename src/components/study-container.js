@@ -501,14 +501,14 @@ export function StudyContainer({ view, onChangeTab }) {
     const checkNetworkExistenceAndReimportIfNotFound = useCallback(
         (successCallback) => {
             fetchNetworkExistence(studyUuid)
-                .then(() => {
-                    successCallback && successCallback();
-                    setIsStudyNetworkFound(true);
-                    loadTree();
-                })
-                .catch((error) => {
-                    // if network is not found, we try to recreate study network from existing case
-                    if (error.status === HttpStatusCode.NOT_FOUND) {
+                .then((response) => {
+                    if (response.status === HttpStatusCode.OK) {
+                        successCallback && successCallback();
+                        setIsStudyNetworkFound(true);
+                        loadTree();
+                    } else {
+                        // response.state === NO_CONTENT
+                        // if network is not found, we try to recreate study network from existing case
                         setIsStudyNetworkFound(false);
                         recreateStudy(studyUuid)
                             .then(() => {
@@ -534,14 +534,15 @@ export function StudyContainer({ view, onChangeTab }) {
                                     );
                                 }
                             });
-                    } else {
-                        // unknown error when fetching network
-                        setErrorMessage(
-                            intlRef.current.formatMessage({
-                                id: 'fetchNetworkError',
-                            })
-                        );
                     }
+                })
+                .catch(() => {
+                    // unknown error when fetching network
+                    setErrorMessage(
+                        intlRef.current.formatMessage({
+                            id: 'fetchNetworkError',
+                        })
+                    );
                 });
         },
         [studyUuid, loadTree, snackError, intlRef]

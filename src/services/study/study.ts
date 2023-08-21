@@ -1,8 +1,9 @@
-// @PathVariable("caseUuid") UUID caseUuid,
-// @RequestParam(required = false, value = "studyUuid") UUID studyUuid,
-// @RequestParam(required = false, value = "duplicateCase", defaultValue = "false") Boolean duplicateCase,
-// @RequestBody(required = false) Map<String, Object> importParameters,
-// @RequestHeader(HEADER_USER_ID) String userId
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 import { UUID } from 'crypto';
 import { PREFIX_STUDY_QUERIES } from '.';
