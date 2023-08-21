@@ -1,23 +1,23 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import React, { FunctionComponent } from 'react';
-import {
-    PreContingencyResult,
-    SecurityAnalysisResult,
-    SecurityAnalysisResultProps,
-} from './security-analysis.type';
+import { SecurityAnalysisResultProps } from './security-analysis.type';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { NMK_TYPE_RESULT } from '../../security-analysis-result';
-import { useTheme } from '@mui/styles';
-import { useSelector } from 'react-redux';
-import { ComputingType } from '../../computing-status/computing-type';
+import { FormattedMessage } from 'react-intl';
+
 import { SecurityAnalysisTableN } from './security-analysis-result-tableN';
-import { ReduxState } from '../../../redux/reducer.type';
 import makeStyles from '@mui/styles/makeStyles';
 import { GridStudyTheme } from '../../app-wrapper.type';
-import { SecurityAnalysisResultTableNmKContingencies } from './security-analysis-result-tableNmKContingencies';
+import { SecurityAnalysisResultTableNmK } from './security-analysis-result-tableNmK';
+import { NMK_TYPE_RESULT } from './security-analysis-result-utils';
 const useStyles = makeStyles<GridStudyTheme>((theme) => ({
     container: {
         display: 'flex',
@@ -39,9 +39,7 @@ const useStyles = makeStyles<GridStudyTheme>((theme) => ({
 export const SecurityAnalusisResult: FunctionComponent<
     SecurityAnalysisResultProps
 > = ({ result, onClickNmKConstraint }) => {
-    console.log(' result final: ', result);
     const classes = useStyles();
-    const theme: GridStudyTheme = useTheme();
 
     const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -49,12 +47,6 @@ export const SecurityAnalusisResult: FunctionComponent<
         NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
     );
 
-    const intl = useIntl();
-
-    const securityAnalysisStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SECURITY_ANALYSIS]
-    );
     const switchNmkTypeResult = () => {
         setNmkTypeResult(
             nmkTypeResult === NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
@@ -116,11 +108,28 @@ export const SecurityAnalusisResult: FunctionComponent<
                 {tabIndex === 1 &&
                     nmkTypeResult ===
                         NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES && (
-                        <SecurityAnalysisResultTableNmKContingencies
+                        <SecurityAnalysisResultTableNmK
                             postContingencyResults={
                                 result?.postContingencyResults
                             }
                             onClickNmKConstraint={onClickNmKConstraint}
+                            nmkTypeResult={
+                                NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
+                            }
+                        />
+                    )}
+
+                {tabIndex === 1 &&
+                    nmkTypeResult ===
+                        NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS && (
+                        <SecurityAnalysisResultTableNmK
+                            postContingencyResults={
+                                result?.postContingencyResults
+                            }
+                            onClickNmKConstraint={onClickNmKConstraint}
+                            nmkTypeResult={
+                                NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS
+                            }
                         />
                     )}
             </div>

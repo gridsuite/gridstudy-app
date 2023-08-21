@@ -1,37 +1,49 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import {
     NmKConstraintRow,
+    PostContingencyResult,
     PostContingencyResultProps,
+    ResultConstraint,
 } from './security-analysis.type';
+import { GridStudyTheme } from '../../app-wrapper.type';
+import { useTheme } from '@mui/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import { IntlShape, useIntl } from 'react-intl';
 import {
     getNoRowsMessage,
     getRows,
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
-import {
-    flattenNmKresultsContingencies,
-    groupPostSort,
-    securityAnalysisTableNmKContingenciesColumnsDefinition,
-} from './security-analysis-result-utils';
-import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
-import { Button } from '@mui/material';
+import { ComputingType } from '../../computing-status/computing-type';
 import {
     GridReadyEvent,
     ICellRendererParams,
     PostSortRowsParams,
     RowClassParams,
 } from 'ag-grid-community';
-import makeStyles from '@mui/styles/makeStyles';
-import { GridStudyTheme } from '../../app-wrapper.type';
-import { useTheme } from '@mui/styles';
+import { Button } from '@mui/material';
+import {
+    flattenNmKresultsConstraints,
+    flattenNmKresultsContingencies,
+    groupPostSort,
+    NMK_TYPE_RESULT,
+    securityAnalysisTableNmKConstraintsColumnsDefinition,
+    securityAnalysisTableNmKContingenciesColumnsDefinition,
+} from './security-analysis-result-utils';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 
-export const SecurityAnalysisResultTableNmKContingencies: FunctionComponent<
+export const SecurityAnalysisResultTableNmK: FunctionComponent<
     PostContingencyResultProps
-> = ({ postContingencyResults, onClickNmKConstraint }) => {
+> = ({ postContingencyResults, onClickNmKConstraint, nmkTypeResult }) => {
     const theme: GridStudyTheme = useTheme();
     const useStyles = makeStyles<GridStudyTheme>((theme) => ({
         button: {
@@ -45,15 +57,16 @@ export const SecurityAnalysisResultTableNmKContingencies: FunctionComponent<
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
+    const isFromContingency = useMemo(
+        () => nmkTypeResult === NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES,
+        [nmkTypeResult]
+    );
+
     const SubjectIdRenderer = useCallback(
         (props: ICellRendererParams) => {
             const onClick = () => {
-                console.log(' daata :', props);
-                console.log(' daata :', typeof props?.node?.data);
-                console.log(' daata :', typeof props?.colDef);
                 const row: NmKConstraintRow = { ...props?.node?.data };
                 onClickNmKConstraint(row, props?.colDef);
-                console.log('alert bbbbbbbb');
             };
             if (props.value) {
                 return (
@@ -63,7 +76,7 @@ export const SecurityAnalysisResultTableNmKContingencies: FunctionComponent<
                 );
             }
         },
-        [classes.button]
+        [classes.button, onClickNmKConstraint]
     );
 
     const getRowStyle = useCallback(
@@ -79,6 +92,7 @@ export const SecurityAnalysisResultTableNmKContingencies: FunctionComponent<
         },
         [theme.selectedRow.background]
     );
+
     const defaultColDef = useMemo(
         () => ({
             sortable: true,
@@ -113,24 +127,47 @@ export const SecurityAnalysisResultTableNmKContingencies: FunctionComponent<
         );
     };
 
-    const securityAnalysisTableNmKContingenciesColumns = useMemo(() => {
-        return securityAnalysisTableNmKContingenciesColumnsDefinition(
+    const securityAnalysisColumns = useMemo(() => {
+        if (isFromContingency) {
+            return securityAnalysisTableNmKContingenciesColumnsDefinition(
+                intl,
+                SubjectIdRenderer
+            );
+        }
+        return securityAnalysisTableNmKConstraintsColumnsDefinition(
             intl,
             SubjectIdRenderer
         );
-    }, [intl]);
+    }, [intl, SubjectIdRenderer, isFromContingency]);
 
-    const rows = flattenNmKresultsContingencies(postContingencyResults, intl);
+    const getRowsResult = (
+        postContingencyResults: PostContingencyResult[],
+        intl: IntlShape,
+        isFromContingency: boolean
+    ) => {
+        if (isFromContingency) {
+            return flattenNmKresultsContingencies(postContingencyResults, intl);
+        }
+        return flattenNmKresultsConstraints(postContingencyResults, intl);
+    };
+
+    const rows: ResultConstraint[] = getRowsResult(
+        postContingencyResults,
+        intl,
+        isFromContingency
+    );
     const message = getNoRowsMessage(messages, rows, securityAnalysisStatus);
-
     const rowsToShow = getRows(rows, securityAnalysisStatus);
+
     return (
         <CustomAGGrid
             rowData={rowsToShow}
-            columnDefs={securityAnalysisTableNmKContingenciesColumns}
-            postSortRows={(params) => handlePostSortRows(params, true)}
+            columnDefs={securityAnalysisColumns}
+            postSortRows={(params) =>
+                handlePostSortRows(params, isFromContingency)
+            }
             defaultColDef={defaultColDef}
-            getRowStyle={(params) => getRowStyle(params, true)}
+            getRowStyle={(params) => getRowStyle(params, isFromContingency)}
             onGridReady={onGridReady}
             overlayNoRowsTemplate={message}
         />

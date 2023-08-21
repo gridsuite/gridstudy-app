@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import React, {
     FunctionComponent,
     useCallback,
@@ -5,6 +11,30 @@ import React, {
     useMemo,
     useState,
 } from 'react';
+
+import { useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
+import { useTheme } from '@mui/styles';
+import { Lens } from '@mui/icons-material';
+import makeStyles from '@mui/styles/makeStyles';
+import { green, red } from '@mui/material/colors';
+import {
+    GridReadyEvent,
+    ICellRendererParams,
+    RowClassParams,
+} from 'ag-grid-community';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+
+import { PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
+import { ComputingType } from '../../computing-status/computing-type';
+import { ReduxState } from '../../../redux/reducer.type';
+import { fetchLimitViolations } from '../../../utils/rest-api';
+import {
+    loadFlowCurrentViolationsColumnsDefinition,
+    loadFlowResultColumnsDefinition,
+    loadFlowVoltageViolationsColumnsDefinition,
+    makeData,
+} from './load-flow-result-utils';
 import {
     LimitTypes,
     LoadflowResultProps,
@@ -17,29 +47,7 @@ import {
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import { useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
-import { PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
-import { ComputingType } from '../../computing-status/computing-type';
-//import { useSnackMessage } from '@gridsuite/commons-ui/lib';
-import { ReduxState } from '../../../redux/reducer.type';
-import { fetchLimitViolations } from '../../../utils/rest-api';
-import {
-    loadFlowCurrentViolationsColumnsDefinition,
-    loadFlowResultColumnsDefinition,
-    loadFlowVoltageViolationsColumnsDefinition,
-    makeData,
-} from './load-flow-result-utils';
-import {
-    GridReadyEvent,
-    ICellRendererParams,
-    RowClassParams,
-} from 'ag-grid-community';
 import { GridStudyTheme } from '../../app-wrapper.type';
-import { useTheme } from '@mui/styles';
-import { Lens } from '@mui/icons-material';
-import makeStyles from '@mui/styles/makeStyles';
-import { green, red } from '@mui/material/colors';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -77,7 +85,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     const loadFlowStatus = useSelector(
         (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
     );
-    // const { snackError } = useSnackMessage();
+    const { snackError } = useSnackMessage();
 
     const defaultColDef = useMemo(
         () => ({
@@ -156,14 +164,13 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
                     setOverloadedEquipments(sortedLines);
                 })
                 .catch((error) => {
-                    //todo : add this
-                    /*  snackError({
+                    snackError({
                         messageTxt: error.message,
                         headerId: 'ErrFetchViolationsMsg',
-                    });*/
+                    });
                 });
         }
-    }, [studyUuid, nodeUuid, intl, limitReductionParam, result]);
+    }, [studyUuid, nodeUuid, intl, limitReductionParam, result, snackError]);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {

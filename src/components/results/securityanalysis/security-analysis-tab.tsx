@@ -1,22 +1,28 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { FunctionComponent } from 'react';
 import {
     NmKConstraintRow,
-    SecurityAnalysisResultProps,
     SecurityAnalysisTabProps,
 } from './security-analysis.type';
 import { useNodeData } from '../../study-container';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
 import { fetchLineOrTransformer } from '../../../utils/rest-api';
 import WaitingLoader from '../../utils/waiting-loader';
-import SecurityAnalysisResult from '../../security-analysis-result';
 import { SecurityAnalusisResult } from './security-analysis-result';
-import { IRowNode } from 'ag-grid-community';
 import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 export const SecurityAnalysisTab: FunctionComponent<
     SecurityAnalysisTabProps
 > = ({ studyUuid, nodeUuid, openVoltageLevelDiagram }) => {
     const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
+    const { snackError } = useSnackMessage();
 
     const [securityAnalysisResult, isWaiting] = useNodeData(
         studyUuid,
@@ -54,11 +60,10 @@ export const SecurityAnalysisTab: FunctionComponent<
                                     row.subjectId +
                                     "'"
                             );
-                            //todo: add snack error
-                            /* snackError({
+                            snackError({
                                 messageId: 'NetworkElementNotFound',
                                 messageValues: { elementId: row.subjectId },
-                            });*/
+                            });
                         } else {
                             openVoltageLevelDiagram(vlId);
                         }

@@ -13,7 +13,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
 import AlertInvalidNode from './utils/alert-invalid-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
@@ -22,7 +21,6 @@ import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simu
 import TabPanelLazy from './results/common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init-result-tab';
 import { ResultsTabsLevel, useResultsTab } from './results/use-results-tab';
-//import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import { SecurityAnalysisTab } from './results/securityanalysis/security-analysis-tab';
