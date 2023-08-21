@@ -82,9 +82,7 @@ export function saveFilter(filter, name) {
 }
 
 export function elementExists(directoryUuid, elementName, type) {
-    const existsElementUrl =
-        PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
+    const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
 
     console.debug(existsElementUrl);
     return backendFetch(existsElementUrl, { method: 'head' }).then(

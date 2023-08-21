@@ -1,9 +1,9 @@
-// /**
-//  * Copyright (c) 2022, RTE (http://www.rte-france.com)
-//  * This Source Code Form is subject to the terms of the Mozilla Public
-//  * License, v. 2.0. If a copy of the MPL was not distributed with this
-//  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//  */
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 import CustomMuiDialog from '../custom-mui-dialog';
 import NameWrapper from '../name-wrapper';
@@ -35,9 +35,8 @@ import {
 } from '../filters-save';
 import PropTypes from 'prop-types';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import DirectoryItemSelector from 'components/directory-item-selector';
-import { useIntl } from 'react-intl/lib';
 import { fetchPath } from 'services/directory';
 
 const emptyFormData = {

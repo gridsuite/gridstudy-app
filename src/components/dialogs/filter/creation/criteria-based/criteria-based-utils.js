@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ENERGY_SOURCES } from 'components/network/constants';
 import {
     COUNTRIES,
     COUNTRIES_1,
@@ -86,14 +87,7 @@ const energySource = {
     props: {
         label: 'EnergySourceText',
         name: `${CRITERIA_BASED}.${ENERGY_SOURCE}`,
-        options: [
-            { id: 'HYDRO', label: 'Hydro' },
-            { id: 'NUCLEAR', label: 'Nuclear' },
-            { id: 'WIND', label: 'Wind' },
-            { id: 'THERMAL', label: 'Thermal' },
-            { id: 'SOLAR', label: 'Solar' },
-            { id: 'OTHER', label: 'Other' },
-        ],
+        options: [ENERGY_SOURCES],
     },
 };
 

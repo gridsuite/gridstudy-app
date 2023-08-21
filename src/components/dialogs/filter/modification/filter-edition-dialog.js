@@ -1,19 +1,19 @@
-// /**
-//  * Copyright (c) 2022, RTE (http://www.rte-france.com)
-//  * This Source Code Form is subject to the terms of the Mozilla Public
-//  * License, v. 2.0. If a copy of the MPL was not distributed with this
-//  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
-//  */
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 import PropTypes from 'prop-types';
 import DirectoryItemSelector from 'components/directory-item-selector';
-import { useIntl } from 'react-intl/lib';
 import { elementType } from '@gridsuite/commons-ui';
 import { getFilterById } from 'services/filter';
 import { FILTER_TYPES } from 'components/network/constants';
 import CriteriaBasedFilterEditionDialog from './criteria-based/criteria-based-filter-edition-dialog';
 import ExplicitNamingFilterEditionDialog from './explicit-naming/explicit-naming-filter-edition-dialog';
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 
 const EditFilterDialog = ({ open, onClose }) => {
     const intl = useIntl();
