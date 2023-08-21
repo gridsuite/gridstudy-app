@@ -15,9 +15,9 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { makeStyles, useTheme } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Typography, useTheme } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
     grid: {
