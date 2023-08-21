@@ -244,11 +244,11 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     const renderLoadFlowResult = () => {
         const message = getNoRowsMessage(
             messages,
-            result.componentResults,
+            result?.componentResults,
             loadFlowStatus
         );
 
-        const rowsToShow = getRows(result.componentResults, loadFlowStatus);
+        const rowsToShow = getRows(result?.componentResults, loadFlowStatus);
         return (
             <CustomAGGrid
                 rowData={rowsToShow}
