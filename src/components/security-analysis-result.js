@@ -16,14 +16,14 @@ import MenuItem from '@mui/material/MenuItem';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
 import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
-import { Button } from '@mui/material';
-import { useTheme } from '@mui/styles';
+import { Button, useTheme } from '@mui/material';
 import {
     getNoRowsMessage,
     getRows,
     useIntlResultStatusMessages,
 } from './utils/aggrid-rows-handler';
 import { ComputingType } from './computing-status/computing-type';
+import CustomTooltipValues from './custom-aggrid/custom-tooltip-values';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -172,6 +172,10 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             ) {
                 rows.push({
                     contingencyId: postContingencyResult.contingency.id,
+                    contingencyEquipmentsIds:
+                        postContingencyResult.contingency.elements.map(
+                            (element) => element.id
+                        ),
                     computationStatus: postContingencyResult.status,
                     violationCount:
                         postContingencyResult.limitViolationsResult
@@ -213,11 +217,30 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
         },
         [onClickNmKConstraint, classes.button]
     );
+
+    const toolTipValueGetterValues = (params) => {
+        if (
+            params.data?.contingencyId &&
+            params.data?.contingencyEquipmentsIds
+        ) {
+            const values = Object.values(params.data?.contingencyEquipmentsIds);
+            const valuesToDisplay = values?.join(', ');
+
+            return {
+                title: null,
+                values: valuesToDisplay,
+            };
+        }
+        return null;
+    };
+
     const columnsNmKContingencies = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'ContingencyId' }),
                 field: 'contingencyId',
+                tooltipComponent: CustomTooltipValues,
+                tooltipValueGetter: toolTipValueGetterValues,
             },
             {
                 headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -399,6 +422,10 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
 
                         contingencies.push({
                             contingencyId: postContingencyResult.contingency.id,
+                            contingencyEquipmentsIds:
+                                postContingencyResult.contingency.elements.map(
+                                    (element) => element.id
+                                ),
                             computationStatus: postContingencyResult.status,
                             constraintId: limitViolation.subjectId,
                             limitType: intl.formatMessage({
@@ -425,6 +452,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             contingencies?.forEach((contingency) => {
                 rows.push({
                     contingencyId: contingency.contingencyId,
+                    contingencyEquipmentsIds:
+                        contingency.contingencyEquipmentsIds,
                     computationStatus: contingency.computationStatus,
                     constraintId: contingency.constraintId,
                     limitType: contingency.limitType,
@@ -452,6 +481,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             {
                 headerName: intl.formatMessage({ id: 'ContingencyId' }),
                 field: 'contingencyId',
+                tooltipComponent: CustomTooltipValues,
+                tooltipValueGetter: toolTipValueGetterValues,
             },
             {
                 headerName: intl.formatMessage({ id: 'ComputationStatus' }),

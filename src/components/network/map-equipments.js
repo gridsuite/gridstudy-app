@@ -10,7 +10,7 @@ import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
-} from '../../utils/rest-api';
+} from '../../services/study/network';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
@@ -169,7 +169,7 @@ export default class MapEquipments {
     }
 
     completeSubstationsInfos(equipementsToIndex) {
-        const nominalVoltagesSet = new Set();
+        const nominalVoltagesSet = new Set(this.nominalVoltages);
         if (equipementsToIndex?.length === 0) {
             this.substationsById = new Map();
             this.voltageLevelsById = new Map();

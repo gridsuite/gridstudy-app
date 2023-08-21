@@ -6,16 +6,16 @@
  */
 
 import {
-    backendFetch,
-    backendFetchJson,
-    backendFetchText,
-    getRequestParamFromList,
-} from '../../utils/rest-api';
-import {
     getStudyUrl,
     getStudyUrlWithNodeUuid,
     PREFIX_STUDY_QUERIES,
 } from './index';
+import {
+    backendFetch,
+    backendFetchJson,
+    backendFetchText,
+    getRequestParamFromList,
+} from '../utils';
 
 export function startSecurityAnalysis(
     studyUuid,

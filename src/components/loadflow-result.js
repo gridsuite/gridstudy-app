@@ -13,19 +13,19 @@ import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { fetchLimitViolations } from '../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl/lib';
 import { useSelector } from 'react-redux';
 import { PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material';
 import { ComputingType } from './computing-status/computing-type';
 import {
     getNoRowsMessage,
     getRows,
     useIntlResultStatusMessages,
 } from './utils/aggrid-rows-handler';
+import { fetchLimitViolations } from '../services/study';
 const LIMIT_TYPES = {
     HIGH_VOLTAGE: 'HIGH_VOLTAGE',
     LOW_VOLTAGE: 'LOW_VOLTAGE',

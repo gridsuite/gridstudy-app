@@ -41,7 +41,6 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { fetchNetworkElementInfos } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
@@ -62,13 +61,14 @@ import {
     REMOVE,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyGenerator } from '../../../../../services/study/network-modifications';
+import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -338,16 +338,6 @@ const GeneratorModificationDialog = ({
                 generatorToModify
             );
 
-            const isFrequencyRegulationOn =
-                generator[FREQUENCY_REGULATION] === true ||
-                (generator[FREQUENCY_REGULATION] === null &&
-                    generatorToModify?.activePowerControlOn === true);
-
-            const isVoltageRegulationOn =
-                generator[VOLTAGE_REGULATION] === true ||
-                (generator[VOLTAGE_REGULATION] === null &&
-                    generatorToModify?.voltageRegulatorOn);
-
             const isReactiveCapabilityCurveOn =
                 generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
@@ -368,18 +358,14 @@ const GeneratorModificationDialog = ({
                 generator[MAXIMUM_ACTIVE_POWER],
                 generator[RATED_NOMINAL_POWER],
                 generator[ACTIVE_POWER_SET_POINT],
-                !isVoltageRegulationOn
-                    ? generator[REACTIVE_POWER_SET_POINT]
-                    : null,
+                generator[REACTIVE_POWER_SET_POINT],
                 generator[VOLTAGE_REGULATION],
 
-                isVoltageRegulationOn ? generator[VOLTAGE_SET_POINT] : null,
+                generator[VOLTAGE_SET_POINT],
                 undefined,
                 undefined,
                 editData?.uuid,
-                isVoltageRegulationOn && isDistantRegulation
-                    ? generator[Q_PERCENT]
-                    : null,
+                generator[Q_PERCENT],
                 generator[PLANNED_ACTIVE_POWER_SET_POINT],
                 generator[MARGINAL_COST],
                 generator[PLANNED_OUTAGE_RATE],
@@ -392,7 +378,7 @@ const GeneratorModificationDialog = ({
                 isDistantRegulation ? generator[VOLTAGE_LEVEL]?.id : null,
                 isReactiveCapabilityCurveOn,
                 generator[FREQUENCY_REGULATION],
-                isFrequencyRegulationOn ? generator[DROOP] : null,
+                generator[DROOP],
                 isReactiveCapabilityCurveOn
                     ? null
                     : generator[MAXIMUM_REACTIVE_POWER],
