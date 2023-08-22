@@ -8,7 +8,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useFormContext } from 'react-hook-form';
-import SubmitButton from './submitButton';
+import { SubmitButton } from '@gridsuite/commons-ui';
 import ModificationDialogContent from './modification-dialog-content';
 
 /**
