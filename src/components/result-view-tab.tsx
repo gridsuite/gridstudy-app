@@ -30,10 +30,10 @@ import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensiti
 import {
     OptionalServicesNames,
     OptionalServicesStatus,
-    useServiceAvailabilityStatus,
 } from './utils/optional-services';
 import { CurrentTreeNode } from '../redux/reducer.type';
 import { UUID } from 'crypto';
+import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -103,19 +103,19 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const securityAnalysisAvailability = useServiceAvailabilityStatus(
+    const securityAnalysisAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SecurityAnalysis
     );
-    const sensitivityAnalysisUnavailability = useServiceAvailabilityStatus(
+    const sensitivityAnalysisUnavailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
-    const dynamicSimulationAvailability = useServiceAvailabilityStatus(
+    const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
     );
-    const voltageInitAvailability = useServiceAvailabilityStatus(
+    const voltageInitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.VoltageInit
     );
-    const shortCircuitAvailability = useServiceAvailabilityStatus(
+    const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
     );
 
@@ -203,7 +203,9 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'SensitivityAnalysis',
                 label: 'SensitivityAnalysis',
-                displayed: !sensitivityAnalysisUnavailability,
+                displayed:
+                    sensitivityAnalysisUnavailability ===
+                    OptionalServicesStatus.Up,
                 renderResult: renderSensitivityAnalysisResult,
             },
             {

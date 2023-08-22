@@ -8,7 +8,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getOptionalServiceByServerName } from './utils/optional-services';
+import {
+    getOptionalServiceByServerName,
+    OptionalServicesStatus,
+} from './utils/optional-services';
 import {
     Navigate,
     Route,
@@ -42,7 +45,7 @@ import {
     selectMapManualRefresh,
     selectEnableDeveloperMode,
     setParamsLoaded,
-    setUnavailableOptionalServices,
+    setOptionalServices,
 } from '../redux/actions';
 
 import {
@@ -56,7 +59,6 @@ import {
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
 
-import { getOptionalServices } from '../services/study/index';
 import {
     APP_NAME,
     COMMON_APP_NAME,
@@ -95,6 +97,7 @@ import {
     fetchConfigParameters,
 } from '../services/config';
 import { fetchDefaultParametersValues } from '../services/utils';
+import { getOptionalServices } from '../services/study';
 
 const noUserManager = { instance: null, error: null };
 
@@ -119,6 +122,8 @@ const App = () => {
     const showAuthenticationRouterLogin = useSelector(
         (state) => state.showAuthenticationRouterLogin
     );
+
+    const optionalServices = useSelector((state) => state.optionalServices);
 
     const [userManager, setUserManager] = useState(noUserManager);
 
@@ -435,21 +440,29 @@ const App = () => {
 
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
-                    const unavailableOptionalServices = services.map(
-                        (service) => {
-                            return {
-                                ...service,
-                                name: getOptionalServiceByServerName(
-                                    service.name
-                                ),
-                            };
-                        }
+                    const retrieveOptionalServices = services.map((service) => {
+                        return {
+                            ...service,
+                            name: getOptionalServiceByServerName(service.name),
+                        };
+                    });
+                    const optionalServicesNames = optionalServices.map(
+                        (service) => service.name
                     );
-                    dispatch(
-                        setUnavailableOptionalServices(
-                            unavailableOptionalServices
+                    optionalServicesNames
+                        .filter(
+                            (serviceName) =>
+                                !retrieveOptionalServices
+                                    .map((service) => service.name)
+                                    .includes(serviceName)
                         )
-                    );
+                        .forEach((serviceName) =>
+                            retrieveOptionalServices.push({
+                                name: serviceName,
+                                status: OptionalServicesStatus.Up,
+                            })
+                        );
+                    dispatch(setOptionalServices(retrieveOptionalServices));
                 })
                 .catch((error) => {
                     snackError({
@@ -483,6 +496,7 @@ const App = () => {
             };
         }
     }, [
+        optionalServices,
         user,
         dispatch,
         updateParams,

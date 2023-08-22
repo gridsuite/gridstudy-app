@@ -24,15 +24,15 @@ import {
 import {
     OptionalServicesNames,
     OptionalServicesStatus,
-    useServiceAvailabilityStatus,
 } from '../../utils/optional-services';
+import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [shortCircuitParams, setShortCircuitParams] = useState(null);
 
-    const shortCircuitAvailability = useServiceAvailabilityStatus(
+    const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
     );
 

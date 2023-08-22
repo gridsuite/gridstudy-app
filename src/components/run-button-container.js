@@ -55,8 +55,8 @@ import {
 import {
     OptionalServicesNames,
     OptionalServicesStatus,
-    useServiceAvailabilityStatus,
 } from './utils/optional-services';
+import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 
 export function RunButtonContainer({
     studyUuid,
@@ -124,19 +124,19 @@ export function RunButtonContainer({
         (state) => state.isModificationsInProgress
     );
 
-    const securityAnalysisAvailability = useServiceAvailabilityStatus(
+    const securityAnalysisAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SecurityAnalysis
     );
-    const sensitivityAnalysisUnavailability = useServiceAvailabilityStatus(
+    const sensitivityAnalysisUnavailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
-    const dynamicSimulationAvailability = useServiceAvailabilityStatus(
+    const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
     );
-    const voltageInitAvailability = useServiceAvailabilityStatus(
+    const voltageInitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.VoltageInit
     );
-    const shortCircuitAvailability = useServiceAvailabilityStatus(
+    const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
     );
 

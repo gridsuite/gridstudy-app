@@ -39,15 +39,15 @@ import {
 import {
     OptionalServicesNames,
     OptionalServicesStatus,
-    useServiceAvailabilityStatus,
 } from '../../../utils/optional-services';
+import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [voltageInitParams, setVoltageInitParams] = useState(null);
 
-    const voltageInitAvailability = useServiceAvailabilityStatus(
+    const voltageInitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.VoltageInit
     );
 

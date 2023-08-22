@@ -78,8 +78,8 @@ import {
 import {
     OptionalServicesNames,
     OptionalServicesStatus,
-    useServiceAvailabilityStatus,
 } from '../../utils/optional-services';
+import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -542,19 +542,19 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const securityAnalysisAvailability = useServiceAvailabilityStatus(
+    const securityAnalysisAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SecurityAnalysis
     );
-    const sensitivityAnalysisAvailability = useServiceAvailabilityStatus(
+    const sensitivityAnalysisAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
-    const dynamicSimulationAvailability = useServiceAvailabilityStatus(
+    const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
     );
-    const voltageInitAvailability = useServiceAvailabilityStatus(
+    const voltageInitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.VoltageInit
     );
-    const shortCircuitAvailability = useServiceAvailabilityStatus(
+    const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
     );
 

@@ -668,11 +668,11 @@ export function setComputingStatus(computingType, runningStatus) {
     };
 }
 
-export const SET_UNAVAILABLE_OPTIONAL_SERVICES = 'SET_UNAVAILABLE_SERVICES';
+export const SET_OPTIONAL_SERVICES = 'SET_SERVICES';
 
-export const setUnavailableOptionalServices = (unavailableOptionalServices) => {
+export const setOptionalServices = (optionalServices) => {
     return {
-        type: SET_UNAVAILABLE_OPTIONAL_SERVICES,
-        unavailableOptionalServices: unavailableOptionalServices,
+        type: SET_OPTIONAL_SERVICES,
+        optionalServices: optionalServices,
     };
 };

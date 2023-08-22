@@ -1,6 +1,3 @@
-import { useSelector } from 'react-redux';
-import { ReduxState } from '../../redux/reducer.type';
-
 export enum OptionalServicesNames {
     SecurityAnalysis = 'SecurityAnalysis',
     SensitivityAnalysis = 'SensitivityAnalysis',
@@ -11,6 +8,7 @@ export enum OptionalServicesNames {
 export enum OptionalServicesStatus {
     Up = 'UP',
     Down = 'DOWN',
+    Pending = 'PENDING',
 }
 
 export interface IOptionalService {
@@ -34,15 +32,4 @@ export const getOptionalServiceByServerName = (
         default:
             return;
     }
-};
-export const useServiceAvailabilityStatus = (
-    serviceName: OptionalServicesNames
-): OptionalServicesStatus | undefined => {
-    const unavailableOptionalServices = useSelector(
-        (state: ReduxState) => state.unavailableOptionalServices
-    );
-    const optionalService = unavailableOptionalServices?.find(
-        (service) => service.name === serviceName
-    );
-    return optionalService?.status;
 };

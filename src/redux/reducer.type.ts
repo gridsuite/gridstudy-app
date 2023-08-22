@@ -16,7 +16,7 @@ export interface ReduxState {
     studyUuid: UUID;
     currentTreeNode: CurrentTreeNode;
     computingStatus: ComputingStatus;
-    unavailableOptionalServices: IOptionalService[] | null;
+    optionalServices: IOptionalService[];
 }
 
 export interface StudyUpdatedEventDataHeader {

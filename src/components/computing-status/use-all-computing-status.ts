@@ -26,10 +26,8 @@ import {
 } from '../../services/study/short-circuit-analysis';
 import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
 import { fetchLoadFlowStatus } from '../../services/study/loadflow';
-import {
-    OptionalServicesNames,
-    useServiceAvailabilityStatus,
-} from '../utils/optional-services';
+import { OptionalServicesNames } from '../utils/optional-services';
+import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
@@ -63,19 +61,19 @@ export const useAllComputingStatus = (
     studyUuid: UUID,
     currentNodeUuid: UUID
 ): void => {
-    const securityAnalysisAvailability = useServiceAvailabilityStatus(
+    const securityAnalysisAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SecurityAnalysis
     );
-    const sensitivityAnalysisAvailability = useServiceAvailabilityStatus(
+    const sensitivityAnalysisAvailability = useOptionalServiceStatus(
         OptionalServicesNames.SensitivityAnalysis
     );
-    const dynamicSimulationAvailability = useServiceAvailabilityStatus(
+    const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
     );
-    const voltageInitAvailability = useServiceAvailabilityStatus(
+    const voltageInitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.VoltageInit
     );
-    const shortCircuitAvailability = useServiceAvailabilityStatus(
+    const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
     );
 

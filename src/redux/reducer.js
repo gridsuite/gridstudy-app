@@ -91,7 +91,7 @@ import {
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_POST_LOADFLOW,
     SET_COMPUTING_STATUS,
-    SET_UNAVAILABLE_OPTIONAL_SERVICES,
+    SET_OPTIONAL_SERVICES,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -130,6 +130,10 @@ import { CopyType } from 'components/network-modification-tree-pane';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/utils/node-insert-modes';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../components/utils/optional-services';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -221,7 +225,28 @@ const initialState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     computingStatus: { ...initialComputingStatus },
-    unavailableOptionalServices: null,
+    optionalServices: [
+        {
+            name: OptionalServicesNames.SecurityAnalysis,
+            status: OptionalServicesStatus.Pending,
+        },
+        {
+            name: OptionalServicesNames.ShortCircuit,
+            status: OptionalServicesStatus.Pending,
+        },
+        {
+            name: OptionalServicesNames.SensitivityAnalysis,
+            status: OptionalServicesStatus.Pending,
+        },
+        {
+            name: OptionalServicesNames.DynamicSimulation,
+            status: OptionalServicesStatus.Pending,
+        },
+        {
+            name: OptionalServicesNames.VoltageInit,
+            status: OptionalServicesStatus.Pending,
+        },
+    ],
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1013,8 +1038,8 @@ export const reducer = createReducer(initialState, {
     [SET_COMPUTING_STATUS]: (state, action) => {
         state.computingStatus[action.computingType] = action.runningStatus;
     },
-    [SET_UNAVAILABLE_OPTIONAL_SERVICES]: (state, action) => {
-        state.unavailableOptionalServices = action.unavailableOptionalServices;
+    [SET_OPTIONAL_SERVICES]: (state, action) => {
+        state.optionalServices = action.optionalServices;
     },
 });
 

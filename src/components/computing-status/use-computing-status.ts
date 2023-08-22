@@ -80,7 +80,7 @@ function isWorthUpdate(
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
- * @param optionalServiceAvailabilityStatus service availability status
+ * @param optionalServiceAvailabilityStatus status of an optional service
  */
 export const useComputingStatus: UseComputingStatusProps = (
     studyUuid,
