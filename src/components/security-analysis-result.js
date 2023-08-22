@@ -16,8 +16,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
 import { DEFAULT_SORT_ORDER } from './spreadsheet/utils/config-tables';
-import { Button } from '@mui/material';
-import { useTheme } from '@mui/styles';
+import { Button, useTheme } from '@mui/material';
 import {
     getNoRowsMessage,
     getRows,
