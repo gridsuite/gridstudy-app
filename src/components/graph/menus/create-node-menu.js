@@ -174,11 +174,14 @@ const CreateNodeMenu = ({
             selectionForCopy?.copyType === CopyType.SUBTREE_CUT
         );
     }
+    function isNodeHasChildren(node, treeModel) {
+        return treeModel.treeNodes.some(
+            (item) => item.data.parentNodeUuid === node.id
+        );
+    }
     function isSubtreeRemovingAllowed() {
         // check if the subtree has children
-        return treeModel.treeNodes.some(
-            (item) => item.data.parentNodeUuid === activeNode.id
-        );
+        return isNodeHasChildren(activeNode, treeModel);
     }
     const NODE_MENU_ITEMS = {
         BUILD_NODE: {
