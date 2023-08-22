@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import RadioInput from 'components/utils/rhf-inputs/radio-input';
+import { RadioInput } from '@gridsuite/commons-ui';
 import {
     ACTIVE_VARIATION_MODES,
     VARIATION_TYPES,
