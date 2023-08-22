@@ -513,7 +513,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         setIsStudyNetworkFound(false);
                         recreateStudyNetwork(studyUuid)
                             .then(() => {
-                                snackError({
+                                snackWarning({
                                     headerId: 'recreatingNetworkStudy',
                                 });
                             })
@@ -539,15 +539,15 @@ export function StudyContainer({ view, onChangeTab }) {
                     }
                 })
                 .catch(() => {
-                    // unknown error when fetching network
+                    // unknown error when checking network existence
                     setErrorMessage(
                         intlRef.current.formatMessage({
-                            id: 'fetchNetworkError',
+                            id: 'checkNetworkExistenceError',
                         })
                     );
                 });
         },
-        [studyUuid, loadTree, snackError, intlRef]
+        [studyUuid, loadTree, snackError, snackWarning, intlRef]
     );
 
     useEffect(() => {
