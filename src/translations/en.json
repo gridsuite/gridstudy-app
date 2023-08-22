@@ -917,6 +917,10 @@
     "TargetVPoint3": "Voltage set point (KV) 3",
     "VoltageSetpointKV": "Voltage set point (KV)",
     "ReactivePowerSetpointMVAR": "Reactive power set point (MVAR)",
+    "RatioTapChangerPosition": "Ratio tap",
+    "Leg": "Leg",
+    "Transformers": "Transformers",
+
     "EmptyList/bbs": "Bus Bar list is empty",
     "EmptyList/connections": "Connections list is empty",
     "EmptyList/variations": "Variations list is empty",
