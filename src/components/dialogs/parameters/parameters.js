@@ -412,7 +412,10 @@ export const useParametersBackend = (
     ]);
 
     useEffect(() => {
-        if (studyUuid) {
+        if (
+            studyUuid &&
+            parameterAvailabilityStatus === OptionalServicesStatus.Up
+        ) {
             if (backendFetchParameters) {
                 backendFetchParameters(studyUuid)
                     .then((params) => {
@@ -456,6 +459,7 @@ export const useParametersBackend = (
         }
     }, [
         type,
+        parameterAvailabilityStatus,
         backendFetchParameters,
         backendFetchSpecificParameters,
         backendFetchProvider,

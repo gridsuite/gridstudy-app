@@ -21,14 +21,26 @@ import {
     getShortCircuitParameters,
     setShortCircuitParameters,
 } from '../../../services/study/short-circuit-analysis';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+    useServiceAvailabilityStatus,
+} from '../../utils/optional-services';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [shortCircuitParams, setShortCircuitParams] = useState(null);
 
+    const shortCircuitAvailability = useServiceAvailabilityStatus(
+        OptionalServicesNames.ShortCircuit
+    );
+
     useEffect(() => {
-        if (studyUuid) {
+        if (
+            studyUuid &&
+            shortCircuitAvailability === OptionalServicesStatus.Up
+        ) {
             getShortCircuitParameters(studyUuid)
                 .then((params) => setShortCircuitParams(params))
                 .catch((error) => {
@@ -38,7 +50,7 @@ export const useGetShortCircuitParameters = () => {
                     });
                 });
         }
-    }, [studyUuid, snackError]);
+    }, [shortCircuitAvailability, studyUuid, snackError]);
 
     return [shortCircuitParams, setShortCircuitParams];
 };
