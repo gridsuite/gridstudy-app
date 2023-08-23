@@ -810,6 +810,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             <TwoWindingsTransformerCharacteristicsPane
                                 twtToModify={twtToModify}
                                 isModification
+                                customStyle={{ marginTop: '0px' }}
                             />
                         </Box>
 

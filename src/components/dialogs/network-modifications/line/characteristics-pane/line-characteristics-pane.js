@@ -26,17 +26,15 @@ import {
     SHUNT_SUSCEPTANCE_2,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import { unitToMicroUnit } from 'utils/rounding';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
-const useStyles = makeStyles(() => ({
+const styles = {
     h3: {
         marginTop: 0,
         marginBottom: 0,
     },
-}));
+};
 
 const LineCharacteristicsPane = ({
     id = CHARACTERISTICS,
@@ -46,8 +44,6 @@ const LineCharacteristicsPane = ({
     lineToModify,
     clearableFields = false,
 }) => {
-    const classes = useStyles();
-
     const currentNodeUuid = currentNode.id;
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     useEffect(() => {
@@ -146,13 +142,11 @@ const LineCharacteristicsPane = ({
         <>
             {displayConnectivity && (
                 <>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id={'Connectivity'} />
-                            </h3>
-                        </Grid>
-                    </Grid>
+                    <GridSection
+                        title="Connectivity"
+                        heading="3"
+                        customStyle={styles.h3}
+                    />
                     <GridSection title="Side1" heading="4" />
                     <Grid container spacing={2}>
                         {gridItem(connectivity1Field, 12)}
