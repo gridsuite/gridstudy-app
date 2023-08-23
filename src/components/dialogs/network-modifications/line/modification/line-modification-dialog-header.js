@@ -10,7 +10,7 @@ import { EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { Box, Grid } from '@mui/material';
 import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
 import LineDialogTabs from '../line-dialog-tabs';
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import { TextField } from '@mui/material';
 
 const LineModificationDialogHeader = ({

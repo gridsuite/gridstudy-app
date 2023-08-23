@@ -11,7 +11,7 @@ import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
-import IntegerInput from 'components/utils/rhf-inputs/integer-input';
+import { IntegerInput } from '@gridsuite/commons-ui';
 import DndTable, {
     MAX_ROWS_NUMBER,
 } from 'components/utils/dnd-table/dnd-table';
