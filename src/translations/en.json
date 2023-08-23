@@ -1062,6 +1062,6 @@
     "deleteSubTreeConfirmation": "Are you sure you want to delete node \"{nodeName}\" and its sub-tree with {nodesNumber} nodes ?",
 
     "IpMin": "ISC min (kA)",
-    "IpMax": "ISC max (kA)"
+    "IpMax": "ISC max (kA)",
     "StartupCost": "Startup cost"
 }
