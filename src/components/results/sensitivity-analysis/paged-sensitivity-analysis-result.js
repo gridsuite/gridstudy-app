@@ -20,7 +20,6 @@ import CustomTablePagination from '../../utils/custom-table-pagination';
 import { fetchSensitivityAnalysisResult } from '../../../services/study/sensitivity-analysis';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
-import { CircularProgress } from '@mui/material';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
