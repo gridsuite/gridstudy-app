@@ -7,7 +7,7 @@
 
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import DirectoryItemsInput from 'components/utils/rhf-inputs/directory-items-input';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import {
     LOSS_COEFFICIENT,
     DEFAULT_OUTAGE_RATE,
@@ -23,7 +23,7 @@ import {
 import { elementType } from '@gridsuite/commons-ui';
 import FrequencyReservePane from './frequency-reserve-pane';
 import { FormattedMessage } from 'react-intl';
-import { FieldLabel } from '../../../utils/inputs/hooks-helpers';
+import { FieldLabel } from '@gridsuite/commons-ui';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
 
 const GenerationDispatchForm = () => {
