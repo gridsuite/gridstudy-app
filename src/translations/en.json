@@ -777,7 +777,7 @@
     "TargetVoltage": "Voltage",
     "TargetVoltageGreaterThanZero": "Voltage value must be strictly positive",
     "Deadband": "Deadband",
-    "TargetDeadbandGreaterThanZero": "Deadband value must be strictly positive",
+    "TargetDeadbandGreaterThanZero": "Deadband value must be non-negative",
     "LowTapPosition": "Low tap position",
     "HighTapPosition": "High tap position",
     "TapPosition": "Tap position",
