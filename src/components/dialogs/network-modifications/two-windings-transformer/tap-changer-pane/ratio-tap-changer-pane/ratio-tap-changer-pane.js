@@ -238,7 +238,7 @@ const RatioTapChangerPane = ({
                     !ratioTapChangerEnabledWatcher ||
                     !isRatioTapLoadTapChangingCapabilitiesOn,
             }}
-            previousValue={previousValues?.[RATIO_TAP_CHANGER]?.targetDeadBand}
+            previousValue={previousValues?.[RATIO_TAP_CHANGER]?.targetDeadband}
         />
     );
 
