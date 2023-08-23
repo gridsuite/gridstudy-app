@@ -213,10 +213,10 @@ export const VoltageInitParameters = ({
     const fromVoltageInitParamsDataToFormValues = useCallback(
         (parameters) => {
             reset({
-                [VOLTAGE_LIMITS]: parameters.voltageLimits.map(
-                    (voltageLimit) => {
+                [VOLTAGE_LIMITS]:
+                    parameters.voltageLimits?.map((voltageLimit) => {
                         return {
-                            [FILTERS]: voltageLimit[FILTERS].map((filter) => {
+                            [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {
                                 return {
                                     [ID]: filter[FILTER_ID],
                                     [NAME]: filter[FILTER_NAME],
@@ -227,8 +227,7 @@ export const VoltageInitParameters = ({
                             [HIGH_VOLTAGE_LIMIT]:
                                 voltageLimit[HIGH_VOLTAGE_LIMIT],
                         };
-                    }
-                ),
+                    }) ?? [],
                 [FIXED_GENERATORS]: parameters[FIXED_GENERATORS]?.map(
                     (filter) => {
                         return {
