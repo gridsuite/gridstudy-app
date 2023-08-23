@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuid } from './index';
+import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../components/utils/equipment-types';
 import {
+    backendFetch,
     backendFetchJson,
     getRequestParamFromList,
     getUrlWithToken,
@@ -433,6 +434,12 @@ export function fetchStaticVarCompensators(
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
+
+export const fetchNetworkExistence = (studyUuid) => {
+    const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network`;
+
+    return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
+};
 
 /* export-network */
 export function getExportUrl(studyUuid, nodeUuid, exportFormat) {

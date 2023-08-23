@@ -2,6 +2,8 @@ declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
     import { RadioGroupProps, TextFieldProps } from '@mui/material';
+    import { CaseImportParameters } from 'services/network-conversion';
+    import { TextFieldProps } from '@mui/material';
 
     interface SnackInputs {
         messageTxt?: string;
@@ -125,4 +127,13 @@ declare module '@gridsuite/commons-ui' {
         optional?: boolean;
         values?: any; // it's for values from https://formatjs.io/docs/react-intl/components/#formattedmessage
     }>;
+
+    interface FlatParametersProps extends Pick<TextFieldProps, 'variant'> {
+        paramsAsArray: CaseImportParameters[];
+        initValues: Record<string, any>;
+        onChange: (paramName: string, value: any, isEdit: boolean) => void;
+        showSeparator?: boolean;
+    }
+
+    export const FlatParameters: FunctionComponent<FlatParametersProps>;
 }
