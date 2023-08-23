@@ -21,7 +21,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import makeStyles from '@mui/styles/makeStyles';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import {
     AmpereAdornment,
     gridItem,
