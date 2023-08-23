@@ -22,9 +22,9 @@ import {
     ReactivePowerAdornment,
 } from '../../../dialogUtils';
 import { LOAD_TYPES } from 'components/network/constants';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { FloatInput } from '@gridsuite/commons-ui';
+import { SelectInput } from '@gridsuite/commons-ui';
+import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';

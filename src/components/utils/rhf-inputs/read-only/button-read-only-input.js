@@ -7,7 +7,7 @@
 
 import { useController } from 'react-hook-form';
 import { InputAdornment, TextField } from '@mui/material';
-import { genHelperError } from '../../inputs/hooks-helpers';
+import { genHelperError } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material';
 
