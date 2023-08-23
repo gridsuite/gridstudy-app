@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { getObjectId } from 'components/utils/utils';
 import {
     EQUIPMENT_NAME,
@@ -17,8 +17,8 @@ import {
     NOMINAL_VOLTAGE,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
-import TextInput from 'components/utils/rhf-inputs/text-input';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { TextInput } from '@gridsuite/commons-ui';
+import { FloatInput } from '@gridsuite/commons-ui';
 import {
     filledTextField,
     gridItem,
