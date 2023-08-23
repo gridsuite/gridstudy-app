@@ -45,6 +45,41 @@ const toolTipValueGetterProperties = (params) => {
     return properties ? { title: null, properties: { ...properties } } : null;
 };
 
+const generateEditableNumericColumnDefinition = (
+    id,
+    field,
+    fractionDigits,
+    changeCmd,
+    minExpression,
+    maxExpression,
+    excludeFromGlobalFilter
+) => {
+    return {
+        id: id,
+        field: field,
+        numeric: true,
+        filter: 'agNumberColumnFilter',
+        fractionDigits: fractionDigits,
+        changeCmd: changeCmd,
+        editable: true,
+        cellEditor: NumericalField,
+        cellEditorParams: (params) => {
+            return {
+                ...(minExpression && { minExpression: minExpression }),
+                ...(maxExpression && { maxExpression: maxExpression }),
+                defaultValue: params.data[field],
+                gridContext: params.context,
+                gridApi: params.api,
+                data: params.data,
+                colDef: params.colDef,
+            };
+        },
+        ...(excludeFromGlobalFilter && {
+            getQuickFilterText: excludeFromGlobalFilter,
+        }),
+    };
+};
+
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,
@@ -103,90 +138,41 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
             },
-            {
-                id: 'LowVoltageLimitkV',
-                field: 'lowVoltageLimit',
-                numeric: true,
-                filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
-                changeCmd: 'equipment.setLowVoltageLimit({})\n',
-                editable: true,
-                cellEditor: NumericalField,
-                cellEditorParams: (params) => {
-                    return {
-                        maxExpression: 'highVoltageLimit',
-                        defaultValue: params.data.lowVoltageLimit,
-                        gridContext: params.context,
-                        gridApi: params.api,
-                        data: params.data,
-                        colDef: params.colDef,
-                    };
-                },
-                getQuickFilterText: excludeFromGlobalFilter,
-            },
-            {
-                id: 'HighVoltageLimitkV',
-                field: 'highVoltageLimit',
-                numeric: true,
-                filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
-                changeCmd: 'equipment.setHighVoltageLimit({})\n',
-                editable: true,
-                cellEditor: NumericalField,
-                cellEditorParams: (params) => {
-                    return {
-                        minExpression: 'lowVoltageLimit',
-                        defaultValue: params.data.highVoltageLimit,
-                        gridContext: params.context,
-                        gridApi: params.api,
-                        data: params.data,
-                        colDef: params.colDef,
-                    };
-                },
-                getQuickFilterText: excludeFromGlobalFilter,
-            },
-            {
-                id: 'IpMin',
-                field: 'ipMin',
-                numeric: true,
-                filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
-                changeCmd: 'equipment.setIpMin({})\n',
-                editable: true,
-                cellEditor: NumericalField,
-                cellEditorParams: (params) => {
-                    return {
-                        maxExpression: 'ipMax',
-                        defaultValue: params.data.ipMin,
-                        gridContext: params.context,
-                        gridApi: params.api,
-                        data: params.data,
-                        colDef: params.colDef,
-                    };
-                },
-                getQuickFilterText: excludeFromGlobalFilter,
-            },
-            {
-                id: 'IpMax',
-                field: 'ipMax',
-                numeric: true,
-                filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
-                changeCmd: 'equipment.setIpMax({})\n',
-                editable: true,
-                cellEditor: NumericalField,
-                cellEditorParams: (params) => {
-                    return {
-                        minExpression: 'ipMin',
-                        defaultValue: params.data.ipMax,
-                        gridContext: params.context,
-                        gridApi: params.api,
-                        data: params.data,
-                        colDef: params.colDef,
-                    };
-                },
-                getQuickFilterText: excludeFromGlobalFilter,
-            },
+            generateEditableNumericColumnDefinition(
+                'LowVoltageLimitkV',
+                'lowVoltageLimit',
+                1,
+                'equipment.setLowVoltageLimit({})\n',
+                undefined,
+                'highVoltageLimit',
+                excludeFromGlobalFilter
+            ),
+            generateEditableNumericColumnDefinition(
+                'HighVoltageLimitkV',
+                'highVoltageLimit',
+                1,
+                'equipment.setHighVoltageLimit({})\n',
+                'lowVoltageLimit',
+                undefined,
+                excludeFromGlobalFilter
+            ),
+            generateEditableNumericColumnDefinition(
+                'IpMin',
+                'ipMin',
+                1,
+                'equipment.setIpMin({})\n',
+                undefined,
+                excludeFromGlobalFilter
+            ),
+            generateEditableNumericColumnDefinition(
+                'IpMax',
+                'ipMax',
+                1,
+                'equipment.setIpMax({})\n',
+                'ipMin',
+                undefined,
+                excludeFromGlobalFilter
+            ),
         ],
     },
 
