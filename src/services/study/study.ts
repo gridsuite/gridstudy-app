@@ -23,17 +23,17 @@ export const recreateStudyNetworkFromExistingCase = (
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('caseUuid', caseUuid);
 
-    const recreateStudyUrl =
+    const recreateStudyNetworkUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/network?' +
         urlSearchParams.toString();
 
-    console.debug(recreateStudyUrl);
+    console.debug(recreateStudyNetworkUrl);
 
-    return backendFetch(recreateStudyUrl, {
-        method: 'put',
+    return backendFetch(recreateStudyNetworkUrl, {
+        method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(importParameters),
     });
@@ -42,16 +42,16 @@ export const recreateStudyNetworkFromExistingCase = (
 export const recreateStudyNetwork = (
     studyUuid: UUID
 ): Promise<BasicStudyInfos> => {
-    const recreateStudyUrl =
+    const recreateStudyNetworkUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/network';
 
-    console.debug(recreateStudyUrl);
+    console.debug(recreateStudyNetworkUrl);
 
-    return backendFetch(recreateStudyUrl, {
-        method: 'put',
+    return backendFetch(recreateStudyNetworkUrl, {
+        method: 'post',
         headers: { 'Content-Type': 'application/json' },
     });
 };
