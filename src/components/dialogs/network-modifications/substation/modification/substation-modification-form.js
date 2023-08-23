@@ -8,7 +8,7 @@
 import Grid from '@mui/material/Grid';
 import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
 import React, { useCallback } from 'react';
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import {
     ADDITIONAL_PROPERTIES,
     COUNTRY,

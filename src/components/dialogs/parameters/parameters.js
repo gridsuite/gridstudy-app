@@ -244,6 +244,12 @@ export const TabPanel = (props) => {
 
 const INITIAL_PROVIDERS = {};
 
+const FETCHING_STATUS = {
+    NOT_STARTED: 'not_started',
+    FETCHING: 'fetching',
+    FINISHED: 'finished',
+};
+
 export const useParametersBackend = (
     user,
     type,
@@ -259,14 +265,10 @@ export const useParametersBackend = (
     const studyUuid = useSelector((state) => state.studyUuid);
     const { snackError } = useSnackMessage();
 
-    const [providers, setProviders] = useState(INITIAL_PROVIDERS);
-    const providersRef = useRef();
-    providersRef.current = providers;
+    const providersRef = useRef(INITIAL_PROVIDERS);
+    const [provider, setProvider] = useState();
 
-    const [provider, setProvider] = useState(null);
-    const providerRef = useRef();
-    providerRef.current = provider;
-
+    const [fetching, setFetching] = useState(FETCHING_STATUS.NOT_STARTED);
     const [params, setParams] = useState(null);
 
     const [specificParamsDescription, setSpecificParamsDescription] =
@@ -293,7 +295,9 @@ export const useParametersBackend = (
     const updateProvider = useCallback(
         (newProvider) => {
             backendUpdateProvider(studyUuid, newProvider)
-                .then(() => setProvider(newProvider))
+                .then(() => {
+                    setProvider(newProvider);
+                })
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -313,7 +317,7 @@ export const useParametersBackend = (
                         defaultProvider in providersRef.current
                             ? defaultProvider
                             : providerNames[0];
-                    if (newProvider !== providerRef.current) {
+                    if (newProvider !== provider) {
                         updateProvider(newProvider);
                     }
                 }
@@ -324,7 +328,13 @@ export const useParametersBackend = (
                     headerId: 'fetchDefault' + type + 'ProviderError',
                 });
             });
-    }, [type, backendFetchDefaultProvider, updateProvider, snackError]);
+    }, [
+        backendFetchDefaultProvider,
+        provider,
+        updateProvider,
+        snackError,
+        type,
+    ]);
 
     const updateParameter = useCallback(
         (newParams) => {
@@ -386,6 +396,7 @@ export const useParametersBackend = (
             user !== null &&
             optionalServiceStatus === OptionalServicesStatus.Up
         ) {
+            setFetching(FETCHING_STATUS.FETCHING);
             backendFetchProviders()
                 .then((providers) => {
                     // we can consider the provider gotten from back will be also used as
@@ -394,7 +405,7 @@ export const useParametersBackend = (
                         obj[v] = v;
                         return obj;
                     }, {});
-                    setProviders(providersObj);
+                    providersRef.current = providersObj;
                 })
                 .catch((error) => {
                     snackError({
@@ -402,66 +413,73 @@ export const useParametersBackend = (
                         headerId: 'fetch' + type + 'ProvidersError',
                     });
                 });
+            setFetching(FETCHING_STATUS.FINISHED);
         }
     }, [user, backendFetchProviders, type, snackError, optionalServiceStatus]);
 
     useEffect(() => {
         if (studyUuid && optionalServiceStatus === OptionalServicesStatus.Up) {
-            if (backendFetchParameters) {
-                backendFetchParameters(studyUuid)
-                    .then((params) => {
-                        setParams(params);
+            if (fetching === FETCHING_STATUS.FINISHED && !provider) {
+                backendFetchProvider(studyUuid)
+                    .then((provider) => {
+                        // if provider is not defined or not among allowed values, it's set to default value
+                        if (provider in providersRef.current) {
+                            setProvider(provider);
+                        } else {
+                            resetProvider();
+                        }
                     })
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
-                            headerId: 'fetch' + type + 'ParametersError',
-                        });
-                    });
-            }
-            backendFetchProvider(studyUuid)
-                .then((provider) => {
-                    // if provider is not defined or not among allowed values, it's set to default value
-                    if (provider in providersRef.current) {
-                        setProvider(provider);
-                    } else {
-                        resetProvider();
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'fetch' + type + 'ProviderError',
-                    });
-                });
-            if (backendFetchSpecificParameters) {
-                backendFetchSpecificParameters()
-                    .then((specificParams) => {
-                        setSpecificParamsDescription(specificParams);
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId:
-                                'fetch' + type + 'SpecificParametersError',
+                            headerId: 'fetch' + type + 'ProviderError',
                         });
                     });
             }
         }
     }, [
-        type,
         optionalServiceStatus,
-        backendFetchParameters,
-        backendFetchSpecificParameters,
         backendFetchProvider,
-        studyUuid,
-        snackError,
+        fetching,
+        provider,
         resetProvider,
-        setParams,
+        snackError,
+        studyUuid,
+        type,
     ]);
 
+    useEffect(() => {
+        if (studyUuid && backendFetchSpecificParameters && optionalServiceStatus === OptionalServicesStatus.Up) {
+            backendFetchSpecificParameters()
+                .then((specificParams) => {
+                    setSpecificParamsDescription(specificParams);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'fetch' + type + 'SpecificParametersError',
+                    });
+                });
+        }
+    }, [optionalServiceStatus, backendFetchSpecificParameters, snackError, studyUuid, type]);
+
+    useEffect(() => {
+        if (studyUuid && backendFetchParameters && optionalServiceStatus === OptionalServicesStatus.Up) {
+            backendFetchParameters(studyUuid)
+                .then((params) => {
+                    setParams(params);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'fetch' + type + 'ParametersError',
+                    });
+                });
+        }
+    }, [optionalServiceStatus, backendFetchParameters, snackError, studyUuid, type]);
+
     return [
-        providers,
+        providersRef.current,
         provider,
         updateProvider,
         resetProvider,

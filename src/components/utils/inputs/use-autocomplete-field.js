@@ -20,7 +20,7 @@ import {
     FieldLabel,
     genHelperError,
     genHelperPreviousValue,
-} from './hooks-helpers';
+} from '@gridsuite/commons-ui';
 
 const QUESTIONABLE_SIZE = 1000;
 

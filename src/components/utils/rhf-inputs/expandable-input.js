@@ -15,8 +15,8 @@ import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
 import { useStyles } from '../../dialogs/dialogUtils';
-import ErrorInput from './error-inputs/error-input';
-import MidFormError from './error-inputs/mid-form-error';
+import { ErrorInput } from '@gridsuite/commons-ui';
+import { MidFormError } from '@gridsuite/commons-ui';
 
 // This component is used to display Array of objects.
 // We can manage 2 states for deletion:

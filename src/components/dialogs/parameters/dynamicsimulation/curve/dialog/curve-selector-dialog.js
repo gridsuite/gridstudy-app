@@ -13,6 +13,7 @@ import {
     DialogTitle,
     Grid,
     Typography,
+    useTheme,
 } from '@mui/material';
 import React, { useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -23,7 +24,6 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
-import { useTheme } from '@mui/styles';
 const CurveSelectorDialog = ({ open, onClose, onSave }) => {
     const classes = useStyles();
     const theme = useTheme();
