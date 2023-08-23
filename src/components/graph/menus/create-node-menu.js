@@ -174,7 +174,15 @@ const CreateNodeMenu = ({
             selectionForCopy?.copyType === CopyType.SUBTREE_CUT
         );
     }
-
+    function isNodeHasChildren(node, treeModel) {
+        return treeModel.treeNodes.some(
+            (item) => item.data.parentNodeUuid === node.id
+        );
+    }
+    function isSubtreeRemovingAllowed() {
+        // check if the subtree has children
+        return isNodeHasChildren(activeNode, treeModel);
+    }
     const NODE_MENU_ITEMS = {
         BUILD_NODE: {
             onRoot: false,
@@ -289,7 +297,7 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => removeSubtree(),
             id: 'removeNetworkModificationSubtree',
-            disabled: isAnyNodeBuilding,
+            disabled: isAnyNodeBuilding || !isSubtreeRemovingAllowed(),
         },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,

@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { useStyles, TabPanel, CloseButton } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
-import SubmitButton from '../../commons/submitButton';
+import { SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {

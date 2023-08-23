@@ -7,7 +7,7 @@
 
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import React from 'react';
-import TextInput from '../../../../utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
 import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';

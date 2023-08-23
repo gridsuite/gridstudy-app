@@ -15,8 +15,8 @@ import {
 } from 'components/utils/field-constants';
 import React from 'react';
 import { filledTextField, gridItem } from '../../../dialogUtils';
-import TextInput from 'components/utils/rhf-inputs/text-input';
-import SwitchInput from '../../../../utils/rhf-inputs/booleans/switch-input';
+import { TextInput } from '@gridsuite/commons-ui';
+import { SwitchInput } from '@gridsuite/commons-ui';
 
 const TwoWindingsTransformerCreationDialogHeader = () => {
     const twoWindingsTransformerIdField = (

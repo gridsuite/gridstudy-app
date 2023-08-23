@@ -6,7 +6,7 @@
  */
 
 import * as yup from 'yup';
-import RHFTextInput from '../../../utils/rhf-inputs/text-input';
+import { TextInput as RHFTextInput } from '@gridsuite/commons-ui';
 import WrapperInput from './wrapper-input';
 
 const TextInput = ({ value, label, callback }) => {
