@@ -183,6 +183,13 @@ const initialSpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type]: null,
 };
 
+export const defaultOptionalServicesState = Object.keys(
+    OptionalServicesNames
+).map((key) => ({
+    name: key,
+    status: OptionalServicesStatus.Pending,
+}));
+
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
@@ -225,28 +232,7 @@ const initialState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     computingStatus: { ...initialComputingStatus },
-    optionalServices: [
-        {
-            name: OptionalServicesNames.SecurityAnalysis,
-            status: OptionalServicesStatus.Pending,
-        },
-        {
-            name: OptionalServicesNames.ShortCircuit,
-            status: OptionalServicesStatus.Pending,
-        },
-        {
-            name: OptionalServicesNames.SensitivityAnalysis,
-            status: OptionalServicesStatus.Pending,
-        },
-        {
-            name: OptionalServicesNames.DynamicSimulation,
-            status: OptionalServicesStatus.Pending,
-        },
-        {
-            name: OptionalServicesNames.VoltageInit,
-            status: OptionalServicesStatus.Pending,
-        },
-    ],
+    optionalServices: defaultOptionalServicesState,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode

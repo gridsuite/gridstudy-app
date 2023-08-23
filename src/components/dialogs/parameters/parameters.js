@@ -245,9 +245,9 @@ export const TabPanel = (props) => {
 const INITIAL_PROVIDERS = {};
 
 export const useParametersBackend = (
-    parameterAvailabilityStatus,
     user,
     type,
+    optionalServiceStatus,
     backendFetchProviders,
     backendFetchProvider,
     backendFetchDefaultProvider,
@@ -384,7 +384,7 @@ export const useParametersBackend = (
     useEffect(() => {
         if (
             user !== null &&
-            parameterAvailabilityStatus === OptionalServicesStatus.Up
+            optionalServiceStatus === OptionalServicesStatus.Up
         ) {
             backendFetchProviders()
                 .then((providers) => {
@@ -403,19 +403,10 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [
-        user,
-        backendFetchProviders,
-        type,
-        snackError,
-        parameterAvailabilityStatus,
-    ]);
+    }, [user, backendFetchProviders, type, snackError, optionalServiceStatus]);
 
     useEffect(() => {
-        if (
-            studyUuid &&
-            parameterAvailabilityStatus === OptionalServicesStatus.Up
-        ) {
+        if (studyUuid && optionalServiceStatus === OptionalServicesStatus.Up) {
             if (backendFetchParameters) {
                 backendFetchParameters(studyUuid)
                     .then((params) => {
@@ -459,7 +450,7 @@ export const useParametersBackend = (
         }
     }, [
         type,
-        parameterAvailabilityStatus,
+        optionalServiceStatus,
         backendFetchParameters,
         backendFetchSpecificParameters,
         backendFetchProvider,
@@ -559,9 +550,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const loadFlowParametersBackend = useParametersBackend(
-        OptionalServicesStatus.Up,
         user,
         'LoadFlow',
+        OptionalServicesStatus.Up,
         getLoadFlowProviders,
         getLoadFlowProvider,
         getDefaultLoadFlowProvider,
@@ -572,9 +563,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const securityAnalysisParametersBackend = useParametersBackend(
-        securityAnalysisAvailability,
         user,
         'SecurityAnalysis',
+        securityAnalysisAvailability,
         fetchSecurityAnalysisProviders,
         fetchSecurityAnalysisProvider,
         fetchDefaultSecurityAnalysisProvider,
@@ -584,9 +575,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     );
 
     const sensitivityAnalysisParametersBackend = useParametersBackend(
-        sensitivityAnalysisAvailability,
         user,
         'SensitivityAnalysis',
+        sensitivityAnalysisAvailability,
         fetchSensitivityAnalysisProviders,
         fetchSensitivityAnalysisProvider,
         fetchDefaultSensitivityAnalysisProvider,

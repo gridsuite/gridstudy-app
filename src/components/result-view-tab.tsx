@@ -65,7 +65,6 @@ interface IResultViewTabProps {
 
 interface IService {
     id: string;
-    label: string;
     displayed: boolean;
     renderResult: React.ReactNode;
 }
@@ -189,28 +188,24 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         return [
             {
                 id: 'LoadFlow',
-                label: 'LoadFlow',
                 displayed: true,
                 renderResult: renderLoadFlowResult,
             },
             {
                 id: 'SecurityAnalysis',
-                label: 'SecurityAnalysis',
                 displayed:
                     securityAnalysisAvailability === OptionalServicesStatus.Up,
                 renderResult: renderSecurityAnalysisResult,
             },
             {
                 id: 'SensitivityAnalysis',
-                label: 'SensitivityAnalysis',
                 displayed:
                     sensitivityAnalysisUnavailability ===
                     OptionalServicesStatus.Up,
                 renderResult: renderSensitivityAnalysisResult,
             },
             {
-                id: 'ShortCircuit',
-                label: 'ShortCircuitAnalysis',
+                id: 'ShortCircuitAnalysis',
                 displayed:
                     enableDeveloperMode &&
                     shortCircuitAvailability === OptionalServicesStatus.Up,
@@ -218,7 +213,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             },
             {
                 id: 'DynamicSimulation',
-                label: 'DynamicSimulation',
                 displayed:
                     enableDeveloperMode &&
                     dynamicSimulationAvailability === OptionalServicesStatus.Up,
@@ -226,7 +220,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             },
             {
                 id: 'VoltageInit',
-                label: 'VoltageInit',
                 displayed:
                     enableDeveloperMode &&
                     voltageInitAvailability === OptionalServicesStatus.Up,
@@ -254,21 +247,24 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <Tab
                     key={service.id + 'tab'}
                     label={intl.formatMessage({
-                        id: service.label,
+                        id: service.id,
                     })}
                     disabled={disabled}
                 />
             )
         );
     };
-    const renderTabPanelLazy = (service: IService): React.ReactNode => {
+    const renderTabPanelLazy = (
+        service: IService,
+        index: number
+    ): React.ReactNode => {
         return (
             <>
                 {service.displayed && (
                     <TabPanelLazy
                         key={service.id + 'tabPanel'}
                         className={classes.tabPanel}
-                        selected={!disabled}
+                        selected={tabIndex === index && !disabled}
                     >
                         {service.renderResult}
                     </TabPanelLazy>
@@ -276,17 +272,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             </>
         );
     };
-
-    const selectedService = useMemo(() => {
-        const displayedServices = services.filter(
-            (service) => service.displayed
-        );
-        const result = displayedServices.find(
-            (service, key) => tabIndex === key
-        );
-
-        return result!;
-    }, [services, tabIndex]);
 
     useEffect(() => {
         if (!enableDeveloperMode) {
@@ -307,7 +292,9 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 </Tabs>
                 {disabled && <AlertInvalidNode />}
             </div>
-            {renderTabPanelLazy(selectedService)}
+            {services.map((service, index) =>
+                renderTabPanelLazy(service, index)
+            )}
         </Paper>
     );
 };

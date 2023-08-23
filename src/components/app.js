@@ -98,6 +98,7 @@ import {
 } from '../services/config';
 import { fetchDefaultParametersValues } from '../services/utils';
 import { getOptionalServices } from '../services/study';
+import { defaultOptionalServicesState } from 'redux/reducer';
 
 const noUserManager = { instance: null, error: null };
 
@@ -122,8 +123,6 @@ const App = () => {
     const showAuthenticationRouterLogin = useSelector(
         (state) => state.showAuthenticationRouterLogin
     );
-
-    const optionalServices = useSelector((state) => state.optionalServices);
 
     const [userManager, setUserManager] = useState(noUserManager);
 
@@ -446,9 +445,14 @@ const App = () => {
                             name: getOptionalServiceByServerName(service.name),
                         };
                     });
-                    const optionalServicesNames = optionalServices.map(
-                        (service) => service.name
-                    );
+                    // get all potentially optional services
+                    const optionalServicesNames =
+                        defaultOptionalServicesState.map(
+                            (service) => service.name
+                        );
+
+                    // if one of those services was not returned by "getOptionalServices", it means it was defined as "not optional"
+                    // in that case, we consider it is UP
                     optionalServicesNames
                         .filter(
                             (serviceName) =>
@@ -496,7 +500,6 @@ const App = () => {
             };
         }
     }, [
-        optionalServices,
         user,
         dispatch,
         updateParams,

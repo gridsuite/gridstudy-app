@@ -58,9 +58,9 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         updateParameters,
         resetParameters,
     ] = useParametersBackend(
-        dynamicSimulationAvailability,
         user,
         'DynamicSimulation',
+        dynamicSimulationAvailability,
         fetchDynamicSimulationProviders,
         fetchDynamicSimulationProvider,
         fetchDefaultDynamicSimulationProvider,
