@@ -16,14 +16,14 @@ import {
 } from 'components/utils/field-constants';
 import { Box } from '@mui/material';
 import { useWatch } from 'react-hook-form';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
-import RadioInput from 'components/utils/rhf-inputs/radio-input';
+import { FloatInput } from '@gridsuite/commons-ui';
+import { RadioInput } from '@gridsuite/commons-ui';
 import {
     gridItem,
     ReactivePowerAdornment,
     SusceptanceAdornment,
 } from '../../../dialogUtils';
-import SelectInput from '../../../../utils/rhf-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 

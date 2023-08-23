@@ -28,8 +28,8 @@ import {
     REGULATION_TYPES,
     SIDE,
 } from 'components/network/constants';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
+import { FloatInput } from '@gridsuite/commons-ui';
+import { SelectInput } from '@gridsuite/commons-ui';
 import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
