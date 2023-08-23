@@ -224,7 +224,7 @@ const PhaseTapChangerPane = ({
             formProps={{
                 disabled: !regulationEnabled,
             }}
-            previousValue={previousValues?.[PHASE_TAP_CHANGER]?.targetDeadBand}
+            previousValue={previousValues?.[PHASE_TAP_CHANGER]?.targetDeadband}
         />
     );
 
