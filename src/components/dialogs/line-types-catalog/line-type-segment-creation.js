@@ -9,7 +9,7 @@ import React, { useCallback, useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
 import { gridItem, KilometerAdornment } from '../dialogUtils';
 import EditIcon from '@mui/icons-material/Edit';
-import FloatInput from '../../utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import {

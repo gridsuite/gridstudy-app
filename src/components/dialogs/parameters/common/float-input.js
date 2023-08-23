@@ -6,7 +6,7 @@
  */
 
 import * as yup from 'yup';
-import RHFFloatInput from '../../../utils/rhf-inputs/float-input';
+import { FloatInput as RHFFloatInput } from '@gridsuite/commons-ui';
 import WrapperInput from './wrapper-input';
 
 const FloatInput = ({ value, label, callback }) => {
