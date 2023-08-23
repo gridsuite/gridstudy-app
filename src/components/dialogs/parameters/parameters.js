@@ -449,7 +449,11 @@ export const useParametersBackend = (
     ]);
 
     useEffect(() => {
-        if (studyUuid && backendFetchSpecificParameters && optionalServiceStatus === OptionalServicesStatus.Up) {
+        if (
+            studyUuid &&
+            backendFetchSpecificParameters &&
+            optionalServiceStatus === OptionalServicesStatus.Up
+        ) {
             backendFetchSpecificParameters()
                 .then((specificParams) => {
                     setSpecificParamsDescription(specificParams);
@@ -461,10 +465,20 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [optionalServiceStatus, backendFetchSpecificParameters, snackError, studyUuid, type]);
+    }, [
+        optionalServiceStatus,
+        backendFetchSpecificParameters,
+        snackError,
+        studyUuid,
+        type,
+    ]);
 
     useEffect(() => {
-        if (studyUuid && backendFetchParameters && optionalServiceStatus === OptionalServicesStatus.Up) {
+        if (
+            studyUuid &&
+            backendFetchParameters &&
+            optionalServiceStatus === OptionalServicesStatus.Up
+        ) {
             backendFetchParameters(studyUuid)
                 .then((params) => {
                     setParams(params);
@@ -476,7 +490,13 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [optionalServiceStatus, backendFetchParameters, snackError, studyUuid, type]);
+    }, [
+        optionalServiceStatus,
+        backendFetchParameters,
+        snackError,
+        studyUuid,
+        type,
+    ]);
 
     return [
         providersRef.current,
