@@ -287,7 +287,7 @@
     "ShortCircuitAnalysisParameters": "Paramètres de l'analyse de court-circuit",
     "startShortCircuitError": "Une erreur est survenue lors du lancement de l'analyse de court-circuit",
     "ShortCircuitAnalysisError": "Une erreur est survenue lors de l'exécution de l'analyse de court-circuit",
-    "ShortCircuitAnalysisResultsError": "An error occured when executing short circuit analysis",
+    "ShortCircuitAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de court-circuit",
     "ShortCircuitAnalysisTabOneBus": "Unitaire",
     "ShortCircuitAnalysisTabAllBuses": "Réseau",
     "IDNode": "ID nœud",

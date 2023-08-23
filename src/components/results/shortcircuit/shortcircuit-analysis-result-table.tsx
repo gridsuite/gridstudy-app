@@ -7,7 +7,7 @@
 
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { useTheme } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import { SCAResultFault } from './shortcircuit-analysis-result.type';
 import {
@@ -352,16 +352,18 @@ const ShortCircuitAnalysisResult: FunctionComponent<
         const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 
         return (
-            <CustomAGGrid
-                rowData={rowsToShow}
-                defaultColDef={defaultColDef}
-                onGridReady={onGridReady}
-                getRowStyle={getRowStyle}
-                enableCellTextSelection={true}
-                postSortRows={handlePostSortRows}
-                columnDefs={columns}
-                overlayNoRowsTemplate={message}
-            />
+            <Box sx={{ flexGrow: 1 }}>
+                <CustomAGGrid
+                    rowData={rowsToShow}
+                    defaultColDef={defaultColDef}
+                    onGridReady={onGridReady}
+                    getRowStyle={getRowStyle}
+                    enableCellTextSelection={true}
+                    postSortRows={handlePostSortRows}
+                    columnDefs={columns}
+                    overlayNoRowsTemplate={message}
+                />
+            </Box>
         );
     };
 

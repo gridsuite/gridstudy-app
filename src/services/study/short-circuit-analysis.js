@@ -109,10 +109,10 @@ export function fetchShortCircuitAnalysisResult({
     return backendFetchJson(url);
 }
 
-export function fetchOneBusShortCircuitAnalysisResult(
+export function fetchOneBusShortCircuitAnalysisResult({
     studyUuid,
-    currentNodeUuid
-) {
+    currentNodeUuid,
+}) {
     const type = getShortcircuitAnalysisTypeFromEnum(
         ShortcircuitAnalysisType.ONE_BUS
     );
