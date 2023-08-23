@@ -11,7 +11,7 @@ import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { SensiProperties } from 'components/spreadsheet/utils/sensi-properties';
-import CustomTooltipKeyValue from './customTooltipKeyValue';
+import CustomTooltipKeyValue from 'components/custom-aggrid/custom-aggrid-tooltip-key-value';
 
 const generateTapPositions = (params) => {
     return params
@@ -1017,7 +1017,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
             },
             {
-                id: 'MarginalCost',
+                id: 'StartupCost',
                 field: 'marginalCost',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1028,14 +1028,14 @@ export const TABLES_DEFINITIONS = {
                 field: 'plannedOutageRate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
+                fractionDigits: 2,
             },
             {
                 id: 'ForcedOutageRate',
                 field: 'forcedOutageRate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
+                fractionDigits: 2,
             },
         ],
     },
