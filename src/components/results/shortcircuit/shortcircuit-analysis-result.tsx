@@ -31,7 +31,7 @@ import {
     PAGE_OPTIONS,
     DEFAULT_PAGE_COUNT,
     DATA_KEY_TO_SORT_KEY,
-} from './shortcircuitèanalysis-result-content';
+} from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSnackMessage } from '@gridsuite/commons-ui';

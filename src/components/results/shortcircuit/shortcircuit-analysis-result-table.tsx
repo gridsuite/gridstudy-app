@@ -112,104 +112,71 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         [sortConfig, onSortChanged]
     );
 
-    const columns = useMemo(() => {
-        const columnsDefs = [];
-
-        columnsDefs.push(
+    const columns = useMemo(
+        () => [
             makeColumn({
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
-            })
-        );
-
-        columnsDefs.push(
+            }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
-            })
-        );
-
-        columnsDefs.push(
+            }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
                 isSortable: false,
-            })
-        );
-
-        columnsDefs.push(
+            }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'IscKA' }),
                 field: 'current',
                 fractionDigits: 1,
                 isNumeric: true,
-            })
-        );
-
-        columnsDefs.push(
+            }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
-            })
-        );
-
-        columnsDefs.push(
+            }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
                 fractionDigits: 1,
                 isNumeric: true,
-            })
-        );
-
-        columnsDefs.push(
+            }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
                 fractionDigits: 1,
                 isNumeric: true,
-            })
-        );
-
-        columnsDefs.push(
+            }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
                 fractionDigits: 1,
                 isNumeric: true,
-            })
-        );
-
-        columnsDefs.push(
+            }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'DeltaIscIscMax' }),
                 field: 'deltaIscIscMax',
                 fractionDigits: 1,
                 isNumeric: true,
                 isSortable: false,
-            })
-        );
-
-        columnsDefs.push(
+            }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'DeltaIscIscMin' }),
                 field: 'deltaIscIscMin',
                 fractionDigits: 1,
                 isNumeric: true,
                 isSortable: false,
-            })
-        );
-
-        columnsDefs.push(
+            }),
             makeColumn({
                 field: 'linkedElementId',
                 isHidden: true,
                 isSortable: false,
-            })
-        );
-
-        return columnsDefs;
-    }, [intl, makeColumn]);
+            }),
+        ],
+        [intl, makeColumn]
+    );
 
     const shortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
