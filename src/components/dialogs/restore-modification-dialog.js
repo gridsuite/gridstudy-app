@@ -17,7 +17,6 @@ import { DialogContentText } from '@mui/material';
 import CheckboxList from 'components/utils/checkbox-list';
 import { ModificationListItem } from 'components/graph/menus/modification-list-item';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import { restoreModifications } from 'services/study/network-modifications';
 
 const useStyles = makeStyles((theme) => ({
@@ -101,14 +100,12 @@ const useStyles = makeStyles((theme) => ({
 
     useEffect(() => {
         setModificationsToRestore(modifToRestore);
-        console.log(modificationsToRestore,"=============")
     }, [modifToRestore]);
 
     const handleClose = () => {
         onClose();
     };
 
-    const { snackInfo, snackError } = useSnackMessage();
     const [modificationsToRestore, setModificationsToRestore] = useState([]);
 
     const handleRestore = () => {
@@ -120,7 +117,6 @@ const useStyles = makeStyles((theme) => ({
             currentNode.id,
             selectedModificationsUuidToRestore
         );
-        // setModificationsToRestore(modificationsToRestore.map(m->m.))
         console.log(selectedModificationsUuidToRestore);
     };
     const classes = useStyles();

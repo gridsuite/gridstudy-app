@@ -1004,7 +1004,7 @@ const NetworkModificationNodeEditor = () => {
                     <RestoreIcon />
                 </IconButton>
             </Toolbar>
-            {renderNetworkModificationsToRestoreDialog()}
+            {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
 
             {renderPaneSubtitle()}
 

@@ -37,6 +37,7 @@ export function changeNetworkModificationOrder(
     return backendFetch(url, { method: 'put' });
 }
 
+//instead of deleting modification, hiding it
 export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
