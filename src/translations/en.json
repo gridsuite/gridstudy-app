@@ -55,6 +55,7 @@
     "paramsChangingError": "An error occured when changing the parameters",
     "paramsChangingDenied": "The requested changes have been rejected",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
+    "optionalServicesRetrievingError": "An error occurred while retrieving the status of optional services",
     "defaultSensiResultsThresholdRetrievingError": "An error occurred while retrieving the sensitivity analysis results default threshold",
 
     "close": "Close",
@@ -514,7 +515,8 @@
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
     "MapEquipmentsLoadError": "An error occured while loading network map",
     "CaseNameLoadError": "An error occured while loading case name",
-    "StudyUnrecoverableStateRecreate": "Your study has a problem. Please recreate it",
+    "StudyUnrecoverableStateRecreate": "Your study had a problem and has been recreated from initial data",
+    "StudyUnrecoverableState": "Your study had a problem and can not be recreated",
     "NodeCreateError": "An error occured while creating node",
     "NodeDeleteError": "An error occured while deleting node",
     "NodeUpdateError": "An error occured while updating node",
@@ -776,7 +778,7 @@
     "TargetVoltage": "Voltage",
     "TargetVoltageGreaterThanZero": "Voltage value must be strictly positive",
     "Deadband": "Deadband",
-    "TargetDeadbandGreaterThanZero": "Deadband value must be strictly positive",
+    "TargetDeadbandGreaterThanZero": "Deadband value must be non-negative",
     "LowTapPosition": "Low tap position",
     "HighTapPosition": "High tap position",
     "TapPosition": "Tap position",
@@ -1045,6 +1047,11 @@
     "VoltageInitModification": "Voltage init modification",
     "GeneratorAvailability": "Generator availability",
     "chooseElement": "Choose element",
+    "studyNetworkRecovered": "Study network has been recreated successfully",
+    "recreatingNetworkStudy": "Impossible to get the study network. Reconstruction of the network from the initial situation...",
+    "importNewSituation": "Import situation",
+    "networkRecreationError": "An error occurred when recreating study network",
+    "checkNetworkExistenceError": "An error occurred when checking study network existence",
     "grid.noRowsToShow": "No data",
     "grid.noCalculation": "No calculation",
     "grid.failed": "Calculation failed",
@@ -1090,5 +1097,6 @@
     "Replace": "replace",
     "distributionKeyWithMissingIdError": "Missing ID with defined distribution key",
     "missingDistributionKeyError": "Missing distribution key",
-    "emptyFilterError": "Filter should contain at least one equipment"
+    "emptyFilterError": "Filter should contain at least one equipment",
+    "StartupCost": "Startup cost"
 }
