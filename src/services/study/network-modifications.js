@@ -49,7 +49,23 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
 
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
-        method: 'delete',
+        method: 'PUT',
+    });
+}
+
+export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
+    const modificationsRestoreUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/network-modifications-restore?uuids=' +
+        encodeURIComponent(modificationUuids);
+
+    console.debug(modificationsRestoreUrl);
+    return backendFetch(modificationsRestoreUrl, {
+        method: 'PUT',
     });
 }
 
@@ -1444,6 +1460,22 @@ export function deleteEquipment(
             equipmentInfos: equipmentInfos,
         }),
     });
+}
+
+export function fetchNetworkModificationsToRestore(studyUuid, nodeUuid) {
+    console.info(
+        'Fetching restored network modifications for nodeUuid : ',
+        nodeUuid
+    );
+    const ModificationsToRestoreGetUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/network-modifications-restore';
+    console.debug(ModificationsToRestoreGetUrl);
+    return backendFetchJson(ModificationsToRestoreGetUrl);
 }
 
 export function fetchNetworkModifications(studyUuid, nodeUuid) {

@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ModificationListItem = ({
     item: modif,
+    isrestoredDialog,
     onEdit,
     checked,
     index,
@@ -132,7 +133,7 @@ export const ModificationListItem = ({
         <Draggable
             draggableId={modif.uuid}
             index={index}
-            isDragDisabled={isOneNodeBuilding}
+            isDragDisabled={isOneNodeBuilding || isrestoredDialog}
         >
             {(provided) => (
                 <div
@@ -152,7 +153,10 @@ export const ModificationListItem = ({
                             size={'small'}
                             style={{
                                 opacity:
-                                    hover && !isDragging && !isOneNodeBuilding
+                                    hover &&
+                                    !isDragging &&
+                                    !isOneNodeBuilding &&
+                                    !isrestoredDialog
                                         ? '1'
                                         : '0',
                             }}
@@ -176,6 +180,7 @@ export const ModificationListItem = ({
                         {!isOneNodeBuilding &&
                             hover &&
                             !isDragging &&
+                            !isrestoredDialog &&
                             isEditableModification(modif) && (
                                 <IconButton
                                     onClick={() =>

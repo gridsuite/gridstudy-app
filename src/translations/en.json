@@ -56,7 +56,7 @@
     "paramsChangingDenied": "The requested changes have been rejected",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
     "defaultSensiResultsThresholdRetrievingError": "An error occurred while retrieving the sensitivity analysis results default threshold",
-
+    "restore": "Restore",
     "close": "Close",
     "validate": "Validate",
 
@@ -480,6 +480,8 @@
 
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
+    "RestoreModifications": "Restore modifications",
+    "RestoreModificationText": "Please select modifications to restore",
     "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
     "OnlyMin": "Min:\u202F{min}",
@@ -541,6 +543,7 @@
     "errCutModificationMsg": "Network modifications cut error",
     "warnDuplicateModificationMsg": "Number of modifications not copied :",
     "errDeleteModificationMsg": "Network modifications deletion error",
+    "errRestoreModificationMsg": "Network modifications restore error",
     "DeleteEquipment": "Delete equipment",
     "LCCConverterStationShuntCompensators": "Shunt compensators related to the LCC",
     "Type": "Type",
