@@ -19,7 +19,6 @@ export const EquipmentTable = ({
     rowData,
     topPinnedData,
     columnData,
-    scrollToIndex,
     gridRef,
     handleColumnDrag,
     handleRowEditing,
@@ -27,7 +26,6 @@ export const EquipmentTable = ({
     handleEditingStopped,
     handleGridReady,
     handleRowDataUpdated,
-    handleBodyScroll,
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
@@ -36,25 +34,14 @@ export const EquipmentTable = ({
     const intl = useIntl();
     const getRowStyle = useCallback(
         (params) => {
-            if (params.rowIndex === scrollToIndex) {
-                return {
-                    backgroundColor: theme.selectedRow.background,
-                };
-            } else if (
-                params.rowIndex === 0 &&
-                params.node.rowPinned === 'top'
-            ) {
+            if (params.rowIndex === 0 && params.node.rowPinned === 'top') {
                 return {
                     borderTop: '1px solid ' + theme.palette.primary.main,
                     borderBottom: '1px solid ' + theme.palette.primary.main,
                 };
             }
         },
-        [
-            scrollToIndex,
-            theme.palette.primary.main,
-            theme.selectedRow.background,
-        ]
+        [theme.palette.primary.main]
     );
 
     const getRowId = useCallback((params) => params.data.id, []);
@@ -141,7 +128,6 @@ export const EquipmentTable = ({
             suppressClickEdit={true}
             context={gridContext}
             onGridReady={handleGridReady}
-            onBodyScroll={handleBodyScroll}
             shouldHidePinnedHeaderRightBorder={
                 shouldHidePinnedHeaderRightBorder
             }

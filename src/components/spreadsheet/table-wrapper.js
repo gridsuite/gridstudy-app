@@ -121,7 +121,6 @@ const TableWrapper = (props) => {
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
     const [tabIndex, setTabIndex] = useState(0);
-    const [scrollToIndex, setScrollToIndex] = useState();
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
@@ -327,7 +326,6 @@ const TableWrapper = (props) => {
     const handleSwitchTab = useCallback(
         (value) => {
             setManualTabSwitch(true);
-            setScrollToIndex();
             setTabIndex(value);
             cleanTableState();
         },
@@ -376,10 +374,8 @@ const TableWrapper = (props) => {
                 props.equipmentId
             );
             if (selectedRow) {
-                setScrollToIndex(selectedRow.rowIndex);
                 gridRef.current.api?.ensureNodeVisible(selectedRow, 'top');
                 selectedRow.setSelected(true, true);
-                gridRef.current.api?.redrawRows(selectedRow);
             }
         }
     }, [manualTabSwitch, props.equipmentId, props.equipmentType]);
@@ -398,8 +394,6 @@ const TableWrapper = (props) => {
                 // select the right table type. This will trigger handleRowDataUpdated + scrollToEquipmentIndex
                 setTabIndex(definition.index);
             }
-        } else if (manualTabSwitch) {
-            setScrollToIndex();
         }
     }, [
         props.equipmentId,
@@ -422,13 +416,6 @@ const TableWrapper = (props) => {
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
     }, [scrollToEquipmentIndex]);
-
-    const handleBodyScroll = useCallback(() => {
-        if (scrollToIndex) {
-            setScrollToIndex();
-            setManualTabSwitch(true);
-        }
-    }, [scrollToIndex]);
 
     useEffect(() => {
         const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
@@ -699,7 +686,6 @@ const TableWrapper = (props) => {
                         columnData={columnData}
                         topPinnedData={topPinnedData}
                         fetched={equipments || errorMessage}
-                        scrollToIndex={scrollToIndex}
                         visible={props.visible}
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
@@ -707,7 +693,6 @@ const TableWrapper = (props) => {
                         handleEditingStopped={handleEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
-                        handleBodyScroll={handleBodyScroll}
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
