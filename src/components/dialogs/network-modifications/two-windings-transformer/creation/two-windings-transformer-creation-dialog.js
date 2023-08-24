@@ -588,7 +588,6 @@ const TwoWindingsTransformerCreationDialog = ({
             characteristics[MAGNETIZING_SUSCEPTANCE] = microUnitToUnit(
                 characteristics[MAGNETIZING_SUSCEPTANCE]
             );
-            // TODO delete ... to clean json
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
@@ -611,7 +610,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...ratioTapChangerFormValues,
                 };
             }
-            // TODO delete ... to clean json
             let phaseTap = undefined;
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];

@@ -293,7 +293,8 @@ const PhaseTapChangerPane = ({
                         <Grid item xs={4}>
                             {regulationTypeField}
                         </Grid>
-                        {gridItem(sideField, 4)}
+                        {regulationType === REGULATION_TYPES.LOCAL.id &&
+                            gridItem(sideField, 4)}
                     </Grid>
                 )}
                 {regulationEnabled &&
