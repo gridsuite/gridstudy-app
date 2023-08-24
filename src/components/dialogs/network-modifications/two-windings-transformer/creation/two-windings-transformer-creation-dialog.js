@@ -417,7 +417,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 ...getPhaseTapChangerFormData({
                     enabled:
                         twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
-                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE],
+                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATING]
+                        ? twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
+                        : PHASE_REGULATION_MODES.FIXED_TAP.id,
                     regulationType: getRegulationTypeForCopy(
                         twt,
                         twt?.[PHASE_TAP_CHANGER]
@@ -586,7 +588,7 @@ const TwoWindingsTransformerCreationDialog = ({
             characteristics[MAGNETIZING_SUSCEPTANCE] = microUnitToUnit(
                 characteristics[MAGNETIZING_SUSCEPTANCE]
             );
-
+            // TODO delete ... to clean json
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
@@ -609,7 +611,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...ratioTapChangerFormValues,
                 };
             }
-
+            // TODO delete ... to clean json
             let phaseTap = undefined;
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];

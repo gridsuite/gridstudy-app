@@ -268,70 +268,63 @@ const RatioTapChangerPane = ({
     return (
         <>
             <Grid container spacing={2}>
+                <Grid item container xs={4}>
+                    {ratioTapLoadTapChangingCapabilitiesField}
+                </Grid>
                 <Grid item container spacing={2}>
-                    <Grid item xs={4}>
-                        {ratioTapLoadTapChangingCapabilitiesField}
-                    </Grid>
                     {isRatioTapLoadTapChangingCapabilitiesOn && (
                         <Grid item xs={4}>
                             {regulationModeField}
                         </Grid>
                     )}
+                    <Grid item xs={4}>
+                        {targetVoltage1Field}
+                    </Grid>
+                    <Grid item xs={4}>
+                        {targetDeadbandField}
+                    </Grid>
                 </Grid>
                 {isRatioTapLoadTapChangingCapabilitiesOn && (
                     <Grid item container spacing={2}>
+                        <Grid
+                            item
+                            xs={4}
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <FormattedMessage
+                                id="RegulatedTerminal"
+                                disabled={true}
+                            />
+                        </Grid>
                         <Grid item xs={4}>
                             {regulationTypeField}
                         </Grid>
-                        <Grid item xs={4}>
-                            {targetVoltage1Field}
-                        </Grid>
-                        <Grid item xs={4}>
-                            {targetDeadbandField}
-                        </Grid>
+                        {isRatioTapLoadTapChangingCapabilitiesOn &&
+                            regulationType === REGULATION_TYPES.LOCAL.id &&
+                            gridItem(sideField, 4)}
                     </Grid>
                 )}
                 {isRatioTapLoadTapChangingCapabilitiesOn &&
                     regulationType === REGULATION_TYPES.DISTANT.id && (
-                        <Grid item container spacing={2}>
-                            <Grid
-                                item
-                                xs={4}
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'flex-end',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <FormattedMessage
-                                    id="DistantRegulatedTerminal"
-                                    disabled={true}
-                                />
-                            </Grid>
+                        <Grid
+                            item
+                            container
+                            columns={3}
+                            direction="row"
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                alignItems: 'center',
+                            }}
+                        >
+                            {gridItem(regulatingTerminalField, 1.98)}
+                        </Grid>
+                    )}
 
-                            {gridItem(regulatingTerminalField, 8)}
-                        </Grid>
-                    )}
-                {isRatioTapLoadTapChangingCapabilitiesOn &&
-                    regulationType === REGULATION_TYPES.LOCAL.id && (
-                        <Grid item container spacing={2}>
-                            <Grid
-                                item
-                                xs={4}
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'flex-end',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <FormattedMessage
-                                    id="RegulatedTerminal"
-                                    disabled={true}
-                                />
-                            </Grid>
-                            {gridItem(sideField, 4)}
-                        </Grid>
-                    )}
                 <RatioTapChangerPaneSteps
                     disabled={!ratioTapChangerEnabledWatcher}
                     previousValues={previousValues?.[RATIO_TAP_CHANGER]}

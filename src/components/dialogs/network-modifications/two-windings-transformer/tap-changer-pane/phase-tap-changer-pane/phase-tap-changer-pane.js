@@ -135,7 +135,8 @@ const PhaseTapChangerPane = ({
             phaseTapChangerEnabledWatch &&
             (regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
                 regulationMode ===
-                    PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id)
+                    PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id ||
+                regulationMode === PHASE_REGULATION_MODES.FIXED_TAP.id)
         );
     }, [phaseTapChangerEnabledWatch, regulationMode]);
 
@@ -145,6 +146,7 @@ const PhaseTapChangerPane = ({
             label={'RegulationMode'}
             options={Object.values(PHASE_REGULATION_MODES)}
             disabled={!phaseTapChangerEnabledWatch}
+            size={'small'}
             previousValue={getPhaseTapChangerRegulationModeLabel(
                 previousValues?.[PHASE_TAP_CHANGER]
             )}
@@ -254,23 +256,44 @@ const PhaseTapChangerPane = ({
                     <Grid item xs={4}>
                         {regulationModeField}
                     </Grid>
+                    <Grid item xs={4}>
+                        {regulationMode ===
+                            PHASE_REGULATION_MODES.CURRENT_LIMITER.id &&
+                            currentLimiterRegulatingValueField}
+                        {regulationMode ===
+                            PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id &&
+                            flowSetPointRegulatingValueField}
+                    </Grid>
+                    <Grid item xs={4}>
+                        {(regulationMode ===
+                            PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
+                            regulationMode ===
+                                PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL
+                                    .id) &&
+                            targetDeadbandField}
+                    </Grid>
                 </Grid>
                 {regulationEnabled && (
                     <Grid item container spacing={2}>
+                        <Grid
+                            item
+                            xs={4}
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <FormattedMessage
+                                id="RegulatedTerminal"
+                                disabled={true}
+                            />
+                        </Grid>
+
                         <Grid item xs={4}>
                             {regulationTypeField}
                         </Grid>
-                        <Grid item xs={4}>
-                            {regulationMode ===
-                                PHASE_REGULATION_MODES.CURRENT_LIMITER.id &&
-                                currentLimiterRegulatingValueField}
-                            {regulationMode ===
-                                PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL
-                                    .id && flowSetPointRegulatingValueField}
-                        </Grid>
-                        <Grid item xs={4}>
-                            {targetDeadbandField}
-                        </Grid>
+                        {gridItem(sideField, 4)}
                     </Grid>
                 )}
                 {regulationEnabled &&
@@ -288,23 +311,6 @@ const PhaseTapChangerPane = ({
                                 <FormattedMessage id="DistantRegulatedTerminal" />
                             </Grid>
                             {gridItem(regulatingTerminalField, 8)}
-                        </Grid>
-                    )}
-                {regulationEnabled &&
-                    regulationType === REGULATION_TYPES.LOCAL.id && (
-                        <Grid item container spacing={2}>
-                            <Grid
-                                item
-                                xs={4}
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'flex-end',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <FormattedMessage id="RegulatedTerminal" />
-                            </Grid>
-                            {gridItem(sideField, 4)}
                         </Grid>
                     )}
                 <PhaseTapChangerPaneSteps
