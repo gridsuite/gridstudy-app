@@ -9,7 +9,10 @@ import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
-import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
+import {
+    ShortcircuitAnalysisResult,
+    ShortcircuitAnalysisType,
+} from './shortcircuit-analysis-result.type';
 import {
     GridReadyEvent,
     IRowNode,
@@ -28,6 +31,7 @@ import { ReduxState } from '../../../redux/reducer.type';
 
 interface ShortCircuitAnalysisResultProps {
     result: ShortcircuitAnalysisResult;
+    analysisType: ShortcircuitAnalysisType;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -41,6 +45,7 @@ interface ShortCircuitAnalysisResultsFaultHeader {
     faultType: string;
     shortCircuitPower: number;
     current: number;
+    positiveMagnitude: number;
     limitType?: string | null;
     limitMin?: number | null;
     limitMax?: number | null;
@@ -60,17 +65,18 @@ interface ShortCircuitAnalysisResultsLimitViolation {
 interface ShortCircuitAnalysisResultsFeederResult {
     connectableId: string;
     current: number;
+    positiveMagnitude: number;
     linkedElementId: string;
 }
 
 const ShortCircuitAnalysisResult: FunctionComponent<
     ShortCircuitAnalysisResultProps
-> = ({ result }) => {
+> = ({ result, analysisType }) => {
     const intl = useIntl();
     const theme = useTheme();
 
     const columns = useMemo(() => {
-        return [
+        const columns = [
             {
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
@@ -82,12 +88,6 @@ const ShortCircuitAnalysisResult: FunctionComponent<
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'IscKA' }),
-                field: 'current',
-                fractionDigits: 1,
-                numeric: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -112,23 +112,44 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 numeric: true,
             },
             {
-                headerName: intl.formatMessage({ id: 'DeltaIscIscMax' }),
-                field: 'deltaIscIscMax',
-                fractionDigits: 1,
-                numeric: true,
-            },
-            {
-                headerName: intl.formatMessage({ id: 'DeltaIscIscMin' }),
-                field: 'deltaIscIscMin',
-                fractionDigits: 1,
-                numeric: true,
-            },
-            {
                 field: 'linkedElementId',
                 hide: true,
             },
         ];
-    }, [intl]);
+
+        if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
+            columns.splice(3, 0, {
+                headerName: intl.formatMessage({ id: 'PositiveMagnitude' }),
+                field: 'positiveMagnitude',
+                fractionDigits: 1,
+                numeric: true,
+            });
+        } else if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+            columns.splice(3, 0, {
+                headerName: intl.formatMessage({ id: 'IscKA' }),
+                field: 'current',
+                fractionDigits: 1,
+                numeric: true,
+            });
+            columns.splice(
+                8,
+                0,
+                {
+                    headerName: intl.formatMessage({ id: 'DeltaIscIscMax' }),
+                    field: 'deltaIscIscMax',
+                    fractionDigits: 1,
+                    numeric: true,
+                },
+                {
+                    headerName: intl.formatMessage({ id: 'DeltaIscIscMin' }),
+                    field: 'deltaIscIscMin',
+                    fractionDigits: 1,
+                    numeric: true,
+                }
+            );
+        }
+        return columns;
+    }, [analysisType, intl]);
     const shortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
@@ -205,6 +226,7 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                     faultResult.current -
                     (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0),
                 current: faultResult.current,
+                positiveMagnitude: faultResult.positiveMagnitude,
                 ...firstLimitViolation,
             });
             limitViolations.slice(1).forEach((lv) => {
@@ -229,6 +251,7 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 rows.push({
                     connectableId: feederResult.connectableId,
                     current: feederResult.current,
+                    positiveMagnitude: feederResult.positiveMagnitude,
                     linkedElementId: fault.id,
                 });
             });
