@@ -7,7 +7,7 @@
 
 import { gridItem, italicFontTextField } from '../../../dialogUtils';
 import React, { useEffect, useMemo, useState } from 'react';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import {
     NAME,
     VALUE,
@@ -17,7 +17,7 @@ import {
 } from 'components/utils/field-constants';
 import { fetchPredefinedProperties } from './property-utils';
 import { useWatch } from 'react-hook-form';
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 
 const PropertyForm = ({ name, index }) => {
     const [predefinedProperties, setPredefinedProperties] = useState();

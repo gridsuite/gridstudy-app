@@ -57,6 +57,11 @@ import {
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
+import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../../utils/optional-services';
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
     const classes = useDiagramStyles();
@@ -81,6 +86,9 @@ function SingleLineDiagramContent(props) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const shortCircuitAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.ShortCircuit
+    );
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -477,7 +485,9 @@ function SingleLineDiagramContent(props) {
                 isReadyForInteraction ? showEquipmentMenu : null,
 
                 // callback on the buses
-                isReadyForInteraction && enableDeveloperMode
+                isReadyForInteraction &&
+                enableDeveloperMode &&
+                shortCircuitAvailability === OptionalServicesStatus.Up
                     ? showBusMenu
                     : null,
 
@@ -531,6 +541,7 @@ function SingleLineDiagramContent(props) {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
+        shortCircuitAvailability,
         props.svgUrl,
         props.svg,
         props.svgMetadata,

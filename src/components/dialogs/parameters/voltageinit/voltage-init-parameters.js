@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { useStyles, TabPanel, CloseButton } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
-import SubmitButton from '../../commons/submitButton';
+import { SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -36,14 +36,26 @@ import {
     getVoltageInitParameters,
     updateVoltageInitParameters,
 } from '../../../../services/study/voltage-init';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../../../utils/optional-services';
+import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [voltageInitParams, setVoltageInitParams] = useState(null);
 
+    const voltageInitAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.VoltageInit
+    );
+
     useEffect(() => {
-        if (studyUuid) {
+        if (
+            studyUuid &&
+            voltageInitAvailability === OptionalServicesStatus.Up
+        ) {
             getVoltageInitParameters(studyUuid)
                 .then((params) => setVoltageInitParams(params))
                 .catch((error) => {
@@ -53,7 +65,7 @@ export const useGetVoltageInitParameters = () => {
                     });
                 });
         }
-    }, [studyUuid, snackError]);
+    }, [voltageInitAvailability, studyUuid, snackError]);
 
     return [voltageInitParams, setVoltageInitParams];
 };
