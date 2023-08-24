@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -40,14 +39,14 @@ import {
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 
-const useStyles = makeStyles(() => ({
+const styles = {
     menuItem: {
         // NestedMenu item manages only label prop of string type
         // It fix paddings itself then we must force this padding
         // to justify menu items texts
         paddingLeft: '12px',
     },
-}));
+};
 
 const withBranchMenu =
     (BaseMenu) =>
@@ -64,7 +63,6 @@ const withBranchMenu =
         modificationInProgress,
         setModificationInProgress,
     }) => {
-        const classes = useStyles();
         const intl = useIntl();
         const { snackError } = useSnackMessage();
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -181,7 +179,7 @@ const withBranchMenu =
 
         return (
             <Menu
-                className={classes.menu}
+                sx={styles.menu}
                 anchorReference="anchorPosition"
                 anchorPosition={{
                     position: 'absolute',
@@ -201,7 +199,7 @@ const withBranchMenu =
                 />
                 {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
-                        className={classes.menuItem}
+                        sx={styles.menuItem}
                         onClick={() => handleLockout()}
                         disabled={
                             !isNodeEditable ||
@@ -224,7 +222,7 @@ const withBranchMenu =
                     </MenuItem>
                 )}
                 <MenuItem
-                    className={classes.menuItem}
+                    sx={styles.menuItem}
                     onClick={() => handleTrip()}
                     disabled={
                         !isNodeEditable ||
@@ -247,7 +245,7 @@ const withBranchMenu =
                 </MenuItem>
                 {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
-                        className={classes.menuItem}
+                        sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
                         disabled={
                             !isNodeEditable ||
@@ -282,7 +280,7 @@ const withBranchMenu =
                 )}
                 {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
-                        className={classes.menuItem}
+                        sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
                         disabled={
                             !isNodeEditable ||
@@ -317,7 +315,7 @@ const withBranchMenu =
                 )}
                 {equipmentType === EQUIPMENT_TYPES.LINE.type && (
                     <MenuItem
-                        className={classes.menuItem}
+                        sx={styles.menuItem}
                         onClick={() => handleSwitchOn()}
                         disabled={
                             !isNodeEditable ||
@@ -341,7 +339,7 @@ const withBranchMenu =
                     </MenuItem>
                 )}
                 <MenuItem
-                    className={classes.menuItem}
+                    sx={styles.menuItem}
                     onClick={() =>
                         handleDeleteEquipment(
                             getFeederTypeFromEquipmentType(equipmentType),
@@ -368,7 +366,7 @@ const withBranchMenu =
                     EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type ||
                     equipmentType === EQUIPMENT_TYPES.LINE.type) && (
                     <MenuItem
-                        className={classes.menuItem}
+                        sx={styles.menuItem}
                         onClick={() =>
                             handleOpenModificationDialog(
                                 equipment.id,
