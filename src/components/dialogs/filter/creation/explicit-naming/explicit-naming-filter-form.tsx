@@ -178,10 +178,8 @@ function ExplicitNamingFilterForm() {
                         const oldValues = getValues(
                             FILTER_EQUIPMENTS_ATTRIBUTES
                         );
-                        const array3 = oldValues.concat(rows);
-                        console.log('flat', array3);
-
-                        setValue(FILTER_EQUIPMENTS_ATTRIBUTES, array3);
+                        const allRows = oldValues.concat(rows);
+                        setValue(FILTER_EQUIPMENTS_ATTRIBUTES, allRows);
                     } else {
                         setValue(FILTER_EQUIPMENTS_ATTRIBUTES, rows);
                     }

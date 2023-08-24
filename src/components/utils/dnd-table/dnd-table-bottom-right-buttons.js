@@ -37,10 +37,6 @@ const DndTableBottomRightButtons = ({
         name: arrayFormName,
     });
 
-    console.log('in dnd', currentRows);
-    console.log('disabled', disabled);
-    console.log('disableAddingRows', disableAddingRows);
-
     const noRowsSelected = toTheLeft
         ? disableDelete
         : !currentRows.some((row) => row[SELECTED]);
@@ -48,19 +44,6 @@ const DndTableBottomRightButtons = ({
     const lastRowSelected = toTheLeft
         ? disableDown
         : currentRows[currentRows.length - 1]?.[SELECTED];
-
-    console.log(
-        'noRowsSelected, firstRowSelected, lastRowSelected',
-        noRowsSelected,
-        firstRowSelected,
-        lastRowSelected
-    );
-    console.log(
-        'disableUp, disableDown, disableDelete',
-        disableUp,
-        disableDown,
-        disableDelete
-    );
 
     return (
         <Grid
