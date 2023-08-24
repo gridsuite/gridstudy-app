@@ -1679,7 +1679,6 @@ export const TABLES_DEFINITION_TYPES = new Map(
     Object.values(TABLES_DEFINITIONS).map((table) => [table.type, table])
 );
 
-
 export const TABLES_DEFINITION_INDEXES = new Map(
     Object.values(TABLES_DEFINITIONS).map((table) => [table.index, table])
 );
