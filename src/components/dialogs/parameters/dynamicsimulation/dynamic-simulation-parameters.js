@@ -31,6 +31,8 @@ import {
     updateDynamicSimulationParameters,
     updateDynamicSimulationProvider,
 } from '../../../../services/study/dynamic-simulation';
+import { OptionalServicesNames } from '../../../utils/optional-services';
+import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',
@@ -43,6 +45,10 @@ const TAB_VALUES = {
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
     const classes = useStyles();
 
+    const dynamicSimulationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.DynamicSimulation
+    );
+
     const [
         providers,
         provider,
@@ -54,6 +60,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
     ] = useParametersBackend(
         user,
         'DynamicSimulation',
+        dynamicSimulationAvailability,
         fetchDynamicSimulationProviders,
         fetchDynamicSimulationProvider,
         fetchDefaultDynamicSimulationProvider,
