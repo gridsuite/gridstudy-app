@@ -103,7 +103,7 @@ const phaseTapChangerValidationSchema = (id) => ({
         [TARGET_DEADBAND]: yup
             .number()
             .nullable()
-            .positive('TargetDeadbandGreaterThanZero'),
+            .min(0, 'TargetDeadbandGreaterThanZero'),
         [LOW_TAP_POSITION]: yup
             .number()
             .nullable()
@@ -204,7 +204,7 @@ const phaseTapChangerModificationValidationSchema = (id) => ({
         [TARGET_DEADBAND]: yup
             .number()
             .nullable()
-            .positive('TargetDeadbandGreaterThanZero'),
+            .min(0, 'TargetDeadbandGreaterThanZero'),
         [LOW_TAP_POSITION]: yup.number().nullable(),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: yup.number().nullable(),
