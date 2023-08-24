@@ -7,8 +7,11 @@
 
 import CustomMuiDialog from '../custom-mui-dialog';
 import NameWrapper from '../name-wrapper';
-import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
-import RadioInput from 'components/utils/rhf-inputs/radio-input';
+import {
+    RadioInput,
+    elementType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { FILTER_TYPES } from 'components/network/constants';
 import {
     EQUIPMENT_TYPE,
@@ -27,7 +30,7 @@ import ExplicitNamingFilterForm, {
 import yup from 'components/utils/yup-config';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     saveCriteriaBasedFilter,
@@ -38,6 +41,7 @@ import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DirectoryItemSelector from 'components/directory-item-selector';
 import { fetchPath } from 'services/directory';
+import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 const emptyFormData = {
     [NAME]: null,
@@ -75,7 +79,7 @@ const CreateFilterDialog = ({ open, onClose }) => {
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { setValue, watch } = formMethods;
+    const { reset, setValue, watch } = formMethods;
     const filterType = watch(FILTER_TYPE);
 
     const handleNameChange = (isValid, newName) => {
@@ -93,6 +97,10 @@ const CreateFilterDialog = ({ open, onClose }) => {
             }
         });
     }, [studyUuid]);
+
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -171,48 +179,53 @@ const CreateFilterDialog = ({ open, onClose }) => {
         </Grid>
     );
     return (
-        <CustomMuiDialog
-            open={open}
-            onClose={onClose}
-            onSave={onSubmit}
-            formSchema={formSchema}
-            formMethods={formMethods}
-            titleId={'createNewFilter'}
+        <FormProvider
+            validationSchema={formSchema}
             removeOptional={true}
-            disabledSave={!filterNameValid}
+            {...formMethods}
         >
-            <NameWrapper
-                titleMessage="Name"
-                contentType={elementType.FILTER}
-                handleNameValidation={handleNameChange}
-                activeDirectory={defaultFolder.id}
-                isChoosedFolderChanged={isChoosedFolderChanged}
+            <ModificationDialog
+                open={open}
+                onClose={onClose}
+                onClear={clear}
+                onSave={onSubmit}
+                titleId={'createNewFilter'}
+                disabledSave={!filterNameValid}
+                maxWidth={'md'}
             >
-                <Grid container spacing={2} marginTop={'auto'}>
-                    {folderChooser}
-                    <Grid item>
-                        <RadioInput
-                            name={FILTER_TYPE}
-                            options={Object.values(FILTER_TYPES)}
-                        />
-                    </Grid>
+                <NameWrapper
+                    titleMessage="Name"
+                    contentType={elementType.FILTER}
+                    handleNameValidation={handleNameChange}
+                    activeDirectory={defaultFolder.id}
+                    isChoosedFolderChanged={isChoosedFolderChanged}
+                >
+                    <Grid container spacing={2} marginTop={'auto'}>
+                        {folderChooser}
+                        <Grid item>
+                            <RadioInput
+                                name={FILTER_TYPE}
+                                options={Object.values(FILTER_TYPES)}
+                            />
+                        </Grid>
 
-                    {filterType === FILTER_TYPES.CRITERIA_BASED.id ? (
-                        <CriteriaBasedFilterForm />
-                    ) : (
-                        <ExplicitNamingFilterForm />
-                    )}
-                </Grid>
-            </NameWrapper>
-            <DirectoryItemSelector
-                open={openDirectoryFolders}
-                onClose={setSelectedFolder}
-                types={[]}
-                title={intl.formatMessage({ id: 'chooseFolder' })}
-                onlyLeaves={false}
-                multiselect={false}
-            />
-        </CustomMuiDialog>
+                        {filterType === FILTER_TYPES.CRITERIA_BASED.id ? (
+                            <CriteriaBasedFilterForm />
+                        ) : (
+                            <ExplicitNamingFilterForm />
+                        )}
+                    </Grid>
+                </NameWrapper>
+                <DirectoryItemSelector
+                    open={openDirectoryFolders}
+                    onClose={setSelectedFolder}
+                    types={[]}
+                    title={intl.formatMessage({ id: 'chooseFolder' })}
+                    onlyLeaves={false}
+                    multiselect={false}
+                />
+            </ModificationDialog>
+        </FormProvider>
     );
 };
 

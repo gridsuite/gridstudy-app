@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ErrorInput, useSnackMessage } from '@gridsuite/commons-ui';
 import React, { useEffect, useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import AddIcon from '@mui/icons-material/Add';
@@ -24,8 +24,6 @@ import {
     FILTER_TYPE,
 } from '../../utils/field-constants';
 import yup from '../../utils/yup-config';
-import ErrorInput from '../../utils/rhf-inputs/error-inputs/error-input';
-import FieldErrorAlert from '../../utils/rhf-inputs/error-inputs/field-error-alert';
 import { ListItem } from '@mui/material';
 import { FILTER_TYPES } from 'components/network/constants';
 import { areArrayElementsUnique } from 'components/utils/utils';
@@ -209,7 +207,7 @@ function FilterProperties() {
                     </Button>
                 </Grid>
                 <Grid item>
-                    <ErrorInput name={fieldName} InputField={FieldErrorAlert} />
+                    <ErrorInput name={fieldName} />
                 </Grid>
             </Grid>
         )

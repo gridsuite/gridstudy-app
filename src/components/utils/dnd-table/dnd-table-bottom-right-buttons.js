@@ -26,6 +26,10 @@ const DndTableBottomRightButtons = ({
     handleMoveDownButton,
     disableAddingRows,
     disabled,
+    toTheLeft = false,
+    disableUp,
+    disableDown,
+    disableDelete,
 }) => {
     const intl = useIntl();
 
@@ -33,12 +37,39 @@ const DndTableBottomRightButtons = ({
         name: arrayFormName,
     });
 
-    const noRowsSelected = !currentRows.some((row) => row[SELECTED]);
-    const firstRowSelected = currentRows[0]?.[SELECTED];
-    const lastRowSelected = currentRows[currentRows.length - 1]?.[SELECTED];
+    console.log('in dnd', currentRows);
+    console.log('disabled', disabled);
+    console.log('disableAddingRows', disableAddingRows);
+
+    const noRowsSelected = toTheLeft
+        ? disableDelete
+        : !currentRows.some((row) => row[SELECTED]);
+    const firstRowSelected = toTheLeft ? disableUp : currentRows[0]?.[SELECTED];
+    const lastRowSelected = toTheLeft
+        ? disableDown
+        : currentRows[currentRows.length - 1]?.[SELECTED];
+
+    console.log(
+        'noRowsSelected, firstRowSelected, lastRowSelected',
+        noRowsSelected,
+        firstRowSelected,
+        lastRowSelected
+    );
+    console.log(
+        'disableUp, disableDown, disableDelete',
+        disableUp,
+        disableDown,
+        disableDelete
+    );
 
     return (
-        <Grid container item xs spacing={1} sx={{ justifyContent: 'flex-end' }}>
+        <Grid
+            container
+            item
+            xs
+            spacing={1}
+            sx={{ justifyContent: toTheLeft ? 'flex-start' : 'flex-end' }}
+        >
             <Grid item>
                 <Tooltip
                     title={intl.formatMessage({
@@ -50,7 +81,9 @@ const DndTableBottomRightButtons = ({
                         <IconButton
                             color="primary"
                             onClick={() => handleAddButton()}
-                            disabled={disabled || disableAddingRows}
+                            disabled={
+                                (disabled || disableAddingRows) && toTheLeft
+                            }
                         >
                             <AddCircleIcon />
                         </IconButton>

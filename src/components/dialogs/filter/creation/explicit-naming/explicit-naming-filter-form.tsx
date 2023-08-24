@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
@@ -19,9 +19,9 @@ import { ValueParserParams } from 'ag-grid-community';
 import { NumericEditor } from 'components/utils/rhf-inputs/ag-grid-table-rhf/cell-editors/numeric-editor';
 import { toFloatOrNullValue } from 'components/dialogs/dialogUtils';
 import InputWithPopupConfirmation from 'components/utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
 import { FILTER_EQUIPMENTS } from '../criteria-based/criteria-based-utils';
-
+import { SelectInput } from '@gridsuite/commons-ui';
+import Papa from 'papaparse';
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
 export const DISTRIBUTION_KEY = 'distributionKey';
 export const EQUIPMENT_ID = 'equipmentID';
@@ -138,23 +138,57 @@ function ExplicitNamingFilterForm() {
     const csvFileHeaders = useMemo(() => {
         const csvFileHeaders = [intl.formatMessage({ id: 'equipmentId' })];
         if (forGeneratorOrLoad) {
-            csvFileHeaders.push(intl.formatMessage({ id: 'distributionKey' }));
+            csvFileHeaders.push(intl.formatMessage({ id: DISTRIBUTION_KEY }));
         }
         return csvFileHeaders;
     }, [intl, forGeneratorOrLoad]);
 
-    const getDataFromCsvFile = useCallback((csvData: any) => {
-        if (csvData) {
-            return csvData.map((value: any) => {
-                return {
-                    [EQUIPMENT_ID]: value[0]?.trim(),
-                    [DISTRIBUTION_KEY]: toFloatOrNullValue(value[1]?.trim()),
-                };
-            });
-        } else {
-            return [];
-        }
-    }, []);
+    const handleImportRow = (val: any) => {
+        return {
+            [EQUIPMENT_ID]:
+                val[
+                    intl.formatMessage({
+                        id: 'equipmentId',
+                    })
+                ]?.trim(),
+            [DISTRIBUTION_KEY]: toFloatOrNullValue(
+                val[
+                    intl.formatMessage({
+                        id: DISTRIBUTION_KEY,
+                    })
+                ]?.trim()
+            ),
+        };
+    };
+
+    const handleImportCsvFilterData = (
+        selectedFile: any,
+        keepData: boolean
+    ) => {
+        Papa.parse(selectedFile, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function (results) {
+                let rows = results.data.map((val) => ({
+                    ...handleImportRow(val),
+                }));
+
+                if (rows && rows.length > 0) {
+                    if (keepData) {
+                        const oldValues = getValues(
+                            FILTER_EQUIPMENTS_ATTRIBUTES
+                        );
+                        const array3 = oldValues.concat(rows);
+                        console.log('flat', array3);
+
+                        setValue(FILTER_EQUIPMENTS_ATTRIBUTES, array3);
+                    } else {
+                        setValue(FILTER_EQUIPMENTS_ATTRIBUTES, rows);
+                    }
+                }
+            },
+        });
+    };
 
     const openConfirmationPopup = () => {
         return getValues(FILTER_EQUIPMENTS_ATTRIBUTES).some(
@@ -195,7 +229,7 @@ function ExplicitNamingFilterForm() {
                                 id: 'filterCsvFileName',
                             }),
                             fileHeaders: csvFileHeaders,
-                            getDataFromCsv: getDataFromCsvFile,
+                            getDataFromCsv: handleImportCsvFilterData,
                         }}
                         cssProps={{
                             '& .ag-root-wrapper-body': {

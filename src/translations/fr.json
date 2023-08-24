@@ -1107,5 +1107,7 @@
     "Countries1": "Pays 1",
     "Countries2": "Pays 2",
     "nameEmpty": "Le nom est vide",
-    "changeTypeMessage": "Voulez-vous changer le type ? La précédente configuration sera perdue"
+    "changeTypeMessage": "Voulez-vous changer le type ? La précédente configuration sera perdue",
+    "ImportIdentifierList": "Importer une liste par nommage",
+    "Replace": "remplacer"
 }

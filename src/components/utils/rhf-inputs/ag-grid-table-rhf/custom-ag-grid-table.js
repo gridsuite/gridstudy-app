@@ -15,7 +15,9 @@ import { useTheme } from '@mui/styles';
 
 import { useIntl } from 'react-intl';
 import { AG_GRID_ROW_UUID } from 'components/utils/field-constants';
-import BottomRightButtons from './bottom-right-buttons';
+import DndTableBottomRightButtons from 'components/utils/dnd-table/dnd-table-bottom-right-buttons';
+import DndTableBottomLeftButtons from 'components/utils/dnd-table/dnd-table-bottom-left-buttons';
+import { CsvDialog } from 'components/utils/csv-dialog';
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
@@ -102,6 +104,7 @@ export const CustomAgGridTable = ({
     const theme = useTheme();
     const [gridApi, setGridApi] = useState(null);
     const [selectedRows, setSelectedRows] = useState([]);
+    const [openCsvDialog, setOpenCsvDialog] = useState(false);
 
     const { control, getValues, setValue, watch } = useFormContext();
     const useFieldArrayOutput = useFieldArray({
@@ -214,50 +217,71 @@ export const CustomAgGridTable = ({
     };
 
     return (
-        <Grid container spacing={2}>
-            <Grid
-                item
-                xs={12}
-                className={theme.aggrid}
-                sx={style(cssProps).grid}
-            >
-                <AgGridReact
-                    rowData={rowData}
-                    onGridReady={onGridReady}
-                    getLocaleText={getLocaleText}
-                    rowSelection={'multiple'}
-                    domLayout={'autoHeight'}
-                    rowDragEntireRow
-                    rowDragManaged
-                    onRowDragEnd={(e) =>
-                        move(getIndex(e.node.data), e.overIndex)
-                    }
-                    suppressBrowserResizeObserver
-                    columnDefs={columnDefs}
-                    detailRowAutoHeight={true}
-                    onSelectionChanged={(event) => {
-                        setSelectedRows(gridApi.api.getSelectedRows());
-                    }}
-                    onCellEditingStopped={(event) => {
-                        update(event.rowIndex, event.data);
-                    }}
-                    getRowId={(row) => row.data[AG_GRID_ROW_UUID]}
-                    {...props}
-                ></AgGridReact>
+        <>
+            <Grid container spacing={2}>
+                <Grid
+                    item
+                    xs={12}
+                    className={theme.aggrid}
+                    sx={style(cssProps).grid}
+                >
+                    <AgGridReact
+                        rowData={rowData}
+                        onGridReady={onGridReady}
+                        getLocaleText={getLocaleText}
+                        rowSelection={'multiple'}
+                        domLayout={'autoHeight'}
+                        rowDragEntireRow
+                        rowDragManaged
+                        onRowDragEnd={(e) =>
+                            move(getIndex(e.node.data), e.overIndex)
+                        }
+                        suppressBrowserResizeObserver
+                        columnDefs={columnDefs}
+                        detailRowAutoHeight={true}
+                        onSelectionChanged={(event) => {
+                            setSelectedRows(gridApi.api.getSelectedRows());
+                        }}
+                        onCellEditingStopped={(event) => {
+                            update(event.rowIndex, event.data);
+                        }}
+                        getRowId={(row) => row.data[AG_GRID_ROW_UUID]}
+                        {...props}
+                    ></AgGridReact>
+                </Grid>
             </Grid>
-            <BottomRightButtons
-                name={name}
-                handleAddRow={handleAddRow}
-                handleDeleteRows={handleDeleteRows}
-                handleMoveRowDown={handleMoveRowDown}
-                handleMoveRowUp={handleMoveRowUp}
-                disableUp={noRowSelected || isFirstSelected}
-                disableDown={noRowSelected || isLastSelected}
-                disableDelete={noRowSelected}
-                csvProps={csvProps}
-                useFieldArrayOutput={useFieldArrayOutput}
-            />
-        </Grid>
+            <Grid container item sx={{ justifyContent: 'flex-start' }}>
+                <DndTableBottomLeftButtons
+                    handleUploadButton={() => setOpenCsvDialog(true)}
+                    uploadButtonMessageId={'ImportCSV'}
+                />
+                <DndTableBottomRightButtons
+                    arrayFormName={name}
+                    handleAddButton={handleAddRow}
+                    handleDeleteButton={handleDeleteRows}
+                    handleMoveUpButton={handleMoveRowUp}
+                    handleMoveDownButton={handleMoveRowDown}
+                    toTheLeft={true}
+                    disableUp={noRowSelected || isFirstSelected}
+                    disableDown={noRowSelected || isLastSelected}
+                    disableDelete={noRowSelected}
+                />
+            </Grid>
+            {openCsvDialog && (
+                <CsvDialog
+                    title={'ImportIdentifierList'}
+                    openCsvDialog={openCsvDialog}
+                    setOpenCsvDialog={() => setOpenCsvDialog(false)}
+                    csvColumns={csvProps.fileHeaders}
+                    handleImportCsv={(file, keepData) =>
+                        csvProps.getDataFromCsv(file, keepData)
+                    }
+                    fileName={intl.formatMessage({
+                        id: 'filterCsvFileName',
+                    })}
+                />
+            )}
+        </>
     );
 };
 

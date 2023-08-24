@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { SelectInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import {
     CRITERIA_BASED,
     EQUIPMENT_TYPE,
 } from 'components/utils/field-constants';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
 import InputWithPopupConfirmation from 'components/utils/rhf-inputs/select-inputs/input-with-popup-confirmation';
 import { useFormContext, useWatch } from 'react-hook-form';
 

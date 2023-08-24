@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { SubmitButton } from '@gridsuite/commons-ui';
 import {
     Button,
     Dialog,
@@ -16,7 +17,6 @@ import {
 import { makeStyles } from '@mui/styles';
 import { FormProvider } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import SubmitButton from '../commons/submitButton';
 
 const useStyles = makeStyles((theme) => ({
     root: {

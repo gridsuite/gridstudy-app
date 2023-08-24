@@ -9,10 +9,11 @@ import { useWatch } from 'react-hook-form';
 import { OPERATION_TYPE, VALUE_1, VALUE_2 } from '../field-constants';
 import yup from '../yup-config';
 import { useMemo } from 'react';
-import FloatInput from './float-input';
+
 import { FormControl, Grid, InputLabel } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import MuiSelectInput from './select-inputs/mui-select-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 
 const style = {
     inputLegend: (theme) => ({
@@ -76,10 +77,10 @@ const RangeInput = ({ name, label }) => {
         <FloatInput
             label={''}
             name={`${name}.${VALUE_1}`}
-            size="medium"
             clearable={false}
             formProps={{
                 placeholder: isOperationTypeRange ? 'Min' : '',
+                size: 'medium',
             }}
         />
     );
@@ -89,9 +90,9 @@ const RangeInput = ({ name, label }) => {
             name={`${name}.${VALUE_2}`}
             clearable={false}
             label={''}
-            size="medium"
             formProps={{
                 placeholder: 'Max',
+                size: 'medium',
             }}
         />
     );

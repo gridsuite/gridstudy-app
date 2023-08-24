@@ -26,7 +26,7 @@ const DndTableBottomLeftButtons = ({
     const intl = useIntl();
 
     return (
-        <Grid container item xs spacing={1}>
+        <Grid item>
             <Grid item>
                 <Tooltip
                     title={intl.formatMessage({
