@@ -7,7 +7,7 @@
 
 import { DialogContent, DialogTitle, Grid } from '@mui/material';
 import { gridItem } from 'components/dialogs/dialogUtils';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,

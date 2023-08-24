@@ -8,13 +8,16 @@
 import FormControl from '@mui/material/FormControl';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
-import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ErrorInput,
+    FieldLabel,
+    MidFormError,
+    OverflowableText,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import React, { useCallback, useState } from 'react';
 import { useController, useFieldArray, useFormContext } from 'react-hook-form';
-import ErrorInput from './error-inputs/error-input';
-import MidFormError from './error-inputs/mid-form-error';
 import { RawReadOnlyInput } from './read-only/raw-read-only-input';
-import { FieldLabel } from '../inputs/hooks-helpers';
 import { isFieldRequired } from '../utils';
 
 const ChipItemsInput = ({ label, name, hideErrorMessage }) => {

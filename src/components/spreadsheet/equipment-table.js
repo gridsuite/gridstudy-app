@@ -6,7 +6,7 @@
  */
 
 import React, { useMemo, useCallback } from 'react';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { useIntl } from 'react-intl';

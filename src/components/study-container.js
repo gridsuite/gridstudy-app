@@ -47,9 +47,13 @@ import {
 } from '../services/directory-notification';
 import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
+import { CreateStudyDialog } from './create-study-dialog/create-study-dialog';
 import { fetchAllEquipments } from '../services/study/network-map';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { fetchNetworkExistence } from '../services/study/network';
+import { recreateStudyNetwork } from 'services/study/study';
+import { HttpStatusCode } from 'utils/http-status-code';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -164,7 +168,7 @@ function useStudy(studyUuidRequest) {
                 setStudyUuid(studyUuidRequest);
             })
             .catch((error) => {
-                if (error.status === 404) {
+                if (error.status === HttpStatusCode.NOT_FOUND) {
                     setErrMessage(
                         intlRef.current.formatMessage(
                             { id: 'studyNotFound' },
@@ -190,6 +194,8 @@ function usePrevious(value) {
 }
 
 export const UPDATE_TYPE_HEADER = 'updateType';
+const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE =
+    'study_network_recreation_done';
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
@@ -197,6 +203,7 @@ const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
+    const intlRef = useIntlRef();
 
     const [studyUuid, studyPending, studyErrorMessage] = useStudy(
         decodeURIComponent(useParams().studyUuid)
@@ -215,6 +222,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const [errorMessage, setErrorMessage] = useState(undefined);
 
+    const [isStudyNetworkFound, setIsStudyNetworkFound] = useState(false);
+
     const [initialTitle] = useState(document.title);
 
     const dispatch = useDispatch();
@@ -231,7 +240,14 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
+    const [isImportStudyDialogDisplayed, setIsImportStudyDialogDisplayed] =
+        useState(false);
+
     const wsRef = useRef();
+
+    const closeImportStudyDialog = useCallback(() => {
+        setIsImportStudyDialogDisplayed(false);
+    }, []);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -472,16 +488,10 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
             })
             .catch((error) => {
-                if (error.status === 404) {
-                    snackError({
-                        headerId: 'StudyUnrecoverableStateRecreate',
-                    });
-                } else {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'NetworkModificationTreeLoadError',
-                    });
-                }
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'NetworkModificationTreeLoadError',
+                });
             })
             .finally(() =>
                 console.debug('Network modification tree loading finished')
@@ -489,11 +499,66 @@ export function StudyContainer({ view, onChangeTab }) {
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
+    const checkNetworkExistenceAndRecreateIfNotFound = useCallback(
+        (successCallback) => {
+            fetchNetworkExistence(studyUuid)
+                .then((response) => {
+                    if (response.status === HttpStatusCode.OK) {
+                        successCallback && successCallback();
+                        setIsStudyNetworkFound(true);
+                        loadTree();
+                    } else {
+                        // response.state === NO_CONTENT
+                        // if network is not found, we try to recreate study network from existing case
+                        setIsStudyNetworkFound(false);
+                        recreateStudyNetwork(studyUuid)
+                            .then(() => {
+                                snackWarning({
+                                    headerId: 'recreatingNetworkStudy',
+                                });
+                            })
+                            .catch((error) => {
+                                if (
+                                    error.status ===
+                                    HttpStatusCode.FAILED_DEPENDENCY
+                                ) {
+                                    // when trying to recreate study network, if case can't be found (424 error), we let the user select a new one
+                                    setIsImportStudyDialogDisplayed(true);
+                                    snackError({
+                                        headerId: 'StudyUnrecoverableState',
+                                    });
+                                } else {
+                                    // unknown error when trying to recreate network from study case
+                                    setErrorMessage(
+                                        intlRef.current.formatMessage({
+                                            id: 'networkRecreationError',
+                                        })
+                                    );
+                                }
+                            });
+                    }
+                })
+                .catch(() => {
+                    // unknown error when checking network existence
+                    setErrorMessage(
+                        intlRef.current.formatMessage({
+                            id: 'checkNetworkExistenceError',
+                        })
+                    );
+                });
+        },
+        [studyUuid, loadTree, snackError, snackWarning, intlRef]
+    );
+
     useEffect(() => {
-        if (studyUuid) {
-            loadTree();
+        if (studyUuid && !isStudyNetworkFound) {
+            checkNetworkExistenceAndRecreateIfNotFound();
         }
-    }, [studyUuid, loadTree]);
+    }, [
+        isStudyNetworkFound,
+        checkNetworkExistenceAndRecreateIfNotFound,
+        studyUuid,
+    ]);
 
     function parseStudyNotification(studyUpdatedForce) {
         const payload = studyUpdatedForce.eventData.payload;
@@ -560,6 +625,26 @@ export function StudyContainer({ view, onChangeTab }) {
             }
         }
     }, [studyUpdatedForce, currentNode?.id, studyUuid, dispatch]);
+
+    // study_network_recreation_done notification
+    // checking another time if we can find network, if we do, we display a snackbar info
+    useEffect(() => {
+        if (
+            studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] ===
+            UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE
+        ) {
+            const successCallback = () =>
+                snackInfo({
+                    headerId: 'studyNetworkRecovered',
+                });
+
+            checkNetworkExistenceAndRecreateIfNotFound(successCallback);
+        }
+    }, [
+        studyUpdatedForce,
+        checkNetworkExistenceAndRecreateIfNotFound,
+        snackInfo,
+    ]);
 
     //handles map automatic mode network reload
     useEffect(() => {
@@ -665,19 +750,24 @@ export function StudyContainer({ view, onChangeTab }) {
     ]);
 
     return (
-        <WaitingLoader
-            errMessage={studyErrorMessage || errorMessage}
-            loading={studyPending || !paramsLoaded} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
-            message={'LoadingRemoteData'}
-        >
-            <StudyPane
-                studyUuid={studyUuid}
-                currentNode={currentNode}
-                view={view}
-                onChangeTab={onChangeTab}
-                setErrorMessage={setErrorMessage}
-            />
-        </WaitingLoader>
+        <>
+            <WaitingLoader
+                errMessage={studyErrorMessage || errorMessage}
+                loading={studyPending || !paramsLoaded || !isStudyNetworkFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+                message={'LoadingRemoteData'}
+            >
+                <StudyPane
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    view={view}
+                    onChangeTab={onChangeTab}
+                    setErrorMessage={setErrorMessage}
+                />
+            </WaitingLoader>
+            {isImportStudyDialogDisplayed && (
+                <CreateStudyDialog closeDialog={closeImportStudyDialog} />
+            )}
+        </>
     );
 }
 
