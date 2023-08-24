@@ -322,7 +322,9 @@
     "LOW_VOLTAGE": "Low voltage",
 
     "HighVoltageLimit": "High voltage limit",
+    "HighVoltageLimitkV": "High voltage limit (kV)",
     "LowVoltageLimit": "Low voltage limit",
+    "LowVoltageLimitkV": "Low voltage limit (kV)",
 
     "descLfVoltageInitMode": "Voltage initialisation mode",
     "descLfTransformerVoltageControlOn": "Activate on-load tap changers",
@@ -1098,5 +1100,7 @@
     "distributionKeyWithMissingIdError": "Missing ID with defined distribution key",
     "missingDistributionKeyError": "Missing distribution key",
     "emptyFilterError": "Filter should contain at least one equipment",
+    "IpMin": "ISC min (kA)",
+    "IpMax": "ISC max (kA)",
     "StartupCost": "Startup cost"
 }

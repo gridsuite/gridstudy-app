@@ -322,7 +322,9 @@
     "LOW_VOLTAGE": "Tension basse",
 
     "HighVoltageLimit": "Limite tension haute",
+    "HighVoltageLimitkV": "Limite tension haute (kV)",
     "LowVoltageLimit": "Limite tension basse",
+    "LowVoltageLimitkV": "Limite tension basse (kV)",
 
     "descLfVoltageInitMode": "Mode d'initialisation du plan de tension",
     "descLfTransformerVoltageControlOn": "Simuler les régleurs en charge",
@@ -1120,5 +1122,7 @@
     "distributionKeyWithMissingIdError": "ID manquant avec une clé de répartition définie",
     "missingDistributionKeyError": "Clé de répartition manquante",
     "emptyFilterError": "Le filtre doit contenir au moins un ouvrage",
+    "IpMin": "ICC min (kA)",
+    "IpMax": "ICC max (kA)",
     "StartupCost": "Coût de démarrage"
 }
