@@ -7,7 +7,7 @@
 
 import { IconButton } from '@mui/material';
 import { gridItem } from 'components/dialogs/dialogUtils';
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import {
     SECTION_COUNT,
     SWITCHES_BETWEEN_SECTIONS,

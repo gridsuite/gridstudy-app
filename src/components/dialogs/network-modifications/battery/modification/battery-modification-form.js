@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from 'components/utils/rhf-inputs/text-input';
 import {
     ACTIVE_POWER_SET_POINT,
     EQUIPMENT_NAME,
@@ -22,7 +21,7 @@ import {
 } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
 import React from 'react';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { TextInput, FloatInput } from '@gridsuite/commons-ui';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import { TextField } from '@mui/material';
 import FrequencyRegulation from '../../../set-points/frequency-regulation';

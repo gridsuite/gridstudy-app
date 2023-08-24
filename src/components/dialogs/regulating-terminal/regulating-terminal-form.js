@@ -18,7 +18,7 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import AutocompleteInput from '../../utils/rhf-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';
 
 // Factory used to create a filter method that is used to change the default
