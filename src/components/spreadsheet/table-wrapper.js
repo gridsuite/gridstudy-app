@@ -45,8 +45,10 @@ import { updateConfigParameter } from '../../services/config';
 import {
     modifyGenerator,
     modifyLoad,
+    modifyVoltageLevel,
     requestNetworkChange,
 } from '../../services/study/network-modifications';
+import { kiloUnitToUnit } from '../../utils/rounding';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -528,6 +530,20 @@ const TableWrapper = (props) => {
                         editingData.targetV,
                         undefined,
                         undefined,
+                        undefined
+                    );
+                case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+                    return modifyVoltageLevel(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.nominalVoltage,
+                        editingData.lowVoltageLimit,
+                        editingData.highVoltageLimit,
+                        kiloUnitToUnit(editingData.ipMin),
+                        kiloUnitToUnit(editingData.ipMax),
+                        false,
                         undefined
                     );
                 default:
