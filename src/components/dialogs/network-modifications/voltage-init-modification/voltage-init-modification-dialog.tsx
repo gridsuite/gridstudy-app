@@ -36,6 +36,8 @@ export const ALLOWED_KEYS = [
 export const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
     TRANSFORMER_TAB: 1,
+    STATIC_VAR_COMPENSATOR_TAB: 2,
+    VSC_CONVERTER_STATION_TAB: 3,
 };
 
 enum FetchStatus {
@@ -61,6 +63,24 @@ interface TransformerRowData {
     [LEG_SIDE]: number | undefined;
 }
 
+interface StaticVarCompensatorRowData {
+    ID: string;
+    [VOLTAGE_SET_POINT]: number | undefined;
+    [REACTIVE_POWER_SET_POINT]: number | undefined;
+}
+
+interface VscConverterStationRowData {
+    ID: string;
+    [VOLTAGE_SET_POINT]: number | undefined;
+    [REACTIVE_POWER_SET_POINT]: number | undefined;
+}
+
+interface TransformerRowData {
+    ID: string;
+    [RATIO_TAP_CHANGER_POSITION]: number | undefined;
+    [LEG_SIDE]: number | undefined;
+}
+
 interface GeneratorData {
     generatorId: string;
     voltageSetpoint: number | undefined;
@@ -73,9 +93,23 @@ interface TransformerData {
     legSide: number | undefined;
 }
 
+interface StaticVarCompensatorData {
+    staticVarCompensatorId: string;
+    voltageSetpoint: number | undefined;
+    reactivePowerSetpoint: number | undefined;
+}
+
+interface VscConverterStationData {
+    vscConverterStationId: string;
+    voltageSetpoint: number | undefined;
+    reactivePowerSetpoint: number | undefined;
+}
+
 interface EditData {
     generators: GeneratorData[];
     transformers: TransformerData[];
+    staticVarCompensators: StaticVarCompensatorData[];
+    vscConverterStations: VscConverterStationData[];
 }
 
 interface VoltageInitModificationProps {
@@ -146,6 +180,54 @@ const VoltageInitModificationDialog: FunctionComponent<
         ];
     }, [intl]);
 
+    const staticVarCompensatorsColumnDefs = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'ID' }),
+                field: 'ID',
+                pinned: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
+                field: VOLTAGE_SET_POINT,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'ReactivePowerSetpointMVAR',
+                }),
+                field: REACTIVE_POWER_SET_POINT,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+        ];
+    }, [intl]);
+
+    const vscConverterStationsColumnDefs = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'ID' }),
+                field: 'ID',
+                pinned: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'VoltageSetpointKV' }),
+                field: VOLTAGE_SET_POINT,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'ReactivePowerSetpointMVAR',
+                }),
+                field: REACTIVE_POWER_SET_POINT,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+        ];
+    }, [intl]);
+
     const equipmentTabs = (
         <Box
             sx={{
@@ -162,6 +244,12 @@ const VoltageInitModificationDialog: FunctionComponent<
                 >
                     <Tab label={<FormattedMessage id="Generators" />} />
                     <Tab label={<FormattedMessage id="Transformers" />} />
+                    <Tab
+                        label={<FormattedMessage id="StaticVarCompensators" />}
+                    />
+                    <Tab
+                        label={<FormattedMessage id="VscConverterStations" />}
+                    />
                 </Tabs>
             </Grid>
         </Box>
@@ -184,7 +272,7 @@ const VoltageInitModificationDialog: FunctionComponent<
         []
     );
 
-    const onGridReady = useCallback((params: any) => {
+    const onRowDataUpdated = useCallback((params: any) => {
         if (params.api) {
             params.api.sizeColumnsToFit();
         }
@@ -222,7 +310,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={generatorsColumnDefs}
                         rowSelection="single"
-                        onGridReady={onGridReady}
+                        onRowDataUpdated={onRowDataUpdated}
                     />
                 );
             } else if (currentTab === EquipmentTypeTabs.TRANSFORMER_TAB) {
@@ -251,7 +339,73 @@ const VoltageInitModificationDialog: FunctionComponent<
                         defaultColDef={defaultColDef}
                         columnDefs={transformersColumnDefs}
                         rowSelection="single"
-                        onGridReady={onGridReady}
+                        onRowDataUpdated={onRowDataUpdated}
+                    />
+                );
+            } else if (
+                currentTab === EquipmentTypeTabs.STATIC_VAR_COMPENSATOR_TAB
+            ) {
+                let rowData: StaticVarCompensatorRowData[] = [];
+                if (editData) {
+                    editData.staticVarCompensators.forEach(
+                        (m: StaticVarCompensatorData) => {
+                            let row: StaticVarCompensatorRowData = {
+                                ID: m.staticVarCompensatorId,
+                                [VOLTAGE_SET_POINT]: undefined,
+                                [REACTIVE_POWER_SET_POINT]: undefined,
+                            };
+                            if (check(m.voltageSetpoint)) {
+                                row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
+                            }
+                            if (check(m.reactivePowerSetpoint)) {
+                                row[REACTIVE_POWER_SET_POINT] =
+                                    m.reactivePowerSetpoint;
+                            }
+                            rowData.push(row);
+                        }
+                    );
+                }
+
+                return (
+                    <CustomAGGrid
+                        rowData={rowData}
+                        defaultColDef={defaultColDef}
+                        columnDefs={staticVarCompensatorsColumnDefs}
+                        rowSelection="single"
+                        onRowDataUpdated={onRowDataUpdated}
+                    />
+                );
+            } else if (
+                currentTab === EquipmentTypeTabs.VSC_CONVERTER_STATION_TAB
+            ) {
+                let rowData: VscConverterStationRowData[] = [];
+                if (editData) {
+                    editData.vscConverterStations.forEach(
+                        (m: VscConverterStationData) => {
+                            let row: VscConverterStationRowData = {
+                                ID: m.vscConverterStationId,
+                                [VOLTAGE_SET_POINT]: undefined,
+                                [REACTIVE_POWER_SET_POINT]: undefined,
+                            };
+                            if (check(m.voltageSetpoint)) {
+                                row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
+                            }
+                            if (check(m.reactivePowerSetpoint)) {
+                                row[REACTIVE_POWER_SET_POINT] =
+                                    m.reactivePowerSetpoint;
+                            }
+                            rowData.push(row);
+                        }
+                    );
+                }
+
+                return (
+                    <CustomAGGrid
+                        rowData={rowData}
+                        defaultColDef={defaultColDef}
+                        columnDefs={vscConverterStationsColumnDefs}
+                        rowSelection="single"
+                        onRowDataUpdated={onRowDataUpdated}
                     />
                 );
             }
@@ -260,8 +414,10 @@ const VoltageInitModificationDialog: FunctionComponent<
             editData,
             generatorsColumnDefs,
             transformersColumnDefs,
+            staticVarCompensatorsColumnDefs,
+            vscConverterStationsColumnDefs,
             defaultColDef,
-            onGridReady,
+            onRowDataUpdated,
         ]
     );
 
@@ -275,6 +431,7 @@ const VoltageInitModificationDialog: FunctionComponent<
     return (
         <BasicModificationDialog
             fullWidth
+            maxWidth="md"
             open={open}
             onClose={onClose}
             onClear={handleClear}

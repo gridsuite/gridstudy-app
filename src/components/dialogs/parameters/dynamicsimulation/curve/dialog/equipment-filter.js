@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, MenuItem, Select, Typography } from '@mui/material';
+import { Grid, MenuItem, Select, Typography, useTheme } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, {
     forwardRef,
@@ -18,7 +18,7 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { AgGridReact } from 'ag-grid-react';
-import { makeStyles, useTheme } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import CountrySelect from '../country-select';
 import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';

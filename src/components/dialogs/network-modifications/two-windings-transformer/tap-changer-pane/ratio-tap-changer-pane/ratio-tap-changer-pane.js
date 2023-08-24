@@ -21,8 +21,8 @@ import { useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { gridItem, VoltageAdornment } from '../../../../dialogUtils';
-import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { SwitchInput } from '@gridsuite/commons-ui';
+import { FloatInput } from '@gridsuite/commons-ui';
 import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import {
@@ -30,7 +30,7 @@ import {
     REGULATION_TYPES,
     SIDE,
 } from 'components/network/constants';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
@@ -238,7 +238,7 @@ const RatioTapChangerPane = ({
                     !ratioTapChangerEnabledWatcher ||
                     !isRatioTapLoadTapChangingCapabilitiesOn,
             }}
-            previousValue={previousValues?.[RATIO_TAP_CHANGER]?.targetDeadBand}
+            previousValue={previousValues?.[RATIO_TAP_CHANGER]?.targetDeadband}
         />
     );
 

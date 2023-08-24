@@ -15,9 +15,8 @@ import React, {
 } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, AutocompleteInput } from '@gridsuite/commons-ui';
 import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import {
     DELETION_SPECIFIC_DATA,
     EQUIPMENT_ID,

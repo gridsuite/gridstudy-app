@@ -15,7 +15,7 @@ import {
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
 import React from 'react';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import {
     ACTIVE_POWER_SET_POINT,
     REACTIVE_POWER_SET_POINT,
@@ -24,7 +24,7 @@ import {
 import { useWatch } from 'react-hook-form';
 import FrequencyRegulation from './frequency-regulation';
 import VoltageRegulation from './voltage-regulation';
-import SwitchInput from 'components/utils/rhf-inputs/booleans/switch-input';
+import { SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 

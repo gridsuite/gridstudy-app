@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Typography } from '@mui/material';
+import { Grid, Typography, useTheme } from '@mui/material';
 import EquipmentFilter, { CURVE_EQUIPMENTS } from './equipment-filter';
 import ModelFilter from './model-filter';
 import { FormattedMessage } from 'react-intl';
@@ -16,7 +16,6 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { useTheme } from '@mui/styles';
 
 const CurveSelector = forwardRef((props, ref) => {
     const theme = useTheme();

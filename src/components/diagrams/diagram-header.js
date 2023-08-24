@@ -8,7 +8,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { OverflowableText } from '@gridsuite/commons-ui/';
+import { OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import PushPinIcon from '@mui/icons-material/PushPin';

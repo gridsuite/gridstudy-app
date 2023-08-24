@@ -16,13 +16,13 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import React, { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 import {
     ACTIVE_VARIATION_MODES,
     REACTIVE_VARIATION_MODES,
     VARIATION_TYPES,
 } from 'components/network/constants';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
 import { elementType } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';

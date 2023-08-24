@@ -15,7 +15,7 @@ import {
     OhmAdornment,
     VoltageAdornment,
 } from '../../../dialogUtils';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import {
     CHARACTERISTICS,
     MAGNETIZING_CONDUCTANCE,
