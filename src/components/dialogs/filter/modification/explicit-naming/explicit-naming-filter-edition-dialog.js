@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage, elementType } from '@gridsuite/commons-ui';
 import {
@@ -24,7 +24,7 @@ import ExplicitNamingFilterForm, {
 import { FILTER_TYPES } from 'components/network/constants';
 import { saveExplicitNamingFilter } from '../../filters-save';
 import yup from 'components/utils/yup-config';
-import CustomMuiDialog from '../../custom-mui-dialog';
+import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 const formSchema = yup
     .object()
@@ -102,26 +102,32 @@ const ExplicitNamingFilterEditionDialog = ({
     };
 
     return (
-        <CustomMuiDialog
-            open={open}
-            onClose={onClose}
-            onSave={onSubmit}
-            formSchema={formSchema}
-            formMethods={formMethods}
-            titleId={titleId}
+        <FormProvider
+            validationSchema={formSchema}
             removeOptional={true}
-            disabledSave={!isNameValid}
+            {...formMethods}
         >
-            <NameWrapper
-                titleMessage="Name"
-                initialValue={name}
-                contentType={elementType.FILTER}
-                handleNameValidation={handleNameChange}
-                activeDirectory={activeDirectory}
+            <ModificationDialog
+                open={open}
+                onClose={onClose}
+                onClear={onClose}
+                onSave={onSubmit}
+                titleId={titleId}
+                disabledSave={!isNameValid}
+                fullWidth
+                maxWidth={'md'}
             >
-                <ExplicitNamingFilterForm />
-            </NameWrapper>
-        </CustomMuiDialog>
+                <NameWrapper
+                    titleMessage="Name"
+                    initialValue={name}
+                    contentType={elementType.FILTER}
+                    handleNameValidation={handleNameChange}
+                    activeDirectory={activeDirectory}
+                >
+                    <ExplicitNamingFilterForm />
+                </NameWrapper>
+            </ModificationDialog>
+        </FormProvider>
     );
 };
 

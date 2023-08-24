@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import PropTypes from 'prop-types';
 import { getFilterById } from 'services/filter';
@@ -18,7 +18,7 @@ import {
     backToFrontTweak,
     frontToBackTweak,
 } from '../../creation/criteria-based/criteria-based-filter-dialog-utils';
-import CustomMuiDialog from '../../custom-mui-dialog';
+
 import NameWrapper from '../../name-wrapper';
 import CriteriaBasedFilterForm, {
     criteriaBasedFilterSchema,
@@ -29,6 +29,7 @@ import {
     FILTER_TYPE,
     NAME,
 } from 'components/utils/field-constants';
+import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 const formSchema = yup
     .object()
@@ -98,26 +99,31 @@ export const CriteriaBasedFilterEditionDialog = ({
     };
 
     return (
-        <CustomMuiDialog
-            open={open}
-            onClose={onClose}
-            onSave={onSubmit}
-            formSchema={formSchema}
-            formMethods={formMethods}
-            titleId={titleId}
+        <FormProvider
+            validationSchema={formSchema}
             removeOptional={true}
-            disabledSave={!isNameValid}
+            {...formMethods}
         >
-            <NameWrapper
-                titleMessage="Name"
-                initialValue={name}
-                contentType={elementType.FILTER}
-                handleNameValidation={handleNameChange}
-                activeDirectory={activeDirectory}
+            <ModificationDialog
+                open={open}
+                onClose={onClose}
+                onClear={onClose}
+                onSave={onSubmit}
+                titleId={titleId}
+                disabledSave={!isNameValid}
+                maxWidth={'md'}
             >
-                <CriteriaBasedFilterForm />
-            </NameWrapper>
-        </CustomMuiDialog>
+                <NameWrapper
+                    titleMessage="Name"
+                    initialValue={name}
+                    contentType={elementType.FILTER}
+                    handleNameValidation={handleNameChange}
+                    activeDirectory={activeDirectory}
+                >
+                    <CriteriaBasedFilterForm />
+                </NameWrapper>
+            </ModificationDialog>
+        </FormProvider>
     );
 };
 
