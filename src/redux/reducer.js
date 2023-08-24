@@ -91,6 +91,7 @@ import {
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_POST_LOADFLOW,
     SET_COMPUTING_STATUS,
+    SET_OPTIONAL_SERVICES,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -129,6 +130,10 @@ import { CopyType } from 'components/network-modification-tree-pane';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/utils/node-insert-modes';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../components/utils/optional-services';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -178,6 +183,13 @@ const initialSpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type]: null,
 };
 
+export const defaultOptionalServicesState = Object.keys(
+    OptionalServicesNames
+).map((key) => ({
+    name: key,
+    status: OptionalServicesStatus.Pending,
+}));
+
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
@@ -220,6 +232,7 @@ const initialState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     computingStatus: { ...initialComputingStatus },
+    optionalServices: defaultOptionalServicesState,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1010,6 +1023,9 @@ export const reducer = createReducer(initialState, {
     },
     [SET_COMPUTING_STATUS]: (state, action) => {
         state.computingStatus[action.computingType] = action.runningStatus;
+    },
+    [SET_OPTIONAL_SERVICES]: (state, action) => {
+        state.optionalServices = action.optionalServices;
     },
 });
 
