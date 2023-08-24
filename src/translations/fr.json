@@ -1109,5 +1109,8 @@
     "nameEmpty": "Le nom est vide",
     "changeTypeMessage": "Voulez-vous changer le type ? La précédente configuration sera perdue",
     "ImportIdentifierList": "Importer une liste par nommage",
-    "Replace": "remplacer"
+    "Replace": "remplacer",
+    "distributionKeyWithMissingIdError": "ID manquant avec une clé de répartition définie",
+    "missingDistributionKeyError": "Clé de répartition manquante",
+    "emptyFilterError": "Le filtre doit contenir au moins un ouvrage",
 }

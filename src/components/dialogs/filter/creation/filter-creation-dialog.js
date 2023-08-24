@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import CustomMuiDialog from '../custom-mui-dialog';
 import NameWrapper from '../name-wrapper';
 import {
     RadioInput,

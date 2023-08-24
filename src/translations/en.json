@@ -1087,5 +1087,8 @@
     "nameEmpty": "The name is empty",
     "changeTypeMessage": "Do you want to change the type? Previous configuration will be erased",
     "ImportIdentifierList": "Import an explicit naming list",
-    "Replace": "replace" 
+    "Replace": "replace",
+    "distributionKeyWithMissingIdError": "Missing ID with defined distribution key",
+    "missingDistributionKeyError": "Missing distribution key",
+    "emptyFilterError": "Filter should contain at least one equipment"
 }
