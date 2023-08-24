@@ -76,7 +76,7 @@ interface ColumnConfig {
     isSortable?: boolean;
 }
 
-const ShortCircuitAnalysisResult: FunctionComponent<
+const ShortCircuitAnalysisResultTable: FunctionComponent<
     ShortCircuitAnalysisResultProps
 > = ({ result, onSortChanged, sortConfig }) => {
     const intl = useIntl();
@@ -370,4 +370,4 @@ const ShortCircuitAnalysisResult: FunctionComponent<
     return <>{renderResult()}</>;
 };
 
-export default ShortCircuitAnalysisResult;
+export default ShortCircuitAnalysisResultTable;

@@ -149,8 +149,6 @@ const PagedSensitivityAnalysisResult = ({
         fetchResult();
     }, [fetchResult]);
 
-    useEffect(() => {}, [sensiKindIndex, nOrNkIndex]);
-
     return (
         <>
             {isLoading && (

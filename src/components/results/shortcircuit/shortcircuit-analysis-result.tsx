@@ -6,7 +6,7 @@
  */
 
 import WaitingLoader from 'components/utils/waiting-loader';
-import ShortCircuitAnalysisResult from './shortcircuit-analysis-result-table';
+import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
 import {
     SCAResultFault,
@@ -41,7 +41,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortcircuitAnalysisType;
 }
 
-export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
+export const ShortCircuitAnalysisResult: FunctionComponent<
     IShortCircuitAnalysisGlobalResultProps
 > = ({ analysisType }) => {
     const intl = useIntl();
@@ -63,12 +63,17 @@ export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
+    const shortCircuitNotif = useSelector(
+        (state: ReduxState) => state.shortCircuitNotif
+    );
 
     const isLoading =
         analysisType === ShortcircuitAnalysisType.ALL_BUSES
             ? isFetching
             : oneBusShortCircuitAnalysisState === RunningStatus.RUNNING ||
               isFetching;
+
+    const isAllBusesType = analysisType === ShortcircuitAnalysisType.ALL_BUSES;
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -111,8 +116,10 @@ export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
             fetchFunction(studyUuid, currentNode?.id)
                 .then((result: ShortcircuitAnalysisResult) => {
                     const { content = [], totalElements } = result || {};
-                    setResult(content);
-                    setCount(totalElements);
+                    if (totalElements && content.length) {
+                        setResult(content);
+                        setCount(totalElements);
+                    }
                 })
                 .catch((error) =>
                     snackError({
@@ -125,7 +132,7 @@ export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
                 .finally(() => setIsFetching(false));
         };
 
-        if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+        if (isAllBusesType) {
             fetchAnalysisResult(
                 fetchShortCircuitAnalysisResult.bind(null, {
                     studyUuid,
@@ -144,31 +151,34 @@ export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
     }, [
         page,
         rowsPerPage,
-        studyUuid,
-        currentNode,
-        analysisType,
-        sortConfig,
-        intl,
         snackError,
+        isAllBusesType,
+        sortConfig,
+        studyUuid,
+        currentNode?.id,
+        intl,
+        shortCircuitNotif,
     ]);
 
     return (
         <>
             <WaitingLoader message={'LoadingRemoteData'} loading={isLoading}>
-                <ShortCircuitAnalysisResult
+                <ShortCircuitAnalysisResultTable
                     result={result}
                     onSortChanged={onSortChanged}
                     sortConfig={sortConfig}
                 />
             </WaitingLoader>
-            <CustomTablePagination
-                rowsPerPageOptions={PAGE_OPTIONS}
-                count={count}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+            {isAllBusesType && (
+                <CustomTablePagination
+                    rowsPerPageOptions={PAGE_OPTIONS}
+                    count={count}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            )}
         </>
     );
 };
