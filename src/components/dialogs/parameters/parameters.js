@@ -75,6 +75,11 @@ import {
     setSecurityAnalysisParameters,
     updateSecurityAnalysisProvider,
 } from '../../../services/study/security-analysis';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../../utils/optional-services';
+import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 
 export const CloseButton = ({ hideParameters, classeStyleName }) => {
     return (
@@ -248,6 +253,7 @@ const FETCHING_STATUS = {
 export const useParametersBackend = (
     user,
     type,
+    optionalServiceStatus,
     backendFetchProviders,
     backendFetchProvider,
     backendFetchDefaultProvider,
@@ -257,7 +263,6 @@ export const useParametersBackend = (
     backendFetchSpecificParameters
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
-
     const { snackError } = useSnackMessage();
 
     const providersRef = useRef(INITIAL_PROVIDERS);
@@ -387,7 +392,10 @@ export const useParametersBackend = (
     );
 
     useEffect(() => {
-        if (user !== null) {
+        if (
+            user !== null &&
+            optionalServiceStatus === OptionalServicesStatus.Up
+        ) {
             setFetching(FETCHING_STATUS.FETCHING);
             backendFetchProviders()
                 .then((providers) => {
@@ -407,10 +415,10 @@ export const useParametersBackend = (
                 });
             setFetching(FETCHING_STATUS.FINISHED);
         }
-    }, [user, backendFetchProviders, type, snackError]);
+    }, [user, backendFetchProviders, type, snackError, optionalServiceStatus]);
 
     useEffect(() => {
-        if (studyUuid) {
+        if (studyUuid && optionalServiceStatus === OptionalServicesStatus.Up) {
             if (fetching === FETCHING_STATUS.FINISHED && !provider) {
                 backendFetchProvider(studyUuid)
                     .then((provider) => {
@@ -430,6 +438,7 @@ export const useParametersBackend = (
             }
         }
     }, [
+        optionalServiceStatus,
         backendFetchProvider,
         fetching,
         provider,
@@ -440,7 +449,11 @@ export const useParametersBackend = (
     ]);
 
     useEffect(() => {
-        if (studyUuid && backendFetchSpecificParameters) {
+        if (
+            studyUuid &&
+            backendFetchSpecificParameters &&
+            optionalServiceStatus === OptionalServicesStatus.Up
+        ) {
             backendFetchSpecificParameters()
                 .then((specificParams) => {
                     setSpecificParamsDescription(specificParams);
@@ -452,10 +465,20 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [backendFetchSpecificParameters, snackError, studyUuid, type]);
+    }, [
+        optionalServiceStatus,
+        backendFetchSpecificParameters,
+        snackError,
+        studyUuid,
+        type,
+    ]);
 
     useEffect(() => {
-        if (studyUuid && backendFetchParameters) {
+        if (
+            studyUuid &&
+            backendFetchParameters &&
+            optionalServiceStatus === OptionalServicesStatus.Up
+        ) {
             backendFetchParameters(studyUuid)
                 .then((params) => {
                     setParams(params);
@@ -467,7 +490,13 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [backendFetchParameters, snackError, studyUuid, type]);
+    }, [
+        optionalServiceStatus,
+        backendFetchParameters,
+        snackError,
+        studyUuid,
+        type,
+    ]);
 
     return [
         providersRef.current,
@@ -542,9 +571,26 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
+    const securityAnalysisAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.SecurityAnalysis
+    );
+    const sensitivityAnalysisAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.SensitivityAnalysis
+    );
+    const dynamicSimulationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.DynamicSimulation
+    );
+    const voltageInitAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.VoltageInit
+    );
+    const shortCircuitAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.ShortCircuit
+    );
+
     const loadFlowParametersBackend = useParametersBackend(
         user,
         'LoadFlow',
+        OptionalServicesStatus.Up,
         getLoadFlowProviders,
         getLoadFlowProvider,
         getDefaultLoadFlowProvider,
@@ -557,6 +603,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const securityAnalysisParametersBackend = useParametersBackend(
         user,
         'SecurityAnalysis',
+        securityAnalysisAvailability,
         fetchSecurityAnalysisProviders,
         fetchSecurityAnalysisProvider,
         fetchDefaultSecurityAnalysisProvider,
@@ -568,6 +615,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
     const sensitivityAnalysisParametersBackend = useParametersBackend(
         user,
         'SensitivityAnalysis',
+        sensitivityAnalysisAvailability,
         fetchSensitivityAnalysisProviders,
         fetchSensitivityAnalysisProvider,
         fetchDefaultSensitivityAnalysisProvider,
@@ -634,43 +682,67 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             label={<FormattedMessage id="LoadFlow" />}
                             value={TAB_VALUES.lfParamsTabValue}
                         />
-                        <Tab
-                            disabled={!studyUuid}
-                            label={<FormattedMessage id="SecurityAnalysis" />}
-                            value={TAB_VALUES.securityAnalysisParamsTabValue}
-                        />
-                        <Tab
-                            disabled={!studyUuid}
-                            label={
-                                <FormattedMessage id="SensitivityAnalysis" />
-                            }
-                            value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
-                        />
-                        {enableDeveloperMode && (
-                            <Tab
-                                disabled={!studyUuid}
-                                label={<FormattedMessage id="ShortCircuit" />}
-                                value={TAB_VALUES.shortCircuitParamsTabValue}
-                            />
-                        )}
-                        {enableDeveloperMode && (
+                        {securityAnalysisAvailability ===
+                            OptionalServicesStatus.Up && (
                             <Tab
                                 disabled={!studyUuid}
                                 label={
-                                    <FormattedMessage id="DynamicSimulation" />
+                                    <FormattedMessage id="SecurityAnalysis" />
                                 }
                                 value={
-                                    TAB_VALUES.dynamicSimulationParamsTabValue
+                                    TAB_VALUES.securityAnalysisParamsTabValue
                                 }
                             />
                         )}
-                        {enableDeveloperMode && (
+                        {sensitivityAnalysisAvailability ===
+                            OptionalServicesStatus.Up && (
                             <Tab
                                 disabled={!studyUuid}
-                                label={<FormattedMessage id="VoltageInit" />}
-                                value={TAB_VALUES.voltageInitParamsTabValue}
+                                label={
+                                    <FormattedMessage id="SensitivityAnalysis" />
+                                }
+                                value={
+                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
+                                }
                             />
                         )}
+                        {shortCircuitAvailability ===
+                            OptionalServicesStatus.Up &&
+                            enableDeveloperMode && (
+                                <Tab
+                                    disabled={!studyUuid}
+                                    label={
+                                        <FormattedMessage id="ShortCircuit" />
+                                    }
+                                    value={
+                                        TAB_VALUES.shortCircuitParamsTabValue
+                                    }
+                                />
+                            )}
+                        {dynamicSimulationAvailability ===
+                            OptionalServicesStatus.Up &&
+                            enableDeveloperMode && (
+                                <Tab
+                                    disabled={!studyUuid}
+                                    label={
+                                        <FormattedMessage id="DynamicSimulation" />
+                                    }
+                                    value={
+                                        TAB_VALUES.dynamicSimulationParamsTabValue
+                                    }
+                                />
+                            )}
+                        {voltageInitAvailability ===
+                            OptionalServicesStatus.Up &&
+                            enableDeveloperMode && (
+                                <Tab
+                                    disabled={!studyUuid}
+                                    label={
+                                        <FormattedMessage id="VoltageInit" />
+                                    }
+                                    value={TAB_VALUES.voltageInitParamsTabValue}
+                                />
+                            )}
                         <Tab
                             label={<FormattedMessage id="Advanced" />}
                             value={TAB_VALUES.advancedParamsTabValue}
@@ -707,35 +779,46 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                 />
                             )}
                         </TabPanel>
-                        <TabPanel
-                            value={tabValue}
-                            index={TAB_VALUES.securityAnalysisParamsTabValue}
-                            keepState
-                        >
-                            {studyUuid && (
-                                <SecurityAnalysisParameters
-                                    hideParameters={hideParameters}
-                                    parametersBackend={
-                                        securityAnalysisParametersBackend
-                                    }
-                                />
-                            )}
-                        </TabPanel>
-                        <TabPanel
-                            value={tabValue}
-                            index={TAB_VALUES.sensitivityAnalysisParamsTabValue}
-                            keepState
-                        >
-                            {studyUuid && (
-                                <SensitivityAnalysisParameters
-                                    hideParameters={hideParameters}
-                                    parametersBackend={
-                                        sensitivityAnalysisParametersBackend
-                                    }
-                                />
-                            )}
-                        </TabPanel>
-                        {
+                        {securityAnalysisAvailability ===
+                            OptionalServicesStatus.Up && (
+                            <TabPanel
+                                value={tabValue}
+                                index={
+                                    TAB_VALUES.securityAnalysisParamsTabValue
+                                }
+                                keepState
+                            >
+                                {studyUuid && (
+                                    <SecurityAnalysisParameters
+                                        hideParameters={hideParameters}
+                                        parametersBackend={
+                                            securityAnalysisParametersBackend
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )}
+                        {sensitivityAnalysisAvailability ===
+                            OptionalServicesStatus.Up && (
+                            <TabPanel
+                                value={tabValue}
+                                index={
+                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
+                                }
+                                keepState
+                            >
+                                {studyUuid && (
+                                    <SensitivityAnalysisParameters
+                                        hideParameters={hideParameters}
+                                        parametersBackend={
+                                            sensitivityAnalysisParametersBackend
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )}
+                        {shortCircuitAvailability ===
+                            OptionalServicesStatus.Up &&
                             //To be removed when ShortCircuit is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel
@@ -754,9 +837,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                         />
                                     )}
                                 </TabPanel>
-                            )
-                        }
-                        {
+                            )}
+                        {dynamicSimulationAvailability ===
+                            OptionalServicesStatus.Up &&
                             //To be removed when DynamicSimulation is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel
@@ -772,9 +855,9 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                         />
                                     )}
                                 </TabPanel>
-                            )
-                        }
-                        {
+                            )}
+                        {voltageInitAvailability ===
+                            OptionalServicesStatus.Up &&
                             //To be removed when DynamicSimulation is not in developer mode only.
                             enableDeveloperMode && (
                                 <TabPanel
@@ -792,8 +875,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                         />
                                     )}
                                 </TabPanel>
-                            )
-                        }
+                            )}
                         <TabPanel
                             value={tabValue}
                             index={TAB_VALUES.advancedParamsTabValue}

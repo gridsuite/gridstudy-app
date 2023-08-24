@@ -232,3 +232,10 @@ export function getUniqueNodeName(studyUuid) {
     console.debug(uniqueNodeNameUrl);
     return backendFetchText(uniqueNodeNameUrl);
 }
+
+export function getOptionalServices() {
+    console.info('get available optional services');
+    const url = PREFIX_STUDY_QUERIES + '/v1/optional-services';
+    console.debug(url);
+    return backendFetchJson(url);
+}
