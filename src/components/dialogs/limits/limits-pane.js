@@ -222,7 +222,7 @@ const LimitsPane = ({
 
     return (
         <>
-            <GridSection title="Side1" heading="3" customStyle={styles.h3} />
+            <GridSection title="Side1" customStyle={styles.h3} />
             <Grid container spacing={2}>
                 {gridItem(permanentCurrentLimit1Field, 4)}
             </Grid>

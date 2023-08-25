@@ -108,7 +108,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
 
     return (
         <>
-            <GridSection title={'Characteristics'} heading="3" />
+            <GridSection title={'Characteristics'} />
             <Grid container item spacing={2} xs={width}>
                 {gridItem(seriesResistanceField)}
                 {gridItem(seriesReactanceField)}

@@ -78,11 +78,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 }
                 p={1}
             >
-                <GridSection
-                    title="Connectivity"
-                    heading="3"
-                    customStyle={styles.h3}
-                />
+                <GridSection title="Connectivity" customStyle={styles.h3} />
                 <GridSection title="Side1" heading="4" size="6" />
                 <Grid container spacing={2}>
                     <Grid item container direction="column">

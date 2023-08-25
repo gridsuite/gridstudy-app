@@ -142,11 +142,7 @@ const LineCharacteristicsPane = ({
         <>
             {displayConnectivity && (
                 <>
-                    <GridSection
-                        title="Connectivity"
-                        heading="3"
-                        customStyle={styles.h3}
-                    />
+                    <GridSection title="Connectivity" customStyle={styles.h3} />
                     <GridSection title="Side1" heading="4" />
                     <Grid container spacing={2}>
                         {gridItem(connectivity1Field, 12)}
