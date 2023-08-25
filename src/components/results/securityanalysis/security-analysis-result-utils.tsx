@@ -9,6 +9,7 @@ import {
     PostContingencyResult,
     ResultConstraint,
     ResultContingencie,
+    SecurityAnalysisColumnDefinition,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
@@ -28,7 +29,9 @@ export const computeLoading = (
               (limitViolation.limit * limitViolation.limitReduction)
             : undefined);
 };
-export const securityAnalysisTableNColumnsDefinition = (intl: IntlShape) => {
+export const securityAnalysisTableNColumnsDefinition = (
+    intl: IntlShape
+): SecurityAnalysisColumnDefinition[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'Equipment' }),
@@ -62,8 +65,8 @@ export const securityAnalysisTableNColumnsDefinition = (intl: IntlShape) => {
 };
 
 export const flattenNmKresultsContingencies = (
-    postContingencyResults: PostContingencyResult[],
-    intl: IntlShape
+    intl: IntlShape,
+    postContingencyResults?: PostContingencyResult[]
 ) => {
     const rows: ResultContingencie[] = [];
     postContingencyResults?.forEach((postContingencyResult, index) => {
@@ -112,7 +115,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     toolTipValueGetterValues: (
         params: ITooltipParams
     ) => { title: null; values: string | undefined } | null
-) => {
+): SecurityAnalysisColumnDefinition[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
@@ -179,7 +182,7 @@ export const groupPostSort = (
     idField: string,
     linkedElementId: string,
     isContingency: boolean
-) => {
+): IRowNode[] => {
     // Because Map remembers the original insertion order of the keys.
     const rowsMap = new Map();
     if (isContingency) {
@@ -213,8 +216,8 @@ export const groupPostSort = (
 };
 
 export const flattenNmKresultsConstraints = (
-    postContingencyResults: PostContingencyResult[],
-    intl: IntlShape
+    intl: IntlShape,
+    postContingencyResults?: PostContingencyResult[]
 ) => {
     const rows: ResultConstraint[] = [];
     let mapConstraints = new Map();
@@ -304,7 +307,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     toolTipValueGetterValues: (
         params: ITooltipParams
     ) => { title: null; values: string | undefined } | null
-) => {
+): SecurityAnalysisColumnDefinition[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'Constraint' }),
@@ -365,7 +368,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         },
     ];
 };
-export const NMK_TYPE_RESULT = {
-    CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
-    CONTINGENCIES_FROM_CONSTRAINTS: 'contingencies-from-constraints',
-};
+export enum NMK_TYPE_RESULT {
+    CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
+    CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
+}

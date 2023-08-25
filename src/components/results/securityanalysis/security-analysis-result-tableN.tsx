@@ -33,7 +33,7 @@ export const SecurityAnalysisTableN: FunctionComponent<
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
-    const rows = limitViolationsResult?.limitViolations?.map(
+    const rows = limitViolationsResult?.limitViolations.map(
         (limitViolation) => {
             return {
                 subjectId: limitViolation.subjectId,
@@ -60,10 +60,8 @@ export const SecurityAnalysisTableN: FunctionComponent<
         []
     );
     const rowsToShow = getRows(rows, securityAnalysisStatus);
-    const onGridReady = useCallback((params: GridReadyEvent) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
+    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
+        api?.sizeColumnsToFit();
     }, []);
     const securityAnalysisTableNColumns = useMemo(() => {
         return securityAnalysisTableNColumnsDefinition(intl);

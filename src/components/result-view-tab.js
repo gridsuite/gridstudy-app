@@ -23,7 +23,7 @@ import { VoltageInitResultTab } from './voltage-init-result-tab';
 import { ResultsTabsLevel, useResultsTab } from './results/use-results-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
-import { SecurityAnalysisTab } from './results/securityanalysis/security-analysis-tab';
+import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -92,7 +92,7 @@ export const ResultViewTab = ({
     function renderSecurityAnalysisResult() {
         return (
             <Paper className={classes.table}>
-                <SecurityAnalysisTab
+                <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}

@@ -6,6 +6,12 @@
  */
 
 import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
+import {
+    ICellRendererParams,
+    ITooltipParams,
+    ValueFormatterParams,
+} from 'ag-grid-community';
+import { FunctionComponent } from 'react';
 
 export interface LimitViolation {
     subjectId: string;
@@ -20,12 +26,12 @@ export interface LimitViolationFromBack extends LimitViolation {
     acceptableDuration?: number;
     side?: string;
 }
-export interface LimitViolationsResult {
+export interface LimitViolationsResultFromBack {
     limitViolations: LimitViolationFromBack[];
 }
 export interface PreContingencyResult {
     status?: string;
-    limitViolationsResult: LimitViolationsResult;
+    limitViolationsResult?: LimitViolationsResultFromBack;
 }
 export interface Contingency {
     id: string;
@@ -34,16 +40,16 @@ export interface Contingency {
 export interface PostContingencyResult {
     contingency: Contingency;
     status: string;
-    limitViolationsResult: LimitViolationsResult;
+    limitViolationsResult: LimitViolationsResultFromBack;
 }
-export interface PostContingencyResultProps {
-    postContingencyResults: PostContingencyResult[];
+export interface SecurityAnalysisResultTableNmKProps {
+    postContingencyResults?: PostContingencyResult[];
     onClickNmKConstraint: (row: NmKConstraintRow, codDef?: ColDef) => void;
     nmkTypeResult: string;
 }
 export interface SecurityAnalysisResult {
     preContingencyResult: PreContingencyResult;
-    postContingencyResults: any[];
+    postContingencyResults: PostContingencyResult[];
 }
 
 export interface SecurityAnalysisResultProps {
@@ -79,4 +85,19 @@ export interface ResultConstraint extends ResultContingencie {
     constraintId?: string;
     acceptableDuration?: number;
     limitName?: string | undefined;
+}
+
+export interface SecurityAnalysisColumnDefinition {
+    headerName?: string;
+    field: string;
+    filter?: string;
+    valueFormatter?: (value: ValueFormatterParams) => any;
+    cellRenderer?: (
+        cellData: ICellRendererParams
+    ) => React.JSX.Element | undefined;
+    tooltipComponent?: FunctionComponent<ITooltipParams>;
+    tooltipValueGetter?: (
+        params: ITooltipParams
+    ) => { title: null; values: string | undefined } | null;
+    hide?: boolean;
 }

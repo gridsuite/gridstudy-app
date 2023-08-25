@@ -6,6 +6,7 @@
  */
 
 import { UUID } from 'crypto';
+import { ICellRendererParams, ValueFormatterParams } from 'ag-grid-community';
 
 export interface ComponentResult {
     componentResultUuid: UUID;
@@ -52,8 +53,14 @@ export interface OverloadedEquipmentFromBack {
     acceptableDuration: 300;
     value: number;
     side: 'ONE' | 'TWO' | '';
-    limitType:
-        | LimitTypes.LOW_VOLTAGE
-        | LimitTypes.HIGH_VOLTAGE
-        | LimitTypes.CURRENT;
+    limitType: LimitTypes;
+}
+
+export interface LoadFlowColumnDefinition {
+    headerName: string;
+    field: string;
+    numeric?: boolean;
+    fractionDigits?: number;
+    valueFormatter?: (value: ValueFormatterParams) => any;
+    cellRenderer?: (cellData: ICellRendererParams) => React.JSX.Element;
 }

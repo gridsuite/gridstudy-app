@@ -9,10 +9,9 @@ import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import {
     NmKConstraintRow,
     PostContingencyResult,
-    PostContingencyResultProps,
+    SecurityAnalysisResultTableNmKProps,
     ResultConstraint,
 } from './security-analysis.type';
-import { Theme } from '@mui/material';
 import { useTheme } from '@mui/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { IntlShape, useIntl } from 'react-intl';
@@ -44,10 +43,10 @@ import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import CustomTooltipValues from '../../custom-aggrid/custom-tooltip-values';
 
 export const SecurityAnalysisResultTableNmK: FunctionComponent<
-    PostContingencyResultProps
+    SecurityAnalysisResultTableNmKProps
 > = ({ postContingencyResults, onClickNmKConstraint, nmkTypeResult }) => {
     const theme = useTheme();
-    const useStyles = makeStyles<Theme>((theme) => ({
+    const useStyles = makeStyles((theme) => ({
         button: {
             color: theme.link.color,
         },
@@ -107,10 +106,8 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
         []
     );
 
-    const onGridReady = useCallback((params: GridReadyEvent) => {
-        if (params?.api) {
-            params.api.sizeColumnsToFit();
-        }
+    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
+        api?.sizeColumnsToFit();
     }, []);
 
     const handlePostSortRows = (
@@ -163,20 +160,20 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
     }, [intl, SubjectIdRenderer, isFromContingency]);
 
     const getRowsResult = (
-        postContingencyResults: PostContingencyResult[],
         intl: IntlShape,
-        isFromContingency: boolean
+        isFromContingency: boolean,
+        postContingencyResults?: PostContingencyResult[]
     ) => {
         if (isFromContingency) {
-            return flattenNmKresultsContingencies(postContingencyResults, intl);
+            return flattenNmKresultsContingencies(intl, postContingencyResults);
         }
-        return flattenNmKresultsConstraints(postContingencyResults, intl);
+        return flattenNmKresultsConstraints(intl, postContingencyResults);
     };
 
     const rows: ResultConstraint[] = getRowsResult(
-        postContingencyResults,
         intl,
-        isFromContingency
+        isFromContingency,
+        postContingencyResults
     );
     const message = getNoRowsMessage(messages, rows, securityAnalysisStatus);
     const rowsToShow = getRows(rows, securityAnalysisStatus);

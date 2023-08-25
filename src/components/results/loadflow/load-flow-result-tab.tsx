@@ -47,7 +47,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadflowResultProps> = ({
         loadflowResultInvalidations
     );
     const classes = useStyles();
-    const [tabIndex, setTabIndex] = useState<number>(0);
+    const [tabIndex, setTabIndex] = useState(0);
     return (
         <>
             <div className={classes.container}>

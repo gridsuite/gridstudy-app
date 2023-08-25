@@ -18,7 +18,7 @@ import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchLineOrTransformer } from '../../../services/study/network-map';
 
-export const SecurityAnalysisTab: FunctionComponent<
+export const SecurityAnalysisResultTab: FunctionComponent<
     SecurityAnalysisTabProps
 > = ({ studyUuid, nodeUuid, openVoltageLevelDiagram }) => {
     const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
@@ -34,7 +34,7 @@ export const SecurityAnalysisTab: FunctionComponent<
     function onClickNmKConstraint(row: NmKConstraintRow, column?: ColDef) {
         if (studyUuid && nodeUuid) {
             if (column?.field === 'subjectId') {
-                let vlId: any;
+                let vlId: string;
                 // ideally we would have the type of the network element but we don't
                 fetchLineOrTransformer(studyUuid, nodeUuid, row.subjectId)
                     .then((equipment) => {

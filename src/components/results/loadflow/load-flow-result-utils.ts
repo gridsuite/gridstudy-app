@@ -7,19 +7,17 @@
 
 import {
     LimitTypes,
+    LoadFlowColumnDefinition,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
 } from './load-flow-result.type';
 import { IntlShape } from 'react-intl';
 import { ICellRendererParams, ValueFormatterParams } from 'ag-grid-community';
+import { BRANCH_SIDE } from '../../network/constants';
 
 const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 const PERMANENT_LIMIT_NAME = 'permanent';
-export const convertDuration = (duration: number): string | null => {
-    if (!duration) {
-        return null;
-    }
-
+export const convertDuration = (duration: number): string => {
     const minutes = Math.floor(duration / 60);
     const seconds = duration % 60;
 
@@ -34,9 +32,9 @@ export const convertDuration = (duration: number): string | null => {
 };
 
 export const convertSide = (side: string, intl: IntlShape) => {
-    return side === 'ONE'
+    return side === BRANCH_SIDE.ONE
         ? intl.formatMessage({ id: 'Side1' })
-        : side === 'TWO'
+        : side === BRANCH_SIDE.TWO
         ? intl.formatMessage({ id: 'Side2' })
         : undefined;
 };
@@ -65,7 +63,9 @@ export const makeData = (
     };
 };
 
-export const loadFlowCurrentViolationsColumnsDefinition = (intl: IntlShape) => {
+export const loadFlowCurrentViolationsColumnsDefinition = (
+    intl: IntlShape
+): LoadFlowColumnDefinition[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
@@ -117,7 +117,9 @@ export const formatLimitType = (limitType: string, intl: IntlShape) => {
         ? intl.formatMessage({ id: limitType })
         : limitType;
 };
-export const loadFlowVoltageViolationsColumnsDefinition = (intl: IntlShape) => {
+export const loadFlowVoltageViolationsColumnsDefinition = (
+    intl: IntlShape
+): LoadFlowColumnDefinition[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'VoltageLevel' }),
@@ -149,7 +151,7 @@ export const loadFlowResultColumnsDefinition = (
     intl: IntlShape,
     statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
-) => {
+): LoadFlowColumnDefinition[] => {
     return [
         {
             headerName: intl.formatMessage({

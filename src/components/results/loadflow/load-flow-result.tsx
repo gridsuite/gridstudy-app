@@ -47,7 +47,6 @@ import {
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import { Theme } from '@mui/material';
 import { fetchLimitViolations } from '../../../services/study';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
@@ -56,7 +55,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     nodeUuid,
     tabIndex,
 }) => {
-    const useStyles = makeStyles<Theme>((theme) => ({
+    const useStyles = makeStyles((theme) => ({
         cell: {
             display: 'flex',
             alignItems: 'center',
@@ -80,8 +79,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         OverloadedEquipment[]
     >([]);
 
-    const limitReductionParam = useSelector((state: ReduxState) =>
-        Number(state[PARAM_LIMIT_REDUCTION])
+    const limitReductionParam = useSelector(
+        (state: ReduxState) => state[PARAM_LIMIT_REDUCTION]
     );
     const loadFlowStatus = useSelector(
         (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]
@@ -129,7 +128,6 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
 
     const NumberRenderer = useCallback(
         (cellData: ICellRendererParams) => {
-            //const value = cellData.data[cellData.colDef.field];
             const value = cellData.value;
             return (
                 <div className={classes.cell}>
@@ -184,10 +182,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         [theme.selectedRow.background]
     );
 
-    const onGridReady = useCallback((params: GridReadyEvent) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
+    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
+        api?.sizeColumnsToFit();
     }, []);
 
     const currentViolations = overloadedEquipments.filter(
@@ -215,7 +211,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         );
     };
 
-    const voltageViolations = overloadedEquipments?.filter(
+    const voltageViolations = overloadedEquipments.filter(
         (overloadedEquipment) =>
             overloadedEquipment.limitType === LimitTypes.HIGH_VOLTAGE ||
             overloadedEquipment.limitType === LimitTypes.LOW_VOLTAGE
