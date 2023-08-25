@@ -29,10 +29,12 @@ export enum LimitTypes {
     LOW_VOLTAGE = 'LOW_VOLTAGE',
     CURRENT = 'CURRENT',
 }
-export interface LoadflowResultProps {
+export interface LoadFlowTabProps {
+    studyUuid: UUID;
+    nodeUuid: UUID | undefined;
+}
+export interface LoadflowResultProps extends LoadFlowTabProps {
     result: LoadFlowResult;
-    studyUuid: string;
-    nodeUuid: string;
     tabIndex: number;
 }
 

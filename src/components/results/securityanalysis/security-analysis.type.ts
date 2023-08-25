@@ -12,6 +12,7 @@ import {
     ValueFormatterParams,
 } from 'ag-grid-community';
 import { FunctionComponent } from 'react';
+import { UUID } from 'crypto';
 
 export interface LimitViolation {
     subjectId: string;
@@ -57,8 +58,8 @@ export interface SecurityAnalysisResultProps {
     onClickNmKConstraint: (row: NmKConstraintRow, codDef?: ColDef) => void;
 }
 export interface SecurityAnalysisTabProps {
-    studyUuid: string;
-    nodeUuid: string;
+    studyUuid: UUID;
+    nodeUuid: UUID;
     openVoltageLevelDiagram: (id: string) => void;
 }
 

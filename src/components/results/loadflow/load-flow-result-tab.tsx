@@ -11,14 +11,14 @@ import Tab from '@mui/material/Tab';
 import { FormattedMessage } from 'react-intl/lib';
 import makeStyles from '@mui/styles/makeStyles';
 import { green, red } from '@mui/material/colors';
-import { LoadflowResultProps } from './load-flow-result.type';
+import { LoadFlowTabProps } from './load-flow-result.type';
 import { Theme } from '@mui/material';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
 import { fetchLoadFlowResult } from '../../../services/study/loadflow';
 import WaitingLoader from '../../utils/waiting-loader';
 
-export const LoadFlowResultTab: FunctionComponent<LoadflowResultProps> = ({
+export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
     nodeUuid,
 }) => {

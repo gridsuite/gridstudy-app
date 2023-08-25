@@ -3,12 +3,11 @@ declare module '@gridsuite/commons-ui' {
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
     import { RadioGroupProps, TextFieldProps } from '@mui/material';
     import { CaseImportParameters } from 'services/network-conversion';
-    import { TextFieldProps } from '@mui/material';
 
     interface SnackInputs {
         messageTxt?: string;
         messageId?: string;
-        messageValues?: string[];
+        messageValues?: string[] | { elementId: string };
         headerTxt?: string;
         headerId?: string;
         headerValues?: string[];
