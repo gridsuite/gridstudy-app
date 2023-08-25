@@ -14,7 +14,6 @@ import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
-import makeStyles from '@mui/styles/makeStyles';
 import { RunButtonContainer } from './run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
@@ -39,14 +38,15 @@ import {
     fetchLinePositions,
     fetchSubstationPositions,
 } from '../services/study/geo-data';
+import { Box } from '@mui/system';
 
 const INITIAL_POSITION = [0, 0];
 
-const useStyles = makeStyles(() => ({
+const styles = {
     divNominalVoltageFilter: {
         position: 'absolute',
-        right: 10,
-        bottom: 30,
+        right: '10px',
+        bottom: '30px',
         zIndex: 0,
         '&:hover': {
             zIndex: 1,
@@ -54,18 +54,18 @@ const useStyles = makeStyles(() => ({
     },
     divRunButton: {
         position: 'absolute',
-        right: 100,
-        bottom: 30,
-        marginLeft: 8,
-        marginRight: 8,
-        marginTop: 8,
+        right: '100px',
+        bottom: '30px',
+        marginLeft: '8px',
+        marginRight: '8px',
+        marginTop: '8px',
     },
     divTemporaryGeoDataLoading: {
         position: 'absolute',
         width: '100%',
         zIndex: 1,
     },
-}));
+};
 
 const NODE_CHANGED_ERROR =
     'Node has changed or is not built anymore. The Promise is rejected.';
@@ -149,8 +149,6 @@ export const NetworkMapTab = ({
     ] = useState(null);
 
     const [position, setPosition] = useState([-1, -1]);
-
-    const classes = useStyles();
     const currentNodeRef = useRef(null);
     const [updatedLines, setUpdatedLines] = useState([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
@@ -966,21 +964,21 @@ export const NetworkMapTab = ({
 
     function renderNominalVoltageFilter() {
         return (
-            <div className={classes.divNominalVoltageFilter}>
+            <Box sx={styles.divNominalVoltageFilter}>
                 <NominalVoltageFilter
                     nominalVoltages={mapEquipments.getNominalVoltages()}
                     filteredNominalVoltages={filteredNominalVoltages}
                     onChange={setFilteredNominalVoltages}
                 />
-            </div>
+            </Box>
         );
     }
 
     return (
         <>
-            <div className={classes.divTemporaryGeoDataLoading}>
+            <Box sx={styles.divTemporaryGeoDataLoading}>
                 {basicDataReady && waitingLoadData && <LinearProgress />}
-            </div>
+            </Box>
             {renderMap()}
             {renderEquipmentMenu()}
             {modificationDialogOpen && renderModificationDialog()}
@@ -989,14 +987,14 @@ export const NetworkMapTab = ({
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
 
-            <div className={classes.divRunButton}>
+            <Box sx={styles.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     setIsComputationRunning={setIsComputationRunning}
                     disabled={disabled || isNodeReadOnly(currentNode)}
                 />
-            </div>
+            </Box>
         </>
     );
 };
