@@ -43,11 +43,7 @@ const DynamicSimulationResultTable = ({ result }) => {
         const status = cellData.rowData[cellData.dataKey];
         const color = status === 'CONVERGED' ? styles.succeed : styles.fail;
         return (
-            <TableCell
-                component={'div'}
-                id={cellData.dataKey}
-                sx={styles.cell}
-            >
+            <TableCell component={'div'} id={cellData.dataKey} sx={styles.cell}>
                 <Grid container direction="row" spacing={4} alignItems="center">
                     <Grid item xs={1}>
                         <Lens fontSize={'medium'} sx={color} />
