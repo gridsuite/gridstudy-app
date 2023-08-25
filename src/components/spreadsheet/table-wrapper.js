@@ -19,10 +19,10 @@ import { Grid, Alert } from '@mui/material';
 import {
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_DEFINITION_INDEXES,
-    TABLES_DEFINITIONS,
     TABLES_NAMES,
     MIN_COLUMN_WIDTH,
     EDIT_COLUMN,
+    TABLES_DEFINITION_TYPES,
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
@@ -45,8 +45,10 @@ import { updateConfigParameter } from '../../services/config';
 import {
     modifyGenerator,
     modifyLoad,
+    modifyVoltageLevel,
     requestNetworkChange,
 } from '../../services/study/network-modifications';
+import { kiloUnitToUnit } from '../../utils/rounding';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -294,7 +296,7 @@ const TableWrapper = (props) => {
     );
 
     const { equipments, errorMessage } = useSpreadsheetEquipments(
-        TABLES_DEFINITION_INDEXES.get(tabIndex)
+        TABLES_DEFINITION_INDEXES.get(tabIndex).type
     );
 
     useEffect(() => {
@@ -364,13 +366,6 @@ const TableWrapper = (props) => {
         setManualTabSwitch(false);
     }, [props.equipmentChanged]);
 
-    function getTabIndexFromEquipementType(equipmentType) {
-        const definition = Object.values(TABLES_DEFINITIONS).find(
-            (d) => d.name.toLowerCase() === equipmentType.toLowerCase()
-        );
-        return definition ? definition.index : 0;
-    }
-
     const scrollToEquipmentIndex = useCallback(() => {
         if (
             props.equipmentId !== null &&
@@ -396,10 +391,8 @@ const TableWrapper = (props) => {
             props.equipmentType !== null &&
             !manualTabSwitch
         ) {
-            const newTabIndex = getTabIndexFromEquipementType(
-                props.equipmentType
-            );
-            setTabIndex(newTabIndex); // select the right table type
+            const definition = TABLES_DEFINITION_TYPES.get(props.equipmentType);
+            setTabIndex(definition.index); // select the right table type
         } else if (manualTabSwitch) {
             setScrollToIndex();
         }
@@ -535,6 +528,20 @@ const TableWrapper = (props) => {
                         editingData.targetV,
                         undefined,
                         undefined,
+                        undefined
+                    );
+                case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+                    return modifyVoltageLevel(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.nominalVoltage,
+                        editingData.lowVoltageLimit,
+                        editingData.highVoltageLimit,
+                        kiloUnitToUnit(editingData.ipMin),
+                        kiloUnitToUnit(editingData.ipMax),
+                        false,
                         undefined
                     );
                 default:

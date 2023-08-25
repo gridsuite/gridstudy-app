@@ -28,7 +28,6 @@ import {
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import FolderIcon from '@mui/icons-material/Folder';
-import TextFieldWithAdornment from '../text-field-with-adornment';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -42,19 +41,18 @@ import {
     useSnackMessage,
     OverflowableText,
     useDebounce,
-} from '@gridsuite/commons-ui';
-import { isNodeExists } from '../../../utils/rest-api';
-import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
-import {
+    TextFieldWithAdornment,
     FieldLabel,
     genHelperError,
     genHelperPreviousValue,
-} from './hooks-helpers';
+} from '@gridsuite/commons-ui';
+import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { useAutocompleteField } from './use-autocomplete-field';
 import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
 import clsx from 'clsx';
+import { isNodeExists } from '../../../services/study';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());

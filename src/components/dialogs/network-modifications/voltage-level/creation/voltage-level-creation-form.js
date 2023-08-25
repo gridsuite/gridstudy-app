@@ -19,22 +19,22 @@ import {
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import { fetchEquipmentsIds } from 'utils/rest-api';
 import {
     gridItem,
     GridSection,
     VoltageAdornment,
     KiloAmpereAdornment,
 } from 'components/dialogs/dialogUtils';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
-import TextInput from 'components/utils/rhf-inputs/text-input';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { FloatInput } from '@gridsuite/commons-ui';
+import { TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { getObjectId } from 'components/utils/utils';
 import { Box } from '@mui/material';
-import IntegerInput from 'components/utils/rhf-inputs/integer-input';
+import { IntegerInput } from '@gridsuite/commons-ui';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
+import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

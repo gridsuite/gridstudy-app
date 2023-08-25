@@ -28,8 +28,8 @@ import {
     REGULATION_TYPES,
     SIDE,
 } from 'components/network/constants';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
+import { FloatInput } from '@gridsuite/commons-ui';
+import { SelectInput } from '@gridsuite/commons-ui';
 import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
 import PhaseTapChangerPaneSteps from './phase-tap-changer-pane-steps';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -115,17 +115,19 @@ const PhaseTapChangerPane = ({
     };
 
     const regulationType = useMemo(() => {
-        return regulationTypeWatch
-            ? regulationTypeWatch
-            : getComputedPreviousPhaseRegulationType(previousValues);
+        return (
+            regulationTypeWatch ||
+            getComputedPreviousPhaseRegulationType(previousValues)
+        );
     }, [regulationTypeWatch, previousValues]);
 
     const regulationMode = useMemo(() => {
-        return regulationModeWatch
-            ? regulationModeWatch
-            : getComputedPhaseTapChangerRegulationMode(
-                  previousValues?.[PHASE_TAP_CHANGER]
-              )?.id;
+        return (
+            regulationModeWatch ||
+            getComputedPhaseTapChangerRegulationMode(
+                previousValues?.[PHASE_TAP_CHANGER]
+            )?.id
+        );
     }, [regulationModeWatch, previousValues]);
 
     const regulationEnabled = useMemo(() => {
@@ -213,11 +215,16 @@ const PhaseTapChangerPane = ({
         <FloatInput
             name={`${id}.${TARGET_DEADBAND}`}
             label="Deadband"
-            adornment={ActivePowerAdornment}
+            adornment={
+                regulationMode ===
+                PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
+                    ? ActivePowerAdornment
+                    : AmpereAdornment
+            }
             formProps={{
                 disabled: !regulationEnabled,
             }}
-            previousValue={previousValues?.[PHASE_TAP_CHANGER]?.targetDeadBand}
+            previousValue={previousValues?.[PHASE_TAP_CHANGER]?.targetDeadband}
         />
     );
 

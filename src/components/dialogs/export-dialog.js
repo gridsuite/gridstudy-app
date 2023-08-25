@@ -25,9 +25,10 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
-import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
 import IconButton from '@mui/material/IconButton';
 import { FlatParameters } from '@gridsuite/commons-ui';
+import { getAvailableExportFormats } from '../../services/study';
+import { getExportUrl } from '../../services/study/network';
 
 const STRING_LIST = 'STRING_LIST';
 

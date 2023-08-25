@@ -22,21 +22,21 @@ import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import {
-    fetchBusbarSectionsForVoltageLevel,
-    fetchBusesForVoltageLevel,
-} from '../../../utils/rest-api';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS } from '../../network/constants';
-import AutocompleteInput from '../../utils/rhf-inputs/autocomplete-input';
-import IntegerInput from '../../utils/rhf-inputs/integer-input';
-import SelectInput from '../../utils/rhf-inputs/select-input';
-import TextInput from '../../utils/rhf-inputs/text-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { IntegerInput } from '@gridsuite/commons-ui';
+import { SelectInput } from '@gridsuite/commons-ui';
+import { TextInput } from '@gridsuite/commons-ui';
 import {
     getConnectivityBusBarSectionData,
     getConnectivityVoltageLevelData,
 } from './connectivity-form-utils';
+import {
+    fetchBusbarSectionsForVoltageLevel,
+    fetchBusesForVoltageLevel,
+} from '../../../services/study/network';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)

@@ -16,8 +16,8 @@ import {
 } from '../../../utils/config-params';
 import { CloseButton, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import { getAvailableComponentLibraries } from '../../../utils/rest-api';
 import { ParamLine, ParameterType } from './widget/ParameterLine';
+import { getAvailableComponentLibraries } from '../../../services/study';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);
@@ -77,11 +77,12 @@ export const SingleLineDiagramParameters = ({
                         [SubstationLayout.HORIZONTAL]:
                             'HorizontalSubstationLayout',
                         [SubstationLayout.VERTICAL]: 'VerticalSubstationLayout',
-                        [SubstationLayout.SMART]: 'SmartSubstationLayout',
-                        [SubstationLayout.SMARTHORIZONTALCOMPACTION]:
-                            'SmartWithHorizontalCompactionSubstationLayout',
-                        [SubstationLayout.SMARTVERTICALCOMPACTION]:
-                            'SmartWithVerticalCompactionSubstationLayout',
+                        // the following layouts are not yet supported
+                        //[SubstationLayout.SMART]: 'SmartSubstationLayout',
+                        //[SubstationLayout.SMARTHORIZONTALCOMPACTION]:
+                        //'SmartWithHorizontalCompactionSubstationLayout',
+                        //[SubstationLayout.SMARTVERTICALCOMPACTION]:
+                        //'SmartWithVerticalCompactionSubstationLayout',
                     }}
                 />
                 <LineSeparator />

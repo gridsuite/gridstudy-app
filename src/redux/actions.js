@@ -112,13 +112,15 @@ export const NETWORK_MODIFICATION_TREE_NODE_ADDED =
 export function networkModificationTreeNodeAdded(
     networkModificationTreeNode,
     parentNodeId,
-    insertMode
+    insertMode,
+    referenceNodeId
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODE_ADDED,
         networkModificationTreeNode: networkModificationTreeNode,
         parentNodeId: parentNodeId,
         insertMode: insertMode,
+        referenceNodeId: referenceNodeId,
     };
 }
 
@@ -665,3 +667,12 @@ export function setComputingStatus(computingType, runningStatus) {
         runningStatus: runningStatus,
     };
 }
+
+export const SET_OPTIONAL_SERVICES = 'SET_SERVICES';
+
+export const setOptionalServices = (optionalServices) => {
+    return {
+        type: SET_OPTIONAL_SERVICES,
+        optionalServices: optionalServices,
+    };
+};

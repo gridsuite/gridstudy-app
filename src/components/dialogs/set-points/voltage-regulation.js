@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import SelectInput from 'components/utils/rhf-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 import { REGULATION_TYPES } from 'components/network/constants';
 import {
     Q_PERCENT,
@@ -13,7 +13,7 @@ import {
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import React, { useMemo } from 'react';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import {
     gridItem,
     percentageTextField,
@@ -113,7 +113,11 @@ const VoltageRegulation = ({
             name={Q_PERCENT}
             label={'QPercentText'}
             adornment={percentageTextField}
-            previousValue={previousValues?.qPercent}
+            previousValue={
+                !isNaN(previousValues?.qPercent)
+                    ? previousValues?.qPercent
+                    : null
+            }
             clearable={true}
         />
     );

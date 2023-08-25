@@ -6,10 +6,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { fetchEquipmentsIds } from '../../../utils/rest-api';
 import { filledTextField, gridItem } from '../dialogUtils';
 import { Autocomplete, TextField } from '@mui/material';
-import { FieldLabel } from '../../utils/inputs/hooks-helpers';
+import { FieldLabel } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
 import { FormFiller } from '../commons/formFiller';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -17,6 +16,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
 import clsx from 'clsx';
+import { fetchEquipmentsIds } from '../../../services/study/network-map';
 
 const useStyles = makeStyles((theme) => ({
     message: {

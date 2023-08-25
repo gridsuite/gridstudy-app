@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { equipments } from '../../network/network-equipments';
 import { BooleanCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
+import { SensiProperties } from 'components/spreadsheet/utils/sensi-properties';
+import CustomTooltipKeyValue from 'components/custom-aggrid/custom-aggrid-tooltip-key-value';
 
 const generateTapPositions = (params) => {
     return params
@@ -39,11 +40,50 @@ export const DEFAULT_SORT_ORDER = 'asc';
 
 export const EDIT_COLUMN = 'edit';
 
+const toolTipValueGetterProperties = (params) => {
+    const properties = params.data?.properties;
+    return properties ? { title: null, properties: { ...properties } } : null;
+};
+
+const generateEditableNumericColumnDefinition = (
+    id,
+    field,
+    fractionDigits,
+    changeCmd,
+    minExpression,
+    maxExpression,
+    excludeFromGlobalFilter
+) => {
+    return {
+        id: id,
+        field: field,
+        numeric: true,
+        filter: 'agNumberColumnFilter',
+        fractionDigits: fractionDigits,
+        changeCmd: changeCmd,
+        editable: true,
+        cellEditor: NumericalField,
+        cellEditorParams: (params) => {
+            return {
+                ...(minExpression && { minExpression: minExpression }),
+                ...(maxExpression && { maxExpression: maxExpression }),
+                defaultValue: params.data[field],
+                gridContext: params.context,
+                gridApi: params.api,
+                data: params.data,
+                colDef: params.colDef,
+            };
+        },
+        ...(excludeFromGlobalFilter && {
+            getQuickFilterText: excludeFromGlobalFilter,
+        }),
+    };
+};
+
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,
         name: 'Substations',
-        resource: equipments.substations,
         type: EQUIPMENT_TYPES.SUBSTATION,
         columns: [
             {
@@ -59,13 +99,22 @@ export const TABLES_DEFINITIONS = {
                 id: 'Country',
                 field: 'countryName',
             },
+            {
+                id: 'Properties',
+                field: 'properties',
+                cellRendererSelector: () => {
+                    return { component: SensiProperties };
+                },
+                tooltipComponent: CustomTooltipKeyValue,
+                tooltipValueGetter: toolTipValueGetterProperties,
+                minWidth: 300,
+            },
         ],
     },
 
     VOLTAGE_LEVELS: {
         index: 1,
         name: 'VoltageLevels',
-        resource: equipments.voltageLevels,
         type: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
         modifiableEquipmentType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
         columns: [
@@ -89,13 +138,47 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
             },
+            generateEditableNumericColumnDefinition(
+                'LowVoltageLimitkV',
+                'lowVoltageLimit',
+                1,
+                'equipment.setLowVoltageLimit({})\n',
+                undefined,
+                'highVoltageLimit',
+                excludeFromGlobalFilter
+            ),
+            generateEditableNumericColumnDefinition(
+                'HighVoltageLimitkV',
+                'highVoltageLimit',
+                1,
+                'equipment.setHighVoltageLimit({})\n',
+                'lowVoltageLimit',
+                undefined,
+                excludeFromGlobalFilter
+            ),
+            generateEditableNumericColumnDefinition(
+                'IpMin',
+                'ipMin',
+                1,
+                'equipment.setIpMin({})\n',
+                undefined,
+                excludeFromGlobalFilter
+            ),
+            generateEditableNumericColumnDefinition(
+                'IpMax',
+                'ipMax',
+                1,
+                'equipment.setIpMax({})\n',
+                'ipMin',
+                undefined,
+                excludeFromGlobalFilter
+            ),
         ],
     },
 
     LINES: {
         index: 2,
         name: 'Lines',
-        resource: equipments.lines,
         type: EQUIPMENT_TYPES.LINE,
         columns: [
             {
@@ -173,7 +256,6 @@ export const TABLES_DEFINITIONS = {
     TWO_WINDINGS_TRANSFORMERS: {
         index: 3,
         name: 'TwoWindingsTransformers',
-        resource: equipments.twoWindingsTransformers,
         type: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
         modifiableEquipmentType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
         groovyEquipmentGetter: 'getTwoWindingsTransformer',
@@ -360,7 +442,6 @@ export const TABLES_DEFINITIONS = {
     THREE_WINDINGS_TRANSFORMERS: {
         index: 4,
         name: 'ThreeWindingsTransformers',
-        resource: equipments.threeWindingsTransformers,
         type: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
         modifiableEquipmentType:
             EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
@@ -762,9 +843,8 @@ export const TABLES_DEFINITIONS = {
     GENERATORS: {
         index: 5,
         name: 'Generators',
-        resource: equipments.generators,
-        modifiableEquipmentType: EQUIPMENT_TYPES.GENERATOR.type,
         type: EQUIPMENT_TYPES.GENERATOR,
+        modifiableEquipmentType: EQUIPMENT_TYPES.GENERATOR.type,
         columns: [
             {
                 id: 'ID',
@@ -985,12 +1065,53 @@ export const TABLES_DEFINITIONS = {
                 field: 'regulatingTerminal',
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'TransientReactance',
+                field: 'transientReactance',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+            },
+            {
+                id: 'TransformerReactance',
+                field: 'stepUpTransformerReactance',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+            },
+            {
+                id: 'PlannedActivePowerSetPoint',
+                field: 'plannedActivePowerSetPoint',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+            },
+            {
+                id: 'StartupCost',
+                field: 'marginalCost',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+            },
+            {
+                id: 'PlannedOutageRate',
+                field: 'plannedOutageRate',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 2,
+            },
+            {
+                id: 'ForcedOutageRate',
+                field: 'forcedOutageRate',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 2,
+            },
         ],
     },
     LOADS: {
         index: 6,
         name: 'Loads',
-        resource: equipments.loads,
         type: EQUIPMENT_TYPES.LOAD,
         modifiableEquipmentType: EQUIPMENT_TYPES.LOAD.type,
         columns: [
@@ -1097,7 +1218,6 @@ export const TABLES_DEFINITIONS = {
     SHUNT_COMPENSATORS: {
         index: 7,
         name: 'ShuntCompensators',
-        resource: equipments.shuntCompensators,
         type: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
         columns: [
             {
@@ -1154,7 +1274,6 @@ export const TABLES_DEFINITIONS = {
     STATIC_VAR_COMPENSATORS: {
         index: 8,
         name: 'StaticVarCompensators',
-        resource: equipments.staticVarCompensators,
         type: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
         columns: [
             {
@@ -1218,7 +1337,6 @@ export const TABLES_DEFINITIONS = {
     BATTERIES: {
         index: 9,
         name: 'Batteries',
-        resource: equipments.batteries,
         type: EQUIPMENT_TYPES.BATTERY,
         columns: [
             {
@@ -1283,7 +1401,6 @@ export const TABLES_DEFINITIONS = {
     HVDC_LINES: {
         index: 10,
         name: 'HvdcLines',
-        resource: equipments.hvdcLines,
         type: EQUIPMENT_TYPES.HVDC_LINE,
         columns: [
             {
@@ -1384,7 +1501,6 @@ export const TABLES_DEFINITIONS = {
     LCC_CONVERTER_STATIONS: {
         index: 11,
         name: 'LccConverterStations',
-        resource: equipments.lccConverterStations,
         type: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
         columns: [
             {
@@ -1451,7 +1567,6 @@ export const TABLES_DEFINITIONS = {
     VSC_CONVERTER_STATIONS: {
         index: 12,
         name: 'VscConverterStations',
-        resource: equipments.vscConverterStations,
         type: EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
         columns: [
             {
@@ -1534,7 +1649,6 @@ export const TABLES_DEFINITIONS = {
     DANGLING_LINES: {
         index: 13,
         name: 'DanglingLines',
-        resource: equipments.danglingLines,
         type: EQUIPMENT_TYPES.DANGLING_LINE,
         columns: [
             {
@@ -1620,6 +1734,10 @@ export const TABLES_NAMES = Object.values(TABLES_DEFINITIONS).map(
 
 export const TABLES_NAMES_INDEXES = new Map(
     Object.values(TABLES_DEFINITIONS).map((table) => [table.name, table.index])
+);
+
+export const TABLES_DEFINITION_TYPES = new Map(
+    Object.values(TABLES_DEFINITIONS).map((table) => [table.type.type, table])
 );
 
 export const TABLES_DEFINITION_INDEXES = new Map(

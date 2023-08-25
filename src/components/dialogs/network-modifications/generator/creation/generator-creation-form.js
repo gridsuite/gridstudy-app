@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -29,15 +29,15 @@ import {
     MVAPowerAdornment,
     OhmAdornment,
 } from '../../../dialogUtils';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 import { ENERGY_SOURCES } from 'components/network/constants';
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
@@ -119,7 +119,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const transientReactanceField = (
         <FloatInput
             name={TRANSIENT_REACTANCE}
-            label={'TransientReactance'}
+            label={'TransientReactanceForm'}
             adornment={OhmAdornment}
         />
     );
@@ -127,7 +127,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const transformerReactanceField = (
         <FloatInput
             name={TRANSFORMER_REACTANCE}
-            label={'TransformerReactance'}
+            label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
         />
     );
@@ -135,7 +135,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const plannedActivePowerSetPointField = (
         <FloatInput
             name={PLANNED_ACTIVE_POWER_SET_POINT}
-            label={'PlannedActivePowerSetPoint'}
+            label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
         />
     );

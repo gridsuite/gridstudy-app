@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { makeStyles, useTheme } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import React, {
     forwardRef,
     useCallback,
@@ -16,7 +16,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Typography, useTheme } from '@mui/material';
 import clsx from 'clsx';
 import CheckboxSelect from '../common/checkbox-select';
 import { CURVE_EQUIPMENT_TYPES } from './equipment-filter';

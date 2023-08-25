@@ -10,8 +10,7 @@ import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
-} from '../../utils/rest-api';
-import { equipments } from './network-equipments';
+} from '../../services/study/network';
 import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
@@ -170,7 +169,7 @@ export default class MapEquipments {
     }
 
     completeSubstationsInfos(equipementsToIndex) {
-        const nominalVoltagesSet = new Set();
+        const nominalVoltagesSet = new Set(this.nominalVoltages);
         if (equipementsToIndex?.length === 0) {
             this.substationsById = new Map();
             this.voltageLevelsById = new Map();
@@ -279,7 +278,11 @@ export default class MapEquipments {
         if (fullReload) {
             this.lines = [];
         }
-        this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
+        this.lines = this.updateEquipments(
+            this.lines,
+            lines,
+            EQUIPMENT_TYPES.LINE.type
+        );
         this.completeLinesInfos(fullReload ? [] : lines);
     }
 
@@ -290,7 +293,7 @@ export default class MapEquipments {
         this.hvdcLines = this.updateEquipments(
             this.hvdcLines,
             hvdcLines,
-            equipments.hvdcLines
+            EQUIPMENT_TYPES.HVDC_LINE.type
         );
         this.completeHvdcLinesInfos(fullReload ? [] : hvdcLines);
     }

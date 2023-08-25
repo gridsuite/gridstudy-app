@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import {
     ACTIVE_POWER,
     EQUIPMENT_NAME,
@@ -19,18 +19,19 @@ import {
     GridSection,
     ReactivePowerAdornment,
 } from '../../../dialogUtils';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
-import { fetchNetworkElementInfos, FetchStatus } from 'utils/rest-api';
 import { useIntl } from 'react-intl';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from 'components/utils/equipment-types';
 import { TextField } from '@mui/material';
+import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import { FetchStatus } from '../../../../../services/utils';
 
 const LoadModificationForm = ({
     currentNode,

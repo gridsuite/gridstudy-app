@@ -69,9 +69,9 @@ import {
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { createGenerator } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -178,7 +178,9 @@ const GeneratorCreationDialog = ({
                 generator?.minMaxReactiveLimits?.minimumReactivePower ?? null,
             [MAXIMUM_REACTIVE_POWER]:
                 generator?.minMaxReactiveLimits?.maximumReactivePower ?? null,
-            [Q_PERCENT]: generator.qPercent,
+            [Q_PERCENT]: isNaN(generator?.[Q_PERCENT])
+                ? null
+                : generator?.[Q_PERCENT],
             [REACTIVE_CAPABILITY_CURVE_CHOICE]: generator?.minMaxReactiveLimits
                 ? 'MINMAX'
                 : 'CURVE',

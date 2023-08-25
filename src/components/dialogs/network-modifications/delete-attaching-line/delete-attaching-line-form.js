@@ -8,8 +8,8 @@
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
-import TextInput from 'components/utils/rhf-inputs/text-input';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { TextInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -17,8 +17,8 @@ import {
     REPLACING_LINE_1_ID,
     REPLACING_LINE_1_NAME,
 } from 'components/utils/field-constants';
-import { fetchEquipmentsIds } from 'utils/rest-api';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
 const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
     const [linesOptions, setLinesOptions] = useState([]);

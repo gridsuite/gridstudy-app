@@ -5,22 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, backendFetchText } from '../utils/rest-api';
+import { backendFetchJson } from './utils';
 
 const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/sensitivity-analysis`;
 
 export function getSensiUrl() {
     return `${PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES}/v1/`;
-}
-
-export function getSensiDefaultResultsThreshold() {
-    console.info('get sensi default results threshold');
-    const getSensiDefaultResultsThresholdUrl =
-        getSensiUrl() + 'results-threshold-default-value';
-    console.debug(getSensiDefaultResultsThresholdUrl);
-    return backendFetchText(getSensiDefaultResultsThresholdUrl, {
-        method: 'get',
-    });
 }
 
 export function fetchSensitivityAnalysisProviders() {

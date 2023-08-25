@@ -74,10 +74,11 @@ const CountrySelector = ({ value, label, callback }) => {
     );
 };
 
-const DoubleEditor = ({
+export const DoubleEditor = ({
     initValue,
     label,
     callback,
+    checkIsTwoDigitAfterDecimal = false,
     ge = undefined,
     gt = undefined,
     le = undefined,
@@ -105,7 +106,9 @@ const DoubleEditor = ({
 
     const checkValue = useCallback(
         (newValue) => {
-            const FloatRE = /^-?\d*[.,]?\d*$/;
+            const FloatRE = checkIsTwoDigitAfterDecimal
+                ? /^(\d*\.{0,1}\d{0,2}$)/
+                : /^-?\d*[.,]?\d*$/;
             const outputTransformFloatString = (value) => {
                 return value?.replace(',', '.') || '';
             };
@@ -122,7 +125,7 @@ const DoubleEditor = ({
                 setValue(outputTransformFloatString(newValue));
             }
         },
-        [ge, gt, le, lt]
+        [checkIsTwoDigitAfterDecimal, ge, gt, le, lt]
     );
 
     return (
@@ -509,12 +512,13 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
 
     const specificParamsDescrWithoutNanVals = useMemo(() => {
         let specificParamsDescrCopy = {};
-        Object.entries(specificParamsDescriptions).forEach(([k, v]) => {
-            specificParamsDescrCopy = {
-                ...specificParamsDescrCopy,
-                [k]: replaceAllDefaultValues(v, 'NaN', ''),
-            };
-        });
+        specificParamsDescriptions &&
+            Object.entries(specificParamsDescriptions).forEach(([k, v]) => {
+                specificParamsDescrCopy = {
+                    ...specificParamsDescrCopy,
+                    [k]: replaceAllDefaultValues(v, 'NaN', ''),
+                };
+            });
         return specificParamsDescrCopy;
     }, [specificParamsDescriptions]);
 

@@ -11,10 +11,10 @@ import React, { useEffect, useState } from 'react';
 
 import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
 
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { fetchVoltageLevelsListInfos } from 'utils/rest-api';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);

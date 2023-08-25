@@ -17,8 +17,9 @@ import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import Button from '@mui/material/Button';
 import { useParams } from 'react-router-dom';
-import { cloneVoltageInitModifications } from 'utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { cloneVoltageInitModifications } from '../services/study/voltage-init';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -52,6 +53,7 @@ const VoltageInitResult = ({ result, status }) => {
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
         !result
     );
+    const [applyingModifications, setApplyingModifications] = useState(false);
 
     const intl = useIntl();
 
@@ -62,16 +64,20 @@ const VoltageInitResult = ({ result, status }) => {
     }, [result, setDisableApplyModifications]);
 
     const applyModifications = useCallback(() => {
+        setApplyingModifications(true);
         setDisableApplyModifications(true);
-        cloneVoltageInitModifications(studyUuid, currentNode.id).catch(
-            (errmsg) => {
+        cloneVoltageInitModifications(studyUuid, currentNode.id)
+            .then(() => {
+                setApplyingModifications(false);
+            })
+            .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errCloneVoltageInitModificationMsg',
                 });
                 setDisableApplyModifications(false);
-            }
-        );
+                setApplyingModifications(false);
+            });
     }, [currentNode?.id, snackError, studyUuid, setDisableApplyModifications]);
 
     function renderIndicatorsTable(indicators) {
@@ -164,6 +170,18 @@ const VoltageInitResult = ({ result, status }) => {
                         >
                             <FormattedMessage id="applyModifications" />
                         </Button>
+                        {applyingModifications && (
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    marginTop: '5px',
+                                    marginLeft: '20px',
+                                }}
+                            >
+                                <CircularProgress />
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div style={{ flexGrow: 1 }}>

@@ -8,15 +8,15 @@
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../../dialogUtils';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { useEffect, useState } from 'react';
 import { PercentageArea } from '../../percentage-area/percentage-area';
 import { useWatch } from 'react-hook-form';
-import { fetchEquipmentsIds } from 'utils/rest-api';
 import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
 export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
     const [line1Substation, setLine1Substation] = useState('');
