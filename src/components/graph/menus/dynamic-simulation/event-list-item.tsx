@@ -83,7 +83,7 @@ export const EventListItem = ({
 
     const getLabel = useCallback(() => {
         if (!item || !computedValues) {
-            return null;
+            return undefined;
         }
         return intl.formatMessage(
             { id: `${item.eventType}/${item.equipmentType}` },

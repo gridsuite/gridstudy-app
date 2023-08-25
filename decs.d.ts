@@ -137,7 +137,8 @@ declare module '@gridsuite/commons-ui' {
     export const FlatParameters: FunctionComponent<FlatParametersProps>;
 
     interface OverflowableTextProps {
-        text: string;
+        className: string,
+        text?: string;
     }
 
     export const OverflowableText: FunctionComponent<OverflowableTextProps>;
