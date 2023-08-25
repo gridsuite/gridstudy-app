@@ -179,7 +179,6 @@ const withBranchMenu =
 
         return (
             <Menu
-                sx={styles.menu}
                 anchorReference="anchorPosition"
                 anchorPosition={{
                     position: 'absolute',
