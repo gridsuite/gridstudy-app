@@ -29,7 +29,7 @@ import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
 import IconButton from '@mui/material/IconButton';
 import { FlatParameters } from '@gridsuite/commons-ui';
 
-const stringListType = 'STRING_LIST';
+const STRING_LIST = 'STRING_LIST';
 
 /**
  * Dialog to export the network case
@@ -65,7 +65,7 @@ const ExportDialog = ({
                 Object.values(formats).forEach((f) => {
                     f.parameters = f.parameters.map((parameter) => {
                         if (
-                            parameter.type === stringListType &&
+                            parameter.type === STRING_LIST &&
                             parameter.name?.endsWith('extensions')
                         ) {
                             parameter.defaultValue = parameter.possibleValues;
