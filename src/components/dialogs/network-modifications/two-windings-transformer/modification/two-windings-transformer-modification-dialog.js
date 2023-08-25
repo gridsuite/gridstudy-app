@@ -806,11 +806,15 @@ const TwoWindingsTransformerModificationDialog = ({
                                 TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB
                             }
                             p={1}
+                            sx={{
+                                'h3:first-of-type': {
+                                    marginTop: 0,
+                                },
+                            }}
                         >
                             <TwoWindingsTransformerCharacteristicsPane
                                 twtToModify={twtToModify}
                                 isModification
-                                customStyle={{ marginTop: '0px' }}
                             />
                         </Box>
 

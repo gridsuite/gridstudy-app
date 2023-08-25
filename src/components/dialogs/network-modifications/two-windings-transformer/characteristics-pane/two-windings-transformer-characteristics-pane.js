@@ -33,7 +33,6 @@ const TwoWindingsTransformerCharacteristicsPane = ({
     id = CHARACTERISTICS,
     twtToModify,
     isModification = false,
-    customStyle = {},
 }) => {
     const width = isModification ? 12 : 8;
 
@@ -109,11 +108,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
 
     return (
         <>
-            <GridSection
-                title={'Characteristics'}
-                heading="3"
-                customStyle={customStyle}
-            />
+            <GridSection title={'Characteristics'} heading="3" />
             <Grid container item spacing={2} xs={width}>
                 {gridItem(seriesResistanceField)}
                 {gridItem(seriesReactanceField)}
