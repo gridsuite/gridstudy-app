@@ -116,8 +116,9 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             fetchFunction(studyUuid, currentNode?.id)
                 .then((result: ShortcircuitAnalysisResult) => {
                     const { content = [], totalElements } = result || {};
+
+                    setResult(content);
                     if (totalElements && content.length) {
-                        setResult(content);
                         setCount(totalElements);
                     }
                 })

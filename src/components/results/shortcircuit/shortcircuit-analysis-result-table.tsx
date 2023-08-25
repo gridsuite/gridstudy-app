@@ -106,6 +106,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                         onSortChanged(field, newSortValue);
                     },
                     isSortable,
+                    isFilterable: false,
                 },
             };
         },
@@ -289,7 +290,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             suppressMovable: true,
             resizable: true,
             sortable: true,
-            autoHeaderHeight: true,
             flex: 1,
         }),
         []
