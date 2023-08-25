@@ -676,3 +676,12 @@ export function setComputingStatus(computingType, runningStatus) {
         runningStatus: runningStatus,
     };
 }
+
+export const SET_OPTIONAL_SERVICES = 'SET_SERVICES';
+
+export const setOptionalServices = (optionalServices) => {
+    return {
+        type: SET_OPTIONAL_SERVICES,
+        optionalServices: optionalServices,
+    };
+};

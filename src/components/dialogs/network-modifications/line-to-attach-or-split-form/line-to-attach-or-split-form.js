@@ -8,7 +8,7 @@
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../../dialogUtils';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { useEffect, useState } from 'react';
 import { PercentageArea } from '../../percentage-area/percentage-area';

@@ -11,7 +11,7 @@ import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { SensiProperties } from 'components/spreadsheet/utils/sensi-properties';
-import CustomTooltipKeyValue from './customTooltipKeyValue';
+import CustomTooltipKeyValue from 'components/custom-aggrid/custom-aggrid-tooltip-key-value';
 
 const generateTapPositions = (params) => {
     return params
@@ -43,6 +43,41 @@ export const EDIT_COLUMN = 'edit';
 const toolTipValueGetterProperties = (params) => {
     const properties = params.data?.properties;
     return properties ? { title: null, properties: { ...properties } } : null;
+};
+
+const generateEditableNumericColumnDefinition = (
+    id,
+    field,
+    fractionDigits,
+    changeCmd,
+    minExpression,
+    maxExpression,
+    excludeFromGlobalFilter
+) => {
+    return {
+        id: id,
+        field: field,
+        numeric: true,
+        filter: 'agNumberColumnFilter',
+        fractionDigits: fractionDigits,
+        changeCmd: changeCmd,
+        editable: true,
+        cellEditor: NumericalField,
+        cellEditorParams: (params) => {
+            return {
+                ...(minExpression && { minExpression: minExpression }),
+                ...(maxExpression && { maxExpression: maxExpression }),
+                defaultValue: params.data[field],
+                gridContext: params.context,
+                gridApi: params.api,
+                data: params.data,
+                colDef: params.colDef,
+            };
+        },
+        ...(excludeFromGlobalFilter && {
+            getQuickFilterText: excludeFromGlobalFilter,
+        }),
+    };
 };
 
 export const TABLES_DEFINITIONS = {
@@ -103,6 +138,41 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
             },
+            generateEditableNumericColumnDefinition(
+                'LowVoltageLimitkV',
+                'lowVoltageLimit',
+                1,
+                'equipment.setLowVoltageLimit({})\n',
+                undefined,
+                'highVoltageLimit',
+                excludeFromGlobalFilter
+            ),
+            generateEditableNumericColumnDefinition(
+                'HighVoltageLimitkV',
+                'highVoltageLimit',
+                1,
+                'equipment.setHighVoltageLimit({})\n',
+                'lowVoltageLimit',
+                undefined,
+                excludeFromGlobalFilter
+            ),
+            generateEditableNumericColumnDefinition(
+                'IpMin',
+                'ipMin',
+                1,
+                'equipment.setIpMin({})\n',
+                undefined,
+                excludeFromGlobalFilter
+            ),
+            generateEditableNumericColumnDefinition(
+                'IpMax',
+                'ipMax',
+                1,
+                'equipment.setIpMax({})\n',
+                'ipMin',
+                undefined,
+                excludeFromGlobalFilter
+            ),
         ],
     },
 
@@ -1017,7 +1087,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
             },
             {
-                id: 'MarginalCost',
+                id: 'StartupCost',
                 field: 'marginalCost',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1028,14 +1098,14 @@ export const TABLES_DEFINITIONS = {
                 field: 'plannedOutageRate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
+                fractionDigits: 2,
             },
             {
                 id: 'ForcedOutageRate',
                 field: 'forcedOutageRate',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
-                fractionDigits: 1,
+                fractionDigits: 2,
             },
         ],
     },
