@@ -206,7 +206,7 @@ const ExportDialog = ({
                         onChange={onChange}
                         variant="standard"
                         selectionWithDialog={(param) =>
-                            param?.possibleValues?.length > 15
+                            param?.possibleValues?.length > 10
                         }
                     />
                 </Collapse>
