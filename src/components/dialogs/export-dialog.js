@@ -29,6 +29,8 @@ import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
 import IconButton from '@mui/material/IconButton';
 import { FlatParameters } from '@gridsuite/commons-ui';
 
+const stringListType = 'STRING_LIST';
+
 /**
  * Dialog to export the network case
  * @param {Boolean} open Is the dialog open ?
@@ -61,14 +63,14 @@ const ExportDialog = ({
                 // the only way for the moment to check if the param is for extension, is by checking his type is name.
                 //TODO to be removed when extensions param default value corrected in backend to include all possible values
                 Object.values(formats).forEach((f) => {
-                    f.parameters = f.parameters.map((p) => {
+                    f.parameters = f.parameters.map((parameter) => {
                         if (
-                            p.type === 'STRING_LIST' &&
-                            p?.name?.endsWith('extensions')
+                            parameter.type === stringListType &&
+                            parameter.name?.endsWith('extensions')
                         ) {
-                            p.defaultValue = p.possibleValues;
+                            parameter.defaultValue = parameter.possibleValues;
                         }
-                        return p;
+                        return parameter;
                     });
                 });
                 setFormatsWithParameters(formats);
