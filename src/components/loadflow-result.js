@@ -8,7 +8,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import Tabs from '@mui/material/Tabs';
@@ -26,6 +25,25 @@ import {
     useIntlResultStatusMessages,
 } from './utils/aggrid-rows-handler';
 import { fetchLimitViolations } from '../services/study';
+import { Box } from '@mui/system';
+
+const styles = {
+    cell: {
+        display: 'flex',
+        alignItems: 'center',
+        textAlign: 'center',
+        boxSizing: 'border-box',
+        flex: 1,
+        cursor: 'initial',
+    },
+    succeed: {
+        color: green[500],
+    },
+    fail: {
+        color: red[500],
+    },
+};
+
 const LIMIT_TYPES = {
     HIGH_VOLTAGE: 'HIGH_VOLTAGE',
     LOW_VOLTAGE: 'LOW_VOLTAGE',
@@ -52,26 +70,8 @@ const convertDuration = (duration) => {
 };
 
 const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
-    const useStyles = makeStyles((theme) => ({
-        cell: {
-            display: 'flex',
-            alignItems: 'center',
-            textAlign: 'center',
-            boxSizing: 'border-box',
-            flex: 1,
-            cursor: 'initial',
-        },
-        succeed: {
-            color: green[500],
-        },
-        fail: {
-            color: red[500],
-        },
-    }));
-
     const intl = useIntl();
     const theme = useTheme();
-    const classes = useStyles();
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState(0);
     const [overloadedEquipments, setOverloadedEquipments] = useState(null);
@@ -139,34 +139,25 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
         }
     }, [studyUuid, nodeUuid, intl, snackError, limitReductionParam, result]);
 
-    const NumberRenderer = useCallback(
-        (cellData) => {
-            const value = cellData.data[cellData.colDef.field];
-            return (
-                <div className={classes.cell}>
-                    {!isNaN(value) ? value.toFixed(1) : ''}
-                </div>
-            );
-        },
-        [classes.cell]
-    );
+    const NumberRenderer = useCallback((cellData) => {
+        const value = cellData.data[cellData.colDef.field];
+        return (
+            <Box sx={styles.cell}>{!isNaN(value) ? value.toFixed(1) : ''}</Box>
+        );
+    }, []);
 
-    const StatusCellRender = useCallback(
-        (cellData) => {
-            const status = cellData.value;
-            const color =
-                status === 'CONVERGED' ? classes.succeed : classes.fail;
-            return (
-                <div className={classes.cell}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Lens fontSize={'medium'} className={color} />
-                        <span style={{ marginLeft: '4px' }}>{status}</span>
-                    </div>
+    const StatusCellRender = useCallback((cellData) => {
+        const status = cellData.value;
+        const color = status === 'CONVERGED' ? styles.succeed : styles.fail;
+        return (
+            <Box sx={styles.cell}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Lens fontSize={'medium'} sx={color} />
+                    <span style={{ marginLeft: '4px' }}>{status}</span>
                 </div>
-            );
-        },
-        [classes.cell, classes.fail, classes.succeed]
-    );
+            </Box>
+        );
+    }, []);
 
     const loadFlowCurrentViolationsColumns = useMemo(() => {
         return [
@@ -389,37 +380,35 @@ const LoadFlowResult = ({ result, studyUuid, nodeUuid }) => {
     function renderLoadFlowResultTabs() {
         return (
             <>
-                <div className={classes.container}>
-                    <div className={classes.tabs}>
-                        <Tabs
-                            value={tabIndex}
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
+                <div>
+                    <Tabs
+                        value={tabIndex}
+                        onChange={(event, newTabIndex) =>
+                            setTabIndex(newTabIndex)
+                        }
+                    >
+                        <Tab
+                            label={
+                                <FormattedMessage
+                                    id={'LoadFlowResultsCurrentViolations'}
+                                />
                             }
-                        >
-                            <Tab
-                                label={
-                                    <FormattedMessage
-                                        id={'LoadFlowResultsCurrentViolations'}
-                                    />
-                                }
-                            />
-                            <Tab
-                                label={
-                                    <FormattedMessage
-                                        id={'LoadFlowResultsVoltageViolations'}
-                                    />
-                                }
-                            />
-                            <Tab
-                                label={
-                                    <FormattedMessage
-                                        id={'LoadFlowResultsStatus'}
-                                    />
-                                }
-                            />
-                        </Tabs>
-                    </div>
+                        />
+                        <Tab
+                            label={
+                                <FormattedMessage
+                                    id={'LoadFlowResultsVoltageViolations'}
+                                />
+                            }
+                        />
+                        <Tab
+                            label={
+                                <FormattedMessage
+                                    id={'LoadFlowResultsStatus'}
+                                />
+                            }
+                        />
+                    </Tabs>
                 </div>
                 {tabIndex === 0 && renderLoadFlowCurrentViolations()}
                 {tabIndex === 1 && renderLoadFlowVoltageViolations()}
