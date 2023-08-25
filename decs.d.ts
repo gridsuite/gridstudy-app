@@ -3,7 +3,6 @@ declare module '@gridsuite/commons-ui' {
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
     import { RadioGroupProps, TextFieldProps } from '@mui/material';
     import { CaseImportParameters } from 'services/network-conversion';
-    import { TextFieldProps } from '@mui/material';
 
     interface SnackInputs {
         messageTxt?: string;
@@ -31,7 +30,7 @@ declare module '@gridsuite/commons-ui' {
     interface AutocompleteInputProps
         extends Omit<
             AutocompleteProps<
-                string,
+                string | {id: string; label: string;},
                 boolean | undefined,
                 boolean | undefined,
                 boolean | undefined
