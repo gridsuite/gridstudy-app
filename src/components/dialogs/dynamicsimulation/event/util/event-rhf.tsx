@@ -6,8 +6,7 @@
  */
 import { EventPropertyDefinition, PrimitiveTypes } from '../types/event.type';
 import React from 'react';
-import FloatInput from '../../../../utils/rhf-inputs/float-input';
-import SelectInput from '../../../../utils/rhf-inputs/select-input';
+import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
 
 const renderFloatField = (
     propertyName: string,
@@ -20,11 +19,12 @@ const renderFloatField = (
         previousValue={propertyValue}
         clearable={true}
         adornment={
-            propertyDefinition
-                ? propertyDefinition.unit
-                    ? { position: 'end', text: propertyDefinition.unit }
-                    : {}
-                : {}
+            propertyDefinition?.unit
+                ? {
+                      position: 'end',
+                      text: propertyDefinition.unit,
+                  }
+                : undefined
         }
     />
 );
