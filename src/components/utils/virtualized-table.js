@@ -8,18 +8,31 @@
 /**
  * This class has been taken from 'Virtualized Table' example at https://material-ui.com/components/tables/
  */
-import withStyles from '@mui/styles/withStyles';
-import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
+import {
+    DEFAULT_CELL_PADDING,
+    MuiVirtualizedTable,
+} from '@gridsuite/commons-ui';
+import { styled } from '@mui/material';
 
-const cellPadding = 16;
+const PREFIX = 'MuiVirtualizedTable';
+const classes = {
+    flexContainer: `${PREFIX}-flexContainer`,
+    table: `${PREFIX}-table`,
+    tableRow: `${PREFIX}-tableRow`,
+    tableRowHover: `${PREFIX}-tableRowHover`,
+    tableCell: `${PREFIX}-tableCell`,
+    noClick: `${PREFIX}-noClick`,
+    tableCellColor: `${PREFIX}-tableCellColor`,
+    header: `${PREFIX}-header`,
+};
 
-const styles = (theme) => ({
-    flexContainer: {
+const VirtualizedTable = styled(MuiVirtualizedTable)(({ theme }) => ({
+    [`.${classes.flexContainer}`]: {
         display: 'flex',
         alignItems: 'center',
         boxSizing: 'border-box',
     },
-    table: {
+    [`.${classes.table}`]: {
         // temporary right-to-left patch, waiting for
         // https://github.com/bvaughn/react-virtualized/issues/454
         '& .ReactVirtualized__Table__headerRow': {
@@ -28,28 +41,27 @@ const styles = (theme) => ({
                 theme.direction === 'rtl' ? '0 !important' : undefined,
         },
     },
-    tableRow: {
+    [`.${classes.tableRow}`]: {
         cursor: 'pointer',
     },
-    tableRowHover: {
+    [`.${classes.tableRowHover}`]: {
         '&:hover': {
             backgroundColor: theme.palette.grey[200],
         },
     },
-    tableCell: {
+    [`.${classes.tableCell}`]: {
         flex: 1,
-        padding: cellPadding,
+        padding: DEFAULT_CELL_PADDING,
     },
-    noClick: {
+    [`.${classes.noClick}`]: {
         cursor: 'initial',
     },
-    tableCellColor: {
+    [`.${classes.tableCellColor}`]: {
         color: theme.link.color,
     },
-    header: {
+    [`.${classes.header}`]: {
         height: '100%',
     },
-});
+}));
 
-const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
 export default VirtualizedTable;

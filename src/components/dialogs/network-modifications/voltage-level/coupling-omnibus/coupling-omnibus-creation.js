@@ -6,7 +6,7 @@
  */
 
 import { gridItem } from 'components/dialogs/dialogUtils';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import {
     BUS_BAR_SECTION_ID1,
     BUS_BAR_SECTION_ID2,

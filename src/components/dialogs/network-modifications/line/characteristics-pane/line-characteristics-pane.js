@@ -12,7 +12,7 @@ import {
     MicroSusceptanceAdornment,
     OhmAdornment,
 } from '../../../dialogUtils';
-import FloatInput from '../../../../utils/rhf-inputs/float-input';
+import { FloatInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import {
     CHARACTERISTICS,

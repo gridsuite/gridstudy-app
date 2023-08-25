@@ -6,7 +6,7 @@
  */
 
 import * as yup from 'yup';
-import RHFIntegerInput from '../../../utils/rhf-inputs/integer-input';
+import { IntegerInput as RHFIntegerInput } from '@gridsuite/commons-ui';
 import WrapperInput from './wrapper-input';
 
 const IntegerInput = ({ value, label, callback }) => {

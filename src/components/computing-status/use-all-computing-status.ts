@@ -26,6 +26,8 @@ import {
 } from '../../services/study/short-circuit-analysis';
 import { fetchVoltageInitStatus } from '../../services/study/voltage-init';
 import { fetchLoadFlowStatus } from '../../services/study/loadflow';
+import { OptionalServicesNames } from '../utils/optional-services';
+import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
@@ -59,6 +61,22 @@ export const useAllComputingStatus = (
     studyUuid: UUID,
     currentNodeUuid: UUID
 ): void => {
+    const securityAnalysisAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.SecurityAnalysis
+    );
+    const sensitivityAnalysisAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.SensitivityAnalysis
+    );
+    const dynamicSimulationAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.DynamicSimulation
+    );
+    const voltageInitAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.VoltageInit
+    );
+    const shortCircuitAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.ShortCircuit
+    );
+
     useComputingStatus(
         studyUuid,
         currentNodeUuid,
@@ -74,7 +92,8 @@ export const useAllComputingStatus = (
         fetchSecurityAnalysisStatus,
         securityAnalysisStatusInvalidations,
         getSecurityAnalysisRunningStatus,
-        ComputingType.SECURITY_ANALYSIS
+        ComputingType.SECURITY_ANALYSIS,
+        securityAnalysisAvailability
     );
 
     useComputingStatus(
@@ -83,7 +102,8 @@ export const useAllComputingStatus = (
         fetchSensitivityAnalysisStatus,
         sensitivityAnalysisStatusInvalidations,
         getSensitivityAnalysisRunningStatus,
-        ComputingType.SENSITIVITY_ANALYSIS
+        ComputingType.SENSITIVITY_ANALYSIS,
+        sensitivityAnalysisAvailability
     );
 
     useComputingStatus(
@@ -92,7 +112,8 @@ export const useAllComputingStatus = (
         fetchShortCircuitAnalysisStatus,
         shortCircuitAnalysisStatusInvalidations,
         getShortCircuitAnalysisRunningStatus,
-        ComputingType.SHORTCIRCUIT_ANALYSIS
+        ComputingType.SHORTCIRCUIT_ANALYSIS,
+        shortCircuitAvailability
     );
 
     useComputingStatus(
@@ -101,7 +122,8 @@ export const useAllComputingStatus = (
         fetchOneBusShortCircuitAnalysisStatus,
         oneBusShortCircuitAnalysisStatusInvalidations,
         getShortCircuitAnalysisRunningStatus,
-        ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
+        ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
+        shortCircuitAvailability
     );
 
     useComputingStatus(
@@ -110,7 +132,8 @@ export const useAllComputingStatus = (
         fetchDynamicSimulationStatus,
         dynamicSimulationStatusInvalidations,
         getDynamicSimulationRunningStatus,
-        ComputingType.DYNAMIC_SIMULATION
+        ComputingType.DYNAMIC_SIMULATION,
+        dynamicSimulationAvailability
     );
 
     useComputingStatus(
@@ -119,6 +142,7 @@ export const useAllComputingStatus = (
         fetchVoltageInitStatus,
         voltageInitStatusInvalidations,
         getVoltageInitRunningStatus,
-        ComputingType.VOLTAGE_INIT
+        ComputingType.VOLTAGE_INIT,
+        voltageInitAvailability
     );
 };
