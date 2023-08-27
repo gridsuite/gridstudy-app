@@ -33,9 +33,11 @@ const DndTableBottomRightButtons = ({
         name: arrayFormName,
     });
 
-    const noRowsSelected = !currentRows.some((row) => row[SELECTED]);
-    const firstRowSelected = currentRows[0]?.[SELECTED];
-    const lastRowSelected = currentRows[currentRows.length - 1]?.[SELECTED];
+    const noRowsSelected =
+        currentRows && !currentRows.some((row) => row[SELECTED]);
+    const firstRowSelected = currentRows && currentRows[0]?.[SELECTED];
+    const lastRowSelected =
+        currentRows && currentRows[currentRows.length - 1]?.[SELECTED];
 
     return (
         <Grid container item xs spacing={1} sx={{ justifyContent: 'flex-end' }}>

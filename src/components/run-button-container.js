@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import SensiParametersSelector from './dialogs/sensi/sensi-parameters-selector';
 import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -83,9 +82,6 @@ export function RunButtonContainer({
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const [showContingencyListSelector, setShowContingencyListSelector] =
-        useState(false);
-
-    const [showSensiParametersSelector, setShowSensiParametersSelector] =
         useState(false);
 
     const [
@@ -254,31 +250,6 @@ export function RunButtonContainer({
         );
     };
 
-    const handleStartSensi = (sensiConfiguration) => {
-        // close the contingency list selection window
-        setShowSensiParametersSelector(false);
-        setComputationStopped(false);
-        dispatch(
-            setComputingStatus(
-                ComputingType.SENSITIVITY_ANALYSIS,
-                RunningStatus.RUNNING
-            )
-        );
-        // start server side security analysis
-        startSensitivityAnalysis(
-            studyUuid,
-            currentNode?.id,
-            sensiConfiguration
-        ).catch(() => {
-            dispatch(
-                setComputingStatus(
-                    ComputingType.SENSITIVITY_ANALYSIS,
-                    RunningStatus.FAILED
-                )
-            );
-        });
-    };
-
     const handleStartDynamicSimulation = (dynamicSimulationConfiguration) => {
         // close the dialog
         setShowDynamicSimulationParametersSelector(false);
@@ -337,8 +308,26 @@ export function RunButtonContainer({
             setShowContingencyListSelector(true);
             setRanSA(true);
         } else if (action === runnable[ComputingType.SENSITIVITY_ANALYSIS]) {
-            setShowSensiParametersSelector(true);
-            setRanSensi(true);
+            dispatch(
+                setComputingStatus(
+                    ComputingType.SENSITIVITY_ANALYSIS,
+                    RunningStatus.RUNNING
+                )
+            );
+            startSensitivityAnalysis(studyUuid, currentNode?.id)
+                .then(setRanSensi(true))
+                .catch((error) => {
+                    dispatch(
+                        setComputingStatus(
+                            ComputingType.SENSITIVITY_ANALYSIS,
+                            RunningStatus.FAILED
+                        )
+                    );
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'startSensitivityAnalysisError',
+                    });
+                });
         } else if (action === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]) {
             dispatch(
                 setComputingStatus(
@@ -493,16 +482,6 @@ export function RunButtonContainer({
                         onStart={handleStartSecurityAnalysis}
                         currentNodeUuid={currentNode?.id}
                     />
-                    {showSensiParametersSelector && (
-                        <SensiParametersSelector
-                            open={showSensiParametersSelector}
-                            onClose={() =>
-                                setShowSensiParametersSelector(false)
-                            }
-                            onStart={handleStartSensi}
-                            currentNodeUuid={currentNode?.id}
-                        />
-                    )}
                     {showDynamicSimulationParametersSelector && (
                         <DynamicSimulationParametersSelector
                             open={showDynamicSimulationParametersSelector}

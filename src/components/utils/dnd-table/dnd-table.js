@@ -35,6 +35,7 @@ import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import DirectoryItemsInput from '../rhf-inputs/directory-items-input';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
+import EnumInput from '../rhf-inputs/enum-input';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -55,17 +56,17 @@ function MultiCheckbox({
     });
 
     const allRowSelected = useMemo(
-        () => arrayToWatch.every((row) => row[SELECTED]),
+        () => arrayToWatch && arrayToWatch.every((row) => row[SELECTED]),
         [arrayToWatch]
     );
     const someRowSelected = useMemo(
-        () => arrayToWatch.some((row) => row[SELECTED]),
+        () => arrayToWatch && arrayToWatch.some((row) => row[SELECTED]),
         [arrayToWatch]
     );
 
     return (
         <Checkbox
-            checked={arrayToWatch.length > 0 && allRowSelected}
+            checked={arrayToWatch && arrayToWatch.length > 0 && allRowSelected}
             indeterminate={someRowSelected && !allRowSelected}
             onChange={(event) => {
                 event.target.checked
@@ -111,12 +112,15 @@ function EditableTableCell({
                     {...props}
                 />
             )}
-            {!column.numeric && !column.directoryItems && !column.chipItems && (
-                <TableTextInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    {...props}
-                />
-            )}
+            {!column.numeric &&
+                !column.directoryItems &&
+                !column.chipItems &&
+                !column.menuItem && (
+                    <TableTextInput
+                        name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                        {...props}
+                    />
+                )}
             {column.directoryItems && (
                 <DirectoryItemsInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
@@ -130,6 +134,14 @@ function EditableTableCell({
                 <ChipItemsInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     hideErrorMessage={true}
+                />
+            )}
+            {column.menuItem && (
+                <EnumInput
+                    options={column.equipmentTypes}
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    label={column.label}
+                    size={'small'}
                 />
             )}
         </TableCell>
@@ -172,6 +184,9 @@ const DndTable = ({
     const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
 
     function renderTableCell(rowId, rowIndex, column) {
+        if (column.test) {
+            return <></>;
+        }
         let CustomTableCell = column.editable
             ? EditableTableCell
             : DefaultTableCell;
