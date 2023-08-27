@@ -67,6 +67,7 @@ export type ShortcircuitAnalysisResult = {
     };
     numberOfElements: number;
     empty: boolean;
+    faults?: SCAResultFault[];
 };
 
 export type ShortCircuitAnalysisFetch = (
