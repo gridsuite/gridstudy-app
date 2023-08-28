@@ -28,7 +28,6 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
     addLoadflowNotif,
@@ -67,16 +66,16 @@ import {
 } from './utils/equipment-types';
 import { fetchAppsAndUrls } from '../services/utils';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     tabs: {
         flexGrow: 1,
     },
-    label: {
+    label: (theme) => ({
         color: theme.palette.primary.main,
         margin: theme.spacing(1.5),
         fontWeight: 'bold',
-    },
-}));
+    }),
+};
 
 const STUDY_VIEWS = [
     StudyView.MAP,
@@ -85,11 +84,8 @@ const STUDY_VIEWS = [
     StudyView.LOGS,
 ];
 
-const useEquipmentStyles = makeStyles(equipmentStyles);
-
 const CustomSuffixRenderer = ({ props, element }) => {
     const dispatch = useDispatch();
-    const equipmentClasses = useEquipmentStyles();
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const networkAreaDiagramNbVoltageLevels = useSelector(
@@ -170,19 +166,11 @@ const CustomSuffixRenderer = ({ props, element }) => {
     }
 
     return (
-        <TagRenderer
-            classes={equipmentClasses}
-            props={props}
-            element={element}
-        />
+        <TagRenderer styles={equipmentStyles} props={props} element={element} />
     );
 };
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
-    const classes = useStyles();
-
-    const equipmentClasses = useEquipmentStyles();
-
     const dispatch = useDispatch();
 
     const intl = useIntl();
@@ -396,7 +384,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 elementsFound={equipmentsFound}
                 renderElement={(props) => (
                     <EquipmentItem
-                        classes={equipmentClasses}
+                        styles={equipmentStyles}
                         {...props}
                         key={'ei' + props.element.key}
                         suffixRenderer={CustomSuffixRenderer}
@@ -418,7 +406,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     {/* TODO : temporary fix (remove user and manage disconnection in a hook?) */}
                     {currentNode && user && (
                         <OverflowableText
-                            className={classes.label}
+                            sx={styles.label}
                             text={
                                 currentNode?.data?.label === 'Root'
                                     ? intl.formatMessage({
@@ -437,7 +425,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             onChangeTab(newTabIndex);
                         }}
                         aria-label="views"
-                        className={classes.tabs}
+                        sx={styles.tabs}
                     >
                         {STUDY_VIEWS.map((tabName) => {
                             let label;

@@ -10,7 +10,7 @@ import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import { Divider, Slider, Tooltip, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import { Box, styled } from '@mui/system';
 
 export const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -190,8 +190,13 @@ export const removeNullDataValues = (data) => {
     });
 };
 
-export const GridSection = ({ title, heading = '3', size = 12 }) => {
-    const CustomTag = `h${heading}`;
+export const GridSection = ({
+    title,
+    heading = '3',
+    size = 12,
+    customStyle = {},
+}) => {
+    const CustomTag = styled(`h${heading}`)(customStyle);
     return (
         <Grid container spacing={2}>
             <Grid item xs={size}>
