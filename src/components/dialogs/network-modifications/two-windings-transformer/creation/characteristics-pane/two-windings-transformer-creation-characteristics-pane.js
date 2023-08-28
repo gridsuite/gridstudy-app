@@ -115,7 +115,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
             >
                 <RatioTapChangerPane
                     studyUuid={studyUuid}
-                    currentNodeUuid={currentNodeUuid}
+                    currentNode={currentNode}
                     voltageLevelOptions={voltageLevelOptions}
                 />
             </Box>
@@ -129,7 +129,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
             >
                 <PhaseTapChangerPane
                     studyUuid={studyUuid}
-                    currentNodeUuid={currentNodeUuid}
+                    currentNode={currentNode}
                     voltageLevelOptions={voltageLevelOptions}
                 />
             </Box>
