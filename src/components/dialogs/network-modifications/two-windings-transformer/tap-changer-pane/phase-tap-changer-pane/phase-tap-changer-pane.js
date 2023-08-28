@@ -289,16 +289,19 @@ const PhaseTapChangerPane = ({
                 )}
                 {phaseTapChangerEnabledWatch &&
                     regulationType === REGULATION_TYPES.DISTANT.id && (
-                        <Grid
-                            item
-                            container
-                            columns={3}
-                            sx={{
-                                justifyContent: 'flex-end',
-                                marginLeft: '10px',
-                            }}
-                        >
-                            {gridItem(regulatingTerminalField, 2)}
+                        <Grid item container spacing={2}>
+                            <Grid
+                                item
+                                xs={4}
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <FormattedMessage id="DistantRegulatedTerminal" />
+                            </Grid>
+                            {gridItem(regulatingTerminalField, 8)}
                         </Grid>
                     )}
                 <PhaseTapChangerPaneSteps
