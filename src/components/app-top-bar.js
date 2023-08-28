@@ -102,13 +102,13 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 return;
             }
             let substationIdPromise;
-            if (element.type === EQUIPMENT_TYPES.SUBSTATION.type) {
+            if (element.type === EQUIPMENT_TYPES.SUBSTATION) {
                 substationIdPromise = Promise.resolve(element.id);
             } else {
                 substationIdPromise = fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
-                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
                     EQUIPMENT_INFOS_TYPES.LIST.type,
                     element.id,
                     true
@@ -133,12 +133,12 @@ const CustomSuffixRenderer = ({ props, element }) => {
     );
 
     if (
-        element.type === EQUIPMENT_TYPES.SUBSTATION.type ||
-        element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
+        element.type === EQUIPMENT_TYPES.SUBSTATION ||
+        element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL
     ) {
         return (
             <>
-                {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type && (
+                {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL && (
                     <IconButton
                         disabled={
                             networkAreaDiagramNbVoltageLevels >
@@ -154,7 +154,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 <IconButton
                     disabled={
                         (!studyUuid || !currentNode) &&
-                        element.type !== EQUIPMENT_TYPES.SUBSTATION.type
+                        element.type !== EQUIPMENT_TYPES.SUBSTATION
                     }
                     onClick={(e) => centerOnSubstationCB(e, element)}
                     size={'small'}
@@ -241,7 +241,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
-            if (optionInfos.type === EQUIPMENT_TYPES.SUBSTATION.type) {
+            if (optionInfos.type === EQUIPMENT_TYPES.SUBSTATION) {
                 openDiagramView(optionInfos.id, DiagramType.SUBSTATION);
             } else {
                 openDiagramView(

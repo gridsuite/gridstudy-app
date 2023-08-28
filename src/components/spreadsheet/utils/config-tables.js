@@ -12,6 +12,7 @@ import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { SensiProperties } from 'components/spreadsheet/utils/sensi-properties';
 import CustomTooltipKeyValue from 'components/custom-aggrid/custom-aggrid-tooltip-key-value';
+import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 
 const generateTapPositions = (params) => {
     return params
@@ -85,6 +86,7 @@ export const TABLES_DEFINITIONS = {
         index: 0,
         name: 'Substations',
         type: EQUIPMENT_TYPES.SUBSTATION,
+        fetchers: EQUIPMENT_FETCHERS.SUBSTATION,
         columns: [
             {
                 id: 'ID',
@@ -116,7 +118,7 @@ export const TABLES_DEFINITIONS = {
         index: 1,
         name: 'VoltageLevels',
         type: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-        modifiableEquipmentType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+        fetchers: EQUIPMENT_FETCHERS.VOLTAGE_LEVEL,
         columns: [
             {
                 id: 'ID',
@@ -180,6 +182,7 @@ export const TABLES_DEFINITIONS = {
         index: 2,
         name: 'Lines',
         type: EQUIPMENT_TYPES.LINE,
+        fetchers: EQUIPMENT_FETCHERS.LINE,
         columns: [
             {
                 id: 'ID',
@@ -257,7 +260,7 @@ export const TABLES_DEFINITIONS = {
         index: 3,
         name: 'TwoWindingsTransformers',
         type: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-        modifiableEquipmentType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        fetchers: EQUIPMENT_FETCHERS.TWO_WINDINGS_TRANSFORMER,
         groovyEquipmentGetter: 'getTwoWindingsTransformer',
         columns: [
             {
@@ -443,8 +446,7 @@ export const TABLES_DEFINITIONS = {
         index: 4,
         name: 'ThreeWindingsTransformers',
         type: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
-        modifiableEquipmentType:
-            EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
+        fetchers: EQUIPMENT_FETCHERS.THREE_WINDINGS_TRANSFORMER,
         groovyEquipmentGetter: 'getThreeWindingsTransformer',
         columns: [
             {
@@ -844,7 +846,7 @@ export const TABLES_DEFINITIONS = {
         index: 5,
         name: 'Generators',
         type: EQUIPMENT_TYPES.GENERATOR,
-        modifiableEquipmentType: EQUIPMENT_TYPES.GENERATOR.type,
+        fetchers: EQUIPMENT_FETCHERS.GENERATOR,
         columns: [
             {
                 id: 'ID',
@@ -1113,7 +1115,7 @@ export const TABLES_DEFINITIONS = {
         index: 6,
         name: 'Loads',
         type: EQUIPMENT_TYPES.LOAD,
-        modifiableEquipmentType: EQUIPMENT_TYPES.LOAD.type,
+        fetchers: EQUIPMENT_FETCHERS.LOAD,
         columns: [
             {
                 id: 'ID',
@@ -1219,6 +1221,7 @@ export const TABLES_DEFINITIONS = {
         index: 7,
         name: 'ShuntCompensators',
         type: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
+        fetchers: EQUIPMENT_FETCHERS.SHUNT_COMPENSATOR,
         columns: [
             {
                 id: 'ID',
@@ -1275,6 +1278,7 @@ export const TABLES_DEFINITIONS = {
         index: 8,
         name: 'StaticVarCompensators',
         type: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
+        fetchers: EQUIPMENT_FETCHERS.STATIC_VAR_COMPENSATOR,
         columns: [
             {
                 id: 'ID',
@@ -1338,6 +1342,7 @@ export const TABLES_DEFINITIONS = {
         index: 9,
         name: 'Batteries',
         type: EQUIPMENT_TYPES.BATTERY,
+        fetchers: EQUIPMENT_FETCHERS.BATTERY,
         columns: [
             {
                 id: 'ID',
@@ -1402,6 +1407,7 @@ export const TABLES_DEFINITIONS = {
         index: 10,
         name: 'HvdcLines',
         type: EQUIPMENT_TYPES.HVDC_LINE,
+        fetchers: EQUIPMENT_FETCHERS.HVDC_LINE,
         columns: [
             {
                 id: 'ID',
@@ -1502,6 +1508,7 @@ export const TABLES_DEFINITIONS = {
         index: 11,
         name: 'LccConverterStations',
         type: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
+        fetchers: EQUIPMENT_FETCHERS.LCC_CONVERTER_STATION,
         columns: [
             {
                 id: 'ID',
@@ -1568,6 +1575,7 @@ export const TABLES_DEFINITIONS = {
         index: 12,
         name: 'VscConverterStations',
         type: EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
+        fetchers: EQUIPMENT_FETCHERS.VSC_CONVERTER_STATION,
         columns: [
             {
                 id: 'ID',
@@ -1650,6 +1658,7 @@ export const TABLES_DEFINITIONS = {
         index: 13,
         name: 'DanglingLines',
         type: EQUIPMENT_TYPES.DANGLING_LINE,
+        fetchers: EQUIPMENT_FETCHERS.DANGLING_LINE,
         columns: [
             {
                 id: 'ID',
@@ -1737,7 +1746,7 @@ export const TABLES_NAMES_INDEXES = new Map(
 );
 
 export const TABLES_DEFINITION_TYPES = new Map(
-    Object.values(TABLES_DEFINITIONS).map((table) => [table.type.type, table])
+    Object.values(TABLES_DEFINITIONS).map((table) => [table.type, table])
 );
 
 export const TABLES_DEFINITION_INDEXES = new Map(
