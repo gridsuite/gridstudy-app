@@ -145,7 +145,7 @@ const LineCreationDialog = ({
     });
 
     const { reset, setValue, watch } = formMethods;
-    watch();
+    watch(); // to keep validate button disabled when only navigate between tabs
 
     const fromSearchCopyToFormValues = (line) => {
         reset(
