@@ -1124,5 +1124,20 @@
     "emptyFilterError": "Le filtre doit contenir au moins un ouvrage",
     "IpMin": "ICC min (kA)",
     "IpMax": "ICC max (kA)",
-    "StartupCost": "Coût de démarrage"
+    "StartupCost": "Coût de démarrage",
+    "agGrid.of": "sur",
+    "agGrid.to": "à",
+    "agGrid.equals": "Égal à",
+    "agGrid.notEqual": "N'est pas égal à",
+    "agGrid.startsWith": "Commence par",
+    "agGrid.endsWith": "Finit par",
+    "agGrid.blank": "Vide",
+    "agGrid.notBlank": "N'est pas vide",
+    "agGrid.loadingOoo": "Chargement...",
+    "agGrid.noRowsToShow": "Aucune Donnée",
+    "agGrid.firstPage": "première page",
+    "agGrid.previousPage": "page précédente",
+    "agGrid.nextPage": "page suivante",
+    "agGrid.lastPage": "dernière page",
+    "agGrid.thousandSeparator": " "
 }

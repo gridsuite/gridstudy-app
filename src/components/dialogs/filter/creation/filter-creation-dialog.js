@@ -23,7 +23,7 @@ import CriteriaBasedFilterForm, {
 } from './criteria-based/criteria-based-filter-form';
 import ExplicitNamingFilterForm, {
     FILTER_EQUIPMENTS_ATTRIBUTES,
-    explicitNamingFilterEmptyFormData,
+    getExplicitNamingFilterEmptyFormData,
     explicitNamingFilterSchema,
 } from './explicit-naming/explicit-naming-filter-form';
 import yup from 'components/utils/yup-config';
@@ -47,7 +47,7 @@ const emptyFormData = {
     [FILTER_TYPE]: FILTER_TYPES.EXPLICIT_NAMING.id,
     [EQUIPMENT_TYPE]: null,
     ...criteriaBasedFilterEmptyFormData,
-    ...explicitNamingFilterEmptyFormData,
+    ...getExplicitNamingFilterEmptyFormData,
 };
 
 // we use both schemas then we can change the type of filter without losing the filled form fields

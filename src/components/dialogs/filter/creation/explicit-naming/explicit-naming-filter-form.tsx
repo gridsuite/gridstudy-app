@@ -10,7 +10,11 @@ import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import yup from 'components/utils/yup-config';
-import { EQUIPMENT_TYPE, FILTER_TYPE } from 'components/utils/field-constants';
+import {
+    AG_GRID_ROW_UUID,
+    EQUIPMENT_TYPE,
+    FILTER_TYPE,
+} from 'components/utils/field-constants';
 import { FILTER_TYPES } from 'components/network/constants';
 import CustomAgGridTable, {
     ROW_DRAGGING_SELECTION_COLUMN_DEF,
@@ -77,19 +81,25 @@ function isGeneratorOrLoad(equipmentType: string): boolean {
 }
 
 interface FilterTableRow {
+    [AG_GRID_ROW_UUID]: string;
     [EQUIPMENT_ID]: string;
     [DISTRIBUTION_KEY]: number | null;
 }
 
-const defaultRowData: FilterTableRow = {
-    [EQUIPMENT_ID]: '',
-    [DISTRIBUTION_KEY]: null,
-};
+function makeDefaultRowData(): FilterTableRow {
+    return {
+        [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+        [EQUIPMENT_ID]: '',
+        [DISTRIBUTION_KEY]: null,
+    };
+}
 
-const defaultTableRows = [defaultRowData, defaultRowData, defaultRowData];
+function makeDefaultTableRows() {
+    return [makeDefaultRowData(), makeDefaultRowData(), makeDefaultRowData()];
+}
 
-export const explicitNamingFilterEmptyFormData = {
-    [FILTER_EQUIPMENTS_ATTRIBUTES]: defaultTableRows,
+export const getExplicitNamingFilterEmptyFormData = {
+    [FILTER_EQUIPMENTS_ATTRIBUTES]: makeDefaultTableRows(),
 };
 
 function ExplicitNamingFilterForm() {
@@ -195,7 +205,7 @@ function ExplicitNamingFilterForm() {
     };
 
     const handleResetOnConfirmation = () => {
-        setValue(FILTER_EQUIPMENTS_ATTRIBUTES, defaultTableRows);
+        setValue(FILTER_EQUIPMENTS_ATTRIBUTES, makeDefaultTableRows());
     };
 
     return (
@@ -210,33 +220,32 @@ function ExplicitNamingFilterForm() {
                     resetOnConfirmation={handleResetOnConfirmation}
                 />
             </Grid>
-            {watchEquipmentType && (
-                <Grid item xs={12}>
-                    <CustomAgGridTable
-                        name={FILTER_EQUIPMENTS_ATTRIBUTES}
-                        columnDefs={columnDefs}
-                        defaultColDef={defaultColDef}
-                        defaultRowData={defaultRowData}
-                        pagination={true}
-                        paginationPageSize={100}
-                        suppressRowClickSelection
-                        alwaysShowVerticalScroll
-                        stopEditingWhenCellsLoseFocus
-                        csvProps={{
-                            fileName: intl.formatMessage({
-                                id: 'filterCsvFileName',
-                            }),
-                            fileHeaders: csvFileHeaders,
-                            getDataFromCsv: handleImportCsvFilterData,
-                        }}
-                        cssProps={{
-                            '& .ag-root-wrapper-body': {
-                                maxHeight: '430px',
-                            },
-                        }}
-                    />
-                </Grid>
-            )}
+
+            <Grid item xs={12}>
+                <CustomAgGridTable
+                    name={FILTER_EQUIPMENTS_ATTRIBUTES}
+                    columnDefs={columnDefs}
+                    defaultColDef={defaultColDef}
+                    makeDefaultRowData={makeDefaultRowData()}
+                    pagination={true}
+                    paginationPageSize={100}
+                    suppressRowClickSelection
+                    alwaysShowVerticalScroll
+                    stopEditingWhenCellsLoseFocus
+                    csvProps={{
+                        fileName: intl.formatMessage({
+                            id: 'filterCsvFileName',
+                        }),
+                        fileHeaders: csvFileHeaders,
+                        getDataFromCsv: handleImportCsvFilterData,
+                    }}
+                    cssProps={{
+                        '& .ag-root-wrapper-body': {
+                            maxHeight: '430px',
+                        },
+                    }}
+                />
+            </Grid>
         </Grid>
     );
 }

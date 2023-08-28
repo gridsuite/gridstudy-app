@@ -11,6 +11,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage, elementType } from '@gridsuite/commons-ui';
 import {
+    AG_GRID_ROW_UUID,
     EQUIPMENT_TYPE,
     FILTER_TYPE,
     NAME,
@@ -63,8 +64,12 @@ const ExplicitNamingFilterEditionDialog = ({
                         [NAME]: name,
                         [FILTER_TYPE]: FILTER_TYPES.EXPLICIT_NAMING.id,
                         [EQUIPMENT_TYPE]: response[EQUIPMENT_TYPE],
-                        [FILTER_EQUIPMENTS_ATTRIBUTES]:
-                            response[FILTER_EQUIPMENTS_ATTRIBUTES],
+                        [FILTER_EQUIPMENTS_ATTRIBUTES]: response[
+                            FILTER_EQUIPMENTS_ATTRIBUTES
+                        ].map((row) => ({
+                            [AG_GRID_ROW_UUID]: crypto.randomUUID(),
+                            ...row,
+                        })),
                     });
                 })
                 .catch((error) => {
