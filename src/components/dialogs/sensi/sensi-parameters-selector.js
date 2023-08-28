@@ -266,7 +266,7 @@ const SensiParametersSelector = (props) => {
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} direction="column" item xs={12}>
-                        <GridSection title="SensitivityBranches" heading="3" />
+                        <GridSection title="SensitivityBranches" />
                         <GridSection
                             title="SensitivityInjectionsSet"
                             heading="4"
@@ -282,7 +282,7 @@ const SensiParametersSelector = (props) => {
                         <GridSection title="SensitivityTD" heading="4" />
                         {SensiPSTsField}
 
-                        <GridSection title="SensitivityNodes" heading="3" />
+                        <GridSection title="SensitivityNodes" />
                         {SensiNodesField}
                     </Grid>
                 </DialogContent>

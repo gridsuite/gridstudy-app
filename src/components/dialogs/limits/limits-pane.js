@@ -17,10 +17,9 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import makeStyles from '@mui/styles/makeStyles';
 import { FloatInput } from '@gridsuite/commons-ui';
 import {
     AmpereAdornment,
@@ -31,11 +30,11 @@ import DndTable from 'components/utils/dnd-table/dnd-table';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     h3: {
         marginTop: 0,
     },
-}));
+};
 
 const LimitsPane = ({
     id = LIMITS,
@@ -44,7 +43,6 @@ const LimitsPane = ({
     clearableFields,
 }) => {
     const intl = useIntl();
-    const classes = useStyles();
     const { getValues } = useFormContext();
 
     const columnsDefinition = useMemo(() => {
@@ -224,13 +222,7 @@ const LimitsPane = ({
 
     return (
         <>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h3 className={classes.h3}>
-                        <FormattedMessage id={'Side1'} />
-                    </h3>
-                </Grid>
-            </Grid>
+            <GridSection title="Side1" customStyle={styles.h3} />
             <Grid container spacing={2}>
                 {gridItem(permanentCurrentLimit1Field, 4)}
             </Grid>

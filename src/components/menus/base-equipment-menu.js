@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -24,14 +23,14 @@ import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-comm
 import { isNodeReadOnly } from '../graph/util/model-functions';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     menuItem: {
         // NestedMenu item manages only label prop of string type
         // It fix paddings itself then we must force this padding
         // to justify menu items texts
         paddingLeft: '12px',
     },
-}));
+};
 
 const ViewInSpreadsheetItem = ({
     equipmentType,
@@ -39,11 +38,9 @@ const ViewInSpreadsheetItem = ({
     itemText,
     handleViewInSpreadsheet,
 }) => {
-    const classes = useStyles();
-
     return (
         <MenuItem
-            className={classes.menuItem}
+            sx={styles.menuItem}
             onClick={() => handleViewInSpreadsheet(equipmentType, equipmentId)}
             selected={false}
         >
@@ -65,11 +62,10 @@ const DeleteEquipmentItem = ({
     handleDeleteEquipment,
 }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const classes = useStyles();
 
     return (
         <MenuItem
-            className={classes.menuItem}
+            sx={styles.menuItem}
             onClick={() =>
                 handleDeleteEquipment(
                     getFeederTypeFromEquipmentType(equipmentType),
@@ -96,11 +92,10 @@ const ModifyEquipmentItem = ({
     handleOpenModificationDialog,
 }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const classes = useStyles();
 
     return (
         <MenuItem
-            className={classes.menuItem}
+            sx={styles.menuItem}
             onClick={() =>
                 handleOpenModificationDialog(
                     equipmentId,
@@ -115,7 +110,6 @@ const ModifyEquipmentItem = ({
             </ListItemIcon>
 
             <ListItemText
-                className={classes.listItemText}
                 primary={<Typography noWrap>{itemText}</Typography>}
             />
         </MenuItem>
@@ -129,10 +123,10 @@ const ItemViewInForm = ({
     handleOpenModificationDialog,
 }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const classes = useStyles();
+
     return (
         <MenuItem
-            className={classes.menuItem}
+            sx={styles.menuItem}
             onClick={() =>
                 handleOpenModificationDialog(equipmentId, equipmentType)
             }
