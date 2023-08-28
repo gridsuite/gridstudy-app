@@ -7,7 +7,6 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
-import clsx from 'clsx';
 import { ReportViewer, useSnackMessage } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
@@ -15,18 +14,18 @@ import AlertInvalidNode from './utils/alert-invalid-node';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import { fetchReport } from '../services/study';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles(() => ({
+const styles = {
     div: {
         display: 'flex',
     },
     reportOnlyNode: {
-        margin: 5,
+        margin: '5px',
     },
-}));
+};
 
 /**
  * control the ReportViewer (fetch and waiting)
@@ -44,7 +43,6 @@ export const ReportViewerTab = ({
     disabled,
 }) => {
     const intl = useIntl();
-    const classes = useStyles();
 
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
@@ -118,10 +116,10 @@ export const ReportViewerTab = ({
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
-            <Paper className={clsx('singlestretch-child')}>
-                <div className={classes.div}>
+            <Paper className={'singlestretch-child'}>
+                <Box sx={styles.div}>
                     <FormControlLabel
-                        className={classes.reportOnlyNode}
+                        sx={styles.reportOnlyNode}
                         control={
                             <Switch
                                 checked={nodeOnlyReport}
@@ -137,7 +135,7 @@ export const ReportViewerTab = ({
                         })}
                     />
                     {disabled && <AlertInvalidNode />}
-                </div>
+                </Box>
                 {!!report && !disabled && <ReportViewer jsonReport={report} />}
             </Paper>
         </WaitingLoader>

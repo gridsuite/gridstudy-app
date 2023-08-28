@@ -45,8 +45,10 @@ import { updateConfigParameter } from '../../services/config';
 import {
     modifyGenerator,
     modifyLoad,
+    modifyVoltageLevel,
     requestNetworkChange,
 } from '../../services/study/network-modifications';
+import { kiloUnitToUnit } from '../../utils/rounding';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -121,7 +123,6 @@ const TableWrapper = (props) => {
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
     const [tabIndex, setTabIndex] = useState(0);
-    const [scrollToIndex, setScrollToIndex] = useState();
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
@@ -327,7 +328,6 @@ const TableWrapper = (props) => {
     const handleSwitchTab = useCallback(
         (value) => {
             setManualTabSwitch(true);
-            setScrollToIndex();
             setTabIndex(value);
             cleanTableState();
         },
@@ -376,9 +376,8 @@ const TableWrapper = (props) => {
                 props.equipmentId
             );
             if (selectedRow) {
-                setScrollToIndex(selectedRow.rowIndex);
                 gridRef.current.api?.ensureNodeVisible(selectedRow, 'top');
-                gridRef.current.api?.redrawRows(selectedRow);
+                selectedRow.setSelected(true, true);
             }
         }
     }, [manualTabSwitch, props.equipmentId, props.equipmentType]);
@@ -390,15 +389,21 @@ const TableWrapper = (props) => {
             !manualTabSwitch
         ) {
             const definition = TABLES_DEFINITION_TYPES.get(props.equipmentType);
-            setTabIndex(definition.index); // select the right table type
-        } else if (manualTabSwitch) {
-            setScrollToIndex();
+            if (tabIndex === definition.index) {
+                // already in expected tab => explicit call to scroll to expected row
+                scrollToEquipmentIndex();
+            } else {
+                // select the right table type. This will trigger handleRowDataUpdated + scrollToEquipmentIndex
+                setTabIndex(definition.index);
+            }
         }
     }, [
         props.equipmentId,
         props.equipmentType,
         props.equipmentChanged,
         manualTabSwitch,
+        tabIndex,
+        scrollToEquipmentIndex,
     ]);
 
     const handleGridReady = useCallback(() => {
@@ -413,13 +418,6 @@ const TableWrapper = (props) => {
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
     }, [scrollToEquipmentIndex]);
-
-    const handleBodyScroll = useCallback(() => {
-        if (scrollToIndex) {
-            setScrollToIndex();
-            setManualTabSwitch(true);
-        }
-    }, [scrollToIndex]);
 
     useEffect(() => {
         const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
@@ -526,6 +524,20 @@ const TableWrapper = (props) => {
                         editingData.targetV,
                         undefined,
                         undefined,
+                        undefined
+                    );
+                case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+                    return modifyVoltageLevel(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.nominalVoltage,
+                        editingData.lowVoltageLimit,
+                        editingData.highVoltageLimit,
+                        kiloUnitToUnit(editingData.ipMin),
+                        kiloUnitToUnit(editingData.ipMax),
+                        false,
                         undefined
                     );
                 default:
@@ -690,7 +702,6 @@ const TableWrapper = (props) => {
                         columnData={columnData}
                         topPinnedData={topPinnedData}
                         fetched={equipments || errorMessage}
-                        scrollToIndex={scrollToIndex}
                         visible={props.visible}
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
@@ -698,7 +709,6 @@ const TableWrapper = (props) => {
                         handleEditingStopped={handleEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
-                        handleBodyScroll={handleBodyScroll}
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }

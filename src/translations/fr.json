@@ -322,7 +322,9 @@
     "LOW_VOLTAGE": "Tension basse",
 
     "HighVoltageLimit": "Limite tension haute",
+    "HighVoltageLimitkV": "Limite tension haute (kV)",
     "LowVoltageLimit": "Limite tension basse",
+    "LowVoltageLimitkV": "Limite tension basse (kV)",
 
     "descLfVoltageInitMode": "Mode d'initialisation du plan de tension",
     "descLfTransformerVoltageControlOn": "Simuler les régleurs en charge",
@@ -1082,5 +1084,7 @@
     "deleteNodeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud  \"{nodeName}\"?",
     "deleteSubTreeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud \"{nodeName}\" et son sous-arbre contenant {nodesNumber} nœuds ?",
 
+    "IpMin": "ICC min (kA)",
+    "IpMax": "ICC max (kA)",
     "StartupCost": "Coût de démarrage"
 }
