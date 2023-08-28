@@ -175,7 +175,7 @@ const TableWrapper = (props) => {
     const isEditColumnVisible = useCallback(() => {
         return (
             !props.disabled &&
-            TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType &&
+            TABLES_DEFINITION_INDEXES.get(tabIndex).type &&
             TABLES_DEFINITION_INDEXES.get(tabIndex)
                 .columns.filter((c) => c.editable)
                 .filter((c) => selectedColumnsNames.has(c.id)).length > 0
@@ -252,7 +252,7 @@ const TableWrapper = (props) => {
                                 setEditingData: setEditingData,
                                 equipmentType:
                                     TABLES_DEFINITION_INDEXES.get(tabIndex)
-                                        .modifiableEquipmentType,
+                                        .type,
                             },
                         };
                     }
@@ -278,6 +278,7 @@ const TableWrapper = (props) => {
                     reorderedTableDefinitionIndexes.indexOf(b.id)
                 );
             }
+
             generatedTableColumns.sort(sortByIndex);
 
             if (isEditColumnVisible()) {
@@ -294,9 +295,10 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const { equipments, errorMessage } = useSpreadsheetEquipments(
-        TABLES_DEFINITION_INDEXES.get(tabIndex).type
-    );
+    const { equipments, errorMessage } = useSpreadsheetEquipments({
+        type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+        fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
+    });
 
     useEffect(() => {
         if (errorMessage) {
@@ -494,7 +496,7 @@ const TableWrapper = (props) => {
     const buildEditPromise = useCallback(
         (editingData, groovyCr) => {
             switch (editingData?.metadata.equipmentType) {
-                case EQUIPMENT_TYPES.LOAD.type:
+                case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -508,7 +510,7 @@ const TableWrapper = (props) => {
                         false,
                         undefined
                     );
-                case EQUIPMENT_TYPES.GENERATOR.type:
+                case EQUIPMENT_TYPES.GENERATOR:
                     return modifyGenerator(
                         props.studyUuid,
                         props.currentNode?.id,

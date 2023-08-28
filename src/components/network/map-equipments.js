@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { mapEquipmentsCreated } from '../../redux/actions';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
 } from '../../services/study/network';
-import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
 const elementIdIndexer = (map, element) => {
@@ -281,7 +281,7 @@ export default class MapEquipments {
         this.lines = this.updateEquipments(
             this.lines,
             lines,
-            EQUIPMENT_TYPES.LINE.type
+            EQUIPMENT_TYPES.LINE
         );
         this.completeLinesInfos(fullReload ? [] : lines);
     }
@@ -293,7 +293,7 @@ export default class MapEquipments {
         this.hvdcLines = this.updateEquipments(
             this.hvdcLines,
             hvdcLines,
-            EQUIPMENT_TYPES.HVDC_LINE.type
+            EQUIPMENT_TYPES.HVDC_LINE
         );
         this.completeHvdcLinesInfos(fullReload ? [] : hvdcLines);
     }
@@ -326,11 +326,11 @@ export default class MapEquipments {
 
     removeEquipment(equipmentType, equipmentId) {
         switch (equipmentType) {
-            case EQUIPMENT_TYPES.LINE.type:
+            case EQUIPMENT_TYPES.LINE:
                 this.lines = this.lines.filter((l) => l.id !== equipmentId);
                 this.linesById.delete(equipmentId);
                 break;
-            case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+            case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                 const substationId =
                     this.voltageLevelsById.get(equipmentId).substationId;
                 let voltageLevelsOfSubstation =
@@ -345,17 +345,14 @@ export default class MapEquipments {
                 //New reference on substations to trigger reload of NetworkExplorer and NetworkMap
                 this.substations = [...this.substations];
                 break;
-            case EQUIPMENT_TYPES.SUBSTATION.type:
+            case EQUIPMENT_TYPES.SUBSTATION:
                 this.substations = this.substations.filter(
                     (l) => l.id !== equipmentId
                 );
 
                 const substation = this.substationsById.get(equipmentId);
                 substation.voltageLevels.map((vl) =>
-                    this.removeEquipment(
-                        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
-                        vl.id
-                    )
+                    this.removeEquipment(EQUIPMENT_TYPES.VOLTAGE_LEVEL, vl.id)
                 );
                 this.completeSubstationsInfos([substation]);
                 break;
