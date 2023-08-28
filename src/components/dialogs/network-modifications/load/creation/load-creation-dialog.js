@@ -127,7 +127,7 @@ const LoadCreationDialog = ({
         currentNodeUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.LOAD.type,
+        elementType: EQUIPMENT_TYPES.LOAD,
     });
 
     useEffect(() => {
@@ -199,7 +199,7 @@ const LoadCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.LOAD.type}
+                    equipmentType={EQUIPMENT_TYPES.LOAD}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

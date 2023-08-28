@@ -9,9 +9,8 @@ import React from 'react';
 
 import Container from '@mui/material/Container';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import makeStyles from '@mui/styles/makeStyles';
 
-const useStyles = makeStyles(() => ({
+const styles = {
     error: {
         fontSize: '64px',
         width: '20%',
@@ -20,14 +19,13 @@ const useStyles = makeStyles(() => ({
     container: {
         marginTop: '70px',
     },
-}));
+};
 
 const PageNotFound = ({ message }) => {
-    const classes = useStyles();
     return (
-        <Container className={classes.container}>
+        <Container sx={styles.container}>
             <br />
-            <ErrorOutlineIcon className={classes.error} />
+            <ErrorOutlineIcon sx={styles.error} />
             <h1 style={{ textAlign: 'center' }}>{message}</h1>
         </Container>
     );
