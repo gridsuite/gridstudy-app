@@ -144,7 +144,8 @@ const LineCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
+    const { reset, setValue, watch } = formMethods;
+    watch();
 
     const fromSearchCopyToFormValues = (line) => {
         reset(

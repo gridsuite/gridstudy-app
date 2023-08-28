@@ -156,7 +156,8 @@ const TwoWindingsTransformerCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset } = formMethods;
+    const { reset, watch } = formMethods;
+    watch();
 
     const [tabIndex, setTabIndex] = useState(
         TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
