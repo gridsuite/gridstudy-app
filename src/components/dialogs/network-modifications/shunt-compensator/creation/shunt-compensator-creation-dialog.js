@@ -154,7 +154,7 @@ const ShuntCompensatorCreationDialog = ({
         currentNodeUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
+        elementType: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
     });
 
     useEffect(() => {
@@ -235,7 +235,7 @@ const ShuntCompensatorCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type}
+                    equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

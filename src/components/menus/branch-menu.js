@@ -75,9 +75,9 @@ const withBranchMenu =
 
         const getEquipmentTranslation = useCallback((equipmentType) => {
             switch (equipmentType) {
-                case EQUIPMENT_TYPES.LINE.type:
+                case EQUIPMENT_TYPES.LINE:
                     return 'Line';
-                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
+                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
                     return '2WTransformer';
                 default:
                     break;
@@ -86,10 +86,10 @@ const withBranchMenu =
 
         const getRealEquipmentType = useCallback((equipmentType) => {
             switch (equipmentType) {
-                case EQUIPMENT_TYPES.LINE.type:
-                    return EQUIPMENT_TYPES.LINE.type;
-                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
-                    return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
+                case EQUIPMENT_TYPES.LINE:
+                    return EQUIPMENT_TYPES.LINE;
+                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+                    return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
                 default:
                     break;
             }
@@ -196,7 +196,7 @@ const withBranchMenu =
                     handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                 />
-                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
+                {equipmentType === EQUIPMENT_TYPES.LINE && (
                     <MenuItem
                         sx={styles.menuItem}
                         onClick={() => handleLockout()}
@@ -242,7 +242,7 @@ const withBranchMenu =
                         }
                     />
                 </MenuItem>
-                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
+                {equipmentType === EQUIPMENT_TYPES.LINE && (
                     <MenuItem
                         sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
@@ -277,7 +277,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
+                {equipmentType === EQUIPMENT_TYPES.LINE && (
                     <MenuItem
                         sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
@@ -312,7 +312,7 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === EQUIPMENT_TYPES.LINE.type && (
+                {equipmentType === EQUIPMENT_TYPES.LINE && (
                     <MenuItem
                         sx={styles.menuItem}
                         onClick={() => handleSwitchOn()}
@@ -361,9 +361,8 @@ const withBranchMenu =
                         }
                     />
                 </MenuItem>
-                {(equipmentType ===
-                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type ||
-                    equipmentType === EQUIPMENT_TYPES.LINE.type) && (
+                {(equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ||
+                    equipmentType === EQUIPMENT_TYPES.LINE) && (
                     <MenuItem
                         sx={styles.menuItem}
                         onClick={() =>

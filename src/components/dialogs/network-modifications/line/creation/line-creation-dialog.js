@@ -260,7 +260,7 @@ const LineCreationDialog = ({
         currentNodeUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.LINE.type,
+        elementType: EQUIPMENT_TYPES.LINE,
     });
 
     useEffect(() => {
@@ -456,7 +456,7 @@ const LineCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.LINE.type}
+                    equipmentType={EQUIPMENT_TYPES.LINE}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

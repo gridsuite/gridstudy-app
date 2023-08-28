@@ -464,7 +464,7 @@ const TwoWindingsTransformerCreationDialog = ({
         currentNodeUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        elementType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
     });
 
     useEffect(() => {
@@ -524,7 +524,7 @@ const TwoWindingsTransformerCreationDialog = ({
         }
 
         if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
-            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
+            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
         }
 
         return undefined;
@@ -750,9 +750,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={
-                        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
-                    }
+                    equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

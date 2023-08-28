@@ -181,7 +181,7 @@ const VoltageLevelCreationDialog = ({
         currentNodeUuid,
         toFormValues: (data) => data,
         setFormValues: fromExternalDataToFormValues,
-        elementType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+        elementType: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
     });
 
     useEffect(() => {
@@ -260,7 +260,7 @@ const VoltageLevelCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
+                    equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />
