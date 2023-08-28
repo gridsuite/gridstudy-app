@@ -316,12 +316,11 @@ const RatioTapChangerPane = ({
                             columns={3}
                             direction="row"
                             sx={{
-                                display: 'flex',
                                 justifyContent: 'flex-end',
-                                alignItems: 'center',
+                                marginLeft: '10px',
                             }}
                         >
-                            {gridItem(regulatingTerminalField, 1.98)}
+                            {gridItem(regulatingTerminalField, 2)}
                         </Grid>
                     )}
 

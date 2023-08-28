@@ -130,16 +130,6 @@ const PhaseTapChangerPane = ({
         );
     }, [regulationModeWatch, previousValues]);
 
-    const regulationEnabled = useMemo(() => {
-        return (
-            phaseTapChangerEnabledWatch &&
-            (regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id ||
-                regulationMode ===
-                    PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id ||
-                regulationMode === PHASE_REGULATION_MODES.FIXED_TAP.id)
-        );
-    }, [phaseTapChangerEnabledWatch, regulationMode]);
-
     const regulationModeField = (
         <SelectInput
             name={`${id}.${REGULATION_MODE}`}
@@ -158,7 +148,7 @@ const PhaseTapChangerPane = ({
             name={`${id}.${REGULATION_TYPE}`}
             label={'RegulationTypeText'}
             options={Object.values(REGULATION_TYPES)}
-            disabled={!regulationEnabled}
+            disabled={!phaseTapChangerEnabledWatch}
             size={'small'}
             disableClearable={!isModification}
             previousValue={getRegulationTypeLabel(
@@ -173,7 +163,7 @@ const PhaseTapChangerPane = ({
             name={`${id}.${REGULATION_SIDE}`}
             label={'RegulatedSide'}
             options={Object.values(SIDE)}
-            disabled={!regulationEnabled}
+            disabled={!phaseTapChangerEnabledWatch}
             size={'small'}
             disableClearable={!isModification}
             previousValue={getTapSideLabel(
@@ -188,7 +178,7 @@ const PhaseTapChangerPane = ({
             name={`${id}.${CURRENT_LIMITER_REGULATING_VALUE}`}
             label="RegulatingValueCurrentLimiter"
             formProps={{
-                disabled: !regulationEnabled,
+                disabled: !phaseTapChangerEnabledWatch,
             }}
             adornment={AmpereAdornment}
             previousValue={getRegulatingPreviousValue(
@@ -204,7 +194,7 @@ const PhaseTapChangerPane = ({
             label="RegulatingValueActivePowerControl"
             adornment={ActivePowerAdornment}
             formProps={{
-                disabled: !regulationEnabled,
+                disabled: !phaseTapChangerEnabledWatch,
             }}
             previousValue={getRegulatingPreviousValue(
                 FLOW_SET_POINT_REGULATING_VALUE,
@@ -224,7 +214,7 @@ const PhaseTapChangerPane = ({
                     : AmpereAdornment
             }
             formProps={{
-                disabled: !regulationEnabled,
+                disabled: !phaseTapChangerEnabledWatch,
             }}
             previousValue={previousValues?.[PHASE_TAP_CHANGER]?.targetDeadband}
         />
@@ -233,7 +223,7 @@ const PhaseTapChangerPane = ({
     const regulatingTerminalField = (
         <RegulatingTerminalForm
             id={id}
-            disabled={!regulationEnabled}
+            disabled={!phaseTapChangerEnabledWatch}
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
             }
@@ -273,7 +263,7 @@ const PhaseTapChangerPane = ({
                             targetDeadbandField}
                     </Grid>
                 </Grid>
-                {regulationEnabled && (
+                {phaseTapChangerEnabledWatch && (
                     <Grid item container spacing={2}>
                         <Grid
                             item
@@ -297,21 +287,18 @@ const PhaseTapChangerPane = ({
                             gridItem(sideField, 4)}
                     </Grid>
                 )}
-                {regulationEnabled &&
+                {phaseTapChangerEnabledWatch &&
                     regulationType === REGULATION_TYPES.DISTANT.id && (
-                        <Grid item container spacing={2}>
-                            <Grid
-                                item
-                                xs={4}
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'flex-end',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <FormattedMessage id="DistantRegulatedTerminal" />
-                            </Grid>
-                            {gridItem(regulatingTerminalField, 8)}
+                        <Grid
+                            item
+                            container
+                            columns={3}
+                            sx={{
+                                justifyContent: 'flex-end',
+                                marginLeft: '10px',
+                            }}
+                        >
+                            {gridItem(regulatingTerminalField, 2)}
                         </Grid>
                     )}
                 <PhaseTapChangerPaneSteps
