@@ -11,7 +11,6 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
-import makeStyles from '@mui/styles/makeStyles';
 import MenuItem from '@mui/material/MenuItem';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid } from './custom-aggrid/custom-aggrid';
@@ -24,13 +23,14 @@ import {
 } from './utils/aggrid-rows-handler';
 import { ComputingType } from './computing-status/computing-type';
 import CustomTooltipValues from './custom-aggrid/custom-tooltip-values';
+import { Box } from '@mui/system';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
     CONTINGENCIES_FROM_CONSTRAINTS: 'contingencies-from-constraints',
 };
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     container: {
         display: 'flex',
         position: 'relative',
@@ -40,17 +40,16 @@ const useStyles = makeStyles((theme) => ({
         top: 0,
         left: 0,
     },
-    nmkResultSelect: {
+    nmkResultSelect: (theme) => ({
         position: 'absolute',
         right: theme.spacing(2),
-    },
-    button: {
+    }),
+    button: (theme) => ({
         color: theme.link.color,
-    },
-}));
+    }),
+};
 
 const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
-    const classes = useStyles();
     const theme = useTheme();
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -207,13 +206,13 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
             };
             if (props.value) {
                 return (
-                    <Button className={classes.button} onClick={onClick}>
+                    <Button sx={styles.button} onClick={onClick}>
                         {props.value}
                     </Button>
                 );
             }
         },
-        [onClickNmKConstraint, classes.button]
+        [onClickNmKConstraint]
     );
 
     const toolTipValueGetterValues = (params) => {
@@ -552,8 +551,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     function renderTabs() {
         return (
             <>
-                <div className={classes.container}>
-                    <div className={classes.tabs}>
+                <Box sx={styles.container}>
+                    <Box sx={styles.tabs}>
                         <Tabs
                             value={tabIndex}
                             onChange={(event, newTabIndex) =>
@@ -563,10 +562,10 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                             <Tab label="N" />
                             <Tab label="N-K" />
                         </Tabs>
-                    </div>
+                    </Box>
 
                     {tabIndex === 1 && (
-                        <div className={classes.nmkResultSelect}>
+                        <Box sx={styles.nmkResultSelect}>
                             <Select
                                 labelId="nmk-type-result-label"
                                 value={nmkTypeResult}
@@ -589,9 +588,9 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                                     <FormattedMessage id="ContingenciesFromConstraints" />
                                 </MenuItem>
                             </Select>
-                        </div>
+                        </Box>
                     )}
-                </div>
+                </Box>
                 <div style={{ flexGrow: 1 }}>
                     {tabIndex === 0 &&
                         renderTableN(result?.preContingencyResult)}
