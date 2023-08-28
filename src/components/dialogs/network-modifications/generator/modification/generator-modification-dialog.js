@@ -247,7 +247,7 @@ const GeneratorModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    EQUIPMENT_TYPES.GENERATOR.type,
+                    EQUIPMENT_TYPES.GENERATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -443,7 +443,7 @@ const GeneratorModificationDialog = ({
                         currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.GENERATOR.type}
+                        equipmentType={EQUIPMENT_TYPES.GENERATOR}
                         fillerHeight={17}
                     />
                 )}

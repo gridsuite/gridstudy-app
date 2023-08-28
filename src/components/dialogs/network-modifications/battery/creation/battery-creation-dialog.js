@@ -139,7 +139,7 @@ const BatteryCreationDialog = ({
         currentNodeUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.BATTERY.type,
+        elementType: EQUIPMENT_TYPES.BATTERY,
     });
 
     useEffect(() => {

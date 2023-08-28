@@ -123,7 +123,6 @@ const TableWrapper = (props) => {
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
     const [tabIndex, setTabIndex] = useState(0);
-    const [scrollToIndex, setScrollToIndex] = useState();
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
@@ -176,7 +175,7 @@ const TableWrapper = (props) => {
     const isEditColumnVisible = useCallback(() => {
         return (
             !props.disabled &&
-            TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType &&
+            TABLES_DEFINITION_INDEXES.get(tabIndex).type &&
             TABLES_DEFINITION_INDEXES.get(tabIndex)
                 .columns.filter((c) => c.editable)
                 .filter((c) => selectedColumnsNames.has(c.id)).length > 0
@@ -253,7 +252,7 @@ const TableWrapper = (props) => {
                                 setEditingData: setEditingData,
                                 equipmentType:
                                     TABLES_DEFINITION_INDEXES.get(tabIndex)
-                                        .modifiableEquipmentType,
+                                        .type,
                             },
                         };
                     }
@@ -279,6 +278,7 @@ const TableWrapper = (props) => {
                     reorderedTableDefinitionIndexes.indexOf(b.id)
                 );
             }
+
             generatedTableColumns.sort(sortByIndex);
 
             if (isEditColumnVisible()) {
@@ -295,9 +295,10 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const { equipments, errorMessage } = useSpreadsheetEquipments(
-        TABLES_DEFINITION_INDEXES.get(tabIndex).type
-    );
+    const { equipments, errorMessage } = useSpreadsheetEquipments({
+        type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+        fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
+    });
 
     useEffect(() => {
         if (errorMessage) {
@@ -329,7 +330,6 @@ const TableWrapper = (props) => {
     const handleSwitchTab = useCallback(
         (value) => {
             setManualTabSwitch(true);
-            setScrollToIndex();
             setTabIndex(value);
             cleanTableState();
         },
@@ -378,9 +378,8 @@ const TableWrapper = (props) => {
                 props.equipmentId
             );
             if (selectedRow) {
-                setScrollToIndex(selectedRow.rowIndex);
                 gridRef.current.api?.ensureNodeVisible(selectedRow, 'top');
-                gridRef.current.api?.redrawRows(selectedRow);
+                selectedRow.setSelected(true, true);
             }
         }
     }, [manualTabSwitch, props.equipmentId, props.equipmentType]);
@@ -392,15 +391,21 @@ const TableWrapper = (props) => {
             !manualTabSwitch
         ) {
             const definition = TABLES_DEFINITION_TYPES.get(props.equipmentType);
-            setTabIndex(definition.index); // select the right table type
-        } else if (manualTabSwitch) {
-            setScrollToIndex();
+            if (tabIndex === definition.index) {
+                // already in expected tab => explicit call to scroll to expected row
+                scrollToEquipmentIndex();
+            } else {
+                // select the right table type. This will trigger handleRowDataUpdated + scrollToEquipmentIndex
+                setTabIndex(definition.index);
+            }
         }
     }, [
         props.equipmentId,
         props.equipmentType,
         props.equipmentChanged,
         manualTabSwitch,
+        tabIndex,
+        scrollToEquipmentIndex,
     ]);
 
     const handleGridReady = useCallback(() => {
@@ -415,13 +420,6 @@ const TableWrapper = (props) => {
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
     }, [scrollToEquipmentIndex]);
-
-    const handleBodyScroll = useCallback(() => {
-        if (scrollToIndex) {
-            setScrollToIndex();
-            setManualTabSwitch(true);
-        }
-    }, [scrollToIndex]);
 
     useEffect(() => {
         const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
@@ -498,7 +496,7 @@ const TableWrapper = (props) => {
     const buildEditPromise = useCallback(
         (editingData, groovyCr) => {
             switch (editingData?.metadata.equipmentType) {
-                case EQUIPMENT_TYPES.LOAD.type:
+                case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -512,7 +510,7 @@ const TableWrapper = (props) => {
                         false,
                         undefined
                     );
-                case EQUIPMENT_TYPES.GENERATOR.type:
+                case EQUIPMENT_TYPES.GENERATOR:
                     return modifyGenerator(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -706,7 +704,6 @@ const TableWrapper = (props) => {
                         columnData={columnData}
                         topPinnedData={topPinnedData}
                         fetched={equipments || errorMessage}
-                        scrollToIndex={scrollToIndex}
                         visible={props.visible}
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
@@ -714,7 +711,6 @@ const TableWrapper = (props) => {
                         handleEditingStopped={handleEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
-                        handleBodyScroll={handleBodyScroll}
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }

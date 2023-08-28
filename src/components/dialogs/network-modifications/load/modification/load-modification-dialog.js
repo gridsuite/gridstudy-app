@@ -162,7 +162,7 @@ const LoadModificationDialog = ({
                         currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.LOAD.type}
+                        equipmentType={EQUIPMENT_TYPES.LOAD}
                         fillerHeight={2}
                     />
                 )}
