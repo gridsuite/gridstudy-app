@@ -9,10 +9,7 @@ import React, { FunctionComponent, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage } from 'react-intl/lib';
-import makeStyles from '@mui/styles/makeStyles';
-import { green, red } from '@mui/material/colors';
 import { LoadFlowTabProps } from './load-flow-result.type';
-import { Theme } from '@mui/material';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
 import { fetchLoadFlowResult } from '../../../services/study/loadflow';
@@ -22,22 +19,6 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
     nodeUuid,
 }) => {
-    const useStyles = makeStyles<Theme>((theme) => ({
-        cell: {
-            display: 'flex',
-            alignItems: 'center',
-            textAlign: 'center',
-            boxSizing: 'border-box',
-            flex: 1,
-            cursor: 'initial',
-        },
-        succeed: {
-            color: green[500],
-        },
-        fail: {
-            color: red[500],
-        },
-    }));
     const loadflowResultInvalidations = ['loadflowResult'];
 
     const [loadflowResult, isWaiting] = useNodeData(
@@ -46,41 +27,34 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         fetchLoadFlowResult,
         loadflowResultInvalidations
     );
-    const classes = useStyles();
     const [tabIndex, setTabIndex] = useState(0);
     return (
         <>
-            <div className={classes.container}>
-                <div className={classes.tabs}>
-                    <Tabs
-                        value={tabIndex}
-                        onChange={(event, newTabIndex) =>
-                            setTabIndex(newTabIndex)
+            <div>
+                <Tabs
+                    value={tabIndex}
+                    onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
+                >
+                    <Tab
+                        label={
+                            <FormattedMessage
+                                id={'LoadFlowResultsCurrentViolations'}
+                            />
                         }
-                    >
-                        <Tab
-                            label={
-                                <FormattedMessage
-                                    id={'LoadFlowResultsCurrentViolations'}
-                                />
-                            }
-                        />
-                        <Tab
-                            label={
-                                <FormattedMessage
-                                    id={'LoadFlowResultsVoltageViolations'}
-                                />
-                            }
-                        />
-                        <Tab
-                            label={
-                                <FormattedMessage
-                                    id={'LoadFlowResultsStatus'}
-                                />
-                            }
-                        />
-                    </Tabs>
-                </div>
+                    />
+                    <Tab
+                        label={
+                            <FormattedMessage
+                                id={'LoadFlowResultsVoltageViolations'}
+                            />
+                        }
+                    />
+                    <Tab
+                        label={
+                            <FormattedMessage id={'LoadFlowResultsStatus'} />
+                        }
+                    />
+                </Tabs>
             </div>
             <WaitingLoader message={'LoadingRemoteData'} loading={isWaiting}>
                 <LoadFlowResult

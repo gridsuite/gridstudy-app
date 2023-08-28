@@ -55,7 +55,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     nodeUuid,
     tabIndex,
 }) => {
-    const useStyles = makeStyles((theme) => ({
+    const useStyles = makeStyles(() => ({
         cell: {
             display: 'flex',
             alignItems: 'center',
@@ -79,8 +79,8 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         OverloadedEquipment[]
     >([]);
 
-    const limitReductionParam = useSelector(
-        (state: ReduxState) => state[PARAM_LIMIT_REDUCTION]
+    const limitReductionParam = useSelector((state: ReduxState) =>
+        Number(state[PARAM_LIMIT_REDUCTION])
     );
     const loadFlowStatus = useSelector(
         (state: ReduxState) => state.computingStatus[ComputingType.LOADFLOW]

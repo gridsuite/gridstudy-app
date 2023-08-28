@@ -17,7 +17,7 @@ export interface ReduxState {
     currentTreeNode: CurrentTreeNode;
     computingStatus: ComputingStatus;
     optionalServices: IOptionalService[];
-    limitReduction: number;
+    limitReduction: string;
 }
 
 export interface StudyUpdatedEventDataHeader {

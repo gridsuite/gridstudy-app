@@ -6,12 +6,6 @@
  */
 
 import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
-import {
-    ICellRendererParams,
-    ITooltipParams,
-    ValueFormatterParams,
-} from 'ag-grid-community';
-import { FunctionComponent } from 'react';
 import { UUID } from 'crypto';
 
 export interface LimitViolation {
@@ -86,19 +80,4 @@ export interface ResultConstraint extends ResultContingencie {
     constraintId?: string;
     acceptableDuration?: number;
     limitName?: string | undefined;
-}
-
-export interface SecurityAnalysisColumnDefinition {
-    headerName?: string;
-    field: string;
-    filter?: string;
-    valueFormatter?: (value: ValueFormatterParams) => any;
-    cellRenderer?: (
-        cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined;
-    tooltipComponent?: FunctionComponent<ITooltipParams>;
-    tooltipValueGetter?: (
-        params: ITooltipParams
-    ) => { title: null; values: string | undefined } | null;
-    hide?: boolean;
 }

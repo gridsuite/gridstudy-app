@@ -7,13 +7,16 @@
 
 import {
     LimitTypes,
-    LoadFlowColumnDefinition,
     OverloadedEquipment,
     OverloadedEquipmentFromBack,
 } from './load-flow-result.type';
 import { IntlShape } from 'react-intl';
-import { ICellRendererParams, ValueFormatterParams } from 'ag-grid-community';
-import { BRANCH_SIDE } from '../../network/constants';
+import {
+    CustomAggridColDef,
+    ICellRendererParams,
+    ValueFormatterParams,
+} from 'ag-grid-community';
+import { BranchSide } from '../../utils/constants';
 
 const UNDEFINED_ACCEPTABLE_DURATION = Math.pow(2, 31) - 1;
 const PERMANENT_LIMIT_NAME = 'permanent';
@@ -32,9 +35,9 @@ export const convertDuration = (duration: number): string => {
 };
 
 export const convertSide = (side: string, intl: IntlShape) => {
-    return side === BRANCH_SIDE.ONE
+    return side === BranchSide.ONE
         ? intl.formatMessage({ id: 'Side1' })
-        : side === BRANCH_SIDE.TWO
+        : side === BranchSide.TWO
         ? intl.formatMessage({ id: 'Side2' })
         : undefined;
 };
@@ -65,7 +68,7 @@ export const makeData = (
 
 export const loadFlowCurrentViolationsColumnsDefinition = (
     intl: IntlShape
-): LoadFlowColumnDefinition[] => {
+): CustomAggridColDef[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
@@ -119,7 +122,7 @@ export const formatLimitType = (limitType: string, intl: IntlShape) => {
 };
 export const loadFlowVoltageViolationsColumnsDefinition = (
     intl: IntlShape
-): LoadFlowColumnDefinition[] => {
+): CustomAggridColDef[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'VoltageLevel' }),
@@ -151,7 +154,7 @@ export const loadFlowResultColumnsDefinition = (
     intl: IntlShape,
     statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
-): LoadFlowColumnDefinition[] => {
+): CustomAggridColDef[] => {
     return [
         {
             headerName: intl.formatMessage({

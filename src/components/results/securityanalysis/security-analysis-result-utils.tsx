@@ -9,7 +9,6 @@ import {
     PostContingencyResult,
     ResultConstraint,
     ResultContingencie,
-    SecurityAnalysisColumnDefinition,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
@@ -17,6 +16,7 @@ import {
     IRowNode,
     ITooltipParams,
     ValueFormatterParams,
+    CustomAggridColDef,
 } from 'ag-grid-community';
 import { FunctionComponent } from 'react';
 
@@ -31,7 +31,7 @@ export const computeLoading = (
 };
 export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape
-): SecurityAnalysisColumnDefinition[] => {
+): CustomAggridColDef[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'Equipment' }),
@@ -115,7 +115,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     toolTipValueGetterValues: (
         params: ITooltipParams
     ) => { title: null; values: string | undefined } | null
-): SecurityAnalysisColumnDefinition[] => {
+): CustomAggridColDef[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
@@ -307,7 +307,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     toolTipValueGetterValues: (
         params: ITooltipParams
     ) => { title: null; values: string | undefined } | null
-): SecurityAnalysisColumnDefinition[] => {
+): CustomAggridColDef[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'Constraint' }),
