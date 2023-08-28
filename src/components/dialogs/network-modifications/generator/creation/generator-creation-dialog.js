@@ -207,7 +207,7 @@ const GeneratorCreationDialog = ({
         currentNodeUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.GENERATOR.type,
+        elementType: EQUIPMENT_TYPES.GENERATOR,
     });
 
     useEffect(() => {

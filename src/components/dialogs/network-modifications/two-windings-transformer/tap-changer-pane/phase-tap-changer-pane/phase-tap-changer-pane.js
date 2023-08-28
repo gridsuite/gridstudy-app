@@ -233,7 +233,7 @@ const PhaseTapChangerPane = ({
             id={id}
             disabled={!regulationEnabled}
             equipmentSectionTypeDefaultValue={
-                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
+                EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
             }
             studyUuid={studyUuid}
             currentNodeUuid={currentNode?.id}

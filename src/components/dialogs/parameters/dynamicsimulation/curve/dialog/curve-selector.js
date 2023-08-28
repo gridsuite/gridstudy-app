@@ -6,7 +6,7 @@
  */
 
 import { Grid, Typography, useTheme } from '@mui/material';
-import EquipmentFilter, { CURVE_EQUIPMENT_TYPES } from './equipment-filter';
+import EquipmentFilter, { CURVE_EQUIPMENTS } from './equipment-filter';
 import ModelFilter from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import React, {
@@ -23,12 +23,10 @@ const CurveSelector = forwardRef((props, ref) => {
     const equipmentFilterRef = useRef();
     const modelFilterRef = useRef();
 
-    const [equipmentType, setEquipmentType] = useState(
-        CURVE_EQUIPMENT_TYPES.GENERATOR
-    );
+    const [equipment, setEquipment] = useState(CURVE_EQUIPMENTS.GENERATOR);
 
-    const handleChangeEquipmentType = useCallback((newEquipmentType) => {
-        setEquipmentType(newEquipmentType);
+    const handleChangeEquipment = useCallback((newEquipment) => {
+        setEquipment(newEquipment);
     }, []);
 
     // expose some api for the component by using ref
@@ -68,8 +66,8 @@ const CurveSelector = forwardRef((props, ref) => {
                 </Typography>
                 <EquipmentFilter
                     ref={equipmentFilterRef}
-                    equipmentType={equipmentType}
-                    onChangeEquipmentType={handleChangeEquipmentType}
+                    equipment={equipment}
+                    onChangeEquipment={handleChangeEquipment}
                 />
             </Grid>
             <Grid
@@ -89,10 +87,7 @@ const CurveSelector = forwardRef((props, ref) => {
                         id={'DynamicSimulationCurveCurveFilter'}
                     ></FormattedMessage>
                 </Typography>
-                <ModelFilter
-                    ref={modelFilterRef}
-                    equipmentType={equipmentType}
-                />
+                <ModelFilter ref={modelFilterRef} equipment={equipment} />
             </Grid>
         </>
     );

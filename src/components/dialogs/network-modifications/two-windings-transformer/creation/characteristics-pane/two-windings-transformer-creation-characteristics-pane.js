@@ -6,9 +6,7 @@
  */
 
 import { Box, Grid } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import { FormattedMessage } from 'react-intl';
-import { gridItem } from '../../../../dialogUtils';
+import { gridItem, GridSection } from '../../../../dialogUtils';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import {
     CHARACTERISTICS,
@@ -23,13 +21,13 @@ import React, { useEffect, useState } from 'react';
 import LimitsPane from '../../../../limits/limits-pane';
 import { fetchVoltageLevelsListInfos } from '../../../../../../services/study/network';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     h3: {
         marginTop: 0,
         marginBottom: 0,
         paddingBottom: 1,
     },
-}));
+};
 
 const TwoWindingsTransformerCreationCharacteristicsPane = ({
     id = CHARACTERISTICS,
@@ -38,7 +36,6 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
     tabIndex,
 }) => {
     const currentNodeUuid = currentNode.id;
-    const classes = useStyles();
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
@@ -81,20 +78,8 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 }
                 p={1}
             >
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <h3 className={classes.h3}>
-                            <FormattedMessage id="Connectivity" />
-                        </h3>
-                    </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <h4 className={classes.h4}>
-                            <FormattedMessage id="Side1" />
-                        </h4>
-                    </Grid>
-                </Grid>
+                <GridSection title="Connectivity" customStyle={styles.h3} />
+                <GridSection title="Side1" heading="4" size="6" />
                 <Grid container spacing={2}>
                     <Grid item container direction="column">
                         <Grid container direction="column" spacing={2}>
@@ -102,13 +87,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <h4 className={classes.h4}>
-                            <FormattedMessage id="Side2" />
-                        </h4>
-                    </Grid>
-                </Grid>
+                <GridSection title="Side2" heading="4" size="6" />
                 <Grid container spacing={2}>
                     <Grid item container>
                         <Grid container direction="column" spacing={2}>
@@ -136,7 +115,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
             >
                 <RatioTapChangerPane
                     studyUuid={studyUuid}
-                    currentNodeUuid={currentNodeUuid}
+                    currentNode={currentNode}
                     voltageLevelOptions={voltageLevelOptions}
                 />
             </Box>
@@ -150,7 +129,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
             >
                 <PhaseTapChangerPane
                     studyUuid={studyUuid}
-                    currentNodeUuid={currentNodeUuid}
+                    currentNode={currentNode}
                     voltageLevelOptions={voltageLevelOptions}
                 />
             </Box>
