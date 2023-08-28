@@ -55,6 +55,7 @@
     "paramsChangingError": "Une erreur est survenue lors de la modification des paramètres",
     "paramsChangingDenied": "Les changements demandés ont été rejetés",
     "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
+    "optionalServicesRetrievingError": "Une erreur est survenue lors de la récupération de l'état des services optionnels",
     "defaultSensiResultsThresholdRetrievingError": "Une erreur est survenue lors de la récupération du seuil par défaut des résultats de l'analyse de sensibilité",
 
     "close": "Fermer",
@@ -321,7 +322,9 @@
     "LOW_VOLTAGE": "Tension basse",
 
     "HighVoltageLimit": "Limite tension haute",
+    "HighVoltageLimitkV": "Limite tension haute (kV)",
     "LowVoltageLimit": "Limite tension basse",
+    "LowVoltageLimitkV": "Limite tension basse (kV)",
 
     "descLfVoltageInitMode": "Mode d'initialisation du plan de tension",
     "descLfTransformerVoltageControlOn": "Simuler les régleurs en charge",
@@ -1081,5 +1084,7 @@
     "deleteNodeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud  \"{nodeName}\"?",
     "deleteSubTreeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud \"{nodeName}\" et son sous-arbre contenant {nodesNumber} nœuds ?",
 
+    "IpMin": "ICC min (kA)",
+    "IpMax": "ICC max (kA)",
     "StartupCost": "Coût de démarrage"
 }
