@@ -1465,7 +1465,7 @@ export function deleteEquipment(
 
 export function fetchNetworkModificationsToRestore(studyUuid, nodeUuid) {
     console.info(
-        'Fetching restored network modifications for nodeUuid : ',
+        'Fetching network modifications to restore for nodeUuid : ',
         nodeUuid
     );
     const ModificationsToRestoreGetUrl =
