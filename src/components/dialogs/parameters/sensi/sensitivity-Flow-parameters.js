@@ -13,9 +13,10 @@ import {
     FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD,
     FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
 } from '../../../utils/field-constants';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
 import { FormattedMessage } from 'react-intl';
 import { useStyles } from '../parameters';
+import { FloatInput } from '@gridsuite/commons-ui';
+
 const SensitivityAnalysisFields = () => {
     const classes = useStyles();
 

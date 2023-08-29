@@ -58,7 +58,7 @@ export const EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES = [
 ];
 export const HVDC_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.HVDC_LINE.type];
 
-const SensiParametersSelector = (props) => {
+const SensiParametersSelector = () => {
     const classes = useStyles();
     const TAB_VALUES = {
         SensitivityBranches: 0,
@@ -68,7 +68,7 @@ const SensiParametersSelector = (props) => {
         SensiHVDC: 2,
         SensiPST: 3,
     };
-    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
     const [subTabValue, setSubTabValue] = useState(
         TAB_VALUES.SensiInjectionsSet
@@ -92,38 +92,6 @@ const SensiParametersSelector = (props) => {
         },
         { label: 'SensitivityNodes' },
     ];
-    const onValidationError = (errors) => {
-        let tabsInError = [];
-        if (errors?.[TAB_VALUES.SensitivityBranches] !== undefined) {
-            tabsInError.push(TAB_VALUES.SensitivityBranches);
-        }
-        if (errors?.[TAB_VALUES.SensitivityNodes]) {
-            tabsInError.push(TAB_VALUES.SensitivityNodes);
-        }
-        setTabIndexesWithError(tabsInError);
-    };
-    const handleClose = () => {
-        props.onClose();
-        onValidationError();
-    };
-
-    const getTabIndicatorClass = useCallback(
-        (index) =>
-            tabIndexesWithError.includes(index)
-                ? {
-                      indicator: classes.tabWithErrorIndicator,
-                  }
-                : {},
-        [tabIndexesWithError, classes]
-    );
-
-    const getTabClass = useCallback(
-        (index) =>
-            clsx({
-                [classes.tabWithError]: tabIndexesWithError.includes(index),
-            }),
-        [tabIndexesWithError, classes]
-    );
 
     return (
         <>
@@ -132,14 +100,14 @@ const SensiParametersSelector = (props) => {
                     value={tabValue}
                     variant="scrollable"
                     onChange={handleTabChange}
-                    classes={getTabIndicatorClass(tabValue)}
+                    //classes={getTabIndicatorClass(tabValue)}
                 >
                     {tabInfo.map((tab, index) => (
                         <Tab
                             key={index}
                             label={<FormattedMessage id={tab.label} />}
                             value={index}
-                            className={getTabClass(index)}
+                            //className={getTabClass(index)}
                         />
                     ))}
                 </Tabs>
@@ -153,7 +121,7 @@ const SensiParametersSelector = (props) => {
                                     value={subTabValue}
                                     variant="scrollable"
                                     onChange={handleSubTabChange}
-                                    classes={getTabIndicatorClass(subTabValue)}
+                                    //classes={getTabIndicatorClass(subTabValue)}
                                 >
                                     {tab.subTabs.map((subTab, subIndex) => (
                                         <Tab

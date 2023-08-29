@@ -5,14 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { Grid, Button, DialogActions } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useStyles, CloseButton, DropDown } from '../parameters';
-
-import SubmitButton from '../../commons/submitButton';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -212,7 +210,7 @@ export const SensitivityAnalysisParameters = ({
                 [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]:
                     parameters.flowVoltageSensitivityValueThreshold,
                 [PARAMETER_SENSI_INJECTIONS_SET]:
-                    parameters.sensitivityInjectionsSet.map(
+                    parameters.sensitivityInjectionsSet?.map(
                         (sensiInjectionsSet) => {
                             return {
                                 [MONITORED_BRANCHES]: sensiInjectionsSet[
@@ -243,10 +241,10 @@ export const SensitivityAnalysisParameters = ({
                                 }),
                             };
                         }
-                    ),
+                    ) ?? [],
 
                 [PARAMETER_SENSI_INJECTION]:
-                    parameters.sensitivityInjection.map((sensiInjections) => {
+                    parameters.sensitivityInjection?.map((sensiInjections) => {
                         return {
                             [MONITORED_BRANCHES]: sensiInjections[
                                 MONITORED_BRANCHES
@@ -275,9 +273,9 @@ export const SensitivityAnalysisParameters = ({
                                 }
                             ),
                         };
-                    }),
-                [PARAMETER_SENSI_HVDC]: parameters.sensitivityHVDC.map(
-                    (sensiInjectionsSet) => {
+                    }) ?? [],
+                [PARAMETER_SENSI_HVDC]:
+                    parameters.sensitivityHVDC?.map((sensiInjectionsSet) => {
                         return {
                             [MONITORED_BRANCHES]: sensiInjectionsSet[
                                 MONITORED_BRANCHES
@@ -306,10 +304,9 @@ export const SensitivityAnalysisParameters = ({
                                 };
                             }),
                         };
-                    }
-                ),
-                [PARAMETER_SENSI_PST]: parameters.sensitivityPST.map(
-                    (sensiInjectionsSet) => {
+                    }) ?? [],
+                [PARAMETER_SENSI_PST]:
+                    parameters.sensitivityPST?.map((sensiInjectionsSet) => {
                         return {
                             [MONITORED_BRANCHES]: sensiInjectionsSet[
                                 MONITORED_BRANCHES
@@ -338,10 +335,9 @@ export const SensitivityAnalysisParameters = ({
                                 };
                             }),
                         };
-                    }
-                ),
-                [PARAMETER_SENSI_NODES]: parameters.sensitivityNodes.map(
-                    (sensiInjectionsSet) => {
+                    }) ?? [],
+                [PARAMETER_SENSI_NODES]:
+                    parameters.sensitivityNodes?.map((sensiInjectionsSet) => {
                         return {
                             [SUPERVISED_VOLTAGE_LEVELS]: sensiInjectionsSet[
                                 SUPERVISED_VOLTAGE_LEVELS
@@ -369,8 +365,7 @@ export const SensitivityAnalysisParameters = ({
                                 };
                             }),
                         };
-                    }
-                ),
+                    }) ?? [],
             });
         },
         [reset]

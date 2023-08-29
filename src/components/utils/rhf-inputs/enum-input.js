@@ -55,7 +55,7 @@ const EnumInput = ({ options, name, label, size, labelValues }) => {
 EnumInput.propTypes = {
     options: PropTypes.array.isRequired,
     name: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
+    label: PropTypes.string,
     size: PropTypes.string,
 };
 
