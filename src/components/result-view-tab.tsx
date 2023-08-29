@@ -14,7 +14,7 @@ import { useIntl } from 'react-intl';
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
-import AlertInvalidNode from './utils/alert-invalid-node';
+import AlertCustomMessageNode from './utils/alert-custom-message-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
@@ -290,7 +290,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 >
                     {services.map((service) => renderTab(service))}
                 </Tabs>
-                {disabled && <AlertInvalidNode />}
+                {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
             </div>
             {services.map((service, index) =>
                 renderTabPanelLazy(service, index)
