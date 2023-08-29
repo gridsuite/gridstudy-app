@@ -54,30 +54,28 @@ const PARAMETER_SENSI_PSTS = 'sensiPSTs';
 const PARAMETER_SENSI_NODES = 'sensiNodes';
 
 export const MONITORED_BRANCHES_EQUIPMENT_TYPES = [
-    EQUIPMENT_TYPES.LINE.type,
-    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+    EQUIPMENT_TYPES.LINE,
+    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
 ];
 
-export const PSTS_EQUIPMENT_TYPES = [
-    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
-];
+export const PSTS_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORME];
 
 export const MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES = [
-    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
 ];
 
 export const EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES = [
-    EQUIPMENT_TYPES.GENERATOR.type,
-    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
-    EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
-    EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
-    EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
+    EQUIPMENT_TYPES.GENERATOR,
+    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+    EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
+    EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
+    EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
 ];
 
-export const HVDC_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.HVDC_LINE.type];
+export const HVDC_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.HVDC_LINE];
 export const INJECTIONS_EQUIPMENT_TYPES = [
-    EQUIPMENT_TYPES.GENERATOR.type,
-    EQUIPMENT_TYPES.LOAD.type,
+    EQUIPMENT_TYPES.GENERATOR,
+    EQUIPMENT_TYPES.LOAD,
 ];
 
 export const useStyles = makeStyles((theme) => ({
@@ -266,7 +264,7 @@ const SensiParametersSelector = (props) => {
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} direction="column" item xs={12}>
-                        <GridSection title="SensitivityBranches" heading="3" />
+                        <GridSection title="SensitivityBranches" />
                         <GridSection
                             title="SensitivityInjectionsSet"
                             heading="4"
@@ -282,7 +280,7 @@ const SensiParametersSelector = (props) => {
                         <GridSection title="SensitivityTD" heading="4" />
                         {SensiPSTsField}
 
-                        <GridSection title="SensitivityNodes" heading="3" />
+                        <GridSection title="SensitivityNodes" />
                         {SensiNodesField}
                     </Grid>
                 </DialogContent>

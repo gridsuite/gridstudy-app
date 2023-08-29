@@ -34,7 +34,7 @@ const EquipmentSelectionParameters = () => {
                 <Grid item xs={4} className={classes.controlItem}>
                     <DirectoryItemsInput
                         name={FIXED_GENERATORS}
-                        equipmentTypes={[EQUIPMENT_TYPES.GENERATOR.type]}
+                        equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
                         elementType={elementType.FILTER}
                         titleId={'FixedGenerators'}
                         hideErrorMessage={true}
@@ -53,7 +53,7 @@ const EquipmentSelectionParameters = () => {
                     <DirectoryItemsInput
                         name={VARIABLE_TRANSFORMERS}
                         equipmentTypes={[
-                            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+                            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
                         ]}
                         elementType={elementType.FILTER}
                         titleId={'VariableTransformers'}
@@ -74,9 +74,7 @@ const EquipmentSelectionParameters = () => {
                 <Grid item xs={4} className={classes.controlItem}>
                     <DirectoryItemsInput
                         name={VARIABLE_SHUNT_COMPENSATORS}
-                        equipmentTypes={[
-                            EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
-                        ]}
+                        equipmentTypes={[EQUIPMENT_TYPES.SHUNT_COMPENSATOR]}
                         elementType={elementType.FILTER}
                         titleId={'VariableShuntCompensators'}
                         hideErrorMessage={true}
