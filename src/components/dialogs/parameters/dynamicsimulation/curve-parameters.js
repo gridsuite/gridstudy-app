@@ -8,8 +8,8 @@
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-import { Grid, Typography } from '@mui/material';
-import { makeStyles, useTheme } from '@mui/styles';
+import { Grid, Typography, useTheme } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
 import { AgGridReact } from 'ag-grid-react';

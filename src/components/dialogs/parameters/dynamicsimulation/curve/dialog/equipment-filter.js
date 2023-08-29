@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, MenuItem, Select, Typography } from '@mui/material';
+import { Grid, MenuItem, Select, Typography, useTheme } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, {
     forwardRef,
@@ -18,16 +18,23 @@ import React, {
 } from 'react';
 import clsx from 'clsx';
 import { AgGridReact } from 'ag-grid-react';
-import { makeStyles, useTheme } from '@mui/styles';
+import { makeStyles } from '@mui/styles';
 import CountrySelect from '../country-select';
 import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 
-export const CURVE_EQUIPMENT_TYPES = {
-    [EQUIPMENT_TYPES.GENERATOR.type]: EQUIPMENT_TYPES.GENERATOR,
-    [EQUIPMENT_TYPES.LOAD.type]: EQUIPMENT_TYPES.LOAD,
+export const CURVE_EQUIPMENTS = {
+    [EQUIPMENT_TYPES.GENERATOR]: {
+        type: EQUIPMENT_TYPES.GENERATOR,
+        fetchers: EQUIPMENT_FETCHERS.GENERATOR,
+    },
+    [EQUIPMENT_TYPES.LOAD]: {
+        type: EQUIPMENT_TYPES.LOAD,
+        fetchers: EQUIPMENT_FETCHERS.LOAD,
+    },
 };
 
 const TENSION_UNIT = 'kV';
@@ -40,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EquipmentFilter = forwardRef(
-    ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
+    ({ equipment: initialEquipment, onChangeEquipment }, ref) => {
         const { snackError } = useSnackMessage();
         const [gridReady, setGridReady] = useState(false);
         const [substationsFiltersReady, setSubstationsFiltersReady] =
@@ -57,16 +64,15 @@ const EquipmentFilter = forwardRef(
         const equipmentsRef = useRef();
 
         // --- Equipment types --- //
-        const [equipmentType, setEquipmentType] =
-            useState(initialEquipmentType);
+        const [equipment, setEquipment] = useState(initialEquipment);
 
         const handleEquipmentTypeChange = useCallback(
             (event) => {
-                const selectedEquipmentType = event.target.value;
-                setEquipmentType(selectedEquipmentType);
-                onChangeEquipmentType(selectedEquipmentType);
+                const selectedEquipment = event.target.value;
+                setEquipment(selectedEquipment);
+                onChangeEquipment(selectedEquipment);
             },
-            [onChangeEquipmentType]
+            [onChangeEquipment]
         );
 
         // --- Voltage levels (id metadata), tension (nominalV metadata) => lookup in Voltage levels --- //
@@ -97,7 +103,7 @@ const EquipmentFilter = forwardRef(
         // load VoltageLevels from backend
         useEffect(() => {
             Promise.all(
-                EQUIPMENT_TYPES.VOLTAGE_LEVEL.fetchers.map((fetchPromise) =>
+                EQUIPMENT_FETCHERS.VOLTAGE_LEVEL.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -148,7 +154,7 @@ const EquipmentFilter = forwardRef(
         // load substation from backend to infer countries
         useEffect(() => {
             Promise.all(
-                EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
+                EQUIPMENT_FETCHERS.SUBSTATION.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -181,7 +187,7 @@ const EquipmentFilter = forwardRef(
         const loadFilteredEquipments = useCallback(() => {
             // get all substations which include also voltage levels
             return Promise.all(
-                EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
+                EQUIPMENT_FETCHERS.SUBSTATION.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -210,7 +216,7 @@ const EquipmentFilter = forwardRef(
 
                     // get equipments by type and substation ids
                     return Promise.all(
-                        equipmentType.fetchers.map((fetchPromise) =>
+                        equipment.fetchers.map((fetchPromise) =>
                             fetchPromise(
                                 studyUuid,
                                 currentNode.id,
@@ -269,7 +275,7 @@ const EquipmentFilter = forwardRef(
             selectedCountries,
             selectedTensionIds,
             selectedVoltageLevelIds,
-            equipmentType.fetchers,
+            equipment.fetchers,
             snackError,
         ]);
 
@@ -356,12 +362,12 @@ const EquipmentFilter = forwardRef(
                     <Grid item xs={6}>
                         <Select
                             labelId={'DynamicSimulationCurveEquipementType'}
-                            value={equipmentType}
+                            value={equipment}
                             onChange={handleEquipmentTypeChange}
                             size="small"
                             sx={{ width: '100%' }}
                         >
-                            {Object.entries(CURVE_EQUIPMENT_TYPES).map(
+                            {Object.entries(CURVE_EQUIPMENTS).map(
                                 ([key, value]) => (
                                     <MenuItem key={key} value={value}>
                                         {intl.formatMessage({ id: value.type })}

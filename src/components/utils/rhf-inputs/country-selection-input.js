@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import AutocompleteInput from './autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { LocalizedCountries } from '../localized-countries-hook';
 
 const CountrySelectionInput = ({ name, label, formProps, ...props }) => {

@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuid } from './index';
+import { PREFIX_STUDY_QUERIES, getStudyUrlWithNodeUuid } from './index';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,
 } from '../../components/utils/equipment-types';
 import {
+    backendFetch,
     backendFetchJson,
     getRequestParamFromList,
     getUrlWithToken,
@@ -210,7 +211,7 @@ export function fetchSubstationsMapInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.SUBSTATION.type,
+        EQUIPMENT_TYPES.SUBSTATION,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
@@ -226,7 +227,7 @@ export function fetchLinesMapInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.LINE.type,
+        EQUIPMENT_TYPES.LINE,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
@@ -242,7 +243,7 @@ export function fetchHvdcLinesMapInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.HVDC_LINE.type,
+        EQUIPMENT_TYPES.HVDC_LINE,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode
     );
@@ -253,7 +254,7 @@ export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.SUBSTATION.type,
+        EQUIPMENT_TYPES.SUBSTATION,
         EQUIPMENT_INFOS_TYPES.TAB.type,
         true
     );
@@ -264,7 +265,7 @@ export function fetchLines(studyUuid, currentNodeUuid, substationsIds) {
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.LINE.type,
+        EQUIPMENT_TYPES.LINE,
         EQUIPMENT_INFOS_TYPES.TAB.type,
         true
     );
@@ -275,7 +276,7 @@ export function fetchVoltageLevels(studyUuid, currentNodeUuid, substationsIds) {
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL,
         EQUIPMENT_INFOS_TYPES.TAB.type,
         true
     );
@@ -290,7 +291,7 @@ export function fetchVoltageLevelsListInfos(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL,
         EQUIPMENT_INFOS_TYPES.LIST.type,
         true
     );
@@ -305,7 +306,7 @@ export function fetchTwoWindingsTransformers(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
         EQUIPMENT_INFOS_TYPES.TAB.type,
         false
     );
@@ -320,7 +321,7 @@ export function fetchThreeWindingsTransformers(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
+        EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
         EQUIPMENT_INFOS_TYPES.TAB.type,
         false
     );
@@ -331,7 +332,7 @@ export function fetchGenerators(studyUuid, currentNodeUuid, substationsIds) {
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.GENERATOR.type,
+        EQUIPMENT_TYPES.GENERATOR,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
@@ -341,7 +342,7 @@ export function fetchLoads(studyUuid, currentNodeUuid, substationsIds) {
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.LOAD.type,
+        EQUIPMENT_TYPES.LOAD,
         EQUIPMENT_INFOS_TYPES.TAB.type,
         true
     );
@@ -352,7 +353,7 @@ export function fetchDanglingLines(studyUuid, currentNodeUuid, substationsIds) {
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.DANGLING_LINE.type,
+        EQUIPMENT_TYPES.DANGLING_LINE,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
@@ -362,7 +363,7 @@ export function fetchBatteries(studyUuid, currentNodeUuid, substationsIds) {
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.BATTERY.type,
+        EQUIPMENT_TYPES.BATTERY,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
@@ -372,7 +373,7 @@ export function fetchHvdcLines(studyUuid, currentNodeUuid, substationsIds) {
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.HVDC_LINE.type,
+        EQUIPMENT_TYPES.HVDC_LINE,
         EQUIPMENT_INFOS_TYPES.TAB.type,
         true
     );
@@ -387,7 +388,7 @@ export function fetchLccConverterStations(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
+        EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
@@ -401,7 +402,7 @@ export function fetchVscConverterStations(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+        EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
@@ -415,7 +416,7 @@ export function fetchShuntCompensators(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
+        EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
@@ -429,10 +430,16 @@ export function fetchStaticVarCompensators(
         studyUuid,
         currentNodeUuid,
         substationsIds,
-        EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
+        EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
+
+export const fetchNetworkExistence = (studyUuid) => {
+    const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network`;
+
+    return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
+};
 
 /* export-network */
 export function getExportUrl(studyUuid, nodeUuid, exportFormat) {

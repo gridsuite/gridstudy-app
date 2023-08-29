@@ -285,7 +285,7 @@ const LineModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    EQUIPMENT_TYPES.LINE.type,
+                    EQUIPMENT_TYPES.LINE,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -434,7 +434,7 @@ const LineModificationDialog = ({
                         currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.LINE.type}
+                        equipmentType={EQUIPMENT_TYPES.LINE}
                     />
                 )}
                 {selectedId != null && (

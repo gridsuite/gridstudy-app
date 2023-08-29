@@ -6,7 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
-import CheckboxInput from 'components/utils/rhf-inputs/booleans/checkbox-input';
+import { CheckboxInput } from '@gridsuite/commons-ui';
 import ReadOnlyInput from 'components/utils/rhf-inputs/read-only/read-only-input';
 import {
     MCS_SELECTED,
@@ -89,10 +89,7 @@ const HvdcLccDeletionSpecificForm = () => {
             paddingTop={2}
             paddingLeft={1}
         >
-            <GridSection
-                title="LCCConverterStationShuntCompensators"
-                heading="3"
-            />
+            <GridSection title="LCCConverterStationShuntCompensators" />
             <Grid container spacing={1}>
                 {gridItem(mscOnsideOne)}
                 {gridItem(mscOnsideTwo)}

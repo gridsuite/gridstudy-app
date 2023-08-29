@@ -12,26 +12,24 @@ import { Box, IconButton } from '@mui/material';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import DroppableTabs from './common/draggable-tab/droppable-tabs';
 import DraggableTab from './common/draggable-tab/draggable-tab';
 import Visibility from './common/visibility';
 import TooltipIconButton from './common/tooltip-icon-button';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     root: {
         height: '100%',
     },
-    addButton: {
+    addButton: (theme) => ({
         borderRadius: '50%',
         marginRight: theme.spacing(10),
         color: theme.palette.primary.main,
-    },
-}));
+    }),
+};
 
 const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
     const { timeseriesMetadatas } = result;
-    const classes = useStyles();
 
     // tab id is auto increase and reset to zero when there is any tab
     const [tabIncId, setTabIncId] = useState(1);
@@ -88,7 +86,7 @@ const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
     };
 
     return (
-        <Box className={classes.root}>
+        <Box sx={styles.root}>
             <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                 {/* tab headers */}
                 <DroppableTabs
@@ -129,7 +127,7 @@ const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
                 />
                 <TooltipIconButton
                     toolTip={'Add a tab'}
-                    className={classes.addButton}
+                    sx={styles.addButton}
                     onClick={handleAddNewTab}
                 >
                     <AddIcon />
