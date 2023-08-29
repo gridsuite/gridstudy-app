@@ -8,6 +8,7 @@
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
+import { IOptionalService } from '../components/utils/optional-services';
 
 export interface ReduxState {
     studyUpdated: StudyUpdated;
@@ -15,6 +16,7 @@ export interface ReduxState {
     studyUuid: UUID;
     currentTreeNode: CurrentTreeNode;
     computingStatus: ComputingStatus;
+    optionalServices: IOptionalService[];
 }
 
 export interface StudyUpdatedEventDataHeader {

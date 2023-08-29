@@ -51,7 +51,7 @@ const VoltageLimitsParameters = () => {
                 initialValue: [],
                 editable: true,
                 directoryItems: true,
-                equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL.type],
+                equipmentTypes: [EQUIPMENT_TYPES.VOLTAGE_LEVEL],
                 elementType: elementType.FILTER,
                 titleId: 'FiltersListsSelection',
                 extra: VoltageLevelFilterTooltip,

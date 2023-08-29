@@ -57,6 +57,11 @@ import {
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
+import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../../utils/optional-services';
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
     const classes = useDiagramStyles();
@@ -81,6 +86,9 @@ function SingleLineDiagramContent(props) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const shortCircuitAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.ShortCircuit
+    );
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -284,14 +292,14 @@ function SingleLineDiagramContent(props) {
 
     const handleDeleteEquipment = useCallback(
         (equipmentType, equipmentId) => {
-            if (equipmentType !== EQUIPMENT_TYPES.HVDC_LINE.type) {
+            if (equipmentType !== EQUIPMENT_TYPES.HVDC_LINE) {
                 removeEquipment(equipmentType, equipmentId);
             } else {
                 // need a query to know the HVDC converters type (LCC vs VSC)
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode?.id,
-                    EQUIPMENT_TYPES.HVDC_LINE.type,
+                    EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.MAP.type,
                     equipmentId,
                     false
@@ -301,7 +309,7 @@ function SingleLineDiagramContent(props) {
                             // only hvdc line with LCC requires a Dialog (to select MCS)
                             handleOpenDeletionDialog(
                                 equipmentId,
-                                EQUIPMENT_TYPES.HVDC_LINE.type
+                                EQUIPMENT_TYPES.HVDC_LINE
                             );
                         } else {
                             removeEquipment(equipmentType, equipmentId);
@@ -327,9 +335,9 @@ function SingleLineDiagramContent(props) {
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
-            (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE.type ||
+            (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE ||
                 equipmentMenu.equipmentType ===
-                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type) && (
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
                 <MenuBranch
                     equipment={{ id: equipmentMenu.equipmentId }}
                     equipmentType={equipmentMenu.equipmentType}
@@ -383,23 +391,23 @@ function SingleLineDiagramContent(props) {
     const displayModificationDialog = () => {
         let CurrentModificationDialog;
         switch (equipmentToModify.equipmentType) {
-            case EQUIPMENT_TYPES.BATTERY.type:
+            case EQUIPMENT_TYPES.BATTERY:
                 CurrentModificationDialog = BatteryModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.GENERATOR.type:
+            case EQUIPMENT_TYPES.GENERATOR:
                 CurrentModificationDialog = GeneratorModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.LOAD.type:
+            case EQUIPMENT_TYPES.LOAD:
                 CurrentModificationDialog = LoadModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
+            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
                 CurrentModificationDialog =
                     TwoWindingsTransformerModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.LINE.type:
+            case EQUIPMENT_TYPES.LINE:
                 CurrentModificationDialog = LineModificationDialog;
                 break;
-            case EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type:
+            case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
                 CurrentModificationDialog = ShuntCompensatorModificationDialog;
                 break;
             default:
@@ -419,7 +427,7 @@ function SingleLineDiagramContent(props) {
 
     const displayDeletionDialog = () => {
         switch (equipmentToDelete.equipmentType) {
-            case EQUIPMENT_TYPES.HVDC_LINE.type:
+            case EQUIPMENT_TYPES.HVDC_LINE:
                 return (
                     <EquipmentDeletionDialog
                         open={true}
@@ -477,7 +485,9 @@ function SingleLineDiagramContent(props) {
                 isReadyForInteraction ? showEquipmentMenu : null,
 
                 // callback on the buses
-                isReadyForInteraction && enableDeveloperMode
+                isReadyForInteraction &&
+                enableDeveloperMode &&
+                shortCircuitAvailability === OptionalServicesStatus.Up
                     ? showBusMenu
                     : null,
 
@@ -531,6 +541,7 @@ function SingleLineDiagramContent(props) {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
+        shortCircuitAvailability,
         props.svgUrl,
         props.svg,
         props.svgMetadata,
@@ -592,32 +603,29 @@ function SingleLineDiagramContent(props) {
             {shouldDisplayTooltip && displayTooltip()}
             {displayBranchMenu()}
             {displayBusMenu()}
-            {displayMenu(EQUIPMENT_TYPES.LOAD.type, 'load-menus')}
-            {displayMenu(EQUIPMENT_TYPES.BATTERY.type, 'battery-menus')}
+            {displayMenu(EQUIPMENT_TYPES.LOAD, 'load-menus')}
+            {displayMenu(EQUIPMENT_TYPES.BATTERY, 'battery-menus')}
+            {displayMenu(EQUIPMENT_TYPES.DANGLING_LINE, 'dangling-line-menus')}
+            {displayMenu(EQUIPMENT_TYPES.GENERATOR, 'generator-menus')}
             {displayMenu(
-                EQUIPMENT_TYPES.DANGLING_LINE.type,
-                'dangling-line-menus'
-            )}
-            {displayMenu(EQUIPMENT_TYPES.GENERATOR.type, 'generator-menus')}
-            {displayMenu(
-                EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR.type,
+                EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
                 'static-var-compensator-menus'
             )}
             {displayMenu(
-                EQUIPMENT_TYPES.SHUNT_COMPENSATOR.type,
+                EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                 'shunt-compensator-menus'
             )}
             {displayMenu(
-                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
+                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
                 'three-windings-transformer-menus'
             )}
-            {displayMenu(EQUIPMENT_TYPES.HVDC_LINE.type, 'hvdc-line-menus')}
+            {displayMenu(EQUIPMENT_TYPES.HVDC_LINE, 'hvdc-line-menus')}
             {displayMenu(
-                EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
+                EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
                 'lcc-converter-station-menus'
             )}
             {displayMenu(
-                EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+                EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
                 'vsc-converter-station-menus'
             )}
             {equipmentToModify && displayModificationDialog()}

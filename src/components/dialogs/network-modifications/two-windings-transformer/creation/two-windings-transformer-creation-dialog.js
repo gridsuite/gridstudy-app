@@ -417,7 +417,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 ...getPhaseTapChangerFormData({
                     enabled:
                         twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
-                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE],
+                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATING]
+                        ? twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
+                        : PHASE_REGULATION_MODES.FIXED_TAP.id,
                     regulationType: getRegulationTypeForCopy(
                         twt,
                         twt?.[PHASE_TAP_CHANGER]
@@ -463,7 +465,7 @@ const TwoWindingsTransformerCreationDialog = ({
         currentNodeUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        elementType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
     });
 
     useEffect(() => {
@@ -523,7 +525,7 @@ const TwoWindingsTransformerCreationDialog = ({
         }
 
         if (tapChangerValue?.[REGULATION_TYPE] === REGULATION_TYPES.LOCAL.id) {
-            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type;
+            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
         }
 
         return undefined;
@@ -586,7 +588,6 @@ const TwoWindingsTransformerCreationDialog = ({
             characteristics[MAGNETIZING_SUSCEPTANCE] = microUnitToUnit(
                 characteristics[MAGNETIZING_SUSCEPTANCE]
             );
-
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
@@ -609,7 +610,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...ratioTapChangerFormValues,
                 };
             }
-
             let phaseTap = undefined;
             if (enablePhaseTapChanger) {
                 const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
@@ -749,9 +749,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={
-                        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type
-                    }
+                    equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />
