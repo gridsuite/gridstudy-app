@@ -56,17 +56,17 @@ function MultiCheckbox({
     });
 
     const allRowSelected = useMemo(
-        () => arrayToWatch && arrayToWatch.every((row) => row[SELECTED]),
+        () => arrayToWatch.every((row) => row[SELECTED]),
         [arrayToWatch]
     );
     const someRowSelected = useMemo(
-        () => arrayToWatch && arrayToWatch.some((row) => row[SELECTED]),
+        () => arrayToWatch.some((row) => row[SELECTED]),
         [arrayToWatch]
     );
 
     return (
         <Checkbox
-            checked={arrayToWatch && arrayToWatch.length > 0 && allRowSelected}
+            checked={arrayToWatch.length > 0 && allRowSelected}
             indeterminate={someRowSelected && !allRowSelected}
             onChange={(event) => {
                 event.target.checked

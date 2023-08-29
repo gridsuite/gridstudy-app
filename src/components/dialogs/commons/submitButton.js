@@ -11,11 +11,6 @@ import { FormattedMessage } from 'react-intl';
 
 const SubmitButton = ({ onClick, disabled = false }) => {
     const { isDirty } = useFormState();
-    // const { isDirty, defaultValues } = useFormState();
-    /*    const { getValues } = useFormContext();
-    console.log('MMT isdirty', isDirty);
-    console.log('MMT defaultValues', defaultValues);
-    console.log('MMT getValues', getValues());*/
 
     return (
         <Button onClick={onClick} disabled={!isDirty || disabled}>
