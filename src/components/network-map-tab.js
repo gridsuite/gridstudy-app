@@ -164,7 +164,7 @@ export const NetworkMapTab = ({
 
     function renderModificationDialog() {
         switch (equipmentToModify.equipmentType) {
-            case EQUIPMENT_TYPES.SUBSTATION.type:
+            case EQUIPMENT_TYPES.SUBSTATION:
                 return (
                     <SubstationModificationDialog
                         open={true}
@@ -175,7 +175,7 @@ export const NetworkMapTab = ({
                         onClose={() => closeModificationDialog()}
                     />
                 );
-            case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+            case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                 return (
                     <VoltageLevelModificationDialog
                         open={true}
@@ -186,7 +186,7 @@ export const NetworkMapTab = ({
                         onClose={() => closeModificationDialog()}
                     />
                 );
-            case EQUIPMENT_TYPES.LINE.type:
+            case EQUIPMENT_TYPES.LINE:
                 return (
                     <LineModificationDialog
                         open={true}
@@ -204,7 +204,7 @@ export const NetworkMapTab = ({
 
     function renderDeletionDialog() {
         switch (equipmentToModify.equipmentType) {
-            case EQUIPMENT_TYPES.HVDC_LINE.type:
+            case EQUIPMENT_TYPES.HVDC_LINE:
                 return (
                     <EquipmentDeletionDialog
                         open={true}
@@ -257,19 +257,19 @@ export const NetworkMapTab = ({
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
         'substation-menus',
-        EQUIPMENT_TYPES.SUBSTATION.type
+        EQUIPMENT_TYPES.SUBSTATION
     );
 
     const MenuVoltageLevel = withEquipmentMenu(
         BaseEquipmentMenu,
         'voltage-level-menus',
-        EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL
     );
 
     const MenuHvdcLine = withEquipmentMenu(
         BaseEquipmentMenu,
         'hvdc-line-menus',
-        EQUIPMENT_TYPES.HVDC_LINE.type
+        EQUIPMENT_TYPES.HVDC_LINE
     );
 
     function showEquipmentMenu(equipment, x, y, type) {
@@ -298,14 +298,14 @@ export const NetworkMapTab = ({
     const handleDeleteEquipment = useCallback(
         (equipmentType, equipmentId) => {
             if (
-                equipmentType === EQUIPMENT_TYPES.HVDC_LINE.type &&
+                equipmentType === EQUIPMENT_TYPES.HVDC_LINE &&
                 mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType ===
                     'LCC'
             ) {
                 // only hvdc line with LCC requires a Dialog (to select MCS)
                 handleOpenDeletionDialog(
                     equipmentId,
-                    EQUIPMENT_TYPES.HVDC_LINE.type
+                    EQUIPMENT_TYPES.HVDC_LINE
                 );
             } else {
                 deleteEquipment(
@@ -342,7 +342,7 @@ export const NetworkMapTab = ({
     }
 
     const voltageLevelMenuClick = (equipment, x, y) => {
-        showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.VOLTAGE_LEVEL.type);
+        showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
     };
 
     const chooseVoltageLevelForSubstation = useCallback(
@@ -882,20 +882,18 @@ export const NetworkMapTab = ({
         }
         return (
             <>
-                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE.type &&
+                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
-                {equipmentMenu.equipmentType ===
-                    EQUIPMENT_TYPES.HVDC_LINE.type &&
+                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.HVDC_LINE &&
                     withEquipment(MenuHvdcLine)}
-                {equipmentMenu.equipmentType ===
-                    EQUIPMENT_TYPES.SUBSTATION.type &&
+                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.SUBSTATION &&
                     withEquipment(MenuSubstation)}
                 {equipmentMenu.equipmentType ===
-                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type &&
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL &&
                     withEquipment(MenuVoltageLevel)}
             </>
         );
@@ -934,27 +932,17 @@ export const NetworkMapTab = ({
             loadFlowStatus={loadFlowStatus}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE.type)
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE)
             }
             onHvdcLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(
-                    equipment,
-                    x,
-                    y,
-                    EQUIPMENT_TYPES.HVDC_LINE.type
-                )
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.HVDC_LINE)
             }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(
-                    equipment,
-                    x,
-                    y,
-                    EQUIPMENT_TYPES.SUBSTATION.type
-                )
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.SUBSTATION)
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
