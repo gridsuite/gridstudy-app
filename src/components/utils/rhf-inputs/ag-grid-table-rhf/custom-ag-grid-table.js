@@ -18,12 +18,11 @@ import { AG_GRID_ROW_UUID } from 'components/utils/field-constants';
 import DndTableBottomRightButtons from 'components/utils/dnd-table/dnd-table-bottom-right-buttons';
 import DndTableBottomLeftButtons from 'components/utils/dnd-table/dnd-table-bottom-left-buttons';
 import { CsvDialog } from 'components/utils/csv-dialog';
+import { ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 
 export const ROW_DRAGGING_SELECTION_COLUMN_DEF = [
     {
         rowDrag: true,
-    },
-    {
         headerCheckboxSelection: true,
         checkboxSelection: true,
         maxWidth: 50,
@@ -46,6 +45,8 @@ const style = (customProps) => ({
             theme.agGridBackground.color + ' !important',
         '--ag-modal-overlay-background-color':
             theme.agGridBackground.color + ' !important',
+        '--ag-checkbox-indeterminate-color':
+            theme.palette.primary.main + ' !important',
         '--ag-selected-row-background-color': 'transparent !important',
         '--ag-range-selection-border-color': 'transparent !important',
         //overrides the default computed max heigt for ag grid default selector editor to make it more usable
@@ -214,7 +215,7 @@ export const CustomAgGridTable = ({
                     sx={style(cssProps).grid}
                 >
                     <AgGridReact
-                        rowData={rowData}
+                        rowData={gridApi && rowData?.length ? rowData : null} // to display loader at first render before we get the initial data and before the columns are sized to avoid glitch
                         onGridReady={onGridReady}
                         getLocaleText={getLocaleText}
                         cacheOverflowSize={10}
@@ -246,6 +247,7 @@ export const CustomAgGridTable = ({
                 <DndTableBottomLeftButtons
                     handleUploadButton={() => setOpenCsvDialog(true)}
                     uploadButtonMessageId={'ImportCSV'}
+                    disabled={false}
                 />
                 <DndTableBottomRightButtons
                     arrayFormName={name}
@@ -257,7 +259,11 @@ export const CustomAgGridTable = ({
                     disableUp={noRowSelected || isFirstSelected}
                     disableDown={noRowSelected || isLastSelected}
                     disableDelete={noRowSelected}
+                    disabled={false}
                 />
+                <Grid item xs={12}>
+                    <ErrorInput name={name} InputField={FieldErrorAlert} />
+                </Grid>
             </Grid>
             {openCsvDialog && (
                 <CsvDialog

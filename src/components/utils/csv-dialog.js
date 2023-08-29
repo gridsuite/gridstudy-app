@@ -18,10 +18,8 @@ import {
 import { useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
-
 import CsvDownloader from 'react-csv-downloader';
 import { PHASE_TAP } from '../dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
-import { MAX_ROWS_NUMBER } from 'components/utils/dnd-table/dnd-table';
 import { useIntl } from 'react-intl';
 import {
     DISTRIBUTION_KEY,
@@ -55,7 +53,6 @@ export const CsvDialog = (props) => {
         label: labelButtonId,
         header: props.csvColumns,
         resetTrigger: props.openCsvDialog,
-        maxTapNumber: MAX_ROWS_NUMBER,
     });
 
     const handleSave = (keepTableValues) => {

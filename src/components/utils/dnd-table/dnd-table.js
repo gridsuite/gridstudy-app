@@ -26,11 +26,13 @@ import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
-import { CheckboxInput } from '@gridsuite/commons-ui';
+import {
+    ErrorInput,
+    CheckboxInput,
+    FieldErrorAlert,
+} from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
-import { ErrorInput } from '@gridsuite/commons-ui';
-import { FieldErrorAlert } from '@gridsuite/commons-ui';
 import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import DirectoryItemsInput from '../rhf-inputs/directory-items-input';

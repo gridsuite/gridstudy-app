@@ -155,6 +155,7 @@ function ExplicitNamingFilterForm() {
 
     const handleImportRow = (val: any) => {
         return {
+            [AG_GRID_ROW_UUID]: crypto.randomUUID(),
             [EQUIPMENT_ID]:
                 val[
                     intl.formatMessage({
@@ -226,7 +227,7 @@ function ExplicitNamingFilterForm() {
                     name={FILTER_EQUIPMENTS_ATTRIBUTES}
                     columnDefs={columnDefs}
                     defaultColDef={defaultColDef}
-                    makeDefaultRowData={makeDefaultRowData()}
+                    makeDefaultRowData={makeDefaultRowData}
                     pagination={true}
                     paginationPageSize={100}
                     suppressRowClickSelection
