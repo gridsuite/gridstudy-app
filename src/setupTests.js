@@ -6,5 +6,17 @@
  */
 
 //FIXME workaround svg.panzoom.js import crash even though it's not used
+
+// make crypto.randomUUID() available in tests
+import crypto from 'crypto';
+
+global.IS_REACT_ACT_ENVIRONMENT = true;
+
+window.crypto = {
+    randomUUID: function () {
+        return crypto.randomUUID();
+    },
+};
+
 global.SVG = () => {};
 global.SVG.extend = () => {};
