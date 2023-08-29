@@ -87,14 +87,6 @@ export const getSensiNodesformatNewParams = (newParams) => {
     };
 };
 
-export const getSensiNodesEmptyFormData = (id = PARAMETER_SENSI_NODES) => ({
-    [id]: {
-        [SUPERVISED_VOLTAGE_LEVELS]: [],
-        [EQUIPMENTS_IN_VOLTAGE_REGULATION]: [],
-        [CONTINGENCIES]: [],
-    },
-});
-
 const SensiNodes = () => {
     const intl = useIntl();
 

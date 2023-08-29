@@ -45,33 +45,26 @@ import {
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import {
-    getSensiInjectionsSetEmptyFormData,
     getSensiInjectionsSetformatNewParams,
     getSensiInjectionsSetFormSchema,
 } from './sensi-injections-set';
 import {
-    getSensiInjectionsEmptyFormData,
     getSensiInjectionsformatNewParams,
     getSensiInjectionsFormSchema,
 } from './sensi-injections';
 import {
     getSensiHvdcformatNewParams,
-    getSensiHVDCsEmptyFormData,
     getSensiHVDCsFormSchema,
 } from './sensi-hvdcs';
 import {
     getSensiPstformatNewParams,
-    getSensiPSTsEmptyFormData,
     getSensiPSTsFormSchema,
 } from './sensi-psts';
 import {
-    getSensiNodesEmptyFormData,
     getSensiNodesformatNewParams,
     getSensiNodesFormSchema,
 } from './sensi-nodes';
-import SensiParametersSelector, {
-    INJECTION_DISTRIBUTION_TYPES,
-} from './sensi-parameters-selector';
+import SensiParametersSelector from './sensi-parameters-selector';
 import { LineSeparator } from '../../dialogUtils';
 
 export const useGetSensitivityAnalysisParameters = () => {
@@ -141,10 +134,6 @@ export const SensitivityAnalysisParameters = ({
             [PARAMETER_SENSI_HVDC]: [],
             [PARAMETER_SENSI_PST]: [],
             [PARAMETER_SENSI_NODES]: [],
-            /*            ...getSensiInjectionsEmptyFormData(),
-            ...getSensiHVDCsEmptyFormData(),
-            ...getSensiPSTsEmptyFormData(),
-            ...getSensiNodesEmptyFormData(),*/
         };
     }, []);
     const formMethods = useForm({

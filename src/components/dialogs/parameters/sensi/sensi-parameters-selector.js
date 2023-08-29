@@ -63,8 +63,6 @@ const SensiParametersSelector = (props) => {
     const TAB_VALUES = {
         SensitivityBranches: 0,
         SensitivityNodes: 1,
-    };
-    const NESTED_TAB_VALUES = {
         SensiInjectionsSet: 0,
         SensiInjection: 1,
         SensiHVDC: 2,
@@ -73,7 +71,7 @@ const SensiParametersSelector = (props) => {
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
     const [subTabValue, setSubTabValue] = useState(
-        NESTED_TAB_VALUES.SensiInjectionsSet
+        TAB_VALUES.SensiInjectionsSet
     );
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue);
@@ -140,7 +138,7 @@ const SensiParametersSelector = (props) => {
                         <Tab
                             key={index}
                             label={<FormattedMessage id={tab.label} />}
-                            value={tabValue}
+                            value={index}
                             className={getTabClass(index)}
                         />
                     ))}
@@ -169,25 +167,25 @@ const SensiParametersSelector = (props) => {
                                     ))}
                                 </Tabs>
                                 <TabPanel
-                                    index={NESTED_TAB_VALUES.SensiInjectionsSet}
+                                    index={TAB_VALUES.SensiInjectionsSet}
                                     value={subTabValue}
                                 >
                                     <SensiInjectionsSet />
                                 </TabPanel>
                                 <TabPanel
-                                    index={NESTED_TAB_VALUES.SensiInjection}
+                                    index={TAB_VALUES.SensiInjection}
                                     value={subTabValue}
                                 >
                                     <SensiInjection />
                                 </TabPanel>
                                 <TabPanel
-                                    index={NESTED_TAB_VALUES.SensiHVDC}
+                                    index={TAB_VALUES.SensiHVDC}
                                     value={subTabValue}
                                 >
                                     <SensiHVDCs />
                                 </TabPanel>
                                 <TabPanel
-                                    index={NESTED_TAB_VALUES.SensiPST}
+                                    index={TAB_VALUES.SensiPST}
                                     value={subTabValue}
                                 >
                                     <SensiPSTs />

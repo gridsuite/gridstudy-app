@@ -21,7 +21,6 @@ import {
     MONITORED_BRANCHES,
     FILTER_ID,
     FILTER_NAME,
-    INJECTION_DISTRIBUTION,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import { useIntl } from 'react-intl';
@@ -87,16 +86,6 @@ export const getSensiInjectionsformatNewParams = (newParams) => {
         ),
     };
 };
-
-/*export const getSensiInjectionsEmptyFormData = (
-    id = PARAMETER_SENSI_INJECTION
-) => ({
-    [id]: {
-        [MONITORED_BRANCHES]: [],
-        [INJECTIONS]: [],
-        [CONTINGENCIES]: [],
-    },
-});*/
 
 const SensiInjections = () => {
     const intl = useIntl();

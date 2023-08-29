@@ -89,14 +89,6 @@ export const getSensiPstformatNewParams = (newParams) => {
     };
 };
 
-export const getSensiPSTsEmptyFormData = (id = PARAMETER_SENSI_PST) => ({
-    [id]: {
-        [MONITORED_BRANCHES]: [],
-        [SENSITIVITY_TYPE]: SENSITIVITY_TYPES[0].id,
-        [PSTS]: [],
-        [CONTINGENCIES]: [],
-    },
-});
 const SensiPSTs = () => {
     const intl = useIntl();
 

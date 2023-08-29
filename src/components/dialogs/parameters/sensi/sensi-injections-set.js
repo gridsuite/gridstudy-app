@@ -18,10 +18,7 @@ import {
     PARAMETER_SENSI_INJECTIONS_SET,
     SELECTED,
     MONITORED_BRANCHES,
-    PARAMETER_SENSI_INJECTION,
-    SENSI_INJECTIONS_SET,
     DISTRIBUTION_TYPE,
-    DISTRIBUTIONTYPE,
 } from '../../../utils/field-constants';
 
 import yup from '../../../utils/yup-config';
@@ -98,16 +95,6 @@ export const getSensiInjectionsSetformatNewParams = (newParams) => {
     };
 };
 
-/*export const getSensiInjectionsSetEmptyFormData = (
-    id = PARAMETER_SENSI_INJECTIONS_SET
-) => ({
-    [id]: {
-        [MONITORED_BRANCHES]: [],
-        [INJECTIONS]: [],
-        [INJECTION_DISTRIBUTION]: INJECTION_DISTRIBUTION_TYPES[0].id,
-        [CONTINGENCIES]: [],
-    },
-});*/
 const SensiInjectionsSet = () => {
     const intl = useIntl();
 

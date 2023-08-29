@@ -90,15 +90,6 @@ export const getSensiHvdcformatNewParams = (newParams) => {
         ),
     };
 };
-
-export const getSensiHVDCsEmptyFormData = (id = PARAMETER_SENSI_HVDC) => ({
-    [id]: {
-        [MONITORED_BRANCHES]: [],
-        [SENSITIVITY_TYPE]: SENSITIVITY_TYPES[0].id,
-        [HVDC_LINES]: [],
-        [CONTINGENCIES]: [],
-    },
-});
 const SensiHVDCs = () => {
     const intl = useIntl();
 
