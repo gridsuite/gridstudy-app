@@ -12,9 +12,9 @@ import {
 } from './load-flow-result.type';
 import { IntlShape } from 'react-intl';
 import {
-    CustomAggridColDef,
     ICellRendererParams,
     ValueFormatterParams,
+    ColDef,
 } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
 
@@ -68,7 +68,7 @@ export const makeData = (
 
 export const loadFlowCurrentViolationsColumnsDefinition = (
     intl: IntlShape
-): CustomAggridColDef[] => {
+): ColDef[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
@@ -122,7 +122,7 @@ export const formatLimitType = (limitType: string, intl: IntlShape) => {
 };
 export const loadFlowVoltageViolationsColumnsDefinition = (
     intl: IntlShape
-): CustomAggridColDef[] => {
+): ColDef[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'VoltageLevel' }),
@@ -154,7 +154,7 @@ export const loadFlowResultColumnsDefinition = (
     intl: IntlShape,
     statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
-): CustomAggridColDef[] => {
+): ColDef[] => {
     return [
         {
             headerName: intl.formatMessage({
