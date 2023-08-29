@@ -554,7 +554,6 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         fetchSensitivityAnalysisProviders,
         fetchSensitivityAnalysisProvider,
         fetchDefaultSensitivityAnalysisProvider,
-        updateSensitivityAnalysisProvider,
         updateSensitivityAnalysisProvider
     );
 
