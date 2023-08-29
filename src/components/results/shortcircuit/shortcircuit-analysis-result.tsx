@@ -113,6 +113,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         const fetchAnalysisResult = (
             fetchFunction: ShortCircuitAnalysisFetch
         ) => {
+            setResult([]);
+
             fetchFunction(studyUuid, currentNode?.id)
                 .then((result: ShortcircuitAnalysisResult) => {
                     const {

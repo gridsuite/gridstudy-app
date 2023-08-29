@@ -309,32 +309,28 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         );
     }, []);
 
-    const renderResult = () => {
-        const rows = flattenResult(result);
-        const message = getNoRowsMessage(
-            messages,
-            rows,
-            shortCircuitAnalysisStatus
-        );
-        const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
+    const rows = flattenResult(result);
+    const message = getNoRowsMessage(
+        messages,
+        rows,
+        shortCircuitAnalysisStatus
+    );
+    const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 
-        return (
-            <Box sx={{ flexGrow: 1 }}>
-                <CustomAGGrid
-                    rowData={rowsToShow}
-                    defaultColDef={defaultColDef}
-                    onGridReady={onGridReady}
-                    getRowStyle={getRowStyle}
-                    enableCellTextSelection={true}
-                    postSortRows={handlePostSortRows}
-                    columnDefs={columns}
-                    overlayNoRowsTemplate={message}
-                />
-            </Box>
-        );
-    };
-
-    return <>{renderResult()}</>;
+    return (
+        <Box sx={{ flexGrow: 1 }}>
+            <CustomAGGrid
+                rowData={rowsToShow}
+                defaultColDef={defaultColDef}
+                onGridReady={onGridReady}
+                getRowStyle={getRowStyle}
+                enableCellTextSelection={true}
+                postSortRows={handlePostSortRows}
+                columnDefs={columns}
+                overlayNoRowsTemplate={message}
+            />
+        </Box>
+    );
 };
 
 export default ShortCircuitAnalysisResultTable;
