@@ -35,7 +35,6 @@ import { CurrentTreeNode } from '../redux/reducer.type';
 import { UUID } from 'crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 
-
 const useStyles = makeStyles(() => ({
     div: {
         display: 'flex',
@@ -291,7 +290,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 >
                     {services.map((service) => renderTab(service))}
                 </Tabs>
-                {disabled && <AlertCustomMessageNode message={'InvalidNode'}/>}
+                {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
             </div>
             {services.map((service, index) =>
                 renderTabPanelLazy(service, index)
