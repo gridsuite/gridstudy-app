@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -117,6 +117,7 @@ const useStyles = makeStyles((theme) => ({
             currentNode.id,
             selectedModificationsUuidToRestore
         );
+        handleClose();
         console.log(selectedModificationsUuidToRestore);
     };
     const classes = useStyles();
@@ -159,7 +160,7 @@ const useStyles = makeStyles((theme) => ({
                                     itemRenderer={(props) => (
                                         <ModificationListItem
                                             key={props.item.uuid}
-                                            isrestoredDialog
+                                            isRestorationDialog
                                             isDragging={false}
                                             isOneNodeBuilding={false}
                                             disabled={false}
