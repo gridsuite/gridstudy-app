@@ -15,12 +15,18 @@ declare module '@mui/material/styles' {
         selectedRow: {
             background: string;
         };
+        link: {
+            color: string;
+        };
     }
 
     interface ThemeOptions {
         aggrid: string;
         selectedRow: {
             background: string;
+        };
+        link: {
+            color: string;
         };
     }
 }
@@ -29,4 +35,12 @@ declare module '@mui/material/styles' {
 // https://mui.com/material-ui/migration/troubleshooting/#types-property-quot-palette-quot-quot-spacing-quot-does-not-exist-on-type-defaulttheme
 declare module '@mui/styles/defaultTheme' {
     interface DefaultTheme extends Theme {}
+}
+
+declare module 'ag-grid-community' {
+    // used to add properties that are not supported by ColDef such as numeric, fractionDigits...
+    interface ColDef {
+        numeric?: boolean;
+        fractionDigits?: number;
+    }
 }
