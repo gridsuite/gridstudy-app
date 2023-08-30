@@ -144,8 +144,7 @@ const LineCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue, watch } = formMethods;
-    watch(); // to keep validate button disabled when only navigate between tabs
+    const { reset, setValue } = formMethods;
 
     const fromSearchCopyToFormValues = (line) => {
         reset(

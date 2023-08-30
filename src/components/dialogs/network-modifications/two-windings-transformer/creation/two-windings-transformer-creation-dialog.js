@@ -156,8 +156,7 @@ const TwoWindingsTransformerCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, watch } = formMethods;
-    watch(); // to keep validate button disabled when only navigate between tabs
+    const { reset } = formMethods;
 
     const [tabIndex, setTabIndex] = useState(
         TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
