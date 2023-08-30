@@ -13,8 +13,7 @@ import Grid from '@mui/material/Grid';
 
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { Tab, Tabs } from '@mui/material';
-import { TabPanel, useStyles } from '../parameters';
-import clsx from 'clsx';
+import { TabPanel } from '../parameters';
 import SensiInjectionsSet from './sensi-injections-set';
 import SensiInjection from './sensi-injections';
 import SensiHVDCs from './sensi-hvdcs';
@@ -59,7 +58,6 @@ export const EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES = [
 export const HVDC_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.HVDC_LINE.type];
 
 const SensiParametersSelector = () => {
-    const classes = useStyles();
     const TAB_VALUES = {
         SensitivityBranches: 0,
         SensitivityNodes: 1,

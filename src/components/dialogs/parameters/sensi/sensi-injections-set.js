@@ -12,7 +12,6 @@ import {
     FILTER_ID,
     FILTER_NAME,
     ID,
-    INJECTION_DISTRIBUTION,
     INJECTIONS,
     NAME,
     PARAMETER_SENSI_INJECTIONS_SET,
@@ -46,7 +45,7 @@ export const getSensiInjectionsSetFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
-            [INJECTION_DISTRIBUTION]: yup.string().nullable(),
+            [DISTRIBUTION_TYPE]: yup.string().nullable(),
             [CONTINGENCIES]: yup.array().of(
                 yup.object().shape({
                     [ID]: yup.string().required(),
@@ -79,8 +78,8 @@ export const getSensiInjectionsSetformatNewParams = (newParams) => {
                                 };
                             }
                         ),
-                        [INJECTION_DISTRIBUTION]:
-                            sensitivityInjectionSet[INJECTION_DISTRIBUTION],
+                        [DISTRIBUTION_TYPE]:
+                            sensitivityInjectionSet[DISTRIBUTION_TYPE],
                         [CONTINGENCIES]: sensitivityInjectionSet[
                             CONTINGENCIES
                         ].map((filter) => {

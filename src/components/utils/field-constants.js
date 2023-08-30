@@ -256,6 +256,5 @@ export const MONITORED_BRANCHES = 'monitoredBranches';
 export const HVDC_LINES = 'hvdcs';
 export const SENSITIVITY_TYPE = 'sensitivityType';
 export const INJECTIONS = 'injections';
-export const INJECTION_DISTRIBUTION = 'injectionDistribution';
 export const DISTRIBUTION_TYPE = 'distributionType';
 export const PSTS = 'psts';

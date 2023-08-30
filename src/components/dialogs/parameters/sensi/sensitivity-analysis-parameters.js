@@ -23,7 +23,7 @@ import {
     FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
     HVDC_LINES,
     ID,
-    INJECTION_DISTRIBUTION,
+    DISTRIBUTION_TYPE,
     INJECTIONS,
     MONITORED_BRANCHES,
     NAME,
@@ -229,8 +229,8 @@ export const SensitivityAnalysisParameters = ({
                                         [NAME]: sensiInjection[FILTER_NAME],
                                     };
                                 }),
-                                [INJECTION_DISTRIBUTION]:
-                                    sensiInjectionsSet[INJECTION_DISTRIBUTION],
+                                [DISTRIBUTION_TYPE]:
+                                    sensiInjectionsSet[DISTRIBUTION_TYPE],
                                 [CONTINGENCIES]: sensiInjectionsSet[
                                     CONTINGENCIES
                                 ].map((sensiInjection) => {
@@ -262,8 +262,8 @@ export const SensitivityAnalysisParameters = ({
                                     };
                                 }
                             ),
-                            [INJECTION_DISTRIBUTION]:
-                                sensiInjections[INJECTION_DISTRIBUTION],
+                            [DISTRIBUTION_TYPE]:
+                                sensiInjections[DISTRIBUTION_TYPE],
                             [CONTINGENCIES]: sensiInjections[CONTINGENCIES].map(
                                 (sensiInjection) => {
                                     return {
