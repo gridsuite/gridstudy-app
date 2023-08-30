@@ -26,6 +26,7 @@ import { FILTER_TYPES } from 'components/network/constants';
 import { saveExplicitNamingFilter } from '../../filters-save';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
+import { FetchStatus } from 'services/utils';
 
 const formSchema = yup
     .object()
@@ -47,6 +48,7 @@ const ExplicitNamingFilterEditionDialog = ({
 }) => {
     const { snackError } = useSnackMessage();
     const [isNameValid, setIsNameValid] = useState(true);
+    const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
     // default values are set via reset when we fetch data
     const formMethods = useForm({
@@ -58,8 +60,10 @@ const ExplicitNamingFilterEditionDialog = ({
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
         if (id && open) {
+            setDataFetchStatus(FetchStatus.FETCHING);
             getFilterById(id)
                 .then((response) => {
+                    setDataFetchStatus(FetchStatus.FETCH_SUCCESS);
                     reset({
                         [NAME]: name,
                         [FILTER_TYPE]: FILTER_TYPES.EXPLICIT_NAMING.id,
@@ -73,6 +77,7 @@ const ExplicitNamingFilterEditionDialog = ({
                     });
                 })
                 .catch((error) => {
+                    setDataFetchStatus(FetchStatus.FETCH_ERROR);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'cannotRetrieveFilter',
@@ -106,6 +111,8 @@ const ExplicitNamingFilterEditionDialog = ({
         setValue(NAME, newName);
     };
 
+    const isDataReady = dataFetchStatus === FetchStatus.FETCH_SUCCESS;
+
     return (
         <FormProvider
             validationSchema={formSchema}
@@ -121,6 +128,7 @@ const ExplicitNamingFilterEditionDialog = ({
                 disabledSave={!isNameValid}
                 fullWidth
                 maxWidth={'md'}
+                isDataFetching={dataFetchStatus === FetchStatus.FETCHING}
             >
                 <NameWrapper
                     titleMessage="Name"
@@ -129,7 +137,7 @@ const ExplicitNamingFilterEditionDialog = ({
                     handleNameValidation={handleNameChange}
                     activeDirectory={activeDirectory}
                 >
-                    <ExplicitNamingFilterForm />
+                    {isDataReady && <ExplicitNamingFilterForm />}
                 </NameWrapper>
             </ModificationDialog>
         </FormProvider>
