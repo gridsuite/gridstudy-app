@@ -197,7 +197,7 @@ const NetworkModificationTree = ({
                 snapGrid={snapGrid}
             >
                 <Controls
-                    sx={styles.controls}
+                    style={styles.controls} // This component uses "style" instead of "sx"
                     showZoom={false}
                     showInteractive={false}
                     showFitView={false}
