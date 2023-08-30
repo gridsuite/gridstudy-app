@@ -51,7 +51,7 @@
   "iidm.export.xml.throw-exception-if-extension-not-found": "Exception si une extension n'est pas connue",
   "iidm.export.xml.throw-exception-if-extension-not-found.desc": "Lever une exception si on essaie d'exporter une extension inconnue",
   "iidm.export.xml.extensions": "Extensions",
-  "iidm.import.xml.extensions.selectionDialog.name": "Sélection des extensions",
+  "iidm.export.xml.extensions.selectionDialog.name": "Sélection des extensions",
   "iidm.export.xml.extensions.desc": "Exporter avec ces extensions",
   "iidm.export.xml.extensions.activePowerControl": "Compensation",
   "iidm.export.xml.extensions.baseVoltageMapping": "Tension nominale",
