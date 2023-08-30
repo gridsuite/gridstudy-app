@@ -10,7 +10,7 @@ import Paper from '@mui/material/Paper';
 import { ReportViewer, useSnackMessage } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
-import AlertInvalidNode from './utils/alert-invalid-node';
+import AlertCustomMessageNode from './utils/alert-custom-message-node';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
@@ -134,7 +134,9 @@ export const ReportViewerTab = ({
                             id: 'LogOnlySingleNode',
                         })}
                     />
-                    {disabled && <AlertInvalidNode />}
+                    {disabled && (
+                        <AlertCustomMessageNode message={'InvalidNode'} />
+                    )}
                 </Box>
                 {!!report && !disabled && <ReportViewer jsonReport={report} />}
             </Paper>
