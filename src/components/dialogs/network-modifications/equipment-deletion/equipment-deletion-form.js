@@ -62,10 +62,10 @@ const DeleteEquipmentForm = ({
 
     const typesOptions = useMemo(() => {
         const equipmentTypesToExclude = new Set([
-            EQUIPMENT_TYPES.SWITCH.type,
-            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
-            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
-            EQUIPMENT_TYPES.HVDC_CONVERTER_STATION.type,
+            EQUIPMENT_TYPES.SWITCH,
+            EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
+            EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
+            EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
         ]);
         return Object.values(EQUIPMENT_TYPES).filter(
             (equipmentType) => !equipmentTypesToExclude.has(equipmentType.type)
@@ -125,7 +125,7 @@ const DeleteEquipmentForm = ({
 
             if (
                 watchEquipmentId &&
-                currentTypeRef.current === EQUIPMENT_TYPES.HVDC_LINE.type
+                currentTypeRef.current === EQUIPMENT_TYPES.HVDC_LINE
             ) {
                 // need specific update related to HVDC LCC deletion (for MCS lists)
                 hvdcLccSpecificUpdate(
