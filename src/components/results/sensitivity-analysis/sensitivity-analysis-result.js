@@ -22,6 +22,7 @@ import {
 } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
+import LoaderWithOverlay from 'components/utils/loader-with-overlay';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -42,6 +43,7 @@ const SensitivityAnalysisResult = ({
     sortConfig,
     updateFilter,
     filterSelector,
+    openLoader,
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
@@ -191,7 +193,15 @@ const SensitivityAnalysisResult = ({
 
     const rowsToShow = getRows(rows, sensitivityAnalysisStatus);
     return (
-        <div style={{ flexGrow: 1 }}>
+        <div style={{ position: 'relative', flexGrow: 1 }}>
+            {openLoader && (
+                <LoaderWithOverlay
+                    color="inherit"
+                    loaderSize={70}
+                    isFixed={false}
+                    loadingMessageText={'LoadingRemoteData'}
+                />
+            )}
             <CustomAGGrid
                 ref={gridRef}
                 rowData={rowsToShow}

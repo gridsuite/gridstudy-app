@@ -12,9 +12,8 @@ import Paper from '@mui/material/Paper';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
-import AlertInvalidNode from './utils/alert-invalid-node';
+import AlertCustomMessageNode from './utils/alert-custom-message-node';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
@@ -25,7 +24,6 @@ import {
     ResultTabIndexRedirection,
     useResultsTab,
 } from './results/use-results-tab';
-import { LoadFlowResultTab } from './loadflow-result-tab';
 import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
 import {
     OptionalServicesNames,
@@ -34,6 +32,8 @@ import {
 import { CurrentTreeNode } from '../redux/reducer.type';
 import { UUID } from 'crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
+import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
+import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 
 const useStyles = makeStyles(() => ({
     div: {
@@ -57,7 +57,7 @@ const useStyles = makeStyles(() => ({
 
 interface IResultViewTabProps {
     studyUuid: UUID;
-    currentNode?: CurrentTreeNode;
+    currentNode: CurrentTreeNode;
     openVoltageLevelDiagram: (voltageLevelId: string) => void;
     resultTabIndexRedirection: ResultTabIndexRedirection;
     disabled: boolean;
@@ -290,7 +290,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 >
                     {services.map((service) => renderTab(service))}
                 </Tabs>
-                {disabled && <AlertInvalidNode />}
+                {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
             </div>
             {services.map((service, index) =>
                 renderTabPanelLazy(service, index)
