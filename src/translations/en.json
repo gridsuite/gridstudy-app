@@ -301,7 +301,6 @@
     "THREE_PHASE": "Three-phase",
     "LOW_SHORT_CIRCUIT_CURRENT": "Isc min",
     "HIGH_SHORT_CIRCUIT_CURRENT": "Isc max",
-    "PositiveMagnitude": "Positive magnitude",
 
     "LimitType": "Limit type",
     "LimitSide": "Side",

@@ -45,7 +45,6 @@ interface ShortCircuitAnalysisResultsFaultHeader {
     faultType: string;
     shortCircuitPower: number;
     current: number;
-    positiveMagnitude: number;
     limitType?: string | null;
     limitMin?: number | null;
     limitMax?: number | null;
@@ -65,7 +64,6 @@ interface ShortCircuitAnalysisResultsLimitViolation {
 interface ShortCircuitAnalysisResultsFeederResult {
     connectableId: string;
     current: number;
-    positiveMagnitude: number;
     linkedElementId: string;
 }
 
@@ -76,7 +74,7 @@ const ShortCircuitAnalysisResult: FunctionComponent<
     const theme = useTheme();
 
     const columns = useMemo(() => {
-        const columns = [
+        return [
             {
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
@@ -88,6 +86,12 @@ const ShortCircuitAnalysisResult: FunctionComponent<
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
+            },
+            {
+                headerName: intl.formatMessage({ id: 'IscKA' }),
+                field: 'current',
+                fractionDigits: 1,
+                numeric: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -112,44 +116,23 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 numeric: true,
             },
             {
+                headerName: intl.formatMessage({ id: 'DeltaIscIscMax' }),
+                field: 'deltaIscIscMax',
+                fractionDigits: 1,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'DeltaIscIscMin' }),
+                field: 'deltaIscIscMin',
+                fractionDigits: 1,
+                numeric: true,
+            },
+            {
                 field: 'linkedElementId',
                 hide: true,
             },
         ];
-
-        if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
-            columns.splice(3, 0, {
-                headerName: intl.formatMessage({ id: 'PositiveMagnitude' }),
-                field: 'positiveMagnitude',
-                fractionDigits: 1,
-                numeric: true,
-            });
-        } else if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
-            columns.splice(3, 0, {
-                headerName: intl.formatMessage({ id: 'IscKA' }),
-                field: 'current',
-                fractionDigits: 1,
-                numeric: true,
-            });
-            columns.splice(
-                8,
-                0,
-                {
-                    headerName: intl.formatMessage({ id: 'DeltaIscIscMax' }),
-                    field: 'deltaIscIscMax',
-                    fractionDigits: 1,
-                    numeric: true,
-                },
-                {
-                    headerName: intl.formatMessage({ id: 'DeltaIscIscMin' }),
-                    field: 'deltaIscIscMin',
-                    fractionDigits: 1,
-                    numeric: true,
-                }
-            );
-        }
-        return columns;
-    }, [analysisType, intl]);
+    }, [intl]);
     const shortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
@@ -212,6 +195,27 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                     limitName: lv.limitName,
                 };
             }
+
+            let current = NaN;
+            let deltaIscIscMax = NaN;
+            let deltaIscIscMin = NaN;
+            if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+                current = faultResult.current;
+                deltaIscIscMax =
+                    faultResult.current -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0);
+                deltaIscIscMin =
+                    faultResult.current -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0);
+            } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
+                current = faultResult.positiveMagnitude;
+                deltaIscIscMax =
+                    faultResult.positiveMagnitude -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0);
+                deltaIscIscMin =
+                    faultResult.positiveMagnitude -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0);
+            }
             rows.push({
                 faultId: fault.id,
                 elementId: fault.elementId,
@@ -219,14 +223,9 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 shortCircuitPower: faultResult.shortCircuitPower,
                 limitMin: unitToKiloUnit(faultResult.shortCircuitLimits.ipMin),
                 limitMax: unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
-                deltaIscIscMax:
-                    faultResult.current -
-                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0),
-                deltaIscIscMin:
-                    faultResult.current -
-                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0),
-                current: faultResult.current,
-                positiveMagnitude: faultResult.positiveMagnitude,
+                deltaIscIscMax: deltaIscIscMax,
+                deltaIscIscMin: deltaIscIscMin,
+                current: current,
                 ...firstLimitViolation,
             });
             limitViolations.slice(1).forEach((lv) => {
@@ -248,11 +247,17 @@ const ShortCircuitAnalysisResult: FunctionComponent<
             });
             const feederResults = faultResult.feederResults;
             feederResults.forEach((feederResult) => {
+                let current = NaN;
+                if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+                    current = feederResult.current;
+                } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
+                    current = feederResult.positiveMagnitude;
+                }
+
                 rows.push({
                     connectableId: feederResult.connectableId,
-                    current: feederResult.current,
-                    positiveMagnitude: feederResult.positiveMagnitude,
                     linkedElementId: fault.id,
+                    current: current,
                 });
             });
         });
