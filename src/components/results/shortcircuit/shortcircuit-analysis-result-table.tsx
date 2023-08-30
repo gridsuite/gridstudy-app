@@ -9,7 +9,10 @@ import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
-import { ShortcircuitAnalysisResult } from './shortcircuit-analysis-result.type';
+import {
+    ShortcircuitAnalysisResult,
+    ShortcircuitAnalysisType,
+} from './shortcircuit-analysis-result.type';
 import {
     GridReadyEvent,
     IRowNode,
@@ -28,6 +31,7 @@ import { ReduxState } from '../../../redux/reducer.type';
 
 interface ShortCircuitAnalysisResultProps {
     result: ShortcircuitAnalysisResult;
+    analysisType: ShortcircuitAnalysisType;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -65,7 +69,7 @@ interface ShortCircuitAnalysisResultsFeederResult {
 
 const ShortCircuitAnalysisResult: FunctionComponent<
     ShortCircuitAnalysisResultProps
-> = ({ result }) => {
+> = ({ result, analysisType }) => {
     const intl = useIntl();
     const theme = useTheme();
 
@@ -191,6 +195,27 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                     limitName: lv.limitName,
                 };
             }
+
+            let current = NaN;
+            let deltaIscIscMax = NaN;
+            let deltaIscIscMin = NaN;
+            if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+                current = faultResult.current;
+                deltaIscIscMax =
+                    faultResult.current -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0);
+                deltaIscIscMin =
+                    faultResult.current -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0);
+            } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
+                current = faultResult.positiveMagnitude;
+                deltaIscIscMax =
+                    faultResult.positiveMagnitude -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0);
+                deltaIscIscMin =
+                    faultResult.positiveMagnitude -
+                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0);
+            }
             rows.push({
                 faultId: fault.id,
                 elementId: fault.elementId,
@@ -198,13 +223,9 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 shortCircuitPower: faultResult.shortCircuitPower,
                 limitMin: unitToKiloUnit(faultResult.shortCircuitLimits.ipMin),
                 limitMax: unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
-                deltaIscIscMax:
-                    faultResult.current -
-                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0),
-                deltaIscIscMin:
-                    faultResult.current -
-                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0),
-                current: faultResult.current,
+                deltaIscIscMax: deltaIscIscMax,
+                deltaIscIscMin: deltaIscIscMin,
+                current: current,
                 ...firstLimitViolation,
             });
             limitViolations.slice(1).forEach((lv) => {
@@ -226,10 +247,17 @@ const ShortCircuitAnalysisResult: FunctionComponent<
             });
             const feederResults = faultResult.feederResults;
             feederResults.forEach((feederResult) => {
+                let current = NaN;
+                if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+                    current = feederResult.current;
+                } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
+                    current = feederResult.positiveMagnitude;
+                }
+
                 rows.push({
                     connectableId: feederResult.connectableId,
-                    current: feederResult.current,
                     linkedElementId: fault.id,
+                    current: current,
                 });
             });
         });
