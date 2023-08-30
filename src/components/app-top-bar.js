@@ -54,7 +54,7 @@ import {
     useDiagram,
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
 } from './diagrams/diagram-common';
-import { isNodeBuilt } from './graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { ComputingType } from './computing-status/computing-type';
@@ -65,6 +65,7 @@ import {
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
 import { fetchAppsAndUrls } from '../services/utils';
+import { RunButtonContainer } from './run-button-container';
 
 const styles = {
     tabs: {
@@ -75,6 +76,10 @@ const styles = {
         margin: theme.spacing(1.5),
         fontWeight: 'bold',
     }),
+    divRunButton: {
+        marginRight: '100px',
+        marginTop: '6px',
+    },
 };
 
 const STUDY_VIEWS = [
@@ -170,7 +175,13 @@ const CustomSuffixRenderer = ({ props, element }) => {
     );
 };
 
-const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
+const AppTopBar = ({
+    user,
+    tabIndex,
+    onChangeTab,
+    userManager,
+    setIsComputationRunning,
+}) => {
     const dispatch = useDispatch();
 
     const intl = useIntl();
@@ -204,6 +215,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const disabled = !isNodeBuilt(currentNode);
 
     const [isParametersOpen, setParametersOpen] = useState(false);
     const { openDiagramView } = useDiagram();
@@ -460,7 +472,18 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         })}
                     </Tabs>
                 )}
+                {studyUuid && (
+                    <Box sx={styles.divRunButton}>
+                        <RunButtonContainer
+                            studyUuid={studyUuid}
+                            currentNode={currentNode}
+                            setIsComputationRunning={setIsComputationRunning}
+                            disabled={disabled || isNodeReadOnly(currentNode)}
+                        />
+                    </Box>
+                )}
             </TopBar>
+
             {studyUuid && (
                 <Parameters
                     isParametersOpen={isParametersOpen}

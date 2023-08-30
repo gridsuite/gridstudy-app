@@ -527,6 +527,7 @@ export function RunButtonContainer({
                         open={showContingencyListSelector}
                         onClose={() => setShowContingencyListSelector(false)}
                         onStart={handleStartSecurityAnalysis}
+                        studyUuid={studyUuid}
                         currentNodeUuid={currentNode?.id}
                     />
                     {showSensiParametersSelector && (

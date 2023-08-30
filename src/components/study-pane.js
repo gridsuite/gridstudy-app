@@ -82,7 +82,13 @@ export const StudyView = {
     LOGS: 'Logs',
 };
 
-const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
+const StudyPane = ({
+    studyUuid,
+    currentNode,
+    setErrorMessage,
+    isComputationRunning,
+    ...props
+}) => {
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
     const lineParallelPath = useSelector(
@@ -100,8 +106,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
-
-    const [isComputationRunning, setIsComputationRunning] = useState(false);
 
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
@@ -251,9 +255,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    setIsComputationRunning={
-                                        setIsComputationRunning
-                                    }
                                     setErrorMessage={setErrorMessage}
                                     loadFlowStatus={loadFlowStatus}
                                 />
