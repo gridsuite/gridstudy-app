@@ -142,7 +142,7 @@ const Diagram = (props) => {
                     <Box position="relative" left={0} right={0} top={0}>
                         <AlertCustomMessageNode
                             message={props.warningToDisplay}
-                            noMargin={true}
+                            noMargin
                         />
                     </Box>
                 ) : (
