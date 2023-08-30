@@ -94,9 +94,12 @@ const styles = {
         overflow: 'hidden',
     }),
     toolbar: (theme) => ({
-        padding: '0 !important', // TODO CHARLY tester avec "&:" ou déclinaisons
+        '&': {
+            // Necessary to overrides some @media specific styles that are defined elsewhere
+            padding: 0,
+            minHeight: 0,
+        },
         border: theme.spacing(1),
-        minHeight: '0 !important',
         margin: 0,
         flexShrink: 0,
     }),
