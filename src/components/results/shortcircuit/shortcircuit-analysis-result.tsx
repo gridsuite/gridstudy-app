@@ -69,7 +69,10 @@ export const ShortCircuitAnalysisGlobalResult: FunctionComponent<
 
     return (
         <WaitingLoader message={'LoadingRemoteData'} loading={isLoading}>
-            <ShortCircuitAnalysisResult result={shortCircuitAnalysisResult} />
+            <ShortCircuitAnalysisResult
+                result={shortCircuitAnalysisResult}
+                analysisType={analysisType}
+            />
         </WaitingLoader>
     );
 };

@@ -1,26 +1,29 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useNodeData } from './study-container';
-import WaitingLoader from './utils/waiting-loader';
-import SecurityAnalysisResult from './security-analysis-result';
+import { FunctionComponent } from 'react';
+import {
+    NmKConstraintRow,
+    SecurityAnalysisTabProps,
+} from './security-analysis.type';
+import { useNodeData } from '../../study-container';
+import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
+import WaitingLoader from '../../utils/waiting-loader';
+import { SecurityAnalysisResult } from './security-analysis-result';
+import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchLineOrTransformer } from '../../../services/study/network-map';
 
-import { fetchSecurityAnalysisResult } from '../services/study/security-analysis';
-import { fetchLineOrTransformer } from '../services/study/network-map';
-
-const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
-
-export const SecurityAnalysisResultTab = ({
-    studyUuid,
-    nodeUuid,
-    openVoltageLevelDiagram,
-}) => {
+export const SecurityAnalysisResultTab: FunctionComponent<
+    SecurityAnalysisTabProps
+> = ({ studyUuid, nodeUuid, openVoltageLevelDiagram }) => {
+    const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
     const { snackError } = useSnackMessage();
+
     const [securityAnalysisResult, isWaiting] = useNodeData(
         studyUuid,
         nodeUuid,
@@ -28,10 +31,10 @@ export const SecurityAnalysisResultTab = ({
         securityAnalysisResultInvalidations
     );
 
-    function onClickNmKConstraint(row, column) {
+    function onClickNmKConstraint(row: NmKConstraintRow, column?: ColDef) {
         if (studyUuid && nodeUuid) {
-            if (column.field === 'subjectId') {
-                let vlId;
+            if (column?.field === 'subjectId') {
+                let vlId: string;
                 // ideally we would have the type of the network element but we don't
                 fetchLineOrTransformer(studyUuid, nodeUuid, row.subjectId)
                     .then((equipment) => {
@@ -68,7 +71,6 @@ export const SecurityAnalysisResultTab = ({
             }
         }
     }
-
     return (
         <WaitingLoader message={'LoadingRemoteData'} loading={isWaiting}>
             <SecurityAnalysisResult
