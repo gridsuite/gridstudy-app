@@ -322,7 +322,9 @@
     "LOW_VOLTAGE": "Tension basse",
 
     "HighVoltageLimit": "Limite tension haute",
+    "HighVoltageLimitkV": "Limite tension haute (kV)",
     "LowVoltageLimit": "Limite tension basse",
+    "LowVoltageLimitkV": "Limite tension basse (kV)",
 
     "descLfVoltageInitMode": "Mode d'initialisation du plan de tension",
     "descLfTransformerVoltageControlOn": "Simuler les régleurs en charge",
@@ -786,7 +788,6 @@
     "HighTapPositionError": "La valeur de la prise max doit être comprise entre la prise min et 100",
     "TapPositionBetweenLowAndHighTapPositionValue": "La valeur de la prise courante doit être comprise entre la valeur de Prise min et Prise max",
     "RegulatedTerminal": "Terminal réglé",
-    "DistantRegulatedTerminal": "Terminal distant réglé",
     "GenerateRatioTapRowsError": "Veuillez générer les prises du régleur",
     "GeneratePhaseTapRowsError": "Veuillez générer les prises du déphaseur",
     "IncoherentRatioTapPositionError": "La valeur du champ Prise courante du régleur n'est pas présente dans les données de ses prises",
@@ -1082,5 +1083,7 @@
     "deleteNodeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud  \"{nodeName}\"?",
     "deleteSubTreeConfirmation": "Êtes-vous sûr(e) de vouloir supprimer le nœud \"{nodeName}\" et son sous-arbre contenant {nodesNumber} nœuds ?",
 
+    "IpMin": "ICC min (kA)",
+    "IpMax": "ICC max (kA)",
     "StartupCost": "Coût de démarrage"
 }

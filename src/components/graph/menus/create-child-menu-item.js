@@ -9,25 +9,22 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
-const useStyles = makeStyles(() => ({
+const styles = {
     menuItem: {
         // NestedMenu item manages only label prop of string type
         // It set paddings itself then we must force this padding
         // to justify menu items texts
         paddingLeft: '12px',
     },
-}));
+};
 
 const ChildMenuItem = ({ item }) => {
-    const classes = useStyles();
-
     return (
         <MenuItem
-            className={classes.menuItem}
+            sx={styles.menuItem}
             onClick={item.action}
             disabled={item.disabled}
         >

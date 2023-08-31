@@ -187,7 +187,7 @@ const BatteryModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    EQUIPMENT_TYPES.BATTERY.type,
+                    EQUIPMENT_TYPES.BATTERY,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -352,7 +352,7 @@ const BatteryModificationDialog = ({
                         currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.BATTERY.type}
+                        equipmentType={EQUIPMENT_TYPES.BATTERY}
                         fillerHeight={17}
                     />
                 )}

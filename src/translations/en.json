@@ -322,7 +322,9 @@
     "LOW_VOLTAGE": "Low voltage",
 
     "HighVoltageLimit": "High voltage limit",
+    "HighVoltageLimitkV": "High voltage limit (kV)",
     "LowVoltageLimit": "Low voltage limit",
+    "LowVoltageLimitkV": "Low voltage limit (kV)",
 
     "descLfVoltageInitMode": "Voltage initialisation mode",
     "descLfTransformerVoltageControlOn": "Activate on-load tap changers",
@@ -785,7 +787,6 @@
     "HighTapPositionError": "High tap position must be between low tap and 100",
     "TapPositionBetweenLowAndHighTapPositionValue": "Tap position must be greater or equal to Low tap position and lesser or equal to High tap position",
     "RegulatedTerminal": "Regulated terminal",
-    "DistantRegulatedTerminal": "Distant regulated terminal",
     "GenerateRatioTapRowsError": "Please generate the ratio changer steps",
     "GeneratePhaseTapRowsError": "Please generate the phase changer steps",
     "IncoherentRatioTapPositionError": "The Tap position value is not consistent with the ratio tap changer steps data",
@@ -1060,5 +1061,7 @@
     "deleteNodeConfirmation": "Are you sure you want to delete this node \"{nodeName}\"?",
     "deleteSubTreeConfirmation": "Are you sure you want to delete node \"{nodeName}\" and its sub-tree with {nodesNumber} nodes ?",
 
+    "IpMin": "ISC min (kA)",
+    "IpMax": "ISC max (kA)",
     "StartupCost": "Startup cost"
 }
