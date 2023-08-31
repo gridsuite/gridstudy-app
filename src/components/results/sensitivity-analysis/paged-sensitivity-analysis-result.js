@@ -108,7 +108,8 @@ const PagedSensitivityAnalysisResult = ({
             isJustBefore: !nOrNkIndex,
             functionType: FUNCTION_TYPES[sensiKindIndex],
             offset: page * rowsPerPage,
-            chunkSize: rowsPerPage,
+            pageSize: rowsPerPage,
+            pageNumber: page,
             ...filterSelector,
             ...sortSelector,
         };
