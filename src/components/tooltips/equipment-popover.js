@@ -39,7 +39,6 @@ const useStyles = makeStyles((theme) => ({
 
 const EquipmentPopover = ({
     studyUuid,
-    equipmentInfos,
     anchorEl,
     equipmentId,
     equipmentType,
@@ -52,9 +51,7 @@ const EquipmentPopover = ({
     const [localAnchorEl, setLocalAnchorEl] = useState(null);
 
     useEffect(() => {
-        if (equipmentInfos) {
-            setEquipmentInfo(equipmentInfos);
-        } else if (equipmentId && equipmentId !== '') {
+        if (equipmentId && equipmentId !== '') {
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNode.id,
@@ -68,7 +65,7 @@ const EquipmentPopover = ({
         } else {
             setEquipmentInfo(null);
         }
-    }, [equipmentId, equipmentType, equipmentInfos, currentNode.id, studyUuid]);
+    }, [equipmentId, equipmentType, currentNode.id, studyUuid]);
 
     const handlePopoverClose = () => {
         setEquipmentInfo(null);
@@ -412,7 +409,6 @@ const EquipmentPopover = ({
 
 EquipmentPopover.propTypes = {
     studyUuid: PropTypes.string,
-    equipmentInfos: PropTypes.object,
     anchorEl: PropTypes.any,
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,

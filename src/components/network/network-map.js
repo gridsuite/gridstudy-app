@@ -269,7 +269,6 @@ const NetworkMap = (props) => {
                 >
                     <EquipmentPopover
                         studyUuid={studyUuid}
-                        equipmentInfos={tooltip.equipmentInfos}
                         anchorEl={divRef.current}
                         equipmentId={tooltip.equipmentId}
                         equipmentType={EQUIPMENT_TYPES.LINE}
