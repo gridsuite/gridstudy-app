@@ -12,7 +12,6 @@ import { unitToKiloUnit } from 'utils/rounding';
 import {
     SCAResultFault,
     ShortcircuitAnalysisType,
-    ShortcircuitAnalysisResult,
 } from './shortcircuit-analysis-result.type';
 import {
     GridReadyEvent,
