@@ -31,7 +31,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
                 editable: true,
                 numeric: false,
                 directoryItems: true,
-                equipmentTypes: [EQUIPMENT_TYPES.GENERATOR.type],
+                equipmentTypes: [EQUIPMENT_TYPES.GENERATOR],
                 elementType: elementType.FILTER,
                 titleId: 'FiltersListsSelection',
             },

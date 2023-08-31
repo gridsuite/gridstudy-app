@@ -22,6 +22,7 @@ export interface SCAResultFaultLimitViolation {
 export interface SCAResultFaultFeederResult {
     connectableId: string;
     current: number;
+    positiveMagnitude: number;
 }
 
 interface SCAShortCircuitLimits {
@@ -32,6 +33,7 @@ interface SCAShortCircuitLimits {
 export interface SCAResultFault {
     fault: SCAResultFaultFault;
     current: number;
+    positiveMagnitude: number;
     shortCircuitPower: number;
     shortCircuitLimits: SCAShortCircuitLimits;
     limitViolations: SCAResultFaultLimitViolation[];

@@ -174,6 +174,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     result={result}
                     onSortChanged={onSortChanged}
                     sortConfig={sortConfig}
+                    analysisType={analysisType}
                 />
             </WaitingLoader>
             {isAllBusesType && (

@@ -84,7 +84,7 @@ const SubstationCreationDialog = ({
         currentNodeUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.SUBSTATION.type,
+        elementType: EQUIPMENT_TYPES.SUBSTATION,
     });
 
     useEffect(() => {
@@ -151,7 +151,7 @@ const SubstationCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.SUBSTATION.type}
+                    equipmentType={EQUIPMENT_TYPES.SUBSTATION}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

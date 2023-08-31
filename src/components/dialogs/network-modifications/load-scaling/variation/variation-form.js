@@ -27,7 +27,7 @@ import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
 import { elementType } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
 
-const LOADS = [EQUIPMENT_TYPES.LOAD.type];
+const LOADS = [EQUIPMENT_TYPES.LOAD];
 
 const VariationForm = ({ name, index }) => {
     const variationMode = useWatch({
