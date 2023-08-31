@@ -7,7 +7,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import { lighten, darken } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -16,9 +15,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { setModificationsDrawerOpen } from '../../../redux/actions';
 import { updateTreeNode } from '../../../services/study/tree-subtree';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
-    paper: {
+const styles = {
+    paper: (theme) => ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -27,11 +27,10 @@ const useStyles = makeStyles((theme) => ({
             theme.palette.mode === 'light'
                 ? darken(theme.palette.background.paper, 0.1)
                 : lighten(theme.palette.background.paper, 0.2),
-    },
-}));
+    }),
+};
 
 const NodeEditor = () => {
-    const classes = useStyles();
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const currentTreeNode = useSelector((state) => state.currentTreeNode);
@@ -55,14 +54,14 @@ const NodeEditor = () => {
     };
 
     return (
-        <div className={classes.paper}>
+        <Box sx={styles.paper}>
             <EditableTitle
                 name={currentTreeNode?.data?.label}
                 onClose={closeModificationsDrawer}
                 onChange={changeNodeName}
             />
             <NetworkModificationNodeEditor />
-        </div>
+        </Box>
     );
 };
 
