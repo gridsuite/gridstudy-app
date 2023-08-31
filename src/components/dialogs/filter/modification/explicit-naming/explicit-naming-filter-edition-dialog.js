@@ -60,10 +60,10 @@ const ExplicitNamingFilterEditionDialog = ({
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
         if (id && open) {
-            setDataFetchStatus(FetchStatus.FETCHING);
+            setDataFetchStatus(FetchStatus.RUNNING);
             getFilterById(id)
                 .then((response) => {
-                    setDataFetchStatus(FetchStatus.FETCH_SUCCESS);
+                    setDataFetchStatus(FetchStatus.SUCCEED);
                     reset({
                         [NAME]: name,
                         [FILTER_TYPE]: FILTER_TYPES.EXPLICIT_NAMING.id,
@@ -77,7 +77,7 @@ const ExplicitNamingFilterEditionDialog = ({
                     });
                 })
                 .catch((error) => {
-                    setDataFetchStatus(FetchStatus.FETCH_ERROR);
+                    setDataFetchStatus(FetchStatus.FAILED);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'cannotRetrieveFilter',
@@ -111,7 +111,7 @@ const ExplicitNamingFilterEditionDialog = ({
         setValue(NAME, newName);
     };
 
-    const isDataReady = dataFetchStatus === FetchStatus.FETCH_SUCCESS;
+    const isDataReady = dataFetchStatus === FetchStatus.SUCCEED;
 
     return (
         <FormProvider
@@ -128,7 +128,7 @@ const ExplicitNamingFilterEditionDialog = ({
                 disabledSave={!isNameValid}
                 fullWidth
                 maxWidth={'md'}
-                isDataFetching={dataFetchStatus === FetchStatus.FETCHING}
+                isDataFetching={dataFetchStatus === FetchStatus.RUNNING}
             >
                 <NameWrapper
                     titleMessage="Name"
@@ -136,6 +136,7 @@ const ExplicitNamingFilterEditionDialog = ({
                     contentType={elementType.FILTER}
                     handleNameValidation={handleNameChange}
                     activeDirectory={activeDirectory}
+                    isChoosedFolderChanged={false}
                 >
                     {isDataReady && <ExplicitNamingFilterForm />}
                 </NameWrapper>

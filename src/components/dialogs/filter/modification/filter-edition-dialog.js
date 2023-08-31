@@ -52,6 +52,11 @@ const EditFilterDialog = ({ open, onClose }) => {
         }
     };
 
+    const handleClose = (event)=>{
+        setOpenDialog(false);
+        onClose();
+    }
+
     function renderDialog(filter) {
         if (FILTER_TYPES.CRITERIA_BASED.id === filter.type) {
             return (
@@ -59,7 +64,7 @@ const EditFilterDialog = ({ open, onClose }) => {
                     <CriteriaBasedFilterEditionDialog
                         id={filter.id}
                         open={openDialog}
-                        onClose={() => setOpenDialog(false)}
+                        onClose={handleClose}
                         titleId={'editFilter'}
                         name={filter.name}
                         activeDirectory={activeDirectory}
@@ -72,7 +77,7 @@ const EditFilterDialog = ({ open, onClose }) => {
                     <ExplicitNamingFilterEditionDialog
                         id={filter.id}
                         open={openDialog}
-                        onClose={() => setOpenDialog(false)}
+                        onClose={handleClose}
                         titleId={'editFilter'}
                         name={filter.name}
                         activeDirectory={activeDirectory}
@@ -92,6 +97,9 @@ const EditFilterDialog = ({ open, onClose }) => {
                 onlyLeaves={true}
                 multiselect={false}
                 getRootDirectorys={getRootDirectorys}
+                validationButtonText={intl.formatMessage({
+                    id: 'validate',
+                })}
             />
             {openDialog && renderDialog(selectedFilter)}
         </>

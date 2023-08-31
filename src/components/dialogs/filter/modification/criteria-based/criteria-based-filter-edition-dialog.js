@@ -64,10 +64,10 @@ export const CriteriaBasedFilterEditionDialog = ({
     // Fetch the filter data from back-end if necessary and fill the form with it
     useEffect(() => {
         if (id && open) {
-            setDataFetchStatus(FetchStatus.FETCHING);
+            setDataFetchStatus(FetchStatus.RUNNING);
             getFilterById(id)
                 .then((response) => {
-                    setDataFetchStatus(FetchStatus.FETCH_SUCCESS);
+                    setDataFetchStatus(FetchStatus.SUCCEED);
                     reset({
                         [NAME]: name,
                         [FILTER_TYPE]: FILTER_TYPES.CRITERIA_BASED.id,
@@ -75,7 +75,7 @@ export const CriteriaBasedFilterEditionDialog = ({
                     });
                 })
                 .catch((error) => {
-                    setDataFetchStatus(FetchStatus.FETCH_ERROR);
+                    setDataFetchStatus(FetchStatus.FAILED);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'cannotRetrieveFilter',
@@ -103,7 +103,7 @@ export const CriteriaBasedFilterEditionDialog = ({
         setValue(NAME, newName);
     };
 
-    const isDataReady = dataFetchStatus === FetchStatus.FETCH_SUCCESS;
+    const isDataReady = dataFetchStatus === FetchStatus.SUCCEED;
 
     return (
         <FormProvider
@@ -119,7 +119,7 @@ export const CriteriaBasedFilterEditionDialog = ({
                 titleId={titleId}
                 disabledSave={!isNameValid}
                 maxWidth={'md'}
-                isDataFetching={dataFetchStatus === FetchStatus.FETCHING}
+                isDataFetching={dataFetchStatus === FetchStatus.RUNNING}
             >
                 <NameWrapper
                     titleMessage="Name"
@@ -127,6 +127,7 @@ export const CriteriaBasedFilterEditionDialog = ({
                     contentType={elementType.FILTER}
                     handleNameValidation={handleNameChange}
                     activeDirectory={activeDirectory}
+                    isChoosedFolderChanged={false}
                 >
                     {isDataReady && <CriteriaBasedFilterForm />}
                 </NameWrapper>

@@ -222,6 +222,9 @@ const CreateFilterDialog = ({ open, onClose }) => {
                     title={intl.formatMessage({ id: 'chooseFolder' })}
                     onlyLeaves={false}
                     multiselect={false}
+                    validationButtonText={intl.formatMessage({
+                        id: 'validate',
+                    })}
                 />
             </ModificationDialog>
         </FormProvider>

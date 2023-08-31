@@ -42,46 +42,52 @@ const NameWrapper = ({
      */
     const updateFormState = useCallback(
         (name) => {
-            if (name === '') {
-                setFormState(
-                    intl.formatMessage({ id: 'nameEmpty' }),
-                    false,
-                    name
-                );
-                setLoadingCheckName(false);
-            } else if (name.match(/^\s*$/)) {
-                setFormState(
-                    intl.formatMessage({ id: 'nameEmpty' }),
-                    false,
-                    name
-                );
+            if (name === initialValue) {
+                setFormState('', true, name);
                 setLoadingCheckName(false);
             } else {
-                //If the name is not only white spaces
-                elementExists(activeDirectory, name, contentType)
-                    .then((data) => {
-                        setFormState(
-                            data
-                                ? intl.formatMessage({
-                                      id: 'nameAlreadyUsed',
-                                  })
-                                : '',
-                            !data,
-                            name
-                        );
-                    })
-                    .catch((error) => {
-                        setFormState(
-                            intl.formatMessage({
-                                id: 'nameValidityCheckErrorMsg',
-                            }) + error.message,
-                            false,
-                            name
-                        );
-                    })
-                    .finally(() => {
-                        setLoadingCheckName(false);
-                    });
+                if (name === '') {
+                    setFormState(
+                        intl.formatMessage({ id: 'nameEmpty' }),
+                        false,
+                        name
+                    );
+                    setLoadingCheckName(false);
+                } else if (name.match(/^\s*$/)) {
+                    setFormState(
+                        intl.formatMessage({ id: 'nameEmpty' }),
+                        false,
+                        name
+                    );
+                    setLoadingCheckName(false);
+                } else {
+                    console.log('elementExists', name, contentType);
+                    //If the name is not only white spaces
+                    elementExists(activeDirectory, name, contentType)
+                        .then((data) => {
+                            setFormState(
+                                data
+                                    ? intl.formatMessage({
+                                          id: 'nameAlreadyUsed',
+                                      })
+                                    : '',
+                                !data,
+                                name
+                            );
+                        })
+                        .catch((error) => {
+                            setFormState(
+                                intl.formatMessage({
+                                    id: 'nameValidityCheckErrorMsg',
+                                }) + error.message,
+                                false,
+                                name
+                            );
+                        })
+                        .finally(() => {
+                            setLoadingCheckName(false);
+                        });
+                }
             }
         },
         [activeDirectory, contentType, intl, setFormState]
@@ -98,7 +104,17 @@ const NameWrapper = ({
     );
 
     const renderNameStatus = () => {
+        console.log(
+            'in rendr name status',
+            value,
+            loadingCheckName,
+            errorMessage,
+            initialValue
+        );
+
         const showOk = value !== '' && !loadingCheckName && errorMessage === '';
+
+        console.log('in rendr showok', showOk);
         return (
             <div
                 style={{

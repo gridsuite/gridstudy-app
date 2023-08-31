@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
@@ -26,6 +26,9 @@ import InputWithPopupConfirmation from 'components/utils/rhf-inputs/select-input
 import { FILTER_EQUIPMENTS } from '../criteria-based/criteria-based-utils';
 import { SelectInput } from '@gridsuite/commons-ui';
 import Papa from 'papaparse';
+import CellEditor from './cell-editor';
+import { useSelector } from 'react-redux';
+import { fetchEquipmentsIds } from 'services/study/network-map';
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
 export const DISTRIBUTION_KEY = 'distributionKey';
 export const EQUIPMENT_ID = 'equipmentID';
@@ -112,6 +115,27 @@ function ExplicitNamingFilterForm() {
     });
 
     const forGeneratorOrLoad = isGeneratorOrLoad(watchEquipmentType);
+    const [linesOptions, setLinesOptions] = useState([]);
+    const studyUuid = useSelector((state: any) => state.studyUuid);
+    const currentNode = useSelector((state: any) => state.currentTreeNode);
+    useEffect(() => {
+        fetchEquipmentsIds(
+            studyUuid,
+            currentNode.id,
+            undefined,
+            watchEquipmentType,
+            true
+        ).then((values) => {
+            console.log('values', values, watchEquipmentType);
+            setLinesOptions(
+                values
+                    .sort((a: any, b: any) => a.localeCompare(b))
+                    .map((value: any) => {
+                        return { id: value };
+                    })
+            );
+        });
+    }, [studyUuid, currentNode.id, watchEquipmentType]);
 
     const columnDefs = useMemo(() => {
         const columnDefs: any[] = [
@@ -121,6 +145,13 @@ function ExplicitNamingFilterForm() {
                 field: EQUIPMENT_ID,
                 editable: true,
                 singleClickEdit: true,
+                cellRenderer: CellEditor,
+                cellRendererParams: {
+                    name: FILTER_EQUIPMENTS_ATTRIBUTES,
+                    equipmentType: EQUIPMENT_TYPE,
+                    options: linesOptions,
+                },
+                cellStyle: { padding: 0 },
                 valueParser: (params: ValueParserParams) =>
                     params.newValue?.trim() ?? null,
             },
@@ -136,7 +167,7 @@ function ExplicitNamingFilterForm() {
             });
         }
         return columnDefs;
-    }, [intl, forGeneratorOrLoad]);
+    }, [intl, linesOptions, forGeneratorOrLoad]);
 
     const defaultColDef = useMemo(
         () => ({
