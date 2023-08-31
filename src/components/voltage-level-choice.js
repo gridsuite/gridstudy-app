@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -15,11 +14,12 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { getNominalVoltageColor } from '../utils/colors';
 import { useNameOrId } from './utils/equipmentInfosHandler';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     menu: {
-        minWidth: 300,
-        maxHeight: 800,
+        minWidth: '300px',
+        maxHeight: '800px',
         overflowY: 'auto',
     },
     nominalVoltageItem: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
         margin: '7px',
     },
     nominalVoltageButton: {
-        borderRadius: 25,
+        borderRadius: '25px',
         size: 'small',
         padding: '0px',
         margin: '7px',
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         fontSize: 12,
         padding: '8px',
     },
-}));
+};
 
 const voltageLevelComparator = (vl1, vl2) => {
     return vl1.nominalVoltage < vl2.nominalVoltage;
@@ -53,11 +53,10 @@ const VoltageLevelChoice = ({
     substation,
     position,
 }) => {
-    const classes = useStyles();
     const { getNameOrId } = useNameOrId();
 
     return (
-        <div className={classes.menu}>
+        <Box sx={styles.menu}>
             <Menu
                 anchorReference="anchorPosition"
                 anchorPosition={{
@@ -87,7 +86,7 @@ const VoltageLevelChoice = ({
 
                             return (
                                 <MenuItem
-                                    className={classes.nominalVoltageItem}
+                                    sx={styles.nominalVoltageItem}
                                     id={voltageLevel.id}
                                     key={voltageLevel.id}
                                     onClick={() =>
@@ -96,9 +95,7 @@ const VoltageLevelChoice = ({
                                 >
                                     <ListItemIcon>
                                         <Button
-                                            className={
-                                                classes.nominalVoltageButton
-                                            }
+                                            sx={styles.nominalVoltageButton}
                                             variant="contained"
                                             style={{
                                                 backgroundColor: colorString,
@@ -109,7 +106,7 @@ const VoltageLevelChoice = ({
                                     </ListItemIcon>
 
                                     <ListItemText
-                                        className={classes.nominalVoltageText}
+                                        sx={styles.nominalVoltageText}
                                         primary={
                                             <Typography noWrap>
                                                 {getNameOrId(voltageLevel)}
@@ -120,7 +117,7 @@ const VoltageLevelChoice = ({
                             );
                         })}
             </Menu>
-        </div>
+        </Box>
     );
 };
 
