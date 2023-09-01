@@ -6,7 +6,6 @@
  */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -19,22 +18,22 @@ import { ModificationListItem } from 'components/graph/menus/modification-list-i
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { restoreModifications } from 'services/study/network-modifications';
 
-const useStyles = makeStyles((theme) => ({
-    text: {
+const styles = {
+    text: (theme) => ({
         padding: theme.spacing(1),
-    },
-    listContainer: {
+    }),
+    listContainer: (theme) => ({
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
-    },
-    list: {
+    }),
+    list: (theme) => ({
         paddingTop: theme.spacing(0),
         flexGrow: 1,
-    },
-    modificationsTitle: {
+    }),
+    modificationsTitle: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         margin: theme.spacing(0),
@@ -42,46 +41,45 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
         overflow: 'hidden',
-    },
-    toolbar: {
+    }),
+    toolbar: (theme) => ({
         padding: theme.spacing(0),
         border: theme.spacing(1),
         minHeight: 0,
         margin: 0,
         flexShrink: 0,
-    },
-
-    toolbarIcon: {
+    }),
+    toolbarIcon: (theme) => ({
         marginRight: theme.spacing(1),
-    },
-    toolbarCheckbox: {
+    }),
+    toolbarCheckbox: (theme) => ({
         marginLeft: theme.spacing(1.5),
-    },
-    filler: {
+    }),
+    filler: (theme) => ({
         flexGrow: 1,
-    },
-    dividerTool: {
+    }),
+    dividerTool: (theme) => ({
         background: theme.palette.primary.main,
-    },
-    circularProgress: {
+    }),
+    circularProgress: (theme) => ({
         marginRight: theme.spacing(2),
         color: theme.palette.primary.contrastText,
-    },
-    formattedMessageProgress: {
+    }),
+    formattedMessageProgress: (theme) => ({
         marginTop: theme.spacing(2),
-    },
-    notification: {
+    }),
+    notification: (theme) => ({
         flex: 1,
         alignContent: 'center',
         justifyContent: 'center',
         marginTop: theme.spacing(4),
         textAlign: 'center',
         color: theme.palette.primary.main,
-    },
-    icon: {
+    }),
+    icon: (theme) => ({
         width: theme.spacing(3),
-    },
-}));
+    }),
+};
 
 /**
  * Dialog to select network modification to create
@@ -120,7 +118,6 @@ const useStyles = makeStyles((theme) => ({
         handleClose();
         console.log(selectedModificationsUuidToRestore);
     };
-    const classes = useStyles();
 
     const [selectedItems, setSelectedItems] = useState(new Set());
 
@@ -136,7 +133,7 @@ const useStyles = makeStyles((theme) => ({
                 {intl.formatMessage({ id: 'RestoreModifications' })}
             </DialogTitle>
             <DialogContent>
-                <div className={classes.text}>
+                <div sx={styles.text}>
                     <DialogContentText>
                         {intl.formatMessage({ id: 'RestoreModificationText' })}
                     </DialogContentText>
@@ -148,12 +145,12 @@ const useStyles = makeStyles((theme) => ({
                     >
                         {(provided) => (
                             <div
-                                className={classes.listContainer}
+                                sx={styles.listContainer}
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
                             >
                                 <CheckboxList
-                                    className={classes.list}
+                                    sx={styles.list}
                                     onChecked={setSelectedItems}
                                     values={modificationsToRestore}
                                     itemComparator={(a, b) => a.uuid === b.uuid}

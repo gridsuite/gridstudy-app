@@ -10,7 +10,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
-import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
 import {
     Checkbox,
@@ -73,20 +72,21 @@ import { FetchStatus } from '../../../services/utils';
 import { copyOrMoveModifications } from '../../../services/study';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
-    listContainer: {
+const styles = {
+    listContainer: (theme) => ({
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
-    },
-    list: {
+    }),
+    list: (theme) => ({
         paddingTop: theme.spacing(0),
         flexGrow: 1,
-    },
-    modificationsTitle: {
+    }),
+    modificationsTitle: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         margin: theme.spacing(0),
@@ -94,46 +94,42 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
         overflow: 'hidden',
-    },
-    toolbar: {
-        padding: theme.spacing(0),
+    }),
+    toolbar: (theme) => ({
+        '&': {
+            // Necessary to overrides some @media specific styles that are defined elsewhere
+            padding: 0,
+            minHeight: 0,
+        },
         border: theme.spacing(1),
-        minHeight: 0,
         margin: 0,
         flexShrink: 0,
-    },
-
-    toolbarIcon: {
+    }),
+    toolbarIcon: (theme) => ({
         marginRight: theme.spacing(1),
-    },
-    toolbarCheckbox: {
+    }),
+    toolbarCheckbox: (theme) => ({
         marginLeft: theme.spacing(1.5),
-    },
+    }),
     filler: {
         flexGrow: 1,
     },
-    dividerTool: {
-        background: theme.palette.primary.main,
-    },
-    circularProgress: {
+    circularProgress: (theme) => ({
         marginRight: theme.spacing(2),
         color: theme.palette.primary.contrastText,
-    },
-    formattedMessageProgress: {
-        marginTop: theme.spacing(2),
-    },
-    notification: {
+    }),
+    notification: (theme) => ({
         flex: 1,
         alignContent: 'center',
         justifyContent: 'center',
         marginTop: theme.spacing(4),
         textAlign: 'center',
         color: theme.palette.primary.main,
-    },
-    icon: {
+    }),
+    icon: (theme) => ({
         width: theme.spacing(3),
-    },
-}));
+    }),
+};
 
 function isChecked(s1) {
     return s1 !== 0;
@@ -578,8 +574,6 @@ const NetworkModificationNodeEditor = () => {
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
-    const classes = useStyles();
-
     const openNetworkModificationConfiguration = useCallback(() => {
         setOpenNetworkModificationsMenu(true);
     }, []);
@@ -799,13 +793,13 @@ const NetworkModificationNodeEditor = () => {
                     isDropDisabled={isLoading() || isAnyNodeBuilding}
                 >
                     {(provided) => (
-                        <div
-                            className={classes.listContainer}
+                        <Box
+                            sx={styles.listContainer}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
                             <CheckboxList
-                                className={classes.list}
+                                sx={styles.list}
                                 onChecked={setSelectedItems}
                                 values={modifications}
                                 itemComparator={(a, b) => a.uuid === b.uuid}
@@ -822,7 +816,7 @@ const NetworkModificationNodeEditor = () => {
                                 toggleSelectAll={toggleSelectAll}
                             />
                             {provided.placeholder}
-                        </div>
+                        </Box>
                     )}
                 </Droppable>
             </DragDropContext>
@@ -831,49 +825,49 @@ const NetworkModificationNodeEditor = () => {
 
     const renderNetworkModificationsListTitleLoading = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     <CircularProgress
                         size={'1em'}
-                        className={classes.circularProgress}
+                        sx={styles.circularProgress}
                     />
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage id={messageId} />
                 </Typography>
-            </div>
+            </Box>
         );
     };
 
     const renderNetworkModificationsListTitleUpdating = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     <CircularProgress
                         size={'1em'}
-                        className={classes.circularProgress}
+                        sx={styles.circularProgress}
                     />
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'network_modifications/modifications'}
                     />
                 </Typography>
-            </div>
+            </Box>
         );
     };
 
     const renderNetworkModificationsListTitle = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     {pendingState && (
                         <CircularProgress
                             size={'1em'}
-                            className={classes.circularProgress}
+                            sx={styles.circularProgress}
                         />
                     )}
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'network_modification/modificationsCount'}
@@ -883,7 +877,7 @@ const NetworkModificationNodeEditor = () => {
                         }}
                     />
                 </Typography>
-            </div>
+            </Box>
         );
     };
     const renderNetworkModificationsToRestoreDialog = () => {
@@ -909,9 +903,9 @@ const NetworkModificationNodeEditor = () => {
 
     return (
         <>
-            <Toolbar className={classes.toolbar}>
+            <Toolbar sx={styles.toolbar}>
                 <Checkbox
-                    className={classes.toolbarCheckbox}
+                    sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
                     checked={isChecked(selectedItems.size)}
@@ -922,9 +916,9 @@ const NetworkModificationNodeEditor = () => {
                     disableRipple
                     onClick={toggleSelectAllModifications}
                 />
-                <div className={classes.filler} />
+                <Box sx={styles.filler} />
                 <IconButton
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
@@ -935,7 +929,7 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCutModifications}
                     size={'small'}
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     disabled={
                         selectedItems.size === 0 ||
                         isAnyNodeBuilding ||
@@ -947,7 +941,7 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCopyModifications}
                     size={'small'}
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     disabled={selectedItems.size === 0 || isAnyNodeBuilding}
                 >
                     <ContentCopyIcon />
@@ -968,7 +962,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            className={classes.toolbarIcon}
+                            sx={styles.toolbarIcon}
                             disabled={
                                 !(copiedModifications.length > 0) ||
                                 isAnyNodeBuilding ||
@@ -982,7 +976,7 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doDeleteModification}
                     size={'small'}
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     disabled={
                         !(selectedItems?.size > 0) ||
                         isAnyNodeBuilding ||
@@ -994,7 +988,7 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={openRestoreModificationDialog}
                     size={'small'}
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                 >
                     <RestoreIcon />
                 </IconButton>

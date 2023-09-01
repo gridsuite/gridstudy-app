@@ -368,7 +368,7 @@ export function RunButtonContainer({
                 )
             );
             startShortCircuitAnalysis(studyUuid, currentNode?.id)
-                .then(setRanShortCircuit(true))
+                .then(() => setRanShortCircuit(true))
                 .catch((error) => {
                     dispatch(
                         setComputingStatus(

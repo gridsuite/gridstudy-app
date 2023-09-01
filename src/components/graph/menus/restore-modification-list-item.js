@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -15,10 +15,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import * as PropTypes from 'prop-types';
 
 const RestoreModificationListItem = (props) => {
-    const [isHoover, setHoover] = useState(false);
+    const [isHover, setHover] = useState(false);
 
-    function handleHoover(enter) {
-        return setHoover(enter);
+    function handleHover(enter) {
+        return setHover(enter);
     }
 
     return (
@@ -27,8 +27,8 @@ const RestoreModificationListItem = (props) => {
             dense
             button
             onClick={props.onClick}
-            onMouseEnter={() => handleHoover(true)}
-            onMouseLeave={() => handleHoover(false)}
+            onMouseEnter={() => handleHover(true)}
+            onMouseLeave={() => handleHover(false)}
             style={{
                 paddingTop: 0,
                 paddingBottom: 0,
@@ -44,7 +44,7 @@ const RestoreModificationListItem = (props) => {
                 />
             </ListItemIcon>
             <ListItemText primary={props.primary} />
-            {props.removeFromList && isHoover && (
+            {props.removeFromList && isHover && (
                 <IconButton onClick={props.removeFromList} size={'small'}>
                     <DeleteIcon
                         style={{
