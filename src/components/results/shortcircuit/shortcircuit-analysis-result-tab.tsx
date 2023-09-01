@@ -16,7 +16,7 @@ import {
     ResultsTabsLevel,
     useResultsTab,
 } from '../use-results-tab';
-import { ShortCircuitAnalysisGlobalResult } from './shortcircuit-analysis-result';
+import { ShortCircuitAnalysisResult } from './shortcircuit-analysis-result';
 import { FormattedMessage } from 'react-intl';
 
 interface ShortCircuitAnalysisResultTabProps {
@@ -57,16 +57,13 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                     }
                 />
             </Tabs>
-            {tabIndex === ShortcircuitAnalysisResultTabs.ALL_BUSES && (
-                <ShortCircuitAnalysisGlobalResult
-                    analysisType={ShortcircuitAnalysisType.ALL_BUSES}
-                />
-            )}
-            {tabIndex === ShortcircuitAnalysisResultTabs.ONE_BUS && (
-                <ShortCircuitAnalysisGlobalResult
-                    analysisType={ShortcircuitAnalysisType.ONE_BUS}
-                />
-            )}
+            <ShortCircuitAnalysisResult
+                analysisType={
+                    tabIndex === ShortcircuitAnalysisResultTabs.ALL_BUSES
+                        ? ShortcircuitAnalysisType.ALL_BUSES
+                        : ShortcircuitAnalysisType.ONE_BUS
+                }
+            />
         </>
     );
 };

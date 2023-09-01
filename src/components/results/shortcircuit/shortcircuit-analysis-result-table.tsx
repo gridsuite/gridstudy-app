@@ -7,10 +7,10 @@
 
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { useTheme } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import {
-    ShortcircuitAnalysisResult,
+    SCAResultFault,
     ShortcircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import {
@@ -28,9 +28,13 @@ import {
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
+import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
+import { ISortConfig } from '../../../hooks/use-aggrid-sort';
 
 interface ShortCircuitAnalysisResultProps {
-    result: ShortcircuitAnalysisResult;
+    result: SCAResultFault[];
+    onSortChanged: (colKey: string, sortWay: number) => void;
+    sortConfig: ISortConfig;
     analysisType: ShortcircuitAnalysisType;
 }
 
@@ -67,72 +71,118 @@ interface ShortCircuitAnalysisResultsFeederResult {
     linkedElementId: string;
 }
 
-const ShortCircuitAnalysisResult: FunctionComponent<
+interface ColumnConfig {
+    headerName?: string;
+    field: string;
+    isNumeric?: boolean;
+    fractionDigits?: number;
+    isHidden?: boolean;
+    isSortable?: boolean;
+}
+
+const ShortCircuitAnalysisResultTable: FunctionComponent<
     ShortCircuitAnalysisResultProps
-> = ({ result, analysisType }) => {
+> = ({ result, onSortChanged, sortConfig, analysisType }) => {
     const intl = useIntl();
     const theme = useTheme();
 
-    const columns = useMemo(() => {
-        return [
-            {
+    const makeColumn = useCallback(
+        ({
+            headerName,
+            field,
+            isNumeric = false,
+            fractionDigits,
+            isHidden = false,
+            isSortable = true,
+        }: ColumnConfig) => {
+            return {
+                headerName,
+                field,
+                numeric: isNumeric,
+                fractionDigits,
+                hide: isHidden,
+                headerComponent: CustomHeaderComponent,
+                headerComponentParams: {
+                    field,
+                    displayName: headerName,
+                    sortConfig,
+                    onSortChanged: (newSortValue: number) => {
+                        onSortChanged(field, newSortValue);
+                    },
+                    isSortable,
+                    isFilterable: false,
+                },
+            };
+        },
+        [sortConfig, onSortChanged]
+    );
+
+    const columns = useMemo(
+        () => [
+            makeColumn({
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
-            },
-            {
+            }),
+            makeColumn({
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
-            },
-            {
+            }),
+            makeColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
-            },
-            {
+                isSortable: false,
+            }),
+            makeColumn({
                 headerName: intl.formatMessage({ id: 'IscKA' }),
                 field: 'current',
                 fractionDigits: 1,
-                numeric: true,
-            },
-            {
+                isNumeric: true,
+            }),
+            makeColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
-            },
-            {
+            }),
+            makeColumn({
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
                 fractionDigits: 1,
-                numeric: true,
-            },
-            {
+                isNumeric: true,
+            }),
+            makeColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
                 fractionDigits: 1,
-                numeric: true,
-            },
-            {
+                isNumeric: true,
+            }),
+            makeColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
                 fractionDigits: 1,
-                numeric: true,
-            },
-            {
+                isNumeric: true,
+            }),
+            makeColumn({
                 headerName: intl.formatMessage({ id: 'DeltaIscIscMax' }),
                 field: 'deltaIscIscMax',
                 fractionDigits: 1,
-                numeric: true,
-            },
-            {
+                isNumeric: true,
+                isSortable: false,
+            }),
+            makeColumn({
                 headerName: intl.formatMessage({ id: 'DeltaIscIscMin' }),
                 field: 'deltaIscIscMin',
                 fractionDigits: 1,
-                numeric: true,
-            },
-            {
+                isNumeric: true,
+                isSortable: false,
+            }),
+            makeColumn({
                 field: 'linkedElementId',
-                hide: true,
-            },
-        ];
-    }, [intl]);
+                isHidden: true,
+                isSortable: false,
+            }),
+        ],
+        [intl, makeColumn]
+    );
+
     const shortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
@@ -178,11 +228,10 @@ const ShortCircuitAnalysisResult: FunctionComponent<
         [theme.selectedRow.background]
     );
 
-    function flattenResult(
-        shortCircuitAnalysisResult: ShortcircuitAnalysisResult
-    ) {
+    const flattenResult = (shortCircuitAnalysisResult: SCAResultFault[]) => {
         const rows: ShortCircuitAnalysisAGGridResult[] = [];
-        shortCircuitAnalysisResult?.faults?.forEach((faultResult) => {
+
+        shortCircuitAnalysisResult?.forEach((faultResult: SCAResultFault) => {
             const fault = faultResult.fault;
             const limitViolations = faultResult.limitViolations;
             let firstLimitViolation;
@@ -262,14 +311,13 @@ const ShortCircuitAnalysisResult: FunctionComponent<
             });
         });
         return rows;
-    }
+    };
 
     const defaultColDef = useMemo(
         () => ({
             suppressMovable: true,
             resizable: true,
             sortable: true,
-            autoHeaderHeight: true,
             flex: 1,
         }),
         []
@@ -280,6 +328,7 @@ const ShortCircuitAnalysisResult: FunctionComponent<
             params.api.sizeColumnsToFit();
         }
     }, []);
+
     const handlePostSortRows = useCallback((params: PostSortRowsParams) => {
         const rows = params.nodes;
         Object.assign(
@@ -288,16 +337,16 @@ const ShortCircuitAnalysisResult: FunctionComponent<
         );
     }, []);
 
-    const renderResult = () => {
-        const rows = flattenResult(result);
-        const message = getNoRowsMessage(
-            messages,
-            rows,
-            shortCircuitAnalysisStatus
-        );
-        const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
+    const rows = flattenResult(result);
+    const message = getNoRowsMessage(
+        messages,
+        rows,
+        shortCircuitAnalysisStatus
+    );
+    const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 
-        return (
+    return (
+        <Box sx={{ flexGrow: 1 }}>
             <CustomAGGrid
                 rowData={rowsToShow}
                 defaultColDef={defaultColDef}
@@ -308,10 +357,8 @@ const ShortCircuitAnalysisResult: FunctionComponent<
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
             />
-        );
-    };
-
-    return <>{renderResult()}</>;
+        </Box>
+    );
 };
 
-export default ShortCircuitAnalysisResult;
+export default ShortCircuitAnalysisResultTable;
