@@ -115,26 +115,27 @@ function ExplicitNamingFilterForm() {
     });
 
     const forGeneratorOrLoad = isGeneratorOrLoad(watchEquipmentType);
-    const [linesOptions, setLinesOptions] = useState([]);
+    const [equipmentTypeOptions, setEquipmentTypeOptions] = useState([]);
     const studyUuid = useSelector((state: any) => state.studyUuid);
     const currentNode = useSelector((state: any) => state.currentTreeNode);
     useEffect(() => {
-        fetchEquipmentsIds(
-            studyUuid,
-            currentNode.id,
-            undefined,
-            watchEquipmentType,
-            true
-        ).then((values) => {
-            console.log('values', values, watchEquipmentType);
-            setLinesOptions(
-                values
-                    .sort((a: any, b: any) => a.localeCompare(b))
-                    .map((value: any) => {
-                        return { id: value };
-                    })
-            );
-        });
+        if (watchEquipmentType) {
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNode.id,
+                undefined,
+                watchEquipmentType,
+                true
+            ).then((values) => {
+                setEquipmentTypeOptions(
+                    values
+                        .sort((a: any, b: any) => a.localeCompare(b))
+                        .map((value: any) => {
+                            return { id: value };
+                        })
+                );
+            });
+        }
     }, [studyUuid, currentNode.id, watchEquipmentType]);
 
     const columnDefs = useMemo(() => {
@@ -143,13 +144,11 @@ function ExplicitNamingFilterForm() {
             {
                 headerName: intl.formatMessage({ id: 'equipmentId' }),
                 field: EQUIPMENT_ID,
-                editable: true,
                 singleClickEdit: true,
                 cellRenderer: CellEditor,
                 cellRendererParams: {
                     name: FILTER_EQUIPMENTS_ATTRIBUTES,
-                    equipmentType: EQUIPMENT_TYPE,
-                    options: linesOptions,
+                    options: equipmentTypeOptions,
                 },
                 cellStyle: { padding: 0 },
                 valueParser: (params: ValueParserParams) =>
@@ -167,7 +166,7 @@ function ExplicitNamingFilterForm() {
             });
         }
         return columnDefs;
-    }, [intl, linesOptions, forGeneratorOrLoad]);
+    }, [intl, equipmentTypeOptions, forGeneratorOrLoad]);
 
     const defaultColDef = useMemo(
         () => ({
@@ -253,31 +252,33 @@ function ExplicitNamingFilterForm() {
                 />
             </Grid>
 
-            <Grid item xs={12}>
-                <CustomAgGridTable
-                    name={FILTER_EQUIPMENTS_ATTRIBUTES}
-                    columnDefs={columnDefs}
-                    defaultColDef={defaultColDef}
-                    makeDefaultRowData={makeDefaultRowData}
-                    pagination={true}
-                    paginationPageSize={100}
-                    suppressRowClickSelection
-                    alwaysShowVerticalScroll
-                    stopEditingWhenCellsLoseFocus
-                    csvProps={{
-                        fileName: intl.formatMessage({
-                            id: 'filterCsvFileName',
-                        }),
-                        fileHeaders: csvFileHeaders,
-                        getDataFromCsv: handleImportCsvFilterData,
-                    }}
-                    cssProps={{
-                        '& .ag-root-wrapper-body': {
-                            maxHeight: '430px',
-                        },
-                    }}
-                />
-            </Grid>
+            {watchEquipmentType && (
+                <Grid item xs={12}>
+                    <CustomAgGridTable
+                        name={FILTER_EQUIPMENTS_ATTRIBUTES}
+                        columnDefs={columnDefs}
+                        defaultColDef={defaultColDef}
+                        makeDefaultRowData={makeDefaultRowData}
+                        pagination={true}
+                        paginationPageSize={100}
+                        suppressRowClickSelection
+                        alwaysShowVerticalScroll
+                        stopEditingWhenCellsLoseFocus
+                        csvProps={{
+                            fileName: intl.formatMessage({
+                                id: 'filterCsvFileName',
+                            }),
+                            fileHeaders: csvFileHeaders,
+                            getDataFromCsv: handleImportCsvFilterData,
+                        }}
+                        cssProps={{
+                            '& .ag-root-wrapper-body': {
+                                maxHeight: '430px',
+                            },
+                        }}
+                    />
+                </Grid>
+            )}
         </Grid>
     );
 }

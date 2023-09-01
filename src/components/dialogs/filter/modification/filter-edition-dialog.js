@@ -52,10 +52,10 @@ const EditFilterDialog = ({ open, onClose }) => {
         }
     };
 
-    const handleClose = (event)=>{
+    const handleClose = () => {
         setOpenDialog(false);
         onClose();
-    }
+    };
 
     function renderDialog(filter) {
         if (FILTER_TYPES.CRITERIA_BASED.id === filter.type) {

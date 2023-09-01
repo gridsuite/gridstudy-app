@@ -61,7 +61,6 @@ const NameWrapper = ({
                     );
                     setLoadingCheckName(false);
                 } else {
-                    console.log('elementExists', name, contentType);
                     //If the name is not only white spaces
                     elementExists(activeDirectory, name, contentType)
                         .then((data) => {
@@ -90,7 +89,7 @@ const NameWrapper = ({
                 }
             }
         },
-        [activeDirectory, contentType, intl, setFormState]
+        [activeDirectory, contentType, initialValue, intl, setFormState]
     );
     const debouncedUpdateFormState = useDebounce(updateFormState, 700);
 
@@ -104,17 +103,7 @@ const NameWrapper = ({
     );
 
     const renderNameStatus = () => {
-        console.log(
-            'in rendr name status',
-            value,
-            loadingCheckName,
-            errorMessage,
-            initialValue
-        );
-
         const showOk = value !== '' && !loadingCheckName && errorMessage === '';
-
-        console.log('in rendr showok', showOk);
         return (
             <div
                 style={{
