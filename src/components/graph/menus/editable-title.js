@@ -11,13 +11,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import AskTextDialog from '../../utils/ask-text-dialog';
 import { lighten, darken } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { OverflowableText } from '@gridsuite/commons-ui';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
-    header: {
+const styles = {
+    header: (theme) => ({
         backgroundColor:
             theme.palette.mode === 'light'
                 ? darken(theme.palette.background.paper, 0.1)
@@ -30,20 +30,19 @@ const useStyles = makeStyles((theme) => ({
         ),
         display: 'flex',
         alignItems: 'center',
-    },
+    }),
     nodeNameTitle: {
         flexGrow: 1,
         fontWeight: 'bold',
     },
-}));
+};
 
 export const EditableTitle = ({ name, onClose, onChange }) => {
     const [openEditTitle, setOpenEditTitle] = useState(false);
-    const classes = useStyles();
     const intl = useIntl();
 
     return (
-        <div className={classes.header}>
+        <Box sx={styles.header}>
             <IconButton
                 size={'small'}
                 onClick={() => setOpenEditTitle(true)}
@@ -51,7 +50,7 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
             >
                 <EditIcon />
             </IconButton>
-            <OverflowableText text={name} className={classes.nodeNameTitle} />
+            <OverflowableText text={name} sx={styles.nodeNameTitle} />
             <IconButton size={'small'} onClick={onClose}>
                 <CloseIcon />
             </IconButton>
@@ -64,7 +63,7 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
                 }}
                 onClose={() => setOpenEditTitle(false)}
             />
-        </div>
+        </Box>
     );
 };
 

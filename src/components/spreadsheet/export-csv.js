@@ -6,15 +6,13 @@
  */
 
 import { Grid, IconButton } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
 import { FormattedMessage, useIntl } from 'react-intl';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { useCallback } from 'react';
 import { EDIT_COLUMN } from './utils/config-tables';
 
-const useStyles = makeStyles((theme) => ({
-    exportCsv: {
+const styles = {
+    exportCsv: (theme) => ({
         marginTop: theme.spacing(2),
         marginLeft: theme.spacing(6),
         display: 'flex',
@@ -22,11 +20,10 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'baseline',
         position: 'absolute',
         right: 0,
-    },
-}));
+    }),
+};
 
 export const CsvExport = ({ gridRef, columns, tableName, disabled }) => {
-    const classes = useStyles();
     const intl = useIntl();
 
     const getCSVFilename = useCallback(() => {
@@ -50,12 +47,8 @@ export const CsvExport = ({ gridRef, columns, tableName, disabled }) => {
     }, [columns, getCSVFilename, gridRef]);
 
     return (
-        <Grid item className={classes.exportCsv}>
-            <span
-                className={clsx({
-                    [classes.disabledLabel]: disabled,
-                })}
-            >
+        <Grid item sx={styles.exportCsv}>
+            <span>
                 <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
             </span>
             <span>
