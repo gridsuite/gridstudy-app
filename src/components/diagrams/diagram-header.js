@@ -48,7 +48,8 @@ const styles = {
     }),
     blink: (theme) => ({
         animation: 'diagramHeaderBlinkAnimation ' + BLINK_LENGTH_MS + 'ms',
-        '@keyframes diagramHeaderBlinkAnimation': { // This adds a global css rule, so we keep the rule's name specific.
+        '@keyframes diagramHeaderBlinkAnimation': {
+            // This adds a global css rule, so we keep the rule's name specific.
             '0%, 25%': {
                 backgroundColor:
                     theme.palette.mode === 'light'
