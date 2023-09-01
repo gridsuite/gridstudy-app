@@ -133,50 +133,71 @@ const RestoreModificationDialog = ({
             <DialogTitle>
                 {intl.formatMessage({ id: 'RestoreModifications' })}
             </DialogTitle>
-            <DialogContent>
-                <div sx={styles.text}>
-                    <DialogContentText>
-                        {intl.formatMessage({ id: 'RestoreModificationText' })}
-                    </DialogContentText>
-                </div>
-                <DragDropContext>
-                    <Droppable
-                        droppableId="restore-modification-list"
-                        isDropDisabled={true}
-                    >
-                        {(provided) => (
-                            <div
-                                sx={styles.listContainer}
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
+            {modificationsToRestore.length === 0 ? (
+                <DialogContent>
+                    <div sx={styles.text}>
+                        <DialogContentText>
+                            {intl.formatMessage({
+                                id: 'NoModificationToRestore',
+                            })}
+                        </DialogContentText>
+                    </div>
+                </DialogContent>
+            ) : (
+                <>
+                    <DialogContent>
+                        <div sx={styles.text}>
+                            <DialogContentText>
+                                {intl.formatMessage({
+                                    id: 'RestoreModificationText',
+                                })}
+                            </DialogContentText>
+                        </div>
+                        <DragDropContext>
+                            <Droppable
+                                droppableId="restore-modification-list"
+                                isDropDisabled={true}
                             >
-                                <CheckboxList
-                                    sx={styles.list}
-                                    onChecked={setSelectedItems}
-                                    values={modificationsToRestore}
-                                    itemComparator={(a, b) => a.uuid === b.uuid}
-                                    itemRenderer={(props) => (
-                                        <ModificationListItem
-                                            key={props.item.uuid}
-                                            isRestorationDialog
-                                            isDragging={false}
-                                            isOneNodeBuilding={false}
-                                            disabled={false}
-                                            {...props}
+                                {(provided) => (
+                                    <div
+                                        sx={styles.listContainer}
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                    >
+                                        <CheckboxList
+                                            sx={styles.list}
+                                            onChecked={setSelectedItems}
+                                            values={modificationsToRestore}
+                                            itemComparator={(a, b) =>
+                                                a.uuid === b.uuid
+                                            }
+                                            itemRenderer={(props) => (
+                                                <ModificationListItem
+                                                    key={props.item.uuid}
+                                                    isRestorationDialog
+                                                    isDragging={false}
+                                                    isOneNodeBuilding={false}
+                                                    disabled={false}
+                                                    {...props}
+                                                />
+                                            )}
                                         />
-                                    )}
-                                />
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>
-            </DialogContent>
+                                        {provided.placeholder}
+                                    </div>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
+                    </DialogContent>
+                </>
+            )}
             <DialogActions>
                 <Button onClick={handleClose}>
                     <FormattedMessage id="close" />
                 </Button>
-                <Button onClick={handleRestore}>
+                <Button
+                    onClick={handleRestore}
+                    disabled={modificationsToRestore.length === 0}
+                >
                     <FormattedMessage id="restore" />
                 </Button>
             </DialogActions>

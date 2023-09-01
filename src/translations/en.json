@@ -485,6 +485,7 @@
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
     "RestoreModifications": "Restore modifications",
+    "NoModificationToRestore": "No modification to restore",
     "RestoreModificationText": "Please select modifications to restore",
     "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
