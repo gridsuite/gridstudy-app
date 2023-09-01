@@ -82,12 +82,15 @@ const styles = {
 };
 
 /**
- * Dialog to select network modification to create
+ * Dialog to select network modification to restore
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param onOpenDialog handle the opening of dialogs
- * @param dialogs the list of dialog
- */ const RestoreModificationDialog = ({
+ * @param modifToRestore List of network modifications to restore
+ * @param currentNode the current node
+ * @param studyUuid Id of the current study
+ */
+
+const RestoreModificationDialog = ({
     open,
     onClose,
     modifToRestore,
@@ -95,6 +98,7 @@ const styles = {
     studyUuid,
 }) => {
     const intl = useIntl();
+    const [modificationsToRestore, setModificationsToRestore] = useState([]);
 
     useEffect(() => {
         setModificationsToRestore(modifToRestore);
@@ -103,8 +107,6 @@ const styles = {
     const handleClose = () => {
         onClose();
     };
-
-    const [modificationsToRestore, setModificationsToRestore] = useState([]);
 
     const handleRestore = () => {
         const selectedModificationsUuidToRestore = [
@@ -116,7 +118,6 @@ const styles = {
             selectedModificationsUuidToRestore
         );
         handleClose();
-        console.log(selectedModificationsUuidToRestore);
     };
 
     const [selectedItems, setSelectedItems] = useState(new Set());
