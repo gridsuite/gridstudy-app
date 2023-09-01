@@ -1495,7 +1495,7 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type,
-            equipmentType: EQUIPMENT_TYPES.SWITCH.type,
+            equipmentType: EQUIPMENT_TYPES.SWITCH,
             equipmentId: switchId,
             equipmentAttributeName: 'open',
             equipmentAttributeValue: open,
