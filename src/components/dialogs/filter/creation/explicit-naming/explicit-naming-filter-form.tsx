@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, memo } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
@@ -118,6 +118,7 @@ function ExplicitNamingFilterForm() {
     const [equipmentTypeOptions, setEquipmentTypeOptions] = useState([]);
     const studyUuid = useSelector((state: any) => state.studyUuid);
     const currentNode = useSelector((state: any) => state.currentTreeNode);
+
     useEffect(() => {
         if (watchEquipmentType) {
             fetchEquipmentsIds(
@@ -145,7 +146,7 @@ function ExplicitNamingFilterForm() {
                 headerName: intl.formatMessage({ id: 'equipmentId' }),
                 field: EQUIPMENT_ID,
                 singleClickEdit: true,
-                cellRenderer: CellEditor,
+                cellRenderer: memo(CellEditor),
                 cellRendererParams: {
                     name: FILTER_EQUIPMENTS_ATTRIBUTES,
                     options: equipmentTypeOptions,
