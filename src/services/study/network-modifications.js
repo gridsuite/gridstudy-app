@@ -38,35 +38,35 @@ export function changeNetworkModificationOrder(
 }
 
 //instead of deleting modification, hiding it
-export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
+export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications?uuids=' +
+        '/network-modifications/stash?uuids=' +
         encodeURIComponent(modificationUuids);
 
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
-        method: 'PUT',
+        method: 'POST',
     });
 }
 
 export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
-    const modificationsRestoreUrl =
+    const RestoreModificationsUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications-restore?uuids=' +
+        '/network-modifications/restore?uuids=' +
         encodeURIComponent(modificationUuids);
 
-    console.debug(modificationsRestoreUrl);
-    return backendFetch(modificationsRestoreUrl, {
-        method: 'PUT',
+    console.debug(RestoreModificationsUrl);
+    return backendFetch(RestoreModificationsUrl, {
+        method: 'POST',
     });
 }
 
@@ -1463,23 +1463,11 @@ export function deleteEquipment(
     });
 }
 
-export function fetchNetworkModificationsToRestore(studyUuid, nodeUuid) {
-    console.info(
-        'Fetching network modifications to restore for nodeUuid : ',
-        nodeUuid
-    );
-    const ModificationsToRestoreGetUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/nodes/' +
-        encodeURIComponent(nodeUuid) +
-        '/network-modifications-restore';
-    console.debug(ModificationsToRestoreGetUrl);
-    return backendFetchJson(ModificationsToRestoreGetUrl);
-}
-
-export function fetchNetworkModifications(studyUuid, nodeUuid) {
+export function fetchNetworkModifications(
+    studyUuid,
+    nodeUuid,
+    stashedModifications
+) {
     console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
     const modificationsGetUrl =
         PREFIX_STUDY_QUERIES +
@@ -1487,8 +1475,8 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications';
-
+        '/network-modifications?stashed=' +
+        encodeURIComponent(stashedModifications);
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }

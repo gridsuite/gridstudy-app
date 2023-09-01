@@ -66,9 +66,8 @@ import VoltageInitModificationDialog from 'components/dialogs/network-modificati
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
     changeNetworkModificationOrder,
-    deleteModifications,
+    stashModifications,
     fetchNetworkModifications,
-    fetchNetworkModificationsToRestore,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import { copyOrMoveModifications } from '../../../services/study';
@@ -444,7 +443,7 @@ const NetworkModificationNodeEditor = () => {
             return;
         }
         setLaunchLoader(true);
-        fetchNetworkModificationsToRestore(studyUuid, currentNode.id)
+        fetchNetworkModifications(studyUuid, currentNode.id, true)
             .then((res) => {
                 if (currentNode.id === currentNodeIdRef.current) {
                     setModificationsToRestore(res);
@@ -468,7 +467,7 @@ const NetworkModificationNodeEditor = () => {
             return;
         }
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentNode.id)
+        fetchNetworkModifications(studyUuid, currentNode.id, false)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -599,11 +598,7 @@ const NetworkModificationNodeEditor = () => {
         const selectedModificationsUuid = [...selectedItems.values()].map(
             (item) => item.uuid
         );
-        deleteModifications(
-            studyUuid,
-            currentNode.id,
-            selectedModificationsUuid
-        )
+        stashModifications(studyUuid, currentNode.id, selectedModificationsUuid)
             .then(() => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
                 if (
