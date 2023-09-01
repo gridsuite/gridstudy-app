@@ -33,11 +33,11 @@ import {
     calculateReactance,
     calculateSusceptance,
 } from '../../utils/utils';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     header: {
         fontWeight: 'bold',
     },
@@ -46,10 +46,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'end',
     },
-}));
+};
 
 export const LineTypeSegmentForm = () => {
-    const classes = useStyles();
     const { setValue, getValues, clearErrors } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
@@ -198,27 +197,27 @@ export const LineTypeSegmentForm = () => {
     );
 
     const segmentTypeHeader = (
-        <div className={classes.header}>
+        <Box sx={styles.header}>
             <FormattedMessage id={'lineTypes.type'} />
-        </div>
+        </Box>
     );
 
     const segmentResistanceHeader = (
-        <div className={classes.headerJustifyEnd}>
+        <Box sx={styles.headerJustifyEnd}>
             <FormattedMessage id={'lineTypes.resistanceLabel'} />
-        </div>
+        </Box>
     );
 
     const segmentReactanceHeader = (
-        <div className={classes.headerJustifyEnd}>
+        <Box sx={styles.headerJustifyEnd}>
             <FormattedMessage id={'lineTypes.reactanceLabel'} />
-        </div>
+        </Box>
     );
 
     const segmentSusceptanceHeader = (
-        <div className={classes.headerJustifyEnd}>
+        <Box sx={styles.headerJustifyEnd}>
             <FormattedMessage id={'lineTypes.susceptanceLabel'} />
-        </div>
+        </Box>
     );
 
     const totalResistanceField = (

@@ -7,10 +7,10 @@
 
 import React from 'react';
 import { CircularProgress } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     overlay: {
         top: 0,
         bottom: 0,
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 99,
         fontSize: 15,
     },
-}));
+};
 
 const LoaderWithOverlay = ({
     color,
@@ -34,16 +34,14 @@ const LoaderWithOverlay = ({
     loadingMessageText,
     isFixed,
 }) => {
-    const classes = useStyles();
-
     return (
-        <div
-            className={classes.overlay}
+        <Box
+            sx={styles.overlay}
             style={{ position: isFixed ? 'fixed' : 'absolute' }}
         >
             <CircularProgress color={color} size={loaderSize} />
             <FormattedMessage id={loadingMessageText} />
-        </div>
+        </Box>
     );
 };
 

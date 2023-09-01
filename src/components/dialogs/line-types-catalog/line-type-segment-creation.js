@@ -10,7 +10,6 @@ import { useWatch } from 'react-hook-form';
 import { gridItem, KilometerAdornment } from '../dialogUtils';
 import EditIcon from '@mui/icons-material/Edit';
 import { FloatInput } from '@gridsuite/commons-ui';
-import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import {
     SEGMENT_DISTANCE_VALUE,
@@ -23,20 +22,12 @@ import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input'
 import { ButtonReadOnlyInput } from '../../utils/rhf-inputs/read-only/button-read-only-input';
 import PropTypes from 'prop-types';
 
-const useStyles = makeStyles((theme) => ({
-    simpleLabel: {
-        paddingTop: theme.spacing(1),
-    },
-}));
-
 const LineTypeSegmentCreation = ({
     name,
     index,
     onEditButtonClick,
     onSegmentDistanceChange,
 }) => {
-    const classes = useStyles();
-
     const watchDistance = useWatch({
         name: `${name}.${index}.${SEGMENT_DISTANCE_VALUE}`,
     });
@@ -78,10 +69,7 @@ const LineTypeSegmentCreation = ({
     const segmentTypeField = (
         <ButtonReadOnlyInput name={`${name}.${index}.${SEGMENT_TYPE_VALUE}`}>
             {onEditButtonClick && (
-                <IconButton
-                    className={classes.icon}
-                    onClick={handleEditButtonClick}
-                >
+                <IconButton onClick={handleEditButtonClick}>
                     <EditIcon />
                 </IconButton>
             )}
