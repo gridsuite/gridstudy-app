@@ -6,16 +6,15 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     menu: {
-        minWidth: 300,
-        maxHeight: 800,
+        minWidth: '300px',
+        maxHeight: '800px',
         overflowY: 'visible',
     },
-}));
+};
 
 const withEquipmentMenu =
     (BaseMenu, menuId, equipmentType) =>
@@ -27,11 +26,9 @@ const withEquipmentMenu =
         handleDeleteEquipment,
         handleOpenModificationDialog,
     }) => {
-        const classes = useStyles();
-
         return (
             <Menu
-                className={classes.menu}
+                sx={styles.menu}
                 anchorReference="anchorPosition"
                 anchorPosition={{
                     top: position[1],

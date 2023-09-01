@@ -12,7 +12,6 @@ import { OverflowableText } from '@gridsuite/commons-ui';
 import Divider from '@mui/material/Divider';
 import PropTypes from 'prop-types';
 import EditIcon from '@mui/icons-material/Edit';
-import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -31,27 +30,26 @@ const isEditableModification = (modif) => {
     return !nonEditableModificationTypes.has(modif.type);
 };
 
-const useStyles = makeStyles((theme) => ({
-    listItem: {
+const styles = {
+    listItem: (theme) => ({
         padding: theme.spacing(0),
-    },
+    }),
     label: {
         flexGrow: '1',
     },
     icon: {
         minWidth: 0,
     },
-    iconEdit: {
+    iconEdit: (theme) => ({
         marginRight: theme.spacing(1),
-    },
-    checkbox: {},
-    dragIcon: {
+    }),
+    dragIcon: (theme) => ({
         padding: theme.spacing(0),
         border: theme.spacing(1),
         borderRadius: theme.spacing(0),
         zIndex: 90,
-    },
-}));
+    }),
+};
 
 export const ModificationListItem = ({
     item: modif,
@@ -65,7 +63,6 @@ export const ModificationListItem = ({
     ...props
 }) => {
     const intl = useIntl();
-    const classes = useStyles();
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [computedValues, setComputedValues] = useState();
@@ -142,14 +139,10 @@ export const ModificationListItem = ({
                     onMouseEnter={() => setHover(true)}
                     onMouseLeave={() => setHover(false)}
                 >
-                    <ListItem
-                        key={modif.uuid}
-                        {...props}
-                        className={classes.listItem}
-                    >
+                    <ListItem key={modif.uuid} {...props} sx={styles.listItem}>
                         <IconButton
                             {...provided.dragHandleProps}
-                            className={classes.dragIcon}
+                            sx={styles.dragIcon}
                             size={'small'}
                             style={{
                                 opacity:
@@ -163,9 +156,8 @@ export const ModificationListItem = ({
                         >
                             <DragIndicatorIcon edge="start" spacing={0} />
                         </IconButton>
-                        <ListItemIcon className={classes.icon}>
+                        <ListItemIcon sx={styles.icon}>
                             <Checkbox
-                                className={classes.checkbox}
                                 color={'primary'}
                                 edge="start"
                                 checked={checked}
@@ -173,10 +165,7 @@ export const ModificationListItem = ({
                                 disableRipple
                             />
                         </ListItemIcon>
-                        <OverflowableText
-                            className={classes.label}
-                            text={getLabel()}
-                        />
+                        <OverflowableText sx={styles.label} text={getLabel()} />
                         {!isOneNodeBuilding &&
                             hover &&
                             !isDragging &&
@@ -187,7 +176,7 @@ export const ModificationListItem = ({
                                         onEdit(modif.uuid, modif?.type)
                                     }
                                     size={'small'}
-                                    className={classes.iconEdit}
+                                    sx={styles.iconEdit}
                                 >
                                     <EditIcon />
                                 </IconButton>
