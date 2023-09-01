@@ -131,12 +131,9 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
             params.data?.contingencyId &&
             params.data?.contingencyEquipmentsIds
         ) {
-            const values = Object.values(params.data?.contingencyEquipmentsIds);
-            const valuesToDisplay = values?.join(', ');
-
             return {
                 title: null,
-                values: valuesToDisplay,
+                values: params.data?.contingencyEquipmentsIds,
             };
         }
         return null;
@@ -189,6 +186,7 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
             getRowStyle={(params) => getRowStyle(params, isFromContingency)}
             onGridReady={onGridReady}
             overlayNoRowsTemplate={message}
+            tooltipShowDelay={0}
         />
     );
 };
