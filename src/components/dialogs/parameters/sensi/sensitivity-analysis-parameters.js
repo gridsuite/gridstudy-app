@@ -400,7 +400,7 @@ export const SensitivityAnalysisParameters = ({
                 spacing={1}
                 padding={1}
                 key="sensitivityAnalysisParameters"
-                className={classes.scrollableGrid}
+                //className={classes.scrollableGrid}
             >
                 <DropDown
                     value={provider}
