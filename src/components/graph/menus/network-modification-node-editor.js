@@ -31,6 +31,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import RestoreIcon from '@mui/icons-material/Restore';
 import CheckboxList from '../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
@@ -64,12 +65,13 @@ import VoltageInitModificationDialog from 'components/dialogs/network-modificati
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
     changeNetworkModificationOrder,
-    deleteModifications,
+    stashModifications,
     fetchNetworkModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import { copyOrMoveModifications } from '../../../services/study';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { Box } from '@mui/system';
 
 const styles = {
@@ -150,6 +152,8 @@ const NetworkModificationNodeEditor = () => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
+    const [modificationsToRestore, setModificationsToRestore] =
+        useState(undefined);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const currentNodeIdRef = useRef(); // initial empty to get first update
@@ -169,6 +173,8 @@ const NetworkModificationNodeEditor = () => {
     const [editDataFetchStatus, setEditDataFetchStatus] = useState(
         FetchStatus.IDLE
     );
+    const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
@@ -428,13 +434,36 @@ const NetworkModificationNodeEditor = () => {
         [fillNotification]
     );
 
+    const dofetchNetworkModificationsToRestore = useCallback(() => {
+        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+            return;
+        }
+        setLaunchLoader(true);
+        fetchNetworkModifications(studyUuid, currentNode.id, true)
+            .then((res) => {
+                if (currentNode.id === currentNodeIdRef.current) {
+                    setModificationsToRestore(res);
+                }
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                });
+            })
+            .finally(() => {
+                setPendingState(false);
+                setLaunchLoader(false);
+                dispatch(setModificationsInProgress(false));
+            });
+    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
+
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
         }
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentNode.id)
+        fetchNetworkModifications(studyUuid, currentNode.id, false)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -471,8 +500,14 @@ const NetworkModificationNodeEditor = () => {
             // Current node has changed then clear the modifications list
             setModifications([]);
             dofetchNetworkModifications();
+
+            setModificationsToRestore([]);
         }
-    }, [currentNode, dofetchNetworkModifications]);
+    }, [
+        currentNode,
+        dofetchNetworkModifications,
+        dofetchNetworkModificationsToRestore,
+    ]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -528,6 +563,7 @@ const NetworkModificationNodeEditor = () => {
     }, [
         dispatch,
         dofetchNetworkModifications,
+        dofetchNetworkModificationsToRestore,
         manageNotification,
         studyUpdatedForce,
         cleanClipboard,
@@ -547,16 +583,16 @@ const NetworkModificationNodeEditor = () => {
         setEditData(undefined);
         setEditDataFetchStatus(FetchStatus.IDLE);
     };
+    const openRestoreModificationDialog = useCallback(() => {
+        dofetchNetworkModificationsToRestore();
+        setRestoreDialogOpen(true);
+    }, [dofetchNetworkModificationsToRestore]);
 
     const doDeleteModification = useCallback(() => {
         const selectedModificationsUuid = [...selectedItems.values()].map(
             (item) => item.uuid
         );
-        deleteModifications(
-            studyUuid,
-            currentNode.id,
-            selectedModificationsUuid
-        )
+        stashModifications(studyUuid, currentNode.id, selectedModificationsUuid)
             .then(() => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
                 if (
@@ -844,7 +880,17 @@ const NetworkModificationNodeEditor = () => {
             </Box>
         );
     };
-
+    const renderNetworkModificationsToRestoreDialog = () => {
+        return (
+            <RestoreModificationDialog
+                open={restoreDialogOpen}
+                modifToRestore={modificationsToRestore}
+                currentNode={currentNode}
+                studyUuid={studyUuid}
+                onClose={() => setRestoreDialogOpen(false)}
+            />
+        );
+    };
     const renderPaneSubtitle = () => {
         if (isLoading() && messageId) {
             return renderNetworkModificationsListTitleLoading();
@@ -939,7 +985,16 @@ const NetworkModificationNodeEditor = () => {
                 >
                     <DeleteIcon />
                 </IconButton>
+                <IconButton
+                    onClick={openRestoreModificationDialog}
+                    size={'small'}
+                    sx={styles.toolbarIcon}
+                >
+                    <RestoreIcon />
+                </IconButton>
             </Toolbar>
+            {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
+
             {renderPaneSubtitle()}
 
             {renderNetworkModificationsList()}

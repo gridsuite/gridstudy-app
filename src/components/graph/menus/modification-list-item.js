@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -53,6 +53,7 @@ const styles = {
 
 export const ModificationListItem = ({
     item: modif,
+    isRestorationDialog,
     onEdit,
     checked,
     index,
@@ -129,7 +130,7 @@ export const ModificationListItem = ({
         <Draggable
             draggableId={modif.uuid}
             index={index}
-            isDragDisabled={isOneNodeBuilding}
+            isDragDisabled={isOneNodeBuilding || isRestorationDialog}
         >
             {(provided) => (
                 <div
@@ -145,7 +146,10 @@ export const ModificationListItem = ({
                             size={'small'}
                             style={{
                                 opacity:
-                                    hover && !isDragging && !isOneNodeBuilding
+                                    hover &&
+                                    !isDragging &&
+                                    !isOneNodeBuilding &&
+                                    !isRestorationDialog
                                         ? '1'
                                         : '0',
                             }}
@@ -165,6 +169,7 @@ export const ModificationListItem = ({
                         {!isOneNodeBuilding &&
                             hover &&
                             !isDragging &&
+                            !isRestorationDialog &&
                             isEditableModification(modif) && (
                                 <IconButton
                                     onClick={() =>
