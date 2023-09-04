@@ -37,19 +37,35 @@ export function changeNetworkModificationOrder(
     return backendFetch(url, { method: 'put' });
 }
 
-export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
+export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications?uuids=' +
+        '/network-modifications/stash?uuids=' +
         encodeURIComponent(modificationUuids);
 
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
-        method: 'delete',
+        method: 'POST',
+    });
+}
+
+export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
+    const RestoreModificationsUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/network-modifications/restore?uuids=' +
+        encodeURIComponent(modificationUuids);
+
+    console.debug(RestoreModificationsUrl);
+    return backendFetch(RestoreModificationsUrl, {
+        method: 'POST',
     });
 }
 
@@ -1446,7 +1462,11 @@ export function deleteEquipment(
     });
 }
 
-export function fetchNetworkModifications(studyUuid, nodeUuid) {
+export function fetchNetworkModifications(
+    studyUuid,
+    nodeUuid,
+    stashedModifications
+) {
     console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
     const modificationsGetUrl =
         PREFIX_STUDY_QUERIES +
@@ -1454,8 +1474,8 @@ export function fetchNetworkModifications(studyUuid, nodeUuid) {
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications';
-
+        '/network-modifications?stashed=' +
+        encodeURIComponent(stashedModifications);
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
