@@ -30,7 +30,7 @@ import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
-const richTypeEquals = (a, b) => a.type === b.type;
+const richTypeEquals = (a, b) => a === b;
 
 const DeleteEquipmentForm = ({
     studyUuid,
@@ -55,7 +55,7 @@ const DeleteEquipmentForm = ({
     const { setValue } = useFormContext();
 
     const richTypeLabel = (rt) => {
-        return intl.formatMessage({ id: rt.type });
+        return intl.formatMessage({ id: rt });
     };
 
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
@@ -68,22 +68,22 @@ const DeleteEquipmentForm = ({
             EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
         ]);
         return Object.values(EQUIPMENT_TYPES).filter(
-            (equipmentType) => !equipmentTypesToExclude.has(equipmentType.type)
+            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
         );
     }, []);
 
     useEffect(() => {
         setEquipmentsOptions([]);
         if (watchType) {
-            if (watchType.type !== currentTypeRef.current) {
-                currentTypeRef.current = watchType.type;
+            if (watchType !== currentTypeRef.current) {
+                currentTypeRef.current = watchType;
             }
             let ignore = false;
             fetchEquipmentsIds(
                 studyUuid,
                 currentNode?.id,
                 undefined,
-                watchType.type,
+                watchType,
                 true
             )
                 .then((vals) => {
