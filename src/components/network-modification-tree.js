@@ -23,7 +23,6 @@ import {
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
-import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH, TOOLTIP_DELAY } from '../utils/UIconstants';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -36,7 +35,7 @@ import { BUILD_STATUS } from './network/constants';
 // in order to avoid unwanted tree nodes rendering (react-flow bug ?)
 const snapGrid = [15, 15];
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     controls: {
         position: 'absolute',
         top: '10px',
@@ -45,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
         left: 'unset',
         bottom: 'unset',
     },
-}));
+};
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -55,7 +54,6 @@ const NetworkModificationTree = ({
     isModificationsDrawerOpen,
 }) => {
     const dispatch = useDispatch();
-    const classes = useStyles();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -199,7 +197,7 @@ const NetworkModificationTree = ({
                 snapGrid={snapGrid}
             >
                 <Controls
-                    className={classes.controls}
+                    style={styles.controls} // This component uses "style" instead of "sx"
                     showZoom={false}
                     showInteractive={false}
                     showFitView={false}
