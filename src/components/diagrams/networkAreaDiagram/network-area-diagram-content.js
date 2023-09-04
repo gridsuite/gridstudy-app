@@ -8,21 +8,20 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import { RunningStatus } from '../../utils/running-status';
 import {
     MIN_HEIGHT,
     MIN_WIDTH,
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-    useDiagramStyles,
+    styles,
 } from '../diagram-common';
 import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
+import { mergeSx } from '../../utils/functions';
 
 function NetworkAreaDiagramContent(props) {
-    const classes = useDiagramStyles();
     const { diagramSizeSetter } = props;
     const svgRef = useRef();
     const diagramViewerRef = useRef();
@@ -81,15 +80,13 @@ function NetworkAreaDiagramContent(props) {
     return (
         <>
             <Box height={2}>{props.loadingState && <LinearProgress />}</Box>
-            <div
+            <Box
                 ref={svgRef}
-                className={clsx(
-                    classes.divDiagram,
-                    classes.divNetworkAreaDiagram,
-                    {
-                        [classes.divDiagramInvalid]:
-                            props.loadFlowStatus !== RunningStatus.SUCCEED,
-                    }
+                sx={mergeSx(
+                    styles.divDiagram,
+                    styles.divNetworkAreaDiagram,
+                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                        styles.divDiagramInvalid
                 )}
                 style={{ height: '100%' }}
             />

@@ -7,8 +7,6 @@
 
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { Checkbox, Tooltip, IconButton } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -17,8 +15,10 @@ import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useSelector } from 'react-redux';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
+import { Box } from '@mui/system';
+import { mergeSx } from '../../utils/functions';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     editCell: {
         position: 'absolute',
         left: 0,
@@ -27,13 +27,13 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         height: '100%',
     },
-    referenceEditRow: {
+    referenceEditRow: (theme) => ({
         '& button': {
             color: theme.palette.primary.main,
             cursor: 'initial',
         },
-    },
-    tableCell: {
+    }),
+    tableCell: (theme) => ({
         fontSize: 'small',
         cursor: 'initial',
         display: 'flex',
@@ -44,14 +44,14 @@ const useStyles = makeStyles((theme) => ({
             right: theme.spacing(0.5),
             bottom: 0,
         },
-    },
+    }),
     valueInvalid: {
         opacity: INVALID_LOADFLOW_OPACITY,
     },
     numericValue: {
         marginLeft: 'inherit',
     },
-    leftFade: {
+    leftFade: (theme) => ({
         background:
             'linear-gradient(to right, ' +
             theme.palette.primary.main +
@@ -60,8 +60,8 @@ const useStyles = makeStyles((theme) => ({
             ' 2%, rgba(0,0,0,0) 12%)',
         borderBottomLeftRadius: theme.spacing(0.8),
         borderTopLeftRadius: theme.spacing(0.8),
-    },
-}));
+    }),
+};
 
 export const BooleanCellRenderer = (props) => {
     const isChecked = Boolean(props.value);
@@ -100,40 +100,37 @@ export const formatCell = (props) => {
 };
 
 export const DefaultCellRenderer = (props) => {
-    const classes = useStyles();
     const cellValue = formatCell(props);
     return (
-        <div className={classes.tableCell}>
+        <Box sx={styles.tableCell}>
             {cellValue.tooltip !== undefined ? (
                 <Tooltip
                     disableFocusListener
                     disableTouchListener
                     title={cellValue.tooltip}
                 >
-                    <div
+                    <Box
                         children={cellValue.value}
-                        className={clsx({
-                            [classes.valueInvalid]: props.isValueInvalid,
-                            [classes.numericValue]: props.colDef.numeric,
-                        })}
+                        sx={mergeSx(
+                            props.isValueInvalid && styles.valueInvalid,
+                            props.colDef.numeric && styles.numericValue
+                        )}
                     />
                 </Tooltip>
             ) : (
                 <OverflowableText
-                    className={clsx({
-                        [classes.valueInvalid]: props.isValueInvalid,
-                        [classes.numericValue]: props.colDef.numeric,
-                    })}
+                    sx={mergeSx(
+                        props.isValueInvalid && styles.valueInvalid,
+                        props.colDef.numeric && styles.numericValue
+                    )}
                     text={cellValue.value}
                 />
             )}
-        </div>
+        </Box>
     );
 };
 
 export const EditableCellRenderer = (props) => {
-    const classes = useStyles();
-
     const currentNode = useSelector((state) => state.currentTreeNode);
     const isRootNode = useMemo(
         () => isNodeReadOnly(currentNode),
@@ -150,7 +147,7 @@ export const EditableCellRenderer = (props) => {
     }, [props]);
 
     return (
-        <div className={classes.editCell}>
+        <Box sx={styles.editCell}>
             <IconButton
                 size={'small'}
                 onClick={handleStartEditing}
@@ -158,19 +155,17 @@ export const EditableCellRenderer = (props) => {
             >
                 <EditIcon />
             </IconButton>
-        </div>
+        </Box>
     );
 };
 
 export const ReferenceLineCellRenderer = (props) => {
-    const classes = useStyles();
-
     return (
-        <div
-            className={clsx(
-                classes.referenceEditRow,
-                classes.leftFade,
-                classes.editCell
+        <Box
+            sx={mergeSx(
+                styles.referenceEditRow,
+                styles.leftFade,
+                styles.editCell
             )}
         >
             <IconButton
@@ -180,13 +175,11 @@ export const ReferenceLineCellRenderer = (props) => {
             >
                 <MoreHorizIcon />
             </IconButton>
-        </div>
+        </Box>
     );
 };
 
 export const EditingCellRenderer = (props) => {
-    const classes = useStyles();
-
     const validateEdit = useCallback(() => {
         //stopEditing triggers the events onCellValueChanged and once every cells have been processed it triggers onRowValueChanged
         props.api?.stopEditing();
@@ -211,7 +204,7 @@ export const EditingCellRenderer = (props) => {
     }, [props]);
 
     return (
-        <div className={clsx(classes.leftFade, classes.editCell)}>
+        <Box sx={mergeSx(styles.leftFade, styles.editCell)}>
             <IconButton
                 size={'small'}
                 onClick={validateEdit}
@@ -223,6 +216,6 @@ export const EditingCellRenderer = (props) => {
             <IconButton size={'small'} onClick={resetEdit}>
                 <ClearIcon />
             </IconButton>
-        </div>
+        </Box>
     );
 };
