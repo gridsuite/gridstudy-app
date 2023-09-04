@@ -214,7 +214,7 @@ const App = () => {
                     case PARAM_FAVORITE_CONTINGENCY_LISTS:
                         dispatch(
                             selectFavoriteContingencyLists(
-                                param.value.split(',')
+                                param.value.split(',').filter((list) => list)
                             )
                         );
                         break;
