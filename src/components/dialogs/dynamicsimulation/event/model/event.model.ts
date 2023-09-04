@@ -43,8 +43,8 @@ export const eventDefinitions = {
 export const getEventType = (equipmentType: string): EventType | undefined => {
     let eventType = undefined;
     switch (equipmentType) {
-        case EQUIPMENT_TYPES.LINE.type:
-        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type:
+        case EQUIPMENT_TYPES.LINE:
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
             eventType = EventType.DISCONNECT;
             break;
         default:

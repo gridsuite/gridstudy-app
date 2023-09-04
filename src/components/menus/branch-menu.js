@@ -253,7 +253,7 @@ const withBranchMenu =
                         equipmentType ===
                             EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type) && (
                         <MenuItem
-                            className={classes.menuItem}
+                            sx={styles.menuItem}
                             onClick={() =>
                                 handleOpenDynamicSimulationEventDialog(
                                     equipment.id,
