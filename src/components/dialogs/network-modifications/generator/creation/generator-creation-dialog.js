@@ -178,7 +178,9 @@ const GeneratorCreationDialog = ({
                 generator?.minMaxReactiveLimits?.minimumReactivePower ?? null,
             [MAXIMUM_REACTIVE_POWER]:
                 generator?.minMaxReactiveLimits?.maximumReactivePower ?? null,
-            [Q_PERCENT]: generator.qPercent,
+            [Q_PERCENT]: isNaN(generator?.[Q_PERCENT])
+                ? null
+                : generator?.[Q_PERCENT],
             [REACTIVE_CAPABILITY_CURVE_CHOICE]: generator?.minMaxReactiveLimits
                 ? 'MINMAX'
                 : 'CURVE',
@@ -205,7 +207,7 @@ const GeneratorCreationDialog = ({
         currentNodeUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.GENERATOR.type,
+        elementType: EQUIPMENT_TYPES.GENERATOR,
     });
 
     useEffect(() => {

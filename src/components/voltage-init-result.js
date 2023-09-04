@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import VirtualizedTable from './utils/virtualized-table';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Stack, Typography } from '@mui/material';
@@ -19,8 +18,10 @@ import Button from '@mui/material/Button';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { cloneVoltageInitModifications } from '../services/study/voltage-init';
+import CircularProgress from '@mui/material/CircularProgress';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     container: {
         display: 'flex',
         position: 'relative',
@@ -40,10 +41,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         position: 'relative',
     },
-}));
+};
 
 const VoltageInitResult = ({ result, status }) => {
-    const classes = useStyles();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { snackError } = useSnackMessage();
@@ -52,6 +52,7 @@ const VoltageInitResult = ({ result, status }) => {
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
         !result
     );
+    const [applyingModifications, setApplyingModifications] = useState(false);
 
     const intl = useIntl();
 
@@ -62,16 +63,20 @@ const VoltageInitResult = ({ result, status }) => {
     }, [result, setDisableApplyModifications]);
 
     const applyModifications = useCallback(() => {
+        setApplyingModifications(true);
         setDisableApplyModifications(true);
-        cloneVoltageInitModifications(studyUuid, currentNode.id).catch(
-            (errmsg) => {
+        cloneVoltageInitModifications(studyUuid, currentNode.id)
+            .then(() => {
+                setApplyingModifications(false);
+            })
+            .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errCloneVoltageInitModificationMsg',
                 });
                 setDisableApplyModifications(false);
-            }
-        );
+                setApplyingModifications(false);
+            });
     }, [currentNode?.id, snackError, studyUuid, setDisableApplyModifications]);
 
     function renderIndicatorsTable(indicators) {
@@ -80,7 +85,7 @@ const VoltageInitResult = ({ result, status }) => {
                   return { key: i[0], value: i[1] };
               })
             : null;
-        const color = status === 'SUCCEED' ? classes.succeed : classes.fail;
+        const color = status === 'SUCCEED' ? styles.succeed : styles.fail;
         return (
             <>
                 <Stack
@@ -93,7 +98,7 @@ const VoltageInitResult = ({ result, status }) => {
                     <Typography style={{ fontWeight: 'bold' }}>
                         <FormattedMessage id="VoltageInitStatus" />
                     </Typography>
-                    <Lens fontSize={'medium'} className={color} />
+                    <Lens fontSize={'medium'} sx={color} />
                 </Stack>
 
                 <VirtualizedTable
@@ -137,8 +142,8 @@ const VoltageInitResult = ({ result, status }) => {
     function renderTabs() {
         return (
             <>
-                <div className={classes.container}>
-                    <div className={classes.tabs}>
+                <Box sx={styles.container}>
+                    <Box sx={styles.tabs}>
                         <Tabs
                             value={tabIndex}
                             onChange={(event, newTabIndex) =>
@@ -154,9 +159,9 @@ const VoltageInitResult = ({ result, status }) => {
                                 })}
                             />
                         </Tabs>
-                    </div>
+                    </Box>
 
-                    <div className={classes.buttonApplyModifications}>
+                    <Box sx={styles.buttonApplyModifications}>
                         <Button
                             variant="outlined"
                             onClick={applyModifications}
@@ -164,8 +169,20 @@ const VoltageInitResult = ({ result, status }) => {
                         >
                             <FormattedMessage id="applyModifications" />
                         </Button>
-                    </div>
-                </div>
+                        {applyingModifications && (
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    marginTop: '5px',
+                                    marginLeft: '20px',
+                                }}
+                            >
+                                <CircularProgress />
+                            </div>
+                        )}
+                    </Box>
+                </Box>
                 <div style={{ flexGrow: 1 }}>
                     {viNotif &&
                         result &&

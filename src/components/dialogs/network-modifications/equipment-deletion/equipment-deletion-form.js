@@ -15,9 +15,8 @@ import React, {
 } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, AutocompleteInput } from '@gridsuite/commons-ui';
 import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
 import {
     DELETION_SPECIFIC_DATA,
     EQUIPMENT_ID,
@@ -31,7 +30,7 @@ import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
-const richTypeEquals = (a, b) => a.type === b.type;
+const richTypeEquals = (a, b) => a === b;
 
 const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const intl = useIntl();
@@ -52,35 +51,35 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const { setValue } = useFormContext();
 
     const richTypeLabel = (rt) => {
-        return intl.formatMessage({ id: rt.type });
+        return intl.formatMessage({ id: rt });
     };
 
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
 
     const typesOptions = useMemo(() => {
         const equipmentTypesToExclude = new Set([
-            EQUIPMENT_TYPES.SWITCH.type,
-            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
-            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
-            EQUIPMENT_TYPES.HVDC_CONVERTER_STATION.type,
+            EQUIPMENT_TYPES.SWITCH,
+            EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
+            EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
+            EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
         ]);
         return Object.values(EQUIPMENT_TYPES).filter(
-            (equipmentType) => !equipmentTypesToExclude.has(equipmentType.type)
+            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
         );
     }, []);
 
     useEffect(() => {
         setEquipmentsOptions([]);
         if (watchType) {
-            if (watchType.type !== currentTypeRef.current) {
-                currentTypeRef.current = watchType.type;
+            if (watchType !== currentTypeRef.current) {
+                currentTypeRef.current = watchType;
             }
             let ignore = false;
             fetchEquipmentsIds(
                 studyUuid,
                 currentNode?.id,
                 undefined,
-                watchType.type,
+                watchType,
                 true
             )
                 .then((vals) => {
@@ -120,7 +119,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
 
             if (
                 watchEquipmentId &&
-                currentTypeRef.current === EQUIPMENT_TYPES.HVDC_LINE.type
+                currentTypeRef.current === EQUIPMENT_TYPES.HVDC_LINE
             ) {
                 // need specific update related to HVDC LCC deletion (for MCS lists)
                 hvdcLccSpecificUpdate(

@@ -49,7 +49,6 @@ const useHvdcLccDeletion = () => {
                             (obj) => obj.id === editObj.id
                         );
                         if (mergedObj) {
-                            // TODO: we should refactor modification-server to store only selected MCS
                             mergedObj.connectedToHvdc = editObj.connectedToHvdc;
                         }
                     } else if (editObj.connectedToHvdc) {

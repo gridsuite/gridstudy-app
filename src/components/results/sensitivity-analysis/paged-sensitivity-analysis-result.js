@@ -8,7 +8,6 @@
 import PropTypes from 'prop-types';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
-    DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
     PAGE_OPTIONS,
@@ -16,9 +15,10 @@ import {
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import LoaderWithOverlay from '../../utils/loader-with-overlay';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { fetchSensitivityAnalysisResult } from '../../../services/study/sensitivity-analysis';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
@@ -92,15 +92,13 @@ const PagedSensitivityAnalysisResult = ({
     );
 
     const fetchResult = useCallback(() => {
-        setIsLoading(true);
-
         const { colKey, sortWay } = sortConfig || {};
 
         const sortSelector =
             colKey && sortWay
                 ? {
                       sortKeysWithWeightAndDirection: {
-                          [DATA_KEY_TO_SORT_KEY[colKey]]: sortWay,
+                          [colKey]: sortWay,
                       },
                   }
                 : {};
@@ -109,11 +107,12 @@ const PagedSensitivityAnalysisResult = ({
             isJustBefore: !nOrNkIndex,
             functionType: FUNCTION_TYPES[sensiKindIndex],
             offset: page * rowsPerPage,
-            chunkSize: rowsPerPage,
+            pageSize: rowsPerPage,
+            pageNumber: page,
             ...filterSelector,
             ...sortSelector,
         };
-
+        setIsLoading(true);
         fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
             .then((res) => {
                 const { filteredSensitivitiesCount = 0 } = res || {};
@@ -149,19 +148,13 @@ const PagedSensitivityAnalysisResult = ({
         fetchResult();
     }, [fetchResult]);
 
-    useEffect(() => {}, [sensiKindIndex, nOrNkIndex]);
+    const openLoader = useOpenLoaderShortWait({
+        isLoading: isLoading,
+        delay: FORM_LOADING_DELAY,
+    });
 
     return (
         <>
-            {isLoading && (
-                <div>
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        loadingMessageText={'LoadingRemoteData'}
-                    />
-                </div>
-            )}
             <SensitivityAnalysisResult
                 result={result?.sensitivities || []}
                 nOrNkIndex={nOrNkIndex}
@@ -171,6 +164,7 @@ const PagedSensitivityAnalysisResult = ({
                 updateFilter={handleUpdateFilter}
                 filterSelector={filterSelector}
                 filtersDef={filtersDef}
+                openLoader={openLoader}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

@@ -25,10 +25,10 @@ import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS } from '../../network/constants';
-import AutocompleteInput from '../../utils/rhf-inputs/autocomplete-input';
-import IntegerInput from '../../utils/rhf-inputs/integer-input';
-import SelectInput from '../../utils/rhf-inputs/select-input';
-import TextInput from '../../utils/rhf-inputs/text-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { IntegerInput } from '@gridsuite/commons-ui';
+import { SelectInput } from '@gridsuite/commons-ui';
+import { TextInput } from '@gridsuite/commons-ui';
 import {
     getConnectivityBusBarSectionData,
     getConnectivityVoltageLevelData,
@@ -110,6 +110,7 @@ export const ConnectivityForm = ({
             }
         } else {
             setBusOrBusbarSectionOptions([]);
+            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
         }
     }, [
         watchVoltageLevelId,
@@ -117,12 +118,13 @@ export const ConnectivityForm = ({
         currentNodeUuid,
         newBusOrBusbarSectionOptions,
         voltageLevelOptions,
+        setValue,
+        id,
     ]);
 
     const handleChange = useCallback(() => {
         onVoltageLevelChangeCallback?.();
-        setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
-    }, [id, onVoltageLevelChangeCallback, setValue]);
+    }, [onVoltageLevelChangeCallback]);
 
     useEffect(() => {
         const currentBusOrBusbarSection = getValues(
@@ -130,7 +132,10 @@ export const ConnectivityForm = ({
         );
         if (
             busOrBusbarSectionOptions?.length > 0 &&
-            !currentBusOrBusbarSection
+            !busOrBusbarSectionOptions.find(
+                (busOrBusbarSection) =>
+                    busOrBusbarSection.id === currentBusOrBusbarSection?.id
+            )
         ) {
             setValue(
                 `${id}.${BUS_OR_BUSBAR_SECTION}`,

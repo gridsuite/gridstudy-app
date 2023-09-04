@@ -101,7 +101,7 @@ const VoltageLevelModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
-                    EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
                     true
@@ -211,7 +211,7 @@ const VoltageLevelModificationDialog = ({
                         currentNode={currentNode}
                         defaultValue={selectedId}
                         setSelectedId={setSelectedId}
-                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
+                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                         fillerHeight={4}
                     />
                 )}
