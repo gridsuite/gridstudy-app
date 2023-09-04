@@ -57,7 +57,7 @@
     "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
     "optionalServicesRetrievingError": "Une erreur est survenue lors de la récupération de l'état des services optionnels",
     "defaultSensiResultsThresholdRetrievingError": "Une erreur est survenue lors de la récupération du seuil par défaut des résultats de l'analyse de sensibilité",
-
+    "restore": "Restaurer",
     "close": "Fermer",
     "validate": "Valider",
 
@@ -484,6 +484,9 @@
 
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre décisionnel",
+    "RestoreModifications": "Restaurer les modifications",
+    "NoModificationToRestore": "Pas de modification à restaurer",
+    "RestoreModificationText": "Veuillez sélectionner les modifications à restaurer",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
     "OnlyMin": "Min:\u202F{min}",
@@ -547,6 +550,7 @@
     "errCutModificationMsg": "Une erreur est survenue lors du coupage des modifications",
     "warnDuplicateModificationMsg": "Nombre de modifications non copiées :",
     "errDeleteModificationMsg": "Une erreur est survenue lors de la suppression des modifications",
+    "errRestoreModificationMsg": "Une erreur est survenue lors de la restauration des modifications",
     "DeleteEquipment": "Supprimer un ouvrage",
     "LCCConverterStationShuntCompensators": "Moyens de compensation liés à la LCC",
     "Type": "Type",
