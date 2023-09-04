@@ -198,6 +198,7 @@ const CreateNodeMenu = ({
         // check if the subtree has children
         return isNodeHasChildren(activeNode, treeModel);
     }
+
     const NODE_MENU_ITEMS = {
         BUILD_NODE: {
             onRoot: false,
@@ -288,7 +289,8 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => copySubtree(),
             id: 'copyNetworkModificationSubtree',
-            disabled: isAnyNodeBuilding,
+            disabled:
+                isAnyNodeBuilding || !isNodeHasChildren(activeNode, treeModel),
         },
         CUT_SUBTREE: {
             onRoot: false,
@@ -299,7 +301,8 @@ const CreateNodeMenu = ({
             id: isSubtreeAlreadySelectedForCut()
                 ? 'cancelCutNetworkModificationSubtree'
                 : 'cutNetworkModificationSubtree',
-            disabled: isAnyNodeBuilding,
+            disabled:
+                isAnyNodeBuilding || !isNodeHasChildren(activeNode, treeModel),
             sectionEnd: true,
         },
         PASTE_SUBTREE: {
