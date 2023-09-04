@@ -16,7 +16,6 @@ import {
 import { FlyToInterpolator } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
 
-import { makeStyles } from '@mui/styles';
 import { decomposeColor } from '@mui/material/styles';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 
@@ -36,8 +35,9 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import EquipmentPopover from '.././tooltips/equipment-popover';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchMapBoxToken } from '../../services/utils';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     mapManualRefreshBackdrop: {
         width: '100%',
         height: '100%',
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 99,
         fontSize: 30,
     },
-}));
+};
 
 const FALLBACK_MAPBOX_TOKEN =
     'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
@@ -110,8 +110,6 @@ const NetworkMap = (props) => {
     }, [props.mapEquipments?.hvdcLines, props.mapEquipments?.lines]);
 
     const studyUuid = useSelector((state) => state.studyUuid);
-
-    const classes = useStyles();
 
     const divRef = useRef();
 
@@ -272,7 +270,7 @@ const NetworkMap = (props) => {
                         equipmentInfos={tooltip.equipmentInfos}
                         anchorEl={divRef.current}
                         equipmentId={tooltip.equipmentId}
-                        equipmentType={EQUIPMENT_TYPES.LINE.type}
+                        equipmentType={EQUIPMENT_TYPES.LINE}
                         loadFlowStatus={props.loadFlowStatus}
                     />
                 </div>
@@ -473,7 +471,7 @@ const NetworkMap = (props) => {
                 {mapManualRefresh &&
                     reloadMapNeeded &&
                     isNodeBuilt(currentNode) && (
-                        <div className={classes.mapManualRefreshBackdrop}>
+                        <Box sx={styles.mapManualRefreshBackdrop}>
                             <Button
                                 onClick={props.onReloadMapClick}
                                 aria-label="reload"
@@ -483,7 +481,7 @@ const NetworkMap = (props) => {
                                 <ReplayIcon />
                                 <FormattedMessage id="ManuallyRefreshGeoData" />
                             </Button>
-                        </div>
+                        </Box>
                     )}
 
                 {mapBoxToken && (

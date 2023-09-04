@@ -30,6 +30,8 @@ import { FlatParameters } from '@gridsuite/commons-ui';
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
 
+const STRING_LIST = 'STRING_LIST';
+
 /**
  * Dialog to export the network case
  * @param {Boolean} open Is the dialog open ?
@@ -58,6 +60,20 @@ const ExportDialog = ({
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
+                // we check if the param is for extension, if it is, we select all possible values by default.
+                // the only way for the moment to check if the param is for extension, is by checking his type is name.
+                //TODO to be removed when extensions param default value corrected in backend to include all possible values
+                Object.values(formats).forEach((f) => {
+                    f.parameters = f.parameters.map((parameter) => {
+                        if (
+                            parameter.type === STRING_LIST &&
+                            parameter.name?.endsWith('extensions')
+                        ) {
+                            parameter.defaultValue = parameter.possibleValues;
+                        }
+                        return parameter;
+                    });
+                });
                 setFormatsWithParameters(formats);
             });
         }
@@ -189,6 +205,9 @@ const ExportDialog = ({
                         initValues={currentParameters}
                         onChange={onChange}
                         variant="standard"
+                        selectionWithDialog={(param) =>
+                            param?.possibleValues?.length > 10
+                        }
                     />
                 </Collapse>
                 {exportStudyErr !== '' && (

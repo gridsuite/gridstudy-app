@@ -23,13 +23,12 @@ import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
 import { BUILD_STATUS } from '../../network/constants';
-import makeStyles from '@mui/styles/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
-    warningMessage: {
+const styles = {
+    warningMessage: (theme) => ({
         backgroundColor: theme.formFiller.background,
-    },
-}));
+    }),
+};
 
 /**
  * Common parts for the Modification Dialog
@@ -53,8 +52,6 @@ const ModificationDialogContent = ({
     closeAndClear,
     ...dialogProps
 }) => {
-    const classes = useStyles();
-
     const catalogButton = useButtonWithTooltip({
         label: 'CatalogButtonTooltip',
         handleClick: onOpenCatalogDialog,
@@ -105,7 +102,7 @@ const ModificationDialogContent = ({
                             <Grid item xs={10}>
                                 <Alert
                                     severity={'warning'}
-                                    className={classes.warningMessage}
+                                    sx={styles.warningMessage}
                                 >
                                     <FormattedMessage id="ModifyNodeNotBuiltWarningMsg" />
                                 </Alert>

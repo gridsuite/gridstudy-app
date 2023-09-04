@@ -7,7 +7,7 @@ declare module '@gridsuite/commons-ui' {
     interface SnackInputs {
         messageTxt?: string;
         messageId?: string;
-        messageValues?: string[];
+        messageValues?: { [key: string]: string };
         headerTxt?: string;
         headerId?: string;
         headerValues?: string[];

@@ -17,6 +17,7 @@ export interface ReduxState {
     currentTreeNode: CurrentTreeNode;
     computingStatus: ComputingStatus;
     optionalServices: IOptionalService[];
+    limitReduction: string;
     notificationIdList: UUID[];
 }
 

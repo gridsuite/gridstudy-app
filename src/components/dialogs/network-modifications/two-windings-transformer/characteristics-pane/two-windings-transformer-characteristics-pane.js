@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import React from 'react';
 import { Grid } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import {
     gridItem,
+    GridSection,
     MicroSusceptanceAdornment,
     MVAPowerAdornment,
     OhmAdornment,
@@ -28,18 +29,11 @@ import {
 } from 'components/utils/field-constants';
 import { unitToMicroUnit } from '../../../../../utils/rounding';
 
-const useStyles = makeStyles((theme) => ({
-    h3: {
-        marginTop: 0,
-    },
-}));
-
 const TwoWindingsTransformerCharacteristicsPane = ({
     id = CHARACTERISTICS,
     twtToModify,
     isModification = false,
 }) => {
-    const classes = useStyles();
     const width = isModification ? 12 : 8;
 
     const seriesResistanceField = (
@@ -114,13 +108,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
 
     return (
         <>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h3 className={classes.h3}>
-                        <FormattedMessage id="Characteristics" />
-                    </h3>
-                </Grid>
-            </Grid>
+            <GridSection title={'Characteristics'} />
             <Grid container item spacing={2} xs={width}>
                 {gridItem(seriesResistanceField)}
                 {gridItem(seriesReactanceField)}
@@ -130,12 +118,12 @@ const TwoWindingsTransformerCharacteristicsPane = ({
             </Grid>
             <Grid container item spacing={2} xs={width}>
                 <Grid item xs={6}>
-                    <h4 className={classes.h4}>
+                    <h4>
                         <FormattedMessage id="Side1" />
                     </h4>
                 </Grid>
                 <Grid item xs={6}>
-                    <h4 className={classes.h4}>
+                    <h4>
                         <FormattedMessage id="Side2" />
                     </h4>
                 </Grid>
