@@ -65,3 +65,27 @@ export interface ComputingStatus {
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
     [ComputingType.VOLTAGE_INIT]: RunningStatus;
 }
+
+export interface ReactiveCapabilityCurveCreationEditaData {
+    qminP: number;
+    qmaxP: number;
+    p: number;
+}
+
+export interface InjectionCreationEditaData extends EditData{
+    voltageLevelId: string | null;
+    busOrBusbarSectionId: string | null;
+    connectionName: string | null;
+    connectionDirection
+}
+
+export interface ReactivePowerHolderEditaData extends InjectionCreationEditaData {
+    minimumReactivePower: number | null;
+    maximumReactivePower: number | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurveCreationEditaData [] | null;
+}
+
+export interface EditData {
+    equipmentId: string,
+    equipmentName: string
+}
