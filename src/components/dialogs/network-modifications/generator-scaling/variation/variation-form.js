@@ -19,12 +19,13 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { SelectInput } from '@gridsuite/commons-ui';
-import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
+//import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
 import { elementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
 import { fetchElementsMetadata } from '../../../../../services/explore';
+import { VARIATION_MODES, VARIATION_TYPES } from "../../../../network/constants";
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 

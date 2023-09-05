@@ -1085,5 +1085,8 @@
 
     "IpMin": "ICC min (kA)",
     "IpMax": "ICC max (kA)",
-    "StartupCost": "Coût de démarrage"
+    "StartupCost": "Coût de démarrage",
+
+    "converterStation1" : "Station origine",
+    "converterStation2" : "Station extrémité"
 }

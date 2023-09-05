@@ -117,6 +117,14 @@ declare module '@gridsuite/commons-ui' {
 
     export const RadioInput: FunctionComponent<RadioInputProps>;
 
+    interface SwitchInputProps {
+        name: string;
+        label?: string;
+        formProps?: Omit<SwitchInputProps, 'disabled'>,
+    }
+
+    export const SwitchInput: FunctionComponent<SwitchInputProps>;
+
     export const SubmitButton: FunctionComponent<{
         onClick: () => void;
         disabled?: boolean;

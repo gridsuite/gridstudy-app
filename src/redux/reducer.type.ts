@@ -66,6 +66,13 @@ export interface ComputingStatus {
     [ComputingType.VOLTAGE_INIT]: RunningStatus;
 }
 
+export enum FetchStatus {
+    SUCCEED = 'SUCCEED',
+    FAILED = 'FAILED',
+    IDLE = 'IDLE',
+    RUNNING = 'RUNNING',
+}
+
 export interface ReactiveCapabilityCurveCreationEditaData {
     qminP: number;
     qmaxP: number;
@@ -76,7 +83,7 @@ export interface InjectionCreationEditaData extends EditData{
     voltageLevelId: string | null;
     busOrBusbarSectionId: string | null;
     connectionName: string | null;
-    connectionDirection
+    connectionDirection: number | null;
 }
 
 export interface ReactivePowerHolderEditaData extends InjectionCreationEditaData {

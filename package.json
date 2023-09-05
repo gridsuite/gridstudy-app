@@ -23,6 +23,7 @@
         "ag-grid-react": "^29.0.0",
         "cheap-ruler": "^3.0.0",
         "clsx": "^1.0.4",
+        "components": "^0.1.0",
         "core-js": "^3.6.4",
         "dagre": "^0.8.5",
         "deck.gl": "^8.0.0",

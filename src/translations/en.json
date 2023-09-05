@@ -1063,5 +1063,8 @@
 
     "IpMin": "ISC min (kA)",
     "IpMax": "ISC max (kA)",
-    "StartupCost": "Startup cost"
+    "StartupCost": "Startup cost",
+
+    "converterStation1" : "Converter station 1",
+    "converterStation2" : "Converter station 2"
 }
