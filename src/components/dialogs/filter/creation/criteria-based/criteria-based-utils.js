@@ -87,7 +87,7 @@ const energySource = {
     props: {
         label: 'EnergySourceText',
         name: `${CRITERIA_BASED}.${ENERGY_SOURCE}`,
-        options: [ENERGY_SOURCES],
+        options: ENERGY_SOURCES,
     },
 };
 
