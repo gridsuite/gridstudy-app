@@ -1,7 +1,7 @@
 declare module '@gridsuite/commons-ui' {
     import { FunctionComponent, ReactElement } from 'react';
     import { AutocompleteProps } from '@mui/material/Autocomplete/Autocomplete';
-    import { RadioGroupProps, TextFieldProps } from '@mui/material';
+    import { RadioGroupProps, SxProps, TextFieldProps } from "@mui/material";
     import { CaseImportParameters } from 'services/network-conversion';
 
     interface SnackInputs {
@@ -137,7 +137,7 @@ declare module '@gridsuite/commons-ui' {
     export const FlatParameters: FunctionComponent<FlatParametersProps>;
 
     interface OverflowableTextProps {
-        className: string,
+        sx: SxProps,
         text?: string;
     }
 

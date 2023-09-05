@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { lighten, darken, Theme } from '@mui/material/styles';
 import { EditableTitle } from '../editable-title';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,24 +14,24 @@ import { setEventScenarioDrawerOpen } from '../../../../redux/actions';
 import { useIntl } from 'react-intl';
 import { ReduxState } from '../../../../redux/reducer.type';
 import EventModificationScenarioEditor from './event-modification-scenario-editor';
+import { Box } from '@mui/material';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const styles = {
     paper: {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        background:
+        background: (theme: Theme) =>
             theme.palette.mode === 'light'
                 ? darken(theme.palette.background.paper, 0.1)
                 : lighten(theme.palette.background.paper, 0.2),
     },
-}));
+};
 
 export interface ScenarioEditorProps {}
 
 const ScenarioEditor = (props: ScenarioEditorProps) => {
-    const classes = useStyles();
     const dispatch = useDispatch();
     const currentTreeNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
@@ -44,7 +43,7 @@ const ScenarioEditor = (props: ScenarioEditorProps) => {
     };
 
     return (
-        <div className={classes.paper}>
+        <Box sx={styles.paper}>
             <EditableTitle
                 name={
                     intl.formatMessage({
@@ -54,7 +53,7 @@ const ScenarioEditor = (props: ScenarioEditorProps) => {
                 onClose={closeEventScenarioDrawer}
             />
             <EventModificationScenarioEditor />
-        </div>
+        </Box>
     );
 };
 

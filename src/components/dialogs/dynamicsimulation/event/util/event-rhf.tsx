@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { EventPropertyDefinition, PrimitiveTypes } from '../types/event.type';
-import React from 'react';
 import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
 
 const renderFloatField = (

@@ -8,8 +8,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import makeStyles from '@mui/styles/makeStyles';
-import { Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
+import {
+    Box,
+    Checkbox,
+    CircularProgress,
+    Toolbar,
+    Typography,
+} from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -43,19 +48,19 @@ import { EventListItem } from './event-list-item';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { FetchStatus } from '../../../../services/utils';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    listContainer: {
+const styles = {
+    listContainer: (theme: Theme) => ({
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
-    },
-    list: {
+    }),
+    list: (theme: Theme) => ({
         paddingTop: theme.spacing(0),
         flexGrow: 1,
-    },
-    modificationsTitle: {
+    }),
+    modificationsTitle: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
         margin: theme.spacing(0),
@@ -63,46 +68,45 @@ const useStyles = makeStyles((theme: Theme) => ({
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
         overflow: 'hidden',
-    },
-    toolbar: {
+    }),
+    toolbar: (theme: Theme) => ({
         padding: theme.spacing(0),
         border: theme.spacing(1),
         minHeight: 0,
         margin: 0,
         flexShrink: 0,
-    },
-
-    toolbarIcon: {
+    }),
+    toolbarIcon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
-    },
-    toolbarCheckbox: {
+    }),
+    toolbarCheckbox: (theme: Theme) => ({
         marginLeft: theme.spacing(1.5),
-    },
+    }),
     filler: {
         flexGrow: 1,
     },
-    dividerTool: {
+    dividerTool: (theme: Theme) => ({
         background: theme.palette.primary.main,
-    },
-    circularProgress: {
+    }),
+    circularProgress: (theme: Theme) => ({
         marginRight: theme.spacing(2),
         color: theme.palette.primary.contrastText,
-    },
-    formattedMessageProgress: {
+    }),
+    formattedMessageProgress: (theme: Theme) => ({
         marginTop: theme.spacing(2),
-    },
-    notification: {
+    }),
+    notification: (theme: Theme) => ({
         flex: 1,
         alignContent: 'center',
         justifyContent: 'center',
         marginTop: theme.spacing(4),
         textAlign: 'center',
         color: theme.palette.primary.main,
-    },
-    icon: {
+    }),
+    icon: (theme: Theme) => ({
         width: theme.spacing(3),
-    },
-}));
+    }),
+};
 
 function isChecked(s1: number) {
     return s1 !== 0;
@@ -284,8 +288,6 @@ const EventModificationScenarioEditor = () => {
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
-    const classes = useStyles();
-
     const doDeleteEvent = useCallback(() => {
         const selectedEvents = [...selectedItems.values()];
         deleteDynamicSimulationEvents(
@@ -403,13 +405,13 @@ const EventModificationScenarioEditor = () => {
                     isDropDisabled={isLoading() || isAnyNodeBuilding}
                 >
                     {(provided) => (
-                        <div
-                            className={classes.listContainer}
+                        <Box
+                            sx={styles.listContainer}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
                             <CheckboxList
-                                className={classes.list}
+                                className={styles.list}
                                 onChecked={setSelectedItems}
                                 values={events}
                                 initialSelection={[]}
@@ -429,7 +431,7 @@ const EventModificationScenarioEditor = () => {
                                 toggleSelectAll={toggleSelectAll}
                             />
                             {provided.placeholder}
-                        </div>
+                        </Box>
                     )}
                 </Droppable>
             </DragDropContext>
@@ -438,49 +440,49 @@ const EventModificationScenarioEditor = () => {
 
     const renderEventListTitleLoading = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     <CircularProgress
                         size={'1em'}
-                        className={classes.circularProgress}
+                        sx={styles.circularProgress}
                     />
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage id={messageId} />
                 </Typography>
-            </div>
+            </Box>
         );
     };
 
     const renderEventListTitleUpdating = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     <CircularProgress
                         size={'1em'}
-                        className={classes.circularProgress}
+                        sx={styles.circularProgress}
                     />
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'DynamicSimulationEventUpdatingList'}
                     />
                 </Typography>
-            </div>
+            </Box>
         );
     };
 
     const renderEventListTitle = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     {pendingState && (
                         <CircularProgress
                             size={'1em'}
-                            className={classes.circularProgress}
+                            sx={styles.circularProgress}
                         />
                     )}
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'DynamicSimulationEventCount'}
@@ -490,7 +492,7 @@ const EventModificationScenarioEditor = () => {
                         }}
                     />
                 </Typography>
-            </div>
+            </Box>
         );
     };
 
@@ -506,9 +508,9 @@ const EventModificationScenarioEditor = () => {
 
     return (
         <>
-            <Toolbar className={classes.toolbar}>
+            <Toolbar sx={styles.toolbar}>
                 <Checkbox
-                    className={classes.toolbarCheckbox}
+                    sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
                     checked={isChecked(selectedItems.size)}
@@ -519,11 +521,11 @@ const EventModificationScenarioEditor = () => {
                     disableRipple
                     onClick={toggleSelectAllEvents}
                 />
-                <div className={classes.filler} />
+                <Box sx={styles.filler} />
                 <IconButton
                     onClick={doDeleteEvent}
                     size={'small'}
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     disabled={
                         !(selectedItems?.size > 0) ||
                         isAnyNodeBuilding ||

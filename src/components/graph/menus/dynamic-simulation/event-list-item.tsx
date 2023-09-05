@@ -11,7 +11,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import Divider from '@mui/material/Divider';
 import EditIcon from '@mui/icons-material/Edit';
-import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
@@ -20,27 +19,28 @@ import { Theme } from '@mui/material/styles';
 import { Event } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { ReduxState } from '../../../../redux/reducer.type';
 import { ListItemProps } from '@mui/material/ListItem/ListItem';
-const useStyles = makeStyles((theme: Theme) => ({
-    listItem: {
+
+const styles = {
+    listItem: (theme: Theme) => ({
         padding: theme.spacing(0),
-    },
+    }),
     label: {
         flexGrow: '1',
     },
     icon: {
         minWidth: 0,
     },
-    iconEdit: {
+    iconEdit: (theme: Theme) => ({
         marginRight: theme.spacing(1),
-    },
+    }),
     checkbox: {},
-    dragIcon: {
+    dragIcon: (theme: Theme) => ({
         padding: theme.spacing(0),
         border: theme.spacing(1),
         borderRadius: theme.spacing(0),
         zIndex: 90,
-    },
-}));
+    }),
+};
 
 export interface EventListItemProps extends ListItemProps {
     item: Event;
@@ -63,7 +63,6 @@ export const EventListItem = ({
     ...props
 }: EventListItemProps) => {
     const intl = useIntl();
-    const classes = useStyles();
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
@@ -111,11 +110,11 @@ export const EventListItem = ({
                     <ListItem
                         key={item.equipmentId}
                         {...props}
-                        className={classes.listItem}
+                        sx={styles.listItem}
                     >
                         <IconButton
                             {...provided.dragHandleProps}
-                            className={classes.dragIcon}
+                            sx={styles.dragIcon}
                             size={'small'}
                             style={{
                                 opacity:
@@ -126,9 +125,9 @@ export const EventListItem = ({
                         >
                             <DragIndicatorIcon spacing={0} edgeMode={'start'} />
                         </IconButton>
-                        <ListItemIcon className={classes.icon}>
+                        <ListItemIcon sx={styles.icon}>
                             <Checkbox
-                                className={classes.checkbox}
+                                sx={styles.checkbox}
                                 color={'primary'}
                                 edge="start"
                                 checked={checked}
@@ -136,15 +135,12 @@ export const EventListItem = ({
                                 disableRipple
                             />
                         </ListItemIcon>
-                        <OverflowableText
-                            className={classes.label}
-                            text={getLabel()}
-                        />
+                        <OverflowableText sx={styles.label} text={getLabel()} />
                         {!isOneNodeBuilding && hover && !isDragging && (
                             <IconButton
                                 onClick={() => onEdit(item)}
                                 size={'small'}
-                                className={classes.iconEdit}
+                                sx={styles.iconEdit}
                             >
                                 <EditIcon />
                             </IconButton>
