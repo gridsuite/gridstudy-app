@@ -17,7 +17,7 @@ import {
 } from '../../../utils/config-params';
 import { CloseButton, useParameterState, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import { ParamLine, ParameterType } from './widget/ParameterLine';
+import { ParamLine, ParameterType } from './widget';
 
 export const MapParameters = ({ hideParameters }) => {
     const classes = useStyles();
