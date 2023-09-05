@@ -147,7 +147,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     selector,
                 })
             );
-        } else {
+        } else if (oneBusShortCircuitAnalysisState !== RunningStatus.RUNNING) {
             fetchAnalysisResult(
                 fetchOneBusShortCircuitAnalysisResult.bind(null, {
                     studyUuid,
@@ -165,6 +165,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         currentNode?.id,
         intl,
         shortCircuitNotif,
+        oneBusShortCircuitAnalysisState,
     ]);
 
     return (
