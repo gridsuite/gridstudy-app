@@ -12,7 +12,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
-import { useStyles } from './sensi-parameters-selector';
+import { styles } from './sensi-parameters-selector';
+import { Box } from "@mui/system";
 
 export const useExpandableSensitivityFactors = ({
     id,
@@ -22,7 +23,6 @@ export const useExpandableSensitivityFactors = ({
     isRequired,
     initialValues,
 }) => {
-    const classes = useStyles();
     const [values, setValues] = useState([]);
     const [errors, setErrors] = useState();
     const [itemListError, setItemListError] = useState({
@@ -90,7 +90,7 @@ export const useExpandableSensitivityFactors = ({
                         />
                         <Grid item xs={1}>
                             <IconButton
-                                className={classes.deleteButton}
+                                sx={styles.deleteButton}
                                 key={id + idx}
                                 onClick={() => handleDeleteItem(idx)}
                             >
@@ -103,16 +103,16 @@ export const useExpandableSensitivityFactors = ({
                     <Grid item xs={3}>
                         <Button
                             fullWidth
-                            className={classes.button}
+                            sx={styles.button}
                             startIcon={<AddIcon />}
                             onClick={handleAddValue}
                         >
                             <FormattedMessage id={labelAddValue} />
                         </Button>
                         {isEmptyListError && (
-                            <div className={classes.emptyListError}>
+                            <Box sx={styles.emptyListError}>
                                 <FormattedMessage id={'EmptyList/' + id} />
-                            </div>
+                            </Box>
                         )}
                     </Grid>
                 </Grid>
@@ -120,9 +120,6 @@ export const useExpandableSensitivityFactors = ({
         );
     }, [
         values,
-        classes.button,
-        classes.deleteButton,
-        classes.emptyListError,
         handleAddValue,
         labelAddValue,
         isEmptyListError,
