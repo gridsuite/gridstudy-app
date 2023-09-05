@@ -47,6 +47,7 @@ import {
 } from 'components/network/constants';
 import {
     getReactiveLimitsEmptyFormData,
+    getReactiveLimitsFormData,
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -55,6 +56,8 @@ import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import PropTypes from 'prop-types';
 import { createBattery } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
+import { REACTIVE_LIMITS } from '../../../../utils/field-constants';
+import { getRowEmptyFormData } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -114,23 +117,23 @@ const BatteryCreationDialog = ({
             [REACTIVE_POWER_SET_POINT]: battery.targetQ,
             [FREQUENCY_REGULATION]: battery.activePowerControlOn,
             [DROOP]: battery.droop,
-            [MINIMUM_REACTIVE_POWER]:
-                battery?.minMaxReactiveLimits?.minimumReactivePower ?? null,
-            [MAXIMUM_REACTIVE_POWER]:
-                battery?.minMaxReactiveLimits?.maximumReactivePower ?? null,
+            ...getReactiveLimitsFormData({
+                reactiveCapabilityCurveChoice: battery?.minMaxReactiveLimits
+                    ? 'MINMAX'
+                    : 'CURVE',
+                minimumReactivePower:
+                    battery?.minMaxReactiveLimits?.minimumReactivePower ?? null,
+                maximumReactivePower:
+                    battery?.minMaxReactiveLimits?.minimumReactivePower ?? null,
+                reactiveCapabilityCurveTable:
+                    battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
+            }),
             ...getConnectivityFormData({
                 voltageLevelId: battery.voltageLevelId,
                 busbarSectionId: battery.busOrBusbarSectionId,
                 connectionDirection: battery.connectionDirection,
                 connectionName: battery.connectionName,
             }),
-            [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                battery.reactiveCapabilityCurvePoints,
-            [REACTIVE_CAPABILITY_CURVE_CHOICE]: battery?.minMaxReactiveLimits
-                ? 'MINMAX'
-                : 'CURVE',
-            [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
         });
     };
 
@@ -153,8 +156,16 @@ const BatteryCreationDialog = ({
                 [REACTIVE_POWER_SET_POINT]: editData.reactivePowerSetpoint,
                 [FREQUENCY_REGULATION]: editData.participate,
                 [DROOP]: editData.droop,
-                [MINIMUM_REACTIVE_POWER]: editData?.minimumReactivePower,
-                [MAXIMUM_REACTIVE_POWER]: editData?.maximumReactivePower,
+                ...getReactiveLimitsFormData({
+                    reactiveCapabilityCurveChoice:
+                        editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
+                    minimumReactivePower: editData?.minimumReactivePower,
+                    maximumReactivePower: editData?.maximumReactivePower,
+                    reactiveCapabilityCurveTable:
+                        editData?.reactiveCapabilityCurve
+                            ? editData?.reactiveCapabilityCurvePoints
+                            : [{}, {}],
+                }),
                 ...getConnectivityFormData({
                     voltageLevelId: editData.voltageLevelId,
                     busbarSectionId: editData.busOrBusbarSectionId,
@@ -162,12 +173,6 @@ const BatteryCreationDialog = ({
                     connectionName: editData.connectionName,
                     connectionPosition: editData.connectionPosition,
                 }),
-                [REACTIVE_CAPABILITY_CURVE_CHOICE]:
-                    editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
-                [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                    editData?.reactiveCapabilityCurve
-                        ? editData?.reactiveCapabilityCurvePoints
-                        : [{}, {}],
             });
         }
     }, [editData, reset]);
@@ -178,8 +183,9 @@ const BatteryCreationDialog = ({
 
     const onSubmit = useCallback(
         (battery) => {
+            const reactiveLimits = battery[REACTIVE_LIMITS];
             const isReactiveCapabilityCurveOn =
-                battery[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+                reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             createBattery(
                 studyUuid,
                 currentNodeUuid,
@@ -196,12 +202,12 @@ const BatteryCreationDialog = ({
                 isReactiveCapabilityCurveOn,
                 isReactiveCapabilityCurveOn
                     ? null
-                    : battery[MINIMUM_REACTIVE_POWER],
+                    : reactiveLimits[MINIMUM_REACTIVE_POWER],
                 isReactiveCapabilityCurveOn
                     ? null
-                    : battery[MAXIMUM_REACTIVE_POWER],
+                    : reactiveLimits[MAXIMUM_REACTIVE_POWER],
                 isReactiveCapabilityCurveOn
-                    ? battery[REACTIVE_CAPABILITY_CURVE_TABLE]
+                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
                     : null,
                 battery[ACTIVE_POWER_SET_POINT],
                 battery[REACTIVE_POWER_SET_POINT],

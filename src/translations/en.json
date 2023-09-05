@@ -1065,6 +1065,18 @@
     "IpMax": "ISC max (kA)",
     "StartupCost": "Startup cost",
 
+    "converterStationId": "Converter station ID",
+    "converterStationName": "Converter station name",
     "converterStation1" : "Converter station 1",
-    "converterStation2" : "Converter station 2"
+    "converterStation2" : "Converter station 2",
+    "dcNominalVoltageLabel": "DC nominal voltage",
+    "dcResistanceLabel": "DC resistance",
+    "operatorActivePowerLimitSide2Text": "Operator active power limit (Side2->Side1)",
+    "operatorActivePowerLimitSide1Text": "Operator active power limit (Side1->Side2)",
+    "converterModeLabel": "Converters mode",
+    "angleDroopActivePowerControlText": "Angle droop active power control",
+    "p0Text": "P0",
+    "droopText": "Droop",
+    "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
+    "side1InverterSide2Rectifier": "Flow (Side2->Side1)"
 }

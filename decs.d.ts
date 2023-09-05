@@ -41,6 +41,7 @@ declare module '@gridsuite/commons-ui' {
         > {
         name: string;
         label?: string;
+        options: any [],
         outputTransform?: (value: string) => string;
         inputTransform?: (value: string) => string;
         readOnly?: boolean;

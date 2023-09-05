@@ -1087,6 +1087,18 @@
     "IpMax": "ICC max (kA)",
     "StartupCost": "Coût de démarrage",
 
+    "converterStationId": "ID de la station",
+    "converterStationName": "Nom de la station",
     "converterStation1" : "Station origine",
-    "converterStation2" : "Station extrémité"
+    "converterStation2" : "Station extrémité",
+    "dcNominalVoltageLabel": "Tension nominale DC",
+    "dcResistanceLabel": "Résistance DC",
+    "operatorActivePowerLimitSide2Text": "Limite de fonctionnement (Ex->Or)",
+    "operatorActivePowerLimitSide1Text": "Limite de fonctionnement (Or->Ex)",
+    "converterModeLabel": "Mode de fonctionnement des stations",
+    "angleDroopActivePowerControlText": "Emulation AC",
+    "p0Text": "P0",
+    "droopText": "Gain",
+    "side1RectifierSide2Inverter": "Flux (Or->Ex)",
+    "side1InverterSide2Rectifier": "Flux (Ex->Or)"
 }

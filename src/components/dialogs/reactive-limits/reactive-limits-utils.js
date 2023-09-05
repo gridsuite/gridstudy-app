@@ -14,38 +14,67 @@ import {
 import {
     getReactiveCapabilityCurveEmptyFormData,
     getReactiveCapabilityCurveValidationSchema,
+    getRowEmptyFormData,
 } from './reactive-capability-curve/reactive-capability-utils';
 import yup from 'components/utils/yup-config';
+import { REACTIVE_LIMITS } from '../../utils/field-constants';
 
+export const getReactiveLimitsFormData = (
+    id: REACTIVE_LIMITS,
+    reactiveCapabilityCurveChoice = 'CURVE',
+    minimumReactivePower = null,
+    maximumReactivePower = null,
+    reactiveCapabilityCurveTable = [
+        getRowEmptyFormData(),
+        getRowEmptyFormData(),
+    ]
+) => ({
+    [id]: {
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]: reactiveCapabilityCurveChoice,
+        [MINIMUM_REACTIVE_POWER]: minimumReactivePower,
+        [MAXIMUM_REACTIVE_POWER]: maximumReactivePower,
+        [REACTIVE_CAPABILITY_CURVE_TABLE]: reactiveCapabilityCurveTable,
+    },
+});
 export const getReactiveLimitsEmptyFormData = (
+    id = REACTIVE_LIMITS,
     isEquipmentModification = false
 ) => ({
-    [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
-    [MINIMUM_REACTIVE_POWER]: null,
-    [MAXIMUM_REACTIVE_POWER]: null,
-    ...getReactiveCapabilityCurveEmptyFormData(REACTIVE_CAPABILITY_CURVE_TABLE),
+    [id]: {
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
+        [MINIMUM_REACTIVE_POWER]: null,
+        [MAXIMUM_REACTIVE_POWER]: null,
+        ...getReactiveCapabilityCurveEmptyFormData(
+            REACTIVE_CAPABILITY_CURVE_TABLE
+        ),
+    },
 });
 
-export const getReactiveLimitsSchema = (isEquipmentModification = false) => ({
-    [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
-    [MINIMUM_REACTIVE_POWER]: yup
-        .number()
-        .nullable()
-        .when([MAXIMUM_REACTIVE_POWER], {
-            is: (maximumReactivePower) =>
-                !isEquipmentModification && maximumReactivePower != null,
-            then: (schema) => schema.required(),
-        }),
-    [MAXIMUM_REACTIVE_POWER]: yup
-        .number()
-        .nullable()
-        .when([MINIMUM_REACTIVE_POWER], {
-            is: (minimumReactivePower) =>
-                !isEquipmentModification && minimumReactivePower != null,
-            then: (schema) => schema.required(),
-        }),
-    ...getReactiveCapabilityCurveValidationSchema(
-        REACTIVE_CAPABILITY_CURVE_TABLE,
-        isEquipmentModification
-    ),
+export const getReactiveLimitsSchema = (
+    id = REACTIVE_LIMITS,
+    isEquipmentModification = false
+) => ({
+    [id]: yup.object().shape({
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
+        [MINIMUM_REACTIVE_POWER]: yup
+            .number()
+            .nullable()
+            .when([MAXIMUM_REACTIVE_POWER], {
+                is: (maximumReactivePower) =>
+                    !isEquipmentModification && maximumReactivePower != null,
+                then: (schema) => schema.required(),
+            }),
+        [MAXIMUM_REACTIVE_POWER]: yup
+            .number()
+            .nullable()
+            .when([MINIMUM_REACTIVE_POWER], {
+                is: (minimumReactivePower) =>
+                    !isEquipmentModification && minimumReactivePower != null,
+                then: (schema) => schema.required(),
+            }),
+        ...getReactiveCapabilityCurveValidationSchema(
+            REACTIVE_CAPABILITY_CURVE_TABLE,
+            isEquipmentModification
+        ),
+    }),
 });

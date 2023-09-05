@@ -11,6 +11,7 @@ import {
     MINIMUM_REACTIVE_POWER,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
+    REACTIVE_LIMITS,
 } from 'components/utils/field-constants';
 import { REACTIVE_LIMIT_TYPES } from 'components/network/constants';
 import React from 'react';
@@ -27,11 +28,12 @@ const headerIds = [
 ];
 
 const ReactiveLimitsForm = ({
+    id = REACTIVE_LIMITS,
     equipmentToModify,
     updatePreviousReactiveCapabilityCurveTable,
 }) => {
     const reactiveCapabilityCurveChoice = useWatch({
-        name: REACTIVE_CAPABILITY_CURVE_CHOICE,
+        name: `${id}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
     });
 
     const isReactiveCapabilityCurveOn =
@@ -39,7 +41,7 @@ const ReactiveLimitsForm = ({
 
     const reactiveCapabilityCurveChoiceRadioField = (
         <RadioInput
-            name={`${REACTIVE_CAPABILITY_CURVE_CHOICE}`}
+            name={`${id}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`}
             defaultValue={'CURVE'}
             options={REACTIVE_LIMIT_TYPES}
             formProps={{ style: { marginTop: '-12px' } }}
@@ -48,7 +50,7 @@ const ReactiveLimitsForm = ({
 
     const minimumReactivePowerField = (
         <FloatInput
-            name={MINIMUM_REACTIVE_POWER}
+            name={`${id}.${MINIMUM_REACTIVE_POWER}`}
             label={'MinimumReactivePower'}
             adornment={ReactivePowerAdornment}
             previousValue={
@@ -60,7 +62,7 @@ const ReactiveLimitsForm = ({
 
     const maximumReactivePowerField = (
         <FloatInput
-            name={MAXIMUM_REACTIVE_POWER}
+            name={`${id}.${MAXIMUM_REACTIVE_POWER}`}
             label={'MaximumReactivePower'}
             adornment={ReactivePowerAdornment}
             previousValue={
@@ -72,7 +74,7 @@ const ReactiveLimitsForm = ({
 
     const reactiveCapabilityCurveTableField = (
         <ReactiveCapabilityCurveTable
-            id={REACTIVE_CAPABILITY_CURVE_TABLE}
+            id={`${id}.${REACTIVE_CAPABILITY_CURVE_TABLE}`}
             tableHeadersIds={headerIds}
             isReactiveCapabilityCurveOn={isReactiveCapabilityCurveOn}
             previousValues={equipmentToModify?.reactiveCapabilityCurvePoints}

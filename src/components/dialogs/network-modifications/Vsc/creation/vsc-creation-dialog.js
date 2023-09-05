@@ -5,27 +5,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from "react";
-import { TextInput, useSnackMessage } from "@gridsuite/commons-ui";
-import { FormProvider, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useCallback, useState } from 'react';
+import { TextInput, useSnackMessage } from '@gridsuite/commons-ui';
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    HVDC_LINE_TAB
-} from "../../../../utils/field-constants";
-import Grid from "@mui/material/Grid";
-import { filledTextField, gridItem } from "../../../dialogUtils";
-import VscTabs from "../vsc-tabs";
-import { Box } from "@mui/system";
-import yup from "components/utils/yup-config";
-import ModificationDialog from "../../../commons/modificationDialog";
-import { FORM_LOADING_DELAY } from "../../../../network/constants";
-import { useOpenShortWaitFetching } from "../../../commons/handle-modification-form";
-import VscHvdcLinePane, { getVscHvdcLinePaneSchema } from "../hvdc-line-pane/vsc-hvdc-line-pane";
-import { FetchStatus } from "../../../../../services/utils";
+    HVDC_LINE_TAB,
+} from '../../../../utils/field-constants';
+import Grid from '@mui/material/Grid';
+import { filledTextField, gridItem } from '../../../dialogUtils';
+import VscTabs from '../vsc-tabs';
+import { Box } from '@mui/system';
+import yup from 'components/utils/yup-config';
+import ModificationDialog from '../../../commons/modificationDialog';
+import { FORM_LOADING_DELAY } from '../../../../network/constants';
+import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
+import VscHvdcLinePane, {
+    getVscHvdcLinePaneEmptyFormData,
+    getVscHvdcLinePaneSchema,
+} from '../hvdc-line-pane/vsc-hvdc-line-pane';
+import { FetchStatus } from '../../../../../services/utils';
+import ConverterStationPane, {
+    getVscConverterStationEmptyFormData,
+    getVscConverterStationSchema
+} from "../converter-station/converter-station-pane";
 
 const formSchema = yup
     .object()
@@ -33,11 +40,16 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
         ...getVscHvdcLinePaneSchema(HVDC_LINE_TAB),
+        ...getVscConverterStationSchema(CONVERTER_STATION_1),
+        ...getVscConverterStationSchema(CONVERTER_STATION_2)
     })
     .required();
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
+    ...getVscHvdcLinePaneEmptyFormData(HVDC_LINE_TAB),
+    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_1),
+    ...getVscConverterStationEmptyFormData(CONVERTER_STATION_2),
 };
 
 export const VSC_CREATION_TABS = {
@@ -158,6 +170,28 @@ const VscCreationDialog = ({
                     p={1}
                 >
                     <VscHvdcLinePane id={HVDC_LINE_TAB} />
+                </Box>
+                <Box
+                    hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_1}
+                    p={1}
+                >
+                    <ConverterStationPane
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        id={CONVERTER_STATION_1}
+                        stationLabel={'converterStation1'}
+                    />
+                </Box>
+                <Box
+                  hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_2}
+                  p={1}
+                >
+                    <ConverterStationPane
+                      studyUuid={studyUuid}
+                      currentNode={currentNode}
+                      id={CONVERTER_STATION_2}
+                      stationLabel={'converterStation2'}
+                    />
                 </Box>
             </ModificationDialog>
         </FormProvider>
