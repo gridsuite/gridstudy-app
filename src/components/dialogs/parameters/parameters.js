@@ -143,7 +143,7 @@ export const DropDown = ({ value, label, values, callback }) => {
     );
 };
 
-export const useStyles = makeStyles((theme) => ({ // TODO CHARLY voir avec Tristan avant de faire celui là
+export const useStyles = makeStyles((theme) => ({
     title: {
         padding: theme.spacing(2),
     },
