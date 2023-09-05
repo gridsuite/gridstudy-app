@@ -7,7 +7,7 @@
 
 import React, { FunctionComponent, useState } from 'react';
 import { useParameterState, useStyles } from '../parameters';
-import { Grid, MenuItem, Select, Slider, Switch } from "@mui/material";
+import { Grid, MenuItem, Select, Slider, Switch } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { Mark } from '@mui/base/useSlider';
 import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';

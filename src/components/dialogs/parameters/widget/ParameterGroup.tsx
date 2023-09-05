@@ -20,8 +20,6 @@ import {
     ExpandMore,
     Settings as SettingsIcon,
 } from '@mui/icons-material';
-//Expand, ExpandCircleDown, ExpandCircleDownOutlined, ExpandCircleDownRounded, ExpandCircleDownSharp, ExpandCircleDownTwoTone, ExpandLess, ExpandLessOutlined, ExpandLessRounded, ExpandLessSharp,
-// ExpandLessTwoTone, ExpandMore, ExpandMoreOutlined, ExpandMoreRounded, ExpandMoreSharp, ExpandMoreTwoTone, ExpandOutlined, ExpandRounded, ExpandSharp, ExpandTwoTone
 
 type ParameterGroupProps = {
     label: string;

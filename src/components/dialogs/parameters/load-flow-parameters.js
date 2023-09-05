@@ -566,7 +566,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     lfParams={params || {}}
                     commitLFParameter={updateParameters}
                 />
-                <LineSeparator />
+                {/*<LineSeparator /> TODO: one already present at the end of BasicLoadFlowParameters…*/}
                 <AdvancedLoadFlowParameters
                     lfParams={params || {}}
                     commitLFParameter={updateParameters}
