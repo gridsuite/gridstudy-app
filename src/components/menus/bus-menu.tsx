@@ -12,7 +12,6 @@ import {
     MenuItem,
     Typography,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
 import { FunctionComponent, useCallback, useMemo } from 'react';
@@ -33,10 +32,10 @@ interface BusMenuProps {
     closeBusMenu: () => void;
 }
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     menu: {
-        minWidth: 300,
-        maxHeight: 800,
+        minWidth: '300px',
+        maxHeight: '800px',
         overflowY: 'visible',
     },
     menuItem: {
@@ -45,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
         // to justify menu items texts
         paddingLeft: '12px',
     },
-}));
+};
 
 export const BusMenu: FunctionComponent<BusMenuProps> = ({
     busId,
@@ -53,7 +52,6 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     position,
     closeBusMenu,
 }) => {
-    const classes = useStyles();
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
@@ -80,7 +78,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
 
     return (
         <Menu
-            className={classes.menu}
+            sx={styles.menu}
             open={true}
             anchorReference="anchorPosition"
             anchorPosition={{
@@ -90,7 +88,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             onClose={closeBusMenu}
         >
             <MenuItem
-                className={classes.menuItem}
+                sx={styles.menuItem}
                 onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
                 disabled={
