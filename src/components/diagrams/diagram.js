@@ -20,7 +20,7 @@ import { useIntl } from 'react-intl';
 import {
     DiagramType,
     useDiagram,
-    useDiagramStyles,
+    styles,
     MIN_WIDTH,
     LOADING_WIDTH,
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
@@ -33,8 +33,6 @@ import AlertCustomMessageNode from '../utils/alert-custom-message-node';
 
 const Diagram = (props) => {
     const dispatch = useDispatch();
-
-    const classes = useDiagramStyles();
     const intl = useIntl();
 
     const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } =
@@ -113,7 +111,7 @@ const Diagram = (props) => {
             <Paper
                 elevation={4}
                 square={true}
-                className={classes.paperBorders}
+                sx={styles.paperBorders}
                 style={{
                     pointerEvents: 'auto',
                     width: '100%',

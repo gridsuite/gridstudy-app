@@ -19,7 +19,6 @@ import {
     NAD_INVALID_LOADFLOW_OPACITY,
 } from '../../utils/colors';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import makeStyles from '@mui/styles/makeStyles';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 export const LOADING_WIDTH = 300;
@@ -51,7 +50,7 @@ export const MAP_BOTTOM_OFFSET = 80;
 // diagram pane's height.
 export const DIAGRAM_MAP_RATIO_MIN_PERCENTAGE = 0.25;
 
-export const useDiagramStyles = makeStyles((theme) => ({
+export const styles = {
     divDiagram: {
         '& svg': {
             // necessary because the default (inline-block) adds vertical space
@@ -63,7 +62,7 @@ export const useDiagramStyles = makeStyles((theme) => ({
         },
         overflow: 'hidden',
     },
-    divNetworkAreaDiagram: {
+    divNetworkAreaDiagram: (theme) => ({
         '& .nad-label-box': {
             color: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
@@ -71,8 +70,8 @@ export const useDiagramStyles = makeStyles((theme) => ({
         '& .nad-text-edges': {
             stroke: theme.palette.text.primary,
         },
-    },
-    divSingleLineDiagram: {
+    }),
+    divSingleLineDiagram: (theme) => ({
         '& polyline': {
             pointerEvents: 'none',
         },
@@ -91,7 +90,7 @@ export const useDiagramStyles = makeStyles((theme) => ({
         '& .arrow': {
             fill: theme.palette.text.primary,
         },
-    },
+    }),
     divDiagramReadOnly: {
         '& .sld-in .sld-label': {
             display: 'none',
@@ -117,12 +116,12 @@ export const useDiagramStyles = makeStyles((theme) => ({
             opacity: NAD_INVALID_LOADFLOW_OPACITY,
         },
     },
-    paperBorders: {
+    paperBorders: (theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
         borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
         borderRight: '1px solid ' + theme.palette.action.hover,
-    },
-}));
+    }),
+};
 
 export const ViewState = {
     PINNED: 'pinned',
