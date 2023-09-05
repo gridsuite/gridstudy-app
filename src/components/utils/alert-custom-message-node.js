@@ -6,27 +6,25 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Alert from '@mui/material/Alert';
 import { FormattedMessage } from 'react-intl';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
+import { mergeSx } from './functions';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     customMessageNode: {
         position: 'absolute',
         top: '30%',
         left: '43%',
     },
-}));
+};
 
 const AlertCustomMessageNode = (props) => {
-    const classes = useStyles();
     const { noMargin, message } = props;
 
     return (
         <Alert
-            className={clsx({ [classes.customMessageNode]: !noMargin })}
+            sx={mergeSx(!noMargin && styles.customMessageNode)}
             severity="warning"
         >
             <FormattedMessage id={message} />
