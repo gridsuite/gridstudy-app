@@ -626,7 +626,7 @@
     "LowShortCircuitCurrentLimit": "Limite ICC min",
     "HighShortCircuitCurrentLimit": "Limite ICC max",
     "TransientReactance": "Réactance transitoire (Ω)",
-    "TransientReactanceForm": "Réactancess transitoire",
+    "TransientReactanceForm": "Réactance transitoire",
     "TransformerReactance": "Réactance du transformateur (Ω)",
     "TransformerReactanceForm": "Réactance du transformateur",
     "FrequencyRegulation": "Compensation",
