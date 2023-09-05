@@ -20,7 +20,6 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from '../../../utils/config-params';
 import { roundToDefaultPrecision } from '../../../utils/rounding';
-
 import { FormattedMessage, useIntl } from 'react-intl';
 import { inputAdornment } from './util/make-component-utils';
 
@@ -120,55 +119,38 @@ const SecurityAnalysisFields = ({
             <Grid item xs={4} className={classes.parameterName}>
                 <Typography>{label}</Typography>
             </Grid>
+            <Grid
+                item
+                container
+                xs={isSingleField ? 8 : 4}
+                className={
+                    isSingleField
+                        ? classes.singleTextField
+                        : classes.firstTextField
+                }
+            >
+                <TextField
+                    fullWidth
+                    sx={{ input: { textAlign: 'right' } }}
+                    value={values[firstField?.name]}
+                    name={firstField?.name}
+                    onBlur={updateValue}
+                    onChange={checkPerPercentageValue}
+                    size="small"
+                    InputProps={inputAdornment(firstField?.label)}
+                />
+            </Grid>
             {!isSingleField && (
-                <>
-                    <Grid
-                        item
-                        container
-                        xs={4}
-                        className={classes.firstTextField}
-                    >
-                        <TextField
-                            fullWidth
-                            sx={{ input: { textAlign: 'right' } }}
-                            value={values[firstField?.name]}
-                            name={firstField?.name}
-                            onBlur={updateValue}
-                            onChange={checkPerPercentageValue}
-                            size="small"
-                            InputProps={inputAdornment(firstField?.label)}
-                        />
-                    </Grid>
-                    <Grid
-                        item
-                        container
-                        xs={4}
-                        className={classes.secondTextField}
-                    >
-                        <TextField
-                            fullWidth
-                            sx={{ input: { textAlign: 'right' } }}
-                            value={values[secondField?.name]}
-                            name={secondField?.name}
-                            onBlur={updateValue}
-                            onChange={checkDoubleValue}
-                            size="small"
-                            InputProps={inputAdornment(secondField?.label)}
-                        />
-                    </Grid>
-                </>
-            )}
-            {isSingleField && (
-                <Grid item container xs={8} className={classes.singleTextField}>
+                <Grid item container xs={4} className={classes.secondTextField}>
                     <TextField
                         fullWidth
                         sx={{ input: { textAlign: 'right' } }}
-                        value={values[firstField?.name]}
-                        name={firstField?.name}
+                        value={values[secondField?.name]}
+                        name={secondField?.name}
                         onBlur={updateValue}
-                        onChange={checkPerPercentageValue}
+                        onChange={checkDoubleValue}
                         size="small"
-                        InputProps={inputAdornment(firstField?.label)}
+                        InputProps={inputAdornment(secondField?.label)}
                     />
                 </Grid>
             )}
