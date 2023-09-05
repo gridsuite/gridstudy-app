@@ -73,34 +73,40 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
             field: 'name',
+            tooltipField: 'name',
         },
         {
             headerName: intl.formatMessage({
                 id: 'LimitNameCurrentViolation',
             }),
             field: 'limitName',
+            tooltipField: 'limitName',
         },
         {
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            tooltipField: 'side',
         },
         {
             headerName: intl.formatMessage({
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
+            tooltipField: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) =>
                 convertDuration(value.data.acceptableDuration),
         },
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
             field: 'limit',
+            tooltipField: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.value.toFixed(1),
         },
         {
             headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
             field: 'value',
+            tooltipField: 'value',
             numeric: true,
             valueFormatter: (params: ValueFormatterParams) =>
                 params.value.toFixed(1),
@@ -108,6 +114,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'overload',
+            tooltipField: 'overload',
             numeric: true,
             fractionDigits: 0,
             valueFormatter: (params: ValueFormatterParams) =>
@@ -127,22 +134,26 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'VoltageLevel' }),
             field: 'name',
+            tooltipField: 'name',
         },
         {
             headerName: intl.formatMessage({ id: 'Violation' }),
             field: 'limitType',
+            tooltipField: 'limitType',
             valueFormatter: (params: ValueFormatterParams) =>
                 formatLimitType(params.value, intl),
         },
         {
             headerName: intl.formatMessage({ id: 'VoltageViolationLimit' }),
             field: 'limit',
+            tooltipField: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.value.toFixed(1),
         },
         {
             headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
             field: 'value',
+            tooltipField: 'value',
             numeric: true,
             valueFormatter: (params: ValueFormatterParams) =>
                 params.value.toFixed(1),
@@ -161,12 +172,14 @@ export const loadFlowResultColumnsDefinition = (
                 id: 'connectedComponentNum',
             }),
             field: 'connectedComponentNum',
+            tooltipField: 'connectedComponentNum',
         },
         {
             headerName: intl.formatMessage({
                 id: 'synchronousComponentNum',
             }),
             field: 'synchronousComponentNum',
+            tooltipField: 'synchronousComponentNum',
         },
         {
             headerName: intl.formatMessage({ id: 'status' }),
@@ -178,18 +191,21 @@ export const loadFlowResultColumnsDefinition = (
                 id: 'iterationCount',
             }),
             field: 'iterationCount',
+            tooltipField: 'iterationCount',
         },
         {
             headerName: intl.formatMessage({
                 id: 'slackBusId',
             }),
             field: 'slackBusId',
+            tooltipField: 'slackBusId',
         },
         {
             headerName: intl.formatMessage({
                 id: 'slackBusActivePowerMismatch',
             }),
             field: 'slackBusActivePowerMismatch',
+            tooltipField: 'slackBusActivePowerMismatch',
             cellRenderer: numberRenderer,
         },
     ];

@@ -58,6 +58,7 @@ const generateEditableNumericColumnDefinition = (
     return {
         id: id,
         field: field,
+        tooltipField: field,
         numeric: true,
         filter: 'agNumberColumnFilter',
         fractionDigits: fractionDigits,
@@ -91,15 +92,18 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
             },
             {
                 id: 'Country',
                 field: 'countryName',
+                tooltipField: 'countryName',
             },
             {
                 id: 'Properties',
@@ -123,19 +127,23 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
             },
             {
                 id: 'SubstationId',
                 field: 'substationId',
+                tooltipField: 'substationId',
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
+                tooltipField: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -187,25 +195,30 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'VoltageLevelIdSide1',
                 field: 'voltageLevelId1',
+                tooltipField: 'voltageLevelId1',
             },
             {
                 id: 'VoltageLevelIdSide2',
                 field: 'voltageLevelId2',
+                tooltipField: 'voltageLevelId2',
             },
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
+                tooltipField: 'nominalVoltage1',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -213,6 +226,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
+                tooltipField: 'nominalVoltage2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -266,23 +280,28 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
             },
             {
                 id: 'VoltageLevelIdSide1',
                 field: 'voltageLevelId1',
+                tooltipField: 'voltageLevelId1',
             },
             {
                 id: 'VoltageLevelIdSide2',
                 field: 'voltageLevelId2',
+                tooltipField: 'voltageLevelId2',
             },
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
+                tooltipField: 'nominalVoltage1',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -290,6 +309,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
+                tooltipField: 'nominalVoltage2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -452,23 +472,28 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
             },
             {
                 id: 'VoltageLevelIdSide1',
                 field: 'voltageLevelId1',
+                tooltipField: 'voltageLevelId1',
             },
             {
                 id: 'VoltageLevelIdSide2',
                 field: 'voltageLevelId2',
+                tooltipField: 'voltageLevelId2',
             },
             {
                 id: 'VoltageLevelIdSide3',
                 field: 'voltageLevelId3',
+                tooltipField: 'voltageLevelId3',
             },
             {
                 id: 'NominalVoltageSide1',
@@ -851,22 +876,26 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
                 changeCmd: "equipment.setName('{}')\n",
                 editable: true,
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                tooltipField: 'voltageLevelId',
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
+                tooltipField: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -874,6 +903,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Type',
                 field: 'energySource',
+                tooltipField: 'energySource',
                 changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
@@ -1065,6 +1095,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingTerminal',
                 field: 'regulatingTerminal',
+                tooltipField: 'regulatingTerminal',
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1120,12 +1151,14 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 changeCmd: "equipment.setName('{}')\n",
                 editable: true,
@@ -1133,6 +1166,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'LoadType',
                 field: 'type',
+                tooltipField: 'type',
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editable: true,
                 cellEditor: 'agSelectCellEditor',
@@ -1148,10 +1182,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                tooltipField: 'voltageLevelId',
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
+                tooltipField: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1226,21 +1262,25 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                tooltipField: 'voltageLevelId',
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
+                tooltipField: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1283,19 +1323,23 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                tooltipField: 'voltageLevelId',
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
+                tooltipField: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1347,19 +1391,23 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                tooltipField: 'voltageLevelId',
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
+                tooltipField: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1412,28 +1460,33 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'ConvertersMode',
                 field: 'convertersMode',
+                tooltipField: 'convertersMode',
                 columnWidth: LARGE_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'ConverterStationId1',
                 field: 'converterStationId1',
+                tooltipField: 'converterStationId1',
                 columnWidth: LARGE_COLUMN_WIDTH,
             },
             {
                 id: 'ConverterStationId2',
                 field: 'converterStationId2',
+                tooltipField: 'converterStationId2',
                 columnWidth: LARGE_COLUMN_WIDTH,
             },
             {
@@ -1513,19 +1566,23 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                tooltipField: 'voltageLevelId',
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
+                tooltipField: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1533,6 +1590,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'HvdcLineId',
                 field: 'hvdcLineId',
+                tooltipField: 'hvdcLineId',
             },
             {
                 id: 'ActivePower',
@@ -1580,20 +1638,24 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                tooltipField: 'voltageLevelId',
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
+                tooltipField: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1601,6 +1663,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'HvdcLineId',
                 field: 'hvdcLineId',
+                tooltipField: 'hvdcLineId',
             },
             {
                 id: 'ActivePower',
@@ -1663,19 +1726,23 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 field: 'id',
+                tooltipField: 'id',
                 sort: DEFAULT_SORT_ORDER,
             },
             {
                 id: 'Name',
                 field: 'name',
+                tooltipField: 'name',
             },
             {
                 id: 'VoltageLevelId',
                 field: 'voltageLevelId',
+                tooltipField: 'voltageLevelId',
             },
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
+                tooltipField: 'nominalVoltage',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1683,6 +1750,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'UcteXnodeCode',
                 field: 'ucteXnodeCode',
+                tooltipField: 'ucteXnodeCode',
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {

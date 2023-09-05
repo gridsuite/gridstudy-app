@@ -15,10 +15,8 @@ import {
     ColDef,
     ICellRendererParams,
     IRowNode,
-    ITooltipParams,
     ValueFormatterParams,
 } from 'ag-grid-community';
-import { FunctionComponent } from 'react';
 
 export const computeLoading = (
     limitViolation: LimitViolationFromBack
@@ -36,28 +34,33 @@ export const securityAnalysisTableNColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'Equipment' }),
             field: 'subjectId',
+            tooltipField: 'subjectId',
             filter: 'agTextColumnFilter',
         },
         {
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
+            tooltipField: 'limitType',
             filter: 'agTextColumnFilter',
         },
         {
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
+            tooltipField: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.limit?.toFixed(1),
         },
         {
             headerName: intl.formatMessage({ id: 'Value' }),
             field: 'value',
+            tooltipField: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
         },
         {
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
+            tooltipField: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data.loading?.toFixed(1),
         },
@@ -110,61 +113,65 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
         cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined,
-    customTooltipValues: FunctionComponent<ITooltipParams>,
-    toolTipValueGetterValues: (
-        params: ITooltipParams
-    ) => { title: null; values: string[] | undefined } | null
+    ) => React.JSX.Element | undefined
 ): ColDef[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
-            tooltipComponent: customTooltipValues,
-            tooltipValueGetter: toolTipValueGetterValues,
+            tooltipField: 'contingencyId',
         },
         {
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'computationStatus',
+            tooltipField: 'computationStatus',
         },
         {
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
+            tooltipField: 'subjectId',
             cellRenderer: subjectIdRenderer,
         },
         {
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
+            tooltipField: 'limitType',
         },
         {
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
+            tooltipField: 'limitName',
         },
         {
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            tooltipField: 'side',
         },
         {
             headerName: intl.formatMessage({
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
+            tooltipField: 'acceptableDuration',
         },
         {
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
+            tooltipField: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.limit?.toFixed(1),
         },
         {
             headerName: intl.formatMessage({ id: 'Value' }),
             field: 'value',
+            tooltipField: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
         },
         {
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
+            tooltipField: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
         },
@@ -302,61 +309,65 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
         cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined,
-    customTooltipValues: FunctionComponent<ITooltipParams>,
-    toolTipValueGetterValues: (
-        params: ITooltipParams
-    ) => { title: null; values: string | undefined } | null
+    ) => React.JSX.Element | undefined
 ): ColDef[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'Constraint' }),
             field: 'subjectId',
+            tooltipField: 'subjectId',
             cellRenderer: subjectIdRenderer,
         },
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
-            tooltipComponent: customTooltipValues,
-            tooltipValueGetter: toolTipValueGetterValues,
+            tooltipField: 'contingencyId',
         },
         {
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
             field: 'computationStatus',
+            tooltipField: 'computationStatus',
         },
         {
             headerName: intl.formatMessage({ id: 'LimitType' }),
             field: 'limitType',
+            tooltipField: 'limitType',
         },
         {
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
+            tooltipField: 'limitName',
         },
         {
             headerName: intl.formatMessage({ id: 'LimitSide' }),
             field: 'side',
+            tooltipField: 'side',
         },
         {
             headerName: intl.formatMessage({
                 id: 'LimitAcceptableDuration',
             }),
             field: 'acceptableDuration',
+            tooltipField: 'acceptableDuration',
         },
         {
             headerName: intl.formatMessage({ id: 'Limit' }),
             field: 'limit',
+            tooltipField: 'limit',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.limit?.toFixed(1),
         },
         {
             headerName: intl.formatMessage({ id: 'Value' }),
             field: 'value',
+            tooltipField: 'value',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.value?.toFixed(1),
         },
         {
             headerName: intl.formatMessage({ id: 'Loading' }),
             field: 'loading',
+            tooltipField: 'loading',
             valueFormatter: (params: ValueFormatterParams) =>
                 params.data?.loading?.toFixed(1),
         },

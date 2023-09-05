@@ -79,6 +79,7 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     getLocaleText={getLocaleText}
                     suppressPropertyNamesCheck={true}
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
+                    enableBrowserTooltips={true}
                     {...props}
                 />
             </div>
