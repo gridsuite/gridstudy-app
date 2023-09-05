@@ -6,12 +6,11 @@
  */
 
 import Drawer from '@mui/material/Drawer';
-import clsx from 'clsx';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
+import { mergeSx } from './utils/functions';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     drawer: {
         position: 'relative',
         flexShrink: 1,
@@ -25,26 +24,23 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: '1',
         transition: 'none !important',
     },
-}));
+};
 
 export const StudyDrawer = ({
-    drawerClassName,
-    drawerShiftClassName,
+    drawerStyle,
+    drawerShiftStyle,
     open,
     children,
     anchor,
 }) => {
-    const classes = useStyles();
     return (
         <Drawer
             variant={'persistent'}
-            className={clsx(drawerClassName, classes.drawer, {
-                [drawerShiftClassName]: !open,
-            })}
+            sx={mergeSx(drawerStyle, styles.drawer, !open && drawerShiftStyle)}
             anchor={anchor}
             open={open}
-            classes={{
-                paper: classes.drawerPaper,
+            PaperProps={{
+                sx: styles.drawerPaper,
             }}
         >
             {children}
@@ -53,8 +49,8 @@ export const StudyDrawer = ({
 };
 
 StudyDrawer.propTypes = {
-    drawerClassName: PropTypes.string,
-    drawerShiftClassName: PropTypes.string,
+    drawerStyle: PropTypes.object,
+    drawerShiftStyle: PropTypes.object,
     open: PropTypes.bool,
     children: PropTypes.object,
     anchor: PropTypes.string,

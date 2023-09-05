@@ -11,37 +11,6 @@
 .singlestretch-child {
     height: 100%;
 }
-/* alternative implementations */
-/*
-*/
-/*
-.singlestretch-parent {
-    position: relative;
-}
-.singlestretch-child {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-*/
-/*
-.singlestretch-parent {
-    display: flex;
-    flex-direction: column;
-}
-.singlestretch-child {
-    flex-grow: 1;
-}
-*/
-/*
-.singlestretch-parent {
-    display: grid;
-}
-.singlestretch-child {
-}
-*/
 
 html {
     height: 100%;
