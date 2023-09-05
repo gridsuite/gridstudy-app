@@ -96,7 +96,8 @@ const LoadCreationDialog = ({
             ...getConnectivityFormData({
                 voltageLevelId: load.voltageLevelId,
                 busbarSectionId: load.busOrBusbarSectionId,
-                connectionDirection: load.connectablePosition.connectionDirection,
+                connectionDirection:
+                    load.connectablePosition.connectionDirection,
                 connectionName: load.connectablePosition.connectionName,
             }),
         });
