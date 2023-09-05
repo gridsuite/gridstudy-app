@@ -28,15 +28,13 @@ import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-
 import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
 import { CheckboxInput, SelectInput } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
-import { SELECTED, VARIATION_MODE } from '../field-constants';
+import { SELECTED } from '../field-constants';
 import { ErrorInput } from '@gridsuite/commons-ui';
 import { FieldErrorAlert } from '@gridsuite/commons-ui';
 import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import DirectoryItemsInput from '../rhf-inputs/directory-items-input';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
-import EnumInput from '../rhf-inputs/enum-input';
-import { VARIATION_MODES } from '../../network/constants';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -184,9 +182,6 @@ const DndTable = ({
     const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
 
     function renderTableCell(rowId, rowIndex, column) {
-        if (column.test) {
-            return <></>;
-        }
         let CustomTableCell = column.editable
             ? EditableTableCell
             : DefaultTableCell;

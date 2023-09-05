@@ -42,28 +42,20 @@ import {
     setSensitivityAnalysisParameters,
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
-import {
-    getSensiInjectionsSetformatNewParams,
-    getSensiInjectionsSetFormSchema,
-} from './sensi-injections-set';
-import {
-    getSensiInjectionsformatNewParams,
-    getSensiInjectionsFormSchema,
-} from './sensi-injections';
+import SensiParametersSelector from './sensi-parameters-selector';
+import { LineSeparator } from '../../dialogUtils';
 import {
     getSensiHvdcformatNewParams,
     getSensiHVDCsFormSchema,
-} from './sensi-hvdcs';
-import {
-    getSensiPstformatNewParams,
-    getSensiPSTsFormSchema,
-} from './sensi-psts';
-import {
+    getSensiInjectionsformatNewParams,
+    getSensiInjectionsFormSchema,
+    getSensiInjectionsSetformatNewParams,
+    getSensiInjectionsSetFormSchema,
     getSensiNodesformatNewParams,
     getSensiNodesFormSchema,
-} from './sensi-nodes';
-import SensiParametersSelector from './sensi-parameters-selector';
-import { LineSeparator } from '../../dialogUtils';
+    getSensiPstformatNewParams,
+    getSensiPSTsFormSchema,
+} from './utils';
 
 export const useGetSensitivityAnalysisParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
