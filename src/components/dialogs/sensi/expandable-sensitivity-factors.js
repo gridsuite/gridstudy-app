@@ -13,7 +13,7 @@ import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
 import { styles } from './sensi-parameters-selector';
-import { Box } from "@mui/system";
+import { Box } from '@mui/system';
 
 export const useExpandableSensitivityFactors = ({
     id,
