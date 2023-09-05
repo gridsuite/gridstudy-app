@@ -12,7 +12,7 @@ export interface RunningStatusMessage {
 
 export function getNoRowsMessage(
     messages: RunningStatusMessage,
-    rows: any[],
+    rows: any[] | undefined,
     status: string
 ): string | undefined {
     switch (status) {
@@ -34,7 +34,7 @@ export function getNoRowsMessage(
     }
 }
 
-export function getRows(rows: any[], status: string): any[] {
+export function getRows(rows: any[] | undefined, status: string): any[] {
     return status === RunningStatus.SUCCEED && rows ? rows : [];
 }
 export const useIntlResultStatusMessages = (

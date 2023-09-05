@@ -68,6 +68,12 @@ const CustomTablePagination = (props) => {
 
 CustomTablePagination.propTypes = {
     children: PropTypes.node,
+    rowsPerPageOptions: PropTypes.arrayOf(PropTypes.number),
+    count: PropTypes.number,
+    rowsPerPage: PropTypes.number,
+    page: PropTypes.number,
+    onPageChange: PropTypes.func,
+    onRowsPerPageChange: PropTypes.func,
 };
 
 export default CustomTablePagination;

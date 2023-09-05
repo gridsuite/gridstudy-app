@@ -10,7 +10,6 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
-import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
 import {
     Checkbox,
@@ -32,6 +31,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import RestoreIcon from '@mui/icons-material/Restore';
 import CheckboxList from '../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
@@ -65,26 +65,28 @@ import VoltageInitModificationDialog from 'components/dialogs/network-modificati
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
     changeNetworkModificationOrder,
-    deleteModifications,
+    stashModifications,
     fetchNetworkModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import { copyOrMoveModifications } from '../../../services/study';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
-    listContainer: {
+const styles = {
+    listContainer: (theme) => ({
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
-    },
-    list: {
+    }),
+    list: (theme) => ({
         paddingTop: theme.spacing(0),
         flexGrow: 1,
-    },
-    modificationsTitle: {
+    }),
+    modificationsTitle: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         margin: theme.spacing(0),
@@ -92,46 +94,42 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
         overflow: 'hidden',
-    },
-    toolbar: {
-        padding: theme.spacing(0),
+    }),
+    toolbar: (theme) => ({
+        '&': {
+            // Necessary to overrides some @media specific styles that are defined elsewhere
+            padding: 0,
+            minHeight: 0,
+        },
         border: theme.spacing(1),
-        minHeight: 0,
         margin: 0,
         flexShrink: 0,
-    },
-
-    toolbarIcon: {
+    }),
+    toolbarIcon: (theme) => ({
         marginRight: theme.spacing(1),
-    },
-    toolbarCheckbox: {
+    }),
+    toolbarCheckbox: (theme) => ({
         marginLeft: theme.spacing(1.5),
-    },
+    }),
     filler: {
         flexGrow: 1,
     },
-    dividerTool: {
-        background: theme.palette.primary.main,
-    },
-    circularProgress: {
+    circularProgress: (theme) => ({
         marginRight: theme.spacing(2),
         color: theme.palette.primary.contrastText,
-    },
-    formattedMessageProgress: {
-        marginTop: theme.spacing(2),
-    },
-    notification: {
+    }),
+    notification: (theme) => ({
         flex: 1,
         alignContent: 'center',
         justifyContent: 'center',
         marginTop: theme.spacing(4),
         textAlign: 'center',
         color: theme.palette.primary.main,
-    },
-    icon: {
+    }),
+    icon: (theme) => ({
         width: theme.spacing(3),
-    },
-}));
+    }),
+};
 
 function isChecked(s1) {
     return s1 !== 0;
@@ -154,6 +152,8 @@ const NetworkModificationNodeEditor = () => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
+    const [modificationsToRestore, setModificationsToRestore] =
+        useState(undefined);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const currentNodeIdRef = useRef(); // initial empty to get first update
@@ -173,6 +173,8 @@ const NetworkModificationNodeEditor = () => {
     const [editDataFetchStatus, setEditDataFetchStatus] = useState(
         FetchStatus.IDLE
     );
+    const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
@@ -432,13 +434,36 @@ const NetworkModificationNodeEditor = () => {
         [fillNotification]
     );
 
+    const dofetchNetworkModificationsToRestore = useCallback(() => {
+        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+            return;
+        }
+        setLaunchLoader(true);
+        fetchNetworkModifications(studyUuid, currentNode.id, true)
+            .then((res) => {
+                if (currentNode.id === currentNodeIdRef.current) {
+                    setModificationsToRestore(res);
+                }
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                });
+            })
+            .finally(() => {
+                setPendingState(false);
+                setLaunchLoader(false);
+                dispatch(setModificationsInProgress(false));
+            });
+    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
+
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
         }
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentNode.id)
+        fetchNetworkModifications(studyUuid, currentNode.id, false)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -475,8 +500,14 @@ const NetworkModificationNodeEditor = () => {
             // Current node has changed then clear the modifications list
             setModifications([]);
             dofetchNetworkModifications();
+
+            setModificationsToRestore([]);
         }
-    }, [currentNode, dofetchNetworkModifications]);
+    }, [
+        currentNode,
+        dofetchNetworkModifications,
+        dofetchNetworkModificationsToRestore,
+    ]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -532,6 +563,7 @@ const NetworkModificationNodeEditor = () => {
     }, [
         dispatch,
         dofetchNetworkModifications,
+        dofetchNetworkModificationsToRestore,
         manageNotification,
         studyUpdatedForce,
         cleanClipboard,
@@ -542,8 +574,6 @@ const NetworkModificationNodeEditor = () => {
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
-    const classes = useStyles();
-
     const openNetworkModificationConfiguration = useCallback(() => {
         setOpenNetworkModificationsMenu(true);
     }, []);
@@ -553,16 +583,16 @@ const NetworkModificationNodeEditor = () => {
         setEditData(undefined);
         setEditDataFetchStatus(FetchStatus.IDLE);
     };
+    const openRestoreModificationDialog = useCallback(() => {
+        dofetchNetworkModificationsToRestore();
+        setRestoreDialogOpen(true);
+    }, [dofetchNetworkModificationsToRestore]);
 
     const doDeleteModification = useCallback(() => {
         const selectedModificationsUuid = [...selectedItems.values()].map(
             (item) => item.uuid
         );
-        deleteModifications(
-            studyUuid,
-            currentNode.id,
-            selectedModificationsUuid
-        )
+        stashModifications(studyUuid, currentNode.id, selectedModificationsUuid)
             .then(() => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
                 if (
@@ -763,13 +793,13 @@ const NetworkModificationNodeEditor = () => {
                     isDropDisabled={isLoading() || isAnyNodeBuilding}
                 >
                     {(provided) => (
-                        <div
-                            className={classes.listContainer}
+                        <Box
+                            sx={styles.listContainer}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
                             <CheckboxList
-                                className={classes.list}
+                                sx={styles.list}
                                 onChecked={setSelectedItems}
                                 values={modifications}
                                 itemComparator={(a, b) => a.uuid === b.uuid}
@@ -786,7 +816,7 @@ const NetworkModificationNodeEditor = () => {
                                 toggleSelectAll={toggleSelectAll}
                             />
                             {provided.placeholder}
-                        </div>
+                        </Box>
                     )}
                 </Droppable>
             </DragDropContext>
@@ -795,49 +825,49 @@ const NetworkModificationNodeEditor = () => {
 
     const renderNetworkModificationsListTitleLoading = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     <CircularProgress
                         size={'1em'}
-                        className={classes.circularProgress}
+                        sx={styles.circularProgress}
                     />
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage id={messageId} />
                 </Typography>
-            </div>
+            </Box>
         );
     };
 
     const renderNetworkModificationsListTitleUpdating = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     <CircularProgress
                         size={'1em'}
-                        className={classes.circularProgress}
+                        sx={styles.circularProgress}
                     />
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'network_modifications/modifications'}
                     />
                 </Typography>
-            </div>
+            </Box>
         );
     };
 
     const renderNetworkModificationsListTitle = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     {pendingState && (
                         <CircularProgress
                             size={'1em'}
-                            className={classes.circularProgress}
+                            sx={styles.circularProgress}
                         />
                     )}
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'network_modification/modificationsCount'}
@@ -847,10 +877,20 @@ const NetworkModificationNodeEditor = () => {
                         }}
                     />
                 </Typography>
-            </div>
+            </Box>
         );
     };
-
+    const renderNetworkModificationsToRestoreDialog = () => {
+        return (
+            <RestoreModificationDialog
+                open={restoreDialogOpen}
+                modifToRestore={modificationsToRestore}
+                currentNode={currentNode}
+                studyUuid={studyUuid}
+                onClose={() => setRestoreDialogOpen(false)}
+            />
+        );
+    };
     const renderPaneSubtitle = () => {
         if (isLoading() && messageId) {
             return renderNetworkModificationsListTitleLoading();
@@ -863,9 +903,9 @@ const NetworkModificationNodeEditor = () => {
 
     return (
         <>
-            <Toolbar className={classes.toolbar}>
+            <Toolbar sx={styles.toolbar}>
                 <Checkbox
-                    className={classes.toolbarCheckbox}
+                    sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
                     checked={isChecked(selectedItems.size)}
@@ -876,9 +916,9 @@ const NetworkModificationNodeEditor = () => {
                     disableRipple
                     onClick={toggleSelectAllModifications}
                 />
-                <div className={classes.filler} />
+                <Box sx={styles.filler} />
                 <IconButton
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
@@ -889,7 +929,7 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCutModifications}
                     size={'small'}
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     disabled={
                         selectedItems.size === 0 ||
                         isAnyNodeBuilding ||
@@ -901,7 +941,7 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCopyModifications}
                     size={'small'}
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     disabled={selectedItems.size === 0 || isAnyNodeBuilding}
                 >
                     <ContentCopyIcon />
@@ -922,7 +962,7 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            className={classes.toolbarIcon}
+                            sx={styles.toolbarIcon}
                             disabled={
                                 !(copiedModifications.length > 0) ||
                                 isAnyNodeBuilding ||
@@ -936,7 +976,7 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doDeleteModification}
                     size={'small'}
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     disabled={
                         !(selectedItems?.size > 0) ||
                         isAnyNodeBuilding ||
@@ -945,7 +985,16 @@ const NetworkModificationNodeEditor = () => {
                 >
                     <DeleteIcon />
                 </IconButton>
+                <IconButton
+                    onClick={openRestoreModificationDialog}
+                    size={'small'}
+                    sx={styles.toolbarIcon}
+                >
+                    <RestoreIcon />
+                </IconButton>
             </Toolbar>
+            {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
+
             {renderPaneSubtitle()}
 
             {renderNetworkModificationsList()}
