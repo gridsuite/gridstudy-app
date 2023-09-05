@@ -7,14 +7,16 @@
 
 import React, { FunctionComponent, useState } from 'react';
 import { useParameterState, useStyles } from '../parameters';
-import { Grid, MenuItem, Select, Slider, Switch } from '@mui/material';
+import { Grid, MenuItem, Select, Slider, Switch } from "@mui/material";
 import { FormattedMessage } from 'react-intl';
 import { Mark } from '@mui/base/useSlider';
+import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
 
 export enum ParameterType {
     Switch,
     DropDown,
     Slider,
+    DirectoryItems,
 }
 
 type BaseParameterLineProps = {
@@ -45,11 +47,22 @@ type SliderParameterLineProps = {
     maxValue?: number; //default = 100;
 };
 
+//TODO: type elementType on @commons-ui/libs/utils/ElementType.elementType enum when migrated on ts
+type DirectoryItemsInputLineProps = {
+    readonly type: ParameterType.DirectoryItems;
+    label: string;
+    name: string;
+    equipmentTypes: string[];
+    elementType: string;
+    hideErrorMessage: boolean;
+};
+
 type ParameterLineProps = BaseParameterLineProps &
     (
         | SwitchParameterLineProps
         | DropDownParameterLineProps
         | SliderParameterLineProps
+        | DirectoryItemsInputLineProps
     );
 
 /**
@@ -72,6 +85,9 @@ export const ParamLine: FunctionComponent<ParameterLineProps> = (
 
         case ParameterType.Slider:
             return ParamLineSlider(props, context);
+
+        case ParameterType.DirectoryItems:
+            return ParamLineDirectoryItemsInput(props, context);
 
         default:
             //TODO: how to manage in react component? throw new Error(`Not supported parameter type ${type}`);
@@ -181,6 +197,39 @@ const ParamLineSlider: FunctionComponent<
                     value={sliderValue}
                     disabled={props.disabled ?? false}
                     marks={props.marks}
+                />
+            </Grid>
+        </>
+    );
+};
+
+const ParamLineDirectoryItemsInput: FunctionComponent<
+    BaseParameterLineProps & DirectoryItemsInputLineProps
+> = (props, context) => {
+    const classes = useStyles();
+
+    return (
+        /*<Grid item container spacing={1} padding={1}>
+            <Grid item xs={7}>
+                <Typography component="span" variant="body1">
+                    <Box fontWeight="fontWeightBold" m={1}>
+                        <FormattedMessage id={'FixedGenerators'} />
+                    </Box>
+                </Typography>
+            </Grid>*/
+        <>
+            <Grid item xs={8} className={classes.parameterName}>
+                <FormattedMessage id={props.label} />
+            </Grid>
+            <Grid item container xs={4} className={classes.controlItem}>
+                <DirectoryItemsInput
+                    name={props.name}
+                    equipmentTypes={props.equipmentTypes}
+                    elementType={props.elementType}
+                    titleId={props.label}
+                    hideErrorMessage={props.hideErrorMessage}
+                    label={undefined}
+                    itemFilter={undefined}
                 />
             </Grid>
         </>
