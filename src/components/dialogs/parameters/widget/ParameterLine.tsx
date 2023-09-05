@@ -183,7 +183,13 @@ const ParamLineSlider: FunctionComponent<
             <Grid item xs={8} className={classes.parameterName}>
                 <FormattedMessage id={props.label} />
             </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
+            <Grid
+                item
+                container
+                xs={4}
+                className={classes.controlItem}
+                sx={{ paddingRight: 2 }}
+            >
                 <Slider
                     min={props.minValue ?? 0}
                     max={props.maxValue ?? 100}
