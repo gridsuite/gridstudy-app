@@ -1143,5 +1143,6 @@
     "agGrid.previousPage": "page précédente",
     "agGrid.nextPage": "page suivante",
     "agGrid.lastPage": "dernière page",
-    "agGrid.thousandSeparator": " "
+    "agGrid.thousandSeparator": " ",
+    "nominalVoltage": "Tension nominale"
 }

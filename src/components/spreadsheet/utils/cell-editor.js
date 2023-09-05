@@ -17,9 +17,6 @@ const CellEditor = forwardRef(({ ...props }, ref) => {
             allowNewValue
             name={cellName}
             options={options}
-            getOptionLabel={(option) => option?.id ?? option}
-            inputTransform={(val) => val?.id ?? val}
-            outputTransform={(val) => val?.id ?? val}
             size={'small'}
             formProps={{
                 sx: {

@@ -1106,5 +1106,6 @@
     "emptyFilterError": "Filter should contain at least one equipment",
     "IpMin": "ISC min (kA)",
     "IpMax": "ISC max (kA)",
-    "StartupCost": "Startup cost"
+    "StartupCost": "Startup cost",
+    "nominalVoltage": "Nominal Voltage"
 }

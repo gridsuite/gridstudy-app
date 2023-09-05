@@ -198,6 +198,7 @@ const CreateFilterDialog = ({ open, onClose }) => {
                     handleNameValidation={handleNameChange}
                     activeDirectory={defaultFolder.id}
                     isChoosedFolderChanged={isChoosedFolderChanged}
+                    setIsChoosedFolderChanged={setIsChoosedFolderChanged}
                 >
                     <Grid container spacing={2} marginTop={'auto'}>
                         {folderChooser}

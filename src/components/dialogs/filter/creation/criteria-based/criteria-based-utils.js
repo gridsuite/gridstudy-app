@@ -29,7 +29,7 @@ import yup from 'components/utils/yup-config';
 const countries = {
     renderer: CountriesInput,
     props: {
-        label: 'Countries',
+        label: 'descLfCountries',
         name: `${CRITERIA_BASED}.${COUNTRIES}`,
     },
 };

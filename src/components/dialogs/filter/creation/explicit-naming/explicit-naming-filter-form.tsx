@@ -26,7 +26,7 @@ import InputWithPopupConfirmation from 'components/utils/rhf-inputs/select-input
 import { FILTER_EQUIPMENTS } from '../criteria-based/criteria-based-utils';
 import { SelectInput } from '@gridsuite/commons-ui';
 import Papa from 'papaparse';
-import CellEditor from './cell-editor';
+import CellEditor from '../../../../spreadsheet/utils/cell-editor';
 import { useSelector } from 'react-redux';
 import { fetchEquipmentsIds } from 'services/study/network-map';
 export const FILTER_EQUIPMENTS_ATTRIBUTES = 'filterEquipmentsAttributes';
@@ -129,11 +129,7 @@ function ExplicitNamingFilterForm() {
                 true
             ).then((values) => {
                 setEquipmentTypeOptions(
-                    values
-                        .sort((a: any, b: any) => a.localeCompare(b))
-                        .map((value: any) => {
-                            return { id: value };
-                        })
+                    values.sort((a: any, b: any) => a.localeCompare(b))
                 );
             });
         }
