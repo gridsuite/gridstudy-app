@@ -96,7 +96,10 @@ import {
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
-import { computeHighTapPosition, formatTemporaryLimits } from 'components/utils/utils';
+import {
+    computeHighTapPosition,
+    formatTemporaryLimits,
+} from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 
 /**
