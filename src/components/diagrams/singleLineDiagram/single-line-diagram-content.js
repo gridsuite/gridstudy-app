@@ -63,8 +63,7 @@ import {
 } from '../../utils/optional-services';
 import { mergeSx } from '../../utils/functions';
 function SingleLineDiagramContent(props) {
-    const { studyUuid } = props;
-    const { diagramSizeSetter, showOneBusShortcircuitResults } = props;
+    const { diagramSizeSetter, studyUuid } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
@@ -249,7 +248,6 @@ function SingleLineDiagramContent(props) {
                 )
             );
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
-                .then(() => showOneBusShortcircuitResults())
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -264,14 +262,7 @@ function SingleLineDiagramContent(props) {
                 })
                 .finally(closeBusMenu());
         },
-        [
-            closeBusMenu,
-            currentNode?.id,
-            studyUuid,
-            showOneBusShortcircuitResults,
-            snackError,
-            dispatch,
-        ]
+        [closeBusMenu, currentNode?.id, studyUuid, snackError, dispatch]
     );
 
     const displayBusMenu = () => {
