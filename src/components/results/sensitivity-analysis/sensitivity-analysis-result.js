@@ -76,7 +76,7 @@ const SensitivityAnalysisResult = ({
                     sortConfig,
                     onSortChanged: (newSortValue) =>
                         onSortChanged(
-                            DATA_KEY_TO_SORT_KEY[field],
+                            field,
                             newSortValue
                         ),
                     updateFilter,

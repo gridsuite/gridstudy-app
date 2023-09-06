@@ -8,10 +8,11 @@
 import PropTypes from 'prop-types';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
+    DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
-    PAGE_OPTIONS,
-} from './sensitivity-analysis-content';
+    PAGE_OPTIONS
+} from "./sensitivity-analysis-content";
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -98,7 +99,7 @@ const PagedSensitivityAnalysisResult = ({
             colKey && sortWay
                 ? {
                       sortKeysWithWeightAndDirection: {
-                          [colKey]: sortWay,
+                          [DATA_KEY_TO_SORT_KEY[colKey]]: sortWay,
                       },
                   }
                 : {};

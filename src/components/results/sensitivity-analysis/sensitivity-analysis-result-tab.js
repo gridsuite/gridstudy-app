@@ -28,8 +28,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     );
 
     // Add default sort on sensitivity col
-    const defaultSortColumn =
-        DATA_KEY_TO_SORT_KEY[nOrNkIndex ? 'valueAfter' : 'value'];
+    const defaultSortColumn = nOrNkIndex ? 'valueAfter' : 'value'
     const defaultSortOrder = SORT_WAYS.desc;
     const { onSortChanged, sortConfig, initSort } = useAgGridSort(
         DATA_KEY_TO_SORT_KEY,
@@ -41,7 +40,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
 
     const initTable = (nOrNkIndex) => {
         initFilters();
-        initSort(DATA_KEY_TO_SORT_KEY[nOrNkIndex ? 'valueAfter' : 'value']);
+        initSort(nOrNkIndex ? 'valueAfter' : 'value');
 
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
            for the page prop of MUI TablePagination if was not on the first page
