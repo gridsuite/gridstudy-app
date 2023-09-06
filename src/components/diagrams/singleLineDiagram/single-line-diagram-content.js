@@ -8,7 +8,6 @@
 import { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import { RunningStatus } from '../../utils/running-status';
 import {
     getEquipmentTypeFromFeederType,
@@ -20,7 +19,7 @@ import {
     MAX_WIDTH_VOLTAGE_LEVEL,
     DiagramType,
     useDiagram,
-    useDiagramStyles,
+    styles,
 } from '../diagram-common';
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
@@ -62,9 +61,9 @@ import {
     OptionalServicesNames,
     OptionalServicesStatus,
 } from '../../utils/optional-services';
+import { mergeSx } from '../../utils/functions';
 function SingleLineDiagramContent(props) {
     const { studyUuid } = props;
-    const classes = useDiagramStyles();
     const { diagramSizeSetter, showOneBusShortcircuitResults } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -589,15 +588,13 @@ function SingleLineDiagramContent(props) {
                 )}
             </Box>
             {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-            <div
+            <Box
                 ref={svgRef}
-                className={clsx(
-                    classes.divDiagram,
-                    classes.divSingleLineDiagram,
-                    {
-                        [classes.divDiagramInvalid]:
-                            props.loadFlowStatus !== RunningStatus.SUCCEED,
-                    }
+                sx={mergeSx(
+                    styles.divDiagram,
+                    styles.divSingleLineDiagram,
+                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                        styles.divDiagramInvalid
                 )}
                 style={{ height: '100%' }}
             />

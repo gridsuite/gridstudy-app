@@ -8,7 +8,6 @@
 import PropTypes from 'prop-types';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
-    DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
     PAGE_OPTIONS,
@@ -99,7 +98,7 @@ const PagedSensitivityAnalysisResult = ({
             colKey && sortWay
                 ? {
                       sortKeysWithWeightAndDirection: {
-                          [DATA_KEY_TO_SORT_KEY[colKey]]: sortWay,
+                          [colKey]: sortWay,
                       },
                   }
                 : {};
@@ -108,7 +107,8 @@ const PagedSensitivityAnalysisResult = ({
             isJustBefore: !nOrNkIndex,
             functionType: FUNCTION_TYPES[sensiKindIndex],
             offset: page * rowsPerPage,
-            chunkSize: rowsPerPage,
+            pageSize: rowsPerPage,
+            pageNumber: page,
             ...filterSelector,
             ...sortSelector,
         };

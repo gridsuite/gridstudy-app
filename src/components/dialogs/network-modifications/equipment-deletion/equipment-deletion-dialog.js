@@ -27,7 +27,7 @@ import { FetchStatus } from '../../../../services/utils';
 const formSchema = yup
     .object()
     .shape({
-        [TYPE]: yup.object().nullable().required(),
+        [TYPE]: yup.string().nullable().required(),
         [EQUIPMENT_ID]: yup.string().nullable().required(),
     })
     .required();
@@ -108,7 +108,7 @@ const EquipmentDeletionDialog = ({
             deleteEquipment(
                 studyUuid,
                 currentNodeUuid,
-                formData[TYPE].type,
+                formData[TYPE],
                 formData[EQUIPMENT_ID],
                 editData?.uuid,
                 formData[DELETION_SPECIFIC_DATA]

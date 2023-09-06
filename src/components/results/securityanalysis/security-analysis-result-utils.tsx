@@ -114,7 +114,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     customTooltipValues: FunctionComponent<ITooltipParams>,
     toolTipValueGetterValues: (
         params: ITooltipParams
-    ) => { title: null; values: string | undefined } | null
+    ) => { title: null; values: string[] | undefined } | null
 ): ColDef[] => {
     return [
         {

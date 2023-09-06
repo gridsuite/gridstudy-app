@@ -25,7 +25,6 @@ import {
     TABLES_DEFINITION_TYPES,
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
@@ -49,6 +48,7 @@ import {
     requestNetworkChange,
 } from '../../services/study/network-modifications';
 import { kiloUnitToUnit } from '../../utils/rounding';
+import { Box } from '@mui/system';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -68,12 +68,12 @@ const useEditBuffer = () => {
     return [data.current, addDataToBuffer, resetBuffer];
 };
 
-const useStyles = makeStyles((theme) => ({
-    table: {
+const styles = {
+    table: (theme) => ({
         marginTop: theme.spacing(2.5),
         lineHeight: 'unset',
         flexGrow: 1,
-    },
+    }),
     blink: {
         animation: '$blink 2s infinite',
     },
@@ -85,21 +85,17 @@ const useStyles = makeStyles((theme) => ({
             opacity: 0.1,
         },
     },
-    disabledLabel: {
-        color: theme.palette.text.disabled,
-    },
     invalidNode: {
         position: 'absolute',
         top: '30%',
         left: '43%',
     },
-}));
+};
 
 const TableWrapper = (props) => {
     const gridRef = useRef();
 
     const intl = useIntl();
-    const classes = useStyles();
 
     const { snackError } = useSnackMessage();
 
@@ -528,7 +524,7 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined
                     );
-                case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+                case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -692,11 +688,11 @@ const TableWrapper = (props) => {
                 </Grid>
             </Grid>
             {props.disabled ? (
-                <Alert className={classes.invalidNode} severity="warning">
+                <Alert sx={styles.invalidNode} severity="warning">
                     <FormattedMessage id="InvalidNode" />
                 </Alert>
             ) : (
-                <div className={classes.table}>
+                <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
                         currentNode={props.currentNode}
@@ -715,7 +711,7 @@ const TableWrapper = (props) => {
                             isLockedColumnNamesEmpty
                         }
                     />
-                </div>
+                </Box>
             )}
         </>
     );
