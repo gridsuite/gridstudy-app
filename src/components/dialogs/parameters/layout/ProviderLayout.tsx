@@ -9,7 +9,7 @@ import {
 import { LineSeparator } from '../../dialogUtils';
 import { SelectInputProps } from '@mui/material/Select/SelectInput';
 
-export type ProviderLayoutParams<P = unknown> = {
+type ProviderLayoutParams<P = unknown> = {
     provider: P | '';
     providers: P[];
     updateProviderCallback: SelectInputProps<P>['onChange'];
@@ -27,7 +27,7 @@ export const ProviderLayout: FunctionComponent<
     // we must keep the line of the simulator selection visible during scrolling
     return (
         <>
-            <Grid container spacing={1}>
+            <Grid container spacing={1} sx={{ marginTop: 1 }}>
                 <Grid
                     container
                     spacing={1}
@@ -55,13 +55,13 @@ export const ProviderLayout: FunctionComponent<
                 maxWidth="md"
             >
                 <LabelledButton
-                    callback={props.resetCallbackParameters}
+                    callback={props.resetCallbackParametersAndProvider}
                     label="resetToDefault"
                     name={undefined}
                 />
                 <LabelledButton
                     label="resetProviderValuesToDefault"
-                    callback={props.resetCallbackParametersAndProvider}
+                    callback={props.resetCallbackParameters}
                     name={undefined}
                 />
                 <CloseButton
