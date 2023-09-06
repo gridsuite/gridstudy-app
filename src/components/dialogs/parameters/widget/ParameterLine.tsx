@@ -10,11 +10,14 @@ import { useParameterState, useStyles } from '../parameters';
 import { Grid, MenuItem, Select, Slider, Switch } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { Mark } from '@mui/base/useSlider';
+import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
+import { SelectInputProps } from '@mui/material/Select/SelectInput';
 
 export enum ParameterType {
     Switch,
     DropDown,
     Slider,
+    DirectoryItems,
 }
 
 type BaseParameterLineProps = {
@@ -34,6 +37,7 @@ type DropDownParameterLineProps = {
     labelValue?: string;
     values: Record<string, string>;
     defaultValueIfNull?: boolean;
+    onPreChange?: SelectInputProps<any>['onChange'];
 };
 
 type SliderParameterLineProps = {
@@ -45,11 +49,22 @@ type SliderParameterLineProps = {
     maxValue?: number; //default = 100;
 };
 
+//TODO: type elementType on @commons-ui/libs/utils/ElementType.elementType enum when migrated on ts
+type DirectoryItemsInputLineProps = {
+    readonly type: ParameterType.DirectoryItems;
+    label: string;
+    name: string;
+    equipmentTypes: string[];
+    elementType: string;
+    hideErrorMessage: boolean;
+};
+
 type ParameterLineProps = BaseParameterLineProps &
     (
         | SwitchParameterLineProps
         | DropDownParameterLineProps
         | SliderParameterLineProps
+        | DirectoryItemsInputLineProps
     );
 
 /**
@@ -72,6 +87,9 @@ export const ParamLine: FunctionComponent<ParameterLineProps> = (
 
         case ParameterType.Slider:
             return ParamLineSlider(props, context);
+
+        case ParameterType.DirectoryItems:
+            return ParamLineDirectoryItemsInput(props, context);
 
         default:
             //TODO: how to manage in react component? throw new Error(`Not supported parameter type ${type}`);
@@ -132,7 +150,8 @@ const ParamLineDropdown: FunctionComponent<
                             ? Object.entries<string>(props.values)[0]
                             : parameterValue
                     }
-                    onChange={(event) => {
+                    onChange={(event, child) => {
+                        props.onPreChange?.(event, child);
                         handleChangeParameterValue(event.target.value);
                     }}
                     size="small"
@@ -167,7 +186,13 @@ const ParamLineSlider: FunctionComponent<
             <Grid item xs={8} className={classes.parameterName}>
                 <FormattedMessage id={props.label} />
             </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
+            <Grid
+                item
+                container
+                xs={4}
+                className={classes.controlItem}
+                sx={{ paddingRight: 2 }}
+            >
                 <Slider
                     min={props.minValue ?? 0}
                     max={props.maxValue ?? 100}
@@ -184,5 +209,31 @@ const ParamLineSlider: FunctionComponent<
                 />
             </Grid>
         </>
+    );
+};
+
+const ParamLineDirectoryItemsInput: FunctionComponent<
+    BaseParameterLineProps & DirectoryItemsInputLineProps
+> = (props, context) => {
+    const classes = useStyles();
+
+    return (
+        <Grid item container spacing={1} padding={1}>
+            <Grid item xs={8} className={classes.parameterName}>
+                {/*<Typography component="span" variant="body1"> as suggested in the doc?*/}
+                <FormattedMessage id={props.label} />
+            </Grid>
+            <Grid item xs={4} className={classes.controlItem}>
+                <DirectoryItemsInput
+                    name={props.name}
+                    equipmentTypes={props.equipmentTypes}
+                    elementType={props.elementType}
+                    titleId={props.label}
+                    hideErrorMessage={props.hideErrorMessage}
+                    label={undefined}
+                    itemFilter={undefined}
+                />
+            </Grid>
+        </Grid>
     );
 };

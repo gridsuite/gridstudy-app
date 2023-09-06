@@ -524,7 +524,7 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined
                     );
-                case EQUIPMENT_TYPES.VOLTAGE_LEVEL.type:
+                case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
                     return modifyVoltageLevel(
                         props.studyUuid,
                         props.currentNode?.id,
