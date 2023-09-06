@@ -27,7 +27,7 @@ const useHvdcLccDeletion = () => {
     const { setValue } = useFormContext();
     const { snackError } = useSnackMessage();
 
-    const updateMscLists = useCallback(
+    const updateMcsLists = useCallback(
         (hvdcLineData, editData) => {
             function mergeMcsLists(dynamicList, editList) {
                 if (!dynamicList && !editList) {
@@ -92,7 +92,7 @@ const useHvdcLccDeletion = () => {
         (studyUuid, nodeId, equipmentId, editData) => {
             fetchHvdcLineWithShuntCompensators(studyUuid, nodeId, equipmentId)
                 .then((hvdcLineData) => {
-                    updateMscLists(hvdcLineData, editData);
+                    updateMcsLists(hvdcLineData, editData);
                 })
                 .catch((error) => {
                     setValue(DELETION_SPECIFIC_DATA, null);
@@ -102,7 +102,7 @@ const useHvdcLccDeletion = () => {
                     });
                 });
         },
-        [setValue, updateMscLists, snackError]
+        [setValue, updateMcsLists, snackError]
     );
 
     return { specificUpdate };
