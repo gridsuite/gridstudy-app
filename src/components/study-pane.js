@@ -160,13 +160,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     function renderMapView() {
         return (
             <ReactFlowProvider>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100%',
-                    }}
-                >
+                <Box sx={styles.table}>
                     <Box
                         sx={styles.horizontalToolbar}
                         style={{
@@ -271,7 +265,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                             />
                         </Box>
                     </div>
-                </div>
+                </Box>
             </ReactFlowProvider>
         );
     }

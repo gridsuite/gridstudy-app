@@ -597,7 +597,7 @@ export const NetworkModificationTreePane = ({
                 />
 
                 <StudyDrawer
-                    open={isModificationsDrawerOpen} // TODO CHARLY vérifier ce truc
+                    open={isModificationsDrawerOpen}
                     drawerStyle={styles.nodeEditor} // TODO Why does this have to be set in the parent, if StudyDrawer is only used here ? Let's remove the useless props and define the style in StudyDrawer
                     drawerShiftStyle={styles.nodeEditorShift}
                     anchor={
