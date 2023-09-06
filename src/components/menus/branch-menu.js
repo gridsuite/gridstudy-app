@@ -251,7 +251,7 @@ const withBranchMenu =
                 {enableDeveloperMode &&
                     (equipmentType === EQUIPMENT_TYPES.LINE ||
                         equipmentType ===
-                            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type) && (
+                            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
                         <MenuItem
                             sx={styles.menuItem}
                             onClick={() =>
