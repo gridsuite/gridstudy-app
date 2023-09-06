@@ -417,7 +417,6 @@ const NetworkMap = (props) => {
                             equipmentId: getNameOrId(lineObject),
                             pointerX: x,
                             pointerY: y,
-                            equipmentInfos: lineObject,
                             visible: showTooltip,
                         });
                     } else {
