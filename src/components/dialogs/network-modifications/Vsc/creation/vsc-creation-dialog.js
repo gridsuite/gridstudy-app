@@ -31,8 +31,9 @@ import VscHvdcLinePane, {
 import { FetchStatus } from '../../../../../services/utils';
 import ConverterStationPane, {
     getVscConverterStationEmptyFormData,
-    getVscConverterStationSchema
-} from "../converter-station/converter-station-pane";
+    getVscConverterStationSchema,
+} from '../converter-station/converter-station-pane';
+import VscCreationForm from './vsc-creation-form';
 
 const formSchema = yup
     .object()
@@ -41,7 +42,7 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string(),
         ...getVscHvdcLinePaneSchema(HVDC_LINE_TAB),
         ...getVscConverterStationSchema(CONVERTER_STATION_1),
-        ...getVscConverterStationSchema(CONVERTER_STATION_2)
+        ...getVscConverterStationSchema(CONVERTER_STATION_2),
     })
     .required();
 const emptyFormData = {
@@ -64,7 +65,7 @@ const VscCreationDialog = ({
     studyUuid,
     isUpdate,
     editDataFetchStatus,
-    dialogProps,
+    ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
@@ -165,34 +166,11 @@ const VscCreationDialog = ({
                 }
                 {...dialogProps}
             >
-                <Box
-                    hidden={tabIndex !== VSC_CREATION_TABS.HVDC_LINE_TAB}
-                    p={1}
-                >
-                    <VscHvdcLinePane id={HVDC_LINE_TAB} />
-                </Box>
-                <Box
-                    hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_1}
-                    p={1}
-                >
-                    <ConverterStationPane
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        id={CONVERTER_STATION_1}
-                        stationLabel={'converterStation1'}
-                    />
-                </Box>
-                <Box
-                  hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_2}
-                  p={1}
-                >
-                    <ConverterStationPane
-                      studyUuid={studyUuid}
-                      currentNode={currentNode}
-                      id={CONVERTER_STATION_2}
-                      stationLabel={'converterStation2'}
-                    />
-                </Box>
+                <VscCreationForm
+                    tabIndex={tabIndex}
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                />
             </ModificationDialog>
         </FormProvider>
     );

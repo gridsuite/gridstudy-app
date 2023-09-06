@@ -82,12 +82,10 @@ const formSchema = yup
             [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
             [ACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
             [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
-            ...getReactiveLimitsSchema(),
+            ...getReactiveLimitsSchema({}),
             ...getConnectivityWithPositionValidationSchema(),
             ...getFrequencyRegulationSchema(),
-        },
-        [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
-    )
+        })
     .required();
 
 const BatteryCreationDialog = ({

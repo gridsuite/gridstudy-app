@@ -19,16 +19,16 @@ import {
 import yup from 'components/utils/yup-config';
 import { REACTIVE_LIMITS } from '../../utils/field-constants';
 
-export const getReactiveLimitsFormData = (
-    id: REACTIVE_LIMITS,
+export const getReactiveLimitsFormData = ({
+    id = REACTIVE_LIMITS,
     reactiveCapabilityCurveChoice = 'CURVE',
     minimumReactivePower = null,
     maximumReactivePower = null,
     reactiveCapabilityCurveTable = [
         getRowEmptyFormData(),
         getRowEmptyFormData(),
-    ]
-) => ({
+    ],
+}) => ({
     [id]: {
         [REACTIVE_CAPABILITY_CURVE_CHOICE]: reactiveCapabilityCurveChoice,
         [MINIMUM_REACTIVE_POWER]: minimumReactivePower,
@@ -36,24 +36,13 @@ export const getReactiveLimitsFormData = (
         [REACTIVE_CAPABILITY_CURVE_TABLE]: reactiveCapabilityCurveTable,
     },
 });
-export const getReactiveLimitsEmptyFormData = (
-    id = REACTIVE_LIMITS,
-    isEquipmentModification = false
-) => ({
-    [id]: {
-        [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
-        [MINIMUM_REACTIVE_POWER]: null,
-        [MAXIMUM_REACTIVE_POWER]: null,
-        ...getReactiveCapabilityCurveEmptyFormData(
-            REACTIVE_CAPABILITY_CURVE_TABLE
-        ),
-    },
-});
+export const getReactiveLimitsEmptyFormData = (id = REACTIVE_LIMITS) =>
+    getReactiveLimitsFormData({ id });
 
-export const getReactiveLimitsSchema = (
+export const getReactiveLimitsSchema = ({
     id = REACTIVE_LIMITS,
-    isEquipmentModification = false
-) => ({
+    isEquipmentModification = false,
+}) => ({
     [id]: yup.object().shape({
         [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup.string().nullable().required(),
         [MINIMUM_REACTIVE_POWER]: yup
@@ -76,5 +65,5 @@ export const getReactiveLimitsSchema = (
             REACTIVE_CAPABILITY_CURVE_TABLE,
             isEquipmentModification
         ),
-    }),
+    }, [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]),
 });

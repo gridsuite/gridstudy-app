@@ -1,14 +1,27 @@
 import { FunctionComponent } from 'react';
 import { string } from 'yup';
-import { FloatInput, TextInput } from "@gridsuite/commons-ui";
+import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import {
     CONNECTIVITY,
     CONVERTER_STATION_ID,
-    CONVERTER_STATION_NAME, DC_RESISTANCE,
+    CONVERTER_STATION_NAME,
+    DC_RESISTANCE,
     EQUIPMENT_ID,
-    EQUIPMENT_NAME, LOSS_FACTOR
-} from "../../../../utils/field-constants";
-import { filledTextField, gridItem, GridSection, percentageTextField } from "../../../dialogUtils";
+    EQUIPMENT_NAME,
+    LOSS_FACTOR,
+    REACTIVE_LIMITS,
+    REACTIVE_POWER,
+    VOLTAGE,
+    VOLTAGE_REGULATION,
+} from '../../../../utils/field-constants';
+import {
+    filledTextField,
+    gridItem,
+    GridSection,
+    percentageTextField,
+    ReactivePowerAdornment,
+    VoltageAdornment,
+} from '../../../dialogUtils';
 import React, { useEffect, useState } from 'react';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import { CurrentTreeNode } from '../../../../../redux/reducer.type';
@@ -21,6 +34,11 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
+import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import {
+    getReactiveLimitsEmptyFormData,
+    getReactiveLimitsSchema,
+} from '../../../reactive-limits/reactive-limits-utils';
 
 interface VscConverterStationPaneProps {
     id: string;
@@ -34,7 +52,12 @@ export function getVscConverterStationSchema(id: string) {
         [id]: yup.object().shape({
             [CONVERTER_STATION_ID]: yup.string().nullable().required(),
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
+            [LOSS_FACTOR]: yup.number().nullable(),
+            [REACTIVE_POWER]: yup.number().nullable(),
+            [VOLTAGE_REGULATION]: yup.boolean(),
+            [VOLTAGE]: yup.number().nullable(),
             ...getConnectivityWithPositionValidationSchema(),
+            ...getReactiveLimitsSchema({}),
         }),
     };
 }
@@ -44,7 +67,12 @@ export function getVscConverterStationEmptyFormData(id: string) {
         [id]: {
             [CONVERTER_STATION_ID]: null,
             [CONVERTER_STATION_NAME]: null,
+            [LOSS_FACTOR]: null,
+            [REACTIVE_POWER]: null,
+            [VOLTAGE_REGULATION]: null,
+            [VOLTAGE]: null,
             ...getConnectivityWithPositionEmptyFormData(),
+            ...getReactiveLimitsEmptyFormData(),
         },
     };
 }
@@ -62,7 +90,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
-                        values.sort((a: {id: string}, b: {id: string}) =>
+                        values.sort((a: { id: string }, b: { id: string }) =>
                             a.id.localeCompare(b.id)
                         )
                     );
@@ -72,7 +100,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     }, [studyUuid, currentNodeUuid]);
 
     const generatorIdField = (
-        <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />
+        <TextInput
+            name={`${id}.${CONVERTER_STATION_ID}`}
+            label={'converterStationId'}
+        />
     );
 
     const generatorNameField = (
@@ -93,8 +124,30 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     );
 
     const lossFactorField = (
-      <FloatInput name={`${id}.${LOSS_FACTOR}`} adornment={percentageTextField}/>
-    )
+        <FloatInput
+            name={`${id}.${LOSS_FACTOR}`}
+            adornment={percentageTextField}
+        />
+    );
+
+    const reactivePowerField = (
+        <FloatInput
+            name={`${id}.${REACTIVE_POWER}`}
+            adornment={ReactivePowerAdornment}
+            label={'ReactivePowerText'}
+        />
+    );
+
+    const voltageRegulation = (
+        <SwitchInput
+            name={`${id}.${VOLTAGE_REGULATION}`}
+            label={'VoltageRegulationText'}
+        />
+    );
+
+    const voltageField = (
+        <FloatInput name={`${id}.${VOLTAGE}`} adornment={VoltageAdornment} label={"VoltageText"}/>
+    );
 
     return (
         <Grid container spacing={2}>
@@ -107,6 +160,23 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             <GridSection title={'Connectivity'} />
             <Grid container item>
                 {gridItem(connectivityForm, 12)}
+            </Grid>
+
+            <GridSection title="Characteristics" />
+            <Grid container item>
+                {gridItem(lossFactorField, 4)}
+            </Grid>
+
+            <GridSection title="ReactiveLimits" />
+            <ReactiveLimitsForm id={`${id}.${REACTIVE_LIMITS}`} />
+
+            <GridSection title={'Setpoints'} />
+            <Grid container item spacing={2}>
+                {gridItem(reactivePowerField, 4)}
+            </Grid>
+            <Grid container item spacing={2}>
+                {gridItem(voltageRegulation, 4)}
+                {gridItem(voltageField, 4)}
             </Grid>
         </Grid>
     );
