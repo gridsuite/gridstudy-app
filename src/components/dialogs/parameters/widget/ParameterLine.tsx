@@ -215,19 +215,12 @@ const ParamLineDirectoryItemsInput: FunctionComponent<
     const classes = useStyles();
 
     return (
-        /*<Grid item container spacing={1} padding={1}>
-            <Grid item xs={7}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={'FixedGenerators'} />
-                    </Box>
-                </Typography>
-            </Grid>*/
-        <>
+        <Grid item container spacing={1} padding={1}>
             <Grid item xs={8} className={classes.parameterName}>
+                {/*<Typography component="span" variant="body1"> as suggested in the doc?*/}
                 <FormattedMessage id={props.label} />
             </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
+            <Grid item xs={4} className={classes.controlItem}>
                 <DirectoryItemsInput
                     name={props.name}
                     equipmentTypes={props.equipmentTypes}
@@ -238,6 +231,6 @@ const ParamLineDirectoryItemsInput: FunctionComponent<
                     itemFilter={undefined}
                 />
             </Grid>
-        </>
+        </Grid>
     );
 };

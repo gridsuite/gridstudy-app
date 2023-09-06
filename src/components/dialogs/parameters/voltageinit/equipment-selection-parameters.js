@@ -25,7 +25,7 @@ const EquipmentSelectionParameters = () => {
                 name={FIXED_GENERATORS}
                 equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
                 elementType={elementType.FILTER}
-                titleId={'FixedGenerators'}
+                label={'FixedGenerators'}
                 hideErrorMessage={true}
             />
             <ParamLine
@@ -34,7 +34,7 @@ const EquipmentSelectionParameters = () => {
                 name={VARIABLE_TRANSFORMERS}
                 equipmentTypes={[EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]}
                 elementType={elementType.FILTER}
-                titleId={'VariableTransformers'}
+                label={'VariableTransformers'}
                 hideErrorMessage={true}
             />
             <ParamLine
@@ -43,7 +43,7 @@ const EquipmentSelectionParameters = () => {
                 name={VARIABLE_SHUNT_COMPENSATORS}
                 equipmentTypes={[EQUIPMENT_TYPES.SHUNT_COMPENSATOR]}
                 elementType={elementType.FILTER}
-                titleId={'VariableShuntCompensators'}
+                label={'VariableShuntCompensators'}
                 hideErrorMessage={true}
             />
         </DialogContent>
