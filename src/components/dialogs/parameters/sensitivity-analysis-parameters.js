@@ -7,17 +7,14 @@
 
 import React, { useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
-import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
-import { LineSeparator } from '../dialogUtils';
 import { TYPES, getValue } from './util/make-component-utils';
 import { DoubleEditor } from './load-flow-parameters';
+import { ProviderLayout } from './layout';
 
 export const SensitivityAnalysisParameters = ({
     hideParameters,
     parametersBackend,
 }) => {
-    const classes = useStyles();
-
     const [
         providers,
         provider,
@@ -53,49 +50,25 @@ export const SensitivityAnalysisParameters = ({
     }, [resetParameters]);
 
     return (
-        <>
-            <Grid container spacing={1} padding={1}>
-                <DropDown
-                    value={provider}
-                    label="Provider"
-                    values={providers}
-                    callback={updateProviderCallback}
-                />
-                <LineSeparator />
-                <SensitivityAnalysisFields
-                    key={`sensititvity-params-${refreshKey}`}
-                    paramaters={defaultParamsValues}
-                    onHandleUpdateSensitivityParameters={
-                        handleUpdateSensitivityParameters
-                    }
-                />
-                <Grid
-                    container
-                    key="sensiAnalysisProvider"
-                    className={classes.scrollableGrid}
-                ></Grid>
-                <LineSeparator />
-            </Grid>
-
-            <Grid
-                container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
-                maxWidth="md"
-            >
-                <LabelledButton
-                    callback={resetSensitivityParametersAndProvider}
-                    label="resetToDefault"
-                />
-                <LabelledButton
-                    label="resetProviderValuesToDefault"
-                    callback={resetSensitivityAnalysisParameters}
-                />
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
-            </Grid>
-        </>
+        <ProviderLayout
+            provider={provider}
+            providers={providers}
+            updateProviderCallback={updateProviderCallback}
+            keyContainer="sensiAnalysisProvider"
+            resetCallbackParametersAndProvider={
+                resetSensitivityParametersAndProvider
+            }
+            resetCallbackParameters={resetSensitivityAnalysisParameters}
+            callbackHideParameters={hideParameters}
+        >
+            <SensitivityAnalysisFields
+                key={`sensititvity-params-${refreshKey}`}
+                paramaters={defaultParamsValues}
+                onHandleUpdateSensitivityParameters={
+                    handleUpdateSensitivityParameters
+                }
+            />
+        </ProviderLayout>
     );
 };
 

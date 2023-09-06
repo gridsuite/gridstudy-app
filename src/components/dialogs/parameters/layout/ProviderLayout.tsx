@@ -1,0 +1,74 @@
+import React, { FunctionComponent, PropsWithChildren } from 'react';
+import { Grid } from '@mui/material';
+import {
+    CloseButton,
+    DropDown,
+    LabelledButton,
+    useStyles,
+} from '../parameters';
+import { LineSeparator } from '../../dialogUtils';
+import { SelectInputProps } from '@mui/material/Select/SelectInput';
+
+export type ProviderLayoutParams<P = unknown> = {
+    provider: P | '';
+    providers: P[];
+    updateProviderCallback: SelectInputProps<P>['onChange'];
+    keyContainer: string;
+    resetCallbackParametersAndProvider: unknown;
+    resetCallbackParameters: unknown;
+    callbackHideParameters: unknown;
+};
+
+export const ProviderLayout: FunctionComponent<
+    PropsWithChildren<ProviderLayoutParams>
+> = (props, context) => {
+    const classes = useStyles();
+
+    // we must keep the line of the simulator selection visible during scrolling
+    return (
+        <>
+            <Grid container spacing={1}>
+                <Grid
+                    container
+                    spacing={1}
+                    sx={{ padding: 0, paddingBottom: 2 }}
+                >
+                    <DropDown
+                        value={props.provider}
+                        label="Provider"
+                        values={props.providers}
+                        callback={props.updateProviderCallback}
+                    />
+                </Grid>
+                <Grid
+                    container
+                    key={props.keyContainer}
+                    className={classes.scrollableGrid}
+                >
+                    {props.children}
+                </Grid>
+            </Grid>
+            <LineSeparator />
+            <Grid
+                container
+                className={classes.controlItem + ' ' + classes.marginTopButton}
+                maxWidth="md"
+            >
+                <LabelledButton
+                    callback={props.resetCallbackParameters}
+                    label="resetToDefault"
+                    name={undefined}
+                />
+                <LabelledButton
+                    label="resetProviderValuesToDefault"
+                    callback={props.resetCallbackParametersAndProvider}
+                    name={undefined}
+                />
+                <CloseButton
+                    hideParameters={props.callbackHideParameters}
+                    classeStyleName={undefined}
+                />
+            </Grid>
+        </>
+    );
+};
