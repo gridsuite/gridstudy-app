@@ -46,6 +46,10 @@ const useStyles = makeStyles<Theme, CustomAGGGridStyleProps>(() => ({
             borderRight: (props) =>
                 props.shouldHidePinnedHeaderRightBorder ? 'none' : '',
         },
+
+        '& .ag-overlay-wrapper': {
+            background: '#222628',
+        },
     },
 }));
 

@@ -333,6 +333,10 @@ const TableWrapper = (props) => {
     );
 
     useEffect(() => {
+        gridRef.current?.api?.showLoadingOverlay();
+    }, [tabIndex]);
+
+    useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
         const newSelectedColumns = new Set(
             allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []
@@ -415,6 +419,7 @@ const TableWrapper = (props) => {
 
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
+        gridRef.current?.api?.hideOverlay();
     }, [scrollToEquipmentIndex]);
 
     useEffect(() => {
