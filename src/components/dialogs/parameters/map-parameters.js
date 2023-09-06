@@ -18,6 +18,7 @@ import {
 import { CloseButton, useParameterState, useStyles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { ParamLine, ParameterType } from './widget';
+import { useState } from 'react';
 
 export const MapParameters = ({ hideParameters }) => {
     const classes = useStyles();
@@ -36,8 +37,10 @@ export const MapParameters = ({ hideParameters }) => {
     const [lineFlowColorModeLocal] = useParameterState(
         PARAM_LINE_FLOW_COLOR_MODE
     );
-    const isLineFlowNominal =
-        lineFlowColorModeLocal === LineFlowColorMode.NOMINAL_VOLTAGE;
+
+    const [isLineFlowNominal, setDisabledFlowAlertThreshold] = useState(
+        lineFlowColorModeLocal === LineFlowColorMode.NOMINAL_VOLTAGE
+    );
 
     return (
         <>
@@ -79,6 +82,12 @@ export const MapParameters = ({ hideParameters }) => {
                     values={{
                         [LineFlowColorMode.NOMINAL_VOLTAGE]: 'NominalVoltage',
                         [LineFlowColorMode.OVERLOADS]: 'Overloads',
+                    }}
+                    onPreChange={(event) => {
+                        setDisabledFlowAlertThreshold(
+                            event.target.value ===
+                                LineFlowColorMode.NOMINAL_VOLTAGE
+                        );
                     }}
                 />
                 <LineSeparator />

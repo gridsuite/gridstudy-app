@@ -11,6 +11,7 @@ import { Grid, MenuItem, Select, Slider, Switch } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { Mark } from '@mui/base/useSlider';
 import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
+import { SelectInputProps } from '@mui/material/Select/SelectInput';
 
 export enum ParameterType {
     Switch,
@@ -36,6 +37,7 @@ type DropDownParameterLineProps = {
     labelValue?: string;
     values: Record<string, string>;
     defaultValueIfNull?: boolean;
+    onPreChange?: SelectInputProps<any>['onChange'];
 };
 
 type SliderParameterLineProps = {
@@ -148,7 +150,8 @@ const ParamLineDropdown: FunctionComponent<
                             ? Object.entries<string>(props.values)[0]
                             : parameterValue
                     }
-                    onChange={(event) => {
+                    onChange={(event, child) => {
+                        props.onPreChange?.(event, child);
                         handleChangeParameterValue(event.target.value);
                     }}
                     size="small"
