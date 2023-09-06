@@ -47,6 +47,8 @@ import networkModification_fr from '../translations/network-modifications-fr.jso
 import exportParameters_en from '../translations/export-parameters-en.json';
 import exportParameters_fr from '../translations/export-parameters-fr.json';
 import messages_plugins from '../plugins/translations';
+import external_labels_en from '../translations/extern-en.json';
+import external_labels_fr from '../translations/extern-fr.json';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
@@ -114,6 +116,7 @@ const messages = {
         ...treeview_finder_en,
         ...messages_en,
         ...networkModification_en,
+        ...external_labels_en,
         ...exportParameters_en,
         ...report_viewer_en,
         ...login_en,
@@ -124,12 +127,13 @@ const messages = {
         ...card_error_boundary_en,
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
-        ...messages_plugins.en, // keep it at the end to allow translation overwritting
+        ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
         ...treeview_finder_fr,
         ...messages_fr,
         ...networkModification_fr,
+        ...external_labels_fr,
         ...exportParameters_fr,
         ...report_viewer_fr,
         ...login_fr,
@@ -140,7 +144,7 @@ const messages = {
         ...card_error_boundary_fr,
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
-        ...messages_plugins.fr, // keep it at the end to allow translation overwritting
+        ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
 
