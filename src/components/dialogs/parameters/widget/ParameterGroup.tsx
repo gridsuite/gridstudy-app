@@ -25,9 +25,9 @@ type ParameterGroupProps = {
     label: string;
     state: boolean;
     onClick: (show: boolean) => void;
-    disabled: boolean;
-    infoText: string;
-    unmountOnExit: boolean;
+    disabled?: boolean;
+    infoText?: string;
+    unmountOnExit?: boolean;
 };
 
 export const ParameterGroup: FunctionComponent<
@@ -55,26 +55,24 @@ export const ParameterGroup: FunctionComponent<
                         className={classes.subgroupParametersAccordionSummary}
                         expandIcon={
                             mouseHover ? <ExpandCircleDown /> : <ExpandMore />
-                            /*<ArrowForwardIosSharp sx={{ fontSize: '0.9rem' }} />*/
                         }
                         onMouseEnter={(event) => setMouseHover(true)}
                         onMouseLeave={(event) => setMouseHover(false)}
                     >
                         <SettingsIcon />
-                        <Typography>
+                        <Typography sx={{ width: '66%', flexShrink: 0 }}>
                             <FormattedMessage id={props.label} />
                         </Typography>
-                        {/*TODO: missing CSS on left
-                        props.infoText && (
+                        {props.infoText && (
                             <Typography
-                                sx={{ color: 'text.secondary' }}
+                                sx={{ color: 'text.secondary', width: '34%' }}
                                 noWrap={true}
                                 align="right"
                                 variant="body2"
                             >
                                 {props.infoText}
                             </Typography>
-                        )*/}
+                        )}
                     </AccordionSummary>
                     <AccordionDetails
                         className={classes.subgroupParametersAccordionDetails}

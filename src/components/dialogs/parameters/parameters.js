@@ -183,9 +183,6 @@ export const useStyles = makeStyles((theme) => ({
         '& .MuiAccordionSummary-content': {
             marginLeft: theme.spacing(0),
         },
-        /*'& .MuiAccordionSummary-content .MuiTypography-body2': {
-            //TODO: CSS rules to align to left
-        },*/
     },
     subgroupParametersAccordionDetails: {
         padding: theme.spacing(0),
