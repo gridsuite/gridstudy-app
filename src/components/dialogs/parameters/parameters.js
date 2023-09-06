@@ -204,25 +204,9 @@ export const useStyles = makeStyles((theme) => ({
         paddingBottom: theme.spacing(1),
         flexGrow: 1,
     },
-    singleItem: {
-        display: 'flex',
-        flex: 'auto',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+    composedItem: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
-    },
-    firstTextField: {
-        marginLeft: theme.spacing(3),
-    },
-    secondTextField: {
-        marginLeft: theme.spacing(3),
-        marginRight: theme.spacing(2),
-    },
-    singleTextField: {
-        display: 'flex',
-        marginRight: theme.spacing(2),
-        marginLeft: theme.spacing(1),
     },
     tooltip: {
         marginLeft: theme.spacing(1),
@@ -231,14 +215,6 @@ export const useStyles = makeStyles((theme) => ({
         display: 'flex',
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
-    },
-    multipleItems: {
-        display: 'flex',
-        flex: 'auto',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
     },
     tabWithError: {
         '&.Mui-selected': { color: theme.palette.error.main },

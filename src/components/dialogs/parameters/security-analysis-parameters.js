@@ -6,10 +6,9 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Grid, TextField, Tooltip } from '@mui/material';
+import { Grid, Stack, TextField, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
-import { LineSeparator } from '../dialogUtils';
+import { useStyles } from './parameters';
 import Typography from '@mui/material/Typography';
 import {
     isProportionalSAParam,
@@ -22,6 +21,7 @@ import {
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { inputAdornment } from './util/make-component-utils';
+import { ProviderLayout } from './layout';
 
 const formatValues = (values, isDivision) => {
     let result = {};
@@ -111,55 +111,42 @@ const SecurityAnalysisFields = ({
     );
 
     return (
-        <Grid
-            className={
-                isSingleField ? classes.singleItem : classes.multipleItems
-            }
-        >
+        <Grid item container className={classes.composedItem}>
             <Grid item xs={4} className={classes.parameterName}>
                 <Typography>{label}</Typography>
             </Grid>
-            <Grid
-                item
-                container
-                xs={isSingleField ? 8 : 4}
-                className={
-                    isSingleField
-                        ? classes.singleTextField
-                        : classes.firstTextField
-                }
-            >
-                <TextField
-                    fullWidth
-                    sx={{ input: { textAlign: 'right' } }}
-                    value={values[firstField?.name]}
-                    name={firstField?.name}
-                    onBlur={updateValue}
-                    onChange={checkPerPercentageValue}
-                    size="small"
-                    InputProps={inputAdornment(firstField?.label)}
-                />
-            </Grid>
-            {!isSingleField && (
-                <Grid item container xs={4} className={classes.secondTextField}>
+            <Grid item xs={8}>
+                <Stack direction="row" spacing={1}>
                     <TextField
-                        fullWidth
+                        fullWidth={true}
                         sx={{ input: { textAlign: 'right' } }}
-                        value={values[secondField?.name]}
-                        name={secondField?.name}
+                        value={values[firstField?.name]}
+                        name={firstField?.name}
                         onBlur={updateValue}
-                        onChange={checkDoubleValue}
+                        onChange={checkPerPercentageValue}
                         size="small"
-                        InputProps={inputAdornment(secondField?.label)}
+                        InputProps={inputAdornment(firstField?.label)}
                     />
-                </Grid>
-            )}
-            <Tooltip
-                title={<FormattedMessage id={tooltipInfoId} />}
-                placement="left-start"
-            >
-                <InfoIcon />
-            </Tooltip>
+                    {!isSingleField && (
+                        <TextField
+                            fullWidth={true}
+                            sx={{ input: { textAlign: 'right' } }}
+                            value={values[secondField?.name]}
+                            name={secondField?.name}
+                            onBlur={updateValue}
+                            onChange={checkDoubleValue}
+                            size="small"
+                            InputProps={inputAdornment(secondField?.label)}
+                        />
+                    )}
+                    <Tooltip
+                        title={<FormattedMessage id={tooltipInfoId} />}
+                        placement="left-start"
+                    >
+                        <InfoIcon />
+                    </Tooltip>
+                </Stack>
+            </Grid>
         </Grid>
     );
 };
@@ -256,74 +243,40 @@ export const SecurityAnalysisParameters = ({
     ];
 
     return (
-        <>
-            <Grid container spacing={1} padding={1}>
-                <Grid
-                    container
-                    spacing={1}
-                    sx={{ padding: 0, paddingBottom: 2 }}
-                >
-                    <DropDown
-                        value={provider}
-                        label="Provider"
-                        values={securityAnalysisProvider}
-                        callback={updateProviderCallback}
-                    />
+        <ProviderLayout
+            provider={provider}
+            providers={securityAnalysisProvider}
+            updateProviderCallback={updateProviderCallback}
+            keyContainer="secuAnalysisProvider"
+            resetCallbackParametersAndProvider={resetSAParametersAndProvider}
+            resetCallbackParameters={resetSAParameters}
+            callbackHideParameters={hideParameters}
+        >
+            <Grid container spacing={1} paddingBottom={1}>
+                <Grid item xs={8} className={classes.text}>
+                    <Typography>
+                        {intl.formatMessage({
+                            id: 'securityAnalysis.violationsHiding',
+                        })}
+                    </Typography>
+                    <Tooltip
+                        className={classes.tooltip}
+                        title={
+                            <FormattedMessage
+                                id={'securityAnalysis.toolTip.violationsHiding'}
+                            />
+                        }
+                        placement="left-start"
+                    >
+                        <InfoIcon />
+                    </Tooltip>
                 </Grid>
-                <Grid container spacing={1} paddingBottom={1}>
-                    <Grid item xs={8} className={classes.text}>
-                        <Typography>
-                            {intl.formatMessage({
-                                id: 'securityAnalysis.violationsHiding',
-                            })}
-                        </Typography>
-                        <Tooltip
-                            className={classes.tooltip}
-                            title={
-                                <FormattedMessage
-                                    id={
-                                        'securityAnalysis.toolTip.violationsHiding'
-                                    }
-                                />
-                            }
-                            placement="left-start"
-                        >
-                            <InfoIcon />
-                        </Tooltip>
-                    </Grid>
-                </Grid>
-
                 {fieldsToShow?.map((item) => {
                     return (
                         <SecurityAnalysisFields key={item.label} {...item} />
                     );
                 })}
             </Grid>
-            <Grid
-                container
-                key="secuAnalysisProvider"
-                className={classes.scrollableGrid}
-                spacing={1}
-            ></Grid>
-            <LineSeparator />
-            <Grid
-                container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
-                maxWidth="md"
-            >
-                <LabelledButton
-                    callback={resetSAParametersAndProvider}
-                    label="resetToDefault"
-                />
-                <LabelledButton
-                    label="resetProviderValuesToDefault"
-                    callback={resetSAParameters}
-                />
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
-            </Grid>
-        </>
+        </ProviderLayout>
     );
 };

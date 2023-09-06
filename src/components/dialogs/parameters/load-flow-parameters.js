@@ -9,9 +9,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Autocomplete, Chip, Grid, TextField } from '@mui/material';
 import {
-    CloseButton,
     DropDown,
-    LabelledButton,
     SwitchWithLabel,
     useParameterState,
     useStyles,
@@ -25,6 +23,7 @@ import {
     PARAM_LIMIT_REDUCTION,
 } from '../../../utils/config-params';
 import { ParameterType, ParamLine, ParameterGroup } from './widget';
+import { ProviderLayout } from './layout';
 
 const CountrySelector = ({ value, label, callback }) => {
     const classes = useStyles();
@@ -422,8 +421,6 @@ const SpecificLoadFlowParameters = ({
 };
 
 export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
-    const classes = useStyles();
-
     const [
         providers,
         provider,
@@ -534,74 +531,45 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         )
     );
 
-    // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
-        <>
-            <Grid
-                container
-                spacing={1}
-                sx={{ paddingLeft: 0, paddingRight: 2 }}
-            >
-                <DropDown
-                    value={provider}
-                    label="Provider"
-                    values={LoadFlowProviders}
-                    callback={updateLfProviderCallback}
+        <ProviderLayout
+            provider={provider}
+            providers={LoadFlowProviders}
+            updateProviderCallback={updateLfProviderCallback}
+            keyContainer="lfParameters"
+            resetCallbackParametersAndProvider={resetLfParametersAndLfProvider}
+            resetCallbackParameters={resetLfParameters}
+            callbackHideParameters={hideParameters}
+        >
+            <LineSeparator />
+            <Grid container spacing={1} paddingTop={1}>
+                <ParamLine
+                    type={ParameterType.Slider}
+                    param_name_id={PARAM_LIMIT_REDUCTION}
+                    label="LimitReduction"
+                    marks={alertThresholdMarks}
+                    minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
                 />
-            </Grid>
-            <Grid
-                container
-                className={classes.scrollableGrid}
-                key="lfParameters"
-            >
                 <LineSeparator />
-                <Grid container spacing={1} paddingTop={1}>
-                    <ParamLine
-                        type={ParameterType.Slider}
-                        param_name_id={PARAM_LIMIT_REDUCTION}
-                        label="LimitReduction"
-                        marks={alertThresholdMarks}
-                        minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
-                    />
-                    <LineSeparator />
-                </Grid>
-                <BasicLoadFlowParameters
-                    lfParams={params || {}}
-                    commitLFParameter={updateParameters}
-                />
-                <AdvancedLoadFlowParameters
-                    lfParams={params || {}}
-                    commitLFParameter={updateParameters}
-                />
-                <SpecificLoadFlowParameters
-                    disabled={!specificParamsDescriptions?.[provider]}
-                    subText={provider}
-                    specificParamsDescription={
-                        specificParamsDescrWithoutNanVals[provider]
-                    }
-                    specificCurrentParams={specificCurrentParams[provider]}
-                    onSpecificParamChange={onSpecificParamChange}
-                />
             </Grid>
-            <Grid
-                container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
-                maxWidth="md"
-            >
-                <LabelledButton
-                    callback={resetLfParametersAndLfProvider}
-                    label="resetToDefault"
-                />
-                <LabelledButton
-                    callback={resetLfParameters}
-                    label="resetProviderValuesToDefault"
-                />
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
-            </Grid>
-        </>
+            <BasicLoadFlowParameters
+                lfParams={params || {}}
+                commitLFParameter={updateParameters}
+            />
+            <AdvancedLoadFlowParameters
+                lfParams={params || {}}
+                commitLFParameter={updateParameters}
+            />
+            <SpecificLoadFlowParameters
+                disabled={!specificParamsDescriptions?.[provider]}
+                subText={provider}
+                specificParamsDescription={
+                    specificParamsDescrWithoutNanVals[provider]
+                }
+                specificCurrentParams={specificCurrentParams[provider]}
+                onSpecificParamChange={onSpecificParamChange}
+            />
+        </ProviderLayout>
     );
 };
