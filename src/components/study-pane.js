@@ -44,6 +44,8 @@ const styles = {
     },
     horizontalToolbar: (theme) => ({
         backgroundColor: darken(theme.palette.background.paper, 0.2),
+        display: 'flex',
+        flexDirection: 'row',
     }),
     error: (theme) => ({
         padding: theme.spacing(2),
@@ -68,6 +70,11 @@ const styles = {
                 duration: theme.transitions.duration.leavingScreen,
             }),
         },
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
     }),
     table: {
         display: 'flex',
@@ -161,13 +168,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
         return (
             <ReactFlowProvider>
                 <Box sx={styles.table}>
-                    <Box
-                        sx={styles.horizontalToolbar}
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                        }}
-                    >
+                    <Box sx={styles.horizontalToolbar}>
                         <HorizontalToolbar />
                     </Box>
                     <div
@@ -210,16 +211,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                         : '100%',
                             }}
                         >
-                            <Box
-                                sx={styles.mapCtrlBottomLeft}
-                                style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    bottom: 0,
-                                    left: 0,
-                                    right: 0,
-                                }}
-                            >
+                            <Box sx={styles.mapCtrlBottomLeft}>
                                 {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
                                 <NetworkMapTab
                                     /* TODO do we move redux param to container */

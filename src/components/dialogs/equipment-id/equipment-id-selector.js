@@ -15,7 +15,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
-import { mergeSx } from '../../utils/functions';
 
 const styles = {
     message: (theme) => ({
@@ -113,7 +112,7 @@ export const EquipmentIdSelector = ({
                 <CircularProgress
                     // We keep the circular progress rendered but hidden to prevent an incomplete
                     // rendering when we set the choosen ID in the parent component.
-                    sx={mergeSx(!selectedValue && styles.hidden)}
+                    sx={!selectedValue ? styles.hidden : undefined}
                 />
             </FormFiller>
         </>
