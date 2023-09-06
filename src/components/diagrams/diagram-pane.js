@@ -342,7 +342,6 @@ const useStyles = makeStyles((theme) => ({
 
 export function DiagramPane({
     studyUuid,
-    isComputationRunning,
     showInSpreadsheet,
     showOneBusShortcircuitResults,
     currentNode,
@@ -1101,9 +1100,6 @@ export function DiagramPane({
                                         DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
                                         loadFlowStatus={loadFlowStatus}
-                                        isComputationRunning={
-                                            isComputationRunning
-                                        }
                                         showInSpreadsheet={showInSpreadsheet}
                                         showOneBusShortcircuitResults={
                                             showOneBusShortcircuitResults

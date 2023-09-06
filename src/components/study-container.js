@@ -201,7 +201,7 @@ const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
 const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
-export function StudyContainer({ view, onChangeTab, isComputationRunning }) {
+export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
     const intlRef = useIntlRef();
 
@@ -762,7 +762,6 @@ export function StudyContainer({ view, onChangeTab, isComputationRunning }) {
                     view={view}
                     onChangeTab={onChangeTab}
                     setErrorMessage={setErrorMessage}
-                    isComputationRunning={isComputationRunning}
                 />
             </WaitingLoader>
             {isImportStudyDialogDisplayed && (

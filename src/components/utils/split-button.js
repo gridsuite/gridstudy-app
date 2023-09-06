@@ -127,6 +127,9 @@ const useStyles = makeStyles((theme) => ({
             color: '#717171',
         },
     },
+    runMenu: {
+        zIndex: 99,
+    },
 }));
 const SplitButton = ({
     runningStatus,
@@ -241,9 +244,7 @@ const SplitButton = ({
                 anchorEl={anchorRef.current}
                 role={undefined}
                 transition
-                style={{
-                    zIndex: 2,
-                }}
+                className={classes.runMenu}
             >
                 {({ TransitionProps, placement }) => (
                     <Grow

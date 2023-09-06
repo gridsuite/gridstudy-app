@@ -82,13 +82,7 @@ export const StudyView = {
     LOGS: 'Logs',
 };
 
-const StudyPane = ({
-    studyUuid,
-    currentNode,
-    setErrorMessage,
-    isComputationRunning,
-    ...props
-}) => {
+const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
     const lineParallelPath = useSelector(
@@ -262,7 +256,6 @@ const StudyPane = ({
 
                             <DiagramPane
                                 studyUuid={studyUuid}
-                                isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
                                 showOneBusShortcircuitResults={
                                     showOneBusShortcircuitResults

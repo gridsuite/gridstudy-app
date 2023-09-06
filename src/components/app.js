@@ -134,8 +134,6 @@ const App = () => {
 
     const [tabIndex, setTabIndex] = useState(0);
 
-    const [isComputationRunning, setIsComputationRunning] = useState(false);
-
     const updateParams = useCallback(
         (params) => {
             console.debug('received UI parameters : ', params);
@@ -526,7 +524,6 @@ const App = () => {
                 tabIndex={tabIndex}
                 onChangeTab={onChangeTab}
                 userManager={userManager}
-                setIsComputationRunning={setIsComputationRunning}
             />
             <CardErrorBoundary>
                 <div
@@ -553,9 +550,6 @@ const App = () => {
                                     <StudyContainer
                                         view={STUDY_VIEWS[tabIndex]}
                                         onChangeTab={onChangeTab}
-                                        isComputationRunning={
-                                            isComputationRunning
-                                        }
                                     />
                                 }
                             />

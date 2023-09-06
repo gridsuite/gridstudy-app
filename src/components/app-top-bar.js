@@ -76,9 +76,10 @@ const styles = {
         margin: theme.spacing(1.5),
         fontWeight: 'bold',
     }),
-    divRunButton: {
-        marginRight: '100px',
+    runButtonContainer: {
+        marginRight: '10%',
         marginTop: '6px',
+        flexShrink: 0,
     },
 };
 
@@ -175,13 +176,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
     );
 };
 
-const AppTopBar = ({
-    user,
-    tabIndex,
-    onChangeTab,
-    userManager,
-    setIsComputationRunning,
-}) => {
+const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
 
     const intl = useIntl();
@@ -215,7 +210,6 @@ const AppTopBar = ({
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const disabled = !isNodeBuilt(currentNode);
 
     const [isParametersOpen, setParametersOpen] = useState(false);
     const { openDiagramView } = useDiagram();
@@ -429,59 +423,63 @@ const AppTopBar = ({
                         />
                     )}
                 </Box>
-                {studyUuid && (
-                    <Tabs
-                        value={tabIndex}
-                        variant="scrollable"
-                        onChange={(event, newTabIndex) => {
-                            onChangeTab(newTabIndex);
-                        }}
-                        aria-label="views"
-                        sx={styles.tabs}
-                    >
-                        {STUDY_VIEWS.map((tabName) => {
-                            let label;
-                            if (
-                                tabName === StudyView.RESULTS &&
-                                (loadflowNotif ||
-                                    saNotif ||
-                                    sensiNotif ||
-                                    shortCircuitNotif ||
-                                    dynamicSimulationNotif ||
-                                    voltageInitNotif)
-                            ) {
-                                label = (
-                                    <Badge
-                                        badgeContent={
-                                            loadflowNotif +
-                                            saNotif +
-                                            sensiNotif +
-                                            shortCircuitNotif +
-                                            dynamicSimulationNotif +
-                                            voltageInitNotif
-                                        }
-                                        color="secondary"
-                                    >
-                                        <FormattedMessage id={tabName} />
-                                    </Badge>
-                                );
-                            } else {
-                                label = <FormattedMessage id={tabName} />;
-                            }
-                            return <Tab key={tabName} label={label} />;
-                        })}
-                    </Tabs>
-                )}
-                {studyUuid && (
-                    <Box sx={styles.divRunButton}>
-                        <RunButtonContainer
-                            studyUuid={studyUuid}
-                            currentNode={currentNode}
-                            setIsComputationRunning={setIsComputationRunning}
-                            disabled={disabled || isNodeReadOnly(currentNode)}
-                        />
-                    </Box>
-                )}
+                <Box sx={{ display: 'flex', width: '100%' }}>
+                    {studyUuid && (
+                        <Tabs
+                            value={tabIndex}
+                            variant="scrollable"
+                            onChange={(event, newTabIndex) => {
+                                onChangeTab(newTabIndex);
+                            }}
+                            aria-label="views"
+                            sx={styles.tabs}
+                        >
+                            {STUDY_VIEWS.map((tabName) => {
+                                let label;
+                                if (
+                                    tabName === StudyView.RESULTS &&
+                                    (loadflowNotif ||
+                                        saNotif ||
+                                        sensiNotif ||
+                                        shortCircuitNotif ||
+                                        dynamicSimulationNotif ||
+                                        voltageInitNotif)
+                                ) {
+                                    label = (
+                                        <Badge
+                                            badgeContent={
+                                                loadflowNotif +
+                                                saNotif +
+                                                sensiNotif +
+                                                shortCircuitNotif +
+                                                dynamicSimulationNotif +
+                                                voltageInitNotif
+                                            }
+                                            color="secondary"
+                                        >
+                                            <FormattedMessage id={tabName} />
+                                        </Badge>
+                                    );
+                                } else {
+                                    label = <FormattedMessage id={tabName} />;
+                                }
+                                return <Tab key={tabName} label={label} />;
+                            })}
+                        </Tabs>
+                    )}
+                    {studyUuid && (
+                        <Box sx={styles.runButtonContainer}>
+                            <RunButtonContainer
+                                studyUuid={studyUuid}
+                                currentNode={currentNode}
+                                disabled={
+                                    !isNodeBuilt(currentNode) ||
+                                    isNodeReadOnly(currentNode)
+                                }
+                            />
+                        </Box>
+                    )}
+                </Box>
             </TopBar>
 
             {studyUuid && (
