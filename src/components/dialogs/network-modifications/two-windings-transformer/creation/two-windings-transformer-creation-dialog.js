@@ -96,7 +96,7 @@ import {
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
-import { computeHighTapPosition } from 'components/utils/utils';
+import { computeHighTapPosition, formatTemporaryLimits } from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 
 /**
@@ -250,10 +250,14 @@ const TwoWindingsTransformerCreationDialog = ({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        twt.currentLimits1?.temporaryLimits
+                        formatTemporaryLimits(
+                            twt.currentLimits1?.temporaryLimits
+                        )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        twt.currentLimits2?.temporaryLimits
+                        formatTemporaryLimits(
+                            twt.currentLimits2?.temporaryLimits
+                        )
                     ),
                 }),
                 ...getPhaseTapChangerFormData({
@@ -366,10 +370,14 @@ const TwoWindingsTransformerCreationDialog = ({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        twt.currentLimits1?.temporaryLimits
+                        formatTemporaryLimits(
+                            twt.currentLimits1?.temporaryLimits
+                        )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        twt.currentLimits2?.temporaryLimits
+                        formatTemporaryLimits(
+                            twt.currentLimits2?.temporaryLimits
+                        )
                     ),
                 }),
                 ...getRatioTapChangerFormData({
