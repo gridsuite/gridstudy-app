@@ -449,3 +449,14 @@ export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
         exportFormat;
     return getUrlWithToken(url);
 }
+
+export const fetchStudyIndexation = (studyUuid) => {
+    console.info(
+        `Fetching study indexation status of study '${studyUuid}' ...`
+    );
+    const fetchStudyIndexationUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/indexation/status`;
+
+    console.debug(fetchStudyIndexationUrl);
+
+    return backendFetchJson(fetchStudyIndexationUrl);
+};

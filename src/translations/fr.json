@@ -1090,5 +1090,8 @@
 
     "IpMin": "ICC min (kA)",
     "IpMax": "ICC max (kA)",
-    "StartupCost": "Coût de démarrage"
+    "StartupCost": "Coût de démarrage",
+    "studyIndexationDone": "L'indexation de l'étude est termine. La fonctionnalité de recherche est disponible",
+    "studyIndexationError": "L'indexation de l'étude a échouée.",
+    "checkstudyIndexationError": "La récupération de l'état d'indexation de l'étude a échouée."
 }

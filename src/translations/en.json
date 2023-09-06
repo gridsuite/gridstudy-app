@@ -1068,5 +1068,8 @@
 
     "IpMin": "ISC min (kA)",
     "IpMax": "ISC max (kA)",
-    "StartupCost": "Startup cost"
+    "StartupCost": "Startup cost",
+    "studyIndexationDone": "Study indexation done. Search functionality is now available",
+    "studyIndexationError": "Study indexation process has failed.",
+    "checkstudyIndexationError": "Study indexation checking has failed."
 }
