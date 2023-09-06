@@ -538,7 +538,11 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
     // only specifics parameters are dependents of simulator type
     return (
         <>
-            <Grid container spacing={1} padding={1}>
+            <Grid
+                container
+                spacing={1}
+                sx={{ paddingLeft: 0, paddingRight: 2 }}
+            >
                 <DropDown
                     value={provider}
                     label="Provider"

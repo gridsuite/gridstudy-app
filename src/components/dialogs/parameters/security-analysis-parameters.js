@@ -258,13 +258,18 @@ export const SecurityAnalysisParameters = ({
     return (
         <>
             <Grid container spacing={1} padding={1}>
-                <DropDown
-                    value={provider}
-                    label="Provider"
-                    values={securityAnalysisProvider}
-                    callback={updateProviderCallback}
-                />
-
+                <Grid
+                    container
+                    spacing={1}
+                    sx={{ padding: 0, paddingBottom: 2 }}
+                >
+                    <DropDown
+                        value={provider}
+                        label="Provider"
+                        values={securityAnalysisProvider}
+                        callback={updateProviderCallback}
+                    />
+                </Grid>
                 <Grid container spacing={1} paddingBottom={1}>
                     <Grid item xs={8} className={classes.text}>
                         <Typography>
