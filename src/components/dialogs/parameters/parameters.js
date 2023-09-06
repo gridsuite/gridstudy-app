@@ -163,9 +163,30 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(1),
     },
-    subgroupParametersButton: {
-        marginTop: theme.spacing(3),
+    subgroupParameters: {
+        marginTop: theme.spacing(2),
         marginBottom: theme.spacing(1),
+    },
+    subgroupParametersAccordion: {
+        '&:before': {
+            display: 'none',
+        },
+        background: 'none',
+    },
+    subgroupParametersAccordionSummary: {
+        flexDirection: 'row-reverse',
+        '& .MuiAccordionSummary-expandIconWrapper': {
+            transform: 'rotate(-90deg)',
+        },
+        '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+            transform: 'rotate(0deg)',
+        },
+        '& .MuiAccordionSummary-content': {
+            marginLeft: theme.spacing(0),
+        },
+    },
+    subgroupParametersAccordionDetails: {
+        padding: theme.spacing(0),
     },
     marginTopButton: {
         marginTop: 10,
