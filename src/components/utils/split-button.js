@@ -28,14 +28,13 @@ import { mergeSx } from './functions';
 
 const styles = {
     expand: (theme) => ({
-        transform: 'rotate(180deg)',
         marginLeft: 'auto',
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,
         }),
     }),
     expandOpen: {
-        transform: 'rotate(0deg)',
+        transform: 'rotate(180deg)',
     },
     listOptions: {
         minWidth: '275px',
@@ -126,6 +125,9 @@ const styles = {
             color: '#717171',
         },
     }),
+    runMenu: {
+        zIndex: 99,
+    },
 };
 
 const SplitButton = ({
@@ -234,6 +236,7 @@ const SplitButton = ({
                 anchorEl={anchorRef.current}
                 role={undefined}
                 transition
+                sx={styles.runMenu}
             >
                 {({ TransitionProps, placement }) => (
                     <Grow
