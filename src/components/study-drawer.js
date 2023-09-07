@@ -9,14 +9,9 @@ import Drawer from '@mui/material/Drawer';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { mergeSx } from './utils/functions';
+import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 
 const styles = {
-    drawer: {
-        position: 'relative',
-        flexShrink: 1,
-        overflowY: 'none',
-        overflowX: 'none',
-    },
     drawerPaper: {
         position: 'static',
         overflow: 'hidden',
@@ -24,19 +19,36 @@ const styles = {
         flexGrow: '1',
         transition: 'none !important',
     },
+    nodeEditor: (theme) => ({
+        width: DRAWER_NODE_EDITOR_WIDTH + 'px',
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        // zIndex set to be below the loader with overlay
+        // and above the network explorer, for mouse events on network modification tree
+        // to be taken into account correctly
+        zIndex: 51,
+        position: 'relative',
+        flexShrink: 1,
+        overflowY: 'none',
+        overflowX: 'none',
+    }),
+    nodeEditorShift: (theme) => ({
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        pointerEvents: 'none',
+        marginLeft: -DRAWER_NODE_EDITOR_WIDTH + 'px',
+    }),
 };
 
-export const StudyDrawer = ({
-    drawerStyle,
-    drawerShiftStyle,
-    open,
-    children,
-    anchor,
-}) => {
+export const StudyDrawer = ({ open, children, anchor }) => {
     return (
         <Drawer
             variant={'persistent'}
-            sx={mergeSx(drawerStyle, styles.drawer, !open && drawerShiftStyle)}
+            sx={mergeSx(styles.nodeEditor, !open && styles.nodeEditorShift)}
             anchor={anchor}
             open={open}
             PaperProps={{
@@ -49,8 +61,6 @@ export const StudyDrawer = ({
 };
 
 StudyDrawer.propTypes = {
-    drawerStyle: PropTypes.object,
-    drawerShiftStyle: PropTypes.object,
     open: PropTypes.bool,
     children: PropTypes.object,
     anchor: PropTypes.string,
