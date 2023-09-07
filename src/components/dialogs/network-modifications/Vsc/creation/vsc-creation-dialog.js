@@ -10,14 +10,29 @@ import { TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
+    ACTIVE_POWER,
+    ANGLE_DROOP_ACTIVE_POWER_CONTROL,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
+    CONVERTER_STATION_ID,
+    CONVERTERS_MODE,
+    DC_NOMINAL_VOLTAGE,
+    DC_RESISTANCE,
+    DROOP,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
+    MAXIMUM_ACTIVE_POWER,
+    OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
+    OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
+    P0,
 } from '../../../../utils/field-constants';
 import Grid from '@mui/material/Grid';
-import { filledTextField, gridItem } from '../../../dialogUtils';
+import {
+    filledTextField,
+    gridItem,
+    sanitizeString,
+} from '../../../dialogUtils';
 import VscTabs from '../vsc-tabs';
 import { Box } from '@mui/system';
 import yup from 'components/utils/yup-config';
@@ -30,10 +45,15 @@ import VscHvdcLinePane, {
 } from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import { FetchStatus } from '../../../../../services/utils';
 import ConverterStationPane, {
+    getConverterStationCreationData,
     getVscConverterStationEmptyFormData,
     getVscConverterStationSchema,
-} from '../converter-station/converter-station-pane';
+} from '../converter-station/converter-station-utils';
 import VscCreationForm from './vsc-creation-form';
+import { useFormSearchCopy } from '../../../form-search-copy-hook';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { createVsc } from '../../../../../services/study/network-modifications';
+import EquipmentSearchDialog from "../../../equipment-search-dialog";
 
 const formSchema = yup
     .object()
@@ -76,6 +96,18 @@ const VscCreationDialog = ({
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
+    });
+
+    const fromSearchCopyToFormValues = (hvdcLine) => {
+        console.log('hvdcLine : ', hvdcLine);
+    };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        currentNodeUuid,
+        toFormValues: (data) => data,
+        setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.GENERATOR,
     });
 
     const open = useOpenShortWaitFetching({
@@ -143,7 +175,40 @@ const VscCreationDialog = ({
         setTabIndexesWithError(tabsInError);
     };
 
-    const onSubmit = useCallback((vsc: any) => {}, []);
+    const onSubmit = useCallback((hvdcLine) => {
+        const converterStation1 = getConverterStationCreationData(
+            hvdcLine[CONVERTER_STATION_1]
+        );
+        const converterStation2 = getConverterStationCreationData(
+            hvdcLine[CONVERTER_STATION_2]
+        );
+        createVsc(
+            studyUuid,
+            currentNodeUuid,
+            hvdcLine[EQUIPMENT_ID],
+            sanitizeString(hvdcLine[EQUIPMENT_NAME]),
+            hvdcLine[DC_NOMINAL_VOLTAGE],
+            hvdcLine[DC_RESISTANCE],
+            hvdcLine[MAXIMUM_ACTIVE_POWER],
+            hvdcLine[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
+            hvdcLine[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
+            hvdcLine[CONVERTERS_MODE],
+            hvdcLine[ACTIVE_POWER],
+            hvdcLine[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
+            hvdcLine[P0],
+            hvdcLine[DROOP],
+            converterStation1,
+            converterStation2,
+            !!editData,
+            editData?.uuid ?? null
+        ).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'VscCreationError',
+            });
+        });
+    }, []);
+
     return (
         <FormProvider {...formMethods} validationSchema={formSchema}>
             <ModificationDialog
@@ -170,6 +235,13 @@ const VscCreationDialog = ({
                     tabIndex={tabIndex}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                />
+                <EquipmentSearchDialog
+                  open={searchCopy.isDialogSearchOpen}
+                  onClose={searchCopy.handleCloseSearchDialog}
+                  equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
+                  onSelectionChange={searchCopy.handleSelectionChange}
+                  currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
         </FormProvider>

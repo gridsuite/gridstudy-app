@@ -47,35 +47,6 @@ interface VscConverterStationPaneProps {
     studyUuid: UUID;
 }
 
-export function getVscConverterStationSchema(id: string) {
-    return {
-        [id]: yup.object().shape({
-            [CONVERTER_STATION_ID]: yup.string().nullable().required(),
-            [CONVERTER_STATION_NAME]: yup.string().nullable(),
-            [LOSS_FACTOR]: yup.number().nullable(),
-            [REACTIVE_POWER]: yup.number().nullable(),
-            [VOLTAGE_REGULATION]: yup.boolean(),
-            [VOLTAGE]: yup.number().nullable(),
-            ...getConnectivityWithPositionValidationSchema(),
-            ...getReactiveLimitsSchema({}),
-        }),
-    };
-}
-
-export function getVscConverterStationEmptyFormData(id: string) {
-    return {
-        [id]: {
-            [CONVERTER_STATION_ID]: null,
-            [CONVERTER_STATION_NAME]: null,
-            [LOSS_FACTOR]: null,
-            [REACTIVE_POWER]: null,
-            [VOLTAGE_REGULATION]: null,
-            [VOLTAGE]: null,
-            ...getConnectivityWithPositionEmptyFormData(),
-            ...getReactiveLimitsEmptyFormData(),
-        },
-    };
-}
 const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     id,
     stationLabel,

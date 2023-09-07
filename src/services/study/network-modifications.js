@@ -1481,3 +1481,61 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
         }),
     });
 }
+
+export function createVsc(
+    studyUuid,
+    currentNodeUuid,
+    id,
+    name,
+    dcNominalVoltage,
+    dcResistance,
+    maximumActivePower,
+    operatorActivePowerLimitSide1,
+    operatorActivePowerLimitSide2,
+    convertersMode,
+    activePower,
+    angleDroopActivePowerControl,
+    p0,
+    droop,
+    converterStation1,
+    converterStation2,
+    isUpdate,
+    modificationUuid
+) {
+    let createVscUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/network-modifications';
+
+    if (isUpdate) {
+        createVscUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating vsc creation');
+    } else {
+        console.info('Creating vsc creation');
+    }
+
+    return backendFetchText(createVscUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.VSC_CREATION.type,
+            equipmentId: id,
+            equipmentName: name,
+            dcNominalVoltage: dcNominalVoltage,
+            dcResistance: dcResistance,
+            maximumActivePower: maximumActivePower,
+            operatorActivePowerLimitSide1: operatorActivePowerLimitSide1,
+            operatorActivePowerLimitSide2: operatorActivePowerLimitSide2,
+            convertersMode: convertersMode,
+            activePower: activePower,
+            angleDroopActivePowerControl: angleDroopActivePowerControl,
+            p0: p0,
+            droop: droop,
+            converterStation1: converterStation1,
+            converterStation2: converterStation2,
+
+        }),
+    });
+}
