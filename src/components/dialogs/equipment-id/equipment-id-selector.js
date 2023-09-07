@@ -12,23 +12,21 @@ import { FieldLabel } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
 import { FormFiller } from '../commons/formFiller';
 import CircularProgress from '@mui/material/CircularProgress';
-import makeStyles from '@mui/styles/makeStyles';
 import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
-import clsx from 'clsx';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
 
-const useStyles = makeStyles((theme) => ({
-    message: {
+const styles = {
+    message: (theme) => ({
         fontSize: 'small',
         fontStyle: 'italic',
         color: theme.palette.text.secondary,
-    },
+    }),
     hidden: {
         color: 'rgba(0,0,0,0)',
         width: 0,
     },
-}));
+};
 
 export const EquipmentIdSelector = ({
     studyUuid,
@@ -42,7 +40,6 @@ export const EquipmentIdSelector = ({
     fillerMessageId = 'idSelector.idNeeded',
     ...props
 }) => {
-    const classes = useStyles();
     const currentNodeUuid = currentNode?.id;
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [selectedValue, setSelectedValue] = useState(null);
@@ -91,9 +88,6 @@ export const EquipmentIdSelector = ({
                     label={FieldLabel({
                         label: 'ID',
                     })}
-                    FormHelperTextProps={{
-                        className: classes.helperText,
-                    }}
                     inputProps={{ ...inputProps, readOnly: readOnly }}
                     autoFocus
                     {...filledTextField}
@@ -111,14 +105,14 @@ export const EquipmentIdSelector = ({
             </Grid>
             <FormFiller lineHeight={fillerHeight}>
                 {fillerMessageId && !selectedValue && (
-                    <Box className={classes.message}>
+                    <Box sx={styles.message}>
                         <FormattedMessage id={fillerMessageId} />
                     </Box>
                 )}
                 <CircularProgress
                     // We keep the circular progress rendered but hidden to prevent an incomplete
                     // rendering when we set the choosen ID in the parent component.
-                    className={clsx({ [classes.hidden]: !selectedValue })}
+                    sx={!selectedValue ? styles.hidden : undefined}
                 />
             </FormFiller>
         </>
