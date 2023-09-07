@@ -1,13 +1,9 @@
-import { FunctionComponent } from 'react';
-import { string } from 'yup';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import {
     CONNECTIVITY,
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
-    DC_RESISTANCE,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
     LOSS_FACTOR,
     REACTIVE_LIMITS,
     REACTIVE_POWER,
@@ -15,30 +11,18 @@ import {
     VOLTAGE_REGULATION,
 } from '../../../../utils/field-constants';
 import {
-    filledTextField,
     gridItem,
     GridSection,
     percentageTextField,
     ReactivePowerAdornment,
     VoltageAdornment,
 } from '../../../dialogUtils';
-import React, { useEffect, useState } from 'react';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import { CurrentTreeNode } from '../../../../../redux/reducer.type';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import Grid from '@mui/material/Grid';
-import yup from 'components/utils/yup-config';
-import {
-    getConnectivityPropertiesEmptyFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
-import {
-    getReactiveLimitsEmptyFormData,
-    getReactiveLimitsSchema,
-} from '../../../reactive-limits/reactive-limits-utils';
 
 interface VscConverterStationPaneProps {
     id: string;
@@ -117,7 +101,11 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     );
 
     const voltageField = (
-        <FloatInput name={`${id}.${VOLTAGE}`} adornment={VoltageAdornment} label={"VoltageText"}/>
+        <FloatInput
+            name={`${id}.${VOLTAGE}`}
+            adornment={VoltageAdornment}
+            label={'VoltageText'}
+        />
     );
 
     return (

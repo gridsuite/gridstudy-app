@@ -57,7 +57,6 @@ import PropTypes from 'prop-types';
 import { createBattery } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import { REACTIVE_LIMITS } from '../../../../utils/field-constants';
-import { getRowEmptyFormData } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -74,18 +73,17 @@ const emptyFormData = {
 
 const formSchema = yup
     .object()
-    .shape(
-        {
-            [EQUIPMENT_ID]: yup.string().required(),
-            [EQUIPMENT_NAME]: yup.string(),
-            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-            [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-            [ACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
-            [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
-            ...getReactiveLimitsSchema({}),
-            ...getConnectivityWithPositionValidationSchema(),
-            ...getFrequencyRegulationSchema(),
-        })
+    .shape({
+        [EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_NAME]: yup.string(),
+        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+        [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+        [ACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
+        [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
+        ...getReactiveLimitsSchema({}),
+        ...getConnectivityWithPositionValidationSchema(),
+        ...getFrequencyRegulationSchema(),
+    })
     .required();
 
 const BatteryCreationDialog = ({

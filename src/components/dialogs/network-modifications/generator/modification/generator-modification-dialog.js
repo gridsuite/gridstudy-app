@@ -90,40 +90,39 @@ const emptyFormData = {
 
 const formSchema = yup
     .object()
-    .shape(
-        {
-            [EQUIPMENT_NAME]: yup.string(),
-            [ENERGY_SOURCE]: yup.string().nullable(),
-            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
-            [MINIMUM_ACTIVE_POWER]: yup
-                .number()
-                .nullable()
-                .when([MAXIMUM_ACTIVE_POWER], {
-                    is: (maximumActivePower) => maximumActivePower != null,
-                    then: (schema) =>
-                        schema.max(
-                            yup.ref(MAXIMUM_ACTIVE_POWER),
-                            'MinActivePowerLessThanMaxActivePower'
-                        ),
-                }),
-            [RATED_NOMINAL_POWER]: yup.number().nullable(),
-            [TRANSIENT_REACTANCE]: yup.number().nullable(),
-            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-            [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-            [MARGINAL_COST]: yup.number().nullable(),
-            [PLANNED_OUTAGE_RATE]: yup
-                .number()
-                .nullable()
-                .min(0, 'RealPercentage')
-                .max(1, 'RealPercentage'),
-            [FORCED_OUTAGE_RATE]: yup
-                .number()
-                .nullable()
-                .min(0, 'RealPercentage')
-                .max(1, 'RealPercentage'),
-            ...getSetPointsSchema(true),
-            ...getReactiveLimitsSchema({ isEquipmentModification: true }),
-        })
+    .shape({
+        [EQUIPMENT_NAME]: yup.string(),
+        [ENERGY_SOURCE]: yup.string().nullable(),
+        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+        [MINIMUM_ACTIVE_POWER]: yup
+            .number()
+            .nullable()
+            .when([MAXIMUM_ACTIVE_POWER], {
+                is: (maximumActivePower) => maximumActivePower != null,
+                then: (schema) =>
+                    schema.max(
+                        yup.ref(MAXIMUM_ACTIVE_POWER),
+                        'MinActivePowerLessThanMaxActivePower'
+                    ),
+            }),
+        [RATED_NOMINAL_POWER]: yup.number().nullable(),
+        [TRANSIENT_REACTANCE]: yup.number().nullable(),
+        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+        [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+        [MARGINAL_COST]: yup.number().nullable(),
+        [PLANNED_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0, 'RealPercentage')
+            .max(1, 'RealPercentage'),
+        [FORCED_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0, 'RealPercentage')
+            .max(1, 'RealPercentage'),
+        ...getSetPointsSchema(true),
+        ...getReactiveLimitsSchema({ isEquipmentModification: true }),
+    })
     .required();
 
 const GeneratorModificationDialog = ({
@@ -264,7 +263,9 @@ const GeneratorModificationDialog = ({
                             // we need to check if the generator we fetch has reactive capability curve table
                             if (previousReactiveCapabilityCurveTable) {
                                 const currentReactiveCapabilityCurveTable =
-                                    getValues(`${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,);
+                                    getValues(
+                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`
+                                    );
 
                                 const sizeDiff =
                                     previousReactiveCapabilityCurveTable.length -
@@ -278,8 +279,8 @@ const GeneratorModificationDialog = ({
                                         );
                                     }
                                     setValue(
-                                      `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                      currentReactiveCapabilityCurveTable
+                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                        currentReactiveCapabilityCurveTable
                                     );
                                 } else if (sizeDiff < 0) {
                                     // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
@@ -337,12 +338,12 @@ const GeneratorModificationDialog = ({
         (generator) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
             const buildCurvePointsToStore = calculateCurvePointsToStore(
-              reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
+                reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
                 generatorToModify
             );
 
             const isReactiveCapabilityCurveOn =
-              reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+                reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
             const isDistantRegulation =
                 generator?.[VOLTAGE_REGULATION_TYPE] ===

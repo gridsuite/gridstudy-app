@@ -84,8 +84,6 @@ const ShuntCompensatorCreationDialog = ({
     editDataFetchStatus,
     ...dialogProps
 }) => {
-
-    console.log('all props : ', studyUuid, currentNode, editData, isUpdate);
     const currentNodeUuid = currentNode?.id;
 
     const { snackError, snackWarning } = useSnackMessage();

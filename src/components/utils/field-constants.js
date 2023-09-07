@@ -57,7 +57,7 @@ export const PLANNED_ACTIVE_POWER_SET_POINT = 'plannedActivePowerSetPoint';
 export const MARGINAL_COST = 'marginalCost';
 export const PLANNED_OUTAGE_RATE = 'plannedOutageRate';
 export const FORCED_OUTAGE_RATE = 'forcedOutageRate';
-export const REACTIVE_LIMITS = 'reactiveLimits'
+export const REACTIVE_LIMITS = 'reactiveLimits';
 export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
 export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
 export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
@@ -240,8 +240,10 @@ export const MCS_SELECTED = 'connectedToHvdc';
 // VSC
 export const DC_NOMINAL_VOLTAGE = 'dcNominalVoltage';
 export const DC_RESISTANCE = 'dcResistance';
-export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 = 'operatorActivePowerLimitSide1';
-export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 = 'operatorActivePowerLimitSide2';
+export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =
+    'operatorActivePowerLimitSide1';
+export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 =
+    'operatorActivePowerLimitSide2';
 export const CONVERTERS_MODE = 'convertersMode';
 export const ANGLE_DROOP_ACTIVE_POWER_CONTROL = 'angleDroopActivePowerControl';
 export const P0 = 'p0';
@@ -249,6 +251,6 @@ export const CONVERTER_STATION_ID = 'converterStationId';
 export const CONVERTER_STATION_NAME = 'converterStationName';
 export const LOSS_FACTOR = 'lossFactor';
 export const VOLTAGE = 'voltage';
-export const HVDC_LINE_TAB = "hvdcLineTab";
-export const CONVERTER_STATION_1 = "converterStation1";
-export const CONVERTER_STATION_2 = "converterStation2";
+export const HVDC_LINE_TAB = 'hvdcLineTab';
+export const CONVERTER_STATION_1 = 'converterStation1';
+export const CONVERTER_STATION_2 = 'converterStation2';

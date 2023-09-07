@@ -68,28 +68,27 @@ const emptyFormData = {
 
 const formSchema = yup
     .object()
-    .shape(
-        {
-            [EQUIPMENT_NAME]: yup.string(),
-            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
-            [MINIMUM_ACTIVE_POWER]: yup
-                .number()
-                .nullable()
-                .when([MAXIMUM_ACTIVE_POWER], {
-                    is: (maximumActivePower) => maximumActivePower != null,
-                    then: (schema) =>
-                        schema.max(
-                            yup.ref(MAXIMUM_ACTIVE_POWER),
-                            'MinActivePowerLessThanMaxActivePower'
-                        ),
-                }),
-            [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-            [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-            ...getReactiveLimitsSchema({
-                isEquipmentModification: true,
+    .shape({
+        [EQUIPMENT_NAME]: yup.string(),
+        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+        [MINIMUM_ACTIVE_POWER]: yup
+            .number()
+            .nullable()
+            .when([MAXIMUM_ACTIVE_POWER], {
+                is: (maximumActivePower) => maximumActivePower != null,
+                then: (schema) =>
+                    schema.max(
+                        yup.ref(MAXIMUM_ACTIVE_POWER),
+                        'MinActivePowerLessThanMaxActivePower'
+                    ),
             }),
-            ...getFrequencyRegulationSchema(true),
-        })
+        [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+        [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+        ...getReactiveLimitsSchema({
+            isEquipmentModification: true,
+        }),
+        ...getFrequencyRegulationSchema(true),
+    })
     .required();
 
 const BatteryModificationDialog = ({
@@ -206,7 +205,9 @@ const BatteryModificationDialog = ({
                             // we need to check if the battery we fetch has reactive capability curve table
                             if (previousReactiveCapabilityCurveTable) {
                                 const currentReactiveCapabilityCurveTable =
-                                    getValues(`${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`);
+                                    getValues(
+                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`
+                                    );
 
                                 const sizeDiff =
                                     previousReactiveCapabilityCurveTable.length -
@@ -220,7 +221,7 @@ const BatteryModificationDialog = ({
                                         );
                                     }
                                     setValue(
-                                      `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                         currentReactiveCapabilityCurveTable
                                     );
                                 } else if (sizeDiff < 0) {
@@ -233,7 +234,7 @@ const BatteryModificationDialog = ({
                                 }
                             }
                             setValue(
-                              `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
+                                `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
                                 value?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
                             );
                             setBatteryToModify({

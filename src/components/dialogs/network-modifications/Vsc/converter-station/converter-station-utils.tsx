@@ -1,4 +1,3 @@
-import { string } from 'yup';
 import yup from '../../../../utils/yup-config';
 import {
     BUS_OR_BUSBAR_SECTION,

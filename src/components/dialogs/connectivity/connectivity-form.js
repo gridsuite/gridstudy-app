@@ -58,7 +58,7 @@ export const ConnectivityForm = ({
     withDirectionsInfos = true,
     withPosition = false,
     voltageLevelOptions = [],
-    newBusOrBusbarSectionOptions= [],
+    newBusOrBusbarSectionOptions = [],
     studyUuid,
     currentNode,
     onVoltageLevelChangeCallback = undefined,

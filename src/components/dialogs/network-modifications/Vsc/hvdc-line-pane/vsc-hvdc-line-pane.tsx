@@ -1,31 +1,31 @@
-import { SelectInput } from '@gridsuite/commons-ui';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { SwitchInput } from '@gridsuite/commons-ui';
+import { FloatInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import {
-  ACTIVE_POWER,
-  ANGLE_DROOP_ACTIVE_POWER_CONTROL,
-  CONVERTERS_MODE,
-  DC_NOMINAL_VOLTAGE,
-  DC_RESISTANCE,
-  DROOP, ID,
-  MAXIMUM_ACTIVE_POWER,
-  OPERATOR_ACTIVE_POWER_LIMIT_SIDE1, OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
-  P0
-} from "../../../../utils/field-constants";
+    ACTIVE_POWER,
+    ANGLE_DROOP_ACTIVE_POWER_CONTROL,
+    CONVERTERS_MODE,
+    DC_NOMINAL_VOLTAGE,
+    DC_RESISTANCE,
+    DROOP,
+    ID,
+    MAXIMUM_ACTIVE_POWER,
+    OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
+    OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
+    P0,
+} from '../../../../utils/field-constants';
 import {
-    ActivePowerAdornment, gridItem, GridSection,
+    ActivePowerAdornment,
+    gridItem,
+    GridSection,
     OhmAdornment,
-    VoltageAdornment
-} from "../../../dialogUtils";
+    VoltageAdornment,
+} from '../../../dialogUtils';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
-import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
-import EnumInput from '../../../../utils/rhf-inputs/enum-input';
-import React, { FunctionComponent } from "react";
-import Grid from "@mui/material/Grid";
+import React, { FunctionComponent } from 'react';
+import Grid from '@mui/material/Grid';
 import yup from 'components/utils/yup-config';
-import { string } from "yup";
+
 interface VscHvdcLinePaneProps {
-  id: string
+    id: string;
 }
 
 export function getVscHvdcLinePaneSchema(id: string) {
@@ -37,8 +37,8 @@ export function getVscHvdcLinePaneSchema(id: string) {
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: yup.number().nullable(),
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
             [CONVERTERS_MODE]: yup.object().shape({
-              [ID]: yup.string(),
-              label: yup.string()
+                [ID]: yup.string(),
+                label: yup.string(),
             }),
             [ACTIVE_POWER]: yup.number().nullable(),
             [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: yup.boolean(),
@@ -49,23 +49,24 @@ export function getVscHvdcLinePaneSchema(id: string) {
 }
 
 export function getVscHvdcLinePaneEmptyFormData(id: string) {
-  return {
-    [id]: {
-      [DC_NOMINAL_VOLTAGE]: null,
-      [DC_RESISTANCE]: null,
-      [MAXIMUM_ACTIVE_POWER]: null,
-      [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: null,
-      [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: null,
-      [CONVERTERS_MODE]: VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.id,
-      [ACTIVE_POWER]: null,
-      [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: null,
-      [P0]: null,
-      [DROOP]: null,
-    }
-  }
+    return {
+        [id]: {
+            [DC_NOMINAL_VOLTAGE]: null,
+            [DC_RESISTANCE]: null,
+            [MAXIMUM_ACTIVE_POWER]: null,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: null,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: null,
+            [CONVERTERS_MODE]:
+                VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.id,
+            [ACTIVE_POWER]: null,
+            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: null,
+            [P0]: null,
+            [DROOP]: null,
+        },
+    };
 }
 
-const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({id}) => {
+const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
     const dcNominalVoltageField = (
         <FloatInput
             name={`${id}.${DC_NOMINAL_VOLTAGE}`}
@@ -139,39 +140,41 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({id}) => {
         />
     );
 
-    const droopField = <FloatInput name={`${id}.${DROOP}`} label={'droopText'} />;
-
-    return(
-      <Grid container spacing={2}>
-          <GridSection title="Characteristics" />
-          <Grid container item spacing={2}>
-              {gridItem(dcNominalVoltageField, 6)}
-              {gridItem(dcResistanceField, 6)}
-          </Grid>
-          <Grid container item spacing={2}>
-              {gridItem(maximumActivePowerField, 6)}
-          </Grid>
-
-          <GridSection title={'Limits'} />
-          <Grid container item spacing={2}>
-              {gridItem(operatorActivePowerLimitSide1Field, 6)}
-              {gridItem(operatorActivePowerLimitSide2Field, 6)}
-          </Grid>
-
-          <GridSection title={'Setpoints'} />
-          <Grid container item spacing={2}>
-              {gridItem(converterModeField, 6)}
-              {gridItem(activePowerField, 6)}
-          </Grid>
-          <Grid container item spacing={2}>
-              {gridItem(AngleDroopActivePowerControl, 6)}
-          </Grid>
-          <Grid container item spacing={2}>
-              {gridItem(droopField, 6)}
-              {gridItem(p0Field, 6)}
-          </Grid>
-      </Grid>
+    const droopField = (
+        <FloatInput name={`${id}.${DROOP}`} label={'droopText'} />
     );
-}
+
+    return (
+        <Grid container spacing={2}>
+            <GridSection title="Characteristics" />
+            <Grid container item spacing={2}>
+                {gridItem(dcNominalVoltageField, 6)}
+                {gridItem(dcResistanceField, 6)}
+            </Grid>
+            <Grid container item spacing={2}>
+                {gridItem(maximumActivePowerField, 6)}
+            </Grid>
+
+            <GridSection title={'Limits'} />
+            <Grid container item spacing={2}>
+                {gridItem(operatorActivePowerLimitSide1Field, 6)}
+                {gridItem(operatorActivePowerLimitSide2Field, 6)}
+            </Grid>
+
+            <GridSection title={'Setpoints'} />
+            <Grid container item spacing={2}>
+                {gridItem(converterModeField, 6)}
+                {gridItem(activePowerField, 6)}
+            </Grid>
+            <Grid container item spacing={2}>
+                {gridItem(AngleDroopActivePowerControl, 6)}
+            </Grid>
+            <Grid container item spacing={2}>
+                {gridItem(droopField, 6)}
+                {gridItem(p0Field, 6)}
+            </Grid>
+        </Grid>
+    );
+};
 
 export default VscHvdcLinePane;

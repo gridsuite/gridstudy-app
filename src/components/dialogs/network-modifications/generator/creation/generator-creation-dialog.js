@@ -95,38 +95,37 @@ const emptyFormData = {
 
 const formSchema = yup
     .object()
-    .shape(
-        {
-            [EQUIPMENT_ID]: yup.string().required(),
-            [EQUIPMENT_NAME]: yup.string(),
-            [ENERGY_SOURCE]: yup.string().nullable().required(),
-            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-            [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-            [RATED_NOMINAL_POWER]: yup.number().nullable(),
-            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-            [TRANSIENT_REACTANCE]: yup
-                .number()
-                .nullable()
-                .when([TRANSFORMER_REACTANCE], {
-                    is: (transformerReactance) => transformerReactance != null,
-                    then: (schema) => schema.required(),
-                }),
-            [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-            [MARGINAL_COST]: yup.number().nullable(),
-            [PLANNED_OUTAGE_RATE]: yup
-                .number()
-                .nullable()
-                .min(0, 'RealPercentage')
-                .max(1, 'RealPercentage'),
-            [FORCED_OUTAGE_RATE]: yup
-                .number()
-                .nullable()
-                .min(0, 'RealPercentage')
-                .max(1, 'RealPercentage'),
-            ...getSetPointsSchema(),
-            ...getReactiveLimitsSchema({}),
-            ...getConnectivityWithPositionValidationSchema(),
-        })
+    .shape({
+        [EQUIPMENT_ID]: yup.string().required(),
+        [EQUIPMENT_NAME]: yup.string(),
+        [ENERGY_SOURCE]: yup.string().nullable().required(),
+        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+        [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
+        [RATED_NOMINAL_POWER]: yup.number().nullable(),
+        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+        [TRANSIENT_REACTANCE]: yup
+            .number()
+            .nullable()
+            .when([TRANSFORMER_REACTANCE], {
+                is: (transformerReactance) => transformerReactance != null,
+                then: (schema) => schema.required(),
+            }),
+        [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+        [MARGINAL_COST]: yup.number().nullable(),
+        [PLANNED_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0, 'RealPercentage')
+            .max(1, 'RealPercentage'),
+        [FORCED_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0, 'RealPercentage')
+            .max(1, 'RealPercentage'),
+        ...getSetPointsSchema(),
+        ...getReactiveLimitsSchema({}),
+        ...getConnectivityWithPositionValidationSchema(),
+    })
     .required();
 
 const GeneratorCreationDialog = ({
@@ -270,9 +269,9 @@ const GeneratorCreationDialog = ({
 
     const onSubmit = useCallback(
         (generator) => {
-            const reactiveLimits = generator[REACTIVE_LIMITS]
+            const reactiveLimits = generator[REACTIVE_LIMITS];
             const isReactiveCapabilityCurveOn =
-              reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+                reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             const isDistantRegulation =
                 generator[VOLTAGE_REGULATION_TYPE] ===
                 REGULATION_TYPES.DISTANT.id;

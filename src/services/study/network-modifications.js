@@ -1535,7 +1535,6 @@ export function createVsc(
             droop: droop,
             converterStation1: converterStation1,
             converterStation2: converterStation2,
-
         }),
     });
 }
