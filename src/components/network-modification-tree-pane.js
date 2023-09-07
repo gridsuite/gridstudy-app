@@ -25,7 +25,6 @@ import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useStore } from 'react-flow-renderer';
-import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
 import { BUILD_STATUS, UPDATE_TYPE } from './network/constants';
@@ -43,9 +42,9 @@ import {
 import { buildNode, getUniqueNodeName } from '../services/study';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 
-const useStyles = makeStyles((theme) => ({
-    nodeEditor: {
-        width: DRAWER_NODE_EDITOR_WIDTH,
+const styles = {
+    nodeEditor: (theme) => ({
+        width: DRAWER_NODE_EDITOR_WIDTH + 'px',
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -54,17 +53,17 @@ const useStyles = makeStyles((theme) => ({
         // and above the network explorer, for mouse events on network modification tree
         // to be taken into account correctly
         zIndex: 51,
-    },
-    nodeEditorShift: {
+    }),
+    nodeEditorShift: (theme) => ({
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
         pointerEvents: 'none',
-        marginLeft: -DRAWER_NODE_EDITOR_WIDTH,
-    },
+        marginLeft: -DRAWER_NODE_EDITOR_WIDTH + 'px',
+    }),
     container: { width: '100%', height: '100%' },
-}));
+};
 
 // We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
 // But the MAP display is neutral for this computation: We need to know what was the last HYBRID or TREE display and its width.
@@ -99,7 +98,6 @@ export const NetworkModificationTreePane = ({
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
     const { snackError, snackInfo } = useSnackMessage();
-    const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
     const isInitiatingCopyTab = useRef(false);
 
@@ -595,11 +593,7 @@ export const NetworkModificationTreePane = ({
 
     return (
         <>
-            <Box
-                className={classes.container}
-                display="flex"
-                flexDirection="row"
-            >
+            <Box sx={styles.container} display="flex" flexDirection="row">
                 <NetworkModificationTree
                     onNodeContextMenu={onNodeContextMenu}
                     studyUuid={studyUuid}
@@ -612,8 +606,8 @@ export const NetworkModificationTreePane = ({
                     open={
                         isModificationsDrawerOpen || isEventScenarioDrawerOpen
                     }
-                    drawerClassName={classes.nodeEditor}
-                    drawerShiftClassName={classes.nodeEditorShift}
+                    drawerStyle={styles.nodeEditor} // TODO Why does this have to be set in the parent, if StudyDrawer is only used here ? Let's remove the useless props and define the style in StudyDrawer
+                    drawerShiftStyle={styles.nodeEditorShift}
                     anchor={
                         prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
                             ? 'right'
