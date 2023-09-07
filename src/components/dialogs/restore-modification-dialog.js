@@ -33,52 +33,6 @@ const styles = {
         paddingTop: theme.spacing(0),
         flexGrow: 1,
     }),
-    modificationsTitle: (theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        margin: theme.spacing(0),
-        padding: theme.spacing(1),
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText,
-        overflow: 'hidden',
-    }),
-    toolbar: (theme) => ({
-        padding: theme.spacing(0),
-        border: theme.spacing(1),
-        minHeight: 0,
-        margin: 0,
-        flexShrink: 0,
-    }),
-    toolbarIcon: (theme) => ({
-        marginRight: theme.spacing(1),
-    }),
-    toolbarCheckbox: (theme) => ({
-        marginLeft: theme.spacing(1.5),
-    }),
-    filler: (theme) => ({
-        flexGrow: 1,
-    }),
-    dividerTool: (theme) => ({
-        background: theme.palette.primary.main,
-    }),
-    circularProgress: (theme) => ({
-        marginRight: theme.spacing(2),
-        color: theme.palette.primary.contrastText,
-    }),
-    formattedMessageProgress: (theme) => ({
-        marginTop: theme.spacing(2),
-    }),
-    notification: (theme) => ({
-        flex: 1,
-        alignContent: 'center',
-        justifyContent: 'center',
-        marginTop: theme.spacing(4),
-        textAlign: 'center',
-        color: theme.palette.primary.main,
-    }),
-    icon: (theme) => ({
-        width: theme.spacing(3),
-    }),
 };
 
 /**
@@ -133,63 +87,53 @@ const RestoreModificationDialog = ({
             <DialogTitle>
                 {intl.formatMessage({ id: 'RestoreModifications' })}
             </DialogTitle>
-            {modificationsToRestore.length === 0 ? (
-                <DialogContent>
-                    <div sx={styles.text}>
-                        <DialogContentText>
-                            {intl.formatMessage({
-                                id: 'NoModificationToRestore',
-                            })}
-                        </DialogContentText>
-                    </div>
-                </DialogContent>
-            ) : (
-                <>
-                    <DialogContent>
-                        <div sx={styles.text}>
-                            <DialogContentText>
-                                {intl.formatMessage({
-                                    id: 'RestoreModificationText',
-                                })}
-                            </DialogContentText>
-                        </div>
-                        <DragDropContext>
-                            <Droppable
-                                droppableId="restore-modification-list"
-                                isDropDisabled={true}
+            <DialogContent>
+                <div sx={styles.text}>
+                    <DialogContentText>
+                        {intl.formatMessage({
+                            id: 'RestoreModificationText',
+                        })}
+                    </DialogContentText>
+                </div>
+                <DragDropContext>
+                    <Droppable
+                        droppableId="restore-modification-list"
+                        isDropDisabled={true}
+                    >
+                        {(provided) => (
+                            <div
+                                sx={styles.listContainer}
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
                             >
-                                {(provided) => (
-                                    <div
-                                        sx={styles.listContainer}
-                                        ref={provided.innerRef}
-                                        {...provided.droppableProps}
-                                    >
-                                        <CheckboxList
-                                            sx={styles.list}
-                                            onChecked={setSelectedItems}
-                                            values={modificationsToRestore}
-                                            itemComparator={(a, b) =>
-                                                a.uuid === b.uuid
-                                            }
-                                            itemRenderer={(props) => (
-                                                <ModificationListItem
-                                                    key={props.item.uuid}
-                                                    isRestorationDialog
-                                                    isDragging={false}
-                                                    isOneNodeBuilding={false}
-                                                    disabled={false}
-                                                    {...props}
-                                                />
-                                            )}
-                                        />
-                                        {provided.placeholder}
-                                    </div>
-                                )}
-                            </Droppable>
-                        </DragDropContext>
-                    </DialogContent>
-                </>
-            )}
+                                <CheckboxList
+                                    sx={styles.list}
+                                    onChecked={setSelectedItems}
+                                    values={modificationsToRestore}
+                                    itemComparator={(a, b) => a.uuid === b.uuid}
+                                    itemRenderer={(props) => (
+                                        <>
+                                            <ModificationListItem
+                                                key={props.item.uuid}
+                                                isRestorationDialog
+                                                isDragging={false}
+                                                isOneNodeBuilding={false}
+                                                disabled={false}
+                                                listSize={
+                                                    modificationsToRestore.length
+                                                }
+                                                {...props}
+                                            />
+                                        </>
+                                    )}
+                                />
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
+            </DialogContent>
+
             <DialogActions>
                 <Button onClick={handleClose}>
                     <FormattedMessage id="close" />
