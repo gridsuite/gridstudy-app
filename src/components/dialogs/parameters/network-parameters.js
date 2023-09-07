@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Box, Grid, MenuItem, Select, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
     PARAM_DEVELOPER_MODE,
     PARAM_FLUX_CONVENTION,
@@ -14,13 +14,13 @@ import {
 import {
     CloseButton,
     LabelledButton,
-    SwitchWithLabel,
     useParameterState,
     useStyles,
 } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Alert from '@mui/material/Alert';
 import { fetchDefaultParametersValues } from '../../../services/utils';
+import { ParamLine, ParameterType } from './widget';
 
 export const FluxConventions = {
     IIDM: 'iidm',
@@ -29,13 +29,12 @@ export const FluxConventions = {
 
 export const NetworkParameters = ({ hideParameters }) => {
     const classes = useStyles();
-    const [fluxConventionLocal, handleChangeFluxConvention] = useParameterState(
+
+    const [, handleChangeFluxConvention] = useParameterState(
         PARAM_FLUX_CONVENTION
     );
-
     const [enableDeveloperMode, handleChangeEnableDeveloperMode] =
         useParameterState(PARAM_DEVELOPER_MODE);
-
     const resetNetworkParameters = () => {
         fetchDefaultParametersValues().then((defaultValues) => {
             const defaultFluxConvention = defaultValues.fluxConvention;
@@ -44,7 +43,6 @@ export const NetworkParameters = ({ hideParameters }) => {
             ) {
                 handleChangeFluxConvention(defaultFluxConvention);
             }
-
             handleChangeEnableDeveloperMode(
                 defaultValues?.enableDeveloperMode ?? false
             );
@@ -59,40 +57,22 @@ export const NetworkParameters = ({ hideParameters }) => {
                 key={'networkParameters'}
                 className={classes.scrollableGrid}
             >
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="FluxConvention" />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <Select
-                        size="small"
-                        labelId="flux-convention-select-label"
-                        value={fluxConventionLocal}
-                        onChange={(event) => {
-                            handleChangeFluxConvention(event.target.value);
-                        }}
-                    >
-                        <MenuItem value={FluxConventions.IIDM}>
-                            <FormattedMessage id="FluxConvention.iidm" />
-                        </MenuItem>
-                        <MenuItem value={FluxConventions.TARGET}>
-                            <FormattedMessage id="FluxConvention.target" />
-                        </MenuItem>
-                    </Select>
-                </Grid>
+                <ParamLine
+                    type={ParameterType.DropDown}
+                    param_name_id={PARAM_FLUX_CONVENTION}
+                    labelTitle="FluxConvention"
+                    labelValue="flux-convention-select-label"
+                    values={{
+                        [FluxConventions.IIDM]: 'FluxConvention.iidm',
+                        [FluxConventions.TARGET]: 'FluxConvention.target',
+                    }}
+                />
                 <LineSeparator />
                 <Grid item container xs={12}>
-                    <SwitchWithLabel
+                    <ParamLine
+                        type={ParameterType.Switch}
+                        param_name_id={PARAM_DEVELOPER_MODE}
                         label="EnableDeveloperMode"
-                        value={enableDeveloperMode}
-                        callback={() => {
-                            handleChangeEnableDeveloperMode(
-                                !enableDeveloperMode
-                            );
-                        }}
                     />
                     {enableDeveloperMode && (
                         <Alert severity={'warning'}>

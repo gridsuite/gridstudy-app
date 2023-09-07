@@ -60,6 +60,7 @@ export const ModificationListItem = ({
     handleToggle,
     isDragging,
     isOneNodeBuilding,
+    listSize,
     ...props
 }) => {
     const intl = useIntl();
@@ -182,7 +183,7 @@ export const ModificationListItem = ({
                                 </IconButton>
                             )}
                     </ListItem>
-                    <Divider />
+                    {index !== listSize - 1 && <Divider />}
                 </div>
             )}
         </Draggable>
