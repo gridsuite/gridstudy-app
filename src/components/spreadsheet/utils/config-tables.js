@@ -11,7 +11,6 @@ import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { SensiProperties } from 'components/spreadsheet/utils/sensi-properties';
-import CustomTooltipKeyValue from 'components/custom-aggrid/custom-aggrid-tooltip-key-value';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 
 const generateTapPositions = (params) => {
@@ -43,7 +42,11 @@ export const EDIT_COLUMN = 'edit';
 
 const toolTipValueGetterProperties = (params) => {
     const properties = params.data?.properties;
-    return properties ? { title: null, properties: { ...properties } } : null;
+    return Object.keys(properties).reduce(
+        (finalMessage, prop) =>
+            finalMessage + prop + ': ' + properties[prop] + '\n',
+        ''
+    );
 };
 
 const generateEditableNumericColumnDefinition = (
@@ -111,7 +114,6 @@ export const TABLES_DEFINITIONS = {
                 cellRendererSelector: () => {
                     return { component: SensiProperties };
                 },
-                tooltipComponent: CustomTooltipKeyValue,
                 tooltipValueGetter: toolTipValueGetterProperties,
                 minWidth: 300,
             },
@@ -379,6 +381,8 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioTap',
                 field: 'ratioTapChanger',
+                tooltipValueGetter: (params) =>
+                    params?.data?.ratioTapChanger?.tapPosition,
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio'),
@@ -407,6 +411,8 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode',
                 field: 'regulationMode',
+                tooltipValueGetter: (params) =>
+                    params?.data?.phaseTapChanger?.regulationMode,
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger?.regulationMode,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
@@ -424,6 +430,8 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap',
                 field: 'phaseTapChanger',
+                tooltipValueGetter: (params) =>
+                    params?.data?.phaseTapChanger?.tapPosition,
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase'),
@@ -498,6 +506,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
+                tooltipField: 'nominalVoltage1',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -505,6 +514,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
+                tooltipField: 'nominalVoltage2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -512,6 +522,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide3',
                 field: 'nominalVoltage3',
+                tooltipField: 'nominalVoltage3',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -595,6 +606,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioTap1',
                 field: 'ratioTapChanger1',
+                tooltipField: 'ratioTapChanger1',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 1),
@@ -644,6 +656,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioTap2',
                 field: 'ratioTapChanger2',
+                tooltipField: 'ratioTapChanger2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Ratio', 2),
@@ -720,12 +733,14 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode1',
                 field: 'regulatingMode1',
+                tooltipField: 'regulatingMode1',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RegulatingPhase1',
                 field: 'regulatingPhase1',
+                tooltipField: 'regulatingPhase1',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -733,6 +748,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap1',
                 field: 'phaseTapChanger1',
+                tooltipField: 'phaseTapChanger1',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 1),
@@ -769,6 +785,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode2',
                 field: 'regulatingMode2',
+                tooltipField: 'regulatingMode2',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -782,6 +799,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap2',
                 field: 'phaseTapChanger2',
+                tooltipField: 'phaseTapChanger2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 2),
@@ -818,6 +836,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingMode3',
                 field: 'regulatingMode3',
+                tooltipField: 'regulatingMode3',
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -831,6 +850,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap3',
                 field: 'phaseTapChanger3',
+                tooltipField: 'phaseTapChanger3',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 changeCmd: generateTapRequest('Phase', 3),

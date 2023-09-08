@@ -98,6 +98,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             return {
                 headerName,
                 field,
+                tooltipField: field,
                 numeric: isNumeric,
                 fractionDigits,
                 hide: isHidden,
