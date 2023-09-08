@@ -10,11 +10,9 @@ import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import { STUDY_DISPLAY_MODE } from '../redux/actions';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
@@ -36,18 +34,22 @@ import TableWrapper from './spreadsheet/table-wrapper';
 import { ResultsTabsRootLevel } from './results/use-results-tab';
 import { ShortcircuitAnalysisResultTabs } from './results/shortcircuit/shortcircuit-analysis-result.type';
 import { ComputingType } from './computing-status/computing-type';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     map: {
         display: 'flex',
         flexDirection: 'row',
+        height: '100%',
     },
-    horizontalToolbar: {
+    horizontalToolbar: (theme) => ({
         backgroundColor: darken(theme.palette.background.paper, 0.2),
-    },
-    error: {
+        display: 'flex',
+        flexDirection: 'row',
+    }),
+    error: (theme) => ({
         padding: theme.spacing(2),
-    },
+    }),
     rotate: {
         animation: 'spin 1000ms infinite',
     },
@@ -61,19 +63,25 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
-    mapCtrlBottomLeft: {
+    mapCtrlBottomLeft: (theme) => ({
         '& .mapboxgl-ctrl-bottom-left': {
             transition: theme.transitions.create('left', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
             }),
         },
-    },
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+    }),
     table: {
         display: 'flex',
         flexDirection: 'column',
+        height: '100%',
     },
-}));
+};
 
 export const StudyView = {
     MAP: 'Map',
@@ -101,8 +109,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const [isComputationRunning, setIsComputationRunning] = useState(false);
-
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -115,8 +121,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     const loadFlowStatus = useSelector(
         (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
-
-    const classes = useStyles();
 
     const { openDiagramView } = useDiagram();
 
@@ -161,22 +165,10 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     function renderMapView() {
         return (
             <ReactFlowProvider>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100%',
-                    }}
-                >
-                    <div
-                        className={classes.horizontalToolbar}
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                        }}
-                    >
+                <Box sx={styles.table}>
+                    <Box sx={styles.horizontalToolbar}>
                         <HorizontalToolbar />
-                    </div>
+                    </Box>
                     <div
                         style={{
                             display: 'flex',
@@ -203,11 +195,8 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                 studyMapTreeDisplay={studyDisplayMode}
                             />
                         </div>
-                        <div
-                            className={clsx(
-                                'relative singlestretch-child',
-                                classes.map
-                            )}
+                        <Box
+                            sx={styles.map}
                             style={{
                                 display:
                                     studyDisplayMode === STUDY_DISPLAY_MODE.TREE
@@ -220,16 +209,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                         : '100%',
                             }}
                         >
-                            <div
-                                className={classes.mapCtrlBottomLeft}
-                                style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    bottom: 0,
-                                    left: 0,
-                                    right: 0,
-                                }}
-                            >
+                            <Box sx={styles.mapCtrlBottomLeft}>
                                 {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
                                 <NetworkMapTab
                                     /* TODO do we move redux param to container */
@@ -251,17 +231,13 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    setIsComputationRunning={
-                                        setIsComputationRunning
-                                    }
                                     setErrorMessage={setErrorMessage}
                                     loadFlowStatus={loadFlowStatus}
                                 />
-                            </div>
+                            </Box>
 
                             <DiagramPane
                                 studyUuid={studyUuid}
-                                isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
                                 showOneBusShortcircuitResults={
                                     showOneBusShortcircuitResults
@@ -273,16 +249,16 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                 }
                                 loadFlowStatus={loadFlowStatus}
                             />
-                        </div>
+                        </Box>
                     </div>
-                </div>
+                </Box>
             </ReactFlowProvider>
         );
     }
 
     function renderTableView() {
         return (
-            <Paper className={clsx('singlestretch-child', classes.table)}>
+            <Paper sx={styles.table}>
                 <TableWrapper
                     studyUuid={studyUuid}
                     currentNode={currentNode}

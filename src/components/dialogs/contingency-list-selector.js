@@ -7,7 +7,6 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
@@ -40,8 +39,6 @@ function makeButton(onClick, message, disabled) {
 
 const CONTINGENCY_TYPES = [elementType.CONTINGENCY_LIST];
 const ContingencyListSelector = (props) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
     const favoriteContingencyListUuids = useSelector(
         (state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]
     );
@@ -88,7 +85,7 @@ const ContingencyListSelector = (props) => {
         var discardResult = false;
         if (props.currentNodeUuid !== null) {
             fetchContingencyCount(
-                studyUuid,
+                props.studyUuid,
                 props.currentNodeUuid,
                 checkedContingencyListUuids
             ).then((contingencyCount) => {
@@ -100,7 +97,7 @@ const ContingencyListSelector = (props) => {
         return () => {
             discardResult = true;
         };
-    }, [studyUuid, props.currentNodeUuid, checkedContingencyListUuids]);
+    }, [props.studyUuid, props.currentNodeUuid, checkedContingencyListUuids]);
 
     useEffect(() => {
         if (
@@ -265,6 +262,7 @@ ContingencyListSelector.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onStart: PropTypes.func.isRequired,
+    studyUuid: PropTypes.string,
     currentNodeUuid: PropTypes.string,
 };
 

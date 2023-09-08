@@ -14,13 +14,11 @@ import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
-import { RunButtonContainer } from './run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_MAP_MANUAL_REFRESH } from '../utils/config-params';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
-    isNodeReadOnly,
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from './graph/util/model-functions';
@@ -52,14 +50,6 @@ const styles = {
             zIndex: 1,
         },
     },
-    divRunButton: {
-        position: 'absolute',
-        right: '100px',
-        bottom: '30px',
-        marginLeft: '8px',
-        marginRight: '8px',
-        marginTop: '8px',
-    },
     divTemporaryGeoDataLoading: {
         position: 'absolute',
         width: '100%',
@@ -84,7 +74,6 @@ export const NetworkMapTab = ({
     lineFlowAlertThreshold,
     /* callbacks */
     openVoltageLevel,
-    setIsComputationRunning,
     showInSpreadsheet,
     setErrorMessage,
 }) => {
@@ -974,15 +963,6 @@ export const NetworkMapTab = ({
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
-
-            <Box sx={styles.divRunButton}>
-                <RunButtonContainer
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    setIsComputationRunning={setIsComputationRunning}
-                    disabled={disabled || isNodeReadOnly(currentNode)}
-                />
-            </Box>
         </>
     );
 };
