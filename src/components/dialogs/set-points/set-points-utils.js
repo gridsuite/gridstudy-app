@@ -46,7 +46,8 @@ export const getFrequencyRegulationSchema = (isEquipmentModification) => ({
         .number()
         .nullable()
         .when([FREQUENCY_REGULATION], {
-            is: !isEquipmentModification,
+            is: (frequencyRegulation) =>
+                !isEquipmentModification && frequencyRegulation,
             then: (schema) => schema.required(),
         }),
 });
