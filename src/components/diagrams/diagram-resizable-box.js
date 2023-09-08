@@ -18,7 +18,8 @@ import {
 import { mergeSx } from '../utils/functions';
 import { styled } from '@mui/system';
 
-const StyledResizableBox = styled(ResizableBox)();
+// TODO can we avoid to define a component just to add sx support ?
+const ResizableBoxSx = styled(ResizableBox)({});
 
 const styles = {
     resizable: (theme) => ({
@@ -60,7 +61,7 @@ const styles = {
 
 const DiagramResizableBox = (props) => {
     return (
-        <StyledResizableBox
+        <ResizableBoxSx
             style={{ display: props.hide ? 'none' : undefined }}
             width={props.width}
             height={props.height}
@@ -89,7 +90,7 @@ const DiagramResizableBox = (props) => {
                     />
                 )}
             </>
-        </StyledResizableBox>
+        </ResizableBoxSx>
     );
 };
 
