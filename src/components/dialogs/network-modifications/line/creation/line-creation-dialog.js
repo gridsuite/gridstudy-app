@@ -165,8 +165,11 @@ const LineCreationDialog = ({
                             {
                                 voltageLevelId: line.voltageLevelId1,
                                 busbarSectionId: line.busOrBusbarSectionId1,
-                                connectionDirection: line.connectionDirection1,
-                                connectionName: line.connectionName1,
+                                connectionDirection:
+                                    line.connectablePosition1
+                                        .connectionDirection,
+                                connectionName:
+                                    line.connectablePosition1.connectionName,
                             },
                             CONNECTIVITY_1
                         )),
@@ -175,8 +178,11 @@ const LineCreationDialog = ({
                             {
                                 voltageLevelId: line.voltageLevelId2,
                                 busbarSectionId: line.busOrBusbarSectionId2,
-                                connectionDirection: line.connectionDirection2,
-                                connectionName: line.connectionName2,
+                                connectionDirection:
+                                    line.connectablePosition2
+                                        .connectionDirection,
+                                connectionName:
+                                    line.connectablePosition2.connectionName,
                             },
                             CONNECTIVITY_2
                         )),
