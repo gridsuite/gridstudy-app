@@ -682,6 +682,15 @@ export function setComputingStatus(computingType, runningStatus) {
     };
 }
 
+export const SET_COMPUTATION_RUNNING = 'SET_COMPUTATION_RUNNING';
+
+export function setComputationRunning(computationRunning) {
+    return {
+        type: SET_COMPUTATION_RUNNING,
+        computationRunning: computationRunning,
+    };
+}
+
 export const SET_OPTIONAL_SERVICES = 'SET_SERVICES';
 
 export const setOptionalServices = (optionalServices) => {

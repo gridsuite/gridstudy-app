@@ -87,6 +87,7 @@ function SingleLineDiagramContent(props) {
     const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
     );
+    const computationRunning = useSelector((state) => state.computationRunning);
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -440,7 +441,7 @@ function SingleLineDiagramContent(props) {
     useLayoutEffect(() => {
         if (props.svg) {
             const isReadyForInteraction =
-                !props.isComputationRunning &&
+                !computationRunning &&
                 !isAnyNodeBuilding &&
                 !modificationInProgress &&
                 !props.loadingState;
@@ -536,7 +537,6 @@ function SingleLineDiagramContent(props) {
         props.svg,
         props.svgMetadata,
         currentNode,
-        props.isComputationRunning,
         isAnyNodeBuilding,
         equipmentMenu,
         showEquipmentMenu,
@@ -552,6 +552,7 @@ function SingleLineDiagramContent(props) {
         handleNextVoltageLevelClick,
         diagramSizeSetter,
         handleTogglePopover,
+        computationRunning,
     ]);
 
     // When the loading is finished, we always reset these two states
