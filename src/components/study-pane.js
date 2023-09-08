@@ -109,8 +109,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const [isComputationRunning, setIsComputationRunning] = useState(false);
-
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -233,9 +231,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    setIsComputationRunning={
-                                        setIsComputationRunning
-                                    }
                                     setErrorMessage={setErrorMessage}
                                     loadFlowStatus={loadFlowStatus}
                                 />
@@ -243,7 +238,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
 
                             <DiagramPane
                                 studyUuid={studyUuid}
-                                isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
                                 showOneBusShortcircuitResults={
                                     showOneBusShortcircuitResults
