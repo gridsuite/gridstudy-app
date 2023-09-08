@@ -35,12 +35,13 @@ import {
     createTreeNode,
     cutSubtree,
     cutTreeNode,
-    deleteSubtree,
-    deleteTreeNode,
+    stashSubtree,
+    stashTreeNode,
     fetchNetworkModificationSubtree,
     fetchNetworkModificationTreeNode,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName } from '../services/study';
+import RestoreNodesDialog from './dialogs/restore-node-dialog';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -465,7 +466,7 @@ export const NetworkModificationTreePane = ({
 
     const handleRemoveNode = useCallback(
         (element) => {
-            deleteTreeNode(studyUuid, element.id).catch((error) => {
+            stashTreeNode(studyUuid, element.id).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'NodeDeleteError',
@@ -498,6 +499,12 @@ export const NetworkModificationTreePane = ({
         setOpenExportDialog(true);
     };
 
+    const [openRestoreDialog, setOpenRestoreDialog] = useState(false);
+
+    const handleOpenRestoreNodesDialog = () => {
+        setOpenRestoreDialog(true);
+    };
+
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: { x: -1, y: -1 },
         display: null,
@@ -519,7 +526,7 @@ export const NetworkModificationTreePane = ({
 
     const handleRemoveSubtree = useCallback(
         (element) => {
-            deleteSubtree(studyUuid, element.id).catch((error) => {
+            stashSubtree(studyUuid, element.id).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'NodeDeleteError',
@@ -632,6 +639,7 @@ export const NetworkModificationTreePane = ({
                     handleCutSubtree={handleCutSubtree}
                     handleCopySubtree={handleCopySubtree}
                     handlePasteSubtree={handlePasteSubtree}
+                    handleOpenRestoreNodesDialog={handleOpenRestoreNodesDialog}
                 />
             )}
             {openExportDialog && (
@@ -644,6 +652,14 @@ export const NetworkModificationTreePane = ({
                     title={intlRef.current.formatMessage({
                         id: 'exportNetwork',
                     })}
+                />
+            )}
+            {openRestoreDialog && (
+                <RestoreNodesDialog
+                    open={openRestoreDialog}
+                    onClose={() => setOpenRestoreDialog(false)}
+                    studyUuid={studyUuid}
+                    anchorNodeId={activeNode.id}
                 />
             )}
             <iframe
