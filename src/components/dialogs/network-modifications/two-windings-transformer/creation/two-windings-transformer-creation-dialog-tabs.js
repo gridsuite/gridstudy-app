@@ -6,8 +6,6 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerCreationDialogTab } from './two-windings-transformer-creation-dialog';
@@ -18,15 +16,15 @@ import {
     RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
 
-const useStyles = makeStyles((theme) => ({
-    tabWithError: {
+const styles = {
+    tabWithError: (theme) => ({
         '&.Mui-selected': { color: theme.palette.error.main },
         color: theme.palette.error.main,
-    },
-    tabWithErrorIndicator: {
+    }),
+    tabWithErrorIndicator: (theme) => ({
         backgroundColor: theme.palette.error.main,
-    },
-}));
+    }),
+};
 
 const TwoWindingsTransformerCreationDialogTabs = ({
     tabIndex,
@@ -34,8 +32,6 @@ const TwoWindingsTransformerCreationDialogTabs = ({
     setTabIndex,
     setDialogWidth,
 }) => {
-    const classes = useStyles();
-
     const ratioTapChangerEnabledWatch = useWatch({
         name: `${RATIO_TAP_CHANGER}.${ENABLED}`,
     });
@@ -44,22 +40,20 @@ const TwoWindingsTransformerCreationDialogTabs = ({
         name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
     });
 
-    const getTabIndicatorClass = useCallback(
+    const getTabIndicatorStyle = useCallback(
         (index) =>
             tabIndexesWithError.includes(index)
-                ? {
-                      indicator: classes.tabWithErrorIndicator,
-                  }
-                : {},
-        [tabIndexesWithError, classes]
+                ? styles.tabWithErrorIndicator
+                : undefined,
+        [tabIndexesWithError]
     );
 
-    const getTabClass = useCallback(
+    const getTabStyle = useCallback(
         (index) =>
-            clsx({
-                [classes.tabWithError]: tabIndexesWithError.includes(index),
-            }),
-        [tabIndexesWithError, classes]
+            tabIndexesWithError.includes(index)
+                ? styles.tabWithError
+                : undefined,
+        [tabIndexesWithError]
     );
 
     return (
@@ -68,20 +62,20 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                 value={tabIndex}
                 variant="scrollable"
                 onChange={(event, newValue) => setTabIndex(newValue)}
-                classes={getTabIndicatorClass(tabIndex)}
+                TabIndicatorProps={{ sx: getTabIndicatorStyle(tabIndex) }}
             >
                 <Tab
                     label={
                         <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
                     }
-                    className={getTabClass(
+                    sx={getTabStyle(
                         TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
                     )}
                     onClick={() => setDialogWidth('xl')}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
-                    className={getTabClass(
+                    sx={getTabStyle(
                         TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
                     )}
                     onClick={() => setDialogWidth('xl')}
@@ -91,7 +85,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                     label={
                         <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
                     }
-                    className={getTabClass(
+                    sx={getTabStyle(
                         TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB
                     )}
                     disabled={!ratioTapChangerEnabledWatch}
@@ -101,7 +95,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                     label={
                         <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
                     }
-                    className={getTabClass(
+                    sx={getTabStyle(
                         TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB
                     )}
                     disabled={!phaseTapChangerEnabledWatch}

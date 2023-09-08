@@ -6,8 +6,6 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerModificationDialogTab } from './two-windings-transformer-modification-dialog';
@@ -18,23 +16,21 @@ import {
     RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
 
-const useStyles = makeStyles((theme) => ({
-    tabWithError: {
+const styles = {
+    tabWithError: (theme) => ({
         '&.Mui-selected': { color: theme.palette.error.main },
         color: theme.palette.error.main,
-    },
-    tabWithErrorIndicator: {
+    }),
+    tabWithErrorIndicator: (theme) => ({
         backgroundColor: theme.palette.error.main,
-    },
-}));
+    }),
+};
 
 const TwoWindingsTransformerModificationDialogTabs = ({
     tabIndex,
     tabIndexesWithError,
     setTabIndex,
 }) => {
-    const classes = useStyles();
-
     const phaseTapChangerEnabledWatch = useWatch({
         name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
     });
@@ -42,22 +38,20 @@ const TwoWindingsTransformerModificationDialogTabs = ({
         name: `${RATIO_TAP_CHANGER}.${ENABLED}`,
     });
 
-    const getTabIndicatorClass = useCallback(
+    const getTabIndicatorStyle = useCallback(
         (index) =>
             tabIndexesWithError.includes(index)
-                ? {
-                      indicator: classes.tabWithErrorIndicator,
-                  }
-                : {},
-        [tabIndexesWithError, classes]
+                ? styles.tabWithErrorIndicator
+                : undefined,
+        [tabIndexesWithError]
     );
 
-    const getTabClass = useCallback(
+    const getTabStyle = useCallback(
         (index) =>
-            clsx({
-                [classes.tabWithError]: tabIndexesWithError.includes(index),
-            }),
-        [tabIndexesWithError, classes]
+            tabIndexesWithError.includes(index)
+                ? styles.tabWithError
+                : undefined,
+        [tabIndexesWithError]
     );
 
     return (
@@ -66,19 +60,19 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                 value={tabIndex}
                 variant="scrollable"
                 onChange={(event, newValue) => setTabIndex(newValue)}
-                classes={getTabIndicatorClass(tabIndex)}
+                TabIndicatorProps={{ sx: getTabIndicatorStyle(tabIndex) }}
             >
                 <Tab
                     label={
                         <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
                     }
-                    className={getTabClass(
+                    sx={getTabStyle(
                         TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB
                     )}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
-                    className={getTabClass(
+                    sx={getTabStyle(
                         TwoWindingsTransformerModificationDialogTab.LIMITS_TAB
                     )}
                 />
@@ -86,7 +80,7 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                     label={
                         <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
                     }
-                    className={getTabClass(
+                    sx={getTabStyle(
                         TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB
                     )}
                     disabled={!ratioTapChangerEnabledWatch}
@@ -95,7 +89,7 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                     label={
                         <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
                     }
-                    className={getTabClass(
+                    sx={getTabStyle(
                         TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB
                     )}
                     disabled={!phaseTapChangerEnabledWatch}

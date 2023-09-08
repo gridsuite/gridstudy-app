@@ -6,41 +6,35 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { LineCreationDialogTab } from './creation/line-creation-dialog';
 
-const useStyles = makeStyles((theme) => ({
-    tabWithError: {
+const styles = {
+    tabWithError: (theme) => ({
         '&.Mui-selected': { color: theme.palette.error.main },
         color: theme.palette.error.main,
-    },
-    tabWithErrorIndicator: {
+    }),
+    tabWithErrorIndicator: (theme) => ({
         backgroundColor: theme.palette.error.main,
-    },
-}));
+    }),
+};
 
 const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
-    const classes = useStyles();
-
-    const getTabIndicatorClass = useCallback(
+    const getTabIndicatorStyle = useCallback(
         (index) =>
             tabIndexesWithError.includes(index)
-                ? {
-                      indicator: classes.tabWithErrorIndicator,
-                  }
-                : {},
-        [tabIndexesWithError, classes]
+                ? styles.tabWithErrorIndicator
+                : undefined,
+        [tabIndexesWithError]
     );
 
-    const getTabClass = useCallback(
+    const getTabStyle = useCallback(
         (index) =>
-            clsx({
-                [classes.tabWithError]: tabIndexesWithError.includes(index),
-            }),
-        [tabIndexesWithError, classes]
+            tabIndexesWithError.includes(index)
+                ? styles.tabWithError
+                : undefined,
+        [tabIndexesWithError]
     );
 
     return (
@@ -49,17 +43,15 @@ const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
                 value={tabIndex}
                 variant="scrollable"
                 onChange={(event, newValue) => setTabIndex(newValue)}
-                classes={getTabIndicatorClass(tabIndex)}
+                TabIndicatorProps={{ sx: getTabIndicatorStyle(tabIndex) }}
             >
                 <Tab
                     label={<FormattedMessage id="LineCharacteristicsTab" />}
-                    className={getTabClass(
-                        LineCreationDialogTab.CHARACTERISTICS_TAB
-                    )}
+                    sx={getTabStyle(LineCreationDialogTab.CHARACTERISTICS_TAB)}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
-                    className={getTabClass(LineCreationDialogTab.LIMITS_TAB)}
+                    sx={getTabStyle(LineCreationDialogTab.LIMITS_TAB)}
                 />
             </Tabs>
         </Grid>
