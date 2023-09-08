@@ -39,12 +39,6 @@ export const DEFAULT_SORT_ORDER = 'asc';
 
 export const EDIT_COLUMN = 'edit';
 
-// We keep this in case we need to use CustomTooltipKeyValue again (see commit to understand)
-const toolTipValueGetterProperties = (params) => {
-    const properties = params.data?.properties;
-    return properties ? { title: null, properties: { ...properties } } : null;
-};
-
 const propertiesGetter = (params) => {
     const properties = params?.data?.properties;
     if (properties && Object.keys(properties).length) {
@@ -115,8 +109,6 @@ export const TABLES_DEFINITIONS = {
                 id: 'Properties',
                 field: 'properties',
                 valueGetter: propertiesGetter, // valueFormatter does not work here
-                // tooltipComponent: CustomTooltipKeyValue, // TODO uncomment / delete with US 2326
-                // tooltipValueGetter: toolTipValueGetterProperties, // TODO uncomment / delete with US 2326
                 minWidth: 300,
             },
         ],
