@@ -55,13 +55,18 @@ export const SensitivityAnalysisParameters = ({
     return (
         <>
             <Grid container spacing={1} padding={1}>
-                <DropDown
-                    value={provider}
-                    label="Provider"
-                    values={providers}
-                    callback={updateProviderCallback}
-                />
-                <LineSeparator />
+                <Grid
+                    container
+                    spacing={1}
+                    sx={{ padding: 0, paddingBottom: 1 }}
+                >
+                    <DropDown
+                        value={provider}
+                        label="Provider"
+                        values={providers}
+                        callback={updateProviderCallback}
+                    />
+                </Grid>
                 <SensitivityAnalysisFields
                     key={`sensititvity-params-${refreshKey}`}
                     paramaters={defaultParamsValues}

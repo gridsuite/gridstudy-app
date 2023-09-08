@@ -185,7 +185,11 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
 
     const shortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
+            state.computingStatus[
+                analysisType === ShortcircuitAnalysisType.ALL_BUSES
+                    ? ComputingType.SHORTCIRCUIT_ANALYSIS
+                    : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
+            ]
     );
 
     const messages = useIntlResultStatusMessages(intl, true);
