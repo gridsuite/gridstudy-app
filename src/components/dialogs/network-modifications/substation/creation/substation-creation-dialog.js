@@ -47,7 +47,7 @@ const getProperties = (properties) => {
         ? Object.entries(properties).map((p) => {
               return { [NAME]: p[0], [VALUE]: p[1] };
           })
-        : null;
+        : [];
 };
 const SubstationCreationDialog = ({
     editData,
