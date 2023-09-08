@@ -36,7 +36,7 @@ const styles = {
     expandOpen: {
         transform: 'rotate(180deg)',
     },
-    listOptions: {
+    listOptions: (theme) => ({
         minWidth: '275px',
         left: '-21px',
         top: '1px',
@@ -44,15 +44,15 @@ const styles = {
         boxShadow: 'none',
         borderRadius: '0',
         border: '1px solid #7f7f7e',
-        background: '#242424',
-        color: '#fdfdfd',
+        background: theme.palette.background.default,
+        color: theme.palette.text.primary,
         '& ul': {
             padding: 0,
             '& li:first-child': {
                 borderBottom: '1px solid #7f7f7e',
             },
         },
-    },
+    }),
     stop: {
         color: 'red',
     },
@@ -89,40 +89,40 @@ const styles = {
             color: '#fdfdfd',
         },
     },
-    running: {
-        backgroundColor: '#242424',
-        color: '#fdfdfd',
+    running: (theme) => ({
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
         border: '1px solid #808080',
         '&:nth-child(1)': {
             minWidth: '270px',
-            color: '#fdfdfd',
+            color: theme.palette.text.primary,
         },
         '&:nth-child(2)': {
             borderLeft: '1px solid #4a4a4a',
         },
         '&:hover': {
-            backgroundColor: '#242424',
-            color: '#fdfdfd',
+            backgroundColor: theme.palette.background.default,
+            color: theme.palette.text.primary,
         },
-    },
+    }),
     idle: (theme) => ({
-        backgroundColor: '#242424',
-        color: '#fdfdfd',
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
         border: '1px solid #808080',
         '&:nth-child(1)': {
             minWidth: '270px',
-            color: '#fdfdfd',
+            color: theme.palette.text.primary,
         },
         '&:nth-child(2)': {
             borderLeft: '1px solid #4a4a4a',
         },
         '&:hover': {
-            backgroundColor: '#242424',
+            backgroundColor: theme.palette.background.default,
             border: '1px solid ' + theme.palette.primary,
-            color: '#fdfdfd',
+            color: theme.palette.text.primary,
         },
         '&:disabled': {
-            color: '#717171',
+            color: theme.palette.text.disabled,
         },
     }),
     runMenu: {
