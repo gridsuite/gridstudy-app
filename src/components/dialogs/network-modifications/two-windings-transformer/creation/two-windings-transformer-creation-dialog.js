@@ -96,7 +96,10 @@ import {
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
-import { computeHighTapPosition } from 'components/utils/utils';
+import {
+    computeHighTapPosition,
+    formatTemporaryLimits,
+} from 'components/utils/utils';
 import { createTwoWindingsTransformer } from '../../../../../services/study/network-modifications';
 
 /**
@@ -228,9 +231,12 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId1,
-                            connectionDirection: twt.connectionDirection1,
-                            connectionName: twt.connectionName1,
-                            connectionPosition: twt.connectionPosition1,
+                            connectionDirection:
+                                twt.connectablePosition1.connectionDirection,
+                            connectionName:
+                                twt.connectablePosition1.connectionName,
+                            connectionPosition:
+                                twt.connectablePosition1.connectionPosition,
                             voltageLevelId: twt.voltageLevelId1,
                         },
                         CONNECTIVITY_1
@@ -238,9 +244,12 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId2,
-                            connectionDirection: twt.connectionDirection2,
-                            connectionName: twt.connectionName2,
-                            connectionPosition: twt.connectionPosition2,
+                            connectionDirection:
+                                twt.connectablePosition2.connectionDirection,
+                            connectionName:
+                                twt.connectablePosition2.connectionName,
+                            connectionPosition:
+                                twt.connectablePosition2.connectionPosition,
                             voltageLevelId: twt.voltageLevelId2,
                         },
                         CONNECTIVITY_2
@@ -250,10 +259,14 @@ const TwoWindingsTransformerCreationDialog = ({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        twt.currentLimits1?.temporaryLimits
+                        formatTemporaryLimits(
+                            twt.currentLimits1?.temporaryLimits
+                        )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        twt.currentLimits2?.temporaryLimits
+                        formatTemporaryLimits(
+                            twt.currentLimits2?.temporaryLimits
+                        )
                     ),
                 }),
                 ...getPhaseTapChangerFormData({
@@ -346,8 +359,10 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId1,
-                            connectionDirection: twt.connectionDirection1,
-                            connectionName: twt.connectionName1,
+                            connectionDirection:
+                                twt.connectablePosition1?.connectionDirection,
+                            connectionName:
+                                twt.connectablePosition1?.connectionName,
                             voltageLevelId: twt.voltageLevelId1,
                         },
                         CONNECTIVITY_1
@@ -355,8 +370,10 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId2,
-                            connectionDirection: twt.connectionDirection2,
-                            connectionName: twt.connectionName2,
+                            connectionDirection:
+                                twt.connectablePosition2?.connectionDirection,
+                            connectionName:
+                                twt.connectablePosition2?.connectionName,
                             voltageLevelId: twt.voltageLevelId2,
                         },
                         CONNECTIVITY_2
@@ -366,10 +383,14 @@ const TwoWindingsTransformerCreationDialog = ({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        twt.currentLimits1?.temporaryLimits
+                        formatTemporaryLimits(
+                            twt.currentLimits1?.temporaryLimits
+                        )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        twt.currentLimits2?.temporaryLimits
+                        formatTemporaryLimits(
+                            twt.currentLimits2?.temporaryLimits
+                        )
                     ),
                 }),
                 ...getRatioTapChangerFormData({
