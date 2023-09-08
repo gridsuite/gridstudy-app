@@ -25,8 +25,6 @@ import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { useStore } from 'react-flow-renderer';
-import makeStyles from '@mui/styles/makeStyles';
-import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import ExportDialog from './dialogs/export-dialog';
 import { BUILD_STATUS, UPDATE_TYPE } from './network/constants';
 import {
@@ -42,28 +40,14 @@ import {
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName } from '../services/study';
 
-const useStyles = makeStyles((theme) => ({
-    nodeEditor: {
-        width: DRAWER_NODE_EDITOR_WIDTH,
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        // zIndex set to be below the loader with overlay
-        // and above the network explorer, for mouse events on network modification tree
-        // to be taken into account correctly
-        zIndex: 51,
+const styles = {
+    container: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'row',
     },
-    nodeEditorShift: {
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-        pointerEvents: 'none',
-        marginLeft: -DRAWER_NODE_EDITOR_WIDTH,
-    },
-    container: { width: '100%', height: '100%' },
-}));
+};
 
 // We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
 // But the MAP display is neutral for this computation: We need to know what was the last HYBRID or TREE display and its width.
@@ -98,7 +82,6 @@ export const NetworkModificationTreePane = ({
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
     const { snackError, snackInfo } = useSnackMessage();
-    const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
     const isInitiatingCopyTab = useRef(false);
 
@@ -589,11 +572,7 @@ export const NetworkModificationTreePane = ({
 
     return (
         <>
-            <Box
-                className={classes.container}
-                display="flex"
-                flexDirection="row"
-            >
+            <Box sx={styles.container}>
                 <NetworkModificationTree
                     onNodeContextMenu={onNodeContextMenu}
                     studyUuid={studyUuid}
@@ -604,8 +583,6 @@ export const NetworkModificationTreePane = ({
 
                 <StudyDrawer
                     open={isModificationsDrawerOpen}
-                    drawerClassName={classes.nodeEditor}
-                    drawerShiftClassName={classes.nodeEditorShift}
                     anchor={
                         prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
                             ? 'right'
