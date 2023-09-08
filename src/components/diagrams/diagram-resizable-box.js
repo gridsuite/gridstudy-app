@@ -7,9 +7,7 @@
 
 import React from 'react';
 import { ResizableBox } from 'react-resizable';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import ResizeHandleIcon from '@mui/icons-material/ChevronRight';
 import {
     MIN_HEIGHT,
@@ -17,9 +15,14 @@ import {
     LOADING_HEIGHT,
     LOADING_WIDTH,
 } from './diagram-common';
+import { mergeSx } from '../utils/functions';
+import { styled } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
-    resizable: {
+// TODO can we avoid to define a component just to add sx support ?
+const ResizableBoxSx = styled(ResizableBox)({});
+
+const styles = {
+    resizable: (theme) => ({
         position: 'relative',
         '& .react-resizable-handle': {
             position: 'absolute',
@@ -27,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
             height: theme.spacing(2),
             bottom: 0,
         },
-    },
+    }),
     rightHandle: {
         '& .react-resizable-handle': {
             right: 0,
@@ -40,53 +43,54 @@ const useStyles = makeStyles((theme) => ({
             cursor: 'sw-resize',
         },
     },
-    resizeHandleIconRight: {
+    resizeHandleIconRight: (theme) => ({
         bottom: theme.spacing(-0.5),
         right: theme.spacing(-0.5),
         position: 'absolute',
         transform: 'rotate(45deg)',
         color: theme.palette.action.disabled,
-    },
-    resizeHandleIconLeft: {
+    }),
+    resizeHandleIconLeft: (theme) => ({
         bottom: theme.spacing(-0.5),
         left: theme.spacing(-0.5),
         position: 'absolute',
         transform: 'rotate(135deg)',
         color: theme.palette.action.disabled,
-    },
-}));
+    }),
+};
 
 const DiagramResizableBox = (props) => {
-    const classes = useStyles();
-
     return (
-        <ResizableBox
+        <ResizableBoxSx
             style={{ display: props.hide ? 'none' : undefined }}
             width={props.width}
             height={props.height}
             minConstraints={[MIN_WIDTH, MIN_HEIGHT]}
             axis={props.disableResize ? 'none' : undefined}
             resizeHandles={props?.align === 'right' ? ['sw'] : undefined}
-            className={clsx(classes.resizable, {
-                [classes.leftHandle]:
-                    !props.disableResize && props?.align === 'right',
-                [classes.rightHandle]:
-                    !props.disableResize && props?.align === 'left',
-            })}
+            sx={mergeSx(
+                styles.resizable,
+                !props.disableResize &&
+                    props?.align === 'right' &&
+                    styles.leftHandle,
+                !props.disableResize &&
+                    props?.align === 'left' &&
+                    styles.rightHandle
+            )}
         >
             <>
                 {props.children}
                 {!props.disableResize && (
                     <ResizeHandleIcon
-                        className={
+                        sx={
                             props?.align === 'right'
-                                ? classes.resizeHandleIconLeft
-                                : classes.resizeHandleIconRight
+                                ? styles.resizeHandleIconLeft
+                                : styles.resizeHandleIconRight
                         }
                     />
                 )}
             </>
-        </ResizableBox>
+        </ResizableBoxSx>
     );
 };
 
