@@ -90,7 +90,7 @@ const styles = {
         },
     },
     running: (theme) => ({
-        backgroundColor: theme.palette.primary,
+        backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         border: '1px solid #808080',
         '&:nth-child(1)': {
