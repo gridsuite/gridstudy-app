@@ -6,6 +6,13 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { Box } from '@mui/system';
+
+const styles = {
+    fullHeight: {
+        height: '100%',
+    },
+};
 
 const TabPanelLazy = (props) => {
     const { children, selected, ...other } = props;
@@ -19,9 +26,13 @@ const TabPanelLazy = (props) => {
     }, [selected, initialized]);
 
     return (
-        <div style={{ display: selected ? 'inherit' : 'none' }} {...other}>
+        <Box
+            style={{ display: selected ? 'inherit' : 'none' }}
+            sx={styles.fullHeight}
+            {...other}
+        >
             {initialized && children}
-        </div>
+        </Box>
     );
 };
 
