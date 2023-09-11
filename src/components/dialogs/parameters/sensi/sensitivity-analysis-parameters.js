@@ -392,15 +392,19 @@ export const SensitivityAnalysisParameters = ({
                 spacing={1}
                 padding={1}
                 key="sensitivityAnalysisParameters"
-                //className={classes.scrollableGrid}
             >
-                <DropDown
-                    value={provider}
-                    label="Provider"
-                    values={providers}
-                    callback={updateProviderCallback}
-                />
-                <LineSeparator />
+                <Grid
+                    container
+                    spacing={1}
+                    sx={{ padding: 0, paddingBottom: 1 }}
+                >
+                    <DropDown
+                        value={provider}
+                        label="Provider"
+                        values={providers}
+                        callback={updateProviderCallback}
+                    />
+                </Grid>
                 <SensitivityAnalysisFields
                     reset={reset}
                     useSensitivityAnalysisParameters={
