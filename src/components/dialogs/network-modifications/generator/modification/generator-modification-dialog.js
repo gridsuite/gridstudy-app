@@ -263,9 +263,9 @@ const GeneratorModificationDialog = ({
                             // we need to check if the generator we fetch has reactive capability curve table
                             if (previousReactiveCapabilityCurveTable) {
                                 const currentReactiveCapabilityCurveTable =
-                                  getValues(
-                                    `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`
-                                  );
+                                    getValues(
+                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`
+                                    );
 
                                 const sizeDiff =
                                     previousReactiveCapabilityCurveTable.length -
@@ -279,7 +279,7 @@ const GeneratorModificationDialog = ({
                                         );
                                     }
                                     setValue(
-                                      `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                         currentReactiveCapabilityCurveTable
                                     );
                                 } else if (sizeDiff < 0) {
@@ -338,12 +338,12 @@ const GeneratorModificationDialog = ({
         (generator) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
             const buildCurvePointsToStore = calculateCurvePointsToStore(
-              reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
+                reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
                 generatorToModify
             );
 
             const isReactiveCapabilityCurveOn =
-              reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+                reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
             const isDistantRegulation =
                 generator?.[VOLTAGE_REGULATION_TYPE] ===

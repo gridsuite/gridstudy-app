@@ -46,6 +46,7 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
+    REACTIVE_LIMITS,
 } from 'components/utils/field-constants';
 import {
     getConnectivityWithPositionEmptyFormData,

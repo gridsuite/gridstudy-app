@@ -13,7 +13,6 @@ import {
     REACTIVE_LIMITS,
 } from 'components/utils/field-constants';
 import {
-    getReactiveCapabilityCurveEmptyFormData,
     getReactiveCapabilityCurveValidationSchema,
     getRowEmptyFormData,
 } from './reactive-capability-curve/reactive-capability-utils';
