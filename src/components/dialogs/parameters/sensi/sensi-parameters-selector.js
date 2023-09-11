@@ -7,7 +7,7 @@
 
 import React, { useCallback, useState } from 'react';
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
 import { Tab, Tabs } from '@mui/material';
@@ -24,6 +24,7 @@ import {
 } from './columns-definitions';
 
 const SensiParametersSelector = () => {
+    const intl = useIntl();
     const TAB_VALUES = {
         SensitivityBranches: 0,
         SensitivityNodes: 1,
@@ -75,6 +76,21 @@ const SensiParametersSelector = () => {
         sensiParam.SensiNodes
     );
 
+    const getColumnsDefinition = useCallback(
+        (sensiColumns) => {
+            if (sensiColumns) {
+                return sensiColumns.map((column) => ({
+                    ...column,
+                    label: intl
+                        .formatMessage({ id: column.label })
+                        .toUpperCase(),
+                }));
+            }
+            return [];
+        },
+        [intl]
+    );
+
     return (
         <>
             <Grid item maxWidth="md" width="100%">
@@ -122,9 +138,9 @@ const SensiParametersSelector = () => {
                                 >
                                     <DndTable
                                         arrayFormName={`${SensiInjectionsSet.name}`}
-                                        columnsDefinition={
+                                        columnsDefinition={getColumnsDefinition(
                                             sensiParam.COLUMNS_DEFINITIONS_INJECTIONS_SET
-                                        }
+                                        )}
                                         useFieldArrayOutput={
                                             useFieldArrayOutputInjectionsSet
                                         }
@@ -140,9 +156,9 @@ const SensiParametersSelector = () => {
                                 >
                                     <DndTable
                                         arrayFormName={`${SensiInjection.name}`}
-                                        columnsDefinition={
+                                        columnsDefinition={getColumnsDefinition(
                                             sensiParam.COLUMNS_DEFINITIONS_INJECTIONS
-                                        }
+                                        )}
                                         useFieldArrayOutput={
                                             useFieldArrayOutputInjections
                                         }
@@ -158,9 +174,9 @@ const SensiParametersSelector = () => {
                                 >
                                     <DndTable
                                         arrayFormName={`${SensiHvdcs.name}`}
-                                        columnsDefinition={
+                                        columnsDefinition={getColumnsDefinition(
                                             sensiParam.COLUMNS_DEFINITIONS_HVDCS
-                                        }
+                                        )}
                                         useFieldArrayOutput={
                                             useFieldArrayOutputHvdc
                                         }
@@ -176,9 +192,9 @@ const SensiParametersSelector = () => {
                                 >
                                     <DndTable
                                         arrayFormName={`${SensiPsts.name}`}
-                                        columnsDefinition={
+                                        columnsDefinition={getColumnsDefinition(
                                             sensiParam.COLUMNS_DEFINITIONS_PSTS
-                                        }
+                                        )}
                                         useFieldArrayOutput={
                                             useFieldArrayOutputPst
                                         }
@@ -193,9 +209,9 @@ const SensiParametersSelector = () => {
                         {tabValue === TAB_VALUES.SensitivityNodes && (
                             <DndTable
                                 arrayFormName={`${SensiNodes.name}`}
-                                columnsDefinition={
+                                columnsDefinition={getColumnsDefinition(
                                     sensiParam.COLUMNS_DEFINITIONS_NODES
-                                }
+                                )}
                                 useFieldArrayOutput={useFieldArrayOutputNodes}
                                 createRows={rowDataNodes}
                                 tableHeight={270}
