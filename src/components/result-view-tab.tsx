@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import clsx from 'clsx';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Paper from '@mui/material/Paper';
-import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
@@ -34,26 +32,21 @@ import { UUID } from 'crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles(() => ({
-    div: {
-        display: 'flex',
-    },
+const styles = {
     table: {
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
+        height: '100%',
     },
     analysisResult: {
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
     },
-    tabPanel: {
-        display: 'flex',
-        flexGrow: 1,
-    },
-}));
+};
 
 interface IResultViewTabProps {
     studyUuid: UUID;
@@ -96,8 +89,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         ResultsTabsLevel.ROOT
     );
 
-    const classes = useStyles();
-
     const intl = useIntl();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -120,18 +111,18 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 
     const renderLoadFlowResult = useMemo(() => {
         return (
-            <Paper className={classes.table}>
+            <Paper sx={styles.analysisResult}>
                 <LoadFlowResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, classes]);
+    }, [studyUuid, currentNode]);
 
     const renderSecurityAnalysisResult = useMemo(() => {
         return (
-            <Paper className={classes.table}>
+            <Paper sx={styles.analysisResult}>
                 <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
@@ -139,50 +130,50 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, classes, openVoltageLevelDiagram]);
+    }, [studyUuid, currentNode, openVoltageLevelDiagram]);
 
     const renderVoltageInitResult = useMemo(() => {
         return (
-            <Paper className={classes.table}>
+            <Paper sx={styles.analysisResult}>
                 <VoltageInitResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, classes]);
+    }, [studyUuid, currentNode]);
 
     const renderSensitivityAnalysisResult = useMemo(() => {
         return (
-            <Paper className={classes.analysisResult}>
+            <Paper sx={styles.analysisResult}>
                 <SensitivityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id!}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, classes]);
+    }, [studyUuid, currentNode]);
 
     const renderShortCircuitAnalysisResult = useMemo(() => {
         return (
-            <Paper className={classes.analysisResult}>
+            <Paper sx={styles.analysisResult}>
                 <ShortCircuitAnalysisResultTab
                     resultTabIndexRedirection={resultTabIndexRedirection}
                 />
             </Paper>
         );
-    }, [classes, resultTabIndexRedirection]);
+    }, [resultTabIndexRedirection]);
 
     const renderDynamicSimulationResult = useMemo(() => {
         return (
-            <Paper className={classes.analysisResult}>
+            <Paper sx={styles.analysisResult}>
                 <DynamicSimulationResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, classes]);
+    }, [studyUuid, currentNode]);
 
     const services: IService[] = useMemo(() => {
         return [
@@ -263,7 +254,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 {service.displayed && (
                     <TabPanelLazy
                         key={service.id + 'tabPanel'}
-                        className={classes.tabPanel}
                         selected={tabIndex === index && !disabled}
                     >
                         {service.renderResult}
@@ -281,8 +271,8 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     }, [enableDeveloperMode]);
 
     return (
-        <Paper className={clsx('singlestretch-child', classes.table)}>
-            <div className={classes.div}>
+        <Paper sx={styles.table}>
+            <Box>
                 <Tabs
                     value={tabIndex}
                     variant="scrollable"
@@ -291,7 +281,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     {services.map((service) => renderTab(service))}
                 </Tabs>
                 {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
-            </div>
+            </Box>
             {services.map((service, index) =>
                 renderTabPanelLazy(service, index)
             )}
