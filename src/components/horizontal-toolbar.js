@@ -10,7 +10,6 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import PublicIcon from '@mui/icons-material/Public';
 import IconButton from '@mui/material/IconButton';
 import ListIcon from '@mui/icons-material/List';
-import makeStyles from '@mui/styles/makeStyles';
 import Tooltip from '@mui/material/Tooltip';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,23 +21,22 @@ import {
 } from '../redux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 
-const useStyles = makeStyles((theme) => ({
-    selected: {
+const styles = {
+    selected: (theme) => ({
         color: theme.palette.action.active,
-    },
-    notSelected: {
+    }),
+    notSelected: (theme) => ({
         color: theme.palette.action.disabled,
-    },
+    }),
     tooltip: {
         fontSize: 18,
         maxWidth: 'none',
         display: 'flex',
         flexDirection: 'row',
     },
-}));
+};
 
 export function HorizontalToolbar() {
-    const classes = useStyles();
     const intl = useIntl();
     const dispatch = useDispatch();
 
@@ -80,7 +78,13 @@ export function HorizontalToolbar() {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                classes={{ tooltip: classes.tooltip }}
+                componentsProps={{
+                    popper: {
+                        sx: {
+                            '& .MuiTooltip-tooltip': styles.tooltip,
+                        },
+                    },
+                }}
                 style={{
                     marginRight: '20px',
                     marginLeft: '20px',
@@ -89,10 +93,10 @@ export function HorizontalToolbar() {
                 <span>
                     <IconButton
                         size={'small'}
-                        className={
+                        sx={
                             isModificationsDrawerOpen
-                                ? classes.selected
-                                : classes.notSelected
+                                ? styles.selected
+                                : styles.notSelected
                         }
                         disabled={
                             studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
@@ -112,7 +116,13 @@ export function HorizontalToolbar() {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                classes={{ tooltip: classes.tooltip }}
+                componentsProps={{
+                    popper: {
+                        sx: {
+                            '& .MuiTooltip-tooltip': styles.tooltip,
+                        },
+                    },
+                }}
                 style={{
                     marginLeft: '20px',
                     marginRight: '8px',
@@ -120,10 +130,10 @@ export function HorizontalToolbar() {
             >
                 <IconButton
                     size={'small'}
-                    className={
+                    sx={
                         studyDisplayMode === STUDY_DISPLAY_MODE.TREE
-                            ? classes.selected
-                            : classes.notSelected
+                            ? styles.selected
+                            : styles.notSelected
                     }
                     onClick={setTreeDisplay}
                 >
@@ -137,17 +147,23 @@ export function HorizontalToolbar() {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                classes={{ tooltip: classes.tooltip }}
+                componentsProps={{
+                    popper: {
+                        sx: {
+                            '& .MuiTooltip-tooltip': styles.tooltip,
+                        },
+                    },
+                }}
                 style={{
                     marginRight: '8px',
                 }}
             >
                 <IconButton
                     size={'small'}
-                    className={
+                    sx={
                         studyDisplayMode === STUDY_DISPLAY_MODE.HYBRID
-                            ? classes.selected
-                            : classes.notSelected
+                            ? styles.selected
+                            : styles.notSelected
                     }
                     onClick={setHybridDisplay}
                 >
@@ -162,17 +178,23 @@ export function HorizontalToolbar() {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                classes={{ tooltip: classes.tooltip }}
+                componentsProps={{
+                    popper: {
+                        sx: {
+                            '& .MuiTooltip-tooltip': styles.tooltip,
+                        },
+                    },
+                }}
                 style={{
                     marginRight: '8px',
                 }}
             >
                 <IconButton
                     size={'small'}
-                    className={
+                    sx={
                         studyDisplayMode === STUDY_DISPLAY_MODE.MAP
-                            ? classes.selected
-                            : classes.notSelected
+                            ? styles.selected
+                            : styles.notSelected
                     }
                     onClick={setMapDisplay}
                 >

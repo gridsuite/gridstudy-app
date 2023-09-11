@@ -10,12 +10,11 @@ import IconButton from '@mui/material/IconButton';
 import PhotoIcon from '@mui/icons-material/Photo';
 import React from 'react';
 import { Handle } from 'react-flow-renderer';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
 
-const useStyles = makeStyles((theme) => ({
-    rootSelected: {
+const styles = {
+    rootSelected: (theme) => ({
         background: theme.node.background,
         borderRadius: '30%',
         boxShadow:
@@ -28,19 +27,17 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             background: theme.node.background,
         },
-    },
-    root: {
+    }),
+    root: (theme) => ({
         background: 'darkseagreen',
         borderRadius: '30%',
         '&:hover': {
             background: theme.node.hover,
         },
-    },
-}));
+    }),
+};
 
 const RootNode = (props) => {
-    const classes = useStyles();
-
     const currentNode = useSelector((state) => state.currentTreeNode);
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
@@ -63,9 +60,7 @@ const RootNode = (props) => {
             >
                 <IconButton
                     variant="outlined"
-                    className={
-                        isSelectedNode() ? classes.rootSelected : classes.root
-                    }
+                    sx={isSelectedNode() ? styles.rootSelected : styles.root}
                 >
                     {(props.data.globalBuildStatus === 'BUILDING' && (
                         <CircularProgress size={24} />
