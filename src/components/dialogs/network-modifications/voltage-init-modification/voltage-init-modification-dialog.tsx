@@ -13,7 +13,10 @@ import React, {
 } from 'react';
 import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
-import { DefaultCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
+import {
+    DefaultCellRenderer,
+    BooleanCellRenderer,
+} from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
@@ -256,7 +259,8 @@ const VoltageInitModificationDialog: FunctionComponent<
             {
                 headerName: intl.formatMessage({ id: 'Connect' }),
                 field: CONNECT,
-                cellRenderer: DefaultCellRenderer,
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
             },
         ];
     }, [intl]);
