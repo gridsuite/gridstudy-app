@@ -486,7 +486,6 @@
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre décisionnel",
     "RestoreModifications": "Restaurer les modifications",
-    "NoModificationToRestore": "Pas de modification à restaurer",
     "RestoreModificationText": "Veuillez sélectionner les modifications à restaurer",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",

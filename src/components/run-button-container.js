@@ -19,6 +19,7 @@ import {
     addDynamicSimulationNotif,
     addVoltageInitNotif,
     setComputingStatus,
+    setComputationRunning,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -57,12 +58,7 @@ import {
 } from './utils/optional-services';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 
-export function RunButtonContainer({
-    studyUuid,
-    currentNode,
-    setIsComputationRunning,
-    disabled,
-}) {
+export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const loadFlowStatus = useSelector(
         (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
@@ -492,12 +488,11 @@ export function RunButtonContainer({
     ]);
 
     useEffect(() => {
-        setIsComputationRunning(
-            runnables.some(function (runnable) {
-                return getRunningStatus(runnable) === RunningStatus.RUNNING;
-            })
-        );
-    }, [setIsComputationRunning, getRunningStatus, runnables]);
+        const computationRunning = runnables.some(function (runnable) {
+            return getRunningStatus(runnable) === RunningStatus.RUNNING;
+        });
+        dispatch(setComputationRunning(computationRunning));
+    }, [dispatch, getRunningStatus, runnables]);
 
     return (
         <>
@@ -516,6 +511,7 @@ export function RunButtonContainer({
                         open={showContingencyListSelector}
                         onClose={() => setShowContingencyListSelector(false)}
                         onStart={handleStartSecurityAnalysis}
+                        studyUuid={studyUuid}
                         currentNodeUuid={currentNode?.id}
                     />
                     {showDynamicSimulationParametersSelector && (

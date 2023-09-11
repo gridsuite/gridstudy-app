@@ -32,11 +32,7 @@ import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
 const richTypeEquals = (a, b) => a === b;
 
-const DeleteEquipmentForm = ({
-    studyUuid,
-    currentNode,
-    editDataEquipmentId,
-}) => {
+const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const editedIdRef = useRef(null);
@@ -106,21 +102,19 @@ const DeleteEquipmentForm = ({
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            if (editDataEquipmentId) {
+            if (editData?.equipmentId) {
                 if (editedIdRef.current === null) {
-                    // In case of edition, don't dynamically change the form on first render.
-                    // Keep user data as it is stored in database (cf editData)
-                    editedIdRef.current = editDataEquipmentId;
-                    return;
-                } else if (watchEquipmentId !== editedIdRef.current) {
-                    // we have changed eqptId, leave the "fisrt edit" mode
+                    // The first time we render an edition, we want to merge the
+                    // dynamic data with the edition data coming from the database
+                    editedIdRef.current = editData.equipmentId;
+                } else if (
+                    watchEquipmentId !== editedIdRef.current &&
+                    editedIdRef.current !== ''
+                ) {
+                    // we have changed eqptId, leave the "first edit" mode (then if we circle back
+                    // to editData?.equipmentId, we wont make the merge anymore).
                     editedIdRef.current = '';
                 }
-            }
-
-            if (watchEquipmentId && watchEquipmentId === editedIdRef.current) {
-                // we still are at first edit, dont change anything
-                return;
             }
 
             if (
@@ -131,7 +125,8 @@ const DeleteEquipmentForm = ({
                 hvdcLccSpecificUpdate(
                     studyUuid,
                     currentNode?.id,
-                    watchEquipmentId
+                    watchEquipmentId,
+                    watchEquipmentId === editedIdRef.current ? editData : null
                 );
             } else {
                 setValue(DELETION_SPECIFIC_DATA, null);
@@ -144,7 +139,7 @@ const DeleteEquipmentForm = ({
         snackError,
         setValue,
         hvdcLccSpecificUpdate,
-        editDataEquipmentId,
+        editData,
     ]);
 
     const handleChange = useCallback(() => {

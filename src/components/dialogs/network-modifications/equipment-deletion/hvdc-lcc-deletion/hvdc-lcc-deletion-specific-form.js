@@ -65,7 +65,7 @@ const HvdcLccDeletionSpecificForm = () => {
         );
     };
 
-    const mscOnsideOne = (
+    const mcsOnsideOne = (
         <ShuntCompensatorSelectionForm
             title="Side1"
             arrayFormName={`${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_1}`}
@@ -73,7 +73,7 @@ const HvdcLccDeletionSpecificForm = () => {
         />
     );
 
-    const mscOnsideTwo = (
+    const mcsOnsideTwo = (
         <ShuntCompensatorSelectionForm
             title="Side2"
             arrayFormName={`${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`}
@@ -91,8 +91,8 @@ const HvdcLccDeletionSpecificForm = () => {
         >
             <GridSection title="LCCConverterStationShuntCompensators" />
             <Grid container spacing={1}>
-                {gridItem(mscOnsideOne)}
-                {gridItem(mscOnsideTwo)}
+                {gridItem(mcsOnsideOne)}
+                {gridItem(mcsOnsideTwo)}
             </Grid>
         </Grid>
     );
