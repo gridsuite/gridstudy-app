@@ -28,16 +28,15 @@ import { mergeSx } from './functions';
 
 const styles = {
     expand: (theme) => ({
-        transform: 'rotate(180deg)',
         marginLeft: 'auto',
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,
         }),
     }),
     expandOpen: {
-        transform: 'rotate(0deg)',
+        transform: 'rotate(180deg)',
     },
-    listOptions: {
+    listOptions: (theme) => ({
         minWidth: '275px',
         left: '-21px',
         top: '1px',
@@ -45,15 +44,15 @@ const styles = {
         boxShadow: 'none',
         borderRadius: '0',
         border: '1px solid #7f7f7e',
-        background: '#242424',
-        color: '#fdfdfd',
+        background: theme.palette.background.default,
+        color: theme.palette.text.primary,
         '& ul': {
             padding: 0,
-            '& li:first-child': {
+            '& li:first-of-type': {
                 borderBottom: '1px solid #7f7f7e',
             },
         },
-    },
+    }),
     stop: {
         color: 'red',
     },
@@ -64,10 +63,10 @@ const styles = {
         backgroundColor: '#0ca789',
         color: '#fdfdfd',
         border: '1px solid #0ca789',
-        '&:nth-child(1)': {
+        '&:nth-of-type(1)': {
             minWidth: '270px',
         },
-        '&:nth-child(2)': {
+        '&:nth-of-type(2)': {
             borderLeft: '1px solid #92b1ab',
         },
         '&:disabled, &:hover': {
@@ -79,10 +78,10 @@ const styles = {
         backgroundColor: '#d85050',
         color: '#fdfdfd',
         border: '1px solid #d85050',
-        '&:nth-child(1)': {
+        '&:nth-of-type(1)': {
             minWidth: '270px',
         },
-        '&:nth-child(2)': {
+        '&:nth-of-type(2)': {
             borderLeft: '1px solid #c58585',
         },
         '&:disabled, &:hover': {
@@ -90,42 +89,45 @@ const styles = {
             color: '#fdfdfd',
         },
     },
-    running: {
-        backgroundColor: '#242424',
-        color: '#fdfdfd',
+    running: (theme) => ({
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
         border: '1px solid #808080',
-        '&:nth-child(1)': {
+        '&:nth-of-type(1)': {
             minWidth: '270px',
-            color: '#fdfdfd',
+            color: theme.palette.text.primary,
         },
-        '&:nth-child(2)': {
+        '&:nth-of-type(2)': {
             borderLeft: '1px solid #4a4a4a',
         },
         '&:hover': {
-            backgroundColor: '#242424',
-            color: '#fdfdfd',
-        },
-    },
-    idle: (theme) => ({
-        backgroundColor: '#242424',
-        color: '#fdfdfd',
-        border: '1px solid #808080',
-        '&:nth-child(1)': {
-            minWidth: '270px',
-            color: '#fdfdfd',
-        },
-        '&:nth-child(2)': {
-            borderLeft: '1px solid #4a4a4a',
-        },
-        '&:hover': {
-            backgroundColor: '#242424',
-            border: '1px solid ' + theme.palette.primary,
-            color: '#fdfdfd',
-        },
-        '&:disabled': {
-            color: '#717171',
+            backgroundColor: theme.palette.background.default,
+            color: theme.palette.text.primary,
         },
     }),
+    idle: (theme) => ({
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+        border: '1px solid #808080',
+        '&:nth-of-type(1)': {
+            minWidth: '270px',
+            color: theme.palette.text.primary,
+        },
+        '&:nth-of-type(2)': {
+            borderLeft: '1px solid #4a4a4a',
+        },
+        '&:hover': {
+            backgroundColor: theme.palette.background.default,
+            border: '1px solid ' + theme.palette.primary,
+            color: theme.palette.text.primary,
+        },
+        '&:disabled': {
+            color: theme.palette.text.disabled,
+        },
+    }),
+    runMenu: {
+        zIndex: 99,
+    },
 };
 
 const SplitButton = ({
@@ -234,6 +236,7 @@ const SplitButton = ({
                 anchorEl={anchorRef.current}
                 role={undefined}
                 transition
+                sx={styles.runMenu}
             >
                 {({ TransitionProps, placement }) => (
                     <Grow

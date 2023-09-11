@@ -109,8 +109,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const [isComputationRunning, setIsComputationRunning] = useState(false);
-
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -233,9 +231,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    setIsComputationRunning={
-                                        setIsComputationRunning
-                                    }
                                     setErrorMessage={setErrorMessage}
                                     loadFlowStatus={loadFlowStatus}
                                 />
@@ -243,7 +238,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
 
                             <DiagramPane
                                 studyUuid={studyUuid}
-                                isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
                                 showOneBusShortcircuitResults={
                                     showOneBusShortcircuitResults
@@ -290,17 +284,15 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
             >
                 {renderMapView()}
             </div>
+            {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy
                 key={`spreadsheet-${currentNode?.id}`}
-                className="singlestretch-child"
                 selected={props.view === StudyView.SPREADSHEET}
             >
                 {renderTableView()}
             </TabPanelLazy>
-            {/* using a key in this tappanellazy because we can change the nodeuuid in this component */}
             <TabPanelLazy
                 key={`results-${currentNode?.id}`}
-                className="singlestretch-child"
                 selected={props.view === StudyView.RESULTS}
             >
                 <ResultViewTab
