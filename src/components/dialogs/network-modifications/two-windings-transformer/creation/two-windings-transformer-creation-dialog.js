@@ -231,12 +231,9 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId1,
-                            connectionDirection:
-                                twt.connectablePosition1.connectionDirection,
-                            connectionName:
-                                twt.connectablePosition1.connectionName,
-                            connectionPosition:
-                                twt.connectablePosition1.connectionPosition,
+                            connectionDirection: twt.connectionDirection1,
+                            connectionName: twt.connectionName1,
+                            connectionPosition: twt.connectionPosition1,
                             voltageLevelId: twt.voltageLevelId1,
                         },
                         CONNECTIVITY_1
@@ -244,12 +241,9 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: twt.busOrBusbarSectionId2,
-                            connectionDirection:
-                                twt.connectablePosition2.connectionDirection,
-                            connectionName:
-                                twt.connectablePosition2.connectionName,
-                            connectionPosition:
-                                twt.connectablePosition2.connectionPosition,
+                            connectionDirection: twt.connectionDirection2,
+                            connectionName: twt.connectionName2,
+                            connectionPosition: twt.connectionPosition2,
                             voltageLevelId: twt.voltageLevelId2,
                         },
                         CONNECTIVITY_2
