@@ -139,7 +139,7 @@ function EditableTableCell({
                 <SelectInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     options={column.equipmentTypes}
-                    size={'small'}
+                    size="small"
                 />
             )}
         </TableCell>

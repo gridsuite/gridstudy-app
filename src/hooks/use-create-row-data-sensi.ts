@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 
 export const useCreateRowDataSensi = (sensiParam: ISensiParameters) => {
     const useFieldArrayOutput = useFieldArray({
-        name: `${sensiParam.name}`,
+        name: sensiParam.name || '',
     });
     const newRowData = useMemo(() => {
         const newRowData: { [key: string]: any } = { [SELECTED]: false };

@@ -42,14 +42,24 @@ const SensitivityAnalysisFields: FunctionComponent = () => {
     const renderInput = (input: IFlowInputParameters) => {
         return (
             <React.Fragment key={input.formattedMessageId}>
-                <Grid item xs={8} className={classes.parameterName}>
+                <Grid
+                    item
+                    xs={8}
+                    alignItems="center"
+                    className={classes.parameterName}
+                >
                     <FormattedMessage id={input.formattedMessageId} />
                 </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
+                <Grid
+                    item
+                    xs={4}
+                    className={classes.controlItem}
+                    alignItems="center"
+                >
                     <FloatInput
                         name={input.name}
                         label={''}
-                        formProps={{ margin: 'normal' }}
+                        formProps={{ margin: '1' }}
                     />
                 </Grid>
             </React.Fragment>
@@ -57,7 +67,7 @@ const SensitivityAnalysisFields: FunctionComponent = () => {
     };
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={1}>
             {flowInputParameters.map((input) => renderInput(input))}
         </Grid>
     );

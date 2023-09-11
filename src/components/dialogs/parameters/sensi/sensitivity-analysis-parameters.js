@@ -404,6 +404,7 @@ export const SensitivityAnalysisParameters = ({
                         values={providers}
                         callback={updateProviderCallback}
                     />
+                    <LineSeparator />
                 </Grid>
                 <SensitivityAnalysisFields
                     reset={reset}
