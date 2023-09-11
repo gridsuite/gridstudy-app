@@ -48,7 +48,7 @@ const styles = {
         color: theme.palette.text.primary,
         '& ul': {
             padding: 0,
-            '& li:first-child': {
+            '& li:first-of-type': {
                 borderBottom: '1px solid #7f7f7e',
             },
         },
