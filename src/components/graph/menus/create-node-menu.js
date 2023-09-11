@@ -69,6 +69,8 @@ const CreateNodeMenu = ({
     handleCutSubtree,
     handleCopySubtree,
     handlePasteSubtree,
+    handleCreateNewFilter,
+    handleEditFilter,
 }) => {
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -80,6 +82,8 @@ const CreateNodeMenu = ({
     );
 
     const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
+
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     function buildNode() {
         handleBuildNode(activeNode);
@@ -174,6 +178,17 @@ const CreateNodeMenu = ({
             selectionForCopy?.copyType === CopyType.SUBTREE_CUT
         );
     }
+
+    function createNewFilter() {
+        handleCreateNewFilter();
+        handleClose();
+    }
+
+    function editFilter() {
+        handleEditFilter();
+        handleClose();
+    }
+
     function isNodeHasChildren(node, treeModel) {
         return treeModel.treeNodes.some(
             (item) => item.data.parentNodeUuid === node.id
@@ -301,6 +316,18 @@ const CreateNodeMenu = ({
             action: () => removeSubtree(),
             id: 'removeNetworkModificationSubtree',
             disabled: isAnyNodeBuilding || !isSubtreeRemovingAllowed(),
+        },
+        CREATE_NEW_FILTER: {
+            onRoot: false,
+            action: () => createNewFilter(),
+            id: 'createNewFilter',
+            disabled: activeNode?.id !== currentNode?.id,
+        },
+        EDIT_FILTER: {
+            onRoot: false,
+            action: () => editFilter(),
+            id: 'editFilter',
+            disabled: activeNode?.id !== currentNode?.id,
         },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,

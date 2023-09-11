@@ -76,6 +76,9 @@ const lightTheme = createTheme({
     },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
     aggrid: 'ag-theme-alpine',
+    agGridBackground: {
+        color: 'white',
+    },
 });
 
 const darkTheme = createTheme({
@@ -101,6 +104,9 @@ const darkTheme = createTheme({
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
     aggrid: 'ag-theme-alpine-dark',
+    agGridBackground: {
+        color: '#383838',
+    },
 });
 
 const getMuiTheme = (theme) => {

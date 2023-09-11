@@ -39,6 +39,8 @@ import {
     fetchNetworkModificationTreeNode,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName } from '../services/study';
+import CreateFilterDialog from './dialogs/filter/creation/filter-creation-dialog';
+import EditFilterDialog from './dialogs/filter/modification/filter-edition-dialog';
 
 const styles = {
     container: {
@@ -471,6 +473,8 @@ export const NetworkModificationTreePane = ({
     );
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
+    const [openCreateFilterDialog, setOpenCreateFilterDialog] = useState(false);
+    const [openEditFilterDialog, setOpenEditFilterDialog] = useState(false);
 
     const handleClickExportStudy = (url) => {
         window.open(url, DownloadIframe);
@@ -570,6 +574,13 @@ export const NetworkModificationTreePane = ({
         [studyUuid, dispatch, snackError]
     );
 
+    const handleCreateNewFilter = () => {
+        setOpenCreateFilterDialog(true);
+    };
+    const handleEditFilter = () => {
+        setOpenEditFilterDialog(true);
+    };
+
     return (
         <>
             <Box sx={styles.container}>
@@ -609,6 +620,8 @@ export const NetworkModificationTreePane = ({
                     handleCutSubtree={handleCutSubtree}
                     handleCopySubtree={handleCopySubtree}
                     handlePasteSubtree={handlePasteSubtree}
+                    handleCreateNewFilter={handleCreateNewFilter}
+                    handleEditFilter={handleEditFilter}
                 />
             )}
             {openExportDialog && (
@@ -621,6 +634,18 @@ export const NetworkModificationTreePane = ({
                     title={intlRef.current.formatMessage({
                         id: 'exportNetwork',
                     })}
+                />
+            )}
+            {openCreateFilterDialog && (
+                <CreateFilterDialog
+                    open={openCreateFilterDialog}
+                    onClose={() => setOpenCreateFilterDialog(false)}
+                />
+            )}
+            {openEditFilterDialog && (
+                <EditFilterDialog
+                    open={openEditFilterDialog}
+                    onClose={() => setOpenEditFilterDialog(false)}
                 />
             )}
             <iframe

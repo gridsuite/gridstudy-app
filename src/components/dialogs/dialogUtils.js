@@ -288,3 +288,14 @@ export const LabelledSlider = ({
         </>
     );
 };
+
+export const toFloatOrNullValue = (value) => {
+    if (value === '-') {
+        return value;
+    }
+    if (value === '0') {
+        return 0;
+    }
+    const tmp = value?.replace(',', '.') || '';
+    return parseFloat(tmp) || null;
+};

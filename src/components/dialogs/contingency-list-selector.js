@@ -253,6 +253,8 @@ const ContingencyListSelector = (props) => {
                 onClose={addFavorites}
                 types={CONTINGENCY_TYPES}
                 title={intl.formatMessage({ id: 'ContingencyListsSelection' })}
+                onlyLeaves={true}
+                multiselect={true}
             />
         </>
     );

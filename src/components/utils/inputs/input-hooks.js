@@ -470,7 +470,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
                         if (response.status === 200) {
                             setError(
                                 intl.formatMessage({
-                                    id: 'nodeNameAlreadyUsed',
+                                    id: 'nameAlreadyUsed',
                                 })
                             );
                             setIsValidName(false);
@@ -655,6 +655,8 @@ export const useDirectoryElements = ({
                     equipmentTypes={equipmentTypes}
                     title={intl.formatMessage({ id: titleId })}
                     itemFilter={itemFilter}
+                    onlyLeaves={true}
+                    multiselect={true}
                 />
             </>
         );

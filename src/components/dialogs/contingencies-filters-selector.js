@@ -164,6 +164,8 @@ const ContingenciesFiltersSelector = ({
                 types={elementTypes}
                 equipmentTypes={equipmentTypes}
                 title={intl.formatMessage({ id: selectorTitleId })}
+                onlyLeaves={true}
+                multiselect={true}
             />
         </>
     );

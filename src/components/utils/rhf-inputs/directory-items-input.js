@@ -148,6 +148,8 @@ const DirectoryItemsInput = ({
                 equipmentTypes={equipmentTypes}
                 title={intl.formatMessage({ id: titleId })}
                 itemFilter={itemFilter}
+                onlyLeaves={true}
+                multiselect={true}
             />
         </>
     );

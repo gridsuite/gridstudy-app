@@ -16,7 +16,7 @@ import DndTable, {
     MAX_ROWS_NUMBER,
 } from 'components/utils/dnd-table/dnd-table';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
-import { ImportRuleDialog } from './import-rule-dialog';
+import { CsvDialog } from '../../../../utils/csv-dialog';
 import {
     HIGH_TAP_POSITION,
     LOW_TAP_POSITION,
@@ -31,6 +31,7 @@ import {
     computeHighTapPosition,
 } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { PHASE_TAP } from '../creation/two-windings-transformer-creation-dialog';
 
 const TapChangerSteps = ({
     tapChanger,
@@ -347,12 +348,22 @@ const TapChangerSteps = ({
                 handleCreateTapRule={handleCreateTapRule}
                 allowNegativeValues={createRuleAllowNegativeValues}
             />
-            <ImportRuleDialog
+            <CsvDialog
                 ruleType={ruleType}
-                openImportRuleDialog={openImportRuleDialog}
-                setOpenImportRuleDialog={setOpenImportRuleDialog}
+                title={
+                    ruleType === PHASE_TAP
+                        ? 'ImportDephasingRule'
+                        : 'ImportRegulationRule'
+                }
+                openCsvDialog={openImportRuleDialog}
+                setOpenCsvDialog={setOpenImportRuleDialog}
                 csvColumns={csvColumns}
-                handleImportTapRule={handleImportTapRule}
+                handleImportCsv={handleImportTapRule}
+                fileName={
+                    ruleType === PHASE_TAP
+                        ? 'tap-dephasing-rule'
+                        : 'tap-regulating-rule'
+                }
             />
         </Grid>
     );
