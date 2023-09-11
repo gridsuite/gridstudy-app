@@ -48,7 +48,7 @@ const styles = {
         color: theme.palette.text.primary,
         '& ul': {
             padding: 0,
-            '& li:first-child': {
+            '& li:first-of-type': {
                 borderBottom: '1px solid #7f7f7e',
             },
         },
@@ -63,10 +63,10 @@ const styles = {
         backgroundColor: '#0ca789',
         color: '#fdfdfd',
         border: '1px solid #0ca789',
-        '&:nth-child(1)': {
+        '&:nth-of-type(1)': {
             minWidth: '270px',
         },
-        '&:nth-child(2)': {
+        '&:nth-of-type(2)': {
             borderLeft: '1px solid #92b1ab',
         },
         '&:disabled, &:hover': {
@@ -78,10 +78,10 @@ const styles = {
         backgroundColor: '#d85050',
         color: '#fdfdfd',
         border: '1px solid #d85050',
-        '&:nth-child(1)': {
+        '&:nth-of-type(1)': {
             minWidth: '270px',
         },
-        '&:nth-child(2)': {
+        '&:nth-of-type(2)': {
             borderLeft: '1px solid #c58585',
         },
         '&:disabled, &:hover': {
@@ -93,11 +93,11 @@ const styles = {
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         border: '1px solid #808080',
-        '&:nth-child(1)': {
+        '&:nth-of-type(1)': {
             minWidth: '270px',
             color: theme.palette.text.primary,
         },
-        '&:nth-child(2)': {
+        '&:nth-of-type(2)': {
             borderLeft: '1px solid #4a4a4a',
         },
         '&:hover': {
@@ -109,11 +109,11 @@ const styles = {
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
         border: '1px solid #808080',
-        '&:nth-child(1)': {
+        '&:nth-of-type(1)': {
             minWidth: '270px',
             color: theme.palette.text.primary,
         },
-        '&:nth-child(2)': {
+        '&:nth-of-type(2)': {
             borderLeft: '1px solid #4a4a4a',
         },
         '&:hover': {
