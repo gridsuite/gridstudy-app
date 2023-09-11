@@ -6,52 +6,35 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { LineCreationDialogTab } from './creation/line-creation-dialog';
-
-const styles = {
-    tabWithError: (theme) => ({
-        '&.Mui-selected': { color: theme.palette.error.main },
-        color: theme.palette.error.main,
-    }),
-    tabWithErrorIndicator: (theme) => ({
-        backgroundColor: theme.palette.error.main,
-    }),
-};
+import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 
 const LineDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
-    const getTabIndicatorStyle = useCallback(
-        (index) =>
-            tabIndexesWithError.includes(index)
-                ? styles.tabWithErrorIndicator
-                : undefined,
-        [tabIndexesWithError]
-    );
-
-    const getTabStyle = useCallback(
-        (index) =>
-            tabIndexesWithError.includes(index)
-                ? styles.tabWithError
-                : undefined,
-        [tabIndexesWithError]
-    );
-
     return (
         <Grid container>
             <Tabs
                 value={tabIndex}
                 variant="scrollable"
                 onChange={(event, newValue) => setTabIndex(newValue)}
-                TabIndicatorProps={{ sx: getTabIndicatorStyle(tabIndex) }}
+                TabIndicatorProps={{
+                    sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
+                }}
             >
                 <Tab
                     label={<FormattedMessage id="LineCharacteristicsTab" />}
-                    sx={getTabStyle(LineCreationDialogTab.CHARACTERISTICS_TAB)}
+                    sx={getTabStyle(
+                        tabIndexesWithError,
+                        LineCreationDialogTab.CHARACTERISTICS_TAB
+                    )}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
-                    sx={getTabStyle(LineCreationDialogTab.LIMITS_TAB)}
+                    sx={getTabStyle(
+                        tabIndexesWithError,
+                        LineCreationDialogTab.LIMITS_TAB
+                    )}
                 />
             </Tabs>
         </Grid>

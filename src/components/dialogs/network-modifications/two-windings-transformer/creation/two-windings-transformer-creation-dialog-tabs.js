@@ -6,7 +6,7 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerCreationDialogTab } from './two-windings-transformer-creation-dialog';
 import { useWatch } from 'react-hook-form';
@@ -15,16 +15,7 @@ import {
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
-
-const styles = {
-    tabWithError: (theme) => ({
-        '&.Mui-selected': { color: theme.palette.error.main },
-        color: theme.palette.error.main,
-    }),
-    tabWithErrorIndicator: (theme) => ({
-        backgroundColor: theme.palette.error.main,
-    }),
-};
+import { getTabIndicatorStyle, getTabStyle } from '../../../../utils/tab-utils';
 
 const TwoWindingsTransformerCreationDialogTabs = ({
     tabIndex,
@@ -40,35 +31,22 @@ const TwoWindingsTransformerCreationDialogTabs = ({
         name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
     });
 
-    const getTabIndicatorStyle = useCallback(
-        (index) =>
-            tabIndexesWithError.includes(index)
-                ? styles.tabWithErrorIndicator
-                : undefined,
-        [tabIndexesWithError]
-    );
-
-    const getTabStyle = useCallback(
-        (index) =>
-            tabIndexesWithError.includes(index)
-                ? styles.tabWithError
-                : undefined,
-        [tabIndexesWithError]
-    );
-
     return (
         <Grid container item>
             <Tabs
                 value={tabIndex}
                 variant="scrollable"
                 onChange={(event, newValue) => setTabIndex(newValue)}
-                TabIndicatorProps={{ sx: getTabIndicatorStyle(tabIndex) }}
+                TabIndicatorProps={{
+                    sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
+                }}
             >
                 <Tab
                     label={
                         <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
                     }
                     sx={getTabStyle(
+                        tabIndexesWithError,
                         TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
                     )}
                     onClick={() => setDialogWidth('xl')}
@@ -76,6 +54,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
                     sx={getTabStyle(
+                        tabIndexesWithError,
                         TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
                     )}
                     onClick={() => setDialogWidth('xl')}
@@ -86,6 +65,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                         <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
                     }
                     sx={getTabStyle(
+                        tabIndexesWithError,
                         TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB
                     )}
                     disabled={!ratioTapChangerEnabledWatch}
@@ -96,6 +76,7 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                         <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
                     }
                     sx={getTabStyle(
+                        tabIndexesWithError,
                         TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB
                     )}
                     disabled={!phaseTapChangerEnabledWatch}
