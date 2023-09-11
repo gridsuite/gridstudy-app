@@ -17,14 +17,6 @@ export const useStyles = makeStyles((theme) => ({
         margin: 0,
         marginTop: 4,
     },
-    h4: {
-        marginBottom: 0,
-    },
-    popper: {
-        style: {
-            width: 'fit-content',
-        },
-    },
     tooltip: {
         fontSize: 18,
         maxWidth: 'none',
