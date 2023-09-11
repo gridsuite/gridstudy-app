@@ -8,25 +8,22 @@
 import { Theme } from '@mui/material';
 
 const styles = {
-  tabWithError: (theme: Theme) => ({
-    '&.Mui-selected': { color: theme.palette.error.main },
-    color: theme.palette.error.main,
-  }),
-  tabWithErrorIndicator: (theme: Theme) => ({
-    backgroundColor: theme.palette.error.main,
-  }),
+    tabWithError: (theme: Theme) => ({
+        '&.Mui-selected': { color: theme.palette.error.main },
+        color: theme.palette.error.main,
+    }),
+    tabWithErrorIndicator: (theme: Theme) => ({
+        backgroundColor: theme.palette.error.main,
+    }),
 };
 
 export const getTabIndicatorStyle = (
-  (tabIndexesWithError: number[], index: number) =>
+    tabIndexesWithError: number[],
+    index: number
+) =>
     tabIndexesWithError.includes(index)
-      ? styles.tabWithErrorIndicator
-      : undefined
-);
+        ? styles.tabWithErrorIndicator
+        : undefined;
 
-export const getTabStyle = (
-  (tabIndexesWithError: number[], index: number) =>
-    tabIndexesWithError.includes(index)
-      ? styles.tabWithError
-      : undefined
-);
+export const getTabStyle = (tabIndexesWithError: number[], index: number) =>
+    tabIndexesWithError.includes(index) ? styles.tabWithError : undefined;
