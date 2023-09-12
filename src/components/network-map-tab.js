@@ -22,7 +22,7 @@ import {
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from './graph/util/model-functions';
-import { resetMapReloaded } from '../redux/actions';
+import { resetMapReloaded, setMapDataLoading } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from './study-container';
@@ -79,11 +79,12 @@ export const NetworkMapTab = ({
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const mapDataLoading = useSelector((state) => state.mapDataLoading);
+
     const dispatch = useDispatch();
 
     const intlRef = useIntlRef();
     const [isInitialized, setInitialized] = useState(false);
-    const [waitingLoadData, setWaitingLoadData] = useState(true);
 
     const { snackError } = useSnackMessage();
 
@@ -496,8 +497,7 @@ export const NetworkMapTab = ({
             console.info(
                 `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLineIds}'...`
             );
-            setWaitingLoadData(true);
-
+            dispatch(setMapDataLoading(true));
             const missingSubstationPositions = getMissingEquipmentsPositions(
                 notFoundSubstationIds,
                 fetchSubstationPositions
@@ -569,10 +569,13 @@ export const NetworkMapTab = ({
                         )
                     );
                 })
-                .finally(() => setWaitingLoadData(false));
+                .finally(() => {
+                    dispatch(setMapDataLoading(false));
+                });
         }
     }, [
         intlRef,
+        dispatch,
         lineFullPath,
         setErrorMessage,
         studyUuid,
@@ -586,7 +589,7 @@ export const NetworkMapTab = ({
 
     const loadAllGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
-        setWaitingLoadData(true);
+        dispatch(setMapDataLoading(true));
         const nodeBeforeFetch = currentNodeRef.current;
 
         const substationPositionsDone = fetchSubstationPositions(
@@ -645,8 +648,10 @@ export const NetworkMapTab = ({
                     )
                 );
             })
-            .finally(() => setWaitingLoadData(false));
-    }, [intlRef, lineFullPath, setErrorMessage, studyUuid]);
+            .finally(() => {
+                dispatch(setMapDataLoading(false));
+            });
+    }, [intlRef, lineFullPath, setErrorMessage, studyUuid, dispatch]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
@@ -683,7 +688,7 @@ export const NetworkMapTab = ({
                 return Promise.reject();
             }
             console.info('Update map equipments');
-            setWaitingLoadData(true);
+            dispatch(setMapDataLoading(true));
             const updatedSubstationsToSend =
                 !refIsMapManualRefreshEnabled.current &&
                 !isUpdatedSubstationsApplied &&
@@ -740,7 +745,7 @@ export const NetworkMapTab = ({
                 updatedLines,
                 updatedHvdcLines,
             ]).finally(() => {
-                setWaitingLoadData(false);
+                dispatch(setMapDataLoading(false));
             });
         },
         [
@@ -907,7 +912,7 @@ export const NetworkMapTab = ({
                 ...(updatedHvdcLines ?? []),
             ]}
             geoData={geoData}
-            displayOverlayLoader={!basicDataReady && waitingLoadData}
+            displayOverlayLoader={!basicDataReady && mapDataLoading}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={9}
             arrowsZoomThreshold={7}
@@ -954,7 +959,7 @@ export const NetworkMapTab = ({
     return (
         <>
             <Box sx={styles.divTemporaryGeoDataLoading}>
-                {basicDataReady && waitingLoadData && <LinearProgress />}
+                {basicDataReady && mapDataLoading && <LinearProgress />}
             </Box>
             {renderMap()}
             {renderEquipmentMenu()}

@@ -575,6 +575,8 @@ const NetworkModificationNodeEditor = () => {
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
+    const mapDataLoading = useSelector((state) => state.mapDataLoading);
+
     const openNetworkModificationConfiguration = useCallback(() => {
         setOpenNetworkModificationsMenu(true);
     }, []);
@@ -791,7 +793,9 @@ const NetworkModificationNodeEditor = () => {
             >
                 <Droppable
                     droppableId="network-modification-list"
-                    isDropDisabled={isLoading() || isAnyNodeBuilding}
+                    isDropDisabled={
+                        isLoading() || isAnyNodeBuilding || mapDataLoading
+                    }
                 >
                     {(provided) => (
                         <Box
@@ -924,7 +928,7 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
-                    disabled={isAnyNodeBuilding}
+                    disabled={isAnyNodeBuilding || mapDataLoading}
                 >
                     <AddIcon />
                 </IconButton>
@@ -935,6 +939,7 @@ const NetworkModificationNodeEditor = () => {
                     disabled={
                         selectedItems.size === 0 ||
                         isAnyNodeBuilding ||
+                        mapDataLoading ||
                         !currentNode
                     }
                 >
@@ -944,7 +949,11 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCopyModifications}
                     size={'small'}
                     sx={styles.toolbarIcon}
-                    disabled={selectedItems.size === 0 || isAnyNodeBuilding}
+                    disabled={
+                        selectedItems.size === 0 ||
+                        isAnyNodeBuilding ||
+                        mapDataLoading
+                    }
                 >
                     <ContentCopyIcon />
                 </IconButton>
@@ -968,6 +977,7 @@ const NetworkModificationNodeEditor = () => {
                             disabled={
                                 !(copiedModifications.length > 0) ||
                                 isAnyNodeBuilding ||
+                                mapDataLoading ||
                                 !currentNode
                             }
                         >
@@ -982,6 +992,7 @@ const NetworkModificationNodeEditor = () => {
                     disabled={
                         !(selectedItems?.size > 0) ||
                         isAnyNodeBuilding ||
+                        mapDataLoading ||
                         !currentNode
                     }
                 >
