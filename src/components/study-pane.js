@@ -284,17 +284,15 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
             >
                 {renderMapView()}
             </div>
+            {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy
                 key={`spreadsheet-${currentNode?.id}`}
-                className="singlestretch-child"
                 selected={props.view === StudyView.SPREADSHEET}
             >
                 {renderTableView()}
             </TabPanelLazy>
-            {/* using a key in this tappanellazy because we can change the nodeuuid in this component */}
             <TabPanelLazy
                 key={`results-${currentNode?.id}`}
-                className="singlestretch-child"
                 selected={props.view === StudyView.RESULTS}
             >
                 <ResultViewTab

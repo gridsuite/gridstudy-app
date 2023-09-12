@@ -76,13 +76,16 @@ export default class NetworkModificationTreeModel {
             }
         }
         // Add edge between node and its parent
-        this.treeEdges.push({
-            id: 'e' + parentId + '-' + newNode.id,
-            source: parentId,
-            target: newNode.id,
-            type: 'smoothstep',
-        });
-
+        // We only add the edge if it's not already added
+        let id = 'e' + parentId + '-' + newNode.id;
+        if (this.treeEdges.filter((value) => value.id === id).length === 0) {
+            this.treeEdges.push({
+                id: 'e' + parentId + '-' + newNode.id,
+                source: parentId,
+                target: newNode.id,
+                type: 'smoothstep',
+            });
+        }
         if (
             insertMode === NodeInsertModes.Before ||
             insertMode === NodeInsertModes.After

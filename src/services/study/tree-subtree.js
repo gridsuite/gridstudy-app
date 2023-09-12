@@ -118,26 +118,29 @@ export function createTreeNode(studyUuid, parentId, insertMode, node) {
     });
 }
 
-export function deleteTreeNode(studyUuid, nodeId) {
-    console.info('Deleting tree node : ', nodeId);
+export function stashTreeNode(studyUuid, nodeId) {
+    console.info('Stash tree node : ', nodeId);
     const url =
-        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeId);
+        getStudyUrl(studyUuid) +
+        '/tree/nodes/' +
+        encodeURIComponent(nodeId) +
+        '/stash';
     console.debug(url);
     return backendFetch(url, {
-        method: 'delete',
+        method: 'post',
     });
 }
 
-export function deleteSubtree(studyUuid, parentNodeId) {
-    console.info('Deleting node subtree : ', parentNodeId);
+export function stashSubtree(studyUuid, parentNodeId) {
+    console.info('stash node subtree : ', parentNodeId);
     const url =
         getStudyUrl(studyUuid) +
         '/tree/nodes/' +
         encodeURIComponent(parentNodeId) +
-        '?deleteChildren=true';
+        '/stash?stashChildren=true';
     console.debug(url);
     return backendFetch(url, {
-        method: 'delete',
+        method: 'post',
     });
 }
 
@@ -177,4 +180,35 @@ export function fetchNetworkModificationSubtree(studyUuid, parentNodeUuid) {
         encodeURIComponent(parentNodeUuid);
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function fetchStashedNodes(studyUuid) {
+    console.info('Fetching stashed nodes for study : ', studyUuid);
+    const url = getStudyUrl(studyUuid) + '/tree/nodes/stash';
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function restoreStashedNodes(studyUuid, nodeToRestoreId, anchorNodeId) {
+    console.info(
+        'Restoring node %s under node %s of study : %s',
+        nodeToRestoreId,
+        nodeToRestoreId,
+        studyUuid
+    );
+    const url =
+        getStudyUrl(studyUuid) +
+        '/tree/nodes/' +
+        encodeURIComponent(nodeToRestoreId) +
+        '/restore?anchorNodeId=' +
+        encodeURIComponent(anchorNodeId);
+
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
 }
