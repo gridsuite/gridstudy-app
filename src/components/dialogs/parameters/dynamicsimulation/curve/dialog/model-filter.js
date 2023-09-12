@@ -6,7 +6,6 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@mui/styles';
 import React, {
     forwardRef,
     useCallback,
@@ -17,7 +16,6 @@ import React, {
     useState,
 } from 'react';
 import { Grid, Typography, useTheme } from '@mui/material';
-import clsx from 'clsx';
 import CheckboxSelect from '../common/checkbox-select';
 import { CURVE_EQUIPMENTS } from './equipment-filter';
 import CheckboxTreeview from '../common/checkbox-treeview';
@@ -25,6 +23,7 @@ import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
+import { Box } from '@mui/system';
 
 const modelsToVariablesTree = (models) => {
     return models.reduce(
@@ -92,22 +91,21 @@ const variablesTreeToVariablesArray = (variablesTree, parentId) => {
     return result;
 };
 
-const useStyles = makeStyles((theme) => ({
-    grid: {
+const styles = {
+    grid: (theme) => ({
         width: '100%',
         height: '100%',
         border: 'solid',
         borderWidth: '.5px',
         borderColor: lighten(theme.palette.background.paper, 0.5),
         overflow: 'auto',
-    },
-}));
+    }),
+};
 
 const ModelFilter = forwardRef(({ equipment = CURVE_EQUIPMENTS.LOAD }, ref) => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const classes = useStyles();
     const theme = useTheme();
 
     const [allModels, setAllModels] = useState([]);
@@ -234,7 +232,7 @@ const ModelFilter = forwardRef(({ equipment = CURVE_EQUIPMENTS.LOAD }, ref) => {
                     </Typography>
                 </Grid>
                 <Grid xs>
-                    <div className={clsx([theme.aggrid, classes.grid])}>
+                    <Box sx={styles.grid} className={theme.aggrid}>
                         <CheckboxTreeview
                             ref={variablesRef}
                             data={filteredVariables}
@@ -244,7 +242,7 @@ const ModelFilter = forwardRef(({ equipment = CURVE_EQUIPMENTS.LOAD }, ref) => {
                                 maxWidth: '50px',
                             }}
                         />
-                    </div>
+                    </Box>
                 </Grid>
             </Grid>
         </>

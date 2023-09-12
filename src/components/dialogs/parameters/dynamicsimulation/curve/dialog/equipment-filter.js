@@ -16,15 +16,14 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import clsx from 'clsx';
 import { AgGridReact } from 'ag-grid-react';
-import { makeStyles } from '@mui/styles';
 import CountrySelect from '../country-select';
 import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
+import { Box } from '@mui/system';
 
 export const CURVE_EQUIPMENTS = {
     [EQUIPMENT_TYPES.GENERATOR]: {
@@ -39,12 +38,12 @@ export const CURVE_EQUIPMENTS = {
 
 const TENSION_UNIT = 'kV';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     grid: {
         width: '100%',
         height: '100%',
     },
-}));
+};
 
 const EquipmentFilter = forwardRef(
     ({ equipment: initialEquipment, onChangeEquipment }, ref) => {
@@ -59,7 +58,6 @@ const EquipmentFilter = forwardRef(
         const currentNode = useSelector((state) => state.currentTreeNode);
 
         const intl = useIntl();
-        const classes = useStyles();
         const theme = useTheme();
         const equipmentsRef = useRef();
 
@@ -454,7 +452,7 @@ const EquipmentFilter = forwardRef(
                         </Typography>
                     </Grid>
                     <Grid xs>
-                        <div className={clsx([theme.aggrid, classes.grid])}>
+                        <Box sx={styles.grid} className={theme.aggrid}>
                             <AgGridReact
                                 ref={equipmentsRef}
                                 rowData={equipmentRowData}
@@ -466,7 +464,7 @@ const EquipmentFilter = forwardRef(
                                     handleEquipmentSelectionChanged
                                 }
                             ></AgGridReact>
-                        </div>
+                        </Box>
                     </Grid>
                 </Grid>
             </>

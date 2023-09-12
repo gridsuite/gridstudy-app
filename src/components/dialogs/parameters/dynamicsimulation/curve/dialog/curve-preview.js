@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import clsx from 'clsx';
 import { AgGridReact } from 'ag-grid-react';
 import React, {
     forwardRef,
@@ -15,20 +14,22 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { makeStyles } from '@mui/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Grid, Typography, useTheme } from '@mui/material';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     grid: {
         width: 'auto',
         height: '100%',
     },
-}));
+    h6: (theme) => ({
+        marginBottom: theme.spacing(2),
+    }),
+};
 
 const CurvePreview = forwardRef((props, ref) => {
     const intl = useIntl();
-    const classes = useStyles();
     const theme = useTheme();
     const gridRef = useRef();
 
@@ -120,10 +121,7 @@ const CurvePreview = forwardRef((props, ref) => {
     return (
         <>
             <Grid item>
-                <Typography
-                    sx={{ marginBottom: theme.spacing(2) }}
-                    variant="h6"
-                >
+                <Typography sx={styles.h6} variant="h6">
                     <FormattedMessage
                         id={'DynamicSimulationCurveToAdd'}
                     ></FormattedMessage>
@@ -131,7 +129,7 @@ const CurvePreview = forwardRef((props, ref) => {
                 </Typography>
             </Grid>
             <Grid xs>
-                <div className={clsx([theme.aggrid, classes.grid])}>
+                <Box sx={styles.grid} className={theme.aggrid}>
                     <AgGridReact
                         ref={gridRef}
                         rowData={rowData}
@@ -140,7 +138,7 @@ const CurvePreview = forwardRef((props, ref) => {
                         rowSelection={'multiple'}
                         onSelectionChanged={onSelectionChanged}
                     ></AgGridReact>
-                </div>
+                </Box>
             </Grid>
         </>
     );
