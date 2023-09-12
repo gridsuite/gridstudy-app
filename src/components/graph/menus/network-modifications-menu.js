@@ -5,12 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import { NestedMenuItem } from 'mui-nested-menu';
 import ChildMenuItem from './create-child-menu-item';
+import { Box } from '@mui/system';
+
+const styles = {
+    forceHover: (theme) => ({
+        backgroundColor: theme.palette.action.hover,
+        color: theme.palette.primary.main,
+        transition: 'all 300ms ease',
+    }),
+    menuLine: (theme) => ({
+        transition: 'all 300ms ease',
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+            transition: 'all 300ms ease',
+        },
+    }),
+};
 
 /**
  * Menu to select network modification to create
@@ -27,28 +43,42 @@ const NetworkModificationsMenu = ({
     menuDefinition,
     anchorEl,
 }) => {
+    const [openParentId, setOpenParentId] = useState();
+
     const intl = useIntl();
-    const renderMenuItems = (menuItems) => {
+    const renderMenuItems = (menuItems, parent = undefined) => {
         return menuItems.map((menuItem) => {
             if (menuItem?.hide) {
                 return undefined;
             }
             return menuItem.subItems === undefined ? (
-                <ChildMenuItem
-                    key={menuItem.id}
-                    item={{
-                        id: menuItem.label,
-                        action: () => onItemClick(menuItem.id),
-                        disabled: false,
-                    }}
-                />
+                <Box
+                    onMouseEnter={() => setOpenParentId(parent)}
+                    onMouseLeave={() => setOpenParentId(undefined)}
+                >
+                    <ChildMenuItem
+                        key={menuItem.id}
+                        item={{
+                            id: menuItem.label,
+                            action: () => onItemClick(menuItem.id),
+                            disabled: false,
+                        }}
+                        sx={styles.menuLine}
+                    />
+                </Box>
             ) : (
                 <NestedMenuItem
                     key={menuItem.id}
                     parentMenuOpen={true}
                     label={intl.formatMessage({ id: menuItem.label })}
+                    className={menuItem.id}
+                    sx={
+                        openParentId === menuItem.id
+                            ? styles.forceHover
+                            : styles.menuLine
+                    }
                 >
-                    {renderMenuItems(menuItem.subItems)}
+                    {renderMenuItems(menuItem.subItems, menuItem.id)}
                 </NestedMenuItem>
             );
         });
