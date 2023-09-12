@@ -7,25 +7,24 @@
 
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
 import { Box } from '@mui/system';
 import { useTheme } from '@mui/material/styles';
+import { mergeSx } from '../../utils/functions';
 
-const useStyles = makeStyles((theme) => ({
-    filler: {
+const styles = {
+    filler: (theme) => ({
         backgroundColor: theme.formFiller.background,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-    },
-}));
+    }),
+};
 
 export const FormFiller = ({
     size = 12, // Default will take the whole row
     lineHeight, // Filler's height : by default 100%, or if specified, equal to X times a generic row in the form.
     children, // These elements will be centered in the filler
 }) => {
-    const classes = useStyles();
     const theme = useTheme();
 
     return (
@@ -43,12 +42,11 @@ export const FormFiller = ({
                 }}
             >
                 <Box
-                    className={classes.filler}
-                    sx={{
+                    sx={mergeSx(styles.filler, {
                         height: lineHeight
                             ? theme.spacing(7 * lineHeight)
                             : '100%',
-                    }}
+                    })}
                 >
                     {children}
                 </Box>
