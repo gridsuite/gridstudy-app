@@ -21,7 +21,7 @@ import {
 export const INSERT = 'INSERT';
 export const REMOVE = 'REMOVE';
 
-const getCreationRowSchema = () =>
+const getCreationRowSchema = (powerBetweenQmaxQmin = false) =>
     yup.object().shape({
         [Q_MAX_P]: yup.number().nullable().required(),
         [Q_MIN_P]: yup
@@ -32,7 +32,23 @@ const getCreationRowSchema = () =>
                 yup.ref(Q_MAX_P),
                 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
             ),
-        [P]: yup.number().nullable().required(),
+        [P]: yup
+            .number()
+            .nullable()
+            .required()
+            .when([], {
+                is: () => powerBetweenQmaxQmin,
+                then: (schema) =>
+                    schema
+                        .min(
+                            yup.ref(Q_MIN_P),
+                            'ReactiveCapabilityCurveCreationErrorPBetweenQminQmax'
+                        )
+                        .max(
+                            yup.ref(Q_MAX_P),
+                            'ReactiveCapabilityCurveCreationErrorPBetweenQminQmax'
+                        ),
+            }),
     });
 
 const getModificationRowSchema = () =>
@@ -100,7 +116,8 @@ function checkAllPValuesBetweenMinMax(values, isEquipmentModification) {
 
 export const getReactiveCapabilityCurveValidationSchema = (
     id = REACTIVE_CAPABILITY_CURVE_TABLE,
-    isEquipmentModification = false
+    isEquipmentModification = false,
+    powerBetweenQmaxQmin = false
 ) => ({
     [id]: yup
         .array()
@@ -111,7 +128,10 @@ export const getReactiveCapabilityCurveValidationSchema = (
                 schema
                     .when([], {
                         is: () => !isEquipmentModification,
-                        then: (schema) => schema.of(getCreationRowSchema()),
+                        then: (schema) =>
+                            schema.of(
+                                getCreationRowSchema(powerBetweenQmaxQmin)
+                            ),
                         otherwise: (schema) =>
                             schema.of(getModificationRowSchema()),
                     })

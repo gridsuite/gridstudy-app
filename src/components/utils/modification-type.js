@@ -57,6 +57,9 @@ export const MODIFICATION_TYPES = {
     TWO_WINDINGS_TRANSFORMER_MODIFICATION: {
         type: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
     },
+    VSC_CREATION: {
+        type: 'VSC_CREATION',
+    },
     EQUIPMENT_DELETION: {
         type: 'EQUIPMENT_DELETION',
     },

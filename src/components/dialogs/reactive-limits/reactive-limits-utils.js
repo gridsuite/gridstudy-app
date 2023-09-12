@@ -39,10 +39,11 @@ export const getReactiveLimitsFormData = ({
 export const getReactiveLimitsEmptyFormData = (id) =>
     getReactiveLimitsFormData({ id });
 
-export const getReactiveLimitsSchema = ({
+export const getReactiveLimitsSchema = (
     isEquipmentModification = false,
+    powerBetweenQmaxQmin = false,
     id = REACTIVE_LIMITS,
-}) => ({
+) => ({
     [id]: yup.object().shape(
         {
             [REACTIVE_CAPABILITY_CURVE_CHOICE]: yup
@@ -69,7 +70,8 @@ export const getReactiveLimitsSchema = ({
                 }),
             ...getReactiveCapabilityCurveValidationSchema(
                 REACTIVE_CAPABILITY_CURVE_TABLE,
-                isEquipmentModification
+                isEquipmentModification,
+                powerBetweenQmaxQmin
             ),
         },
         [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]

@@ -566,6 +566,7 @@
     "HVDC_CONVERTER_STATION": "Station de conversion HVDC",
     "LCC_CONVERTER_STATION": "Station de conversion LCC",
     "VSC_CONVERTER_STATION": "Station de conversion VSC",
+    "VSC": "Vsc",
     "SHUNT_COMPENSATOR": "Moyen de compensation",
     "STATIC_VAR_COMPENSATOR": "CSPR",
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
@@ -648,9 +649,11 @@
     "ReactiveCapabilityCurveCreationErrorPInvalid": "Chaque valeur de puissance active doit être un nombre unique et valide.",
     "ReactiveCapabilityCurveCreationErrorPOutOfRange": "Chaque valeur de puissance active doit être comprise entre les valeurs P min et P max.",
     "ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence": "Chaque valeur de puissance réactive minimale doit être inférieur ou égale à la puissance réactive maximale correspondante.",
+    "ReactiveCapabilityCurveCreationErrorPBetweenQminQmax": "Chaque valeur de puissance active doit être comprise entre les valeurs Qmin et Qmax.",
     "BatteryModificationError": "Erreur lors de la modification d'une batterie ",
     "ModifyLine": "Modifier une ligne",
     "CreateLine": "Créer une ligne",
+    "CreateVsc": "Création d'une VSC",
     "Characteristics": "Caractéristiques",
     "Side1": "Côté 1",
     "Side2": "Côté 2",
@@ -1089,5 +1092,21 @@
 
     "IpMin": "ICC min (kA)",
     "IpMax": "ICC max (kA)",
-    "StartupCost": "Coût de démarrage"
+    "StartupCost": "Coût de démarrage",
+
+    "converterStationId": "ID de la station",
+    "converterStationName": "Nom de la station",
+    "converterStation1" : "Station origine",
+    "converterStation2" : "Station extrémité",
+    "dcNominalVoltageLabel": "Tension nominale DC",
+    "dcResistanceLabel": "Résistance DC",
+    "operatorActivePowerLimitSide2Label": "Limite de fonctionnement (Ex->Or)",
+    "operatorActivePowerLimitSide1Label": "Limite de fonctionnement (Or->Ex)",
+    "converterModeLabel": "Mode de fonctionnement des stations",
+    "lossFactorLabel": "Coefficient de pertes",
+    "angleDroopActivePowerControlLabel": "Emulation AC",
+    "p0Label": "P0",
+    "droopLabel": "Gain",
+    "side1RectifierSide2Inverter": "Flux (Or->Ex)",
+    "side1InverterSide2Rectifier": "Flux (Ex->Or)"
 }

@@ -49,7 +49,7 @@ import {
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
  * @param onVoltageLevelChangeCallback callback to be called when the voltage level changes
- * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
+ * @returns JSX.Element
  */
 export const ConnectivityForm = ({
     id = CONNECTIVITY,
@@ -58,10 +58,10 @@ export const ConnectivityForm = ({
     withDirectionsInfos = true,
     withPosition = false,
     voltageLevelOptions = [],
-    newBusOrBusbarSectionOptions,
+    newBusOrBusbarSectionOptions = [],
     studyUuid,
     currentNode,
-    onVoltageLevelChangeCallback,
+    onVoltageLevelChangeCallback = undefined,
 }) => {
     const currentNodeUuid = currentNode?.id;
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
