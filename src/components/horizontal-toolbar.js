@@ -78,7 +78,7 @@ export function HorizontalToolbar() {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                componentsProps={{
+                slotProps={{
                     popper: {
                         sx: {
                             '& .MuiTooltip-tooltip': styles.tooltip,
@@ -116,7 +116,7 @@ export function HorizontalToolbar() {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                componentsProps={{
+                slotProps={{
                     popper: {
                         sx: {
                             '& .MuiTooltip-tooltip': styles.tooltip,
@@ -147,7 +147,7 @@ export function HorizontalToolbar() {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                componentsProps={{
+                slotProps={{
                     popper: {
                         sx: {
                             '& .MuiTooltip-tooltip': styles.tooltip,
@@ -178,7 +178,7 @@ export function HorizontalToolbar() {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                componentsProps={{
+                slotProps={{
                     popper: {
                         sx: {
                             '& .MuiTooltip-tooltip': styles.tooltip,
