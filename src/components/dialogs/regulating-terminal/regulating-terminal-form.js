@@ -8,7 +8,6 @@
 import { Popper } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import makeStyles from '@mui/styles/makeStyles';
 import {
     EQUIPMENT,
     ID,
@@ -24,26 +23,6 @@ import { fetchVoltageLevelEquipments } from '../../../services/study/network-map
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
 const filter = createFilterOptions();
-
-const useStyles = makeStyles((theme) => ({
-    helperText: {
-        margin: 0,
-        marginTop: 4,
-    },
-    popper: {
-        style: {
-            width: 'fit-content',
-        },
-    },
-    //Style class to override disabled input style
-    fieldError: {
-        '& .MuiOutlinedInput-root': {
-            '&.Mui-disabled fieldset': {
-                borderColor: 'red',
-            },
-        },
-    },
-}));
 
 export const REGULATING_VOLTAGE_LEVEL = 'regulating-voltage-level';
 export const REGULATING_EQUIPMENT = 'regulating-equipment';
@@ -61,14 +40,8 @@ export function makeRefreshRegulatingTerminalSectionsCallback() {
 // Specific Popper component to be used with Autocomplete
 // This allows the popper to fit its content, which is not the case by default
 const FittingPopper = (props) => {
-    const classes = useStyles();
-    return (
-        <Popper
-            {...props}
-            style={classes.popper.style}
-            placement="bottom-start"
-        />
-    );
+    const { style, ...otherProps } = props; // We filter out the "style" props to remove the width provided by the autocomplete input field.
+    return <Popper {...otherProps} placement="bottom-start" />;
 };
 
 const RegulatingTerminalForm = ({
