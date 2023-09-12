@@ -41,7 +41,7 @@ const SensitivityAnalysisFields: FunctionComponent = () => {
     ];
     const renderInput = (input: IFlowInputParameters) => {
         return (
-            <React.Fragment key={input.formattedMessageId}>
+            <>
                 <Grid
                     item
                     xs={8}
@@ -62,7 +62,7 @@ const SensitivityAnalysisFields: FunctionComponent = () => {
                         formProps={{ margin: '1' }}
                     />
                 </Grid>
-            </React.Fragment>
+            </>
         );
     };
 

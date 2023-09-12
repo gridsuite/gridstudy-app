@@ -93,25 +93,28 @@ const SensiParametersSelector = () => {
 
     return (
         <>
-            <Grid item maxWidth="md" width="100%">
+            <Grid maxWidth="md" width="100%">
                 <Tabs
                     value={tabValue}
                     variant="scrollable"
                     onChange={handleTabChange}
-                    //classes={getTabIndicatorClass(tabValue)}
                 >
                     {tabInfo.map((tab, index) => (
                         <Tab
                             key={tab.label}
                             label={<FormattedMessage id={tab.label} />}
                             value={index}
-                            //className={getTabClass(index)}
                         />
                     ))}
                 </Tabs>
 
                 {tabInfo.map((tab, index) => (
-                    <TabPanel key={tab.label} value={tabValue} index={index}>
+                    <TabPanel
+                        key={tab.label}
+                        value={tabValue}
+                        index={index}
+                        sx={{ padding: '0px' }}
+                    >
                         {tabValue === TAB_VALUES.SensitivityBranches &&
                         tab.subTabs ? (
                             <>
@@ -119,7 +122,7 @@ const SensiParametersSelector = () => {
                                     value={subTabValue}
                                     variant="scrollable"
                                     onChange={handleSubTabChange}
-                                    //classes={getTabIndicatorClass(subTabValue)}
+                                    sx={{ padding: '0px' }}
                                 >
                                     {tab.subTabs.map((subTab, subIndex) => (
                                         <Tab

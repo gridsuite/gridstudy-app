@@ -955,7 +955,6 @@
     "SensitivityType": "Type de sensibilité",
     "DeltaMW": "\u0394 MW",
     "DeltaA": "\u0394 A",
-    "AddSensitivityFactor": "Ajouter calcul de sensibilité",
     "ContingencyLists": "Aléas",
     "Injections": "Injections",
     "MonitoredVoltageLevels": "Postes surveillés",

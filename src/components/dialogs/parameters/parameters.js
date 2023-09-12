@@ -634,7 +634,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         setSecurityAnalysisParameters
     );
 
-    const sensibilityAnalysisBackend = useParametersBackend(
+    const sensitivityAnalysisBackend = useParametersBackend(
         user,
         'SensitivityAnalysis',
         sensitivityAnalysisAvailability,
@@ -834,7 +834,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                                     <SensitivityAnalysisParameters
                                         user={user}
                                         parametersBackend={
-                                            sensibilityAnalysisBackend
+                                            sensitivityAnalysisBackend
                                         }
                                         hideParameters={hideParameters}
                                         useSensitivityAnalysisParameters={

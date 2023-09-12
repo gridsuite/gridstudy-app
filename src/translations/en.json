@@ -952,7 +952,6 @@
     "SensitivityType": "Sensitivity type",
     "DeltaMW": "\u0394 MW",
     "DeltaA": "\u0394 A",
-    "AddSensitivityFactor": "Add sensitivity factor",
     "ContingencyLists": "Contingencies",
     "Injections": "Injections",
     "MonitoredVoltageLevels": "Supervised voltage levels",

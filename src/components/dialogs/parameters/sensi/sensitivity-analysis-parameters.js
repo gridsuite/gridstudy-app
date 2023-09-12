@@ -7,7 +7,7 @@
 
 import { SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { Grid, Button, DialogActions } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useStyles, CloseButton, DropDown } from '../parameters';
@@ -387,16 +387,12 @@ export const SensitivityAnalysisParameters = ({
 
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid
-                container
-                spacing={1}
-                padding={1}
-                key="sensitivityAnalysisParameters"
-            >
+            <Grid item maxWidth="md" width="100%">
                 <Grid
                     container
                     spacing={1}
-                    sx={{ padding: 0, paddingBottom: 1 }}
+                    paddingTop={1}
+                    sx={{ paddingLeft: 0, paddingRight: 2 }}
                 >
                     <DropDown
                         value={provider}
@@ -404,22 +400,31 @@ export const SensitivityAnalysisParameters = ({
                         values={providers}
                         callback={updateProviderCallback}
                     />
-                    <LineSeparator />
                 </Grid>
-                <SensitivityAnalysisFields
-                    reset={reset}
-                    useSensitivityAnalysisParameters={
-                        useSensitivityAnalysisParameters
-                    }
-                />
-                <LineSeparator />
-                <SensiParametersSelector
-                    reset={reset}
-                    useSensitivityAnalysisParameters={
-                        useSensitivityAnalysisParameters
-                    }
-                />
-
+                <Grid
+                    container
+                    key="sensitivityAnalysisParameters"
+                    className={classes.scrollableGrid}
+                >
+                    <Grid container paddingBottom={1}>
+                        <LineSeparator />
+                    </Grid>
+                    <SensitivityAnalysisFields
+                        reset={reset}
+                        useSensitivityAnalysisParameters={
+                            useSensitivityAnalysisParameters
+                        }
+                    />
+                    <Grid container paddingTop={1}>
+                        <LineSeparator />
+                    </Grid>
+                    <SensiParametersSelector
+                        reset={reset}
+                        useSensitivityAnalysisParameters={
+                            useSensitivityAnalysisParameters
+                        }
+                    />
+                </Grid>
                 <DialogActions>
                     <Button onClick={clear}>
                         <FormattedMessage id="resetToDefault" />
