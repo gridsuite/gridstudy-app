@@ -24,19 +24,21 @@ import {
     REACTIVE_POWER,
     VOLTAGE,
     VOLTAGE_LEVEL,
-    VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_ON,
 } from '../../../../utils/field-constants';
 import {
+    getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import {
     getReactiveLimitsEmptyFormData,
+    getReactiveLimitsFormData,
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialogUtils';
+import { getRowEmptyFormData } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 
 export function getVscConverterStationSchema(id: string) {
     return {
@@ -44,18 +46,18 @@ export function getVscConverterStationSchema(id: string) {
             [CONVERTER_STATION_ID]: yup.string().nullable().required(),
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
             [LOSS_FACTOR]: yup.number().nullable().required(),
-            [VOLTAGE_REGULATION]: yup.boolean(),
+            [VOLTAGE_REGULATION_ON]: yup.boolean(),
             [REACTIVE_POWER]: yup
                 .number()
                 .nullable()
-                .when([VOLTAGE_REGULATION], {
+                .when([VOLTAGE_REGULATION_ON], {
                     is: false,
                     then: (schema) => schema.required(),
                 }),
             [VOLTAGE]: yup
                 .number()
                 .nullable()
-                .when([VOLTAGE_REGULATION], {
+                .when([VOLTAGE_REGULATION_ON], {
                     is: true,
                     then: (schema) => schema.required(),
                 }),
@@ -72,7 +74,7 @@ export function getVscConverterStationEmptyFormData(id: string) {
             [CONVERTER_STATION_NAME]: null,
             [LOSS_FACTOR]: null,
             [REACTIVE_POWER]: null,
-            [VOLTAGE_REGULATION]: false,
+            [VOLTAGE_REGULATION_ON]: false,
             [VOLTAGE]: null,
             ...getConnectivityWithPositionEmptyFormData(),
             ...getReactiveLimitsEmptyFormData(),
@@ -113,4 +115,76 @@ export function getConverterStationCreationData(converterStation: any) {
             ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
             : null,
     };
+}
+
+interface ReactiveCapabilityCurvePointEditData {
+    p?: number | null;
+    qmaxP?: number | null;
+    qminP?: number | null;
+}
+export interface ConverterStationInterfaceEditData {
+    converterStationId: string;
+    converterStationName: string | null;
+    lossFactor: number;
+    reactivePower?: number;
+    voltageRegulationOn: boolean;
+    voltage?: number | null;
+    voltageLevelId: string;
+    busbarSectionId: string;
+    busbarSectionName?: string;
+    connectionDirection: string | null;
+    connectionName?: string | null;
+    connectionPosition?: string | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointEditData[];
+    reactiveCapabilityCurve: boolean;
+    minimumReactivePower: number | null;
+    maximumReactivePower: number | null;
+}
+
+export function getConverterStationFromEditData(
+    id: string,
+    converterStation: ConverterStationInterfaceEditData
+) {
+    return {
+        [id]: {
+            [CONVERTER_STATION_ID]: converterStation.converterStationId,
+            [CONVERTER_STATION_NAME]:
+                converterStation?.converterStationName ?? '',
+            [LOSS_FACTOR]: converterStation.lossFactor,
+            [REACTIVE_POWER]: converterStation?.reactivePower,
+            [VOLTAGE_REGULATION_ON]: converterStation.voltageRegulationOn,
+            [VOLTAGE]: converterStation?.voltage,
+            ...getConnectivityFormData({
+                voltageLevelId: converterStation.voltageLevelId,
+                busbarSectionId: converterStation.busbarSectionId,
+                connectionDirection: converterStation?.connectionDirection,
+                connectionName: converterStation?.converterStationName,
+                connectionPosition: converterStation?.connectionPosition,
+                busbarSectionName: converterStation?.busbarSectionName,
+            }),
+            ...getConverterStationReactiveLimits(converterStation),
+        },
+    };
+}
+
+export function getConverterStationReactiveLimits(
+    converterStation: ConverterStationInterfaceEditData
+) {
+    return converterStation.reactiveCapabilityCurve
+        ? getReactiveLimitsFormData({
+              reactiveCapabilityCurveChoice: 'CURVE',
+              minimumReactivePower: null,
+              maximumReactivePower: null,
+              reactiveCapabilityCurveTable:
+                  converterStation.reactiveCapabilityCurvePoints,
+          })
+        : getReactiveLimitsFormData({
+              reactiveCapabilityCurveChoice: 'MINMAX',
+              minimumReactivePower: converterStation.minimumReactivePower,
+              maximumReactivePower: converterStation.maximumReactivePower,
+              reactiveCapabilityCurveTable: [
+                  getRowEmptyFormData(),
+                  getRowEmptyFormData(),
+              ],
+          });
 }

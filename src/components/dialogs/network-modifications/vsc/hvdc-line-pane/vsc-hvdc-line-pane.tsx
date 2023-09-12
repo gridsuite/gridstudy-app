@@ -13,7 +13,6 @@ import {
     DC_NOMINAL_VOLTAGE,
     DC_RESISTANCE,
     DROOP,
-    ID,
     MAXIMUM_ACTIVE_POWER,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
@@ -93,6 +92,41 @@ export function getVscHvdcLinePaneEmptyFormData(id: string) {
             [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: false,
             [P0]: null,
             [DROOP]: null,
+        },
+    };
+}
+export interface hvdcLineTabEditData {
+    dcNominalVoltage: number;
+    dcResistance: number;
+    maximumActivePower: number;
+    operatorActivePowerLimitSide1?: number | null;
+    operatorActivePowerLimitSide2?: number | null;
+    convertersMode: string;
+    activePower: number;
+    angleDroopActivePowerControl: boolean;
+    p0?: number | null;
+    droop?: number | null;
+}
+
+export function getVscHvdcLineTabFromEditData(
+    id: string,
+    hvdcLine: hvdcLineTabEditData
+) {
+    return {
+        [id]: {
+            [DC_NOMINAL_VOLTAGE]: hvdcLine.dcNominalVoltage,
+            [DC_RESISTANCE]: hvdcLine.dcResistance,
+            [MAXIMUM_ACTIVE_POWER]: hvdcLine.maximumActivePower,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]:
+                hvdcLine?.operatorActivePowerLimitSide1,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]:
+                hvdcLine?.operatorActivePowerLimitSide2,
+            [CONVERTERS_MODE]: hvdcLine.convertersMode,
+            [ACTIVE_POWER]: hvdcLine.activePower,
+            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]:
+                hvdcLine.angleDroopActivePowerControl,
+            [P0]: hvdcLine?.p0,
+            [DROOP]: hvdcLine?.droop,
         },
     };
 }

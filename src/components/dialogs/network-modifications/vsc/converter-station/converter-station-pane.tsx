@@ -15,7 +15,7 @@ import {
     REACTIVE_LIMITS,
     REACTIVE_POWER,
     VOLTAGE,
-    VOLTAGE_REGULATION,
+    VOLTAGE_REGULATION_ON,
 } from '../../../../utils/field-constants';
 import {
     gridItem,
@@ -88,7 +88,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     const lossFactorField = (
         <FloatInput
             name={`${id}.${LOSS_FACTOR}`}
-            label={"lossFactorLabel"}
+            label={'lossFactorLabel'}
             adornment={percentageTextField}
         />
     );
@@ -103,7 +103,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
 
     const voltageRegulation = (
         <SwitchInput
-            name={`${id}.${VOLTAGE_REGULATION}`}
+            name={`${id}.${VOLTAGE_REGULATION_ON}`}
             label={'VoltageRegulationText'}
         />
     );

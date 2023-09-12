@@ -25,8 +25,8 @@ import {
     Q_MIN_P,
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
-    REACTIVE_POWER_SET_POINT,
     REACTIVE_LIMITS,
+    REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialogUtils';
 import BatteryModificationForm from './battery-modification-form';
@@ -49,8 +49,8 @@ import {
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import {
-    getFrequencyRegulationSchema,
     getFrequencyRegulationEmptyFormData,
+    getFrequencyRegulationSchema,
 } from '../../../set-points/set-points-utils';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -84,9 +84,7 @@ const formSchema = yup
             }),
         [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        ...getReactiveLimitsSchema(
-            true
-        ),
+        ...getReactiveLimitsSchema(true),
         ...getFrequencyRegulationSchema(true),
     })
     .required();

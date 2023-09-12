@@ -21,28 +21,37 @@ import yup from 'components/utils/yup-config';
 export const getReactiveLimitsFormData = ({
     id = REACTIVE_LIMITS,
     reactiveCapabilityCurveChoice = 'CURVE',
-    minimumReactivePower = null,
-    maximumReactivePower = null,
-    reactiveCapabilityCurveTable = [
-        getRowEmptyFormData(),
-        getRowEmptyFormData(),
-    ],
+    minimumReactivePower,
+    maximumReactivePower,
+    reactiveCapabilityCurveTable,
 }) => ({
     [id]: {
         [REACTIVE_CAPABILITY_CURVE_CHOICE]: reactiveCapabilityCurveChoice,
-        [MINIMUM_REACTIVE_POWER]: minimumReactivePower,
-        [MAXIMUM_REACTIVE_POWER]: maximumReactivePower,
-        [REACTIVE_CAPABILITY_CURVE_TABLE]: reactiveCapabilityCurveTable,
+        [MINIMUM_REACTIVE_POWER]: minimumReactivePower ?? null,
+        [MAXIMUM_REACTIVE_POWER]: maximumReactivePower ?? null,
+        [REACTIVE_CAPABILITY_CURVE_TABLE]: reactiveCapabilityCurveTable ?? [
+            getRowEmptyFormData(),
+            getRowEmptyFormData(),
+        ],
     },
 });
 
-export const getReactiveLimitsEmptyFormData = (id) =>
-    getReactiveLimitsFormData({ id });
+export const getReactiveLimitsEmptyFormData = (id) => ({
+    [id]: {
+        [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
+        [MINIMUM_REACTIVE_POWER]: null,
+        [MAXIMUM_REACTIVE_POWER]: null,
+        [REACTIVE_CAPABILITY_CURVE_TABLE]: [
+            getRowEmptyFormData(),
+            getRowEmptyFormData(),
+        ],
+    },
+});
 
 export const getReactiveLimitsSchema = (
     isEquipmentModification = false,
     powerBetweenQmaxQmin = false,
-    id = REACTIVE_LIMITS,
+    id = REACTIVE_LIMITS
 ) => ({
     [id]: yup.object().shape(
         {

@@ -81,7 +81,11 @@ export const ConnectivityForm = ({
     useEffect(() => {
         if (newBusOrBusbarSectionOptions?.length > 0) {
             setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
-        } else if (watchVoltageLevelId) {
+        }
+    }, [newBusOrBusbarSectionOptions]);
+
+    useEffect(() => {
+        if (watchVoltageLevelId) {
             const voltageLevelTopologyKind = voltageLevelOptions.find(
                 (vl) => vl.id === watchVoltageLevelId
             )?.topologyKind;
@@ -116,7 +120,6 @@ export const ConnectivityForm = ({
         watchVoltageLevelId,
         studyUuid,
         currentNodeUuid,
-        newBusOrBusbarSectionOptions,
         voltageLevelOptions,
         setValue,
         id,

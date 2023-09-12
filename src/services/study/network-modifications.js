@@ -1533,6 +1533,7 @@ export function createVsc(
         console.info('Creating vsc creation');
     }
 
+    console.log('dcNominalVoltage : ', dcNominalVoltage);
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.VSC_CREATION.type,
         equipmentId: id,
@@ -1548,7 +1549,7 @@ export function createVsc(
         p0: p0,
         droop: droop,
         converterStation1: converterStation1,
-        converterStation2: converterStation2
+        converterStation2: converterStation2,
     });
 
     console.log('body : ', body);

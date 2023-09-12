@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -34,18 +34,17 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import {
     getVscHvdcLinePaneEmptyFormData,
     getVscHvdcLinePaneSchema,
+    getVscHvdcLineTabFromEditData,
 } from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import { FetchStatus } from '../../../../../services/utils';
 import {
     getConverterStationCreationData,
+    getConverterStationFromEditData,
     getVscConverterStationEmptyFormData,
     getVscConverterStationSchema,
 } from '../converter-station/converter-station-utils';
 import VscCreationForm from './vsc-creation-form';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { createVsc } from '../../../../../services/study/network-modifications';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
 
 const formSchema = yup
     .object()
@@ -88,18 +87,6 @@ const VscCreationDialog = ({
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
-    });
-
-    const fromSearchCopyToFormValues = (hvdcLine) => {
-        console.log('hvdcLine : ', hvdcLine);
-    };
-
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        currentNodeUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
-        elementType: EQUIPMENT_TYPES.GENERATOR,
     });
 
     const open = useOpenShortWaitFetching({
@@ -147,6 +134,26 @@ const VscCreationDialog = ({
     );
 
     const { reset } = formMethods;
+
+    useEffect(() => {
+        if (editData) {
+            console.log('editData : ', editData);
+            reset({
+                [EQUIPMENT_ID]: editData.equipmentId,
+                [EQUIPMENT_NAME]: editData?.equipmentName ?? '',
+                ...getVscHvdcLineTabFromEditData(HVDC_LINE_TAB, editData),
+                ...getConverterStationFromEditData(
+                    CONVERTER_STATION_1,
+                    editData.converterStation1
+                ),
+                ...getConverterStationFromEditData(
+                    CONVERTER_STATION_2,
+                    editData.converterStation2
+                ),
+            });
+        }
+    }, [editData, reset]);
+
     const clear = useCallback(() => {
         reset(emptyFormData);
     }, [reset]);
@@ -168,6 +175,8 @@ const VscCreationDialog = ({
 
     const onSubmit = useCallback(
         (hvdcLine) => {
+            const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
+            console.log('hvdcLine : ', hvdcLine);
             const converterStation1 = getConverterStationCreationData(
                 hvdcLine[CONVERTER_STATION_1]
             );
@@ -179,16 +188,16 @@ const VscCreationDialog = ({
                 currentNodeUuid,
                 hvdcLine[EQUIPMENT_ID],
                 sanitizeString(hvdcLine[EQUIPMENT_NAME]),
-                hvdcLine[DC_NOMINAL_VOLTAGE],
-                hvdcLine[DC_RESISTANCE],
-                hvdcLine[MAXIMUM_ACTIVE_POWER],
-                hvdcLine[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
-                hvdcLine[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
-                hvdcLine[CONVERTERS_MODE],
-                hvdcLine[ACTIVE_POWER],
-                hvdcLine[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
-                hvdcLine[P0],
-                hvdcLine[DROOP],
+                hvdcLineTab[DC_NOMINAL_VOLTAGE],
+                hvdcLineTab[DC_RESISTANCE],
+                hvdcLineTab[MAXIMUM_ACTIVE_POWER],
+                hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
+                hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
+                hvdcLineTab[CONVERTERS_MODE],
+                hvdcLineTab[ACTIVE_POWER],
+                hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
+                hvdcLineTab[P0],
+                hvdcLineTab[DROOP],
                 converterStation1,
                 converterStation2,
                 !!editData,
@@ -229,13 +238,6 @@ const VscCreationDialog = ({
                     tabIndex={tabIndex}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
-                />
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
         </FormProvider>
