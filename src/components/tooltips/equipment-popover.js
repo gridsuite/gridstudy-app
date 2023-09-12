@@ -123,9 +123,11 @@ const EquipmentPopover = ({
                                     {checkValue(
                                         Math.round(
                                             side === '1'
-                                                ? (equipmentInfo.i1 * 100) /
+                                                ? (Math.abs(equipmentInfo.i1) *
+                                                      100) /
                                                       currentLimits.permanentLimit
-                                                : (equipmentInfo.i2 * 100) /
+                                                : (Math.abs(equipmentInfo.i2) *
+                                                      100) /
                                                       currentLimits.permanentLimit
                                         )
                                     )}
@@ -177,14 +179,18 @@ const EquipmentPopover = ({
                                                 {side === '1'
                                                     ? checkValue(
                                                           Math.round(
-                                                              (equipmentInfo.i1 *
+                                                              (Math.abs(
+                                                                  equipmentInfo.i1
+                                                              ) *
                                                                   100) /
                                                                   temporaryLimit.value
                                                           )
                                                       )
                                                     : checkValue(
                                                           Math.round(
-                                                              (equipmentInfo.i2 *
+                                                              (Math.abs(
+                                                                  equipmentInfo.i2
+                                                              ) *
                                                                   100) /
                                                                   temporaryLimit.value
                                                           )
