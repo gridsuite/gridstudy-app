@@ -19,6 +19,7 @@ import { Theme } from '@mui/material';
 
 interface CustomAGGGridStyleProps {
     shouldHidePinnedHeaderRightBorder?: boolean;
+    showOverlay?: boolean;
 }
 
 interface CustomAGGridProps extends AgGridReactProps, CustomAGGGridStyleProps {}
@@ -47,7 +48,8 @@ const useStyles = makeStyles<Theme, CustomAGGGridStyleProps>((theme) => ({
                 props.shouldHidePinnedHeaderRightBorder ? 'none' : '',
         },
         '& .ag-overlay-wrapper': {
-            background: theme.overlay.background,
+            background: (props) =>
+                props.showOverlay ? theme.overlay.background : '',
         },
     },
 }));
@@ -59,11 +61,13 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             overlayNoRowsTemplate,
             loadingOverlayComponent,
             loadingOverlayComponentParams,
-            noRowsOverlayComponent,
-            noRowsOverlayComponentParams,
+            showOverlay = false,
         } = props;
         const theme = useTheme();
-        const classes = useStyles({ shouldHidePinnedHeaderRightBorder });
+        const classes = useStyles({
+            shouldHidePinnedHeaderRightBorder,
+            showOverlay,
+        });
         const intl = useIntl();
 
         const GRID_PREFIX = 'grid.';
@@ -78,7 +82,6 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             },
             [intl]
         );
-
         return (
             <div className={clsx([theme.aggrid, classes.grid])}>
                 <AgGridReact
@@ -89,8 +92,6 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     loadingOverlayComponentParams={
                         loadingOverlayComponentParams
                     }
-                    noRowsOverlayComponent={noRowsOverlayComponent}
-                    noRowsOverlayComponentParams={noRowsOverlayComponentParams}
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
                     {...props}
                 />

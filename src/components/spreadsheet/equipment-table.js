@@ -144,6 +144,7 @@ export const EquipmentTable = ({
             overlayNoRowsTemplate={message}
             loadingOverlayComponent={loadingOverlayComponent}
             loadingOverlayComponentParams={loadingOverlayComponentParams}
+            showOverlay={true}
         />
     );
 };
