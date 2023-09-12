@@ -116,8 +116,9 @@ const BatteryCreationDialog = ({
             ...getConnectivityFormData({
                 voltageLevelId: battery.voltageLevelId,
                 busbarSectionId: battery.busOrBusbarSectionId,
-                connectionDirection: battery.connectionDirection,
-                connectionName: battery.connectionName,
+                connectionDirection:
+                    battery.connectablePosition.connectionDirection,
+                connectionName: battery.connectablePosition.connectionName,
             }),
             ...getReactiveLimitsFormData({
                 reactiveCapabilityCurveChoice: battery?.minMaxReactiveLimits
