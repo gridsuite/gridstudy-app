@@ -331,6 +331,9 @@ const TableWrapper = (props) => {
         },
         [cleanTableState]
     );
+    useEffect(() => {
+        gridRef.current?.api?.showLoadingOverlay();
+    }, [tabIndex]);
 
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
@@ -415,6 +418,10 @@ const TableWrapper = (props) => {
 
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
+        // wait a moment  before removing the loading message.
+        setTimeout(() => {
+            gridRef.current?.api?.hideOverlay();
+        }, 50);
     }, [scrollToEquipmentIndex]);
 
     useEffect(() => {

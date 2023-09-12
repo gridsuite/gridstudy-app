@@ -18,6 +18,9 @@ declare module '@mui/material/styles' {
         link: {
             color: string;
         };
+        overlay: {
+            background: string;
+        };
     }
 
     interface ThemeOptions {
@@ -27,6 +30,9 @@ declare module '@mui/material/styles' {
         };
         link: {
             color: string;
+        };
+        overlay: {
+            background: string;
         };
     }
 }

@@ -23,7 +23,7 @@ interface CustomAGGGridStyleProps {
 
 interface CustomAGGridProps extends AgGridReactProps, CustomAGGGridStyleProps {}
 
-const useStyles = makeStyles<Theme, CustomAGGGridStyleProps>(() => ({
+const useStyles = makeStyles<Theme, CustomAGGGridStyleProps>((theme) => ({
     grid: {
         width: 'auto',
         height: '100%',
@@ -46,6 +46,9 @@ const useStyles = makeStyles<Theme, CustomAGGGridStyleProps>(() => ({
             borderRight: (props) =>
                 props.shouldHidePinnedHeaderRightBorder ? 'none' : '',
         },
+        '& .ag-overlay-wrapper': {
+            background: theme.overlay.background,
+        },
     },
 }));
 
@@ -54,6 +57,10 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
         const {
             shouldHidePinnedHeaderRightBorder = false,
             overlayNoRowsTemplate,
+            loadingOverlayComponent,
+            loadingOverlayComponentParams,
+            noRowsOverlayComponent,
+            noRowsOverlayComponentParams,
         } = props;
         const theme = useTheme();
         const classes = useStyles({ shouldHidePinnedHeaderRightBorder });
@@ -78,6 +85,12 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     ref={ref}
                     getLocaleText={getLocaleText}
                     suppressPropertyNamesCheck={true}
+                    loadingOverlayComponent={loadingOverlayComponent}
+                    loadingOverlayComponentParams={
+                        loadingOverlayComponentParams
+                    }
+                    noRowsOverlayComponent={noRowsOverlayComponent}
+                    noRowsOverlayComponentParams={noRowsOverlayComponentParams}
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
                     {...props}
                 />
