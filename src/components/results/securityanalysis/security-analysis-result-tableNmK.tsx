@@ -13,7 +13,6 @@ import {
     ResultConstraint,
 } from './security-analysis.type';
 import { useTheme } from '@mui/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import { IntlShape, useIntl } from 'react-intl';
 import {
     getNoRowsMessage,
@@ -29,7 +28,7 @@ import {
     PostSortRowsParams,
     RowClassParams,
 } from 'ag-grid-community';
-import { Button } from '@mui/material';
+import { Button, Theme } from '@mui/material';
 import {
     flattenNmKresultsConstraints,
     flattenNmKresultsContingencies,
@@ -45,12 +44,11 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
     SecurityAnalysisResultTableNmKProps
 > = ({ postContingencyResults, onClickNmKConstraint, nmkTypeResult }) => {
     const theme = useTheme();
-    const useStyles = makeStyles((theme) => ({
-        button: {
+    const styles = {
+        button: (theme: Theme) => ({
             color: theme.link.color,
-        },
-    }));
-    const classes = useStyles();
+        }),
+    };
     const intl = useIntl();
     const messages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
@@ -70,13 +68,13 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
             };
             if (props.value) {
                 return (
-                    <Button className={classes.button} onClick={onClick}>
+                    <Button sx={styles.button} onClick={onClick}>
                         {props.value}
                     </Button>
                 );
             }
         },
-        [classes.button, onClickNmKConstraint]
+        [styles.button, onClickNmKConstraint]
     );
 
     const getRowStyle = useCallback(
