@@ -36,7 +36,7 @@ export const getReactiveLimitsFormData = ({
     },
 });
 
-export const getReactiveLimitsEmptyFormData = (id) => ({
+export const getReactiveLimitsEmptyFormData = (id = REACTIVE_LIMITS) => ({
     [id]: {
         [REACTIVE_CAPABILITY_CURVE_CHOICE]: 'CURVE',
         [MINIMUM_REACTIVE_POWER]: null,
