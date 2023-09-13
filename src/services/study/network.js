@@ -13,6 +13,7 @@ import {
 import {
     backendFetch,
     backendFetchJson,
+    backendFetchText,
     getRequestParamFromList,
     getUrlWithToken,
 } from '../utils';
@@ -441,6 +442,17 @@ export const fetchNetworkExistence = (studyUuid) => {
     return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
 };
 
+export const fetchStudyIndexationStatus = (studyUuid) => {
+    console.info(
+        `Fetching study indexation status of study '${studyUuid}' ...`
+    );
+    const fetchStudyIndexationUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/indexation/status`;
+
+    console.debug(fetchStudyIndexationUrl);
+
+    return backendFetchText(fetchStudyIndexationUrl);
+};
+
 /* export-network */
 export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
     const url =
@@ -450,13 +462,4 @@ export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
     return getUrlWithToken(url);
 }
 
-export const fetchStudyIndexation = (studyUuid) => {
-    console.info(
-        `Fetching study indexation status of study '${studyUuid}' ...`
-    );
-    const fetchStudyIndexationUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/indexation/status`;
 
-    console.debug(fetchStudyIndexationUrl);
-
-    return backendFetchJson(fetchStudyIndexationUrl);
-};

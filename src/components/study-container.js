@@ -53,7 +53,7 @@ import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import {
     fetchNetworkExistence,
-    fetchStudyIndexation,
+    fetchStudyIndexationStatus,
 } from '../services/study/network';
 import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
 import { HttpStatusCode } from 'utils/http-status-code';
@@ -200,6 +200,9 @@ export const UPDATE_TYPE_HEADER = 'updateType';
 const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE =
     'study_network_recreation_done';
 const UPDATE_TYPE_INDEXATION_STATUS = 'indexation_status_updated';
+const HEADER_INDEXATION_STATUS = 'indexation_status';
+const INDEXATION_STATUS_DONE = 'INDEX_DONE';
+
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
@@ -557,9 +560,9 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const checkStudyIndexation = useCallback(
         (successCallback) => {
-            fetchStudyIndexation(studyUuid)
-                .then((response) => {
-                    if (response.status === HttpStatusCode.OK) {
+            fetchStudyIndexationStatus(studyUuid)
+                .then((status) => {
+                    if (status === INDEXATION_STATUS_DONE) {
                         successCallback && successCallback();
                         setIsStudyIndexationDone(true);
                     } else {
@@ -567,10 +570,8 @@ export function StudyContainer({ view, onChangeTab }) {
                         setIsStudyIndexationDone(false);
                         reindexAllStudy(studyUuid)
                             .then(() => {
+
                                 // TODO ??
-                                // snackWarning({
-                                //     headerId: 'reindexingStudy',
-                                // });
                             })
                             .catch((error) => {
                                 // unknown error when trying to reindex study
@@ -693,12 +694,16 @@ export function StudyContainer({ view, onChangeTab }) {
             studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] ===
             UPDATE_TYPE_INDEXATION_STATUS
         ) {
-            const successCallback = () =>
+            if (
+                studyUpdatedForce.eventData.headers?.[
+                    HEADER_INDEXATION_STATUS
+                ] === INDEXATION_STATUS_DONE
+            ) {
+                setIsStudyIndexationDone(true);
                 snackInfo({
                     headerId: 'studyIndexationDone',
                 });
-
-            checkStudyIndexation(successCallback);
+            }
         }
     }, [
         studyUpdatedForce,
