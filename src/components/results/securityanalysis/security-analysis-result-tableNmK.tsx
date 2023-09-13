@@ -26,7 +26,6 @@ import { ComputingType } from '../../computing-status/computing-type';
 import {
     GridReadyEvent,
     ICellRendererParams,
-    ITooltipParams,
     PostSortRowsParams,
     RowClassParams,
 } from 'ag-grid-community';
@@ -40,7 +39,7 @@ import {
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import CustomTooltipValues from '../../custom-aggrid/custom-tooltip-values';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 
 export const SecurityAnalysisResultTableNmK: FunctionComponent<
     SecurityAnalysisResultTableNmKProps
@@ -102,6 +101,7 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
             autoHeaderHeight: true,
             suppressMovable: true,
             flex: 1,
+            cellRenderer: DefaultCellRenderer,
         }),
         []
     );
@@ -126,33 +126,16 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
         );
     };
 
-    const toolTipValueGetterValues = (params: ITooltipParams) => {
-        if (
-            params.data?.contingencyId &&
-            params.data?.contingencyEquipmentsIds
-        ) {
-            return {
-                title: null,
-                values: params.data?.contingencyEquipmentsIds,
-            };
-        }
-        return null;
-    };
-
     const securityAnalysisColumns = useMemo(() => {
         if (isFromContingency) {
             return securityAnalysisTableNmKContingenciesColumnsDefinition(
                 intl,
-                SubjectIdRenderer,
-                CustomTooltipValues,
-                toolTipValueGetterValues
+                SubjectIdRenderer
             );
         }
         return securityAnalysisTableNmKConstraintsColumnsDefinition(
             intl,
-            SubjectIdRenderer,
-            CustomTooltipValues,
-            toolTipValueGetterValues
+            SubjectIdRenderer
         );
     }, [intl, SubjectIdRenderer, isFromContingency]);
 

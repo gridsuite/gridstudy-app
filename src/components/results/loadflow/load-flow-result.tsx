@@ -48,6 +48,7 @@ import {
 } from '../../utils/aggrid-rows-handler';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { fetchLimitViolations } from '../../../services/study';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -97,6 +98,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             wrapHeaderText: true,
             autoHeaderHeight: true,
             flex: 1,
+            cellRenderer: DefaultCellRenderer,
         }),
         []
     );
