@@ -8,6 +8,7 @@
 import PropTypes from 'prop-types';
 import SensitivityAnalysisResult from './sensitivity-analysis-result';
 import {
+    DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     FUNCTION_TYPES,
     PAGE_OPTIONS,
@@ -98,7 +99,7 @@ const PagedSensitivityAnalysisResult = ({
             colKey && sortWay
                 ? {
                       sortKeysWithWeightAndDirection: {
-                          [colKey]: sortWay,
+                          [DATA_KEY_TO_SORT_KEY[colKey]]: sortWay,
                       },
                   }
                 : {};

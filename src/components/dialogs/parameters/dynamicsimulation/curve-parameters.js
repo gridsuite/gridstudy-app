@@ -9,21 +9,20 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
 import { Grid, Typography, useTheme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
 import { AgGridReact } from 'ag-grid-react';
-import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
 import { GlobalFilter } from '../../../spreadsheet/global-filter';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     grid: {
         width: 'auto',
         height: '100%',
     },
-}));
+};
 
 const CurveParameters = ({ curves, onUpdateCurve }) => {
     const intl = useIntl();
@@ -57,7 +56,6 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
     const quickFilterRef = useRef();
 
     // curve grid configuration
-    const classes = useStyles();
     const theme = useTheme();
     const gridRef = useRef();
 
@@ -169,7 +167,7 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
                     </Grid>
                     {/* aggrid for configured curves */}
                     <Grid item xs>
-                        <div className={clsx([theme.aggrid, classes.grid])}>
+                        <Box sx={styles.grid} className={theme.aggrid}>
                             <AgGridReact
                                 ref={gridRef}
                                 rowData={rowData}
@@ -179,7 +177,7 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
                                 onGridReady={onGridReady}
                                 onSelectionChanged={onSelectionChanged}
                             ></AgGridReact>
-                        </div>
+                        </Box>
                     </Grid>
                 </Grid>
                 {open && (
