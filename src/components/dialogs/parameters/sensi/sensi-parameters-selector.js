@@ -21,18 +21,11 @@ import {
     SensiInjectionsSet,
     SensiNodes,
     SensiPsts,
+    TAB_VALUES,
 } from './columns-definitions';
 
 const SensiParametersSelector = () => {
     const intl = useIntl();
-    const TAB_VALUES = {
-        SensitivityBranches: 0,
-        SensitivityNodes: 1,
-        SensiInjectionsSet: 0,
-        SensiInjection: 1,
-        SensiHVDC: 2,
-        SensiPST: 3,
-    };
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
     const [subTabValue, setSubTabValue] = useState(

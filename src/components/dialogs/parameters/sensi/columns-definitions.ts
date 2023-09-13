@@ -271,3 +271,12 @@ export const SensiNodes: ISensiParameters = {
     columnsDef: COLUMNS_DEFINITIONS_NODES,
     name: PARAMETER_SENSI_NODES,
 };
+
+export enum TAB_VALUES {
+    'SensitivityBranches' = 0,
+    'SensitivityNodes' = 1,
+    'SensiInjectionsSet' = 0,
+    'SensiInjection' = 1,
+    'SensiHVDC' = 2,
+    'SensiPST' = 3,
+}
