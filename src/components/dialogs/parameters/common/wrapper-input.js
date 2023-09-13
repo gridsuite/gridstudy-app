@@ -5,17 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useStyles } from '../parameters';
+import { styles } from '../parameters';
 import * as yup from 'yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import React, { useEffect } from 'react';
-import { Box, Grid, Typography } from '@mui/material';
+import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 const WrapperInput = ({ value, label, callback, validator, children }) => {
-    const classes = useStyles();
-
     const formSchema = yup.object().shape({
         value: validator,
     });
@@ -37,15 +35,11 @@ const WrapperInput = ({ value, label, callback, validator, children }) => {
 
     return (
         <>
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
+            <Grid item xs={8} sx={styles.parameterName}>
+                <FormattedMessage id={label} />
             </Grid>
             <FormProvider validationSchema={formSchema} {...formMethods}>
-                <Grid item container xs={4} className={classes.controlItem}>
+                <Grid item container xs={4} sx={styles.controlItem}>
                     {children}
                 </Grid>
             </FormProvider>
