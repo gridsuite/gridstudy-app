@@ -14,10 +14,11 @@ import MenuItem from '@mui/material/MenuItem';
 import { FormattedMessage } from 'react-intl';
 
 import { SecurityAnalysisTableN } from './security-analysis-result-tableN';
-import makeStyles from '@mui/styles/makeStyles';
 import { SecurityAnalysisResultTableNmK } from './security-analysis-result-tableNmK';
 import { NMK_TYPE_RESULT } from './security-analysis-result-utils';
-const useStyles = makeStyles((theme) => ({
+import { Box } from '@mui/system';
+
+const styles = {
     container: {
         display: 'flex',
         position: 'relative',
@@ -29,17 +30,13 @@ const useStyles = makeStyles((theme) => ({
     },
     nmkResultSelect: {
         position: 'absolute',
-        right: theme.spacing(2),
+        right: '16px',
     },
-    button: {
-        color: theme.link.color,
-    },
-}));
+};
+
 export const SecurityAnalysisResult: FunctionComponent<
     SecurityAnalysisResultProps
 > = ({ result, onClickNmKConstraint }) => {
-    const classes = useStyles();
-
     const [tabIndex, setTabIndex] = React.useState(0);
 
     const [nmkTypeResult, setNmkTypeResult] = React.useState(
@@ -56,8 +53,8 @@ export const SecurityAnalysisResult: FunctionComponent<
 
     return (
         <>
-            <div className={classes.container}>
-                <div className={classes.tabs}>
+            <Box sx={styles.container}>
+                <Box sx={styles.tabs}>
                     <Tabs
                         value={tabIndex}
                         onChange={(event, newTabIndex) =>
@@ -67,10 +64,10 @@ export const SecurityAnalysisResult: FunctionComponent<
                         <Tab label="N" />
                         <Tab label="N-K" />
                     </Tabs>
-                </div>
+                </Box>
 
                 {tabIndex === 1 && (
-                    <div className={classes.nmkResultSelect}>
+                    <Box sx={styles.nmkResultSelect}>
                         <Select
                             labelId="nmk-type-result-label"
                             value={nmkTypeResult}
@@ -93,9 +90,9 @@ export const SecurityAnalysisResult: FunctionComponent<
                                 <FormattedMessage id="ContingenciesFromConstraints" />
                             </MenuItem>
                         </Select>
-                    </div>
+                    </Box>
                 )}
-            </div>
+            </Box>
             <div style={{ flexGrow: 1 }}>
                 {tabIndex === 0 && (
                     <SecurityAnalysisTableN

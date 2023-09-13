@@ -102,8 +102,11 @@ const ShuntCompensatorCreationDialog = ({
                 [EQUIPMENT_NAME]: shuntCompensator.name ?? '',
                 ...getConnectivityFormData({
                     busbarSectionId: shuntCompensator.busOrBusbarSectionId,
-                    connectionDirection: shuntCompensator.connectionDirection,
-                    connectionName: shuntCompensator.connectionName,
+                    connectionDirection:
+                        shuntCompensator.connectablePosition
+                            .connectionDirection,
+                    connectionName:
+                        shuntCompensator.connectablePosition.connectionName,
                     voltageLevelId: shuntCompensator.voltageLevelId,
                 }),
                 ...getCharacteristicsFormDataFromSearchCopy({

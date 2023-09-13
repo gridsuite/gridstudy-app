@@ -197,8 +197,9 @@ const GeneratorCreationDialog = ({
             ...getConnectivityFormData({
                 voltageLevelId: generator.voltageLevelId,
                 busbarSectionId: generator.busOrBusbarSectionId,
-                connectionDirection: generator.connectionDirection,
-                connectionName: generator.connectionName,
+                connectionDirection:
+                    generator.connectablePosition.connectionDirection,
+                connectionName: generator.connectablePosition.connectionName,
             }),
         });
     };
