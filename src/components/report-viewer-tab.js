@@ -56,6 +56,9 @@ export const ReportViewerTab = ({
     const dynamicSimulationNotif = useSelector(
         (state) => state.dynamicSimulationNotif
     );
+    const oneBusShortCircuitNotif = useSelector(
+        (state) => state.oneBusShortCircuitNotif
+    );
 
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
@@ -134,7 +137,8 @@ export const ReportViewerTab = ({
             voltageInitNotif ||
             sensiNotif ||
             shortCircuitNotif ||
-            dynamicSimulationNotif;
+            dynamicSimulationNotif ||
+            oneBusShortCircuitNotif;
 
         if (visible && !disabled && anyNotificationTriggered) {
             fetchAndProcessReport(studyId, currentNode);
@@ -155,6 +159,7 @@ export const ReportViewerTab = ({
         shortCircuitNotif,
         dynamicSimulationNotif,
         fetchAndProcessReport,
+        oneBusShortCircuitNotif,
     ]);
 
     return (
