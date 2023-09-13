@@ -24,18 +24,18 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
-import makeStyles from '@mui/styles/makeStyles';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
+import { mergeSx } from '../utils/functions';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     tableCells: {
         fontSize: 10,
     },
-    table: {
+    table: (theme) => ({
         backgroundColor: theme.tooltipTable.background,
-    },
-}));
+    }),
+};
 
 const EquipmentPopover = ({
     studyUuid,
@@ -47,7 +47,6 @@ const EquipmentPopover = ({
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [equipmentInfo, setEquipmentInfo] = useState(null);
     const intl = useIntl();
-    const classes = useStyles();
     const [localAnchorEl, setLocalAnchorEl] = useState(null);
 
     useEffect(() => {
@@ -100,37 +99,38 @@ const EquipmentPopover = ({
                     <>
                         {currentLimits.permanentLimit && (
                             <TableRow key={currentLimits.permanentLimit + side}>
-                                <TableCell className={classes.tableCells}>
+                                <TableCell sx={styles.tableCells}>
                                     {intl.formatMessage({
                                         id: 'PermanentCurrentLimitText',
                                     })}
                                 </TableCell>
-                                <TableCell className={classes.tableCells}>
+                                <TableCell sx={styles.tableCells}>
                                     {checkValue(
                                         Math.round(currentLimits.permanentLimit)
                                     )}
                                 </TableCell>
                                 <TableCell
-                                    className={classes.tableCells}
-                                    sx={{
+                                    sx={mergeSx(styles.tableCells, {
                                         opacity:
                                             loadFlowStatus ===
                                             RunningStatus.SUCCEED
                                                 ? 1
                                                 : 0.2,
-                                    }}
+                                    })}
                                 >
                                     {checkValue(
                                         Math.round(
                                             side === '1'
-                                                ? (equipmentInfo.i1 * 100) /
+                                                ? (Math.abs(equipmentInfo.i1) *
+                                                      100) /
                                                       currentLimits.permanentLimit
-                                                : (equipmentInfo.i2 * 100) /
+                                                : (Math.abs(equipmentInfo.i2) *
+                                                      100) /
                                                       currentLimits.permanentLimit
                                         )
                                     )}
                                 </TableCell>
-                                <TableCell className={classes.tableCells}>
+                                <TableCell sx={styles.tableCells}>
                                     {checkValue(
                                         side === '1'
                                             ? equipmentInfo.voltageLevelId1
@@ -148,16 +148,12 @@ const EquipmentPopover = ({
                                         <TableRow
                                             key={temporaryLimit.name + side}
                                         >
-                                            <TableCell
-                                                className={classes.tableCells}
-                                            >
+                                            <TableCell sx={styles.tableCells}>
                                                 {checkValue(
                                                     temporaryLimit.name
                                                 )}
                                             </TableCell>
-                                            <TableCell
-                                                className={classes.tableCells}
-                                            >
+                                            <TableCell sx={styles.tableCells}>
                                                 {checkValue(
                                                     Math.round(
                                                         temporaryLimit.value
@@ -165,34 +161,35 @@ const EquipmentPopover = ({
                                                 )}
                                             </TableCell>
                                             <TableCell
-                                                className={classes.tableCells}
-                                                sx={{
+                                                sx={mergeSx(styles.tableCells, {
                                                     opacity:
                                                         loadFlowStatus ===
                                                         RunningStatus.SUCCEED
                                                             ? 1
                                                             : 0.2,
-                                                }}
+                                                })}
                                             >
                                                 {side === '1'
                                                     ? checkValue(
                                                           Math.round(
-                                                              (equipmentInfo.i1 *
+                                                              (Math.abs(
+                                                                  equipmentInfo.i1
+                                                              ) *
                                                                   100) /
                                                                   temporaryLimit.value
                                                           )
                                                       )
                                                     : checkValue(
                                                           Math.round(
-                                                              (equipmentInfo.i2 *
+                                                              (Math.abs(
+                                                                  equipmentInfo.i2
+                                                              ) *
                                                                   100) /
                                                                   temporaryLimit.value
                                                           )
                                                       )}
                                             </TableCell>
-                                            <TableCell
-                                                className={classes.tableCells}
-                                            >
+                                            <TableCell sx={styles.tableCells}>
                                                 {checkValue(
                                                     side === '1'
                                                         ? equipmentInfo.voltageLevelId1
@@ -252,33 +249,27 @@ const EquipmentPopover = ({
                                 <Grid item>
                                     <TableContainer
                                         component={Paper}
-                                        className={classes.table}
+                                        sx={styles.table}
                                     >
                                         <Table size={'small'}>
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell
-                                                        className={
-                                                            classes.tableCells
-                                                        }
+                                                        sx={styles.tableCells}
                                                     >
                                                         {intl.formatMessage({
                                                             id: 'CURRENT',
                                                         })}
                                                     </TableCell>
                                                     <TableCell
-                                                        className={
-                                                            classes.tableCells
-                                                        }
+                                                        sx={styles.tableCells}
                                                     >
                                                         {checkValue(
                                                             equipmentInfo.voltageLevelId1
                                                         )}
                                                     </TableCell>
                                                     <TableCell
-                                                        className={
-                                                            classes.tableCells
-                                                        }
+                                                        sx={styles.tableCells}
                                                     >
                                                         {checkValue(
                                                             equipmentInfo.voltageLevelId2
@@ -289,25 +280,23 @@ const EquipmentPopover = ({
                                             <TableBody>
                                                 <TableRow>
                                                     <TableCell
-                                                        className={
-                                                            classes.tableCells
-                                                        }
+                                                        sx={styles.tableCells}
                                                     >
                                                         {intl.formatMessage({
                                                             id: 'I_(A)',
                                                         })}
                                                     </TableCell>
                                                     <TableCell
-                                                        className={
-                                                            classes.tableCells
-                                                        }
-                                                        sx={{
-                                                            opacity:
-                                                                loadFlowStatus ===
-                                                                RunningStatus.SUCCEED
-                                                                    ? 1
-                                                                    : 0.2,
-                                                        }}
+                                                        sx={mergeSx(
+                                                            styles.tableCells,
+                                                            {
+                                                                opacity:
+                                                                    loadFlowStatus ===
+                                                                    RunningStatus.SUCCEED
+                                                                        ? 1
+                                                                        : 0.2,
+                                                            }
+                                                        )}
                                                     >
                                                         {checkValue(
                                                             Math.round(
@@ -316,16 +305,16 @@ const EquipmentPopover = ({
                                                         )}
                                                     </TableCell>
                                                     <TableCell
-                                                        className={
-                                                            classes.tableCells
-                                                        }
-                                                        sx={{
-                                                            opacity:
-                                                                loadFlowStatus ===
-                                                                RunningStatus.SUCCEED
-                                                                    ? 1
-                                                                    : 0.2,
-                                                        }}
+                                                        sx={mergeSx(
+                                                            styles.tableCells,
+                                                            {
+                                                                opacity:
+                                                                    loadFlowStatus ===
+                                                                    RunningStatus.SUCCEED
+                                                                        ? 1
+                                                                        : 0.2,
+                                                            }
+                                                        )}
                                                     >
                                                         {checkValue(
                                                             Math.round(
@@ -342,42 +331,34 @@ const EquipmentPopover = ({
                                 <Grid item>
                                     <TableContainer
                                         component={Paper}
-                                        className={classes.table}
+                                        sx={styles.table}
                                     >
                                         <Table size={'small'}>
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell
-                                                        className={
-                                                            classes.tableCells
-                                                        }
+                                                        sx={styles.tableCells}
                                                     >
                                                         {intl.formatMessage({
                                                             id: 'Limit_name',
                                                         })}
                                                     </TableCell>
                                                     <TableCell
-                                                        className={
-                                                            classes.tableCells
-                                                        }
+                                                        sx={styles.tableCells}
                                                     >
                                                         {intl.formatMessage({
                                                             id: 'LimitLabel',
                                                         })}
                                                     </TableCell>
                                                     <TableCell
-                                                        className={
-                                                            classes.tableCells
-                                                        }
+                                                        sx={styles.tableCells}
                                                     >
                                                         {intl.formatMessage({
                                                             id: 'Loading',
                                                         })}
                                                     </TableCell>
                                                     <TableCell
-                                                        className={
-                                                            classes.tableCells
-                                                        }
+                                                        sx={styles.tableCells}
                                                     >
                                                         {intl.formatMessage({
                                                             id: 'Side',

@@ -9,20 +9,18 @@ import PropTypes from 'prop-types';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
 import { Grid, List, ListSubheader, Typography } from '@mui/material';
 import { memo, useCallback, useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 
-const useStyle = makeStyles((theme) => ({
+const styles = {
     root: {
         width: '100%',
         height: '100%',
         overflow: 'auto',
     },
-    headerItem: {
+    headerItem: (theme) => ({
         textAlign: 'center',
         background: theme.palette.background.paper,
-    },
-    headerList: {},
-}));
+    }),
+};
 
 const DynamicSimulationResultSeriesList = ({
     index,
@@ -33,8 +31,6 @@ const DynamicSimulationResultSeriesList = ({
 }) => {
     const [leftAxisCheckedIndexes, setLeftAxisCheckedIndexes] = useState([]);
     const [rightAxisCheckedIndexes, setRightAxisCheckedIndexes] = useState([]);
-
-    const classes = useStyle();
 
     const handleToggle = useCallback((id, setAxisCheckedIndexes) => {
         setAxisCheckedIndexes((prev) => {
@@ -75,12 +71,12 @@ const DynamicSimulationResultSeriesList = ({
 
     const renderHeaders = () => {
         return (
-            <ListSubheader className={classes.headerList}>
+            <ListSubheader>
                 <Grid container>
                     {headers.map((header, index) => (
                         <Grid item flexGrow={index === 1 ? 1 : 0} key={index}>
                             <Typography
-                                className={classes.headerItem}
+                                sx={styles.headerItem}
                                 variant={'subtitle1'}
                             >
                                 {header}
@@ -92,7 +88,7 @@ const DynamicSimulationResultSeriesList = ({
         );
     };
     return (
-        <List className={classes.root} subheader={renderHeaders()}>
+        <List sx={styles.root} subheader={renderHeaders()}>
             {items.map((item, index) => (
                 <DynamicSimulationResultSeriesItem
                     key={index}
