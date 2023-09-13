@@ -67,6 +67,8 @@ import {
     CLOSE_DIAGRAMS,
     ADD_SHORT_CIRCUIT_NOTIF,
     RESET_SHORT_CIRCUIT_NOTIF,
+    ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF,
+    RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF,
     ADD_DYNAMIC_SIMULATION_NOTIF,
     RESET_DYNAMIC_SIMULATION_NOTIF,
     RESET_MAP_RELOADED,
@@ -215,6 +217,7 @@ const initialState = {
     voltageInitNotif: false,
     sensiNotif: false,
     shortCircuitNotif: false,
+    oneBusShortCircuitNotif: false,
     dynamicSimulationNotif: false,
     fullScreenDiagram: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
@@ -566,6 +569,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_SHORT_CIRCUIT_NOTIF]: (state) => {
         state.shortCircuitNotif = false;
+    },
+
+    [ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.oneBusShortCircuitNotif = true;
+    },
+
+    [RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.oneBusShortCircuitNotif = false;
     },
 
     [ADD_DYNAMIC_SIMULATION_NOTIF]: (state) => {
