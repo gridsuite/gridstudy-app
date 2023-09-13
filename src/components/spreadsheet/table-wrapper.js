@@ -94,7 +94,7 @@ const styles = {
 
 const TableWrapper = (props) => {
     const gridRef = useRef();
-
+    const timerRef = useRef(null);
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
@@ -333,6 +333,7 @@ const TableWrapper = (props) => {
     );
     useEffect(() => {
         gridRef.current?.api?.showLoadingOverlay();
+        return () => clearTimeout(timerRef.current);
     }, [tabIndex]);
 
     useEffect(() => {
@@ -419,7 +420,7 @@ const TableWrapper = (props) => {
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
         // wait a moment  before removing the loading message.
-        setTimeout(() => {
+        timerRef.current = setTimeout(() => {
             gridRef.current?.api?.hideOverlay();
         }, 50);
     }, [scrollToEquipmentIndex]);
