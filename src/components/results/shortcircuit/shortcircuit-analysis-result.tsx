@@ -10,7 +10,7 @@ import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-tabl
 import { useSelector } from 'react-redux';
 import {
     SCAResultFault,
-    ShortCircuitAnalysisFetch,
+    ShortCircuitAnalysisResultFetch,
     ShortcircuitAnalysisResult,
     ShortcircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
@@ -67,12 +67,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         (state: ReduxState) => state.shortCircuitNotif
     );
 
-    const isLoading =
-        analysisType === ShortcircuitAnalysisType.ALL_BUSES
-            ? isFetching
-            : oneBusShortCircuitAnalysisState === RunningStatus.RUNNING ||
-              isFetching;
-
     const isAllBusesType = analysisType === ShortcircuitAnalysisType.ALL_BUSES;
 
     const handleChangePage = useCallback(
@@ -111,7 +105,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         };
 
         const fetchAnalysisResult = (
-            fetchFunction: ShortCircuitAnalysisFetch
+            fetchFunction: ShortCircuitAnalysisResultFetch
         ) => {
             setResult([]);
 
@@ -132,7 +126,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     snackError({
                         messageTxt: error.message,
                         headerId: intl.formatMessage({
-                            id: 'ShortCircuitAnalysisError',
+                            id: 'ShortCircuitAnalysisResultsError',
                         }),
                     })
                 )
@@ -170,7 +164,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     return (
         <>
-            <WaitingLoader message={'LoadingRemoteData'} loading={isLoading}>
+            <WaitingLoader message={'LoadingRemoteData'} loading={isFetching}>
                 <ShortCircuitAnalysisResultTable
                     result={result}
                     onSortChanged={onSortChanged}

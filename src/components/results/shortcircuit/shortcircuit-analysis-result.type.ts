@@ -72,7 +72,7 @@ export type ShortcircuitAnalysisResult = {
     faults?: SCAResultFault[];
 };
 
-export type ShortCircuitAnalysisFetch = (
+export type ShortCircuitAnalysisResultFetch = (
     studyUuid: string,
     nodeId: string,
     selector?: {
