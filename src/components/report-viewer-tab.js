@@ -48,6 +48,15 @@ export const ReportViewerTab = ({
         (state) => state.networkModificationTreeModel
     );
 
+    const loadflowNotif = useSelector((state) => state.loadflowNotif);
+    const saNotif = useSelector((state) => state.saNotif);
+    const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
+    const sensiNotif = useSelector((state) => state.sensiNotif);
+    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+    const dynamicSimulationNotif = useSelector(
+        (state) => state.dynamicSimulationNotif
+    );
+
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const { snackError } = useSnackMessage();
@@ -74,8 +83,8 @@ export const ReportViewerTab = ({
         [nodesNames]
     );
 
-    useEffect(() => {
-        if (visible && !disabled) {
+    const fetchAndProcessReport = useCallback(
+        (studyId, currentNode) => {
             setWaitingLoadReport(true);
             fetchReport(studyId, currentNode.id, nodeOnlyReport)
                 .then((fetchedReport) => {
@@ -94,14 +103,17 @@ export const ReportViewerTab = ({
                         setReport(globalReport);
                     }
                 })
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
-                    })
-                )
+                .catch((error) => snackError({ messageTxt: error.message }))
                 .finally(() => {
                     setWaitingLoadReport(false);
                 });
+        },
+        [nodeOnlyReport, setNodeName, snackError]
+    );
+
+    useEffect(() => {
+        if (visible && !disabled) {
+            fetchAndProcessReport(studyId, currentNode);
         }
     }, [
         visible,
@@ -112,6 +124,37 @@ export const ReportViewerTab = ({
         nodeOnlyReport,
         disabled,
         snackError,
+        fetchAndProcessReport,
+    ]);
+
+    useEffect(() => {
+        const anyNotificationTriggered =
+            loadflowNotif ||
+            saNotif ||
+            voltageInitNotif ||
+            sensiNotif ||
+            shortCircuitNotif ||
+            dynamicSimulationNotif;
+
+        if (visible && !disabled && anyNotificationTriggered) {
+            fetchAndProcessReport(studyId, currentNode);
+        }
+    }, [
+        visible,
+        studyId,
+        currentNode,
+        nodesNames,
+        setNodeName,
+        nodeOnlyReport,
+        disabled,
+        snackError,
+        saNotif,
+        loadflowNotif,
+        voltageInitNotif,
+        sensiNotif,
+        shortCircuitNotif,
+        dynamicSimulationNotif,
+        fetchAndProcessReport,
     ]);
 
     return (
