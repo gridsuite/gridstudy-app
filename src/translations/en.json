@@ -1071,5 +1071,8 @@
     "StartupCost": "Startup cost",
     "studyIndexationDone": "Study indexation done. Search functionality is now available",
     "studyIndexationError": "Study indexation process has failed.",
-    "checkstudyIndexationError": "Study indexation checking has failed."
+    "checkstudyIndexationError": "Study indexation checking has failed.",
+    "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
+    "WaitingStudyIndexation": "Waiting for Study indexation..."
+
 }

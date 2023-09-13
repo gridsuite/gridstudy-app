@@ -92,6 +92,8 @@ import {
     RESET_EQUIPMENTS_POST_LOADFLOW,
     SET_COMPUTING_STATUS,
     SET_OPTIONAL_SERVICES,
+    SET_STUDY_INDEXATION_STATUS,
+    STUDY_INDEXATION_STATUS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -233,6 +235,7 @@ const initialState = {
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     computingStatus: { ...initialComputingStatus },
     optionalServices: defaultOptionalServicesState,
+    studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1025,6 +1028,9 @@ export const reducer = createReducer(initialState, {
     },
     [SET_OPTIONAL_SERVICES]: (state, action) => {
         state.optionalServices = action.optionalServices;
+    },
+    [SET_STUDY_INDEXATION_STATUS]: (state, action) => {
+        state.studyIndexationStatus = action.studyIndexationStatus;
     },
 });
 

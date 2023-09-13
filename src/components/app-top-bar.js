@@ -45,6 +45,7 @@ import {
     STUDY_DISPLAY_MODE,
     addVoltageInitNotif,
     resetVoltageInitNotif,
+    STUDY_INDEXATION_STATUS,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
@@ -237,6 +238,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
+    const studyIndexationStatus = useSelector(
+        (state) => state.studyIndexationStatus
+    );
+
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
@@ -351,6 +356,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 id: 'InvalidNode',
             });
         }
+
+        if (studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEX_DONE) {
+            return intl.formatMessage({
+                id: 'WaitingStudyIndexation',
+            });
+        }
+
         return '';
     }
 
