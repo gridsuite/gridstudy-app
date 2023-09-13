@@ -45,6 +45,8 @@ import {
     STUDY_DISPLAY_MODE,
     addVoltageInitNotif,
     resetVoltageInitNotif,
+    addOneBusShortCircuitNotif,
+    resetOneBusShortCircuitNotif,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
@@ -192,6 +194,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
 
+    const oneBusShortCircuitNotif = useSelector(
+        (state) => state.oneBusShortCircuitNotif
+    );
+
     const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
 
     const dynamicSimulationNotif = useSelector(
@@ -232,6 +238,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const shortCircuitAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
+    );
+
+    const oneBusShortCircuitAnalysisStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
     const dynamicSimulationStatus = useSelector(
@@ -313,6 +324,23 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             dispatch(resetShortCircuitNotif());
         }
     }, [currentNode, dispatch, shortCircuitAnalysisStatus, tabIndex, user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            oneBusShortCircuitAnalysisStatus === RunningStatus.SUCCEED
+        ) {
+            dispatch(addOneBusShortCircuitNotif());
+        } else {
+            dispatch(resetOneBusShortCircuitNotif());
+        }
+    }, [
+        currentNode,
+        dispatch,
+        oneBusShortCircuitAnalysisStatus,
+        tabIndex,
+        user,
+    ]);
 
     useEffect(() => {
         if (
@@ -443,6 +471,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                         saNotif ||
                                         sensiNotif ||
                                         shortCircuitNotif ||
+                                        oneBusShortCircuitNotif ||
                                         dynamicSimulationNotif ||
                                         voltageInitNotif)
                                 ) {
@@ -453,6 +482,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                                 saNotif +
                                                 sensiNotif +
                                                 shortCircuitNotif +
+                                                oneBusShortCircuitNotif +
                                                 dynamicSimulationNotif +
                                                 voltageInitNotif
                                             }
