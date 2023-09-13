@@ -7,7 +7,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
+import { Grid, MenuItem, Select } from '@mui/material';
 import {
     CloseButton,
     LabelledButton,
