@@ -259,7 +259,7 @@ export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                componentsProps={{
+                slotProps={{
                     popper: {
                         sx: {
                             '& .MuiTooltip-tooltip': styles.tooltip,
