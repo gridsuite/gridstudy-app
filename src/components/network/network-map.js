@@ -267,7 +267,6 @@ const NetworkMap = (props) => {
                 >
                     <EquipmentPopover
                         studyUuid={studyUuid}
-                        equipmentInfos={tooltip.equipmentInfos}
                         anchorEl={divRef.current}
                         equipmentId={tooltip.equipmentId}
                         equipmentType={EQUIPMENT_TYPES.LINE}
@@ -418,7 +417,6 @@ const NetworkMap = (props) => {
                             equipmentId: getNameOrId(lineObject),
                             pointerX: x,
                             pointerY: y,
-                            equipmentInfos: lineObject,
                             visible: showTooltip,
                         });
                     } else {

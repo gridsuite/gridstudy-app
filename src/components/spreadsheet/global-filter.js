@@ -6,24 +6,22 @@
  */
 
 import { Grid, InputAdornment, TextField } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { useIntl } from 'react-intl';
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 
-const useStyles = makeStyles((theme) => ({
-    searchSection: {
+const styles = {
+    searchSection: (theme) => ({
         paddingRight: theme.spacing(1),
         alignItems: 'center',
-    },
-    containerInputSearch: {
+    }),
+    containerInputSearch: (theme) => ({
         marginTop: theme.spacing(2),
         marginLeft: theme.spacing(1),
-    },
-}));
+    }),
+};
 
 export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
-    const classes = useStyles();
     const intl = useIntl();
     const inputRef = useRef();
 
@@ -62,18 +60,17 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
     );
 
     return (
-        <Grid item className={classes.containerInputSearch}>
+        <Grid item sx={styles.containerInputSearch}>
             <TextField
                 disabled={disabled}
-                className={classes.textField}
                 size="small"
                 placeholder={intl.formatMessage({ id: 'filter' }) + '...'}
                 onChange={handleChangeFilter}
                 inputRef={inputRef}
                 fullWidth
                 InputProps={{
-                    classes: {
-                        input: classes.searchSection,
+                    sx: {
+                        input: styles.searchSection,
                     },
                     startAdornment: (
                         <InputAdornment position="start">

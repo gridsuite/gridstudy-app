@@ -16,14 +16,6 @@ export const styles = {
         margin: 0,
         marginTop: '4px',
     },
-    h4: {
-        marginBottom: 0,
-    },
-    popper: {
-        style: {
-            width: 'fit-content',
-        },
-    },
     tooltip: {
         fontSize: 18,
         maxWidth: 'none',

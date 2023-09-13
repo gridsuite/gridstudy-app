@@ -390,6 +390,20 @@ export function resetShortCircuitNotif() {
     return { type: RESET_SHORT_CIRCUIT_NOTIF };
 }
 
+export const ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF =
+    'ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF';
+
+export function addOneBusShortCircuitNotif() {
+    return { type: ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF };
+}
+
+export const RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF =
+    'RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF';
+
+export function resetOneBusShortCircuitNotif() {
+    return { type: RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF };
+}
+
 // --- Dynamic simulation ACTION - BEGIN
 export const ADD_DYNAMIC_SIMULATION_NOTIF = 'ADD_DYNAMIC_SIMULATION_NOTIF';
 
@@ -665,6 +679,15 @@ export function setComputingStatus(computingType, runningStatus) {
         type: SET_COMPUTING_STATUS,
         computingType: computingType,
         runningStatus: runningStatus,
+    };
+}
+
+export const SET_COMPUTATION_RUNNING = 'SET_COMPUTATION_RUNNING';
+
+export function setComputationRunning(computationRunning) {
+    return {
+        type: SET_COMPUTATION_RUNNING,
+        computationRunning: computationRunning,
     };
 }
 
