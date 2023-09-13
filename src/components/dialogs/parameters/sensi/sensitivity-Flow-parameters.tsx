@@ -14,7 +14,7 @@ import {
     FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
 } from '../../../utils/field-constants';
 import { FormattedMessage } from 'react-intl';
-import { useStyles } from '../parameters';
+import { styles } from '../parameters';
 import { FloatInput } from '@gridsuite/commons-ui';
 
 interface IFlowInputParameters {
@@ -23,8 +23,6 @@ interface IFlowInputParameters {
 }
 
 const SensitivityAnalysisFields: FunctionComponent = () => {
-    const classes = useStyles();
-
     const flowInputParameters: IFlowInputParameters[] = [
         {
             formattedMessageId: 'flowFlowSensitivityValueThreshold',
@@ -46,14 +44,14 @@ const SensitivityAnalysisFields: FunctionComponent = () => {
                     item
                     xs={8}
                     alignItems="center"
-                    className={classes.parameterName}
+                    sx={styles.parameterName}
                 >
                     <FormattedMessage id={input.formattedMessageId} />
                 </Grid>
                 <Grid
                     item
                     xs={4}
-                    className={classes.controlItem}
+                    sx={styles.controlItem}
                     alignItems="center"
                 >
                     <FloatInput
