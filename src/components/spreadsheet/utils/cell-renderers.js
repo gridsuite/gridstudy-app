@@ -123,15 +123,18 @@ export const PropertiesCellRenderer = (props) => {
     // different properties are seperated with |
     // tooltip message contains properties in seperated lines
     return (
-        <Tooltip
-            title={
-                <div style={{ whiteSpace: 'pre-wrap' }}>
-                    {cellValue.value && cellValue.value.replace(' | ', '\n')}
-                </div>
-            }
-        >
-            <Box children={cellValue.value} />
-        </Tooltip>
+        <Box sx={styles.tableCell}>
+            <Tooltip
+                title={
+                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                        {cellValue.value &&
+                            cellValue.value.replace(' | ', '\n')}
+                    </div>
+                }
+            >
+                <Box children={cellValue.value} />
+            </Tooltip>
+        </Box>
     );
 };
 
