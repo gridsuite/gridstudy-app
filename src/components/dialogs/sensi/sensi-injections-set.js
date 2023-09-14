@@ -14,7 +14,7 @@ import { elementType } from '@gridsuite/commons-ui';
 import { filledTextField, gridItem } from '../dialogUtils';
 import {
     INJECTION_DISTRIBUTION_TYPES,
-    useStyles,
+    styles,
     SensiChecked,
     INJECTIONS_EQUIPMENT_TYPES,
     MONITORED_BRANCHES_EQUIPMENT_TYPES,
@@ -26,7 +26,6 @@ export const SensiInjectionsSet = ({
     defaultValue,
     inputForm,
 }) => {
-    const classes = useStyles();
     const [checked, setChecked] = useState(defaultValue.checked ?? true);
 
     const onClickChecked = () => {
@@ -41,7 +40,7 @@ export const SensiInjectionsSet = ({
         elementType: elementType.FILTER,
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
+        elementStyle: styles.chipElement,
     });
 
     const [injections, injectionsField] = useDirectoryElements({
@@ -50,7 +49,7 @@ export const SensiInjectionsSet = ({
         elementType: elementType.FILTER,
         equipmentTypes: INJECTIONS_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
+        elementStyle: styles.chipElement,
     });
 
     const [distributionType, distributionTypeField] = useEnumValue({
@@ -71,7 +70,7 @@ export const SensiInjectionsSet = ({
             : [],
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        elementClassName: classes.chipElement,
+        elementStyle: styles.chipElement,
     });
 
     useEffect(() => {
