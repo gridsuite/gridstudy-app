@@ -37,9 +37,8 @@ const styles = {
         transform: 'rotate(180deg)',
     },
     listOptions: (theme) => ({
-        minWidth: '275px',
-        left: '-21px',
-        top: '1px',
+        minWidth: '270px',
+        marginRight: '43px',
         position: 'relative',
         boxShadow: 'none',
         borderRadius: '0',
@@ -108,14 +107,12 @@ const styles = {
     idle: (theme) => ({
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
-        border: '1px solid #808080',
+        borderColor: '#808080',
         '&:nth-of-type(1)': {
             minWidth: '270px',
             color: theme.palette.text.primary,
         },
-        '&:nth-of-type(2)': {
-            borderLeft: '1px solid #4a4a4a',
-        },
+
         '&:hover': {
             backgroundColor: theme.palette.background.default,
             border: '1px solid ' + theme.palette.primary,
@@ -125,7 +122,7 @@ const styles = {
             color: theme.palette.text.disabled,
         },
     }),
-    runMenu: {
+    runMenuButton: {
         zIndex: 99,
     },
 };
@@ -217,7 +214,7 @@ const SplitButton = ({
                     disabled={buttonDisabled}
                     onClick={handleClick}
                 >
-                    {breakText(text)}
+                    <span style={{ marginTop: '2px' }}>{breakText(text)}</span>
                 </Button>
                 <Button
                     variant="outlined"
@@ -236,7 +233,7 @@ const SplitButton = ({
                 anchorEl={anchorRef.current}
                 role={undefined}
                 transition
-                sx={styles.runMenu}
+                sx={styles.runMenuButton}
             >
                 {({ TransitionProps, placement }) => (
                     <Grow
