@@ -31,7 +31,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import RestoreIcon from '@mui/icons-material/Restore';
 import CheckboxList from '../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
@@ -73,6 +72,7 @@ import { copyOrMoveModifications } from '../../../services/study';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { Box } from '@mui/system';
+import { RestoreFromTrash } from '@mui/icons-material';
 
 const styles = {
     listContainer: (theme) => ({
@@ -152,8 +152,7 @@ const NetworkModificationNodeEditor = () => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
-    const [modificationsToRestore, setModificationsToRestore] =
-        useState(undefined);
+    const [modificationsToRestore, setModificationsToRestore] = useState([]);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const currentNodeIdRef = useRef(); // initial empty to get first update
@@ -502,6 +501,7 @@ const NetworkModificationNodeEditor = () => {
             dofetchNetworkModifications();
 
             setModificationsToRestore([]);
+            dofetchNetworkModificationsToRestore();
         }
     }, [
         currentNode,
@@ -552,6 +552,7 @@ const NetworkModificationNodeEditor = () => {
                 // Do not clear the modifications list, because currentNode is the concerned one
                 // this allow to append new modifications to the existing list.
                 dofetchNetworkModifications();
+                dofetchNetworkModificationsToRestore();
                 dispatch(
                     removeNotificationByNode([
                         studyUpdatedForce.eventData.headers['parentNode'],
@@ -810,6 +811,7 @@ const NetworkModificationNodeEditor = () => {
                                         isDragging={isDragging}
                                         isOneNodeBuilding={isAnyNodeBuilding}
                                         disabled={isLoading()}
+                                        listSize={modifications.length}
                                         {...props}
                                     />
                                 )}
@@ -985,13 +987,34 @@ const NetworkModificationNodeEditor = () => {
                 >
                     <DeleteIcon />
                 </IconButton>
-                <IconButton
-                    onClick={openRestoreModificationDialog}
-                    size={'small'}
-                    sx={styles.toolbarIcon}
+                <Tooltip
+                    title={
+                        <FormattedMessage
+                            id={'NbModificationToRestore'}
+                            values={{
+                                nb: modificationsToRestore.length,
+                                several:
+                                    modificationsToRestore.length > 1
+                                        ? 's'
+                                        : '',
+                            }}
+                        />
+                    }
                 >
-                    <RestoreIcon />
-                </IconButton>
+                    <span>
+                        <IconButton
+                            onClick={openRestoreModificationDialog}
+                            size={'small'}
+                            sx={styles.toolbarIcon}
+                            disabled={
+                                modificationsToRestore.length === 0 ||
+                                isAnyNodeBuilding
+                            }
+                        >
+                            <RestoreFromTrash />
+                        </IconButton>
+                    </span>
+                </Tooltip>
             </Toolbar>
             {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
 

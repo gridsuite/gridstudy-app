@@ -10,8 +10,6 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
-import { SensiProperties } from 'components/spreadsheet/utils/sensi-properties';
-import CustomTooltipKeyValue from 'components/custom-aggrid/custom-aggrid-tooltip-key-value';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 
 const generateTapPositions = (params) => {
@@ -41,9 +39,15 @@ export const DEFAULT_SORT_ORDER = 'asc';
 
 export const EDIT_COLUMN = 'edit';
 
-const toolTipValueGetterProperties = (params) => {
-    const properties = params.data?.properties;
-    return properties ? { title: null, properties: { ...properties } } : null;
+const propertiesGetter = (params) => {
+    const properties = params?.data?.properties;
+    if (properties && Object.keys(properties).length) {
+        return Object.keys(properties)
+            .map((property) => property + ' : ' + properties[property])
+            .join(' | ');
+    } else {
+        return null;
+    }
 };
 
 const generateEditableNumericColumnDefinition = (
@@ -104,11 +108,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Properties',
                 field: 'properties',
-                cellRendererSelector: () => {
-                    return { component: SensiProperties };
-                },
-                tooltipComponent: CustomTooltipKeyValue,
-                tooltipValueGetter: toolTipValueGetterProperties,
+                valueGetter: propertiesGetter, // valueFormatter does not work here
                 minWidth: 300,
             },
         ],

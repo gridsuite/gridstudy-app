@@ -46,6 +46,8 @@ import {
     addVoltageInitNotif,
     resetVoltageInitNotif,
     STUDY_INDEXATION_STATUS,
+    addOneBusShortCircuitNotif,
+    resetOneBusShortCircuitNotif,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
@@ -55,7 +57,7 @@ import {
     useDiagram,
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
 } from './diagrams/diagram-common';
-import { isNodeBuilt } from './graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
 import { ComputingType } from './computing-status/computing-type';
@@ -66,6 +68,7 @@ import {
     EQUIPMENT_TYPES,
 } from './utils/equipment-types';
 import { fetchAppsAndUrls } from '../services/utils';
+import { RunButtonContainer } from './run-button-container';
 
 const styles = {
     tabs: {
@@ -76,6 +79,11 @@ const styles = {
         margin: theme.spacing(1.5),
         fontWeight: 'bold',
     }),
+    runButtonContainer: {
+        marginRight: '10%',
+        marginTop: '6px',
+        flexShrink: 0,
+    },
 };
 
 const STUDY_VIEWS = [
@@ -186,6 +194,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
 
+    const oneBusShortCircuitNotif = useSelector(
+        (state) => state.oneBusShortCircuitNotif
+    );
+
     const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
 
     const dynamicSimulationNotif = useSelector(
@@ -226,6 +238,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const shortCircuitAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
+    );
+
+    const oneBusShortCircuitAnalysisStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
     );
 
     const dynamicSimulationStatus = useSelector(
@@ -311,6 +328,23 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             dispatch(resetShortCircuitNotif());
         }
     }, [currentNode, dispatch, shortCircuitAnalysisStatus, tabIndex, user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            oneBusShortCircuitAnalysisStatus === RunningStatus.SUCCEED
+        ) {
+            dispatch(addOneBusShortCircuitNotif());
+        } else {
+            dispatch(resetOneBusShortCircuitNotif());
+        }
+    }, [
+        currentNode,
+        dispatch,
+        oneBusShortCircuitAnalysisStatus,
+        tabIndex,
+        user,
+    ]);
 
     useEffect(() => {
         if (
@@ -429,50 +463,67 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         />
                     )}
                 </Box>
-                {studyUuid && (
-                    <Tabs
-                        value={tabIndex}
-                        variant="scrollable"
-                        onChange={(event, newTabIndex) => {
-                            onChangeTab(newTabIndex);
-                        }}
-                        aria-label="views"
-                        sx={styles.tabs}
-                    >
-                        {STUDY_VIEWS.map((tabName) => {
-                            let label;
-                            if (
-                                tabName === StudyView.RESULTS &&
-                                (loadflowNotif ||
-                                    saNotif ||
-                                    sensiNotif ||
-                                    shortCircuitNotif ||
-                                    dynamicSimulationNotif ||
-                                    voltageInitNotif)
-                            ) {
-                                label = (
-                                    <Badge
-                                        badgeContent={
-                                            loadflowNotif +
-                                            saNotif +
-                                            sensiNotif +
-                                            shortCircuitNotif +
-                                            dynamicSimulationNotif +
-                                            voltageInitNotif
-                                        }
-                                        color="secondary"
-                                    >
-                                        <FormattedMessage id={tabName} />
-                                    </Badge>
-                                );
-                            } else {
-                                label = <FormattedMessage id={tabName} />;
-                            }
-                            return <Tab key={tabName} label={label} />;
-                        })}
-                    </Tabs>
-                )}
+                <Box sx={{ display: 'flex', width: '100%' }}>
+                    {studyUuid && (
+                        <Tabs
+                            value={tabIndex}
+                            variant="scrollable"
+                            onChange={(event, newTabIndex) => {
+                                onChangeTab(newTabIndex);
+                            }}
+                            aria-label="views"
+                            sx={styles.tabs}
+                        >
+                            {STUDY_VIEWS.map((tabName) => {
+                                let label;
+                                if (
+                                    tabName === StudyView.RESULTS &&
+                                    (loadflowNotif ||
+                                        saNotif ||
+                                        sensiNotif ||
+                                        shortCircuitNotif ||
+                                        oneBusShortCircuitNotif ||
+                                        dynamicSimulationNotif ||
+                                        voltageInitNotif)
+                                ) {
+                                    label = (
+                                        <Badge
+                                            badgeContent={
+                                                loadflowNotif +
+                                                saNotif +
+                                                sensiNotif +
+                                                shortCircuitNotif +
+                                                oneBusShortCircuitNotif +
+                                                dynamicSimulationNotif +
+                                                voltageInitNotif
+                                            }
+                                            color="secondary"
+                                        >
+                                            <FormattedMessage id={tabName} />
+                                        </Badge>
+                                    );
+                                } else {
+                                    label = <FormattedMessage id={tabName} />;
+                                }
+                                return <Tab key={tabName} label={label} />;
+                            })}
+                        </Tabs>
+                    )}
+                    {studyUuid && (
+                        <Box sx={styles.runButtonContainer}>
+                            <RunButtonContainer
+                                studyUuid={studyUuid}
+                                currentNode={currentNode}
+                                disabled={
+                                    !isNodeBuilt(currentNode) ||
+                                    isNodeReadOnly(currentNode)
+                                }
+                            />
+                        </Box>
+                    )}
+                </Box>
             </TopBar>
+
             {studyUuid && (
                 <Parameters
                     isParametersOpen={isParametersOpen}
