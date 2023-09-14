@@ -461,5 +461,3 @@ export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
         exportFormat;
     return getUrlWithToken(url);
 }
-
-
