@@ -69,6 +69,7 @@ const CreateNodeMenu = ({
     handleCutSubtree,
     handleCopySubtree,
     handlePasteSubtree,
+    handleOpenRestoreNodesDialog,
 }) => {
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -138,6 +139,11 @@ const CreateNodeMenu = ({
     function cancelCutSubtree() {
         handleCutSubtree(null);
         handleClose();
+    }
+
+    function restoreNodes() {
+        handleClose();
+        handleOpenRestoreNodesDialog(activeNode.id);
     }
 
     function removeSubtree() {
@@ -301,6 +307,11 @@ const CreateNodeMenu = ({
             action: () => removeSubtree(),
             id: 'removeNetworkModificationSubtree',
             disabled: isAnyNodeBuilding || !isSubtreeRemovingAllowed(),
+        },
+        RESTORE_NODES: {
+            onRoot: true,
+            action: () => restoreNodes(),
+            id: 'restoreNodes',
         },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,

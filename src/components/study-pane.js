@@ -31,8 +31,6 @@ import { ReactFlowProvider } from 'react-flow-renderer';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
-import { ResultsTabsRootLevel } from './results/use-results-tab';
-import { ShortcircuitAnalysisResultTabs } from './results/shortcircuit/shortcircuit-analysis-result.type';
 import { ComputingType } from './computing-status/computing-type';
 import { Box } from '@mui/system';
 
@@ -109,16 +107,11 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const [isComputationRunning, setIsComputationRunning] = useState(false);
-
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
         changed: false,
     });
-
-    const [resultTabIndexRedirection, setResultTabIndexRedirection] =
-        useState();
 
     const loadFlowStatus = useSelector(
         (state) => state.computingStatus[ComputingType.LOADFLOW]
@@ -151,17 +144,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
         };
         setTableEquipment(newTableEquipment);
         props.onChangeTab(1); // switch to spreadsheet view
-    }
-
-    function showOneBusShortcircuitResults() {
-        props.onChangeTab(2); // switch to results view
-        // redirect to shorcircuit analysis tab, one bus subtab
-        // TODO: it's working only because the object passed to the state is different each time which will cause the useEffect to execute
-        // done this way to match the "showInSpreadsheet" behaviour
-        setResultTabIndexRedirection([
-            ResultsTabsRootLevel.SHORTCIRCUIT_ANALYSIS,
-            ShortcircuitAnalysisResultTabs.ONE_BUS,
-        ]);
     }
 
     function renderMapView() {
@@ -233,9 +215,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    setIsComputationRunning={
-                                        setIsComputationRunning
-                                    }
                                     setErrorMessage={setErrorMessage}
                                     loadFlowStatus={loadFlowStatus}
                                 />
@@ -243,11 +222,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
 
                             <DiagramPane
                                 studyUuid={studyUuid}
-                                isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
-                                showOneBusShortcircuitResults={
-                                    showOneBusShortcircuitResults
-                                }
                                 currentNode={currentNode}
                                 visible={
                                     props.view === StudyView.MAP &&
@@ -290,17 +265,15 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
             >
                 {renderMapView()}
             </div>
+            {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy
                 key={`spreadsheet-${currentNode?.id}`}
-                className="singlestretch-child"
                 selected={props.view === StudyView.SPREADSHEET}
             >
                 {renderTableView()}
             </TabPanelLazy>
-            {/* using a key in this tappanellazy because we can change the nodeuuid in this component */}
             <TabPanelLazy
                 key={`results-${currentNode?.id}`}
-                className="singlestretch-child"
                 selected={props.view === StudyView.RESULTS}
             >
                 <ResultViewTab
@@ -308,7 +281,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     currentNode={currentNode}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
-                    resultTabIndexRedirection={resultTabIndexRedirection}
                 />
             </TabPanelLazy>
             <div

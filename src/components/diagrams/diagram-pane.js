@@ -342,9 +342,7 @@ const styles = {
 
 export function DiagramPane({
     studyUuid,
-    isComputationRunning,
     showInSpreadsheet,
-    showOneBusShortcircuitResults,
     currentNode,
     visible,
     loadFlowStatus,
@@ -1099,13 +1097,7 @@ export function DiagramPane({
                                         DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
                                         loadFlowStatus={loadFlowStatus}
-                                        isComputationRunning={
-                                            isComputationRunning
-                                        }
                                         showInSpreadsheet={showInSpreadsheet}
-                                        showOneBusShortcircuitResults={
-                                            showOneBusShortcircuitResults
-                                        }
                                         studyUuid={studyUuid}
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}

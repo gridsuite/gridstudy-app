@@ -65,8 +65,7 @@ import { mergeSx } from '../../utils/functions';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 
 function SingleLineDiagramContent(props) {
-    const { studyUuid } = props;
-    const { diagramSizeSetter, showOneBusShortcircuitResults } = props;
+    const { diagramSizeSetter, studyUuid } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
@@ -90,6 +89,7 @@ function SingleLineDiagramContent(props) {
     const shortCircuitAvailability = useOptionalServiceStatus(
         OptionalServicesNames.ShortCircuit
     );
+    const computationRunning = useSelector((state) => state.computationRunning);
 
     // dynamic simulation event configuration states
     const [
@@ -261,7 +261,6 @@ function SingleLineDiagramContent(props) {
                 )
             );
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
-                .then(() => showOneBusShortcircuitResults())
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -276,14 +275,7 @@ function SingleLineDiagramContent(props) {
                 })
                 .finally(closeBusMenu());
         },
-        [
-            closeBusMenu,
-            currentNode?.id,
-            studyUuid,
-            showOneBusShortcircuitResults,
-            snackError,
-            dispatch,
-        ]
+        [closeBusMenu, currentNode?.id, studyUuid, snackError, dispatch]
     );
 
     const displayBusMenu = () => {
@@ -480,7 +472,7 @@ function SingleLineDiagramContent(props) {
     useLayoutEffect(() => {
         if (props.svg) {
             const isReadyForInteraction =
-                !props.isComputationRunning &&
+                !computationRunning &&
                 !isAnyNodeBuilding &&
                 !modificationInProgress &&
                 !props.loadingState;
@@ -576,7 +568,6 @@ function SingleLineDiagramContent(props) {
         props.svg,
         props.svgMetadata,
         currentNode,
-        props.isComputationRunning,
         isAnyNodeBuilding,
         equipmentMenu,
         showEquipmentMenu,
@@ -592,6 +583,7 @@ function SingleLineDiagramContent(props) {
         handleNextVoltageLevelClick,
         diagramSizeSetter,
         handleTogglePopover,
+        computationRunning,
     ]);
 
     // When the loading is finished, we always reset these two states
