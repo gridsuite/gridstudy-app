@@ -6,7 +6,6 @@
  */
 
 import FormControl from '@mui/material/FormControl';
-import clsx from 'clsx';
 import { Grid } from '@mui/material';
 import { FieldLabel } from '@gridsuite/commons-ui';
 import Chip from '@mui/material/Chip';
@@ -15,7 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
 import DirectoryItemSelector from '../../directory-item-selector';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useStyles } from '../../dialogs/dialogUtils';
+import { styles } from '../../dialogs/dialogUtils';
 import { useController, useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { ErrorInput } from '@gridsuite/commons-ui';
@@ -24,6 +23,7 @@ import { RawReadOnlyInput } from './read-only/raw-read-only-input';
 import { NAME } from '../field-constants';
 import { isFieldRequired } from '../utils';
 import Tooltip from '@mui/material/Tooltip';
+import { mergeSx } from '../functions';
 
 const DirectoryItemsInput = ({
     label,
@@ -34,7 +34,6 @@ const DirectoryItemsInput = ({
     titleId, // title of directory item selector dialogue
     hideErrorMessage,
 }) => {
-    const classes = useStyles();
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const types = useMemo(() => [elementType], [elementType]);
@@ -82,9 +81,10 @@ const DirectoryItemsInput = ({
     return (
         <>
             <FormControl
-                className={clsx(classes.formDirectoryElements1, {
-                    [classes.formDirectoryElementsError]: error?.message,
-                })}
+                sx={mergeSx(
+                    styles.formDirectoryElements1,
+                    error?.message && styles.formDirectoryElementsError
+                )}
                 error={!!error?.message}
             >
                 {elements?.length === 0 && label && (
@@ -100,7 +100,7 @@ const DirectoryItemsInput = ({
                     />
                 )}
                 {elements?.length > 0 && (
-                    <FormControl className={classes.formDirectoryElements2}>
+                    <FormControl sx={styles.formDirectoryElements2}>
                         {elements.map((item, index) => (
                             <Chip
                                 key={item.id}
@@ -126,7 +126,7 @@ const DirectoryItemsInput = ({
                             title={intl.formatMessage({ id: 'chooseElement' })}
                         >
                             <IconButton
-                                className={classes.addDirectoryElements}
+                                sx={styles.addDirectoryElements}
                                 size={'small'}
                                 onClick={() =>
                                     setDirectoryItemSelectorOpen(true)
