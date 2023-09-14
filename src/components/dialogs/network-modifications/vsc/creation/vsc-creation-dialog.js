@@ -34,17 +34,22 @@ import { useOpenShortWaitFetching } from '../../../commons/handle-modification-f
 import {
     getVscHvdcLinePaneEmptyFormData,
     getVscHvdcLinePaneSchema,
-    getVscHvdcLineTabFromEditData,
-} from '../hvdc-line-pane/vsc-hvdc-line-pane';
+    getVscHvdcLineTabFormData,
+} from '../hvdc-line-pane/vsc-hvdc-line-pane-utils';
 import { FetchStatus } from '../../../../../services/utils';
 import {
     getConverterStationCreationData,
-    getConverterStationFromEditData,
+    getConverterStationFormEditData,
+    getConverterStationFromSearchCopy,
     getVscConverterStationEmptyFormData,
     getVscConverterStationSchema,
 } from '../converter-station/converter-station-utils';
 import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../services/study/network-modifications';
+import { useFormSearchCopy } from '../../../form-search-copy-hook';
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
+import EquipmentSearchDialog from '../../../equipment-search-dialog';
 
 const formSchema = yup
     .object()
@@ -89,12 +94,51 @@ const VscCreationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
+    const fromSearchCopyToFormValues = (hvdcLine) => {
+        const converterStation1 = hvdcLine.converterStation1;
+        reset({
+            [EQUIPMENT_ID]: hvdcLine.id + '(1)',
+            [EQUIPMENT_NAME]: hvdcLine.name ?? '',
+            ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, {
+                dcNominalVoltage: hvdcLine.dcNominalVoltage,
+                dcResistance: hvdcLine.dcResistance,
+                maximumActivePower: hvdcLine.maximumActivePower,
+                operatorActivePowerLimitFromSide1ToSide2:
+                    hvdcLine.operatorActivePowerLimitFromSide1ToSide2,
+                operatorActivePowerLimitFromSide2ToSide1:
+                    hvdcLine.operatorActivePowerLimitFromSide2ToSide1,
+                convertersMode: hvdcLine.convertersMode,
+                activePower: hvdcLine.activePower,
+                angleDroopActivePowerControl:
+                    hvdcLine.angleDroopActivePowerControl,
+                p0: hvdcLine.p0,
+                droop: hvdcLine.droop,
+            }),
+            ...getConverterStationFromSearchCopy(
+                CONVERTER_STATION_1,
+                hvdcLine.converterStation1
+            ),
+            ...getConverterStationFromSearchCopy(
+                CONVERTER_STATION_2,
+                hvdcLine.converterStation2
+            ),
+        });
+    };
+
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
             editDataFetchStatus === FetchStatus.SUCCEED ||
             editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
+    });
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        currentNodeUuid,
+        toFormValues: (data) => data,
+        setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.HVDC_LINE,
     });
 
     const generatorIdField = (
@@ -137,16 +181,15 @@ const VscCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            console.log('editData : ', editData);
             reset({
                 [EQUIPMENT_ID]: editData.equipmentId,
                 [EQUIPMENT_NAME]: editData?.equipmentName ?? '',
-                ...getVscHvdcLineTabFromEditData(HVDC_LINE_TAB, editData),
-                ...getConverterStationFromEditData(
+                ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, editData),
+                ...getConverterStationFormEditData(
                     CONVERTER_STATION_1,
                     editData.converterStation1
                 ),
-                ...getConverterStationFromEditData(
+                ...getConverterStationFormEditData(
                     CONVERTER_STATION_2,
                     editData.converterStation2
                 ),
@@ -176,7 +219,6 @@ const VscCreationDialog = ({
     const onSubmit = useCallback(
         (hvdcLine) => {
             const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
-            console.log('hvdcLine : ', hvdcLine);
             const converterStation1 = getConverterStationCreationData(
                 hvdcLine[CONVERTER_STATION_1]
             );
@@ -223,6 +265,7 @@ const VscCreationDialog = ({
                 maxWidth={'md'}
                 titleId="CreateVsc"
                 subtitle={headersAndTabs}
+                searchCopy={searchCopy}
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
@@ -238,6 +281,13 @@ const VscCreationDialog = ({
                     tabIndex={tabIndex}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                />
+                <EquipmentSearchDialog
+                    open={searchCopy.isDialogSearchOpen}
+                    onClose={searchCopy.handleCloseSearchDialog}
+                    equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
+                    onSelectionChange={searchCopy.handleSelectionChange}
+                    currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
         </FormProvider>

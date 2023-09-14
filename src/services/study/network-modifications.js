@@ -1533,7 +1533,6 @@ export function createVsc(
         console.info('Creating vsc creation');
     }
 
-    console.log('dcNominalVoltage : ', dcNominalVoltage);
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.VSC_CREATION.type,
         equipmentId: id,
@@ -1541,8 +1540,8 @@ export function createVsc(
         dcNominalVoltage: dcNominalVoltage,
         dcResistance: dcResistance,
         maximumActivePower: maximumActivePower,
-        operatorActivePowerLimitSide1: operatorActivePowerLimitSide1,
-        operatorActivePowerLimitSide2: operatorActivePowerLimitSide2,
+        operatorActivePowerLimitFromSide1ToSide2: operatorActivePowerLimitSide1,
+        operatorActivePowerLimitFromSide2ToSide1: operatorActivePowerLimitSide2,
         convertersMode: convertersMode,
         activePower: activePower,
         angleDroopActivePowerControl: angleDroopActivePowerControl,
@@ -1552,7 +1551,6 @@ export function createVsc(
         converterStation2: converterStation2,
     });
 
-    console.log('body : ', body);
     return backendFetchText(createVscUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
