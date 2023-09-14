@@ -234,6 +234,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const studyIndexationStatus = useSelector(
         (state) => state.studyIndexationStatus
     );
+    const studyIndexationStatusRef = useRef();
+    studyIndexationStatusRef.current = studyIndexationStatus;
 
     const [initialTitle] = useState(document.title);
 
@@ -483,12 +485,22 @@ export function StudyContainer({ view, onChangeTab }) {
                         });
                     });
 
-                const firstSelectedNode =
-                    getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
-                        BUILD_STATUS.BUILT,
-                        BUILD_STATUS.BUILT_WITH_WARNING,
-                        BUILD_STATUS.BUILT_WITH_ERROR,
-                    ]) || getFirstNodeOfType(tree, 'ROOT');
+                // Select root node by default
+                let firstSelectedNode = getFirstNodeOfType(tree, 'ROOT');
+                // if reidexation is ongoing then stay on root node, all variants will be removed
+                // if indexation is done then look for the next built node.
+                // This is to avoid future fetch on variants removed during reindexation process
+                if (
+                    studyIndexationStatusRef.current ===
+                    STUDY_INDEXATION_STATUS.INDEX_DONE
+                ) {
+                    firstSelectedNode =
+                        getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
+                            BUILD_STATUS.BUILT,
+                            BUILD_STATUS.BUILT_WITH_WARNING,
+                            BUILD_STATUS.BUILT_WITH_ERROR,
+                        ]) ?? firstSelectedNode;
+                }
 
                 // To get positions we must get the node from the model class
                 const ModelFirstSelectedNode = {
