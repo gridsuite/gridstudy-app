@@ -126,7 +126,7 @@ export const PropertiesCellRenderer = (props) => {
         <Box sx={styles.tableCell}>
             <Tooltip
                 title={
-                    <div style={{ whiteSpace: 'pre' }}>
+                    <div style={{ whiteSpace: 'pre-line' }}>
                         {cellValue.value &&
                             cellValue.value.replaceAll(' | ', '\n')}
                     </div>
