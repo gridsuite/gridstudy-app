@@ -45,7 +45,6 @@ const styles = {
         },
     }),
     overflow: {
-        display: 'inline-block',
         whiteSpace: 'pre',
         textOverflow: 'ellipsis',
         overflow: 'hidden',
