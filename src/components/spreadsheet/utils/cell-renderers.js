@@ -44,6 +44,12 @@ const styles = {
             bottom: 0,
         },
     }),
+    overflow: {
+        display: 'inline-block',
+        whiteSpace: 'pre',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+    },
     valueInvalid: {
         opacity: INVALID_LOADFLOW_OPACITY,
     },
@@ -103,16 +109,11 @@ export const DefaultCellRenderer = (props) => {
     return (
         <Box sx={styles.tableCell}>
             <Tooltip
+                disableFocusListener
                 disableTouchListener
                 title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
             >
-                <Box
-                    children={cellValue.value}
-                    sx={mergeSx(
-                        props.isValueInvalid && styles.valueInvalid,
-                        props.colDef.numeric && styles.numericValue
-                    )}
-                />
+                <Box sx={styles.overflow} children={cellValue.value} />
             </Tooltip>
         </Box>
     );
@@ -126,13 +127,13 @@ export const PropertiesCellRenderer = (props) => {
         <Box sx={styles.tableCell}>
             <Tooltip
                 title={
-                    <div style={{ whiteSpace: 'pre-wrap' }}>
+                    <div style={{ whiteSpace: 'pre' }}>
                         {cellValue.value &&
-                            cellValue.value.replace(' | ', '\n')}
+                            cellValue.value.replaceAll(' | ', '\n')}
                     </div>
                 }
             >
-                <Box children={cellValue.value} />
+                <Box sx={styles.overflow} children={cellValue.value} />
             </Tooltip>
         </Box>
     );
