@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { OverflowableText } from '@gridsuite/commons-ui';
 import { Checkbox, Tooltip, IconButton } from '@mui/material';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
@@ -45,6 +44,11 @@ const styles = {
             bottom: 0,
         },
     }),
+    overflow: {
+        whiteSpace: 'pre',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+    },
     valueInvalid: {
         opacity: INVALID_LOADFLOW_OPACITY,
     },
@@ -103,29 +107,33 @@ export const DefaultCellRenderer = (props) => {
     const cellValue = formatCell(props);
     return (
         <Box sx={styles.tableCell}>
-            {cellValue.tooltip !== undefined ? (
-                <Tooltip
-                    disableFocusListener
-                    disableTouchListener
-                    title={cellValue.tooltip}
-                >
-                    <Box
-                        children={cellValue.value}
-                        sx={mergeSx(
-                            props.isValueInvalid && styles.valueInvalid,
-                            props.colDef.numeric && styles.numericValue
-                        )}
-                    />
-                </Tooltip>
-            ) : (
-                <OverflowableText
-                    sx={mergeSx(
-                        props.isValueInvalid && styles.valueInvalid,
-                        props.colDef.numeric && styles.numericValue
-                    )}
-                    text={cellValue.value}
-                />
-            )}
+            <Tooltip
+                disableFocusListener
+                disableTouchListener
+                title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
+            >
+                <Box sx={styles.overflow} children={cellValue.value} />
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const PropertiesCellRenderer = (props) => {
+    const cellValue = formatCell(props);
+    // different properties are seperated with |
+    // tooltip message contains properties in seperated lines
+    return (
+        <Box sx={styles.tableCell}>
+            <Tooltip
+                title={
+                    <div style={{ whiteSpace: 'pre-line' }}>
+                        {cellValue.value &&
+                            cellValue.value.replaceAll(' | ', '\n')}
+                    </div>
+                }
+            >
+                <Box sx={styles.overflow} children={cellValue.value} />
+            </Tooltip>
         </Box>
     );
 };
