@@ -10,7 +10,24 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { IOptionalService } from '../components/utils/optional-services';
 
+type UserProfile = {
+    sub: string;
+    name: string;
+    email: string;
+    s_hash: string;
+};
+
+interface User {
+    id_token: string;
+    access_token: string;
+    token_type: string;
+    scope: string;
+    profile: UserProfile;
+    expires_at: number;
+}
+
 export interface ReduxState {
+    user: User;
     studyUpdated: StudyUpdated;
     shortCircuitNotif: boolean;
     oneBusShortCircuitNotif: boolean;
@@ -19,6 +36,7 @@ export interface ReduxState {
     computingStatus: ComputingStatus;
     optionalServices: IOptionalService[];
     limitReduction: string;
+    activeDirectory: UUID;
 }
 
 export interface StudyUpdatedEventDataHeader {

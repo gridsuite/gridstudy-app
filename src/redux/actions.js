@@ -26,6 +26,35 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 
+/*
+ Common section
+ */
+
+export const SELECT_THEME = 'SELECT_THEME';
+
+export function selectTheme(theme) {
+    return { type: SELECT_THEME, [PARAM_THEME]: theme };
+}
+
+export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
+
+export function selectLanguage(language) {
+    return { type: SELECT_LANGUAGE, [PARAM_LANGUAGE]: language };
+}
+
+export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';
+
+export function selectComputedLanguage(computedLanguage) {
+    return {
+        type: SELECT_COMPUTED_LANGUAGE,
+        computedLanguage: computedLanguage,
+    };
+}
+
+/*
+ GridStudy section
+ */
+
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 
 export function loadEquipments(equipmentType, equipments) {
@@ -175,27 +204,6 @@ export function networkModificationTreeNodesUpdated(
     return {
         type: NETWORK_MODIFICATION_TREE_NODES_UPDATED,
         networkModificationTreeNodes: networkModificationTreeNodes,
-    };
-}
-
-export const SELECT_THEME = 'SELECT_THEME';
-
-export function selectTheme(theme) {
-    return { type: SELECT_THEME, [PARAM_THEME]: theme };
-}
-
-export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
-
-export function selectLanguage(language) {
-    return { type: SELECT_LANGUAGE, [PARAM_LANGUAGE]: language };
-}
-
-export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';
-
-export function selectComputedLanguage(computedLanguage) {
-    return {
-        type: SELECT_COMPUTED_LANGUAGE,
-        computedLanguage: computedLanguage,
     };
 }
 
@@ -699,3 +707,82 @@ export const setOptionalServices = (optionalServices) => {
         optionalServices: optionalServices,
     };
 };
+
+/*
+ GridExplore section
+  */
+
+export const CURRENT_CHILDREN = 'CURRENT_CHILDREN';
+
+export function setCurrentChildren(currentChildren) {
+    return {
+        type: CURRENT_CHILDREN,
+        currentChildren: currentChildren,
+    };
+}
+
+export const SELECT_DIRECTORY = 'SELECT_DIRECTORY';
+
+export function setSelectedDirectory(selectedDirectory) {
+    return {
+        type: SELECT_DIRECTORY,
+        selectedDirectory: selectedDirectory,
+    };
+}
+
+export const ACTIVE_DIRECTORY = 'ACTIVE_DIRECTORY';
+
+export function setActiveDirectory(activeDirectory) {
+    return {
+        type: ACTIVE_DIRECTORY,
+        activeDirectory: activeDirectory,
+    };
+}
+
+export const CURRENT_PATH = 'CURRENT_PATH';
+
+export function setCurrentPath(path) {
+    return {
+        type: CURRENT_PATH,
+        currentPath: path,
+    };
+}
+
+export const SET_APPS_AND_URLS = 'SET_APPS_AND_URLS';
+
+export function setAppsAndUrls(appsAndUrls) {
+    return {
+        type: SET_APPS_AND_URLS,
+        appsAndUrls: appsAndUrls,
+    };
+}
+
+export const ADD_UPLOADING_ELEMENT = 'ADD_UPLOADING_ELEMENT';
+
+export function addUploadingElement(uploadingElement) {
+    return { type: ADD_UPLOADING_ELEMENT, uploadingElement: uploadingElement };
+}
+
+export const REMOVE_UPLOADING_ELEMENT = 'REMOVE_UPLOADING_ELEMENT';
+
+export function removeUploadingElement(uploadingElement) {
+    return {
+        type: REMOVE_UPLOADING_ELEMENT,
+        uploadingElement: uploadingElement,
+    };
+}
+
+export const DIRECTORY_UPDATED = 'DIRECTORY_UPDATED';
+
+export function directoryUpdated(eventData) {
+    return { type: DIRECTORY_UPDATED, eventData };
+}
+
+export const TREE_DATA = 'TREE_DATA';
+
+export function setTreeData(treeData) {
+    return {
+        type: TREE_DATA,
+        treeData: treeData,
+    };
+}

@@ -54,9 +54,14 @@ declare module '@gridsuite/commons-ui' {
 
     export const AutocompleteInput: FunctionComponent<AutocompleteInputProps>;
 
+    interface FieldErrorAlertProps {
+        name: string;
+    }
+    export const FieldErrorAlert: FunctionComponent<FieldErrorAlertProps>;
+
     interface ErrorInputProps {
         name: string;
-        InputField?: FunctionComponent;
+        InputField?: FunctionComponent<FieldErrorAlertProps>;
     }
 
     export const ErrorInput: FunctionComponent<ErrorInputProps>;
@@ -111,7 +116,7 @@ declare module '@gridsuite/commons-ui' {
         label?: string;
         id?: string;
         options: Options;
-        formProps?: Omit<RadioGroupProps, 'value' | 'onChange'>;
+        formProps?: Omit<RadioGroupProps, 'value'>;
     }
 
     export const RadioInput: FunctionComponent<RadioInputProps>;
@@ -132,7 +137,13 @@ declare module '@gridsuite/commons-ui' {
         initValues: Record<string, any>;
         onChange: (paramName: string, value: any, isEdit: boolean) => void;
         showSeparator?: boolean;
+        selectionWithDialog?: (parameter: CaseImportParameters) => boolean;
     }
 
     export const FlatParameters: FunctionComponent<FlatParametersProps>;
+
+    export function useDebounce(
+        debouncedFunction: (...args: any[]) => void,
+        debounceDelay: number
+    ): (...args: any[]) => void;
 }

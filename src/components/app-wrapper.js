@@ -40,8 +40,10 @@ import {
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
-import messages_en from '../translations/en.json';
-import messages_fr from '../translations/fr.json';
+import study_messages_en from 'translations/en.json';
+import study_messages_fr from 'translations/fr.json';
+import explore_messages_en from 'explore/translations/en.json';
+import explore_messages_fr from 'explore/translations/fr.json';
 import networkModification_en from '../translations/network-modifications-en.json';
 import networkModification_fr from '../translations/network-modifications-fr.json';
 import exportParameters_en from '../translations/export-parameters-en.json';
@@ -49,6 +51,8 @@ import exportParameters_fr from '../translations/export-parameters-fr.json';
 import messages_plugins from '../plugins/translations';
 import external_labels_en from '../translations/extern-en.json';
 import external_labels_fr from '../translations/extern-fr.json';
+import import_parameters_en from 'explore/translations/import-parameters-en';
+import import_parameters_fr from 'explore/translations/import-parameters-fr';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
@@ -58,7 +62,7 @@ const lightTheme = createTheme({
         mode: 'light',
     },
     link: {
-        color: 'blue',
+        color: 'blue', //TODO FM black in gridexplore
     },
     node: {
         background: '#1976d2',
@@ -74,8 +78,32 @@ const lightTheme = createTheme({
     formFiller: {
         background: '#e6e6e6',
     },
+    arrow: {
+        fill: '#212121',
+        stroke: '#212121',
+    },
+    arrow_hover: {
+        fill: 'white',
+        stroke: 'white',
+    },
+    circle: {
+        stroke: 'white',
+        fill: 'white',
+    },
+    circle_hover: {
+        stroke: '#212121',
+        fill: '#212121',
+    },
+    row: {
+        primary: '#E8E8E8',
+        secondary: '#F4F4F4',
+        hover: '#8E9C9B',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
     aggrid: 'ag-theme-alpine',
+    agGridBackground: {
+        color: 'white',
+    },
 });
 
 const darkTheme = createTheme({
@@ -83,7 +111,7 @@ const darkTheme = createTheme({
         mode: 'dark',
     },
     link: {
-        color: 'green',
+        color: 'green', //TODO FM white in gridexplore
     },
     node: {
         background: '#1976d2',
@@ -99,8 +127,32 @@ const darkTheme = createTheme({
     formFiller: {
         background: '#2C2C2C',
     },
+    arrow: {
+        fill: 'white',
+        stroke: 'white',
+    },
+    arrow_hover: {
+        fill: '#424242',
+        stroke: '#424242',
+    },
+    circle: {
+        stroke: '#424242',
+        fill: '#424242',
+    },
+    circle_hover: {
+        stroke: 'white',
+        fill: 'white',
+    },
+    row: {
+        primary: '#272727',
+        secondary: '#323232',
+        hover: '#545C5B',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
     aggrid: 'ag-theme-alpine-dark',
+    agGridBackground: {
+        color: '#383838',
+    },
 });
 
 const getMuiTheme = (theme) => {
@@ -114,7 +166,8 @@ const getMuiTheme = (theme) => {
 const messages = {
     en: {
         ...treeview_finder_en,
-        ...messages_en,
+        ...study_messages_en,
+        ...explore_messages_en,
         ...networkModification_en,
         ...external_labels_en,
         ...exportParameters_en,
@@ -127,11 +180,13 @@ const messages = {
         ...card_error_boundary_en,
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
+        ...import_parameters_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
         ...treeview_finder_fr,
-        ...messages_fr,
+        ...study_messages_fr,
+        ...explore_messages_fr,
         ...networkModification_fr,
         ...external_labels_fr,
         ...exportParameters_fr,
@@ -144,6 +199,7 @@ const messages = {
         ...card_error_boundary_fr,
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
+        ...import_parameters_fr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
