@@ -11,7 +11,6 @@ import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
-import { useStyles } from '../../dialogUtils';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
 import { ErrorInput } from '@gridsuite/commons-ui';
@@ -28,7 +27,6 @@ export const ReactiveCapabilityCurveTable = ({
     getRowLabelSuffix = (index) => index.toString(),
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
-    const classes = useStyles();
 
     const handleInsertRow = () => {
         if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
@@ -80,7 +78,6 @@ export const ReactiveCapabilityCurveTable = ({
                         />
                         <Grid item xs={1}>
                             <IconButton
-                                className={classes.icon}
                                 key={value.id}
                                 onClick={() => handleRemoveRow(index)}
                                 disabled={
@@ -95,7 +92,6 @@ export const ReactiveCapabilityCurveTable = ({
                         {index === displayedValues.length - 1 && (
                             <Grid item xs={1}>
                                 <IconButton
-                                    className={classes.icon}
                                     key={value.id}
                                     onClick={() => handleInsertRow()}
                                     disabled={disabled}

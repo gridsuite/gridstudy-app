@@ -13,6 +13,7 @@ import { IOptionalService } from '../components/utils/optional-services';
 export interface ReduxState {
     studyUpdated: StudyUpdated;
     shortCircuitNotif: boolean;
+    oneBusShortCircuitNotif: boolean;
     studyUuid: UUID;
     currentTreeNode: CurrentTreeNode;
     computingStatus: ComputingStatus;

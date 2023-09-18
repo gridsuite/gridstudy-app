@@ -993,14 +993,34 @@ const NetworkModificationNodeEditor = () => {
                 >
                     <DeleteIcon />
                 </IconButton>
-                <IconButton
-                    onClick={openRestoreModificationDialog}
-                    size={'small'}
-                    sx={styles.toolbarIcon}
-                    disabled={modificationsToRestore.length === 0}
+                <Tooltip
+                    title={
+                        <FormattedMessage
+                            id={'NbModificationToRestore'}
+                            values={{
+                                nb: modificationsToRestore.length,
+                                several:
+                                    modificationsToRestore.length > 1
+                                        ? 's'
+                                        : '',
+                            }}
+                        />
+                    }
                 >
-                    <RestoreFromTrash />
-                </IconButton>
+                    <span>
+                        <IconButton
+                            onClick={openRestoreModificationDialog}
+                            size={'small'}
+                            sx={styles.toolbarIcon}
+                            disabled={
+                                modificationsToRestore.length === 0 ||
+                                isAnyNodeBuilding
+                            }
+                        >
+                            <RestoreFromTrash />
+                        </IconButton>
+                    </span>
+                </Tooltip>
             </Toolbar>
             {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
 

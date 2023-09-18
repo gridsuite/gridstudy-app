@@ -13,11 +13,10 @@ import {
     INJECTIONS_EQUIPMENT_TYPES,
     MONITORED_BRANCHES_EQUIPMENT_TYPES,
     SensiChecked,
-    useStyles,
+    styles,
 } from './sensi-parameters-selector';
 
 export const SensiInjections = ({ index, onChange, defaultValue }) => {
-    const classes = useStyles();
     const [checked, setChecked] = useState(defaultValue.checked ?? true);
 
     const onClickChecked = () => {
@@ -32,7 +31,7 @@ export const SensiInjections = ({ index, onChange, defaultValue }) => {
         elementType: elementType.FILTER,
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
+        elementStyle: styles.chipElement,
     });
 
     const [injections, injectionsField] = useDirectoryElements({
@@ -41,7 +40,7 @@ export const SensiInjections = ({ index, onChange, defaultValue }) => {
         elementType: elementType.FILTER,
         equipmentTypes: INJECTIONS_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
+        elementStyle: styles.chipElement,
     });
 
     const [contingencies, contingenciesField] = useDirectoryElements({
@@ -51,7 +50,7 @@ export const SensiInjections = ({ index, onChange, defaultValue }) => {
             : [],
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        elementClassName: classes.chipElement,
+        elementStyle: styles.chipElement,
     });
 
     useEffect(() => {

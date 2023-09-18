@@ -587,6 +587,7 @@
     "Off": "Désactivé",
     "NoModification": "Pas de modification",
     "NbModification": "{nb} modification{several} à coller",
+    "NbModificationToRestore": "{nb} modification{several} à restaurer",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
     "EnergySourceText": "Source d'énergie",
     "Hydro": "Hydraulique",
