@@ -18,7 +18,6 @@ import {
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
 } from '../../../../utils/field-constants';
-import { VSC_CONVERTER_MODE } from '../../../../network/constants';
 
 export function getVscHvdcLinePaneSchema(id: string) {
     return {
@@ -72,8 +71,7 @@ export function getVscHvdcLinePaneEmptyFormData(id: string) {
             [MAXIMUM_ACTIVE_POWER]: null,
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: null,
             [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: null,
-            [CONVERTERS_MODE]:
-                VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.id,
+            [CONVERTERS_MODE]: null,
             [ACTIVE_POWER]: null,
             [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: false,
             [P0]: null,

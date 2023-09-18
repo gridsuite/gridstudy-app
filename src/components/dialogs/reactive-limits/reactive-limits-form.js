@@ -31,7 +31,6 @@ const ReactiveLimitsForm = ({
     id = REACTIVE_LIMITS,
     equipmentToModify = null,
     updatePreviousReactiveCapabilityCurveTable = undefined,
-    getRowLabelSuffix,
 }) => {
     const reactiveCapabilityCurveChoice = useWatch({
         name: `${id}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
@@ -82,7 +81,6 @@ const ReactiveLimitsForm = ({
             updatePreviousReactiveCapabilityCurveTable={
                 updatePreviousReactiveCapabilityCurveTable
             }
-            getRowLabelSuffix={getRowLabelSuffix}
         />
     );
 

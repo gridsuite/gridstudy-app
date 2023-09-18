@@ -24,7 +24,6 @@ export const ReactiveCapabilityCurveTable = ({
     disabled = false,
     previousValues,
     updatePreviousReactiveCapabilityCurveTable,
-    getRowLabelSuffix = (index) => index.toString(),
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
 
@@ -65,7 +64,7 @@ export const ReactiveCapabilityCurveTable = ({
                 } else if (index === displayedValues.length - 1) {
                     labelSuffix = 'max';
                 } else {
-                    labelSuffix = getRowLabelSuffix(index);
+                    labelSuffix = index - 1;
                 }
                 return (
                     <Grid key={value.id} container spacing={3} item>

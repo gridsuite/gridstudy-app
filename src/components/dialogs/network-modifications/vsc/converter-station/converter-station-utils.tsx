@@ -222,7 +222,7 @@ export function getConverterStationFromSearchCopy(
 ) {
     return {
         [id]: {
-            [CONVERTER_STATION_ID]: converterStation.id,
+            [CONVERTER_STATION_ID]: converterStation.id + '(1)',
             [CONVERTER_STATION_NAME]: converterStation?.name ?? '',
             [LOSS_FACTOR]: converterStation.lossFactor,
             [REACTIVE_POWER]: converterStation?.reactivePowerSetpoint,
@@ -233,7 +233,7 @@ export function getConverterStationFromSearchCopy(
                 busbarSectionId: converterStation.busOrBusbarSectionId,
                 connectionDirection: converterStation?.connectionDirection,
                 connectionName: converterStation?.connectionName,
-                connectionPosition: converterStation?.connectionPosition,
+                connectionPosition: null,
                 busbarSectionName: null,
             }),
             ...getReactiveLimitsFormData({
