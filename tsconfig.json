@@ -17,5 +17,8 @@
         "noEmit": true,
         "jsx": "react-jsx"
     },
-    "include": ["src","decs.d.ts"]
+    "include": [
+        "src", "decs.d.ts"
+    ],
+    "types": ["jest", "node"]
 }

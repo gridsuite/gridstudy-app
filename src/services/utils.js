@@ -24,7 +24,7 @@ export const getRequestParamFromList = (params, paramName) => {
     );
 };
 
-const parseError = (text) => {
+export const parseError = (text) => {
     try {
         return JSON.parse(text);
     } catch (err) {
@@ -32,7 +32,7 @@ const parseError = (text) => {
     }
 };
 
-const handleError = (response) => {
+export const handleError = (response) => {
     return response.text().then((text) => {
         const errorName = 'HttpResponseError : ';
         let error;
@@ -72,7 +72,7 @@ export const getToken = () => {
     return state.user.id_token;
 };
 
-const prepareRequest = (init, token) => {
+export const prepareRequest = (init, token) => {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
             'Argument 2 of backendFetch is not an object' + typeof init
@@ -85,7 +85,7 @@ const prepareRequest = (init, token) => {
     return initCopy;
 };
 
-const safeFetch = (url, initCopy) => {
+export const safeFetch = (url, initCopy) => {
     return fetch(url, initCopy).then((response) =>
         response.ok ? response : handleError(response)
     );

@@ -63,12 +63,19 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test --watchAll=false --transformIgnorePatterns \"node_modules/(?!@gridsuite/commons-ui)/\"",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "jest_clear_cache": "jest --clearCache"
     },
     "eslintConfig": {
+        "plugins": [
+            "jest",
+            "testing-library"
+        ],
         "extends": [
             "react-app",
-            "plugin:prettier/recommended"
+            "plugin:prettier/recommended",
+            "plugin:prettier/recommended",
+            "plugin:jest/recommended"
         ],
         "rules": {
             "prettier/prettier": "warn",
@@ -90,9 +97,11 @@
         ]
     },
     "devDependencies": {
-        "http-proxy-middleware": "^2.0.0",
+        "@types/jest": "^29.5.5",
         "eslint-config-prettier": "^8.0.0",
+        "eslint-plugin-jest": "^27.2.1",
         "eslint-plugin-prettier": "^4.0.0",
+        "http-proxy-middleware": "^2.0.0",
         "prettier": "^2.0.5"
     }
 }
