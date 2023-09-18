@@ -211,7 +211,7 @@ const initialState = {
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
-    mapDataLoading: false,
+    mapDataLoading: true,
     loadflowNotif: false,
     saNotif: false,
     voltageInitNotif: false,
