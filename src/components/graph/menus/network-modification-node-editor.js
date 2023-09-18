@@ -1006,7 +1006,10 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openRestoreModificationDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={modificationsToRestore.length === 0}
+                            disabled={
+                                modificationsToRestore.length === 0 ||
+                                isAnyNodeBuilding
+                            }
                         >
                             <RestoreFromTrash />
                         </IconButton>

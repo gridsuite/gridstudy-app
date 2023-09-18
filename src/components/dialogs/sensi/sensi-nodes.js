@@ -13,11 +13,10 @@ import {
     EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES,
     MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES,
     SensiChecked,
-    useStyles,
+    styles,
 } from './sensi-parameters-selector';
 
 export const SensiNodes = ({ index, onChange, defaultValue }) => {
-    const classes = useStyles();
     const [checked, setChecked] = useState(defaultValue.checked ?? true);
 
     const onClickChecked = () => {
@@ -33,7 +32,7 @@ export const SensiNodes = ({ index, onChange, defaultValue }) => {
             elementType: elementType.FILTER,
             equipmentTypes: MONITORED_VOLTAGE_LEVELS_EQUIPMENT_TYPES,
             titleId: 'FiltersListsSelection',
-            elementClassName: classes.chipElement,
+            elementStyle: styles.chipElement,
         });
 
     const [equipmentsInVoltageRegulation, equipmentsInVoltageRegulationField] =
@@ -45,7 +44,7 @@ export const SensiNodes = ({ index, onChange, defaultValue }) => {
             elementType: elementType.FILTER,
             equipmentTypes: EQUIPMENTS_IN_VOLTAGE_REGULATION_TYPES,
             titleId: 'FiltersListsSelection',
-            elementClassName: classes.chipElement,
+            elementStyle: styles.chipElement,
         });
 
     const [contingencies, contingenciesField] = useDirectoryElements({
@@ -55,7 +54,7 @@ export const SensiNodes = ({ index, onChange, defaultValue }) => {
             : [],
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        elementClassName: classes.chipElement,
+        elementStyle: styles.chipElement,
     });
 
     useEffect(() => {
