@@ -135,7 +135,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             </Grid>
 
             <GridSection title="ReactiveLimits" />
-            <ReactiveLimitsForm id={`${id}.${REACTIVE_LIMITS}`} getRowLabelSuffix={(index : number) => index - 1}/>
+            <ReactiveLimitsForm
+                id={`${id}.${REACTIVE_LIMITS}`}
+                getRowLabelSuffix={(index: number) => index - 1}
+            />
 
             <GridSection title={'Setpoints'} />
             <Grid container item spacing={2}>

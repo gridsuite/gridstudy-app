@@ -25,7 +25,7 @@ export const ReactiveCapabilityCurveTable = ({
     disabled = false,
     previousValues,
     updatePreviousReactiveCapabilityCurveTable,
-    getRowLabelSuffix = (index) => index.toString()
+    getRowLabelSuffix = (index) => index.toString(),
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
     const classes = useStyles();

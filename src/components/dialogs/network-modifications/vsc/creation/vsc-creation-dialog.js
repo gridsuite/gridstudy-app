@@ -48,7 +48,6 @@ import VscCreationForm from './vsc-creation-form';
 import { createVsc } from '../../../../../services/study/network-modifications';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
-import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 
 const formSchema = yup
@@ -95,7 +94,6 @@ const VscCreationDialog = ({
     });
 
     const fromSearchCopyToFormValues = (hvdcLine) => {
-        const converterStation1 = hvdcLine.converterStation1;
         reset({
             [EQUIPMENT_ID]: hvdcLine.id + '(1)',
             [EQUIPMENT_NAME]: hvdcLine.name ?? '',
