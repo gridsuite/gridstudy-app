@@ -23,7 +23,13 @@ const styles = {
     }),
 };
 
-export const CsvExport = ({ gridRef, columns, tableName, disabled }) => {
+export const CsvExport = ({
+    gridRef,
+    columns,
+    tableNamePrefix = '',
+    tableName,
+    disabled,
+}) => {
     const intl = useIntl();
 
     const getCSVFilename = useCallback(() => {
@@ -42,9 +48,9 @@ export const CsvExport = ({ gridRef, columns, tableName, disabled }) => {
         gridRef?.current?.api?.exportDataAsCsv({
             suppressQuotes: true,
             columnKeys: filteredColumnsKeys,
-            fileName: getCSVFilename(),
+            fileName: tableNamePrefix.concat(getCSVFilename()),
         });
-    }, [columns, getCSVFilename, gridRef]);
+    }, [columns, getCSVFilename, gridRef, tableNamePrefix]);
 
     return (
         <Grid item sx={styles.exportCsv}>
