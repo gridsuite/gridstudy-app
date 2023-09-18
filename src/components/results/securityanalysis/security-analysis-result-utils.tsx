@@ -15,10 +15,8 @@ import {
     ColDef,
     ICellRendererParams,
     IRowNode,
-    ITooltipParams,
     ValueFormatterParams,
 } from 'ag-grid-community';
-import { FunctionComponent } from 'react';
 
 export const computeLoading = (
     limitViolation: LimitViolationFromBack
@@ -110,18 +108,12 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
         cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined,
-    customTooltipValues: FunctionComponent<ITooltipParams>,
-    toolTipValueGetterValues: (
-        params: ITooltipParams
-    ) => { title: null; values: string[] | undefined } | null
+    ) => React.JSX.Element | undefined
 ): ColDef[] => {
     return [
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
-            tooltipComponent: customTooltipValues,
-            tooltipValueGetter: toolTipValueGetterValues,
         },
         {
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -302,11 +294,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
         cellData: ICellRendererParams
-    ) => React.JSX.Element | undefined,
-    customTooltipValues: FunctionComponent<ITooltipParams>,
-    toolTipValueGetterValues: (
-        params: ITooltipParams
-    ) => { title: null; values: string | undefined } | null
+    ) => React.JSX.Element | undefined
 ): ColDef[] => {
     return [
         {
@@ -317,8 +305,6 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
-            tooltipComponent: customTooltipValues,
-            tooltipValueGetter: toolTipValueGetterValues,
         },
         {
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),

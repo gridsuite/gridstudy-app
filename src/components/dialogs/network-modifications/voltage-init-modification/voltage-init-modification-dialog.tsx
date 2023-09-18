@@ -278,6 +278,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             lockPinned: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
+            cellRenderer: DefaultCellRenderer,
             suppressKeyboardEvent: (params: any) => suppressKeyEvent(params),
         }),
         []
