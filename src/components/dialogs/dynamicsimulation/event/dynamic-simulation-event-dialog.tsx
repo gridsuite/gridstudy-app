@@ -96,8 +96,7 @@ export const DynamicSimulationEventDialog = (
                         name: propertyName,
                         value: formObj[propertyName],
                         type: eventDefinition
-                            ? eventDefinition[propertyName as EventPropertyName]
-                                  ?.type
+                            ? eventDefinition[propertyName]?.type
                             : PrimitiveTypes.STRING,
                     } as EventProperty,
                 ],
@@ -197,6 +196,7 @@ export const DynamicSimulationEventDialog = (
         setDataFetchStatus(FetchStatus.RUNNING);
         fetchDynamicSimulationEvent(studyUuid, currentNodeId, equipmentId).then(
             (event) => {
+                console.log('Loaded event = ', event);
                 setDataFetchStatus(FetchStatus.SUCCEED);
                 setEvent(event);
             }
