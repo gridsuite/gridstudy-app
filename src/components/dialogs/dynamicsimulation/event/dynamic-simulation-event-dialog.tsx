@@ -122,7 +122,6 @@ export const DynamicSimulationEventDialog = (
                       equipmentId,
                       equipmentType,
                       eventType,
-                      eventOrder: 0,
                       properties,
                   };
 

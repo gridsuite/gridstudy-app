@@ -101,31 +101,6 @@ export function saveDynamicSimulationEvent(
     }
 }
 
-export function moveDynamicSimulationEvent(
-    studyUuid: string,
-    nodeUuid: string,
-    itemUuid?: string,
-    beforeUuid?: string
-) {
-    console.info(
-        `Move dynamic simulation event on '${studyUuid}' and node '${nodeUuid}' ...`
-    );
-
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        `/dynamic-simulation/events/move/${itemUuid}?beforeUuid=${beforeUuid}`;
-
-    console.debug(url);
-
-    return backendFetch(url, {
-        method: 'PUT',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-    });
-}
-
 export function deleteDynamicSimulationEvents(
     studyUuid: string,
     nodeUuid: string,

@@ -7,6 +7,7 @@
 import {
     EventDefinition,
     EventType,
+    Event,
     PrimitiveTypes,
 } from '../types/event.type';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
@@ -51,4 +52,22 @@ export const getEventType = (equipmentType: string): EventType | undefined => {
     }
 
     return eventType;
+};
+
+// util methods for Event model
+
+// util methods for Event
+export const getStartTime = (event: Event): number => {
+    return parseInt(
+        event.properties.find((property) => property.name === 'startTime')
+            ?.value ?? ''
+    );
+};
+
+export const getStartTimeUnit = (event: Event): string => {
+    return (
+        (event.eventType &&
+            eventDefinitions[event.eventType]?.startTime?.unit) ??
+        ''
+    );
 };

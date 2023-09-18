@@ -20,7 +20,6 @@ import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
-import { DragDropContext, Droppable, DropResult } from 'react-beautiful-dnd';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import {
     addNotification,
@@ -42,11 +41,11 @@ import {
 import {
     deleteDynamicSimulationEvents,
     fetchDynamicSimulationEvents,
-    moveDynamicSimulationEvent,
 } from '../../../../services/dynamic-simulation';
 import { EventListItem } from './event-list-item';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { FetchStatus } from '../../../../services/utils';
+import { getStartTime } from '../../../dialogs/dynamicsimulation/event/model/event.model';
 
 const styles = {
     listContainer: (theme: Theme) => ({
@@ -70,9 +69,12 @@ const styles = {
         overflow: 'hidden',
     }),
     toolbar: (theme: Theme) => ({
-        padding: theme.spacing(0),
+        '&': {
+            // Necessary to overrides some @media specific styles that are defined elsewhere
+            padding: 0,
+            minHeight: 0,
+        },
         border: theme.spacing(1),
-        minHeight: 0,
         margin: 0,
         flexShrink: 0,
     }),
@@ -85,15 +87,9 @@ const styles = {
     filler: {
         flexGrow: 1,
     },
-    dividerTool: (theme: Theme) => ({
-        background: theme.palette.primary.main,
-    }),
     circularProgress: (theme: Theme) => ({
         marginRight: theme.spacing(2),
         color: theme.palette.primary.contrastText,
-    }),
-    formattedMessageProgress: (theme: Theme) => ({
-        marginTop: theme.spacing(2),
     }),
     notification: (theme: Theme) => ({
         flex: 1,
@@ -139,8 +135,6 @@ const EventModificationScenarioEditor = () => {
 
     const [selectedItems, setSelectedItems] = useState<Set<Event>>(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState<boolean>(false);
-
-    const [isDragging, setIsDragging] = useState(false);
 
     const [editDialogOpen, setEditDialogOpen] = useState<
         | {
@@ -217,7 +211,11 @@ const EventModificationScenarioEditor = () => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
                 if (currentNode.id === currentNodeIdRef.current) {
-                    setEvents(res);
+                    // sort by start time
+                    const sortedEvents = res.sort(
+                        (a, b) => getStartTime(a) - getStartTime(b)
+                    );
+                    setEvents(sortedEvents);
                 }
             })
             .catch((error) => {
@@ -348,44 +346,6 @@ const EventModificationScenarioEditor = () => {
         setToggleSelectAll((oldVal: boolean) => !oldVal);
     }, []);
 
-    const handleDragEnd = useCallback(
-        ({ source, destination }: DropResult) => {
-            setIsDragging(false);
-            if (
-                !currentNode?.id ||
-                destination === null ||
-                source.index === destination?.index
-            ) {
-                return;
-            }
-            const res = [...events];
-            const [item] = res.splice(source.index, 1);
-            const before = res[destination?.index ?? source.index]?.uuid || '';
-
-            res.splice(
-                destination ? destination.index : events.length,
-                0,
-                item
-            );
-
-            /* doing the local change before update to server */
-            setEvents(res);
-            moveDynamicSimulationEvent(
-                studyUuid ?? '',
-                currentNode.id,
-                item.uuid,
-                before
-            ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'errReorderModificationMsg',
-                });
-                setEvents(events); // rollback
-            });
-        },
-        [events, studyUuid, currentNode?.id, snackError]
-    );
-
     const isLoading = () => {
         return (
             notificationIdList.filter(
@@ -396,45 +356,23 @@ const EventModificationScenarioEditor = () => {
 
     const renderEventList = () => {
         return (
-            <DragDropContext
-                onDragEnd={handleDragEnd}
-                onDragStart={() => setIsDragging(true)}
-            >
-                <Droppable
-                    droppableId="event-modification-list"
-                    isDropDisabled={isLoading() || isAnyNodeBuilding}
-                >
-                    {(provided) => (
-                        <Box
-                            sx={styles.listContainer}
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                        >
-                            <CheckboxList
-                                className={styles.list}
-                                onChecked={setSelectedItems}
-                                values={events}
-                                initialSelection={[]}
-                                itemComparator={(a, b) =>
-                                    a.eventOrder === b.eventOrder
-                                }
-                                itemRenderer={(props: any) => (
-                                    <EventListItem
-                                        key={props.item.equipmentId}
-                                        onEdit={doEditEvent}
-                                        isDragging={isDragging}
-                                        isOneNodeBuilding={isAnyNodeBuilding}
-                                        disabled={isLoading()}
-                                        {...props}
-                                    />
-                                )}
-                                toggleSelectAll={toggleSelectAll}
-                            />
-                            {provided.placeholder}
-                        </Box>
-                    )}
-                </Droppable>
-            </DragDropContext>
+            <CheckboxList
+                className={styles.list}
+                onChecked={setSelectedItems}
+                values={events}
+                initialSelection={[]}
+                itemComparator={(a, b) => a.uuid === b.uuid}
+                itemRenderer={(props: any) => (
+                    <EventListItem
+                        key={props.item.equipmentId}
+                        onEdit={doEditEvent}
+                        isOneNodeBuilding={isAnyNodeBuilding}
+                        disabled={isLoading()}
+                        {...props}
+                    />
+                )}
+                toggleSelectAll={toggleSelectAll}
+            />
         );
     };
 

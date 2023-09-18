@@ -12,13 +12,16 @@ import { OverflowableText } from '@gridsuite/commons-ui';
 import Divider from '@mui/material/Divider';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
-import { Draggable } from 'react-beautiful-dnd';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSelector } from 'react-redux';
 import { Theme } from '@mui/material/styles';
 import { Event } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { ReduxState } from '../../../../redux/reducer.type';
 import { ListItemProps } from '@mui/material/ListItem/ListItem';
+import { Box } from '@mui/material';
+import {
+    getStartTime,
+    getStartTimeUnit,
+} from '../../../dialogs/dynamicsimulation/event/model/event.model';
 
 const styles = {
     listItem: (theme: Theme) => ({
@@ -27,19 +30,14 @@ const styles = {
     label: {
         flexGrow: '1',
     },
-    icon: {
+    iconCheck: (theme: Theme) => ({
         minWidth: 0,
-    },
+        marginLeft: theme.spacing(2),
+    }),
     iconEdit: (theme: Theme) => ({
         marginRight: theme.spacing(1),
     }),
     checkbox: {},
-    dragIcon: (theme: Theme) => ({
-        padding: theme.spacing(0),
-        border: theme.spacing(1),
-        borderRadius: theme.spacing(0),
-        zIndex: 90,
-    }),
 };
 
 export interface EventListItemProps extends ListItemProps {
@@ -48,7 +46,6 @@ export interface EventListItemProps extends ListItemProps {
     checked: boolean;
     handleToggle: (event: Event) => void;
     onEdit: (event: Event) => void;
-    isDragging: boolean;
     isOneNodeBuilding: boolean;
 }
 
@@ -58,7 +55,6 @@ export const EventListItem = ({
     checked,
     index,
     handleToggle,
-    isDragging,
     isOneNodeBuilding,
     ...props
 }: EventListItemProps) => {
@@ -76,7 +72,14 @@ export const EventListItem = ({
             return;
         }
         setComputedValues({
-            computedLabel: <strong>{item.equipmentId}</strong>,
+            computedLabel: (
+                <>
+                    <strong>{item.equipmentId}</strong>
+                    <i>{` - ${getStartTime(item)} ${getStartTimeUnit(
+                        item
+                    )}`}</i>
+                </>
+            ),
         });
     }, [item, studyUuid, currentNode]);
 
@@ -95,60 +98,33 @@ export const EventListItem = ({
     const [hover, setHover] = useState(false);
 
     return (
-        <Draggable
-            draggableId={item.equipmentId}
-            index={index}
-            isDragDisabled={isOneNodeBuilding}
+        <Box
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
         >
-            {(provided) => (
-                <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    onMouseEnter={() => setHover(true)}
-                    onMouseLeave={() => setHover(false)}
-                >
-                    <ListItem
-                        key={item.equipmentId}
-                        {...props}
-                        sx={styles.listItem}
+            <ListItem key={item.equipmentId} {...props} sx={styles.listItem}>
+                <ListItemIcon sx={styles.iconCheck}>
+                    <Checkbox
+                        sx={styles.checkbox}
+                        color={'primary'}
+                        edge="start"
+                        checked={checked}
+                        onClick={toggle}
+                        disableRipple
+                    />
+                </ListItemIcon>
+                <OverflowableText sx={styles.label} text={getLabel()} />
+                {!isOneNodeBuilding && hover && (
+                    <IconButton
+                        onClick={() => onEdit(item)}
+                        size={'small'}
+                        sx={styles.iconEdit}
                     >
-                        <IconButton
-                            {...provided.dragHandleProps}
-                            sx={styles.dragIcon}
-                            size={'small'}
-                            style={{
-                                opacity:
-                                    hover && !isDragging && !isOneNodeBuilding
-                                        ? '1'
-                                        : '0',
-                            }}
-                        >
-                            <DragIndicatorIcon spacing={0} edgeMode={'start'} />
-                        </IconButton>
-                        <ListItemIcon sx={styles.icon}>
-                            <Checkbox
-                                sx={styles.checkbox}
-                                color={'primary'}
-                                edge="start"
-                                checked={checked}
-                                onClick={toggle}
-                                disableRipple
-                            />
-                        </ListItemIcon>
-                        <OverflowableText sx={styles.label} text={getLabel()} />
-                        {!isOneNodeBuilding && hover && !isDragging && (
-                            <IconButton
-                                onClick={() => onEdit(item)}
-                                size={'small'}
-                                sx={styles.iconEdit}
-                            >
-                                <EditIcon />
-                            </IconButton>
-                        )}
-                    </ListItem>
-                    <Divider />
-                </div>
-            )}
-        </Draggable>
+                        <EditIcon />
+                    </IconButton>
+                )}
+            </ListItem>
+            <Divider />
+        </Box>
     );
 };

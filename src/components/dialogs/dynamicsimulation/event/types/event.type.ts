@@ -49,6 +49,5 @@ export interface Event {
     equipmentId: string;
     equipmentType: string;
     eventType?: EventType;
-    eventOrder: number;
     properties: EventProperty[];
 }
