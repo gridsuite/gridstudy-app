@@ -37,8 +37,6 @@ const AppTopBar = ({ user, userManager }) => {
         if (user !== null) {
             console.log('FM useEffect');
             fetchAppsAndUrls().then((res) => {
-                //TODO FM
-                console.log('FM res', res);
                 dispatch(setAppsAndUrls(res));
             });
         }

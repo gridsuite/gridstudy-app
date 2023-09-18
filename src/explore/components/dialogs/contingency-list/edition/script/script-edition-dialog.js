@@ -14,8 +14,15 @@ import {
     getContingencyListEmptyFormData,
     getScriptFormDataFromFetchedElement,
 } from '../../contingency-list-utils';
-import { getContingencyList, saveScriptContingencyList } from '../../../../../utils/rest-api';
-import { EQUIPMENT_TYPE, NAME, SCRIPT } from 'explore/components/utils/field-constants';
+import {
+    getContingencyList,
+    saveScriptContingencyList,
+} from '../../../../../utils/rest-api';
+import {
+    EQUIPMENT_TYPE,
+    NAME,
+    SCRIPT,
+} from 'explore/components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import ScriptEditionForm from './script-edition-form';
 import CustomMuiDialog from '../../../commons/custom-mui-dialog/custom-mui-dialog';

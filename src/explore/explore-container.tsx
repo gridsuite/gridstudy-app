@@ -6,17 +6,13 @@ import DirectoryContent from './components/directory-content';
 
 export const ExploreContainer: FunctionComponent = () => {
     return (
-        <Grid
-            container
-            style={{ height: '100%' }}
-        >
+        <Grid container style={{ height: '100%' }}>
             <Grid
                 item
                 xs={12}
                 sm={3}
                 style={{
-                    borderRight:
-                        '1px solid rgba(81, 81, 81, 1)',
+                    borderRight: '1px solid rgba(81, 81, 81, 1)',
                     height: '100%',
                     overflow: 'auto',
                     display: 'flex',
