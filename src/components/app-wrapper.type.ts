@@ -31,12 +31,6 @@ declare module '@mui/material/styles' {
     }
 }
 
-// used to accept properties from muiV4 like spacing, palette...
-// https://mui.com/material-ui/migration/troubleshooting/#types-property-quot-palette-quot-quot-spacing-quot-does-not-exist-on-type-defaulttheme
-declare module '@mui/styles/defaultTheme' {
-    interface DefaultTheme extends Theme {}
-}
-
 declare module 'ag-grid-community' {
     // used to add properties that are not supported by ColDef such as numeric, fractionDigits...
     interface ColDef {
