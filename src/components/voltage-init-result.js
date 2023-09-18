@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -17,9 +17,13 @@ import { green, red } from '@mui/material/colors';
 import Button from '@mui/material/Button';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { cloneVoltageInitModifications } from '../services/study/voltage-init';
+import {
+    cloneVoltageInitModifications,
+    getVoltageInitModifications,
+} from '../services/study/voltage-init';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
+import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 
 const styles = {
     container: {
@@ -53,6 +57,9 @@ const VoltageInitResult = ({ result, status }) => {
         !result
     );
     const [applyingModifications, setApplyingModifications] = useState(false);
+    const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] =
+        useState(false);
+    const [voltageInitModification, setVoltageInitModification] = useState();
 
     const intl = useIntl();
 
@@ -61,6 +68,10 @@ const VoltageInitResult = ({ result, status }) => {
     useEffect(() => {
         setDisableApplyModifications(!result);
     }, [result, setDisableApplyModifications]);
+
+    const closePreviewModificationsDialog = () => {
+        setPreviewModificationsDialogOpen(false);
+    };
 
     const applyModifications = useCallback(() => {
         setApplyingModifications(true);
@@ -78,6 +89,38 @@ const VoltageInitResult = ({ result, status }) => {
                 setApplyingModifications(false);
             });
     }, [currentNode?.id, snackError, studyUuid, setDisableApplyModifications]);
+
+    const previewModifications = useCallback(() => {
+        getVoltageInitModifications(studyUuid, currentNode.id)
+            .then((modificationList) => {
+                // this endpoint returns a list, but we are expecting a single modification here
+                setVoltageInitModification(modificationList.at(0));
+                setPreviewModificationsDialogOpen(true);
+            })
+            .catch((errmsg) => {
+                snackError({
+                    messageTxt: errmsg,
+                    headerId: 'errPreviewVoltageInitModificationMsg',
+                });
+            });
+    }, [
+        currentNode?.id,
+        snackError,
+        studyUuid,
+        setVoltageInitModification,
+        setPreviewModificationsDialogOpen,
+    ]);
+
+    const renderPreviewModificationsDialog = () => {
+        return (
+            <VoltageInitModificationDialog
+                currentNode={currentNode.id}
+                studyUuid={studyUuid}
+                editData={voltageInitModification}
+                onClose={() => closePreviewModificationsDialog(false)}
+            />
+        );
+    };
 
     function renderIndicatorsTable(indicators) {
         const rows = indicators
@@ -164,11 +207,13 @@ const VoltageInitResult = ({ result, status }) => {
                     <Box sx={styles.buttonApplyModifications}>
                         <Button
                             variant="outlined"
-                            onClick={applyModifications}
+                            onClick={previewModifications}
                             disabled={disabledApplyModifications}
                         >
-                            <FormattedMessage id="applyModifications" />
+                            <FormattedMessage id="previewModifications" />
                         </Button>
+                        {previewModificationsDialogOpen &&
+                            renderPreviewModificationsDialog()}
                         {applyingModifications && (
                             <div
                                 style={{
