@@ -14,10 +14,7 @@ import {
 } from '@gridsuite/commons-ui';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSearchMatchingEquipments } from '../utils/search-matching-equipments';
-
-const useEquipmentStyles = makeStyles(equipmentStyles);
 
 /**
  * Dialog to search equipment with a given type
@@ -34,8 +31,6 @@ const EquipmentSearchDialog = ({
     equipmentType,
     currentNodeUuid,
 }) => {
-    const equipmentClasses = useEquipmentStyles();
-
     const intl = useIntl();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const [searchMatchingEquipments, equipmentsFound] =
@@ -60,7 +55,7 @@ const EquipmentSearchDialog = ({
             elementsFound={equipmentsFound}
             renderElement={(props) => (
                 <EquipmentItem
-                    classes={equipmentClasses}
+                    styles={equipmentStyles}
                     {...props}
                     key={props.element.key}
                 />

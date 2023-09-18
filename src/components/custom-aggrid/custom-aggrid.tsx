@@ -6,16 +6,14 @@
  */
 
 import React, { useCallback } from 'react';
-import { makeStyles } from '@mui/styles';
 import { useTheme } from '@mui/material';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
-import clsx from 'clsx';
 import { useIntl } from 'react-intl';
-
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { GetLocaleTextParams } from 'ag-grid-community';
-import { Theme } from '@mui/material';
+import { Box } from '@mui/system';
+import { mergeSx } from '../utils/functions';
 
 interface CustomAGGGridStyleProps {
     shouldHidePinnedHeaderRightBorder?: boolean;
@@ -23,7 +21,7 @@ interface CustomAGGGridStyleProps {
 
 interface CustomAGGridProps extends AgGridReactProps, CustomAGGGridStyleProps {}
 
-const useStyles = makeStyles<Theme, CustomAGGGridStyleProps>(() => ({
+const styles = {
     grid: {
         width: 'auto',
         height: '100%',
@@ -40,14 +38,14 @@ const useStyles = makeStyles<Theme, CustomAGGGridStyleProps>(() => ({
             {
                 visibility: 'hidden',
             },
-
+    },
+    noBorderRight: {
         // hides right border for header of "Edit" column due to column being pinned
         '& .ag-pinned-left-header': {
-            borderRight: (props) =>
-                props.shouldHidePinnedHeaderRightBorder ? 'none' : '',
+            borderRight: 'none',
         },
     },
-}));
+};
 
 export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
     (props, ref) => {
@@ -56,7 +54,6 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             overlayNoRowsTemplate,
         } = props;
         const theme = useTheme();
-        const classes = useStyles({ shouldHidePinnedHeaderRightBorder });
         const intl = useIntl();
 
         const GRID_PREFIX = 'grid.';
@@ -73,7 +70,13 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
         );
 
         return (
-            <div className={clsx([theme.aggrid, classes.grid])}>
+            <Box
+                sx={mergeSx(
+                    styles.grid,
+                    shouldHidePinnedHeaderRightBorder && styles.noBorderRight
+                )}
+                className={theme.aggrid}
+            >
                 <AgGridReact
                     ref={ref}
                     getLocaleText={getLocaleText}
@@ -81,7 +84,7 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
                     {...props}
                 />
-            </div>
+            </Box>
         );
     }
 );
