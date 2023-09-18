@@ -52,6 +52,12 @@ interface MinMaxReactiveLimitsData {
     maximumReactivePower: number | null;
 }
 
+interface ConnectablePositionInfos {
+    connectionName: string | null;
+    connectionDirection: string | null;
+    connectionPosition: number | null;
+}
+
 interface ConverterStationInterfaceEditData {
     equipmentId: string;
     equipmentName: string | null;
@@ -85,10 +91,8 @@ export interface ConverterStationElementInfos {
     p: number | null;
     q: number | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
-    connectionName: string | null;
-    connectionDirection: string | null;
-    connectionPosition: number | null;
     minMaxReactiveLimits: MinMaxReactiveLimitsData | null;
+    connectablePositionInfos: ConnectablePositionInfos;
 }
 
 export function getVscConverterStationSchema(id: string) {
@@ -231,8 +235,11 @@ export function getConverterStationFromSearchCopy(
             ...getConnectivityFormData({
                 voltageLevelId: converterStation.voltageLevelId,
                 busbarSectionId: converterStation.busOrBusbarSectionId,
-                connectionDirection: converterStation?.connectionDirection,
-                connectionName: converterStation?.connectionName,
+                connectionDirection:
+                    converterStation?.connectablePositionInfos
+                        ?.connectionDirection,
+                connectionName:
+                    converterStation?.connectablePositionInfos?.connectionName,
                 connectionPosition: null,
                 busbarSectionName: null,
             }),
