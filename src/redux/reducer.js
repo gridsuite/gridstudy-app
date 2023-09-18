@@ -95,6 +95,7 @@ import {
     SET_COMPUTING_STATUS,
     SET_OPTIONAL_SERVICES,
     SET_COMPUTATION_RUNNING,
+    RESET_EQUIPMENTS_SUBSTATION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -1031,6 +1032,12 @@ export const reducer = createReducer(initialState, {
                 state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
             [EQUIPMENT_TYPES.HVDC_LINE]:
                 state.spreadsheetNetwork[EQUIPMENT_TYPES.HVDC_LINE],
+        };
+    },
+    [RESET_EQUIPMENTS_SUBSTATION]: (state) => {
+        state.spreadsheetNetwork = {
+            ...state.spreadsheetNetwork,
+            [EQUIPMENT_TYPES.SUBSTATION]: null,
         };
     },
     [SET_COMPUTING_STATUS]: (state, action) => {

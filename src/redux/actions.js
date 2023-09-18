@@ -699,3 +699,10 @@ export const setOptionalServices = (optionalServices) => {
         optionalServices: optionalServices,
     };
 };
+export const RESET_EQUIPMENTS_SUBSTATION = 'RESET_EQUIPMENTS_SUBSTATION';
+
+export function resetEquipmentsSubstation() {
+    return {
+        type: RESET_EQUIPMENTS_SUBSTATION,
+    };
+}

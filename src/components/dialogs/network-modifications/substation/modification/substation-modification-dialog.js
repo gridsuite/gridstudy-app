@@ -33,6 +33,8 @@ import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector
 import { modifySubstation } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import { resetEquipmentsSubstation } from '../../../../../redux/actions';
+import { useDispatch } from 'react-redux';
 
 const checkUniquePropertiesNames = (properties) => {
     const validValues = properties.filter((v) => v?.name);
@@ -113,6 +115,7 @@ const SubstationModificationDialog = ({
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [substationToModify, setSubstationToModify] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
+    const dispatch = useDispatch();
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -253,6 +256,10 @@ const SubstationModificationDialog = ({
 
     const onSubmit = useCallback(
         (substation) => {
+            const propertiesToUpdate = substation[
+                ADDITIONAL_PROPERTIES
+            ]?.filter((p) => p[VALUE] != null || p[DELETION_MARK]);
+
             modifySubstation(
                 studyUuid,
                 currentNodeUuid,
@@ -261,17 +268,22 @@ const SubstationModificationDialog = ({
                 substation[COUNTRY],
                 !!editData,
                 editData?.uuid,
-                substation[ADDITIONAL_PROPERTIES]?.filter(
-                    (p) => p[VALUE] != null || p[DELETION_MARK]
-                )
-            ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'SubstationModificationError',
+                propertiesToUpdate
+            )
+                .then(() => {
+                    // if properties change then we need to reset substation spreadsheet in order to get the new values
+                    if (propertiesToUpdate.length > 0) {
+                        dispatch(resetEquipmentsSubstation());
+                    }
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'SubstationModificationError',
+                    });
                 });
-            });
         },
-        [currentNodeUuid, editData, snackError, studyUuid, selectedId]
+        [currentNodeUuid, editData, snackError, studyUuid, selectedId, dispatch]
     );
 
     const open = useOpenShortWaitFetching({
