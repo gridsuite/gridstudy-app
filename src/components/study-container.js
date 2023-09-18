@@ -492,7 +492,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 // This is to avoid future fetch on variants removed during reindexation process
                 if (
                     studyIndexationStatusRef.current ===
-                    STUDY_INDEXATION_STATUS.INDEX_DONE
+                    STUDY_INDEXATION_STATUS.INDEXED
                 ) {
                     firstSelectedNode =
                         getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
@@ -577,7 +577,7 @@ export function StudyContainer({ view, onChangeTab }) {
         fetchStudyIndexationStatus(studyUuid)
             .then((status) => {
                 switch (status) {
-                    case STUDY_INDEXATION_STATUS.INDEX_DONE:
+                    case STUDY_INDEXATION_STATUS.INDEXED:
                     case STUDY_INDEXATION_STATUS.INDEXING_ONGOING: {
                         dispatch(setStudyIndexationStatus(status));
                         break;
@@ -630,7 +630,7 @@ export function StudyContainer({ view, onChangeTab }) {
     useEffect(() => {
         if (
             studyUuid &&
-            studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEX_DONE
+            studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEXED
         ) {
             checkStudyIndexation();
         }
@@ -729,7 +729,7 @@ export function StudyContainer({ view, onChangeTab }) {
             if (
                 studyUpdatedForce.eventData.headers?.[
                     HEADER_INDEXATION_STATUS
-                ] === STUDY_INDEXATION_STATUS.INDEX_DONE
+                ] === STUDY_INDEXATION_STATUS.INDEXED
             ) {
                 snackInfo({
                     headerId: 'studyIndexationDone',
@@ -855,7 +855,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     studyPending ||
                     !paramsLoaded ||
                     !isStudyNetworkFound ||
-                    studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEX_DONE
+                    studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEXED
                 } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
                 message={'LoadingRemoteData'}
             >

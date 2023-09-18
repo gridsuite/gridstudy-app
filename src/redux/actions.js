@@ -694,7 +694,7 @@ export function setComputationRunning(computationRunning) {
 export const STUDY_INDEXATION_STATUS = {
     NOT_INDEXED: 'NOT_INDEXED',
     INDEXING_ONGOING: 'INDEXING_ONGOING',
-    INDEX_DONE: 'INDEX_DONE',
+    INDEXED: 'INDEXED',
 };
 
 export const SET_STUDY_INDEXATION_STATUS = 'SET_STUDY_INDEXATION_STATUS';

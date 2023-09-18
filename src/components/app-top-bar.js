@@ -391,7 +391,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             });
         }
 
-        if (studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEX_DONE) {
+        if (studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEXED) {
             return intl.formatMessage({
                 id: 'WaitingStudyIndexation',
             });
