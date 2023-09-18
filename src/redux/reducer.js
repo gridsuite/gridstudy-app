@@ -14,7 +14,7 @@ import {
     USER_VALIDATION_ERROR,
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
-    SIGNIN_CALLBACK_ERROR
+    SIGNIN_CALLBACK_ERROR,
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
@@ -103,7 +103,8 @@ import {
     TREE_DATA,
     DIRECTORY_UPDATED,
     REMOVE_UPLOADING_ELEMENT,
-    ADD_UPLOADING_ELEMENT, SET_APPS_AND_URLS
+    ADD_UPLOADING_ELEMENT,
+    SET_APPS_AND_URLS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -267,7 +268,6 @@ const initialState = {
 };
 
 export const reducer = createReducer(initialState, {
-
     /*
     Common section
      */

@@ -112,7 +112,7 @@ export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
     return fetch('env.json')
         .then((res) => {
-            return res.json()
+            return res.json();
         })
         .then((res) => {
             return fetch(
@@ -122,7 +122,7 @@ export function fetchAppsAndUrls() {
             });
         })
         .catch((error) => {
-            console.error(error.message)
+            console.error(error.message);
         });
 }
 
