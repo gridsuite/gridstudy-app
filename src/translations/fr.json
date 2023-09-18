@@ -1073,7 +1073,6 @@
     "flowFlowSensitivityValueThreshold": "Valeur du seuil de sensibilité (ΔMW ou ΔA / MW)",
     "angleFlowSensitivityValueThreshold": "Valeur du seuil de sensibilité (ΔMW ou ΔA / Δ°)",
     "flowVoltageSensitivityValueThreshold": "Valeur du seuil de sensibilité (ΔkV / kV)",
-    "applyModifications": "Appliquer modifications",
     "previewModifications": "Visualiser modifications",
     "errPreviewVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération des modifications issues de l'initialisation du plan de tension",
     "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de l'application des modifications issues de l'initialisation du plan de tension",

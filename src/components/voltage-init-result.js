@@ -24,6 +24,7 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
 import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
+import { FetchStatus } from '../services/utils';
 
 const styles = {
     container: {
@@ -73,7 +74,7 @@ const VoltageInitResult = ({ result, status }) => {
         setPreviewModificationsDialogOpen(false);
     };
 
-    const applyModifications = useCallback(() => {
+    const applyModifications = () => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
         cloneVoltageInitModifications(studyUuid, currentNode.id)
@@ -88,20 +89,26 @@ const VoltageInitResult = ({ result, status }) => {
                 setDisableApplyModifications(false);
                 setApplyingModifications(false);
             });
-    }, [currentNode?.id, snackError, studyUuid, setDisableApplyModifications]);
+    };
 
     const previewModifications = useCallback(() => {
+        setApplyingModifications(true);
+        setDisableApplyModifications(true);
         getVoltageInitModifications(studyUuid, currentNode.id)
             .then((modificationList) => {
                 // this endpoint returns a list, but we are expecting a single modification here
                 setVoltageInitModification(modificationList.at(0));
                 setPreviewModificationsDialogOpen(true);
+                setDisableApplyModifications(false);
+                setApplyingModifications(false);
             })
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errPreviewVoltageInitModificationMsg',
                 });
+                setDisableApplyModifications(false);
+                setApplyingModifications(false);
             });
     }, [
         currentNode?.id,
@@ -118,6 +125,9 @@ const VoltageInitResult = ({ result, status }) => {
                 studyUuid={studyUuid}
                 editData={voltageInitModification}
                 onClose={() => closePreviewModificationsDialog(false)}
+                onPreviewModeSubmit={applyModifications}
+                editDataFetchStatus={FetchStatus.IDLE}
+                dialogProps={undefined}
             />
         );
     };
