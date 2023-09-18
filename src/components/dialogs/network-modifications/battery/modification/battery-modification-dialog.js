@@ -84,9 +84,7 @@ const formSchema = yup
             }),
         [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-        ...getReactiveLimitsSchema({
-            isEquipmentModification: true,
-        }),
+        ...getReactiveLimitsSchema(true),
         ...getFrequencyRegulationSchema(true),
     })
     .required();

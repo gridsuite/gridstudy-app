@@ -123,7 +123,7 @@ const formSchema = yup
             .min(0, 'RealPercentage')
             .max(1, 'RealPercentage'),
         ...getSetPointsSchema(),
-        ...getReactiveLimitsSchema({}),
+        ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
     })
     .required();
