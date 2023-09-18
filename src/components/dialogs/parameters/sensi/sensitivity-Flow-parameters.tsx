@@ -40,20 +40,10 @@ const SensitivityAnalysisFields: FunctionComponent = () => {
     const renderInput = (input: IFlowInputParameters) => {
         return (
             <>
-                <Grid
-                    item
-                    xs={8}
-                    alignItems="center"
-                    sx={styles.parameterName}
-                >
+                <Grid item xs={8} alignItems="center" sx={styles.parameterName}>
                     <FormattedMessage id={input.formattedMessageId} />
                 </Grid>
-                <Grid
-                    item
-                    xs={4}
-                    sx={styles.controlItem}
-                    alignItems="center"
-                >
+                <Grid item xs={4} sx={styles.controlItem} alignItems="center">
                     <FloatInput
                         name={input.name}
                         label={''}

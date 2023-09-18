@@ -431,9 +431,7 @@ export const SensitivityAnalysisParameters = ({
                     <SubmitButton onClick={handleSubmit(onSubmit)}>
                         <FormattedMessage id="validate" />
                     </SubmitButton>
-                    <CloseButton
-                        hideParameters={hideParameters}
-                    />
+                    <CloseButton hideParameters={hideParameters} />
                 </DialogActions>
             </Grid>
         </FormProvider>
