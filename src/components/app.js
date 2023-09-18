@@ -88,7 +88,8 @@ import {
     TABLES_NAMES_INDEXES,
 } from './spreadsheet/utils/config-tables';
 import { getComputedLanguage } from '../utils/language';
-import AppTopBar from './app-top-bar';
+import StudyTopBar from './app-top-bar';
+import ExploreTopBar from '../explore/components/app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchValidateUser } from '../services/user-admin';
 import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
@@ -99,6 +100,7 @@ import {
 import { fetchDefaultParametersValues } from '../services/utils';
 import { getOptionalServices } from '../services/study';
 import { defaultOptionalServicesState } from 'redux/reducer';
+import { ExploreContainer } from '../explore/explore-container';
 
 const noUserManager = { instance: null, error: null };
 
@@ -377,10 +379,15 @@ const App = () => {
             path: '/studies/:studyUuid',
         }) !== null;
 
+    // remove the default contextMenu
     useEffect(() => {
-        document.addEventListener('contextmenu', (event) => {
-            event.preventDefault();
-        });
+        document.addEventListener(
+            'contextmenu',
+            (event) => {
+                event.preventDefault();
+            },
+            { capture: true }
+        );
     });
 
     useEffect(() => {
@@ -437,7 +444,8 @@ const App = () => {
                 }
             );
 
-            const fetchOptionalServices = getOptionalServices()
+            //TODO FM voir avec mahdi et refactor si besoin
+            getOptionalServices()
                 .then((services) => {
                     const retrieveOptionalServices = services.map((service) => {
                         return {
@@ -479,11 +487,7 @@ const App = () => {
             // This might not be necessary but allows to gradually migrate parts
             // of the code that don't subscribe to exactly the parameters they need.
             // Code that depends on this could be rewritten to depend on what it acually needs.
-            Promise.all([
-                fetchCommonConfigPromise,
-                fetchAppConfigPromise,
-                fetchOptionalServices,
-            ])
+            Promise.all([fetchCommonConfigPromise, fetchAppConfigPromise])
                 .then(() => {
                     dispatch(setParamsLoaded());
                 })
@@ -519,85 +523,99 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar
-                user={user}
-                tabIndex={tabIndex}
-                onChangeTab={onChangeTab}
-                userManager={userManager}
-            />
             <CardErrorBoundary>
-                <div
-                    className="singlestretch-parent"
-                    style={{
-                        flexGrow: 1,
-                        //Study pane needs 'hidden' when displaying a
-                        //fullscreen sld or when displaying the results or
-                        //elements tables for certain screen sizes because
-                        //width/heights are computed programmaticaly and
-                        //resizing the page trigger render loops due to
-                        //appearing and disappearing scrollbars.
-                        //For all other cases, auto is better because it will
-                        //be easier to see that we have a layout problem when
-                        //scrollbars appear when they should not.
-                        overflow: isStudyPane ? 'hidden' : 'auto',
-                    }}
-                >
-                    {user !== null ? (
-                        <Routes>
-                            <Route
-                                path="/studies/:studyUuid"
-                                element={
-                                    <StudyContainer
-                                        view={STUDY_VIEWS[tabIndex]}
-                                        onChangeTab={onChangeTab}
+                {user !== null ? (
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={
+                                <>
+                                    <ExploreTopBar
+                                        user={user}
+                                        userManager={userManager}
                                     />
-                                }
-                            />
-                            <Route
-                                path="/sign-in-callback"
-                                element={
-                                    <Navigate
-                                        replace
-                                        to={getPreLoginPath() || '/'}
-                                    />
-                                }
-                            />
-                            <Route
-                                path="/logout-callback"
-                                element={
-                                    <h1>
-                                        Error: logout failed; you are still
-                                        logged in.
-                                    </h1>
-                                }
-                            />
-                            <Route
-                                path="*"
-                                element={
-                                    <PageNotFound
-                                        message={
-                                            <FormattedMessage id="PageNotFound" />
-                                        }
-                                    />
-                                }
-                            />
-                        </Routes>
-                    ) : (
-                        <AuthenticationRouter
-                            userManager={userManager}
-                            signInCallbackError={signInCallbackError}
-                            authenticationRouterError={
-                                authenticationRouterError
+                                    <ExploreContainer />
+                                </>
                             }
-                            showAuthenticationRouterLogin={
-                                showAuthenticationRouterLogin
-                            }
-                            dispatch={dispatch}
-                            navigate={navigate}
-                            location={location}
                         />
-                    )}
-                </div>
+                        <Route
+                            path="/studies/:studyUuid"
+                            element={
+                                <>
+                                    <StudyTopBar
+                                        user={user}
+                                        tabIndex={tabIndex}
+                                        onChangeTab={onChangeTab}
+                                        userManager={userManager}
+                                    />
+                                    <div
+                                        className="singlestretch-parent"
+                                        style={{
+                                            flexGrow: 1,
+                                            //Study pane needs 'hidden' when displaying a
+                                            //fullscreen sld or when displaying the results or
+                                            //elements tables for certain screen sizes because
+                                            //width/heights are computed programmaticaly and
+                                            //resizing the page trigger render loops due to
+                                            //appearing and disappearing scrollbars.
+                                            //For all other cases, auto is better because it will
+                                            //be easier to see that we have a layout problem when
+                                            //scrollbars appear when they should not.
+                                            overflow: isStudyPane
+                                                ? 'hidden'
+                                                : 'auto',
+                                        }}
+                                    >
+                                        <StudyContainer
+                                            view={STUDY_VIEWS[tabIndex]}
+                                            onChangeTab={onChangeTab}
+                                        />
+                                    </div>
+                                </>
+                            }
+                        />
+                        <Route
+                            path="/sign-in-callback"
+                            element={
+                                <Navigate
+                                    replace
+                                    to={getPreLoginPath() || '/'}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/logout-callback"
+                            element={
+                                <h1>
+                                    Error: logout failed; you are still logged
+                                    in.
+                                </h1>
+                            }
+                        />
+                        <Route
+                            path="*"
+                            element={
+                                <PageNotFound
+                                    message={
+                                        <FormattedMessage id="PageNotFound" />
+                                    }
+                                />
+                            }
+                        />
+                    </Routes>
+                ) : (
+                    <AuthenticationRouter
+                        userManager={userManager}
+                        signInCallbackError={signInCallbackError}
+                        authenticationRouterError={authenticationRouterError}
+                        showAuthenticationRouterLogin={
+                            showAuthenticationRouterLogin
+                        }
+                        dispatch={dispatch}
+                        navigate={navigate}
+                        location={location}
+                    />
+                )}
             </CardErrorBoundary>
         </div>
     );

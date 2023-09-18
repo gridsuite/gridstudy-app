@@ -14,6 +14,7 @@ import {
     USER_VALIDATION_ERROR,
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
+    SIGNIN_CALLBACK_ERROR
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
@@ -95,6 +96,14 @@ import {
     SET_COMPUTING_STATUS,
     SET_OPTIONAL_SERVICES,
     SET_COMPUTATION_RUNNING,
+    SELECT_DIRECTORY,
+    CURRENT_CHILDREN,
+    ACTIVE_DIRECTORY,
+    CURRENT_PATH,
+    TREE_DATA,
+    DIRECTORY_UPDATED,
+    REMOVE_UPLOADING_ELEMENT,
+    ADD_UPLOADING_ELEMENT, SET_APPS_AND_URLS
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -186,6 +195,18 @@ const initialSpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
 };
 
+const exploreInitialState = {
+    currentChildren: null,
+    selectedDirectory: null,
+    activeDirectory: null,
+    currentPath: [],
+    appsAndUrls: [],
+    selectedFile: null,
+    uploadingElements: {},
+    directoryUpdated: { force: 0, eventData: {} },
+    treeData: { mapData: {}, rootDirectories: [] },
+};
+
 export const defaultOptionalServicesState = Object.keys(
     OptionalServicesNames
 ).map((key) => ({
@@ -239,12 +260,66 @@ const initialState = {
     computationRunning: false,
     optionalServices: defaultOptionalServicesState,
     ...paramsInitialState,
+    ...exploreInitialState, //TODO FM separate gridstudy states too ?
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
 };
 
 export const reducer = createReducer(initialState, {
+
+    /*
+    Common section
+     */
+
+    [SELECT_THEME]: (state, action) => {
+        state[PARAM_THEME] = action[PARAM_THEME];
+        saveLocalStorageTheme(state[PARAM_THEME]);
+    },
+
+    [SELECT_LANGUAGE]: (state, action) => {
+        state[PARAM_LANGUAGE] = action[PARAM_LANGUAGE];
+        saveLocalStorageLanguage(state[PARAM_LANGUAGE]);
+    },
+
+    [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
+        state.computedLanguage = action.computedLanguage;
+    },
+
+    [USER]: (state, action) => {
+        state.user = action.user;
+    },
+
+    // TODO FM SIGNIN_CALLBACK_ERROR was not present in gridstudy before
+    [SIGNIN_CALLBACK_ERROR]: (state, action) => {
+        state.signInCallbackError = action.signInCallbackError;
+    },
+
+    [UNAUTHORIZED_USER_INFO]: (state, action) => {
+        state.authenticationRouterError = action.authenticationRouterError;
+    },
+
+    [LOGOUT_ERROR]: (state, action) => {
+        state.authenticationRouterError = action.authenticationRouterError;
+    },
+
+    [USER_VALIDATION_ERROR]: (state, action) => {
+        state.authenticationRouterError = action.authenticationRouterError;
+    },
+
+    [RESET_AUTHENTICATION_ROUTER_ERROR]: (state, action) => {
+        state.authenticationRouterError = null;
+    },
+
+    [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
+        state.showAuthenticationRouterLogin =
+            action.showAuthenticationRouterLogin;
+    },
+
+    /*
+    GridStudy section
+     */
+
     [OPEN_STUDY]: (state, action) => {
         state.studyUuid = action.studyRef[0];
 
@@ -426,30 +501,12 @@ export const reducer = createReducer(initialState, {
         };
     },
 
-    [SELECT_THEME]: (state, action) => {
-        state[PARAM_THEME] = action[PARAM_THEME];
-        saveLocalStorageTheme(state[PARAM_THEME]);
-    },
-
-    [SELECT_LANGUAGE]: (state, action) => {
-        state[PARAM_LANGUAGE] = action[PARAM_LANGUAGE];
-        saveLocalStorageLanguage(state[PARAM_LANGUAGE]);
-    },
-
-    [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
-        state.computedLanguage = action.computedLanguage;
-    },
-
     [SET_PARAMS_LOADED]: (state, action) => {
         state[PARAMS_LOADED] = action[PARAMS_LOADED];
     },
 
     [USE_NAME]: (state, action) => {
         state[PARAM_USE_NAME] = action[PARAM_USE_NAME];
-    },
-
-    [USER]: (state, action) => {
-        state.user = action.user;
     },
 
     [CENTER_LABEL]: (state, action) => {
@@ -491,27 +548,6 @@ export const reducer = createReducer(initialState, {
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
         state[PARAM_LINE_FLOW_ALERT_THRESHOLD] =
             action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
-    },
-
-    [UNAUTHORIZED_USER_INFO]: (state, action) => {
-        state.authenticationRouterError = action.authenticationRouterError;
-    },
-
-    [LOGOUT_ERROR]: (state, action) => {
-        state.authenticationRouterError = action.authenticationRouterError;
-    },
-
-    [USER_VALIDATION_ERROR]: (state, action) => {
-        state.authenticationRouterError = action.authenticationRouterError;
-    },
-
-    [RESET_AUTHENTICATION_ROUTER_ERROR]: (state, action) => {
-        state.authenticationRouterError = null;
-    },
-
-    [SHOW_AUTH_INFO_LOGIN]: (state, action) => {
-        state.showAuthenticationRouterLogin =
-            action.showAuthenticationRouterLogin;
     },
 
     [MAP_MANUAL_REFRESH]: (state, action) => {
@@ -1042,6 +1078,55 @@ export const reducer = createReducer(initialState, {
 
     [SET_OPTIONAL_SERVICES]: (state, action) => {
         state.optionalServices = action.optionalServices;
+    },
+
+    /*
+    GridExplore section
+     */
+
+    [CURRENT_CHILDREN]: (state, action) => {
+        state.currentChildren = action.currentChildren;
+    },
+
+    [SELECT_DIRECTORY]: (state, action) => {
+        state.selectedDirectory = action.selectedDirectory
+            ? { ...action.selectedDirectory }
+            : null;
+    },
+
+    [ACTIVE_DIRECTORY]: (state, action) => {
+        state.activeDirectory = action.activeDirectory;
+    },
+
+    [CURRENT_PATH]: (state, action) => {
+        state.currentPath = action.currentPath;
+    },
+
+    [SET_APPS_AND_URLS]: (state, action) => {
+        state.appsAndUrls = action.appsAndUrls;
+    },
+
+    [ADD_UPLOADING_ELEMENT]: (state, action) => {
+        state.uploadingElements = {
+            ...state.uploadingElements,
+            ...{ [action.uploadingElement.id]: action.uploadingElement },
+        };
+    },
+
+    [REMOVE_UPLOADING_ELEMENT]: (state, action) => {
+        let newUploadingElements = { ...state.uploadingElements };
+        delete newUploadingElements[action.uploadingElement.id];
+        state.uploadingElements = newUploadingElements;
+    },
+
+    [DIRECTORY_UPDATED]: (state, action) => {
+        state.directoryUpdated = {
+            force: 1 - state.directoryUpdated.force,
+            eventData: action.eventData,
+        };
+    },
+    [TREE_DATA]: (state, action) => {
+        state.treeData = action.treeData;
     },
 });
 

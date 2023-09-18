@@ -111,13 +111,18 @@ export const backendFetchJson = (url, init, token) => {
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
     return fetch('env.json')
-        .then((res) => res.json())
+        .then((res) => {
+            return res.json()
+        })
         .then((res) => {
             return fetch(
                 res.appsMetadataServerUrl + '/apps-metadata.json'
             ).then((response) => {
                 return response.json();
             });
+        })
+        .catch((error) => {
+            console.error(error.message)
         });
 }
 
