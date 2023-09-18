@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid, TextField, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
+import { CloseButton, DropDown, LabelledButton, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Typography from '@mui/material/Typography';
 import {
@@ -22,6 +22,7 @@ import {
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { inputAdornment } from './util/make-component-utils';
+import { mergeSx } from '../../utils/functions';
 
 const formatValues = (values, isDivision) => {
     let result = {};
@@ -50,7 +51,6 @@ const SecurityAnalysisFields = ({
     callback,
     isSingleField,
 }) => {
-    const classes = useStyles();
     const [values, setValues] = useState(initValue);
     const positiveDoubleValue = useMemo(() => /^\d*[.,]?\d?\d?$/, []);
 
@@ -111,22 +111,18 @@ const SecurityAnalysisFields = ({
     );
 
     return (
-        <Grid
-            className={
-                isSingleField ? classes.singleItem : classes.multipleItems
-            }
-        >
-            <Grid item xs={4} className={classes.parameterName}>
+        <Grid sx={isSingleField ? styles.singleItem : styles.multipleItems}>
+            <Grid item xs={4} sx={styles.parameterName}>
                 <Typography>{label}</Typography>
             </Grid>
             <Grid
                 item
                 container
                 xs={isSingleField ? 8 : 4}
-                className={
+                sx={
                     isSingleField
-                        ? classes.singleTextField
-                        : classes.firstTextField
+                        ? styles.singleTextField
+                        : styles.firstTextField
                 }
             >
                 <TextField
@@ -141,7 +137,7 @@ const SecurityAnalysisFields = ({
                 />
             </Grid>
             {!isSingleField && (
-                <Grid item container xs={4} className={classes.secondTextField}>
+                <Grid item container xs={4} sx={styles.secondTextField}>
                     <TextField
                         fullWidth
                         sx={{ input: { textAlign: 'right' } }}
@@ -168,8 +164,6 @@ export const SecurityAnalysisParameters = ({
     hideParameters,
     parametersBackend,
 }) => {
-    const classes = useStyles();
-
     const [
         providers,
         provider,
@@ -271,14 +265,14 @@ export const SecurityAnalysisParameters = ({
                     />
                 </Grid>
                 <Grid container spacing={1} paddingBottom={1}>
-                    <Grid item xs={8} className={classes.text}>
+                    <Grid item xs={8} sx={styles.text}>
                         <Typography>
                             {intl.formatMessage({
                                 id: 'securityAnalysis.violationsHiding',
                             })}
                         </Typography>
                         <Tooltip
-                            className={classes.tooltip}
+                            sx={styles.tooltip}
                             title={
                                 <FormattedMessage
                                     id={
@@ -302,13 +296,13 @@ export const SecurityAnalysisParameters = ({
             <Grid
                 container
                 key="secuAnalysisProvider"
-                className={classes.scrollableGrid}
+                sx={styles.scrollableGrid}
                 spacing={1}
             ></Grid>
             <LineSeparator />
             <Grid
                 container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
+                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
             >
                 <LabelledButton
@@ -319,10 +313,7 @@ export const SecurityAnalysisParameters = ({
                     label="resetProviderValuesToDefault"
                     callback={resetSAParameters}
                 />
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
+                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

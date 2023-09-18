@@ -22,6 +22,7 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { GridReadyEvent } from 'ag-grid-community';
 import { ReduxState } from '../../../redux/reducer.type';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 
 export const SecurityAnalysisTableN: FunctionComponent<
     PreContingencyResult
@@ -56,6 +57,7 @@ export const SecurityAnalysisTableN: FunctionComponent<
             autoHeaderHeight: true,
             suppressMovable: true,
             flex: 1,
+            cellRenderer: DefaultCellRenderer,
         }),
         []
     );

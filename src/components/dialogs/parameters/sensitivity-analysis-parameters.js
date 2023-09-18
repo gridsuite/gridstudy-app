@@ -7,17 +7,16 @@
 
 import React, { useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
-import { CloseButton, DropDown, LabelledButton, useStyles } from './parameters';
+import { CloseButton, DropDown, LabelledButton, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { TYPES, getValue } from './util/make-component-utils';
 import { DoubleEditor } from './load-flow-parameters';
+import { mergeSx } from '../../utils/functions';
 
 export const SensitivityAnalysisParameters = ({
     hideParameters,
     parametersBackend,
 }) => {
-    const classes = useStyles();
-
     const [
         providers,
         provider,
@@ -77,14 +76,14 @@ export const SensitivityAnalysisParameters = ({
                 <Grid
                     container
                     key="sensiAnalysisProvider"
-                    className={classes.scrollableGrid}
+                    sx={styles.scrollableGrid}
                 ></Grid>
                 <LineSeparator />
             </Grid>
 
             <Grid
                 container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
+                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
             >
                 <LabelledButton
@@ -95,10 +94,7 @@ export const SensitivityAnalysisParameters = ({
                     label="resetProviderValuesToDefault"
                     callback={resetSensitivityAnalysisParameters}
                 />
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
+                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

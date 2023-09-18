@@ -81,9 +81,10 @@ const styles = {
     }),
     runButtonContainer: {
         marginRight: '10%',
-        marginTop: '6px',
+        marginTop: '4px',
         flexShrink: 0,
     },
+    boxContent: { display: 'flex', width: '100%' },
 };
 
 const STUDY_VIEWS = [
@@ -463,7 +464,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         />
                     )}
                 </Box>
-                <Box sx={{ display: 'flex', width: '100%' }}>
+                <Box sx={styles.boxContent}>
                     {studyUuid && (
                         <Tabs
                             value={tabIndex}
