@@ -15,14 +15,13 @@ import {
     PARAM_LINE_PARALLEL_PATH,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../utils/config-params';
-import { CloseButton, useParameterState, useStyles } from './parameters';
+import { CloseButton, useParameterState, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { ParamLine, ParameterType } from './widget';
 import { useState } from 'react';
+import { mergeSx } from '../../utils/functions';
 
 export const MapParameters = ({ hideParameters }) => {
-    const classes = useStyles();
-
     const alertThresholdMarks = [
         {
             value: 0,
@@ -47,7 +46,7 @@ export const MapParameters = ({ hideParameters }) => {
             <Grid
                 container
                 spacing={1}
-                className={classes.scrollableGrid}
+                sx={styles.scrollableGrid}
                 key={'mapParameters'}
             >
                 <ParamLine
@@ -108,13 +107,10 @@ export const MapParameters = ({ hideParameters }) => {
             </Grid>
             <Grid
                 container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
+                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
             >
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
+                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

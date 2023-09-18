@@ -19,7 +19,7 @@ import {
     LabelledButton,
     TabPanel,
     useParametersBackend,
-    useStyles,
+    styles,
 } from '../parameters';
 import NetworkParameters from './network-parameters';
 import CurveParameters from './curve-parameters';
@@ -33,6 +33,7 @@ import {
 } from '../../../../services/study/dynamic-simulation';
 import { OptionalServicesNames } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
+import { mergeSx } from '../../../utils/functions';
 
 const TAB_VALUES = {
     timeDelayParamsTabValue: 'TimeDelay',
@@ -43,8 +44,6 @@ const TAB_VALUES = {
 };
 
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
-    const classes = useStyles();
-
     const dynamicSimulationAvailability = useOptionalServiceStatus(
         OptionalServicesNames.DynamicSimulation
     );
@@ -134,11 +133,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
 
     return (
         <>
-            <Grid
-                container
-                key="dsParameters"
-                className={classes.scrollableGrid}
-            >
+            <Grid container key="dsParameters" sx={styles.scrollableGrid}>
                 {providers && provider && (
                     <DropDown
                         value={provider}
@@ -281,17 +276,14 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
             </Grid>
             <Grid
                 container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
+                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
             >
                 <LabelledButton
                     callback={handleResetParametersAndProvider}
                     label="resetToDefault"
                 />
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
+                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

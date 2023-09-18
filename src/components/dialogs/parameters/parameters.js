@@ -8,7 +8,6 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import makeStyles from '@mui/styles/makeStyles';
 import {
     Grid,
     Box,
@@ -82,32 +81,27 @@ import {
 } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 
-export const CloseButton = ({ hideParameters, classeStyleName }) => {
+export const CloseButton = ({ hideParameters, ...props }) => {
     return (
-        <LabelledButton
-            callback={hideParameters}
-            label={'close'}
-            name={classeStyleName}
-        />
+        <LabelledButton callback={hideParameters} label={'close'} {...props} />
     );
 };
 
-export const LabelledButton = ({ callback, label, name }) => {
+export const LabelledButton = ({ callback, label, ...props }) => {
     return (
-        <Button onClick={callback} className={name}>
+        <Button onClick={callback} {...props}>
             <FormattedMessage id={label} />
         </Button>
     );
 };
 
 export const SwitchWithLabel = ({ value, label, callback }) => {
-    const classes = useStyles();
     return (
         <>
-            <Grid item xs={8} className={classes.parameterName}>
+            <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
+            <Grid item container xs={4} sx={styles.controlItem}>
                 <Switch
                     checked={value}
                     onChange={callback}
@@ -120,13 +114,12 @@ export const SwitchWithLabel = ({ value, label, callback }) => {
 };
 
 export const DropDown = ({ value, label, values, callback }) => {
-    const classes = useStyles();
     return (
         <>
-            <Grid item xs={8} className={classes.parameterName}>
+            <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
+            <Grid item container xs={4} sx={styles.controlItem}>
                 <Select
                     labelId={label}
                     value={value}
@@ -144,36 +137,36 @@ export const DropDown = ({ value, label, values, callback }) => {
     );
 };
 
-export const useStyles = makeStyles((theme) => ({
-    title: {
+export const styles = {
+    title: (theme) => ({
         padding: theme.spacing(2),
-    },
-    minWidthMedium: {
+    }),
+    minWidthMedium: (theme) => ({
         minWidth: theme.spacing(20),
-    },
-    parameterName: {
+    }),
+    parameterName: (theme) => ({
         fontWeight: 'bold',
         marginTop: theme.spacing(1),
-    },
+    }),
     controlItem: {
         justifyContent: 'flex-end',
         flexGrow: 1,
     },
-    button: {
+    button: (theme) => ({
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(1),
-    },
-    subgroupParameters: {
+    }),
+    subgroupParameters: (theme) => ({
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(1),
-    },
+    }),
     subgroupParametersAccordion: {
         '&:before': {
             display: 'none',
         },
         background: 'none',
     },
-    subgroupParametersAccordionSummary: {
+    subgroupParametersAccordionSummary: (theme) => ({
         flexDirection: 'row-reverse',
         '& .MuiAccordionSummary-expandIconWrapper': {
             transform: 'rotate(-90deg)',
@@ -184,16 +177,16 @@ export const useStyles = makeStyles((theme) => ({
         '& .MuiAccordionSummary-content': {
             marginLeft: theme.spacing(0),
         },
-    },
-    subgroupParametersAccordionDetails: {
+    }),
+    subgroupParametersAccordionDetails: (theme) => ({
         padding: theme.spacing(0),
-    },
+    }),
     marginTopButton: {
-        marginTop: 10,
+        marginTop: '10px',
         position: 'sticky',
         bottom: 0,
     },
-    scrollableGrid: {
+    scrollableGrid: (theme) => ({
         overflowY: 'auto',
         overflowX: 'hidden',
         maxHeight: '60vh',
@@ -201,51 +194,55 @@ export const useStyles = makeStyles((theme) => ({
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(1),
         flexGrow: 1,
-    },
-    singleItem: {
+    }),
+    singleItem: (theme) => ({
         display: 'flex',
         flex: 'auto',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
-    },
-    firstTextField: {
+    }),
+    firstTextField: (theme) => ({
         marginLeft: theme.spacing(3),
-    },
-    secondTextField: {
+    }),
+    secondTextField: (theme) => ({
         marginLeft: theme.spacing(3),
         marginRight: theme.spacing(2),
-    },
-    singleTextField: {
+    }),
+    singleTextField: (theme) => ({
         display: 'flex',
         marginRight: theme.spacing(2),
         marginLeft: theme.spacing(1),
-    },
-    tooltip: {
+    }),
+    tooltip: (theme) => ({
         marginLeft: theme.spacing(1),
-    },
-    text: {
+    }),
+    text: (theme) => ({
         display: 'flex',
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
-    },
-    multipleItems: {
+    }),
+    multipleItems: (theme) => ({
         display: 'flex',
         flex: 'auto',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
-    },
-    tabWithError: {
+    }),
+    tabWithError: (theme) => ({
         '&.Mui-selected': { color: theme.palette.error.main },
         color: theme.palette.error.main,
-    },
-    tabWithErrorIndicator: {
+    }),
+    tabWithErrorIndicator: (theme) => ({
         backgroundColor: theme.palette.error.main,
-    },
-}));
+    }),
+    panel: (theme) => ({
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(1),
+    }),
+};
 
 export const TabPanel = (props) => {
     const { children, value, index, keepState, ...other } = props;
@@ -259,7 +256,9 @@ export const TabPanel = (props) => {
             style={{ flexGrow: 1 }}
             {...other}
         >
-            {(value === index || keepState) && <Box p={1}>{children}</Box>}
+            {(value === index || keepState) && (
+                <Box sx={styles.panel}>{children}</Box>
+            )}
         </Typography>
     );
 };
@@ -585,8 +584,6 @@ const TAB_VALUES = {
 };
 
 const Parameters = ({ user, isParametersOpen, hideParameters }) => {
-    const classes = useStyles();
-
     const [tabValue, setTabValue] = useState(TAB_VALUES.sldParamsTabValue);
 
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -676,11 +673,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
             fullWidth={true}
         >
             <DialogTitle id="form-dialog-title">
-                <Typography
-                    component="span"
-                    variant="h5"
-                    className={classes.title}
-                >
+                <Typography component="span" variant="h5" sx={styles.title}>
                     <FormattedMessage id="parameters" />
                 </Typography>
             </DialogTitle>
