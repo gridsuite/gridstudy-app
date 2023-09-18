@@ -10,7 +10,7 @@ import { Tabs, Tab, Grid, Button, DialogActions } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { useStyles, TabPanel, CloseButton } from '../parameters';
+import { styles, TabPanel, CloseButton } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
 import { SubmitButton } from '@gridsuite/commons-ui';
@@ -31,7 +31,6 @@ import {
     VOLTAGE_LIMITS,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
-import clsx from 'clsx';
 import {
     getVoltageInitParameters,
     updateVoltageInitParameters,
@@ -41,6 +40,7 @@ import {
     OptionalServicesStatus,
 } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
+import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -115,7 +115,6 @@ export const VoltageInitParameters = ({
     hideParameters,
     useVoltageInitParameters,
 }) => {
-    const classes = useStyles();
     const { snackError } = useSnackMessage();
 
     const [tabValue, setTabValue] = useState(
@@ -287,24 +286,6 @@ export const VoltageInitParameters = ({
         setTabIndexesWithError(tabsInError);
     };
 
-    const getTabIndicatorClass = useCallback(
-        (index) =>
-            tabIndexesWithError.includes(index)
-                ? {
-                      indicator: classes.tabWithErrorIndicator,
-                  }
-                : {},
-        [tabIndexesWithError, classes]
-    );
-
-    const getTabClass = useCallback(
-        (index) =>
-            clsx({
-                [classes.tabWithError]: tabIndexesWithError.includes(index),
-            }),
-        [tabIndexesWithError, classes]
-    );
-
     const clear = useCallback(() => {
         reset(emptyFormData);
         resetVoltageInitParameters();
@@ -316,26 +297,33 @@ export const VoltageInitParameters = ({
             <Grid
                 container
                 key="voltageInitParameters"
-                className={classes.scrollableGrid}
+                sx={styles.scrollableGrid}
             >
                 <Grid item maxWidth="md" width="100%">
                     <Tabs
                         value={tabValue}
                         variant="scrollable"
                         onChange={handleTabChange}
-                        classes={getTabIndicatorClass(tabValue)}
+                        TabIndicatorProps={{
+                            sx: getTabIndicatorStyle(
+                                tabIndexesWithError,
+                                tabValue
+                            ),
+                        }}
                     >
                         <Tab
                             label={<FormattedMessage id="VoltageLimits" />}
                             value={TAB_VALUES.voltageLimitsParamsTabValue}
-                            className={getTabClass(
+                            sx={getTabStyle(
+                                tabIndexesWithError,
                                 TAB_VALUES.voltageLimitsParamsTabValue
                             )}
                         />
                         <Tab
                             label={<FormattedMessage id="EquipmentSelection" />}
                             value={TAB_VALUES.equipmentSelectionParamsTabValue}
-                            className={getTabClass(
+                            sx={getTabStyle(
+                                tabIndexesWithError,
                                 TAB_VALUES.equipmentSelectionParamsTabValue
                             )}
                         />
@@ -371,10 +359,7 @@ export const VoltageInitParameters = ({
                         <SubmitButton
                             onClick={handleSubmit(onSubmit, onValidationError)}
                         />
-                        <CloseButton
-                            hideParameters={hideParameters}
-                            className={classes.button}
-                        />
+                        <CloseButton hideParameters={hideParameters} />
                     </DialogActions>
                 </Grid>
             </Grid>

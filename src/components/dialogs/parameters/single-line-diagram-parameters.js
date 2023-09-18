@@ -14,10 +14,11 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../../utils/config-params';
-import { CloseButton, useStyles } from './parameters';
+import { CloseButton, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { getAvailableComponentLibraries } from '../../../services/study';
 import { ParamLine, ParameterType } from './widget';
+import { mergeSx } from '../../utils/functions';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);
@@ -37,7 +38,6 @@ export const SingleLineDiagramParameters = ({
     hideParameters,
     componentLibraries,
 }) => {
-    const classes = useStyles();
     const componentLibsRenderCache = useMemo(
         () =>
             Array.from(componentLibraries).reduce(
@@ -52,7 +52,7 @@ export const SingleLineDiagramParameters = ({
             <Grid
                 container
                 spacing={1}
-                className={classes.scrollableGrid}
+                sx={styles.scrollableGrid}
                 key={'sldParameters'}
             >
                 <ParamLine
@@ -96,15 +96,12 @@ export const SingleLineDiagramParameters = ({
             </Grid>
             <Grid
                 container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
+                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
                 position={'sticky'}
                 top={0}
             >
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
+                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );
