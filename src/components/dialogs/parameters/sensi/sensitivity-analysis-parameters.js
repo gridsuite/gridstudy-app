@@ -10,7 +10,7 @@ import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { useStyles, CloseButton, DropDown } from '../parameters';
+import { styles, CloseButton, DropDown } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -98,7 +98,6 @@ export const SensitivityAnalysisParameters = ({
     parametersBackend,
     useSensitivityAnalysisParameters,
 }) => {
-    const classes = useStyles();
     const { snackError } = useSnackMessage();
 
     const [providers, provider, updateProvider, resetProvider] =
@@ -404,7 +403,7 @@ export const SensitivityAnalysisParameters = ({
                 <Grid
                     container
                     key="sensitivityAnalysisParameters"
-                    className={classes.scrollableGrid}
+                    sx={styles.scrollableGrid}
                 >
                     <Grid container paddingBottom={1}>
                         <LineSeparator />
@@ -434,7 +433,6 @@ export const SensitivityAnalysisParameters = ({
                     </SubmitButton>
                     <CloseButton
                         hideParameters={hideParameters}
-                        className={classes.button}
                     />
                 </DialogActions>
             </Grid>
