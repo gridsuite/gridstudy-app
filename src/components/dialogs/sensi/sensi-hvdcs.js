@@ -17,11 +17,10 @@ import {
     MONITORED_BRANCHES_EQUIPMENT_TYPES,
     SensiChecked,
     SENSITIVITY_TYPES,
-    useStyles,
+    styles,
 } from './sensi-parameters-selector';
 
 export const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
-    const classes = useStyles();
     const [checked, setChecked] = useState(defaultValue.checked ?? true);
 
     const onClickChecked = () => {
@@ -36,7 +35,7 @@ export const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
         elementType: elementType.FILTER,
         equipmentTypes: MONITORED_BRANCHES_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
+        elementStyle: styles.chipElement,
     });
 
     const [hvdcs, hvdcsField] = useDirectoryElements({
@@ -45,7 +44,7 @@ export const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
         elementType: elementType.FILTER,
         equipmentTypes: HVDC_EQUIPMENT_TYPES,
         titleId: 'FiltersListsSelection',
-        elementClassName: classes.chipElement,
+        elementStyle: styles.chipElement,
     });
 
     const [sensitivityType, sensitivityTypeField] = useEnumValue({
@@ -66,7 +65,7 @@ export const SensiHVDCs = ({ index, onChange, defaultValue, inputForm }) => {
             : [],
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
-        elementClassName: classes.chipElement,
+        elementStyle: styles.chipElement,
     });
 
     useEffect(() => {
