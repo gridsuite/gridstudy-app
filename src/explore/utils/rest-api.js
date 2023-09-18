@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { APP_NAME, getAppName } from './config-params';
+import { getAppName } from './config-params';
 import { store } from '../../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { ContingencyListType } from './elementType';
