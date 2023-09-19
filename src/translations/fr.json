@@ -1093,9 +1093,12 @@
     "IpMin": "ICC min (kA)",
     "IpMax": "ICC max (kA)",
     "StartupCost": "Coût de démarrage",
+
+    "Connect": "Reconnexion ?",
+
     "studyIndexationDone": "L'indexation de l'étude est terminée. La fonctionnalité de recherche est disponible",
     "studyIndexationError": "L'indexation de l'étude a échoué.",
     "checkstudyIndexationError": "La récupération de l'état d'indexation de l'étude a échoué.",
     "studyIndexationStatusUnknown": "L'état d'indexation de l'étude est inconnu : \"{status}\".",
-    "WaitingStudyIndexation": "En attente de l'indexation de l'étude..."
+    "waitingStudyIndexation": "En attente de l'indexation de l'étude..."
 }

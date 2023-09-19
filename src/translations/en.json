@@ -1071,10 +1071,12 @@
     "IpMin": "ISC min (kA)",
     "IpMax": "ISC max (kA)",
     "StartupCost": "Startup cost",
+
+    "Connect": "Reconnect ?",
+
     "studyIndexationDone": "Study indexation done. Search functionality is now available",
     "studyIndexationError": "Study indexation process has failed.",
     "checkstudyIndexationError": "Study indexation checking has failed.",
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
-    "WaitingStudyIndexation": "Waiting for Study indexation..."
-
+    "waitingStudyIndexation": "Waiting for Study indexation..."
 }
