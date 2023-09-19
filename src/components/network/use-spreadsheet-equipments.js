@@ -10,12 +10,14 @@ export const useSpreadsheetEquipments = (equipment) => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [errorMessage, setErrorMessage] = useState();
+    const [isFetching, setIsFetching] = useState(false);
 
     const shouldFetchEquipments = !equipments;
 
     useEffect(() => {
         if (shouldFetchEquipments) {
             setErrorMessage();
+            setIsFetching(true);
             Promise.all(
                 equipment.fetchers.map((fetcher) =>
                     fetcher(studyUuid, currentNode.id)
@@ -24,12 +26,14 @@ export const useSpreadsheetEquipments = (equipment) => {
                 .then((results) => {
                     const fetchedEquipments = results.flat();
                     dispatch(loadEquipments(equipment.type, fetchedEquipments));
+                    setIsFetching(false);
                 })
                 .catch((err) => {
                     setErrorMessage(err);
+                    setIsFetching(false);
                 });
         }
     }, [equipment, shouldFetchEquipments, studyUuid, currentNode.id, dispatch]);
 
-    return { equipments, errorMessage };
+    return { equipments, errorMessage, isFetching };
 };
