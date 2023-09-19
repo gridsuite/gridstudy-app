@@ -114,29 +114,23 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
     return (
         <Grid container spacing={2}>
             <GridSection title="Characteristics" />
-            <Grid container item spacing={2}>
+            <Grid container spacing={2}>
                 {gridItem(dcNominalVoltageField, 6)}
                 {gridItem(dcResistanceField, 6)}
-            </Grid>
-            <Grid container item spacing={2}>
                 {gridItem(maximumActivePowerField, 6)}
             </Grid>
 
             <GridSection title={'Limits'} />
-            <Grid container item spacing={2}>
+            <Grid container spacing={2}>
                 {gridItem(operatorActivePowerLimitSide1Field, 6)}
                 {gridItem(operatorActivePowerLimitSide2Field, 6)}
             </Grid>
 
             <GridSection title={'Setpoints'} />
-            <Grid container item spacing={2}>
+            <Grid container spacing={2}>
                 {gridItem(converterModeField, 6)}
                 {gridItem(activePowerField, 6)}
-            </Grid>
-            <Grid container item spacing={2}>
-                {gridItem(AngleDroopActivePowerControl, 6)}
-            </Grid>
-            <Grid container item spacing={2}>
+                {gridItem(AngleDroopActivePowerControl, 12)}
                 {gridItem(droopField, 6)}
                 {gridItem(p0Field, 6)}
             </Grid>

@@ -119,18 +119,18 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     return (
         <Grid container spacing={2}>
             <GridSection title={stationLabel} />
-            <Grid container item spacing={2}>
+            <Grid container spacing={2}>
                 {gridItem(generatorIdField, 4)}
                 {gridItem(generatorNameField, 4)}
             </Grid>
 
             <GridSection title={'Connectivity'} />
-            <Grid container item>
+            <Grid container spacing={2}>
                 {gridItem(connectivityForm, 12)}
             </Grid>
 
             <GridSection title="Characteristics" />
-            <Grid container item>
+            <Grid container spacing={2}>
                 {gridItem(lossFactorField, 4)}
             </Grid>
 
@@ -138,10 +138,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             <ReactiveLimitsForm id={`${id}.${REACTIVE_LIMITS}`} />
 
             <GridSection title={'Setpoints'} />
-            <Grid container item spacing={2}>
+            <Grid container spacing={2}>
                 {gridItem(reactivePowerField, 4)}
             </Grid>
-            <Grid container item spacing={2}>
+            <Grid container spacing={2} paddingTop={2}>
                 {gridItem(voltageRegulation, 4)}
                 {gridItem(voltageField, 4)}
             </Grid>
