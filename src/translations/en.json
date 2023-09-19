@@ -1075,5 +1075,7 @@
 
     "IpMin": "ISC min (kA)",
     "IpMax": "ISC max (kA)",
-    "StartupCost": "Startup cost"
+    "StartupCost": "Startup cost",
+
+    "Connect": "Reconnect ?"
 }
