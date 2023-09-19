@@ -15,12 +15,13 @@ import {
     CloseButton,
     LabelledButton,
     useParameterState,
-    useStyles,
+    styles,
 } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import Alert from '@mui/material/Alert';
 import { fetchDefaultParametersValues } from '../../../services/utils';
 import { ParamLine, ParameterType } from './widget';
+import { mergeSx } from '../../utils/functions';
 
 export const FluxConventions = {
     IIDM: 'iidm',
@@ -28,8 +29,6 @@ export const FluxConventions = {
 };
 
 export const NetworkParameters = ({ hideParameters }) => {
-    const classes = useStyles();
-
     const [, handleChangeFluxConvention] = useParameterState(
         PARAM_FLUX_CONVENTION
     );
@@ -55,7 +54,7 @@ export const NetworkParameters = ({ hideParameters }) => {
                 container
                 spacing={1}
                 key={'networkParameters'}
-                className={classes.scrollableGrid}
+                sx={styles.scrollableGrid}
             >
                 <ParamLine
                     type={ParameterType.DropDown}
@@ -84,17 +83,14 @@ export const NetworkParameters = ({ hideParameters }) => {
             <LineSeparator />
             <Grid
                 container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
+                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
             >
                 <LabelledButton
                     callback={resetNetworkParameters}
                     label="resetToDefault"
                 />
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
+                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

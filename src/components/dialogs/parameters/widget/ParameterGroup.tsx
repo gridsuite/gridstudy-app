@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useStyles } from '../parameters';
+import { styles } from '../parameters';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
@@ -33,14 +33,13 @@ type ParameterGroupProps = {
 export const ParameterGroup: FunctionComponent<
     PropsWithChildren<ParameterGroupProps>
 > = (props, context) => {
-    const classes = useStyles();
     const [mouseHover, setMouseHover] = useState(false);
 
     return (
         <>
-            <Grid item xs={12} className={classes.subgroupParameters}>
+            <Grid item xs={12} sx={styles.subgroupParameters}>
                 <Accordion
-                    className={classes.subgroupParametersAccordion}
+                    sx={styles.subgroupParametersAccordion}
                     expanded={props.state}
                     onChange={(event, showed) => props.onClick(showed)}
                     disableGutters
@@ -52,7 +51,7 @@ export const ParameterGroup: FunctionComponent<
                     disabled={props.disabled || undefined}
                 >
                     <AccordionSummary
-                        className={classes.subgroupParametersAccordionSummary}
+                        sx={styles.subgroupParametersAccordionSummary}
                         expandIcon={
                             mouseHover ? <ExpandCircleDown /> : <ExpandMore />
                         }
@@ -75,7 +74,7 @@ export const ParameterGroup: FunctionComponent<
                         )}
                     </AccordionSummary>
                     <AccordionDetails
-                        className={classes.subgroupParametersAccordionDetails}
+                        sx={styles.subgroupParametersAccordionDetails}
                     >
                         {props.children}
                     </AccordionDetails>

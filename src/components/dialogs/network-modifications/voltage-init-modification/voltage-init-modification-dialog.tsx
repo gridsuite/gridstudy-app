@@ -14,7 +14,10 @@ import React, {
 } from 'react';
 import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
-import { DefaultCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
+import {
+    DefaultCellRenderer,
+    BooleanCellRenderer,
+} from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
@@ -24,6 +27,8 @@ import {
     VOLTAGE_SET_POINT,
     RATIO_TAP_CHANGER_POSITION,
     LEG_SIDE,
+    SECTION_COUNT,
+    CONNECT,
 } from '../../../utils/field-constants';
 import { CsvExport } from '../../../spreadsheet/export-csv';
 
@@ -40,6 +45,7 @@ export const EquipmentTypeTabs = {
     TRANSFORMER_TAB: 1,
     STATIC_VAR_COMPENSATOR_TAB: 2,
     VSC_CONVERTER_STATION_TAB: 3,
+    SHUNT_COMPENSATOR_TAB: 4,
 };
 
 enum FetchStatus {
@@ -77,10 +83,10 @@ interface VscConverterStationRowData {
     [REACTIVE_POWER_SET_POINT]: number | undefined;
 }
 
-interface TransformerRowData {
+interface ShuntCompensatorRowData {
     ID: string;
-    [RATIO_TAP_CHANGER_POSITION]: number | undefined;
-    [LEG_SIDE]: number | undefined;
+    [SECTION_COUNT]: number | undefined;
+    [CONNECT]: boolean | undefined;
 }
 
 interface GeneratorData {
@@ -107,11 +113,18 @@ interface VscConverterStationData {
     reactivePowerSetpoint: number | undefined;
 }
 
+interface ShuntCompensatorData {
+    shuntCompensatorId: string;
+    sectionCount: number | undefined;
+    connect: boolean | undefined;
+}
+
 interface EditData {
     generators: GeneratorData[];
     transformers: TransformerData[];
     staticVarCompensators: StaticVarCompensatorData[];
     vscConverterStations: VscConverterStationData[];
+    shuntCompensators: ShuntCompensatorData[];
 }
 
 interface VoltageInitModificationProps {
@@ -232,6 +245,30 @@ const VoltageInitModificationDialog: FunctionComponent<
         ];
     }, [intl]);
 
+    const shuntCompensatorsColumnDefs = useMemo(() => {
+        return [
+            {
+                headerName: intl.formatMessage({ id: 'ID' }),
+                field: 'ID',
+                pinned: true,
+            },
+            {
+                headerName: intl.formatMessage({
+                    id: 'SectionCount',
+                }),
+                field: SECTION_COUNT,
+                cellRenderer: DefaultCellRenderer,
+                numeric: true,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'Connect' }),
+                field: CONNECT,
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+            },
+        ];
+    }, [intl]);
+
     const equipmentTabs = (
         <Box
             sx={{
@@ -254,6 +291,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                     <Tab
                         label={<FormattedMessage id="VscConverterStations" />}
                     />
+                    <Tab label={<FormattedMessage id="ShuntCompensators" />} />
                 </Tabs>
             </Grid>
         </Box>
@@ -271,6 +309,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             lockPinned: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
+            cellRenderer: DefaultCellRenderer,
             suppressKeyboardEvent: (params: any) => suppressKeyEvent(params),
         }),
         []
@@ -380,6 +419,27 @@ const VoltageInitModificationDialog: FunctionComponent<
                                 rowData.push(row);
                             }
                         );
+                    } else if (
+                        currentTab === EquipmentTypeTabs.SHUNT_COMPENSATOR_TAB
+                    ) {
+                        columnDefs = shuntCompensatorsColumnDefs;
+                        tableName = 'ShuntCompensators';
+                        editData.shuntCompensators.forEach(
+                            (m: ShuntCompensatorData) => {
+                                let row: ShuntCompensatorRowData = {
+                                    ID: m.shuntCompensatorId,
+                                    [SECTION_COUNT]: undefined,
+                                    [CONNECT]: false,
+                                };
+                                if (check(m.sectionCount)) {
+                                    row[SECTION_COUNT] = m.sectionCount;
+                                }
+                                if (m.connect) {
+                                    row[CONNECT] = m.connect;
+                                }
+                                rowData.push(row);
+                            }
+                        );
                     }
                 }
                 return { rowData, columnDefs, tableName };
@@ -433,12 +493,13 @@ const VoltageInitModificationDialog: FunctionComponent<
         [
             editData,
             editDataFetchStatus,
-            defaultColDef,
-            onRowDataUpdated,
             generatorsColumnDefs,
             transformersColumnDefs,
             staticVarCompensatorsColumnDefs,
             vscConverterStationsColumnDefs,
+            shuntCompensatorsColumnDefs,
+            defaultColDef,
+            onRowDataUpdated,
         ]
     );
 
