@@ -17,15 +17,15 @@ import {
 } from '@mui/material';
 import React, { useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useStyles } from '../../../parameters';
+import { styles } from '../../../parameters';
 import CurveSelector from './curve-selector';
 import CurvePreview from './curve-preview';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+
 const CurveSelectorDialog = ({ open, onClose, onSave }) => {
-    const classes = useStyles();
     const theme = useTheme();
 
     const selectorRef = useRef();
@@ -79,11 +79,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
             fullWidth={true}
         >
             <DialogTitle id="curve-selector-dialog-title">
-                <Typography
-                    component="span"
-                    variant="h5"
-                    className={classes.title}
-                >
+                <Typography component="span" variant="h5" sx={styles.title}>
                     <FormattedMessage id="DynamicSimulationCurveSelectorDialogTitle" />
                 </Typography>
             </DialogTitle>

@@ -227,6 +227,7 @@ export const LEG_SIDE = 'legSide';
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
+export const CONNECT = 'connect';
 
 // HVDC deletion
 export const DELETION_SPECIFIC_DATA = 'equipmentInfos';
