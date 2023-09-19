@@ -172,14 +172,7 @@ export const TABLES_DEFINITIONS = {
                 true,
                 undefined,
                 'ipMax',
-                excludeFromGlobalFilter,
-                {
-                    crossValidation: {
-                        requiredOn: {
-                            dependencyColumn: 'ipMax',
-                        },
-                    },
-                }
+                excludeFromGlobalFilter
             ),
             generateEditableNumericColumnDefinition(
                 'IpMax',
