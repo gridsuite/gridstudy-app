@@ -1093,5 +1093,7 @@
 
     "IpMin": "ICC min (kA)",
     "IpMax": "ICC max (kA)",
-    "StartupCost": "Coût de démarrage"
+    "StartupCost": "Coût de démarrage",
+
+    "Connect": "Reconnexion ?"
 }
