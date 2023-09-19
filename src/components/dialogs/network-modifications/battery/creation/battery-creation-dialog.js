@@ -127,7 +127,7 @@ const BatteryCreationDialog = ({
                 minimumReactivePower:
                     battery?.minMaxReactiveLimits?.minimumReactivePower ?? null,
                 maximumReactivePower:
-                    battery?.minMaxReactiveLimits?.minimumReactivePower ?? null,
+                    battery?.minMaxReactiveLimits?.maximumReactivePower ?? null,
                 reactiveCapabilityCurveTable:
                     battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
             }),
