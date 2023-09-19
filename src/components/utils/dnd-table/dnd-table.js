@@ -114,7 +114,8 @@ function EditableTableCell({
             {!column.numeric &&
                 !column.directoryItems &&
                 !column.chipItems &&
-                !column.menuItem && (
+                !column.menuItem &&
+                !column.checkboxItem && (
                     <TableTextInput
                         name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                         {...props}
@@ -137,6 +138,13 @@ function EditableTableCell({
             )}
             {column.menuItem && (
                 <SelectInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    options={column.equipmentTypes}
+                    size="small"
+                />
+            )}
+            {column.checkboxItem && (
+                <CheckboxInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     options={column.equipmentTypes}
                     size="small"

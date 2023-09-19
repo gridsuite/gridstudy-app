@@ -25,6 +25,7 @@ import {
     INJECTIONS,
     PARAMETER_SENSI_INJECTION,
     SELECTED,
+    ACTIVATED,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 
@@ -44,6 +45,7 @@ interface INewParamsPst {
             [ID]: string;
             [NAME]: string;
         }>;
+        [ACTIVATED]: boolean;
     }>;
 }
 
@@ -62,6 +64,7 @@ interface INewParamsNodes {
             [ID]: string;
             [NAME]: string;
         }>;
+        [ACTIVATED]: boolean;
     }>;
 }
 
@@ -81,6 +84,7 @@ interface INewParamsHvdc {
             [ID]: string;
             [NAME]: string;
         }>;
+        [ACTIVATED]: boolean;
     }>;
 }
 
@@ -99,6 +103,7 @@ interface INewParamsInjections {
             [ID]: string;
             [NAME]: string;
         }>;
+        [ACTIVATED]: boolean;
     }>;
 }
 
@@ -124,6 +129,7 @@ export const getSensiHVDCsFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
+            [ACTIVATED]: yup.boolean().nullable(),
         })
     ),
 });
@@ -131,7 +137,7 @@ export const getSensiHVDCsFormSchema = () => ({
 export const getSensiHvdcformatNewParams = (newParams: INewParamsHvdc) => {
     return {
         [PARAMETER_SENSI_HVDC]: newParams.sensitivityHVDC
-            .filter((param) => param.selected)
+            .filter((param) => param.activated)
             .map((sensitivityInjection) => {
                 return {
                     [MONITORED_BRANCHES]: sensitivityInjection[
@@ -159,6 +165,7 @@ export const getSensiHvdcformatNewParams = (newParams: INewParamsHvdc) => {
                             };
                         }
                     ),
+                    [ACTIVATED]: sensitivityInjection[ACTIVATED],
                 };
             }),
     };
@@ -185,6 +192,7 @@ export const getSensiInjectionsFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
+            [ACTIVATED]: yup.boolean().nullable(),
         })
     ),
 });
@@ -194,7 +202,7 @@ export const getSensiInjectionsformatNewParams = (
 ) => {
     return {
         [PARAMETER_SENSI_INJECTION]: newParams.sensitivityInjection
-            .filter((param) => param.selected)
+            .filter((param) => param.activated)
             .map((sensitivityInjection) => {
                 return {
                     [MONITORED_BRANCHES]: sensitivityInjection[
@@ -221,6 +229,7 @@ export const getSensiInjectionsformatNewParams = (
                             };
                         }
                     ),
+                    [ACTIVATED]: sensitivityInjection[ACTIVATED],
                 };
             }),
     };
@@ -248,6 +257,7 @@ export const getSensiInjectionsSetFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
+            [ACTIVATED]: yup.boolean().nullable(),
         })
     ),
 });
@@ -268,6 +278,7 @@ interface INewParamsInjectionsSet {
             [ID]: string;
             [NAME]: string;
         }>;
+        [ACTIVATED]: boolean;
     }>;
 }
 
@@ -276,7 +287,7 @@ export const getSensiInjectionsSetformatNewParams = (
 ) => {
     return {
         [PARAMETER_SENSI_INJECTIONS_SET]: newParams.sensitivityInjectionsSet
-            .filter((param) => param.selected)
+            .filter((param) => param.activated)
             .map((sensitivityInjectionSet) => {
                 return {
                     [MONITORED_BRANCHES]: sensitivityInjectionSet[
@@ -305,6 +316,7 @@ export const getSensiInjectionsSetformatNewParams = (
                             };
                         }
                     ),
+                    [ACTIVATED]: sensitivityInjectionSet[ACTIVATED],
                 };
             }),
     };
@@ -331,6 +343,7 @@ export const getSensiNodesFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
+            [ACTIVATED]: yup.boolean().nullable(),
         })
     ),
 });
@@ -338,7 +351,7 @@ export const getSensiNodesFormSchema = () => ({
 export const getSensiNodesformatNewParams = (newParams: INewParamsNodes) => {
     return {
         [PARAMETER_SENSI_NODES]: newParams.sensitivityNodes
-            .filter((param) => param.selected)
+            .filter((param) => param.activated)
             .map((sensitivityInjection) => {
                 return {
                     [SUPERVISED_VOLTAGE_LEVELS]: sensitivityInjection[
@@ -365,6 +378,7 @@ export const getSensiNodesformatNewParams = (newParams: INewParamsNodes) => {
                             };
                         }
                     ),
+                    [ACTIVATED]: sensitivityInjection[ACTIVATED],
                 };
             }),
     };
@@ -392,6 +406,7 @@ export const getSensiPSTsFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
+            [ACTIVATED]: yup.boolean().nullable(),
         })
     ),
 });
@@ -399,7 +414,7 @@ export const getSensiPSTsFormSchema = () => ({
 export const getSensiPstformatNewParams = (newParams: INewParamsPst) => {
     return {
         [PARAMETER_SENSI_PST]: newParams.sensitivityPST
-            .filter((param) => param.selected)
+            .filter((param) => param.activated)
             .map((sensitivityInjection) => {
                 return {
                     [MONITORED_BRANCHES]: sensitivityInjection[
@@ -425,6 +440,7 @@ export const getSensiPstformatNewParams = (newParams: INewParamsPst) => {
                             };
                         }
                     ),
+                    [ACTIVATED]: sensitivityInjection[ACTIVATED],
                 };
             }),
     };

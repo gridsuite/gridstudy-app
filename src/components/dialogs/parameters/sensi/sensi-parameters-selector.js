@@ -86,7 +86,7 @@ const SensiParametersSelector = () => {
 
     return (
         <>
-            <Grid maxWidth="md" width="100%">
+            <Grid>
                 <Tabs
                     value={tabValue}
                     variant="scrollable"

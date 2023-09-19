@@ -6,6 +6,7 @@
  */
 
 import {
+    ACTIVATED,
     CONTINGENCIES,
     DISTRIBUTION_TYPE,
     EQUIPMENTS_IN_VOLTAGE_REGULATION,
@@ -66,13 +67,14 @@ export interface ISensiParameters {
 interface IColumnsDef {
     label: string;
     dataKey: string;
-    initialValue: string | string[];
+    initialValue: boolean | string | string[];
     editable?: boolean;
     directoryItems?: boolean;
     menuItems?: boolean;
     equipmentTypes?: any[];
     elementType?: string;
     titleId?: string;
+    CheckboxInput?: boolean;
 }
 export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
     {
@@ -112,6 +114,13 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
     },
+    {
+        label: 'Actif',
+        dataKey: ACTIVATED,
+        initialValue: false,
+        checkboxItem: true,
+        editable: true,
+    },
 ];
 export const COLUMNS_DEFINITIONS_INJECTIONS = [
     {
@@ -142,6 +151,13 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
+    },
+    {
+        label: 'Actif',
+        dataKey: ACTIVATED,
+        initialValue: false,
+        checkboxItem: true,
+        editable: true,
     },
 ];
 export const COLUMNS_DEFINITIONS_HVDCS = [
@@ -182,6 +198,13 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
     },
+    {
+        label: 'Actif',
+        dataKey: ACTIVATED,
+        initialValue: false,
+        checkboxItem: true,
+        editable: true,
+    },
 ];
 export const COLUMNS_DEFINITIONS_PSTS = [
     {
@@ -221,6 +244,13 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
     },
+    {
+        label: 'Actif',
+        dataKey: ACTIVATED,
+        initialValue: false,
+        checkboxItem: true,
+        editable: true,
+    },
 ];
 export const COLUMNS_DEFINITIONS_NODES = [
     {
@@ -251,6 +281,13 @@ export const COLUMNS_DEFINITIONS_NODES = [
         directoryItems: true,
         elementType: elementType.CONTINGENCY_LIST,
         titleId: 'ContingencyListsSelection',
+    },
+    {
+        label: 'Actif',
+        dataKey: ACTIVATED,
+        initialValue: false,
+        checkboxItem: true,
+        editable: true,
     },
 ];
 

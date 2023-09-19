@@ -35,6 +35,7 @@ import {
     PSTS,
     SENSITIVITY_TYPE,
     SUPERVISED_VOLTAGE_LEVELS,
+    ACTIVATED,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
@@ -230,6 +231,7 @@ export const SensitivityAnalysisParameters = ({
                                         [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
                                 }),
+                                [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
                             };
                         }
                     ) ?? [],
@@ -263,6 +265,7 @@ export const SensitivityAnalysisParameters = ({
                                     };
                                 }
                             ),
+                            [ACTIVATED]: sensiInjections[ACTIVATED],
                         };
                     }) ?? [],
                 [PARAMETER_SENSI_HVDC]:
@@ -294,6 +297,7 @@ export const SensitivityAnalysisParameters = ({
                                     [NAME]: sensiInjection[CONTAINER_NAME],
                                 };
                             }),
+                            [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
                         };
                     }) ?? [],
                 [PARAMETER_SENSI_PST]:
