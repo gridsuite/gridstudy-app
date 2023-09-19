@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback } from 'react';
-import { useTheme } from '@mui/material';
+import { Theme, useTheme } from '@mui/material';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -45,12 +45,13 @@ const styles = {
         '& .ag-pinned-left-header': {
             borderRight: 'none',
         },
-        '& .ag-overlay-wrapper': {
-            background: (props) =>
-                props.showOverlay ? theme.overlay.background : '',
-        },
     },
-}));
+    overlayBackground: (theme: Theme) => ({
+        '& .ag-overlay-wrapper': {
+            background: theme.overlay.background,
+        },
+    }),
+};
 
 export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
     (props, ref) => {
@@ -81,7 +82,8 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             <Box
                 sx={mergeSx(
                     styles.grid,
-                    shouldHidePinnedHeaderRightBorder && styles.noBorderRight
+                    shouldHidePinnedHeaderRightBorder && styles.noBorderRight,
+                    showOverlay && styles.overlayBackground(theme)
                 )}
                 className={theme.aggrid}
             >
