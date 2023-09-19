@@ -5,22 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
+import React, { FunctionComponent } from 'react';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { VSC_CREATION_TABS } from './creation/vsc-creation-dialog';
-
-const useStyles = makeStyles((theme) => ({
-    tabWithError: {
-        '&.Mui-selected': { color: theme.palette.error.main },
-        color: theme.palette.error.main,
-    },
-    tabWithErrorIndicator: {
-        backgroundColor: theme.palette.error.main,
-    },
-}));
+import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 
 interface VscTabsProps {
     tabIndex: number;
@@ -33,26 +22,6 @@ const VscTabs: FunctionComponent<VscTabsProps> = ({
     tabIndexesWithError,
     setTabIndex,
 }) => {
-    const classes = useStyles();
-
-    const getTabIndicatorClass = useCallback(
-        (index: number) =>
-            tabIndexesWithError.includes(index)
-                ? {
-                      indicator: classes.tabWithErrorIndicator,
-                  }
-                : {},
-        [tabIndexesWithError, classes]
-    );
-
-    const getTabClass = useCallback(
-        (index: number) =>
-            clsx({
-                [classes.tabWithError]: tabIndexesWithError.includes(index),
-            }),
-        [tabIndexesWithError, classes]
-    );
-
     return (
         <>
             <Grid container>
@@ -60,21 +29,28 @@ const VscTabs: FunctionComponent<VscTabsProps> = ({
                     value={tabIndex}
                     variant="scrollable"
                     onChange={(event, newValue) => setTabIndex(newValue)}
-                    classes={getTabIndicatorClass(tabIndex)}
+                    TabIndicatorProps={{
+                        sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
+                    }}
                 >
                     <Tab
                         label={<FormattedMessage id="HVDC_LINE" />}
-                        className={getTabClass(VSC_CREATION_TABS.HVDC_LINE_TAB)}
+                        sx={getTabStyle(
+                            tabIndexesWithError,
+                            VSC_CREATION_TABS.HVDC_LINE_TAB
+                        )}
                     />
                     <Tab
                         label={<FormattedMessage id="converterStation1" />}
-                        className={getTabClass(
+                        sx={getTabStyle(
+                            tabIndexesWithError,
                             VSC_CREATION_TABS.CONVERTER_STATION_1
                         )}
                     />
                     <Tab
                         label={<FormattedMessage id="converterStation2" />}
-                        className={getTabClass(
+                        sx={getTabStyle(
+                            tabIndexesWithError,
                             VSC_CREATION_TABS.CONVERTER_STATION_2
                         )}
                     />
