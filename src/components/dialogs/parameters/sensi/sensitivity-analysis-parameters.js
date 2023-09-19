@@ -17,8 +17,8 @@ import {
     ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD,
     CONTINGENCIES,
     EQUIPMENTS_IN_VOLTAGE_REGULATION,
-    FILTER_ID,
-    FILTER_NAME,
+    CONTAINER_ID,
+    CONTAINER_NAME,
     FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD,
     FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
     HVDC_LINES,
@@ -208,16 +208,16 @@ export const SensitivityAnalysisParameters = ({
                                     MONITORED_BRANCHES
                                 ].map((sensiInjection) => {
                                     return {
-                                        [ID]: sensiInjection[FILTER_ID],
-                                        [NAME]: sensiInjection[FILTER_NAME],
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
                                 }),
                                 [INJECTIONS]: sensiInjectionsSet[
                                     INJECTIONS
                                 ].map((sensiInjection) => {
                                     return {
-                                        [ID]: sensiInjection[FILTER_ID],
-                                        [NAME]: sensiInjection[FILTER_NAME],
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
                                 }),
                                 [DISTRIBUTION_TYPE]:
@@ -226,8 +226,8 @@ export const SensitivityAnalysisParameters = ({
                                     CONTINGENCIES
                                 ].map((sensiInjection) => {
                                     return {
-                                        [ID]: sensiInjection[FILTER_ID],
-                                        [NAME]: sensiInjection[FILTER_NAME],
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
                                 }),
                             };
@@ -241,15 +241,15 @@ export const SensitivityAnalysisParameters = ({
                                 MONITORED_BRANCHES
                             ].map((sensiInjection) => {
                                 return {
-                                    [ID]: sensiInjection[FILTER_ID],
-                                    [NAME]: sensiInjection[FILTER_NAME],
+                                    [ID]: sensiInjection[CONTAINER_ID],
+                                    [NAME]: sensiInjection[CONTAINER_NAME],
                                 };
                             }),
                             [INJECTIONS]: sensiInjections[INJECTIONS].map(
                                 (sensiInjection) => {
                                     return {
-                                        [ID]: sensiInjection[FILTER_ID],
-                                        [NAME]: sensiInjection[FILTER_NAME],
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
                                 }
                             ),
@@ -258,8 +258,8 @@ export const SensitivityAnalysisParameters = ({
                             [CONTINGENCIES]: sensiInjections[CONTINGENCIES].map(
                                 (sensiInjection) => {
                                     return {
-                                        [ID]: sensiInjection[FILTER_ID],
-                                        [NAME]: sensiInjection[FILTER_NAME],
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
                                 }
                             ),
@@ -272,15 +272,15 @@ export const SensitivityAnalysisParameters = ({
                                 MONITORED_BRANCHES
                             ].map((sensiInjection) => {
                                 return {
-                                    [ID]: sensiInjection[FILTER_ID],
-                                    [NAME]: sensiInjection[FILTER_NAME],
+                                    [ID]: sensiInjection[CONTAINER_ID],
+                                    [NAME]: sensiInjection[CONTAINER_NAME],
                                 };
                             }),
                             [HVDC_LINES]: sensiInjectionsSet[HVDC_LINES].map(
                                 (sensiInjection) => {
                                     return {
-                                        [ID]: sensiInjection[FILTER_ID],
-                                        [NAME]: sensiInjection[FILTER_NAME],
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
                                 }
                             ),
@@ -290,8 +290,8 @@ export const SensitivityAnalysisParameters = ({
                                 CONTINGENCIES
                             ].map((sensiInjection) => {
                                 return {
-                                    [ID]: sensiInjection[FILTER_ID],
-                                    [NAME]: sensiInjection[FILTER_NAME],
+                                    [ID]: sensiInjection[CONTAINER_ID],
+                                    [NAME]: sensiInjection[CONTAINER_NAME],
                                 };
                             }),
                         };
@@ -303,15 +303,15 @@ export const SensitivityAnalysisParameters = ({
                                 MONITORED_BRANCHES
                             ].map((sensiInjection) => {
                                 return {
-                                    [ID]: sensiInjection[FILTER_ID],
-                                    [NAME]: sensiInjection[FILTER_NAME],
+                                    [ID]: sensiInjection[CONTAINER_ID],
+                                    [NAME]: sensiInjection[CONTAINER_NAME],
                                 };
                             }),
                             [PSTS]: sensiInjectionsSet[PSTS].map(
                                 (sensiInjection) => {
                                     return {
-                                        [ID]: sensiInjection[FILTER_ID],
-                                        [NAME]: sensiInjection[FILTER_NAME],
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
                                 }
                             ),
@@ -321,8 +321,8 @@ export const SensitivityAnalysisParameters = ({
                                 CONTINGENCIES
                             ].map((sensiInjection) => {
                                 return {
-                                    [ID]: sensiInjection[FILTER_ID],
-                                    [NAME]: sensiInjection[FILTER_NAME],
+                                    [ID]: sensiInjection[CONTAINER_ID],
+                                    [NAME]: sensiInjection[CONTAINER_NAME],
                                 };
                             }),
                         };
@@ -334,8 +334,8 @@ export const SensitivityAnalysisParameters = ({
                                 SUPERVISED_VOLTAGE_LEVELS
                             ].map((sensiInjection) => {
                                 return {
-                                    [ID]: sensiInjection[FILTER_ID],
-                                    [NAME]: sensiInjection[FILTER_NAME],
+                                    [ID]: sensiInjection[CONTAINER_ID],
+                                    [NAME]: sensiInjection[CONTAINER_NAME],
                                 };
                             }),
                             [EQUIPMENTS_IN_VOLTAGE_REGULATION]:
@@ -343,16 +343,16 @@ export const SensitivityAnalysisParameters = ({
                                     EQUIPMENTS_IN_VOLTAGE_REGULATION
                                 ].map((sensiInjection) => {
                                     return {
-                                        [ID]: sensiInjection[FILTER_ID],
-                                        [NAME]: sensiInjection[FILTER_NAME],
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
                                     };
                                 }),
                             [CONTINGENCIES]: sensiInjectionsSet[
                                 CONTINGENCIES
                             ].map((sensiInjection) => {
                                 return {
-                                    [ID]: sensiInjection[FILTER_ID],
-                                    [NAME]: sensiInjection[FILTER_NAME],
+                                    [ID]: sensiInjection[CONTAINER_ID],
+                                    [NAME]: sensiInjection[CONTAINER_NAME],
                                 };
                             }),
                         };

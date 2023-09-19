@@ -958,7 +958,7 @@
     "AddSensitivityFactor": "Add sensitivity factor",
     "ContingencyLists": "Contingencies",
     "Injections": "Injections",
-    "SupervisedVoltageLevels": "Supervised voltage levels",
+    "MonitoredVoltageLevels": "Supervised voltage levels",
     "EquipmentsInVoltageRegulation": "Equipments in voltage regulation",
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",

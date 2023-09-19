@@ -229,6 +229,9 @@ export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
 
+export const CONTAINER_ID = 'containerId';
+export const CONTAINER_NAME = 'containerName';
+
 // HVDC deletion
 export const DELETION_SPECIFIC_DATA = 'equipmentInfos';
 export const DELETION_SPECIFIC_TYPE = 'specificType';
