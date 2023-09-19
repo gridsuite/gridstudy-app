@@ -40,8 +40,8 @@
     "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
     "nameValidityCheckErrorMsg": "Erreur à la vérification du nom d'étude\u00a0:",
 
-    "diagonalLabel": "Afficher les noms d'ouvrage en diagonal",
-    "centerLabel": "Centrer les noms d'ouvrage",
+    "diagonalLabel": "Afficher les noms d'ouvrages en diagonale",
+    "centerLabel": "Centrer les noms d'ouvrages",
     "topologicalColoring": "Coloration topologique",
     "SingleLineDiagram": "Schéma unifilaire",
 
@@ -626,7 +626,7 @@
     "LowShortCircuitCurrentLimit": "Limite ICC min",
     "HighShortCircuitCurrentLimit": "Limite ICC max",
     "TransientReactance": "Réactance transitoire (Ω)",
-    "TransientReactanceForm": "Réactancess transitoire",
+    "TransientReactanceForm": "Réactance transitoire",
     "TransformerReactance": "Réactance du transformateur (Ω)",
     "TransformerReactanceForm": "Réactance du transformateur",
     "FrequencyRegulation": "Compensation",

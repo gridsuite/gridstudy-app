@@ -14,7 +14,7 @@ import React, {
 
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material';
 import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import {
