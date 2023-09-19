@@ -117,7 +117,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
     {
         label: 'Actif',
         dataKey: ACTIVATED,
-        initialValue: false,
+        initialValue: true,
         checkboxItem: true,
         editable: true,
     },
@@ -155,7 +155,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
     {
         label: 'Actif',
         dataKey: ACTIVATED,
-        initialValue: false,
+        initialValue: true,
         checkboxItem: true,
         editable: true,
     },
@@ -201,7 +201,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
     {
         label: 'Actif',
         dataKey: ACTIVATED,
-        initialValue: false,
+        initialValue: true,
         checkboxItem: true,
         editable: true,
     },
@@ -247,7 +247,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
     {
         label: 'Actif',
         dataKey: ACTIVATED,
-        initialValue: false,
+        initialValue: true,
         checkboxItem: true,
         editable: true,
     },
@@ -285,7 +285,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
     {
         label: 'Actif',
         dataKey: ACTIVATED,
-        initialValue: false,
+        initialValue: true,
         checkboxItem: true,
         editable: true,
     },

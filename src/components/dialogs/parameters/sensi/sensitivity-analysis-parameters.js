@@ -329,6 +329,7 @@ export const SensitivityAnalysisParameters = ({
                                     [NAME]: sensiInjection[CONTAINER_NAME],
                                 };
                             }),
+                            [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
                         };
                     }) ?? [],
                 [PARAMETER_SENSI_NODES]:
@@ -359,6 +360,7 @@ export const SensitivityAnalysisParameters = ({
                                     [NAME]: sensiInjection[CONTAINER_NAME],
                                 };
                             }),
+                            [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
                         };
                     }) ?? [],
             });

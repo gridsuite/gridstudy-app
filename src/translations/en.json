@@ -962,6 +962,7 @@
     "EquipmentsInVoltageRegulation": "Equipments in voltage regulation",
     "PSTS": "PSTs",
     "ElementAlreadyUsed": "This element is already used",
+    "Actif": "Actif",
 
     "ConnectionName": "Connection name",
     "ConnectionDirection": "Connection direction",
