@@ -15,13 +15,13 @@ import {
     PARAM_LINE_PARALLEL_PATH,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../utils/config-params';
-import { CloseButton, useParameterState, useStyles } from './parameters';
+import { CloseButton, useParameterState, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import { ParamLine, ParameterType } from './widget/ParameterLine';
+import { ParamLine, ParameterType } from './widget';
+import { useState } from 'react';
+import { mergeSx } from '../../utils/functions';
 
 export const MapParameters = ({ hideParameters }) => {
-    const classes = useStyles();
-
     const alertThresholdMarks = [
         {
             value: 0,
@@ -36,15 +36,17 @@ export const MapParameters = ({ hideParameters }) => {
     const [lineFlowColorModeLocal] = useParameterState(
         PARAM_LINE_FLOW_COLOR_MODE
     );
-    const isLineFlowNominal =
-        lineFlowColorModeLocal === LineFlowColorMode.NOMINAL_VOLTAGE;
+
+    const [isLineFlowNominal, setDisabledFlowAlertThreshold] = useState(
+        lineFlowColorModeLocal === LineFlowColorMode.NOMINAL_VOLTAGE
+    );
 
     return (
         <>
             <Grid
                 container
                 spacing={1}
-                className={classes.scrollableGrid}
+                sx={styles.scrollableGrid}
                 key={'mapParameters'}
             >
                 <ParamLine
@@ -80,6 +82,12 @@ export const MapParameters = ({ hideParameters }) => {
                         [LineFlowColorMode.NOMINAL_VOLTAGE]: 'NominalVoltage',
                         [LineFlowColorMode.OVERLOADS]: 'Overloads',
                     }}
+                    onPreChange={(event) => {
+                        setDisabledFlowAlertThreshold(
+                            event.target.value ===
+                                LineFlowColorMode.NOMINAL_VOLTAGE
+                        );
+                    }}
                 />
                 <LineSeparator />
                 <ParamLine
@@ -99,13 +107,10 @@ export const MapParameters = ({ hideParameters }) => {
             </Grid>
             <Grid
                 container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
+                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
             >
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
+                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

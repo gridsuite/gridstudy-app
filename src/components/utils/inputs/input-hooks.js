@@ -35,7 +35,7 @@ import {
     func_identity,
     toFloatValue,
     toIntValue,
-    useStyles,
+    styles,
 } from '../../dialogs/dialogUtils';
 import {
     useSnackMessage,
@@ -51,8 +51,8 @@ import { useAutocompleteField } from './use-autocomplete-field';
 import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
-import clsx from 'clsx';
 import { isNodeExists } from '../../../services/study';
+import { mergeSx } from '../functions';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -121,7 +121,6 @@ export const useTextValue = ({
     const [error, setError] = useState();
 
     const validationRef = useRef();
-    const classes = useStyles();
 
     validationRef.current = validation;
 
@@ -174,7 +173,7 @@ export const useTextValue = ({
                 value={'' + value} // handle numerical value
                 onChange={handleChangeValue}
                 FormHelperTextProps={{
-                    className: classes.helperText,
+                    sx: styles.helperText,
                 }}
                 InputProps={{
                     endAdornment: (
@@ -205,7 +204,6 @@ export const useTextValue = ({
         formProps,
         value,
         handleChangeValue,
-        classes.helperText,
         clearable,
         handleClearValue,
         customAdornment,
@@ -253,8 +251,6 @@ export const useDoubleValue = ({
 };
 
 export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
-    const classes = useStyles();
-
     return useMemo(() => {
         return (
             <Tooltip
@@ -263,14 +259,20 @@ export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                classes={{ tooltip: classes.tooltip }}
+                slotProps={{
+                    popper: {
+                        sx: {
+                            '& .MuiTooltip-tooltip': styles.tooltip,
+                        },
+                    },
+                }}
             >
                 <IconButton style={{ padding: '2px' }} onClick={handleClick}>
                     {icon}
                 </IconButton>
             </Tooltip>
         );
-    }, [label, handleClick, classes.tooltip, icon]);
+    }, [label, handleClick, icon]);
 };
 
 export const useOptionalEnumValue = (props) => {
@@ -529,13 +531,12 @@ export const useDirectoryElements = ({
     elementType,
     equipmentTypes,
     titleId,
-    elementClassName,
+    elementStyle,
     required = false,
     itemFilter = undefined,
     errorMsg = undefined,
     inputForm = undefined,
 }) => {
-    const classes = useStyles();
     const [values, setValues] = useState(initialValues);
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] =
         useState(false);
@@ -590,9 +591,10 @@ export const useDirectoryElements = ({
         return (
             <>
                 <FormControl
-                    className={clsx(classes.formDirectoryElements1, {
-                        [classes.formDirectoryElementsError]: errorMsg,
-                    })}
+                    sx={mergeSx(
+                        styles.formDirectoryElements1,
+                        errorMsg && styles.formDirectoryElementsError
+                    )}
                     error={!!errorMsg}
                     aria-errormessage={errorMsg}
                 >
@@ -601,7 +603,7 @@ export const useDirectoryElements = ({
                             <Grid item>
                                 <InputLabel
                                     id="elements"
-                                    className={classes.labelDirectoryElements}
+                                    sx={styles.labelDirectoryElements}
                                     error={!!errorMsg}
                                 >
                                     <FieldLabel
@@ -613,11 +615,11 @@ export const useDirectoryElements = ({
                         </Grid>
                     )}
                     {values?.length > 0 && (
-                        <FormControl className={classes.formDirectoryElements2}>
+                        <FormControl sx={styles.formDirectoryElements2}>
                             <div>
                                 {values.map((item, index) => (
                                     <Chip
-                                        className={elementClassName}
+                                        sx={elementStyle}
                                         key={label + '_' + index}
                                         size="small"
                                         onDelete={() =>
@@ -637,7 +639,7 @@ export const useDirectoryElements = ({
                     <Grid item xs>
                         <Grid container direction="row-reverse">
                             <IconButton
-                                className={classes.addDirectoryElements}
+                                sx={styles.addDirectoryElements}
                                 size={'small'}
                                 onClick={() =>
                                     setDirectoryItemSelectorOpen(true)
@@ -659,11 +661,6 @@ export const useDirectoryElements = ({
             </>
         );
     }, [
-        classes.formDirectoryElementsError,
-        classes.formDirectoryElements1,
-        classes.labelDirectoryElements,
-        classes.formDirectoryElements2,
-        classes.addDirectoryElements,
         errorMsg,
         values,
         label,
@@ -673,7 +670,7 @@ export const useDirectoryElements = ({
         intl,
         titleId,
         itemFilter,
-        elementClassName,
+        elementStyle,
         handleDelete,
         types,
     ]);

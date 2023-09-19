@@ -88,7 +88,7 @@
   "iidm.export.xml.extensions.mergedXnode": "Xnode mergé",
   "iidm.export.xml.extensions.position": "Position des départs",
   "iidm.export.xml.extensions.secondaryVoltageControl": "Réglage secondaire de tension",
-  "iidm.export.xml.extensions.slackTerminal": "Noeud bilan",
+  "iidm.export.xml.extensions.slackTerminal": "Nœud bilan",
   "iidm.export.xml.extensions.standbyAutomaton": "Automate des CSPRs",
   "iidm.export.xml.extensions.startup": "Coût de démarrage des groupes",
   "iidm.export.xml.extensions.substationPosition": "Coordonnées géographiques des sites",

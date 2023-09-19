@@ -5,73 +5,58 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import { Divider, Slider, Tooltip, Typography } from '@mui/material';
 import { Box, styled } from '@mui/system';
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = {
     helperText: {
         margin: 0,
-        marginTop: 4,
-    },
-    h4: {
-        marginBottom: 0,
-    },
-    popper: {
-        style: {
-            width: 'fit-content',
-        },
+        marginTop: '4px',
     },
     tooltip: {
         fontSize: 18,
         maxWidth: 'none',
     },
-    button: {
+    button: (theme) => ({
         justifyContent: 'flex-start',
         fontSize: 'small',
         marginTop: theme.spacing(1),
-    },
-    paddingButton: {
+    }),
+    paddingButton: (theme) => ({
         paddingLeft: theme.spacing(2),
-    },
-    emptyListError: {
-        color: theme.palette.error.main,
-        fontSize: 'small',
-        textAlign: 'center',
-        margin: theme.spacing(0.5),
-    },
+    }),
     formDirectoryElements1: {
         display: 'flex',
         gap: '8px',
         flexWrap: 'wrap',
         flexDirection: 'row',
         border: '2px solid lightgray',
-        padding: 4,
+        padding: '4px',
         borderRadius: '4px',
         overflow: 'hidden',
     },
-    formDirectoryElementsError: {
+    formDirectoryElementsError: (theme) => ({
         borderColor: theme.palette.error.main,
-    },
+    }),
     formDirectoryElements2: {
         display: 'flex',
         gap: '8px',
         flexWrap: 'wrap',
         flexDirection: 'row',
         marginTop: 0,
-        padding: 4,
+        padding: '4px',
         overflow: 'hidden',
     },
     labelDirectoryElements: {
-        marginTop: -10,
+        marginTop: '-10px',
     },
     addDirectoryElements: {
-        marginTop: -5,
+        marginTop: '-5px',
     },
-}));
+};
 
 export const MicroSusceptanceAdornment = {
     position: 'end',
@@ -270,8 +255,6 @@ export const LabelledSlider = ({
         setSliderValue(newValue);
     };
 
-    const classes = useStyles();
-
     return (
         <>
             <Grid item xs={7}>
@@ -281,7 +264,7 @@ export const LabelledSlider = ({
                     </Box>
                 </Typography>
             </Grid>
-            <Grid item container xs={5} className={classes.controlItem}>
+            <Grid item container xs={5}>
                 <Slider
                     min={minValue}
                     max={maxValue}

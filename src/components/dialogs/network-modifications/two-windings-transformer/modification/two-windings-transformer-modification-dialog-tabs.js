@@ -6,9 +6,7 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerModificationDialogTab } from './two-windings-transformer-modification-dialog';
 import { useWatch } from 'react-hook-form';
@@ -17,24 +15,13 @@ import {
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
-
-const useStyles = makeStyles((theme) => ({
-    tabWithError: {
-        '&.Mui-selected': { color: theme.palette.error.main },
-        color: theme.palette.error.main,
-    },
-    tabWithErrorIndicator: {
-        backgroundColor: theme.palette.error.main,
-    },
-}));
+import { getTabIndicatorStyle, getTabStyle } from '../../../../utils/tab-utils';
 
 const TwoWindingsTransformerModificationDialogTabs = ({
     tabIndex,
     tabIndexesWithError,
     setTabIndex,
 }) => {
-    const classes = useStyles();
-
     const phaseTapChangerEnabledWatch = useWatch({
         name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
     });
@@ -42,43 +29,29 @@ const TwoWindingsTransformerModificationDialogTabs = ({
         name: `${RATIO_TAP_CHANGER}.${ENABLED}`,
     });
 
-    const getTabIndicatorClass = useCallback(
-        (index) =>
-            tabIndexesWithError.includes(index)
-                ? {
-                      indicator: classes.tabWithErrorIndicator,
-                  }
-                : {},
-        [tabIndexesWithError, classes]
-    );
-
-    const getTabClass = useCallback(
-        (index) =>
-            clsx({
-                [classes.tabWithError]: tabIndexesWithError.includes(index),
-            }),
-        [tabIndexesWithError, classes]
-    );
-
     return (
         <Grid container item>
             <Tabs
                 value={tabIndex}
                 variant="scrollable"
                 onChange={(event, newValue) => setTabIndex(newValue)}
-                classes={getTabIndicatorClass(tabIndex)}
+                TabIndicatorProps={{
+                    sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
+                }}
             >
                 <Tab
                     label={
                         <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
                     }
-                    className={getTabClass(
+                    sx={getTabStyle(
+                        tabIndexesWithError,
                         TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB
                     )}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
-                    className={getTabClass(
+                    sx={getTabStyle(
+                        tabIndexesWithError,
                         TwoWindingsTransformerModificationDialogTab.LIMITS_TAB
                     )}
                 />
@@ -86,7 +59,8 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                     label={
                         <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
                     }
-                    className={getTabClass(
+                    sx={getTabStyle(
+                        tabIndexesWithError,
                         TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB
                     )}
                     disabled={!ratioTapChangerEnabledWatch}
@@ -95,7 +69,8 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                     label={
                         <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
                     }
-                    className={getTabClass(
+                    sx={getTabStyle(
+                        tabIndexesWithError,
                         TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB
                     )}
                     disabled={!phaseTapChangerEnabledWatch}

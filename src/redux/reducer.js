@@ -68,6 +68,8 @@ import {
     CLOSE_DIAGRAMS,
     ADD_SHORT_CIRCUIT_NOTIF,
     RESET_SHORT_CIRCUIT_NOTIF,
+    ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF,
+    RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF,
     ADD_DYNAMIC_SIMULATION_NOTIF,
     RESET_DYNAMIC_SIMULATION_NOTIF,
     RESET_MAP_RELOADED,
@@ -92,6 +94,7 @@ import {
     RESET_EQUIPMENTS_POST_LOADFLOW,
     SET_COMPUTING_STATUS,
     SET_OPTIONAL_SERVICES,
+    SET_COMPUTATION_RUNNING,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -213,6 +216,7 @@ const initialState = {
     voltageInitNotif: false,
     sensiNotif: false,
     shortCircuitNotif: false,
+    oneBusShortCircuitNotif: false,
     dynamicSimulationNotif: false,
     fullScreenDiagram: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
@@ -232,6 +236,7 @@ const initialState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     computingStatus: { ...initialComputingStatus },
+    computationRunning: false,
     optionalServices: defaultOptionalServicesState,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
@@ -563,6 +568,14 @@ export const reducer = createReducer(initialState, {
 
     [RESET_SHORT_CIRCUIT_NOTIF]: (state) => {
         state.shortCircuitNotif = false;
+    },
+
+    [ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.oneBusShortCircuitNotif = true;
+    },
+
+    [RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.oneBusShortCircuitNotif = false;
     },
 
     [ADD_DYNAMIC_SIMULATION_NOTIF]: (state) => {
@@ -1023,6 +1036,10 @@ export const reducer = createReducer(initialState, {
     [SET_COMPUTING_STATUS]: (state, action) => {
         state.computingStatus[action.computingType] = action.runningStatus;
     },
+    [SET_COMPUTATION_RUNNING]: (state, action) => {
+        state.computationRunning = action.computationRunning;
+    },
+
     [SET_OPTIONAL_SERVICES]: (state, action) => {
         state.optionalServices = action.optionalServices;
     },

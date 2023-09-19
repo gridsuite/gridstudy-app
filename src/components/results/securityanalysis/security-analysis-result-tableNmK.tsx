@@ -12,8 +12,7 @@ import {
     SecurityAnalysisResultTableNmKProps,
     ResultConstraint,
 } from './security-analysis.type';
-import { useTheme } from '@mui/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { useTheme } from '@mui/material';
 import { IntlShape, useIntl } from 'react-intl';
 import {
     getNoRowsMessage,
@@ -26,11 +25,10 @@ import { ComputingType } from '../../computing-status/computing-type';
 import {
     GridReadyEvent,
     ICellRendererParams,
-    ITooltipParams,
     PostSortRowsParams,
     RowClassParams,
 } from 'ag-grid-community';
-import { Button } from '@mui/material';
+import { Button, Theme } from '@mui/material';
 import {
     flattenNmKresultsConstraints,
     flattenNmKresultsContingencies,
@@ -40,18 +38,17 @@ import {
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import CustomTooltipValues from '../../custom-aggrid/custom-tooltip-values';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 
 export const SecurityAnalysisResultTableNmK: FunctionComponent<
     SecurityAnalysisResultTableNmKProps
 > = ({ postContingencyResults, onClickNmKConstraint, nmkTypeResult }) => {
     const theme = useTheme();
-    const useStyles = makeStyles((theme) => ({
-        button: {
+    const styles = {
+        button: (theme: Theme) => ({
             color: theme.link.color,
-        },
-    }));
-    const classes = useStyles();
+        }),
+    };
     const intl = useIntl();
     const messages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
@@ -71,13 +68,13 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
             };
             if (props.value) {
                 return (
-                    <Button className={classes.button} onClick={onClick}>
+                    <Button sx={styles.button} onClick={onClick}>
                         {props.value}
                     </Button>
                 );
             }
         },
-        [classes.button, onClickNmKConstraint]
+        [styles.button, onClickNmKConstraint]
     );
 
     const getRowStyle = useCallback(
@@ -102,6 +99,7 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
             autoHeaderHeight: true,
             suppressMovable: true,
             flex: 1,
+            cellRenderer: DefaultCellRenderer,
         }),
         []
     );
@@ -126,33 +124,16 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
         );
     };
 
-    const toolTipValueGetterValues = (params: ITooltipParams) => {
-        if (
-            params.data?.contingencyId &&
-            params.data?.contingencyEquipmentsIds
-        ) {
-            return {
-                title: null,
-                values: params.data?.contingencyEquipmentsIds,
-            };
-        }
-        return null;
-    };
-
     const securityAnalysisColumns = useMemo(() => {
         if (isFromContingency) {
             return securityAnalysisTableNmKContingenciesColumnsDefinition(
                 intl,
-                SubjectIdRenderer,
-                CustomTooltipValues,
-                toolTipValueGetterValues
+                SubjectIdRenderer
             );
         }
         return securityAnalysisTableNmKConstraintsColumnsDefinition(
             intl,
-            SubjectIdRenderer,
-            CustomTooltipValues,
-            toolTipValueGetterValues
+            SubjectIdRenderer
         );
     }, [intl, SubjectIdRenderer, isFromContingency]);
 

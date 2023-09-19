@@ -19,7 +19,6 @@ import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import makeStyles from '@mui/styles/makeStyles';
 import {
     useDiagram,
     ViewState,
@@ -42,7 +41,6 @@ import {
 import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
-import clsx from 'clsx';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
@@ -55,6 +53,8 @@ import {
     getVoltageLevelSingleLineDiagram,
 } from '../../services/study/network';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
+import { mergeSx } from '../utils/functions';
+import { Box } from '@mui/system';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -320,7 +320,7 @@ const useDisplayView = (studyUuid, currentNode) => {
     );
 };
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     minimizedDiagram: {
         bottom: '60px',
         position: 'absolute',
@@ -330,21 +330,19 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         overflow: 'hidden',
     },
-    availableDiagramSurfaceArea: {
+    availableDiagramSurfaceArea: (theme) => ({
         flexDirection: 'row',
         display: 'inline-flex',
         paddingRight: theme.spacing(6),
-    },
+    }),
     fullscreen: {
         paddingRight: 0,
     },
-}));
+};
 
 export function DiagramPane({
     studyUuid,
-    isComputationRunning,
     showInSpreadsheet,
-    showOneBusShortcircuitResults,
     currentNode,
     visible,
     loadFlowStatus,
@@ -372,7 +370,6 @@ export function DiagramPane({
     currentNodeRef.current = currentNode;
     const viewsRef = useRef([]);
     viewsRef.current = views;
-    const classes = useStyles();
 
     /**
      * BUILDS THE DIAGRAMS LIST
@@ -1047,10 +1044,11 @@ export function DiagramPane({
     return (
         <AutoSizer>
             {({ width, height }) => (
-                <div
-                    className={clsx(classes.availableDiagramSurfaceArea, {
-                        [classes.fullscreen]: fullScreenDiagram?.id,
-                    })}
+                <Box
+                    sx={mergeSx(
+                        styles.availableDiagramSurfaceArea,
+                        fullScreenDiagram?.id && styles.fullscreen
+                    )}
                     style={{
                         width: width + 'px',
                         height: height + 'px',
@@ -1069,9 +1067,7 @@ export function DiagramPane({
                                 array[index]?.align === 'right' &&
                                     (index === 0 ||
                                         array[index - 1]?.align === 'left') && (
-                                        <div
-                                            className={classes.separator}
-                                        ></div>
+                                        <Box sx={styles.separator}></Box>
                                     )
                             }
                             <Diagram
@@ -1101,13 +1097,7 @@ export function DiagramPane({
                                         DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
                                         loadFlowStatus={loadFlowStatus}
-                                        isComputationRunning={
-                                            isComputationRunning
-                                        }
                                         showInSpreadsheet={showInSpreadsheet}
-                                        showOneBusShortcircuitResults={
-                                            showOneBusShortcircuitResults
-                                        }
                                         studyUuid={studyUuid}
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}
@@ -1134,7 +1124,7 @@ export function DiagramPane({
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
                         spacing={1}
-                        className={classes.minimizedDiagram}
+                        sx={styles.minimizedDiagram}
                         style={{
                             display: !fullScreenDiagram?.id ? '' : 'none', // We hide this stack if a diagram is in fullscreen
                         }}
@@ -1169,7 +1159,7 @@ export function DiagramPane({
                             />
                         ))}
                     </Stack>
-                </div>
+                </Box>
             )}
         </AutoSizer>
     );

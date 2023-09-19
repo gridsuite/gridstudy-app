@@ -30,6 +30,7 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { ISortConfig } from '../../../hooks/use-aggrid-sort';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAResultFault[];
@@ -323,6 +324,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             resizable: true,
             sortable: true,
             flex: 1,
+            cellRenderer: DefaultCellRenderer,
         }),
         []
     );

@@ -14,9 +14,8 @@ import React, {
 
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import makeStyles from '@mui/styles/makeStyles';
 import { green, red } from '@mui/material/colors';
 import {
     GridReadyEvent,
@@ -48,6 +47,8 @@ import {
 } from '../../utils/aggrid-rows-handler';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { fetchLimitViolations } from '../../../services/study';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { Box } from '@mui/system';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     result,
@@ -55,7 +56,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     nodeUuid,
     tabIndex,
 }) => {
-    const useStyles = makeStyles(() => ({
+    const styles = {
         cell: {
             display: 'flex',
             alignItems: 'center',
@@ -70,8 +71,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         fail: {
             color: red[500],
         },
-    }));
-    const classes = useStyles();
+    };
     const theme = useTheme();
     const intl = useIntl();
 
@@ -97,6 +97,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             wrapHeaderText: true,
             autoHeaderHeight: true,
             flex: 1,
+            cellRenderer: DefaultCellRenderer,
         }),
         []
     );
@@ -112,31 +113,31 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
     const StatusCellRender = useCallback(
         (cellData: ICellRendererParams) => {
             const status = cellData.value;
-            const color =
-                status === 'CONVERGED' ? classes.succeed : classes.fail;
+            const color = status === 'CONVERGED' ? styles.succeed : styles.fail;
             return (
-                <div className={classes.cell}>
+                <Box sx={styles.cell}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Lens fontSize={'medium'} className={color} />
+                        <Lens fontSize={'medium'} sx={color} />
                         <span style={{ marginLeft: '4px' }}>{status}</span>
                     </div>
-                </div>
+                </Box>
             );
         },
-        [classes.cell, classes.fail, classes.succeed]
+        [styles.cell, styles.fail, styles.succeed]
     );
 
     const NumberRenderer = useCallback(
         (cellData: ICellRendererParams) => {
             const value = cellData.value;
             return (
-                <div className={classes.cell}>
+                <Box sx={styles.cell}>
                     {!isNaN(value) ? value.toFixed(1) : ''}
-                </div>
+                </Box>
             );
         },
-        [classes.cell]
+        [styles.cell]
     );
+
     const loadFlowResultColumns = useMemo(() => {
         return loadFlowResultColumnsDefinition(
             intl,

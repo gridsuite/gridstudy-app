@@ -7,18 +7,16 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Grid, Autocomplete, TextField, Chip, Button } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import CheckIcon from '@mui/icons-material/Check';
+import { Autocomplete, Chip, Grid, TextField } from '@mui/material';
 import {
     CloseButton,
     DropDown,
     LabelledButton,
     SwitchWithLabel,
     useParameterState,
-    useStyles,
+    styles,
 } from './parameters';
-import { LabelledSlider, LineSeparator } from '../dialogUtils';
+import { LineSeparator } from '../dialogUtils';
 import { FlatParameters } from '@gridsuite/commons-ui';
 import { LocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
@@ -26,16 +24,18 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_LIMIT_REDUCTION,
 } from '../../../utils/config-params';
+import { ParameterType, ParamLine, ParameterGroup } from './widget';
+import { mergeSx } from '../../utils/functions';
+
 const CountrySelector = ({ value, label, callback }) => {
-    const classes = useStyles();
     const { translate, countryCodes } = LocalizedCountries();
 
     return (
         <>
-            <Grid item xs={6} className={classes.parameterName}>
+            <Grid item xs={6} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={6} className={classes.controlItem}>
+            <Grid item container xs={6} sx={styles.controlItem}>
                 <Autocomplete
                     size="small"
                     value={value}
@@ -54,7 +54,7 @@ const CountrySelector = ({ value, label, callback }) => {
                                     }
                                 />
                             }
-                            className={classes.minWidthMedium}
+                            sx={styles.minWidthMedium}
                             {...props}
                         />
                     )}
@@ -84,7 +84,6 @@ export const DoubleEditor = ({
     le = undefined,
     lt = undefined,
 }) => {
-    const classes = useStyles();
     const [value, setValue] = useState(initValue);
     const [doubleError, setDoubleError] = useState(false);
 
@@ -130,10 +129,10 @@ export const DoubleEditor = ({
 
     return (
         <>
-            <Grid item xs={8} className={classes.parameterName}>
+            <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
+            <Grid item container xs={4} sx={styles.controlItem}>
                 <TextField
                     fullWidth
                     size="small"
@@ -321,27 +320,6 @@ const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     );
 };
 
-const SubgroupParametersButton = ({ showOpenIcon, label, onClick }) => {
-    const classes = useStyles();
-    return (
-        <>
-            <Grid item xs={12} className={classes.subgroupParametersButton}>
-                <Button
-                    startIcon={<SettingsIcon />}
-                    endIcon={
-                        showOpenIcon ? (
-                            <CheckIcon style={{ color: 'green' }} />
-                        ) : undefined
-                    }
-                    onClick={onClick}
-                >
-                    <FormattedMessage id={label} />
-                </Button>
-            </Grid>
-        </>
-    );
-};
-
 const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
@@ -392,29 +370,28 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     };
 
     return (
-        <>
-            <SubgroupParametersButton
-                showOpenIcon={showAdvancedLfParams}
-                label={'showAdvancedParameters'}
-                onClick={() => setShowAdvancedLfParams(!showAdvancedLfParams)}
-            />
-            {showAdvancedLfParams &&
-                makeComponentsFor(
-                    defParams,
-                    lfParams?.commonParameters || {},
-                    lfParams,
-                    commitLFParameter
-                )}
-        </>
+        <ParameterGroup
+            label={'showAdvancedParameters'}
+            state={showAdvancedLfParams}
+            onClick={setShowAdvancedLfParams}
+        >
+            {makeComponentsFor(
+                defParams,
+                lfParams?.commonParameters || {},
+                lfParams,
+                commitLFParameter
+            )}
+        </ParameterGroup>
     );
 };
 
 const SpecificLoadFlowParameters = ({
+    disabled,
+    subText,
     specificParamsDescription,
     specificCurrentParams,
     onSpecificParamChange,
 }) => {
-    const classes = useStyles();
     const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
     const onChange = (paramName, value, isEdit) => {
         if (isEdit) {
@@ -424,27 +401,25 @@ const SpecificLoadFlowParameters = ({
     };
 
     return (
-        <>
-            <SubgroupParametersButton
-                showOpenIcon={showSpecificLfParams}
-                label={'showSpecificParameters'}
-                onClick={() => setShowSpecificLfParams(!showSpecificLfParams)}
+        <ParameterGroup
+            state={showSpecificLfParams}
+            label={'showSpecificParameters'}
+            onClick={setShowSpecificLfParams}
+            unmountOnExit={false}
+            disabled={disabled}
+            infoText={subText}
+        >
+            <FlatParameters
+                sx={styles.parameterName}
+                paramsAsArray={specificParamsDescription}
+                initValues={specificCurrentParams}
+                onChange={onChange}
             />
-            {showSpecificLfParams && (
-                <FlatParameters
-                    className={classes.parameterName}
-                    paramsAsArray={specificParamsDescription}
-                    initValues={specificCurrentParams}
-                    onChange={onChange}
-                />
-            )}
-        </>
+        </ParameterGroup>
     );
 };
 
 export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
-    const classes = useStyles();
-
     const [
         providers,
         provider,
@@ -455,10 +430,6 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         resetParameters,
         specificParamsDescriptions,
     ] = parametersBackend;
-
-    const [limitReductionParam, handleChangeLimitReduction] = useParameterState(
-        PARAM_LIMIT_REDUCTION
-    );
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
@@ -559,9 +530,15 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
         )
     );
 
+    // we must keep the line of the simulator selection visible during scrolling
+    // only specifics parameters are dependents of simulator type
     return (
         <>
-            <Grid container spacing={1} padding={1}>
+            <Grid
+                container
+                spacing={1}
+                sx={{ paddingLeft: 0, paddingRight: 2 }}
+            >
                 <DropDown
                     value={provider}
                     label="Provider"
@@ -569,19 +546,13 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     callback={updateLfProviderCallback}
                 />
             </Grid>
-            <Grid
-                container
-                className={classes.scrollableGrid}
-                key="lfParameters"
-            >
+            <Grid container sx={styles.scrollableGrid} key="lfParameters">
                 <LineSeparator />
                 <Grid container spacing={1} paddingTop={1}>
-                    <LabelledSlider
-                        value={Number(limitReductionParam)}
+                    <ParamLine
+                        type={ParameterType.Slider}
+                        param_name_id={PARAM_LIMIT_REDUCTION}
                         label="LimitReduction"
-                        onCommitCallback={(event, value) => {
-                            handleChangeLimitReduction(value);
-                        }}
                         marks={alertThresholdMarks}
                         minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
                     />
@@ -595,19 +566,19 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     lfParams={params || {}}
                     commitLFParameter={updateParameters}
                 />
-                {specificParamsDescriptions?.[provider] && (
-                    <SpecificLoadFlowParameters
-                        specificParamsDescription={
-                            specificParamsDescrWithoutNanVals[provider]
-                        }
-                        specificCurrentParams={specificCurrentParams[provider]}
-                        onSpecificParamChange={onSpecificParamChange}
-                    />
-                )}
+                <SpecificLoadFlowParameters
+                    disabled={!specificParamsDescriptions?.[provider]}
+                    subText={provider}
+                    specificParamsDescription={
+                        specificParamsDescrWithoutNanVals[provider]
+                    }
+                    specificCurrentParams={specificCurrentParams[provider]}
+                    onSpecificParamChange={onSpecificParamChange}
+                />
             </Grid>
             <Grid
                 container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
+                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
             >
                 <LabelledButton
@@ -618,10 +589,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     callback={resetLfParameters}
                     label="resetProviderValuesToDefault"
                 />
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
+                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

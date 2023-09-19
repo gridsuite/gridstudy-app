@@ -9,10 +9,7 @@ import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
-import {
-    DATA_KEY_TO_FILTER_KEY,
-    DATA_KEY_TO_SORT_KEY,
-} from './sensitivity-analysis-content';
+import { DATA_KEY_TO_FILTER_KEY } from './sensitivity-analysis-content';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import {
@@ -23,6 +20,7 @@ import {
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import LoaderWithOverlay from 'components/utils/loader-with-overlay';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -75,10 +73,7 @@ const SensitivityAnalysisResult = ({
                     filterOptions,
                     sortConfig,
                     onSortChanged: (newSortValue) =>
-                        onSortChanged(
-                            DATA_KEY_TO_SORT_KEY[field],
-                            newSortValue
-                        ),
+                        onSortChanged(field, newSortValue),
                     updateFilter,
                     filterSelectedOptions,
                 },
@@ -88,7 +83,6 @@ const SensitivityAnalysisResult = ({
                 autoHeaderHeight: true,
                 pinned: pinned,
                 headerTooltip: intl.formatMessage({ id: labelId }),
-                tooltipField: intl.formatMessage({ id: field }),
             };
         },
         [
@@ -176,6 +170,7 @@ const SensitivityAnalysisResult = ({
             sortable: true,
             resizable: true,
             flex: 1,
+            cellRenderer: DefaultCellRenderer,
         }),
         []
     );

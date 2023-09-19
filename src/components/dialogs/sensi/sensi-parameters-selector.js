@@ -20,7 +20,6 @@ import { useInputForm } from '../../utils/inputs/input-hooks';
 import { GridSection } from '../dialogUtils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import DialogActions from '@mui/material/DialogActions';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSensitivityFactors } from './sensitivity-factors';
 import { SensiInjectionsSet } from './sensi-injections-set';
 import { SensiInjections } from './sensi-injections';
@@ -78,38 +77,37 @@ export const INJECTIONS_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.LOAD,
 ];
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = {
     checkedButton: {
-        marginTop: 20,
+        marginTop: '20px',
     },
     deleteButton: {
-        marginTop: 10,
+        marginTop: '10px',
     },
-    button: {
+    button: (theme) => ({
         justifyContent: 'flex-start',
         fontSize: 'small',
         marginTop: theme.spacing(1),
-    },
-    emptyListError: {
+    }),
+    emptyListError: (theme) => ({
         color: theme.palette.error.main,
         fontSize: 'small',
         textAlign: 'center',
         margin: theme.spacing(0.5),
-    },
+    }),
     chipElement: {
-        margin: 3,
-        maxWidth: 200,
+        margin: '3px',
+        maxWidth: '200px',
     },
-}));
+};
 
 export const SensiChecked = ({ checked, onClick }) => {
-    const classes = useStyles();
     return (
         <Checkbox
             checked={checked}
             size="small"
             onChange={onClick}
-            className={classes.checkedButton}
+            sx={styles.checkedButton}
         />
     );
 };
