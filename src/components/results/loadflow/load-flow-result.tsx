@@ -14,7 +14,7 @@ import React, {
 
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material';
 import { Lens } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
 import {
@@ -47,6 +47,7 @@ import {
 } from '../../utils/aggrid-rows-handler';
 import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import { fetchLimitViolations } from '../../../services/study';
+import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { Box } from '@mui/system';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
@@ -96,6 +97,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
             wrapHeaderText: true,
             autoHeaderHeight: true,
             flex: 1,
+            cellRenderer: DefaultCellRenderer,
         }),
         []
     );
