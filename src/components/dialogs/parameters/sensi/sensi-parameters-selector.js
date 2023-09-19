@@ -119,6 +119,7 @@ const SensiParametersSelector = () => {
                                 >
                                     {tab.subTabs.map((subTab, subIndex) => (
                                         <Tab
+                                            key={subTab.label}
                                             value={subIndex}
                                             label={
                                                 <FormattedMessage

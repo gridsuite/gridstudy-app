@@ -37,26 +37,26 @@ const SensitivityAnalysisFields: FunctionComponent = () => {
             name: FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
         },
     ];
-    const renderInput = (input: IFlowInputParameters) => {
+    const renderInput = (key: number, input: IFlowInputParameters) => {
         return (
-            <>
+            <React.Fragment key={key}>
                 <Grid item xs={8} alignItems="center" sx={styles.parameterName}>
                     <FormattedMessage id={input.formattedMessageId} />
                 </Grid>
                 <Grid item xs={4} sx={styles.controlItem} alignItems="center">
                     <FloatInput
                         name={input.name}
-                        label={''}
+                        label=""
                         formProps={{ margin: '1' }}
                     />
                 </Grid>
-            </>
+            </React.Fragment>
         );
     };
 
     return (
         <Grid container spacing={1}>
-            {flowInputParameters.map((input) => renderInput(input))}
+            {flowInputParameters.map((input, key) => renderInput(key, input))}
         </Grid>
     );
 };
