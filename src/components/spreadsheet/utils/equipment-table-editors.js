@@ -44,21 +44,29 @@ const checkCrossValidationRequiredOn = (gridApi, colDef) => {
                   colDef.crossValidation.requiredOn.dependencyColumn
                 : undefined
         );
-
-    return dependencyEditor.length > 0
-        ? dependencyEditor[0].getValue() !==
-              colDef.crossValidation.requiredOn.columnValue
-        : false;
+    if (!dependencyEditor.length) {
+        return false;
+    }
+    if (colDef.crossValidation.requiredOn.columnValue) {
+        // if the prop columnValue exist, then we compare its value with the current value
+        return (
+            dependencyEditor[0].getValue() !==
+            colDef.crossValidation.requiredOn.columnValue
+        );
+    } else {
+        // otherwise, we just check if there is a current value
+        return dependencyEditor[0].getValue() === undefined;
+    }
 };
 
 export const NumericalField = forwardRef(
     (
         {
             defaultValue,
+            optional,
             minExpression,
             maxExpression,
             gridContext,
-            data,
             colDef,
             gridApi,
         },
@@ -72,21 +80,15 @@ export const NumericalField = forwardRef(
             if (!isNaN(minExpression)) {
                 return minExpression;
             }
-            if (gridContext.dynamicValidation[minExpression]) {
-                return gridContext.dynamicValidation[minExpression];
-            }
-            return data[minExpression];
-        }, [minExpression, gridContext.dynamicValidation, data]);
+            return gridContext.dynamicValidation[minExpression];
+        }, [minExpression, gridContext.dynamicValidation]);
 
         const getMax = useCallback(() => {
             if (!isNaN(maxExpression)) {
                 return maxExpression;
             }
-            if (gridContext.dynamicValidation[maxExpression]) {
-                return gridContext.dynamicValidation[maxExpression];
-            }
-            return data[maxExpression];
-        }, [maxExpression, gridContext.dynamicValidation, data]);
+            return gridContext.dynamicValidation[maxExpression];
+        }, [maxExpression, gridContext.dynamicValidation]);
 
         const [minValue, setMinValue] = useState(getMin());
         const [maxValue, setMaxValue] = useState(getMax());
@@ -98,6 +100,9 @@ export const NumericalField = forwardRef(
 
         const isValid = useCallback(
             (val, minVal, maxVal) => {
+                if (!val && optional) {
+                    return true;
+                }
                 if (!val && colDef.crossValidation?.requiredOn) {
                     const isConditionFulfiled = checkCrossValidationRequiredOn(
                         gridApi,
@@ -107,22 +112,18 @@ export const NumericalField = forwardRef(
                         return true;
                     }
                 }
-                if (isNaN(val)) {
-                    return false;
-                }
-                let valFloat = parseFloat(val);
-                if (isNaN(valFloat)) {
-                    return false;
-                }
                 return (
-                    (minVal === undefined || valFloat >= minVal) &&
-                    (maxVal === undefined || valFloat <= maxVal)
+                    (minVal === undefined || val >= minVal) &&
+                    (maxVal === undefined || val <= maxVal)
                 );
             },
-            [colDef, gridApi]
+            [optional, colDef, gridApi]
         );
 
         const validateChange = useCallback(() => {
+            // the local state is not always up to date, for instance when we call setMinValue and setMaxValue right before this callback
+            const minValue = getMin();
+            const maxValue = getMax();
             const updatedErrors = { ...gridContext.editErrors };
             if (isValid(value, minValue, maxValue)) {
                 setError(false);
@@ -133,7 +134,7 @@ export const NumericalField = forwardRef(
                 updatedErrors[colDef.field] = true;
                 gridContext.editErrors = updatedErrors;
             }
-        }, [colDef.field, gridContext, minValue, maxValue, value, isValid]);
+        }, [colDef.field, gridContext, getMin, getMax, value, isValid]);
 
         useImperativeHandle(
             ref,
@@ -157,10 +158,12 @@ export const NumericalField = forwardRef(
 
         const validateEvent = useCallback(
             (ev) => {
-                const newVal = ev.target.value;
+                let newVal = parseFloat(ev.target.value);
+                if (isNaN(newVal)) {
+                    newVal = undefined;
+                }
                 setValue(newVal);
-                gridContext.dynamicValidation[colDef.field] =
-                    parseFloat(newVal);
+                gridContext.dynamicValidation[colDef.field] = newVal;
             },
             [colDef.field, gridContext.dynamicValidation]
         );

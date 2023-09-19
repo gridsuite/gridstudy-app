@@ -626,6 +626,11 @@ const TableWrapper = (props) => {
         [validateEdit]
     );
 
+    const handleEditingStarted = useCallback((params) => {
+        // we initialize the dynamicValidation with the initial data
+        params.context.dynamicValidation = { ...params.data };
+    }, []);
+
     const handleEditingStopped = useCallback(
         (params) => {
             if (
@@ -704,6 +709,7 @@ const TableWrapper = (props) => {
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}
+                        handleEditingStarted={handleEditingStarted}
                         handleEditingStopped={handleEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
