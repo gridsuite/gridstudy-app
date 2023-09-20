@@ -562,22 +562,20 @@ export const NetworkMapTab = ({
                     if (!checkNodeConsistency(nodeBeforeFetch)) {
                         return;
                     }
-                    setErrorMessage(
-                        intlRef.current.formatMessage(
-                            { id: 'geoDataLoadingFail' },
-                            { studyUuid: studyUuid }
-                        )
-                    );
+                    console.info('111', error.message);
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'geoDataLoadingFail',
+                    });
                 })
                 .finally(() => {
                     dispatch(setMapDataLoading(false));
                 });
         }
     }, [
-        intlRef,
         dispatch,
         lineFullPath,
-        setErrorMessage,
+        snackError,
         studyUuid,
         getEquipmentsNotFoundIds,
         getMissingEquipmentsPositions,
@@ -641,17 +639,16 @@ export const NetworkMapTab = ({
                 if (!checkNodeConsistency(nodeBeforeFetch)) {
                     return;
                 }
-                setErrorMessage(
-                    intlRef.current.formatMessage(
-                        { id: 'geoDataLoadingFail' },
-                        { studyUuid: studyUuid }
-                    )
-                );
+                console.info('222', error.message);
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'geoDataLoadingFail',
+                });
             })
             .finally(() => {
                 dispatch(setMapDataLoading(false));
             });
-    }, [intlRef, lineFullPath, setErrorMessage, studyUuid, dispatch]);
+    }, [lineFullPath, studyUuid, dispatch, snackError]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
@@ -675,12 +672,12 @@ export const NetworkMapTab = ({
         new MapEquipments(
             studyUuid,
             currentNode?.id,
-            setErrorMessage,
+            snackError,
             dispatch,
             intlRef
         );
         dispatch(resetMapReloaded());
-    }, [currentNode, dispatch, intlRef, setErrorMessage, studyUuid]);
+    }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
 
     const updateMapEquipments = useCallback(
         (currentNodeAtReloadCalling) => {
