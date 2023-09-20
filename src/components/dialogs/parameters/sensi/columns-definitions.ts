@@ -74,7 +74,7 @@ interface IColumnsDef {
     equipmentTypes?: any[];
     elementType?: string;
     titleId?: string;
-    CheckboxInput?: boolean;
+    checkboxItems?: boolean;
 }
 export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
     {
@@ -102,7 +102,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         dataKey: DISTRIBUTION_TYPE,
         equipmentTypes: INJECTION_DISTRIBUTION_TYPES,
         initialValue: INJECTION_DISTRIBUTION_TYPES[0].id,
-        menuItem: true,
+        menuItems: true,
         editable: true,
     },
     {
@@ -118,7 +118,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
         label: 'Actif',
         dataKey: ACTIVATED,
         initialValue: true,
-        checkboxItem: true,
+        checkboxItems: true,
         editable: true,
     },
 ];
@@ -156,7 +156,7 @@ export const COLUMNS_DEFINITIONS_INJECTIONS = [
         label: 'Actif',
         dataKey: ACTIVATED,
         initialValue: true,
-        checkboxItem: true,
+        checkboxItems: true,
         editable: true,
     },
 ];
@@ -176,7 +176,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         dataKey: SENSITIVITY_TYPE,
         equipmentTypes: SENSITIVITY_TYPES,
         initialValue: SENSITIVITY_TYPES[0].id,
-        menuItem: true,
+        menuItems: true,
         editable: true,
     },
     {
@@ -202,7 +202,7 @@ export const COLUMNS_DEFINITIONS_HVDCS = [
         label: 'Actif',
         dataKey: ACTIVATED,
         initialValue: true,
-        checkboxItem: true,
+        checkboxItems: true,
         editable: true,
     },
 ];
@@ -222,7 +222,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         dataKey: SENSITIVITY_TYPE,
         equipmentTypes: SENSITIVITY_TYPES,
         initialValue: SENSITIVITY_TYPES[0].id,
-        menuItem: true,
+        menuItems: true,
         editable: true,
     },
     {
@@ -248,7 +248,7 @@ export const COLUMNS_DEFINITIONS_PSTS = [
         label: 'Actif',
         dataKey: ACTIVATED,
         initialValue: true,
-        checkboxItem: true,
+        checkboxItems: true,
         editable: true,
     },
 ];
@@ -286,7 +286,7 @@ export const COLUMNS_DEFINITIONS_NODES = [
         label: 'Actif',
         dataKey: ACTIVATED,
         initialValue: true,
-        checkboxItem: true,
+        checkboxItems: true,
         editable: true,
     },
 ];

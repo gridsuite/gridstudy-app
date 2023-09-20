@@ -392,12 +392,12 @@ export const SensitivityAnalysisParameters = ({
 
     return (
         <FormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid item maxWidth="md" width="100%">
+            <Grid item>
                 <Grid
                     container
                     spacing={1}
                     paddingTop={1}
-                    sx={{ paddingLeft: 0, paddingRight: 2 }}
+                    sx={{ paddingLeft: 0, paddingRight: 0 }}
                 >
                     <DropDown
                         value={provider}
@@ -406,12 +406,8 @@ export const SensitivityAnalysisParameters = ({
                         callback={updateProviderCallback}
                     />
                 </Grid>
-                <Grid
-                    container
-                    key="sensitivityAnalysisParameters"
-                    sx={styles.scrollableGrid}
-                >
-                    <Grid container paddingBottom={1}>
+                <Grid container key="sensitivityAnalysisParameters">
+                    <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
                     <SensitivityAnalysisFields

@@ -35,6 +35,10 @@ import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import DirectoryItemsInput from '../rhf-inputs/directory-items-input';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
+import {
+    filledTextField,
+    italicFontTextField,
+} from '../../dialogs/dialogUtils';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -114,8 +118,8 @@ function EditableTableCell({
             {!column.numeric &&
                 !column.directoryItems &&
                 !column.chipItems &&
-                !column.menuItem &&
-                !column.checkboxItem && (
+                !column.menuItems &&
+                !column.checkboxItems && (
                     <TableTextInput
                         name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                         {...props}
@@ -136,14 +140,17 @@ function EditableTableCell({
                     hideErrorMessage={true}
                 />
             )}
-            {column.menuItem && (
+            {column.menuItems && (
                 <SelectInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     options={column.equipmentTypes}
+                    fullWidth
+                    disableClearable={true}
                     size="small"
+                    formProps={{ ...italicFontTextField, ...filledTextField }}
                 />
             )}
-            {column.checkboxItem && (
+            {column.checkboxItems && (
                 <CheckboxInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     options={column.equipmentTypes}
