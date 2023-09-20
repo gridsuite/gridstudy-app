@@ -142,7 +142,6 @@ const styles = {
     },
     csvExport: {
         display: 'flex',
-        flexDirection: 'row-reverse',
         alignItems: 'baseline',
     },
     grid: {
@@ -469,6 +468,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             return (
                 <Box sx={styles.container}>
                     <Box sx={styles.csvExport}>
+                        <Box style={{ flexGrow: 1 }}></Box>
                         <CsvExport
                             gridRef={gridRef}
                             columns={columnDefs}
