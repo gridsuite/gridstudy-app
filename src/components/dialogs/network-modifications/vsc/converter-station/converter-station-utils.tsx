@@ -66,7 +66,7 @@ interface ConverterStationInterfaceEditData {
     voltageRegulationOn: boolean;
     voltage?: number | null;
     voltageLevelId: string;
-    busbarSectionId: string;
+    busOrBusbarSectionId: string;
     busbarSectionName?: string;
     connectionDirection: string | null;
     connectionName?: string | null;
@@ -187,7 +187,7 @@ export function getConverterStationFormEditData(
             [VOLTAGE]: converterStation?.voltage,
             ...getConnectivityFormData({
                 voltageLevelId: converterStation.voltageLevelId,
-                busbarSectionId: converterStation.busbarSectionId,
+                busbarSectionId: converterStation.busOrBusbarSectionId,
                 connectionDirection: converterStation?.connectionDirection,
                 connectionName: converterStation?.connectionName,
                 connectionPosition: converterStation?.connectionPosition,
