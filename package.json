@@ -68,8 +68,7 @@
     },
     "eslintConfig": {
         "plugins": [
-            "jest",
-            "testing-library"
+            "jest"
         ],
         "extends": [
             "react-app",
