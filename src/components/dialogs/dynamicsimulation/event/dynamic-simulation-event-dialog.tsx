@@ -56,20 +56,9 @@ export const DynamicSimulationEventDialog = (
         ...dialogProps
     } = props;
 
-    const [selectedId, setSelectedId] = useState(equipmentId ?? null);
+    const { snackError } = useSnackMessage();
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [event, setEvent] = useState<Event>();
-
-    const { snackError } = useSnackMessage();
-
-    const waitingOpen = useOpenShortWaitFetching({
-        isDataFetched: true,
-        delay: FORM_LOADING_DELAY,
-    });
-    const open = defaultOpen !== undefined ? defaultOpen : waitingOpen;
-
-    // empty form
-    const handleSetValuesAndEmptyOthers = useCallback(() => {}, []);
 
     const eventType = useMemo(
         () => getEventType(equipmentType),
@@ -80,6 +69,82 @@ export const DynamicSimulationEventDialog = (
         () => (eventType ? eventDefinitions[eventType] : undefined),
         [eventType]
     );
+
+    // build formSchema from an event definition
+    const formSchema = useMemo(
+        () =>
+            yup
+                .object()
+                .shape(
+                    eventDefinition
+                        ? Object.entries(eventDefinition).reduce(
+                              (obj, [key, value]) => ({
+                                  ...obj,
+                                  [key]: getSchema(value),
+                              }),
+                              {}
+                          )
+                        : {}
+                )
+                .required(),
+        [eventDefinition]
+    );
+
+    // build default values from an event definition
+    const defaultFormData: {
+        [Property in EventPropertyName]?: any;
+    } = useMemo(
+        () =>
+            eventDefinition
+                ? Object.entries(eventDefinition).reduce(
+                      (obj, [key, value]) => ({
+                          ...obj,
+                          [key]: value.default,
+                      }),
+                      {}
+                  )
+                : {},
+        [eventDefinition]
+    );
+
+    const formMethods = useForm({
+        defaultValues: defaultFormData,
+        resolver: yupResolver(formSchema),
+    });
+
+    const { reset } = formMethods;
+
+    // load event for equipment
+    useEffect(() => {
+        setDataFetchStatus(FetchStatus.RUNNING);
+        fetchDynamicSimulationEvent(studyUuid, currentNodeId, equipmentId).then(
+            (event) => {
+                setDataFetchStatus(FetchStatus.SUCCEED);
+                setEvent(event);
+            }
+        );
+    }, [currentNodeId, equipmentId, studyUuid, reset]);
+
+    // reset form data when event available after fetch
+    useEffect(() => {
+        if (event && eventDefinition) {
+            const formData = Object.entries(eventDefinition).reduce(
+                (obj, [key, value]) => ({
+                    ...obj,
+                    [key]: event.properties.find(
+                        (property) => property.name === key
+                    )?.value,
+                }),
+                {}
+            );
+            reset(formData);
+        }
+    }, [eventDefinition, event, reset]);
+
+    // empty form
+    const handleClear = useCallback(() => {
+        reset(defaultFormData);
+    }, [reset, defaultFormData]);
 
     // submit form
     const handleSubmit = useCallback(
@@ -134,7 +199,6 @@ export const DynamicSimulationEventDialog = (
                     messageTxt: error.message,
                     headerId: 'DynamicSimulationEventSaveError',
                 });
-                console.log('Error occurs when save an event');
             });
         },
         [
@@ -149,73 +213,36 @@ export const DynamicSimulationEventDialog = (
         ]
     );
 
-    // build formSchema from an event definition
-    const formSchema = useMemo(
-        () =>
-            yup
-                .object()
-                .shape(
-                    eventDefinition
-                        ? Object.entries(eventDefinition).reduce(
-                              (obj, [key, value]) => ({
-                                  ...obj,
-                                  [key]: getSchema(value),
-                              }),
-                              {}
-                          )
-                        : {}
-                )
-                .required(),
-        [eventDefinition]
-    );
-
-    // build default values from an event definition
-    const emptyFormData: {
-        [Property in EventPropertyName]?: any;
-    } = useMemo(
-        () =>
-            eventDefinition
-                ? Object.entries(eventDefinition).reduce(
-                      (obj, [key, value]) => ({
-                          ...obj,
-                          [key]: value.default,
-                      }),
-                      {}
-                  )
-                : {},
-        [eventDefinition]
-    );
-
-    const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+    const waitingOpen = useOpenShortWaitFetching({
+        isDataFetched:
+            !isUpdate ||
+            ((editDataFetchStatus === FetchStatus.SUCCEED ||
+                editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED ||
+                    dataFetchStatus === FetchStatus.FAILED)),
+        delay: FORM_LOADING_DELAY,
     });
-
-    // load event for equipment
-    useEffect(() => {
-        setDataFetchStatus(FetchStatus.RUNNING);
-        fetchDynamicSimulationEvent(studyUuid, currentNodeId, equipmentId).then(
-            (event) => {
-                console.log('Loaded event = ', event);
-                setDataFetchStatus(FetchStatus.SUCCEED);
-                setEvent(event);
-            }
-        );
-    }, [currentNodeId, equipmentId, studyUuid]);
+    const open = defaultOpen !== undefined ? defaultOpen : waitingOpen;
 
     return (
-        <FormProvider {...{ validationSchema: formSchema, ...formMethods }}>
+        <FormProvider
+            {...{
+                validationSchema: formSchema,
+                removeOptional: true,
+                ...formMethods,
+            }}
+        >
             <ModificationDialog
                 fullWidth
                 onClose={onClose}
-                onClear={handleSetValuesAndEmptyOthers}
+                onClear={handleClear}
                 onSave={handleSubmit}
                 aria-labelledby="dialog-event-configuration"
                 maxWidth={'xs'}
                 titleId={title}
                 open={open}
                 keepMounted={true}
-                showNodeNotBuiltWarning={selectedId != null}
+                showNodeNotBuiltWarning={!!equipmentId}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||

@@ -15,8 +15,7 @@ const renderFloatField = (
     <FloatInput
         name={propertyName}
         label={propertyDefinition ? propertyDefinition.label : ''}
-        previousValue={propertyValue}
-        clearable={true}
+        clearable
         adornment={
             propertyDefinition?.unit
                 ? {
@@ -25,6 +24,7 @@ const renderFloatField = (
                   }
                 : undefined
         }
+        previousValue={parseFloat(propertyValue)}
     />
 );
 
