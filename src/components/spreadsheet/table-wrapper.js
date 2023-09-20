@@ -103,7 +103,7 @@ const styles = {
 
 const TableWrapper = (props) => {
     const gridRef = useRef();
-
+    const timerRef = useRef(null);
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
@@ -300,7 +300,7 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const { equipments, errorMessage } = useSpreadsheetEquipments({
+    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments({
         type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
         fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
     });
@@ -340,7 +340,10 @@ const TableWrapper = (props) => {
         },
         [cleanTableState]
     );
-
+    useEffect(() => {
+        gridRef.current?.api?.showLoadingOverlay();
+        return () => clearTimeout(timerRef.current);
+    }, [tabIndex]);
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
         const newSelectedColumns = new Set(
@@ -424,8 +427,15 @@ const TableWrapper = (props) => {
 
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
-    }, [scrollToEquipmentIndex]);
-
+        // wait a moment  before removing the loading message.
+        timerRef.current = setTimeout(() => {
+            gridRef.current?.api?.hideOverlay();
+            if (rowData.length === 0 && !isFetching) {
+                // we need to call showNoRowsOverlay in order to show message when rowData is empty
+                gridRef.current?.api?.showNoRowsOverlay();
+            }
+        }, 50);
+    }, [scrollToEquipmentIndex, isFetching, rowData]);
     useEffect(() => {
         const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
             .columns.filter((column) => lockedColumnsNames.has(column.id))
@@ -652,7 +662,6 @@ const TableWrapper = (props) => {
         () => (editingData ? [editingData] : undefined),
         [editingData]
     );
-
     return (
         <>
             <Grid container justifyContent={'space-between'}>
