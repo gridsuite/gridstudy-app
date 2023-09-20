@@ -261,7 +261,6 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
-                canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -270,7 +269,6 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
-                canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -280,7 +278,6 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.g1),
-                canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -290,7 +287,6 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b1),
-                canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -300,7 +296,6 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.g2),
-                canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -310,7 +305,6 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b2),
-                canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
