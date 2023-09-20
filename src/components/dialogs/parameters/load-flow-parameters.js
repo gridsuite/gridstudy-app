@@ -14,7 +14,7 @@ import {
     LabelledButton,
     SwitchWithLabel,
     useParameterState,
-    useStyles,
+    styles,
 } from './parameters';
 import { LineSeparator } from '../dialogUtils';
 import { FlatParameters } from '@gridsuite/commons-ui';
@@ -25,17 +25,17 @@ import {
     PARAM_LIMIT_REDUCTION,
 } from '../../../utils/config-params';
 import { ParameterType, ParamLine, ParameterGroup } from './widget';
+import { mergeSx } from '../../utils/functions';
 
 const CountrySelector = ({ value, label, callback }) => {
-    const classes = useStyles();
     const { translate, countryCodes } = LocalizedCountries();
 
     return (
         <>
-            <Grid item xs={6} className={classes.parameterName}>
+            <Grid item xs={6} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={6} className={classes.controlItem}>
+            <Grid item container xs={6} sx={styles.controlItem}>
                 <Autocomplete
                     size="small"
                     value={value}
@@ -54,7 +54,7 @@ const CountrySelector = ({ value, label, callback }) => {
                                     }
                                 />
                             }
-                            className={classes.minWidthMedium}
+                            sx={styles.minWidthMedium}
                             {...props}
                         />
                     )}
@@ -84,7 +84,6 @@ export const DoubleEditor = ({
     le = undefined,
     lt = undefined,
 }) => {
-    const classes = useStyles();
     const [value, setValue] = useState(initValue);
     const [doubleError, setDoubleError] = useState(false);
 
@@ -130,10 +129,10 @@ export const DoubleEditor = ({
 
     return (
         <>
-            <Grid item xs={8} className={classes.parameterName}>
+            <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
+            <Grid item container xs={4} sx={styles.controlItem}>
                 <TextField
                     fullWidth
                     size="small"
@@ -393,7 +392,6 @@ const SpecificLoadFlowParameters = ({
     specificCurrentParams,
     onSpecificParamChange,
 }) => {
-    const classes = useStyles();
     const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
     const onChange = (paramName, value, isEdit) => {
         if (isEdit) {
@@ -412,7 +410,7 @@ const SpecificLoadFlowParameters = ({
             infoText={subText}
         >
             <FlatParameters
-                className={classes.parameterName}
+                sx={styles.parameterName}
                 paramsAsArray={specificParamsDescription}
                 initValues={specificCurrentParams}
                 onChange={onChange}
@@ -422,8 +420,6 @@ const SpecificLoadFlowParameters = ({
 };
 
 export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
-    const classes = useStyles();
-
     const [
         providers,
         provider,
@@ -550,11 +546,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     callback={updateLfProviderCallback}
                 />
             </Grid>
-            <Grid
-                container
-                className={classes.scrollableGrid}
-                key="lfParameters"
-            >
+            <Grid container sx={styles.scrollableGrid} key="lfParameters">
                 <LineSeparator />
                 <Grid container spacing={1} paddingTop={1}>
                     <ParamLine
@@ -586,7 +578,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
             </Grid>
             <Grid
                 container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
+                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
             >
                 <LabelledButton
@@ -597,10 +589,7 @@ export const LoadFlowParameters = ({ hideParameters, parametersBackend }) => {
                     callback={resetLfParameters}
                     label="resetProviderValuesToDefault"
                 />
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
+                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

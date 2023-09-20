@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BooleanCellRenderer } from './cell-renderers';
+import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
@@ -109,6 +109,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'Properties',
                 field: 'properties',
                 valueGetter: propertiesGetter, // valueFormatter does not work here
+                cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
             },
         ],
