@@ -78,6 +78,15 @@ export function getVoltageInitParameters(studyUuid) {
     return backendFetchJson(getVoltageInitParams);
 }
 
+export function getVoltageInitModifications(studyUuid, currentNodeId) {
+    console.info('get voltage init modifications');
+    const getVoltageInitModifications =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeId) +
+        '/voltage-init/modifications';
+    console.debug(getVoltageInitModifications);
+    return backendFetchJson(getVoltageInitModifications);
+}
+
 export function cloneVoltageInitModifications(studyUuid, currentNodeId) {
     console.info('cloning voltage init modifications');
     const cloneVoltageInitModificationsUrl =
