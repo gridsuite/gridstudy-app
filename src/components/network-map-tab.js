@@ -562,7 +562,6 @@ export const NetworkMapTab = ({
                     if (!checkNodeConsistency(nodeBeforeFetch)) {
                         return;
                     }
-                    console.info('111', error.message);
                     snackError({
                         messageTxt: error.message,
                         headerId: 'geoDataLoadingFail',
@@ -639,7 +638,6 @@ export const NetworkMapTab = ({
                 if (!checkNodeConsistency(nodeBeforeFetch)) {
                     return;
                 }
-                console.info('222', error.message);
                 snackError({
                     messageTxt: error.message,
                     headerId: 'geoDataLoadingFail',
