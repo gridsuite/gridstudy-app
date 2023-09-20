@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, InputAdornment, TextField } from '@mui/material';
+import { InputAdornment, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
@@ -14,10 +14,6 @@ const styles = {
     searchSection: (theme) => ({
         paddingRight: theme.spacing(1),
         alignItems: 'center',
-    }),
-    containerInputSearch: (theme) => ({
-        marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(1),
     }),
 };
 
@@ -60,27 +56,23 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
     );
 
     return (
-        <Grid item sx={styles.containerInputSearch}>
-            <TextField
-                disabled={disabled}
-                size="small"
-                placeholder={intl.formatMessage({ id: 'filter' }) + '...'}
-                onChange={handleChangeFilter}
-                inputRef={inputRef}
-                fullWidth
-                InputProps={{
-                    sx: {
-                        input: styles.searchSection,
-                    },
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon
-                                color={disabled ? 'disabled' : 'inherit'}
-                            />
-                        </InputAdornment>
-                    ),
-                }}
-            />
-        </Grid>
+        <TextField
+            disabled={disabled}
+            size="small"
+            placeholder={intl.formatMessage({ id: 'filter' }) + '...'}
+            onChange={handleChangeFilter}
+            inputRef={inputRef}
+            fullWidth
+            InputProps={{
+                sx: {
+                    input: styles.searchSection,
+                },
+                startAdornment: (
+                    <InputAdornment position="start">
+                        <SearchIcon color={disabled ? 'disabled' : 'inherit'} />
+                    </InputAdornment>
+                ),
+            }}
+        />
     );
 });
