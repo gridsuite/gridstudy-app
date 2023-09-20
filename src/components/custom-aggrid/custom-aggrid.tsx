@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback } from 'react';
-import { useTheme } from '@mui/material';
+import { Theme, useTheme } from '@mui/material';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -17,6 +17,7 @@ import { mergeSx } from '../utils/functions';
 
 interface CustomAGGGridStyleProps {
     shouldHidePinnedHeaderRightBorder?: boolean;
+    showOverlay?: boolean;
 }
 
 interface CustomAGGridProps extends AgGridReactProps, CustomAGGGridStyleProps {}
@@ -45,6 +46,11 @@ const styles = {
             borderRight: 'none',
         },
     },
+    overlayBackground: (theme: Theme) => ({
+        '& .ag-overlay-wrapper': {
+            background: theme.overlay.background,
+        },
+    }),
 };
 
 export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
@@ -52,6 +58,9 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
         const {
             shouldHidePinnedHeaderRightBorder = false,
             overlayNoRowsTemplate,
+            loadingOverlayComponent,
+            loadingOverlayComponentParams,
+            showOverlay = false,
         } = props;
         const theme = useTheme();
         const intl = useIntl();
@@ -73,7 +82,8 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             <Box
                 sx={mergeSx(
                     styles.grid,
-                    shouldHidePinnedHeaderRightBorder && styles.noBorderRight
+                    shouldHidePinnedHeaderRightBorder && styles.noBorderRight,
+                    showOverlay && styles.overlayBackground(theme)
                 )}
                 className={theme.aggrid}
             >
@@ -81,6 +91,10 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                     ref={ref}
                     getLocaleText={getLocaleText}
                     suppressPropertyNamesCheck={true}
+                    loadingOverlayComponent={loadingOverlayComponent}
+                    loadingOverlayComponentParams={
+                        loadingOverlayComponentParams
+                    }
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
                     {...props}
                 />
