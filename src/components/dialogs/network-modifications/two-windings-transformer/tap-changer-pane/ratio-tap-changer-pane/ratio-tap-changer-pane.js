@@ -46,6 +46,9 @@ const RatioTapChangerPane = ({
     isModification = false,
 }) => {
     const { trigger } = useFormContext();
+    const watchLRegulationMode = useWatch({
+        name: `${id}.${REGULATION_MODE}`,
+    });
     const intl = useIntl();
 
     const previousRegulation = () => {
@@ -271,19 +274,23 @@ const RatioTapChangerPane = ({
                 <Grid item container xs={4}>
                     {ratioTapLoadTapChangingCapabilitiesField}
                 </Grid>
-                <Grid item container spacing={2}>
-                    {isRatioTapLoadTapChangingCapabilitiesOn && (
+                {isRatioTapLoadTapChangingCapabilitiesOn && (
+                    <Grid item container spacing={2}>
                         <Grid item xs={4}>
                             {regulationModeField}
                         </Grid>
-                    )}
-                    <Grid item xs={4}>
-                        {targetVoltage1Field}
+                        {watchLRegulationMode && (
+                            <>
+                                <Grid item xs={4}>
+                                    {targetVoltage1Field}
+                                </Grid>
+                                <Grid item xs={4}>
+                                    {targetDeadbandField}
+                                </Grid>
+                            </>
+                        )}
                     </Grid>
-                    <Grid item xs={4}>
-                        {targetDeadbandField}
-                    </Grid>
-                </Grid>
+                )}
                 {isRatioTapLoadTapChangingCapabilitiesOn && (
                     <Grid item container spacing={2}>
                         <Grid
