@@ -140,12 +140,12 @@ const styles = {
         flexDirection: 'column',
         height: '100%',
     },
-    subCsvExport: {
+    csvExport: {
         display: 'flex',
         flexDirection: 'row-reverse',
         alignItems: 'baseline',
     },
-    subGrid: {
+    grid: {
         flexGrow: '1',
     },
 };
@@ -468,7 +468,7 @@ const VoltageInitModificationDialog: FunctionComponent<
 
             return (
                 <Box sx={styles.container}>
-                    <Box sx={styles.subCsvExport}>
+                    <Box sx={styles.csvExport}>
                         <CsvExport
                             gridRef={gridRef}
                             columns={columnDefs}
@@ -480,7 +480,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                             }
                         />
                     </Box>
-                    <Box sx={styles.subGrid}>
+                    <Box sx={styles.grid}>
                         <CustomAGGrid
                             ref={gridRef}
                             rowData={rowData}
