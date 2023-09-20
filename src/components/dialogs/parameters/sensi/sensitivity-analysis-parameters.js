@@ -10,7 +10,7 @@ import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles, CloseButton, DropDown } from '../parameters';
+import { CloseButton, DropDown } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
