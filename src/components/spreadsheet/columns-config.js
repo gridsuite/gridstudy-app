@@ -8,7 +8,6 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     Checkbox,
-    Grid,
     IconButton,
     ListItem,
     ListItemIcon,
@@ -49,10 +48,6 @@ const styles = {
     columnConfigOpenLock: (theme) => ({
         fontSize: '1.2em',
         color: theme.palette.action.disabled,
-    }),
-    selectColumns: (theme) => ({
-        marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(6),
     }),
 };
 
@@ -349,7 +344,7 @@ export const ColumnsConfig = ({
     };
 
     return (
-        <Grid item sx={styles.selectColumns}>
+        <>
             <span>
                 <FormattedMessage id="LabelSelectList" />
             </span>
@@ -376,6 +371,6 @@ export const ColumnsConfig = ({
                     },
                 }}
             />
-        </Grid>
+        </>
     );
 };

@@ -90,8 +90,14 @@ const styles = {
         top: '30%',
         left: '43%',
     },
-    exportCsv: (theme) => ({
+    toolbar: (theme) => ({
         marginTop: theme.spacing(2),
+    }),
+    filter: (theme) => ({
+        marginLeft: theme.spacing(1),
+    }),
+    selectColumns: (theme) => ({
+        marginLeft: theme.spacing(6),
     }),
 };
 
@@ -655,29 +661,33 @@ const TableWrapper = (props) => {
                     tabIndex={tabIndex}
                     handleSwitchTab={handleSwitchTab}
                 />
-                <Grid container>
-                    <GlobalFilter
-                        disabled={!!(props.disabled || editingData)}
-                        visible={props.visible}
-                        gridRef={gridRef}
-                        ref={globalFilterRef}
-                    />
-                    <ColumnsConfig
-                        tabIndex={tabIndex}
-                        disabled={!!(props.disabled || editingData)}
-                        reorderedTableDefinitionIndexes={
-                            reorderedTableDefinitionIndexes
-                        }
-                        setReorderedTableDefinitionIndexes={
-                            setReorderedTableDefinitionIndexes
-                        }
-                        selectedColumnsNames={selectedColumnsNames}
-                        setSelectedColumnsNames={setSelectedColumnsNames}
-                        lockedColumnsNames={lockedColumnsNames}
-                        setLockedColumnsNames={setLockedColumnsNames}
-                    />
+                <Grid container sx={styles.toolbar}>
+                    <Grid item sx={styles.filter}>
+                        <GlobalFilter
+                            disabled={!!(props.disabled || editingData)}
+                            visible={props.visible}
+                            gridRef={gridRef}
+                            ref={globalFilterRef}
+                        />
+                    </Grid>
+                    <Grid item sx={styles.selectColumns}>
+                        <ColumnsConfig
+                            tabIndex={tabIndex}
+                            disabled={!!(props.disabled || editingData)}
+                            reorderedTableDefinitionIndexes={
+                                reorderedTableDefinitionIndexes
+                            }
+                            setReorderedTableDefinitionIndexes={
+                                setReorderedTableDefinitionIndexes
+                            }
+                            selectedColumnsNames={selectedColumnsNames}
+                            setSelectedColumnsNames={setSelectedColumnsNames}
+                            lockedColumnsNames={lockedColumnsNames}
+                            setLockedColumnsNames={setLockedColumnsNames}
+                        />
+                    </Grid>
                     <Grid item style={{ flexGrow: 1 }}></Grid>
-                    <Grid item sx={styles.exportCsv}>
+                    <Grid item>
                         <CsvExport
                             gridRef={gridRef}
                             columns={columnData}
