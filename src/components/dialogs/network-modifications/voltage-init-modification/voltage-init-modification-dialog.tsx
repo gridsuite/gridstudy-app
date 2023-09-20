@@ -9,6 +9,7 @@ import React, {
     FunctionComponent,
     useCallback,
     useMemo,
+    useRef,
     useState,
 } from 'react';
 import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
@@ -29,6 +30,7 @@ import {
     SECTION_COUNT,
     CONNECT,
 } from '../../../utils/field-constants';
+import { CsvExport } from '../../../spreadsheet/export-csv';
 
 export const ALLOWED_KEYS = [
     'Escape',
@@ -132,6 +134,21 @@ interface VoltageInitModificationProps {
     dialogProps: any;
 }
 
+const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    csvExport: {
+        display: 'flex',
+        alignItems: 'baseline',
+    },
+    grid: {
+        flexGrow: '1',
+    },
+};
+
 const VoltageInitModificationDialog: FunctionComponent<
     VoltageInitModificationProps
 > = ({ editData, onClose, editDataFetchStatus, dialogProps }) => {
@@ -144,6 +161,8 @@ const VoltageInitModificationDialog: FunctionComponent<
     const handleTabChange = useCallback((newValue: number) => {
         setTabIndex(newValue);
     }, []);
+
+    const gridRef = useRef();
 
     const generatorsColumnDefs = useMemo(() => {
         return [
@@ -323,73 +342,20 @@ const VoltageInitModificationDialog: FunctionComponent<
 
     const displayTable = useCallback(
         (currentTab: number) => {
-            if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
-                let rowData: GeneratorRowData[] = [];
+            const prepareGridData = (
+                currentTab: number,
+                editData: EditData
+            ) => {
+                let rowData: any[] = [];
+                let columnDefs: any[] = [];
+                let tableName: string = '';
                 if (editData) {
-                    editData.generators.forEach((m: GeneratorData) => {
-                        let row: GeneratorRowData = {
-                            ID: m.generatorId,
-                            [VOLTAGE_SET_POINT]: undefined,
-                            [REACTIVE_POWER_SET_POINT]: undefined,
-                        };
-                        if (check(m.voltageSetpoint)) {
-                            row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
-                        }
-                        if (check(m.reactivePowerSetpoint)) {
-                            row[REACTIVE_POWER_SET_POINT] =
-                                m.reactivePowerSetpoint;
-                        }
-                        rowData.push(row);
-                    });
-                }
-
-                return (
-                    <CustomAGGrid
-                        rowData={rowData}
-                        defaultColDef={defaultColDef}
-                        columnDefs={generatorsColumnDefs}
-                        rowSelection="single"
-                        onRowDataUpdated={onRowDataUpdated}
-                    />
-                );
-            } else if (currentTab === EquipmentTypeTabs.TRANSFORMER_TAB) {
-                let rowData: TransformerRowData[] = [];
-                if (editData) {
-                    editData.transformers.forEach((m: TransformerData) => {
-                        let row: TransformerRowData = {
-                            ID: m.transformerId,
-                            [RATIO_TAP_CHANGER_POSITION]: undefined,
-                            [LEG_SIDE]: undefined,
-                        };
-                        if (check(m.ratioTapChangerPosition)) {
-                            row[RATIO_TAP_CHANGER_POSITION] =
-                                m.ratioTapChangerPosition;
-                        }
-                        if (m.legSide) {
-                            row[LEG_SIDE] = m.legSide;
-                        }
-                        rowData.push(row);
-                    });
-                }
-
-                return (
-                    <CustomAGGrid
-                        rowData={rowData}
-                        defaultColDef={defaultColDef}
-                        columnDefs={transformersColumnDefs}
-                        rowSelection="single"
-                        onRowDataUpdated={onRowDataUpdated}
-                    />
-                );
-            } else if (
-                currentTab === EquipmentTypeTabs.STATIC_VAR_COMPENSATOR_TAB
-            ) {
-                let rowData: StaticVarCompensatorRowData[] = [];
-                if (editData) {
-                    editData.staticVarCompensators.forEach(
-                        (m: StaticVarCompensatorData) => {
-                            let row: StaticVarCompensatorRowData = {
-                                ID: m.staticVarCompensatorId,
+                    if (currentTab === EquipmentTypeTabs.GENERATOR_TAB) {
+                        columnDefs = generatorsColumnDefs;
+                        tableName = 'Generators';
+                        editData.generators.forEach((m: GeneratorData) => {
+                            let row: GeneratorRowData = {
+                                ID: m.generatorId,
                                 [VOLTAGE_SET_POINT]: undefined,
                                 [REACTIVE_POWER_SET_POINT]: undefined,
                             };
@@ -401,86 +367,135 @@ const VoltageInitModificationDialog: FunctionComponent<
                                     m.reactivePowerSetpoint;
                             }
                             rowData.push(row);
-                        }
-                    );
-                }
-
-                return (
-                    <CustomAGGrid
-                        rowData={rowData}
-                        defaultColDef={defaultColDef}
-                        columnDefs={staticVarCompensatorsColumnDefs}
-                        rowSelection="single"
-                        onRowDataUpdated={onRowDataUpdated}
-                    />
-                );
-            } else if (
-                currentTab === EquipmentTypeTabs.VSC_CONVERTER_STATION_TAB
-            ) {
-                let rowData: VscConverterStationRowData[] = [];
-                if (editData) {
-                    editData.vscConverterStations.forEach(
-                        (m: VscConverterStationData) => {
-                            let row: VscConverterStationRowData = {
-                                ID: m.vscConverterStationId,
-                                [VOLTAGE_SET_POINT]: undefined,
-                                [REACTIVE_POWER_SET_POINT]: undefined,
+                        });
+                    } else if (
+                        currentTab === EquipmentTypeTabs.TRANSFORMER_TAB
+                    ) {
+                        columnDefs = transformersColumnDefs;
+                        tableName = 'Transformers';
+                        editData.transformers.forEach((m: TransformerData) => {
+                            let row: TransformerRowData = {
+                                ID: m.transformerId,
+                                [RATIO_TAP_CHANGER_POSITION]: undefined,
+                                [LEG_SIDE]: undefined,
                             };
-                            if (check(m.voltageSetpoint)) {
-                                row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
+                            if (check(m.ratioTapChangerPosition)) {
+                                row[RATIO_TAP_CHANGER_POSITION] =
+                                    m.ratioTapChangerPosition;
                             }
-                            if (check(m.reactivePowerSetpoint)) {
-                                row[REACTIVE_POWER_SET_POINT] =
-                                    m.reactivePowerSetpoint;
+                            if (m.legSide) {
+                                row[LEG_SIDE] = m.legSide;
                             }
                             rowData.push(row);
-                        }
-                    );
-                }
-
-                return (
-                    <CustomAGGrid
-                        rowData={rowData}
-                        defaultColDef={defaultColDef}
-                        columnDefs={vscConverterStationsColumnDefs}
-                        rowSelection="single"
-                        onRowDataUpdated={onRowDataUpdated}
-                    />
-                );
-            } else if (currentTab === EquipmentTypeTabs.SHUNT_COMPENSATOR_TAB) {
-                let rowData: ShuntCompensatorRowData[] = [];
-                if (editData) {
-                    editData.shuntCompensators.forEach(
-                        (m: ShuntCompensatorData) => {
-                            let row: ShuntCompensatorRowData = {
-                                ID: m.shuntCompensatorId,
-                                [SECTION_COUNT]: undefined,
-                                [CONNECT]: false,
-                            };
-                            if (check(m.sectionCount)) {
-                                row[SECTION_COUNT] = m.sectionCount;
+                        });
+                    } else if (
+                        currentTab ===
+                        EquipmentTypeTabs.STATIC_VAR_COMPENSATOR_TAB
+                    ) {
+                        columnDefs = staticVarCompensatorsColumnDefs;
+                        tableName = 'StaticVarCompensators';
+                        editData.staticVarCompensators.forEach(
+                            (m: StaticVarCompensatorData) => {
+                                let row: StaticVarCompensatorRowData = {
+                                    ID: m.staticVarCompensatorId,
+                                    [VOLTAGE_SET_POINT]: undefined,
+                                    [REACTIVE_POWER_SET_POINT]: undefined,
+                                };
+                                if (check(m.voltageSetpoint)) {
+                                    row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
+                                }
+                                if (check(m.reactivePowerSetpoint)) {
+                                    row[REACTIVE_POWER_SET_POINT] =
+                                        m.reactivePowerSetpoint;
+                                }
+                                rowData.push(row);
                             }
-                            if (m.connect) {
-                                row[CONNECT] = m.connect;
+                        );
+                    } else if (
+                        currentTab ===
+                        EquipmentTypeTabs.VSC_CONVERTER_STATION_TAB
+                    ) {
+                        columnDefs = vscConverterStationsColumnDefs;
+                        tableName = 'VscConverterStations';
+                        editData.vscConverterStations.forEach(
+                            (m: VscConverterStationData) => {
+                                let row: VscConverterStationRowData = {
+                                    ID: m.vscConverterStationId,
+                                    [VOLTAGE_SET_POINT]: undefined,
+                                    [REACTIVE_POWER_SET_POINT]: undefined,
+                                };
+                                if (check(m.voltageSetpoint)) {
+                                    row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
+                                }
+                                if (check(m.reactivePowerSetpoint)) {
+                                    row[REACTIVE_POWER_SET_POINT] =
+                                        m.reactivePowerSetpoint;
+                                }
+                                rowData.push(row);
                             }
-                            rowData.push(row);
-                        }
-                    );
+                        );
+                    } else if (
+                        currentTab === EquipmentTypeTabs.SHUNT_COMPENSATOR_TAB
+                    ) {
+                        columnDefs = shuntCompensatorsColumnDefs;
+                        tableName = 'ShuntCompensators';
+                        editData.shuntCompensators.forEach(
+                            (m: ShuntCompensatorData) => {
+                                let row: ShuntCompensatorRowData = {
+                                    ID: m.shuntCompensatorId,
+                                    [SECTION_COUNT]: undefined,
+                                    [CONNECT]: false,
+                                };
+                                if (check(m.sectionCount)) {
+                                    row[SECTION_COUNT] = m.sectionCount;
+                                }
+                                if (m.connect) {
+                                    row[CONNECT] = m.connect;
+                                }
+                                rowData.push(row);
+                            }
+                        );
+                    }
                 }
+                return { rowData, columnDefs, tableName };
+            };
 
-                return (
-                    <CustomAGGrid
-                        rowData={rowData}
-                        defaultColDef={defaultColDef}
-                        columnDefs={shuntCompensatorsColumnDefs}
-                        rowSelection="single"
-                        onRowDataUpdated={onRowDataUpdated}
-                    />
-                );
-            }
+            const { rowData, columnDefs, tableName } = prepareGridData(
+                currentTab,
+                editData
+            );
+
+            return (
+                <Box sx={styles.container}>
+                    <Box sx={styles.csvExport}>
+                        <Box style={{ flexGrow: 1 }}></Box>
+                        <CsvExport
+                            gridRef={gridRef}
+                            columns={columnDefs}
+                            tableName={tableName}
+                            tableNamePrefix="VoltageInit_"
+                            disabled={
+                                rowData.length === 0 ||
+                                editDataFetchStatus === FetchStatus.RUNNING
+                            }
+                        />
+                    </Box>
+                    <Box sx={styles.grid}>
+                        <CustomAGGrid
+                            ref={gridRef}
+                            rowData={rowData}
+                            defaultColDef={defaultColDef}
+                            columnDefs={columnDefs}
+                            rowSelection="single"
+                            onRowDataUpdated={onRowDataUpdated}
+                        />
+                    </Box>
+                </Box>
+            );
         },
         [
             editData,
+            editDataFetchStatus,
             generatorsColumnDefs,
             transformersColumnDefs,
             staticVarCompensatorsColumnDefs,
@@ -518,7 +533,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             disabledSave={true}
             isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
         >
-            <div style={{ height: '100%' }}>{displayTable(tabIndex)}</div>
+            {displayTable(tabIndex)}
         </BasicModificationDialog>
     );
 };
