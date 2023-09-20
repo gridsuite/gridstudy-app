@@ -1069,8 +1069,9 @@
     "flowFlowSensitivityValueThreshold": "Sensitivity value threshold (ΔMW ou ΔA / MW)",
     "angleFlowSensitivityValueThreshold": "Sensitivity value threshold (ΔMW ou ΔA / Δ°)",
     "flowVoltageSensitivityValueThreshold": "Sensitivity value threshold (ΔkV / kV)",
-    "applyModifications": "Apply modifications",
-    "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération/application des modifications issues de l'initialisation du plan de tension",
+    "previewModifications": "View modifications",
+    "errPreviewVoltageInitModificationMsg": "An error occurred while retrieving the modifications coming from voltage profile initialization",
+    "errCloneVoltageInitModificationMsg": "An error occurred while applying the modifications coming from voltage profile initialization",
     "VoltageInitModification": "Voltage init modification",
     "GeneratorAvailability": "Generator availability",
     "chooseElement": "Choose element",
@@ -1089,5 +1090,7 @@
 
     "IpMin": "ISC min (kA)",
     "IpMax": "ISC max (kA)",
-    "StartupCost": "Startup cost"
+    "StartupCost": "Startup cost",
+
+    "Connect": "Reconnect ?"
 }

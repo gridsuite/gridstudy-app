@@ -12,7 +12,7 @@ import {
     SecurityAnalysisResultTableNmKProps,
     ResultConstraint,
 } from './security-analysis.type';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material';
 import { IntlShape, useIntl } from 'react-intl';
 import {
     getNoRowsMessage,
