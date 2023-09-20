@@ -134,6 +134,22 @@ interface VoltageInitModificationProps {
     dialogProps: any;
 }
 
+const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    subCsvExport: {
+        display: 'flex',
+        flexDirection: 'row-reverse',
+        alignItems: 'baseline',
+    },
+    subGrid: {
+        flexGrow: '1',
+    },
+};
+
 const VoltageInitModificationDialog: FunctionComponent<
     VoltageInitModificationProps
 > = ({ editData, onClose, editDataFetchStatus, dialogProps }) => {
@@ -451,14 +467,8 @@ const VoltageInitModificationDialog: FunctionComponent<
             );
 
             return (
-                <>
-                    <Box
-                        sx={{
-                            flex: '1',
-                            display: 'flex',
-                            flexDirection: 'column',
-                        }}
-                    >
+                <Box sx={styles.container}>
+                    <Box sx={styles.subCsvExport}>
                         <CsvExport
                             gridRef={gridRef}
                             columns={columnDefs}
@@ -470,14 +480,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                             }
                         />
                     </Box>
-                    <Box
-                        sx={{
-                            height: '90%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            marginTop: '60px',
-                        }}
-                    >
+                    <Box sx={styles.subGrid}>
                         <CustomAGGrid
                             ref={gridRef}
                             rowData={rowData}
@@ -487,7 +490,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                             onRowDataUpdated={onRowDataUpdated}
                         />
                     </Box>
-                </>
+                </Box>
             );
         },
         [
@@ -530,7 +533,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             disabledSave={true}
             isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
         >
-            <div style={{ height: '100%' }}>{displayTable(tabIndex)}</div>
+            {displayTable(tabIndex)}
         </BasicModificationDialog>
     );
 };

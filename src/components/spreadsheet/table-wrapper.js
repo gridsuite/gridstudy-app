@@ -90,6 +90,9 @@ const styles = {
         top: '30%',
         left: '43%',
     },
+    exportCsv: (theme) => ({
+        marginTop: theme.spacing(2),
+    }),
 };
 
 const TableWrapper = (props) => {
@@ -673,18 +676,23 @@ const TableWrapper = (props) => {
                         lockedColumnsNames={lockedColumnsNames}
                         setLockedColumnsNames={setLockedColumnsNames}
                     />
-                    <CsvExport
-                        gridRef={gridRef}
-                        columns={columnData}
-                        tableName={TABLES_DEFINITION_INDEXES.get(tabIndex).name}
-                        disabled={
-                            !!(
-                                props.disabled ||
-                                rowData.length === 0 ||
-                                editingData
-                            )
-                        }
-                    />
+                    <Grid item style={{ flexGrow: 1 }}></Grid>
+                    <Grid item sx={styles.exportCsv}>
+                        <CsvExport
+                            gridRef={gridRef}
+                            columns={columnData}
+                            tableName={
+                                TABLES_DEFINITION_INDEXES.get(tabIndex).name
+                            }
+                            disabled={
+                                !!(
+                                    props.disabled ||
+                                    rowData.length === 0 ||
+                                    editingData
+                                )
+                            }
+                        />
+                    </Grid>
                 </Grid>
             </Grid>
             {props.disabled ? (

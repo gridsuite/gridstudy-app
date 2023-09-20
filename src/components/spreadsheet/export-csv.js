@@ -5,23 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { useCallback } from 'react';
 import { EDIT_COLUMN } from './utils/config-tables';
-
-const styles = {
-    exportCsv: (theme) => ({
-        marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(6),
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'baseline',
-        position: 'absolute',
-        right: 0,
-    }),
-};
 
 export const CsvExport = ({
     gridRef,
@@ -53,7 +41,7 @@ export const CsvExport = ({
     }, [columns, getCSVFilename, gridRef, tableNamePrefix]);
 
     return (
-        <Grid item sx={styles.exportCsv}>
+        <>
             <span>
                 <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
             </span>
@@ -66,6 +54,6 @@ export const CsvExport = ({
                     <GetAppIcon />
                 </IconButton>
             </span>
-        </Grid>
+        </>
     );
 };
