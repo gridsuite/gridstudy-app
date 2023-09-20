@@ -38,6 +38,7 @@ const PagedSensitivityAnalysisResult = ({
     const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_PAGE_COUNT);
     const [count, setCount] = useState(0);
     const [result, setResult] = useState(null);
+    const [options, setOptions] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const filtersDef = useMemo(() => {
@@ -47,12 +48,12 @@ const PagedSensitivityAnalysisResult = ({
                 label: intl.formatMessage({
                     id: sensiKindIndex < 2 ? 'SupervisedBranches' : 'BusBarBus',
                 }),
-                options: result?.allFunctionIds || [],
+                options: options?.allFunctionIds || [],
             },
             {
                 field: 'varId',
                 label: intl.formatMessage({ id: 'VariablesToSimulate' }),
-                options: result?.allVariableIds || [],
+                options: options?.allVariableIds || [],
             },
         ];
 
@@ -60,12 +61,12 @@ const PagedSensitivityAnalysisResult = ({
             baseFilters.push({
                 field: 'contingencyId',
                 label: intl.formatMessage({ id: 'ContingencyId' }),
-                options: result?.allContingencyIds || [],
+                options: options?.allContingencyIds || [],
             });
         }
 
         return baseFilters;
-    }, [intl, sensiKindIndex, nOrNkIndex, result]);
+    }, [intl, sensiKindIndex, nOrNkIndex, options]);
 
     const { snackError } = useSnackMessage();
 
@@ -91,6 +92,30 @@ const PagedSensitivityAnalysisResult = ({
         },
         [setPage, updateFilter]
     );
+
+    const fetchColumnOptions = useCallback(() => {
+        const selector = {
+            isJustBefore: !nOrNkIndex,
+            functionType: FUNCTION_TYPES[sensiKindIndex],
+        };
+
+        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
+            .then((res) => {
+                setOptions(res);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'SensitivityAnalysisResultsError',
+                    }),
+                });
+            });
+    }, [nOrNkIndex, sensiKindIndex, studyUuid, nodeUuid, snackError, intl]);
+
+    useEffect(() => {
+        fetchColumnOptions();
+    }, [fetchColumnOptions]);
 
     const fetchResult = useCallback(() => {
         const { colKey, sortWay } = sortConfig || {};

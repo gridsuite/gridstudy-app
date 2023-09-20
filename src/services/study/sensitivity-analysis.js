@@ -72,6 +72,8 @@ export function fetchSensitivityAnalysisResult(
         `Fetching sensitivity analysis on ${studyUuid} and node ${currentNodeUuid}  ...`
     );
 
+    console.log('selector : ', selector);
+
     // Add params to Url
     const urlSearchParams = new URLSearchParams();
     const jsoned = JSON.stringify(selector);
