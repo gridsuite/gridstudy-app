@@ -365,11 +365,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 setStudyName(studyName);
                 setStudyPath(path);
 
-                document.title = computePageTitle(
-                    initialTitle,
-                    studyName,
-                    parentDirectoriesNames
-                );
+                document.title = computePageTitle(initialTitle, studyName);
             })
             .catch((error) => {
                 document.title = initialTitle;
