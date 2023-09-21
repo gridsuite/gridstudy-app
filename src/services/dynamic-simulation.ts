@@ -57,7 +57,7 @@ export function fetchDynamicSimulationEvent(
 
     const url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        `/dynamic-simulation/events/search/equipment-id/${equipmentId}`;
+        `/dynamic-simulation/events?equipmentId=${equipmentId}`;
 
     console.debug(url);
 
