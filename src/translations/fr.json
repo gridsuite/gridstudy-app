@@ -1101,5 +1101,8 @@
     "IpMax": "ICC max (kA)",
     "StartupCost": "Coût de démarrage",
 
-    "Connect": "Reconnexion ?"
+    "Connect": "Reconnexion ?",
+    "MagnetizingConductanceWithUnit": "Conductance magnétisante (μS)",
+    "MagnetizingSusceptanceWithUnit": "Susceptance magnétisante (μS)",
+    "RatedNominalPower": "Puissance nominale (MVA)"
 }

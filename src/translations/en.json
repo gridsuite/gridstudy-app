@@ -1079,5 +1079,9 @@
     "IpMax": "ISC max (kA)",
     "StartupCost": "Startup cost",
 
-    "Connect": "Reconnect ?"
+    "Connect": "Reconnect ?",
+    "MagnetizingConductanceWithUnit": "Magnetizing conductance (μS)",
+    "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
+    "RatedNominalPower": "Rated nominal power (MVA)"
+
 }
