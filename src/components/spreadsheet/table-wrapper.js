@@ -42,10 +42,11 @@ import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
+    modifyBattery,
     modifyGenerator,
     modifyLoad,
     modifyVoltageLevel,
-    requestNetworkChange,
+    requestNetworkChange
 } from '../../services/study/network-modifications';
 import { kiloUnitToUnit } from '../../utils/rounding';
 import { Box } from '@mui/system';
@@ -556,6 +557,22 @@ const TableWrapper = (props) => {
                         kiloUnitToUnit(editingData.ipMax),
                         false,
                         undefined
+                    );
+                case EQUIPMENT_TYPES.BATTERY:
+                    return modifyBattery(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.minP,
+                        editingData.maxP,
+                        editingData.targetP,
+                        editingData.targetQ,
+                        undefined,
+                        undefined,
+                        undefined,
+                        editingData.activePowerControlOn,
+                        editingData.droop
                     );
                 default:
                     return requestNetworkChange(
