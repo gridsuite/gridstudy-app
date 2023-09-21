@@ -169,10 +169,7 @@ const RatioTapChangerPane = ({
             label={'RegulationMode'}
             options={Object.values(RATIO_REGULATION_MODES)}
             size={'small'}
-            disabled={
-                !ratioTapChangerEnabledWatcher ||
-                !isRatioTapLoadTapChangingCapabilitiesOn
-            }
+            disabled={!ratioTapChangerEnabledWatcher}
             previousValue={getRatioTapChangerRegulationModeLabel(
                 previousValues?.[RATIO_TAP_CHANGER]
             )}
@@ -184,10 +181,7 @@ const RatioTapChangerPane = ({
             name={`${id}.${REGULATION_TYPE}`}
             label={'RegulationTypeText'}
             options={Object.values(REGULATION_TYPES)}
-            disabled={
-                !ratioTapChangerEnabledWatcher ||
-                !isRatioTapLoadTapChangingCapabilitiesOn
-            }
+            disabled={!ratioTapChangerEnabledWatcher}
             size={'small'}
             previousValue={getRegulationTypeLabel(
                 previousValues,
@@ -201,10 +195,7 @@ const RatioTapChangerPane = ({
             name={`${id}.${REGULATION_SIDE}`}
             label={'RegulatedSide'}
             options={Object.values(SIDE)}
-            disabled={
-                !ratioTapChangerEnabledWatcher ||
-                !isRatioTapLoadTapChangingCapabilitiesOn
-            }
+            disabled={!ratioTapChangerEnabledWatcher}
             size={'small'}
             previousValue={getTapSideLabel(
                 previousValues,
@@ -219,9 +210,7 @@ const RatioTapChangerPane = ({
             label="TargetVoltage"
             adornment={VoltageAdornment}
             formProps={{
-                disabled:
-                    !ratioTapChangerEnabledWatcher ||
-                    !isRatioTapLoadTapChangingCapabilitiesOn,
+                disabled: !ratioTapChangerEnabledWatcher,
             }}
             previousValue={previousValues?.[RATIO_TAP_CHANGER]?.[TARGET_V]}
         />
@@ -233,9 +222,7 @@ const RatioTapChangerPane = ({
             label="Deadband"
             adornment={VoltageAdornment}
             formProps={{
-                disabled:
-                    !ratioTapChangerEnabledWatcher ||
-                    !isRatioTapLoadTapChangingCapabilitiesOn,
+                disabled: !ratioTapChangerEnabledWatcher,
             }}
             previousValue={previousValues?.[RATIO_TAP_CHANGER]?.targetDeadband}
         />
@@ -244,10 +231,7 @@ const RatioTapChangerPane = ({
     const regulatingTerminalField = (
         <RegulatingTerminalForm
             id={id}
-            disabled={
-                !ratioTapChangerEnabledWatcher ||
-                !isRatioTapLoadTapChangingCapabilitiesOn
-            }
+            disabled={!ratioTapChangerEnabledWatcher}
             equipmentSectionTypeDefaultValue={
                 EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
             }
@@ -304,8 +288,7 @@ const RatioTapChangerPane = ({
                             <Grid item xs={4}>
                                 {regulationTypeField}
                             </Grid>
-                            {isRatioTapLoadTapChangingCapabilitiesOn &&
-                                regulationType === REGULATION_TYPES.LOCAL.id &&
+                            {regulationType === REGULATION_TYPES.LOCAL.id &&
                                 gridItem(sideField, 4)}
                         </Grid>
                         {regulationType === REGULATION_TYPES.DISTANT.id && (
