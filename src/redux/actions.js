@@ -88,12 +88,6 @@ export function mapEquipmentsCreated(
     };
 }
 
-export const LOAD_GEO_DATA_SUCCESS = 'LOAD_GEO_DATA_SUCCESS';
-
-export function loadGeoDataSuccess(geoData) {
-    return { type: LOAD_GEO_DATA_SUCCESS, geoData: geoData };
-}
-
 export const LOAD_NETWORK_MODIFICATION_TREE_SUCCESS =
     'LOAD_NETWORK_MODIFICATION_TREE_SUCCESS';
 
@@ -311,6 +305,15 @@ export const STUDY_UPDATED = 'STUDY_UPDATED';
 
 export function studyUpdated(eventData) {
     return { type: STUDY_UPDATED, eventData };
+}
+
+export const MAP_DATA_LOADING = 'MAP_DATA_LOADING';
+
+export function setMapDataLoading(mapDataLoading) {
+    return {
+        type: MAP_DATA_LOADING,
+        mapDataLoading,
+    };
 }
 
 export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
