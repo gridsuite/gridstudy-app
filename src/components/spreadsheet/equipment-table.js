@@ -72,7 +72,6 @@ export const EquipmentTable = ({
             isEditing: topPinnedData ? true : false,
         };
     }, [network, topPinnedData]);
-
     const getRowHeight = useCallback(
         (params) =>
             params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
@@ -92,6 +91,15 @@ export const EquipmentTable = ({
         }
         return undefined;
     }, [rowData, fetched, intl]);
+
+    const loadingOverlayComponent = (props) => {
+        return <>{props.loadingMessage}</>;
+    };
+    const loadingOverlayComponentParams = useMemo(() => {
+        return {
+            loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),
+        };
+    }, [intl]);
 
     return (
         <CustomAGGrid
@@ -122,6 +130,9 @@ export const EquipmentTable = ({
             }
             getRowHeight={getRowHeight}
             overlayNoRowsTemplate={message}
+            loadingOverlayComponent={loadingOverlayComponent}
+            loadingOverlayComponentParams={loadingOverlayComponentParams}
+            showOverlay={true}
         />
     );
 };
