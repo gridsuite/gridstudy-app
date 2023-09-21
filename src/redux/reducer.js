@@ -25,7 +25,6 @@ import {
     LINE_FLOW_ALERT_THRESHOLD,
     LINE_FULL_PATH,
     LINE_PARALLEL_PATH,
-    LOAD_GEO_DATA_SUCCESS,
     OPEN_STUDY,
     SELECT_THEME,
     USE_NAME,
@@ -95,6 +94,7 @@ import {
     SET_COMPUTING_STATUS,
     SET_OPTIONAL_SERVICES,
     SET_COMPUTATION_RUNNING,
+    MAP_DATA_LOADING,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
 } from './actions';
 import {
@@ -212,6 +212,7 @@ const initialState = {
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
+    mapDataLoading: false,
     loadflowNotif: false,
     saNotif: false,
     voltageInitNotif: false,
@@ -284,10 +285,6 @@ export const reducer = createReducer(initialState, {
             newMapEquipments.completeHvdcLinesInfos();
         }
         state.mapEquipments = newMapEquipments;
-    },
-
-    [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
-        state.geoData = action.geoData;
     },
 
     [LOAD_NETWORK_MODIFICATION_TREE_SUCCESS]: (state, action) => {
@@ -426,6 +423,10 @@ export const reducer = createReducer(initialState, {
             force: 1 - state.studyUpdated.force,
             eventData: action.eventData,
         };
+    },
+
+    [MAP_DATA_LOADING]: (state, action) => {
+        state.mapDataLoading = action.mapDataLoading;
     },
 
     [SELECT_THEME]: (state, action) => {
