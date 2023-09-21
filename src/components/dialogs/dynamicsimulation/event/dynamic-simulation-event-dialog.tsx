@@ -34,11 +34,10 @@ export type DynamicSimulationEventDialogProps = {
     currentNodeId: string;
     equipmentId: string;
     equipmentType: string; // must be a string enum
-    isUpdate: boolean;
     onClose: () => void;
-    editDataFetchStatus: string; // must be a string enum
     title: string;
-} & DialogProps;
+    open?: boolean;
+} & Omit<DialogProps, 'open'>;
 
 export const DynamicSimulationEventDialog = (
     props: DynamicSimulationEventDialogProps
@@ -48,9 +47,7 @@ export const DynamicSimulationEventDialog = (
         currentNodeId,
         equipmentId,
         equipmentType,
-        isUpdate,
         onClose,
-        editDataFetchStatus,
         title,
         open: defaultOpen,
         ...dialogProps
@@ -215,14 +212,12 @@ export const DynamicSimulationEventDialog = (
 
     const waitingOpen = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            ((editDataFetchStatus === FetchStatus.SUCCEED ||
-                editDataFetchStatus === FetchStatus.FAILED) &&
-                (dataFetchStatus === FetchStatus.SUCCEED ||
-                    dataFetchStatus === FetchStatus.FAILED)),
+            dataFetchStatus === FetchStatus.SUCCEED ||
+            dataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
-    const open = defaultOpen !== undefined ? defaultOpen : waitingOpen;
+
+    const open = defaultOpen ?? waitingOpen;
 
     return (
         <FormProvider
@@ -242,11 +237,7 @@ export const DynamicSimulationEventDialog = (
                 open={open}
                 keepMounted={true}
                 showNodeNotBuiltWarning={!!equipmentId}
-                isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        dataFetchStatus === FetchStatus.RUNNING)
-                }
+                isDataFetching={dataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <DynamicSimulationEventForm

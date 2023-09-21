@@ -660,7 +660,6 @@ function SingleLineDiagramContent(props) {
                     equipmentType={
                         equipmentToConfigDynamicSimulationEvent.equipmentType
                     }
-                    isUpdate={true}
                     onClose={() => handleCloseDynamicSimulationEventDialog()}
                     title={dynamicSimulationEventDialogTitle}
                 />

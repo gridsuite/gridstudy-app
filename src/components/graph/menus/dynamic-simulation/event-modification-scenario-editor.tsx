@@ -30,8 +30,6 @@ import {
     EVENT_CRUD_FINISHED,
     EventCrudType,
 } from 'components/network/constants.type';
-
-import { Theme } from '@mui/material/styles';
 import { ReduxState, StudyUpdated } from '../../../../redux/reducer.type';
 import { UUID } from 'crypto';
 import {
@@ -44,76 +42,12 @@ import {
 } from '../../../../services/dynamic-simulation';
 import { EventListItem } from './event-list-item';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import { FetchStatus } from '../../../../services/utils';
 import { getStartTime } from '../../../dialogs/dynamicsimulation/event/model/event.model';
-
-const styles = {
-    listContainer: (theme: Theme) => ({
-        overflowY: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        paddingBottom: theme.spacing(8),
-    }),
-    list: (theme: Theme) => ({
-        paddingTop: theme.spacing(0),
-        flexGrow: 1,
-    }),
-    modificationsTitle: (theme: Theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        margin: theme.spacing(0),
-        padding: theme.spacing(1),
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText,
-        overflow: 'hidden',
-    }),
-    toolbar: (theme: Theme) => ({
-        '&': {
-            // Necessary to overrides some @media specific styles that are defined elsewhere
-            padding: 0,
-            minHeight: 0,
-        },
-        border: theme.spacing(1),
-        margin: 0,
-        flexShrink: 0,
-    }),
-    toolbarIcon: (theme: Theme) => ({
-        marginRight: theme.spacing(1),
-    }),
-    toolbarCheckbox: (theme: Theme) => ({
-        marginLeft: theme.spacing(1.5),
-    }),
-    filler: {
-        flexGrow: 1,
-    },
-    circularProgress: (theme: Theme) => ({
-        marginRight: theme.spacing(2),
-        color: theme.palette.primary.contrastText,
-    }),
-    notification: (theme: Theme) => ({
-        flex: 1,
-        alignContent: 'center',
-        justifyContent: 'center',
-        marginTop: theme.spacing(4),
-        textAlign: 'center',
-        color: theme.palette.primary.main,
-    }),
-    icon: (theme: Theme) => ({
-        width: theme.spacing(3),
-    }),
-};
-
-function isChecked(s1: number) {
-    return s1 !== 0;
-}
-
-function isPartial(s1: number, s2: number) {
-    if (s1 === 0) {
-        return false;
-    }
-    return s1 !== s2;
-}
+import {
+    isChecked,
+    isPartial,
+    styles,
+} from '../network-modification-node-editor';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
@@ -124,7 +58,7 @@ const EventModificationScenarioEditor = () => {
     const studyUuid = params?.studyUuid
         ? decodeURIComponent(params.studyUuid)
         : undefined;
-    const { snackInfo, snackError } = useSnackMessage();
+    const { snackError } = useSnackMessage();
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
@@ -144,21 +78,16 @@ const EventModificationScenarioEditor = () => {
           }
         | undefined
     >();
-    const [editData, setEditData] = useState<Event | undefined>(undefined);
-    const [editDataFetchStatus, setEditDataFetchStatus] = useState(
-        FetchStatus.IDLE
-    );
+
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector(
         (state: ReduxState) => state.studyUpdated
     );
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
-    const [isUpdate, setIsUpdate] = useState(false);
 
     const handleCloseDialog = () => {
         setEditDialogOpen(undefined);
-        setEditData(undefined);
     };
 
     const fillNotification = useCallback(
@@ -300,46 +229,12 @@ const EventModificationScenarioEditor = () => {
         });
     }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
-    /*function removeNullFields(data: Event) {
-        let dataTemp = data;
-        if (dataTemp) {
-            (Object.keys(dataTemp) as EventPropertyName[]).forEach((key) => {
-                if (
-                    dataTemp[key] &&
-                    dataTemp[key] !== null &&
-                    typeof dataTemp[key] === 'object'
-                ) {
-                    dataTemp[key] = removeNullFields(dataTemp[key]);
-                }
-
-                if (dataTemp[key] === null) {
-                    delete dataTemp[key];
-                }
-            });
-        }
-        return dataTemp;
-    }*/
-
     const doEditEvent = (event: Event) => {
-        setIsUpdate(true);
         setEditDialogOpen({
             eventType: event.eventType,
             equipmentId: event.equipmentId,
             equipmentType: event.equipmentType,
         });
-        //setEditDataFetchStatus(FetchStatus.RUNNING);
-        /*getEvent(studyUuid ?? '', currentNode.id, event.equipmentId)
-            .then((event) => {
-                //remove all null values to avoid showing a "null" in the forms
-                setEditData(event ? removeNullFields(event) : undefined);
-                setEditDataFetchStatus(FetchStatus.SUCCEED);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
-                setEditDataFetchStatus(FetchStatus.FAILED);
-            });*/
     };
 
     const toggleSelectAllEvents = useCallback(() => {
@@ -479,14 +374,11 @@ const EventModificationScenarioEditor = () => {
 
             {editDialogOpen && (
                 <DynamicSimulationEventDialog
-                    open={!!editDialogOpen}
                     studyUuid={studyUuid ?? ''}
                     currentNodeId={currentNode?.id}
                     equipmentId={editDialogOpen.equipmentId}
                     equipmentType={editDialogOpen.equipmentType}
-                    isUpdate={true}
                     onClose={() => handleCloseDialog()}
-                    editDataFetchStatus={''}
                     title={intl.formatMessage(
                         {
                             id: `${editDialogOpen.eventType}/${editDialogOpen.equipmentType}`,

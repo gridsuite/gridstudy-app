@@ -54,8 +54,6 @@ export const getEventType = (equipmentType: string): EventType | undefined => {
     return eventType;
 };
 
-// util methods for Event model
-
 // util methods for Event
 export const getStartTime = (event: Event): number => {
     return parseFloat(
