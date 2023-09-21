@@ -29,8 +29,8 @@ const headerIds = [
 
 const ReactiveLimitsForm = ({
     id = REACTIVE_LIMITS,
-    equipmentToModify,
-    updatePreviousReactiveCapabilityCurveTable,
+    equipmentToModify = null,
+    updatePreviousReactiveCapabilityCurveTable = undefined,
 }) => {
     const reactiveCapabilityCurveChoice = useWatch({
         name: `${id}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
