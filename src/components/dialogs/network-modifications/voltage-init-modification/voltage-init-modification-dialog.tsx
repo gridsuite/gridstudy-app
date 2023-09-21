@@ -59,6 +59,10 @@ interface CloseFunction {
     (): void;
 }
 
+interface PreviewModeSubmitFunction {
+    (): void;
+}
+
 interface GeneratorRowData {
     ID: string;
     [VOLTAGE_SET_POINT]: number | undefined;
@@ -130,6 +134,7 @@ interface EditData {
 interface VoltageInitModificationProps {
     editData: EditData;
     onClose: CloseFunction;
+    onPreviewModeSubmit?: PreviewModeSubmitFunction;
     editDataFetchStatus: FetchStatus;
     dialogProps: any;
 }
@@ -151,7 +156,13 @@ const styles = {
 
 const VoltageInitModificationDialog: FunctionComponent<
     VoltageInitModificationProps
-> = ({ editData, onClose, editDataFetchStatus, dialogProps }) => {
+> = ({
+    editData,
+    onClose,
+    onPreviewModeSubmit,
+    editDataFetchStatus,
+    dialogProps,
+}) => {
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(EquipmentTypeTabs.GENERATOR_TAB);
@@ -520,7 +531,10 @@ const VoltageInitModificationDialog: FunctionComponent<
             open={open}
             onClose={onClose}
             onClear={handleClear}
-            onSave={() => {}} // no modifications
+            onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
+            disabledSave={
+                onPreviewModeSubmit === undefined || editData === undefined
+            }
             aria-labelledby="dialog-voltage-init-modification"
             subtitle={equipmentTabs}
             PaperProps={{
@@ -530,7 +544,6 @@ const VoltageInitModificationDialog: FunctionComponent<
             }}
             titleId={'VoltageInitModification'}
             {...dialogProps}
-            disabledSave={true}
             isDataFetching={editDataFetchStatus === FetchStatus.RUNNING}
         >
             {displayTable(tabIndex)}

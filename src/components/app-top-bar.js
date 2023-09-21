@@ -263,6 +263,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
+            if (!optionInfos) {
+                return;
+            }
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
             if (optionInfos.type === EQUIPMENT_TYPES.SUBSTATION) {
                 openDiagramView(optionInfos.id, DiagramType.SUBSTATION);
@@ -440,7 +443,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
                 searchTermDisabled={getDisableReason() !== ''}
-                initialSearchTerm={getDisableReason()}
+                searchTermDisableReason={getDisableReason()}
             >
                 {/* Add current Node name between Logo and Tabs */}
                 <Box
