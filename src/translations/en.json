@@ -49,7 +49,7 @@
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
-    "geoDataLoadingFail": "Geographical data of study with id \"{studyUuid}\" couldn't be loaded",
+    "geoDataLoadingFail": "An error occured while loading geographical data.",
 
     "parameters": "Parameters",
     "paramsChangingError": "An error occured when changing the parameters",
