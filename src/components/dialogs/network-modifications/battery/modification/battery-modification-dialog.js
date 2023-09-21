@@ -49,8 +49,8 @@ import {
 } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import {
-    getFrequencyRegulationSchema,
     getFrequencyRegulationEmptyFormData,
+    getFrequencyRegulationSchema,
 } from '../../../set-points/set-points-utils';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
