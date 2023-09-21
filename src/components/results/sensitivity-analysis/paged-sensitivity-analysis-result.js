@@ -105,6 +105,7 @@ const PagedSensitivityAnalysisResult = ({
         fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, selector)
             .then((res) => {
                 console.log('test results',res);
+                setOptions(res)
             })
             .catch((error) => {
                 snackError({
@@ -116,9 +117,33 @@ const PagedSensitivityAnalysisResult = ({
             });
     }, [nOrNkIndex, sensiKindIndex, studyUuid, nodeUuid, snackError, intl]);
 
+    const fetchColumnOptions2 = useCallback(() => {
+        const selector = {
+            isJustBefore: !nOrNkIndex,
+            functionType: FUNCTION_TYPES[sensiKindIndex],
+        };
+
+        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
+          .then((res) => {
+              console.log('test results',res);
+          })
+          .catch((error) => {
+              snackError({
+                  messageTxt: error.message,
+                  headerId: intl.formatMessage({
+                      id: 'SensitivityAnalysisResultsError',
+                  }),
+              });
+          });
+    }, [nOrNkIndex, sensiKindIndex, studyUuid, nodeUuid, snackError, intl]);
+
     useEffect(() => {
         fetchColumnOptions();
     }, [fetchColumnOptions]);
+
+    useEffect(() => {
+        fetchColumnOptions2();
+    }, [fetchColumnOptions2]);
 
     const fetchResult = useCallback(() => {
         const { colKey, sortWay } = sortConfig || {};
