@@ -27,6 +27,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
     REACTIVE_POWER_SET_POINT,
+    REACTIVE_LIMITS,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialogUtils';
 import BatteryModificationForm from './battery-modification-form';
