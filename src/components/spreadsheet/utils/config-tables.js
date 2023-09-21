@@ -161,7 +161,7 @@ export const TABLES_DEFINITIONS = {
             ),
             generateEditableNumericColumnDefinition(
                 'IpMin',
-                'ipMin',
+                'identifiableShortCircuit.ipMin',
                 1,
                 'equipment.setIpMin({})\n',
                 undefined,
@@ -169,7 +169,7 @@ export const TABLES_DEFINITIONS = {
             ),
             generateEditableNumericColumnDefinition(
                 'IpMax',
-                'ipMax',
+                'identifiableShortCircuit.ipMax',
                 1,
                 'equipment.setIpMax({})\n',
                 'ipMin',

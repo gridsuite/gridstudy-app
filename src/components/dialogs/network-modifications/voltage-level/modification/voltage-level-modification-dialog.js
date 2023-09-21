@@ -87,9 +87,13 @@ const VoltageLevelModificationDialog = ({
                 [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value ?? null,
                 [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value ?? null,
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                    unitToKiloUnit(editData?.ipMin?.value) ?? null,
+                    unitToKiloUnit(
+                        editData?.identifiableShortCircuit?.ipMin?.value
+                    ) ?? null,
                 [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                    unitToKiloUnit(editData?.ipMax?.value) ?? null,
+                    unitToKiloUnit(
+                        editData?.identifiableShortCircuit?.ipMax?.value
+                    ) ?? null,
             });
         }
     }, [editData, reset]);
@@ -109,12 +113,16 @@ const VoltageLevelModificationDialog = ({
                     .then((voltageLevel) => {
                         if (voltageLevel) {
                             //We convert values of low short circuit current limit and high short circuit current limit from A to KA
-                            voltageLevel.ipMax = unitToKiloUnit(
-                                voltageLevel?.ipMax
-                            );
-                            voltageLevel.ipMin = unitToKiloUnit(
-                                voltageLevel?.ipMin
-                            );
+                            voltageLevel.identifiableShortCircuit.ipMax =
+                                unitToKiloUnit(
+                                    voltageLevel?.identifiableShortCircuit
+                                        ?.ipMax
+                                );
+                            voltageLevel.identifiableShortCircuit.ipMin =
+                                unitToKiloUnit(
+                                    voltageLevel?.identifiableShortCircuit
+                                        ?.ipMin
+                                );
                             setVoltageLevelInfos(voltageLevel);
                             setDataFetchStatus(FetchStatus.SUCCEED);
 
