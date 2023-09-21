@@ -418,8 +418,6 @@
     "MaxP": "Max P (MW)",
     "TargetV": "Target V (kV)",
     "TargetDeadband": "Target deadband",
-    "VoltageSetpoint": "Voltage set point",
-    "ReactivePowerSetpoint": "Reactive power set point",
     "ConverterStationId1": "Converter Station Id 1",
     "ConverterStationId2": "Converter Station Id 2",
     "NominalV": "Nominal V",
