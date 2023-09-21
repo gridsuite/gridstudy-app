@@ -130,7 +130,7 @@ export const getReactiveCapabilityCurveValidationSchema = (
                                     'checkATLeastThereIsOnePositiveP',
                                     'ReactiveCapabilityCurveCreationErrorMissingPositiveP',
                                     (values) =>
-                                        values.some((value) => value.p > 0)
+                                        values.some((value) => value.p >= 0)
                                 ),
                     })
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
