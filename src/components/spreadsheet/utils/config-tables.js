@@ -1373,7 +1373,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'VoltageSetpoint',
+                id: 'VoltageSetpointKV',
                 field: 'voltageSetpoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1381,7 +1381,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePowerSetpoint',
+                id: 'ReactivePowerSetpointMVAR',
                 field: 'reactivePowerSetpoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
