@@ -1098,7 +1098,7 @@
     "p0Label": "P0",
     "droopLabel": "Droop",
     "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
-    "side1InverterSide2Rectifier": "Flow (Side2->Side1)"
+    "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
     "MagnetizingConductanceWithUnit": "Magnetizing conductance (μS)",
     "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
     "RatedNominalPower": "Rated nominal power (MVA)"

@@ -1120,7 +1120,7 @@
     "p0Label": "P0",
     "droopLabel": "Gain",
     "side1RectifierSide2Inverter": "Flux (Or->Ex)",
-    "side1InverterSide2Rectifier": "Flux (Ex->Or)"
+    "side1InverterSide2Rectifier": "Flux (Ex->Or)",
     "MagnetizingConductanceWithUnit": "Conductance magnétisante (μS)",
     "MagnetizingSusceptanceWithUnit": "Susceptance magnétisante (μS)",
     "RatedNominalPower": "Puissance nominale (MVA)"
