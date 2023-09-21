@@ -153,3 +153,14 @@ export const SWITCH_TYPE = {
     BREAKER: { id: 'BREAKER', label: 'Breaker' },
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
 };
+
+export const VSC_CONVERTER_MODE = {
+    SIDE_1_RECTIFIER_SIDE_2_INVERTER: {
+        id: 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
+        label: 'side1RectifierSide2Inverter',
+    },
+    SIDE_1_INVERTER_SIDE_2_RECTIFIER: {
+        id: 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
+        label: 'side1InverterSide2Rectifier',
+    },
+};

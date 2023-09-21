@@ -57,6 +57,9 @@ export const MODIFICATION_TYPES = {
     TWO_WINDINGS_TRANSFORMER_MODIFICATION: {
         type: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
     },
+    VSC_CREATION: {
+        type: 'VSC_CREATION',
+    },
     EQUIPMENT_DELETION: {
         type: 'EQUIPMENT_DELETION',
     },
@@ -92,5 +95,8 @@ export const MODIFICATION_TYPES = {
     },
     VOLTAGE_INIT_MODIFICATION: {
         type: 'VOLTAGE_INIT_MODIFICATION',
+    },
+    CONVERTER_STATION_CREATION: {
+        type: 'CONVERTER_STATION_CREATION',
     },
 };

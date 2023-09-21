@@ -121,7 +121,7 @@ const formSchema = yup
             .min(0, 'RealPercentage')
             .max(1, 'RealPercentage'),
         ...getSetPointsSchema(true),
-        ...getReactiveLimitsSchema({ isEquipmentModification: true }),
+        ...getReactiveLimitsSchema(true),
     })
     .required();
 
