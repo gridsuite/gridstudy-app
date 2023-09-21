@@ -101,7 +101,7 @@ describe('services utils', function () {
     });
 
     describe('fetchAppsAndUrls', () => {
-        it('should fetch correctly apps metadata JSON', async () => {
+        it('should fetch correctly apps metadata JSON', () => {
             const mockRes = {
                 appsMetadataServerUrl: mockUrl,
             };
@@ -113,32 +113,34 @@ describe('services utils', function () {
                 json: jest.fn().mockResolvedValueOnce(mockAppsMetadata),
             });
 
-            const result = await fetchAppsAndUrls();
-
-            expect(mockFetch).toHaveBeenCalledTimes(2);
-            expect(mockFetch).toHaveBeenNthCalledWith(1, 'env.json');
-            expect(mockFetch).toHaveBeenNthCalledWith(
-                2,
-                `${mockRes.appsMetadataServerUrl}/apps-metadata.json`
-            );
-            expect(result).toEqual(mockAppsMetadata);
+            return fetchAppsAndUrls().then((result) => {
+                expect(mockFetch).toHaveBeenCalledTimes(2);
+                expect(mockFetch).toHaveBeenNthCalledWith(1, 'env.json');
+                expect(mockFetch).toHaveBeenNthCalledWith(
+                    2,
+                    `${mockRes.appsMetadataServerUrl}/apps-metadata.json`
+                );
+                expect(result).toEqual(mockAppsMetadata);
+            });
         });
     });
 
     describe('fetchDefaultParametersValues', () => {
-        it('should fetch apps and urls, and return default parameters values for Study metadata', async () => {
+        it('should fetch apps and urls, and return default parameters values for Study metadata', () => {
             mockFetch.mockImplementation(() =>
                 Promise.resolve({
                     json: () => Promise.resolve(mockAppsMetadata),
                 })
             );
 
-            const result = await fetchDefaultParametersValues();
-
-            expect(result).toEqual(mockAppsMetadata[1].defaultParametersValues);
+            return fetchDefaultParametersValues().then((result) => {
+                expect(result).toEqual(
+                    mockAppsMetadata[1].defaultParametersValues
+                );
+            });
         });
 
-        it('should handle missing Study metadata', async () => {
+        it('should handle missing Study metadata', () => {
             mockFetch.mockImplementation(() =>
                 Promise.resolve({
                     json: () =>
@@ -148,7 +150,7 @@ describe('services utils', function () {
                 })
             );
 
-            await expect(fetchDefaultParametersValues()).rejects.toEqual(
+            return expect(fetchDefaultParametersValues()).rejects.toEqual(
                 'Study entry could not be found in metadatas'
             );
         });
@@ -207,7 +209,7 @@ describe('services utils', function () {
     });
 
     describe('handleError', () => {
-        it('should throw an Error with message parsed from response text json', async () => {
+        it('should throw an Error with message parsed from response text json', () => {
             const mockBadRequestResponse = {
                 status: mockStatus.error,
                 statusText: 'Bad Request',
@@ -220,12 +222,12 @@ describe('services utils', function () {
             const expectedErrorMessage =
                 'HttpResponseError : mock-status mock-error, message : mock-message';
 
-            await expect(handleError(mockBadRequestResponse)).rejects.toThrow(
+            return expect(handleError(mockBadRequestResponse)).rejects.toThrow(
                 expectedErrorMessage
             );
         });
 
-        it('should throw an Error with message from provided reponse information', async () => {
+        it('should throw an Error with message from provided response information', () => {
             const response = {
                 status: mockStatus.error,
                 statusText: 'mock-statusText',
@@ -233,7 +235,7 @@ describe('services utils', function () {
             };
             const expectedErrorMessage = `HttpResponseError : ${mockStatus.error} mock-statusText, message : mock-resolved-text-value`;
 
-            await expect(handleError(response)).rejects.toThrow(
+            return expect(handleError(response)).rejects.toThrow(
                 expectedErrorMessage
             );
         });
@@ -272,16 +274,17 @@ describe('services utils', function () {
     });
 
     describe('safeFetch', () => {
-        it('should return the response when response.ok is true (get successfully the response)', async () => {
+        it('should return the response when response.ok is true (get successfully the response)', () => {
             const mockResponse = { ok: true };
             mockFetch.mockResolvedValue(mockResponse);
 
-            const result = await safeFetch(mockUrl, mockInitCopy);
-            expect(result).toBe(mockResponse);
-            expect(mockFetch).toHaveBeenCalledWith(mockUrl, mockInitCopy);
+            return safeFetch(mockUrl, mockInitCopy).then((result) => {
+                expect(result).toBe(mockResponse);
+                expect(mockFetch).toHaveBeenCalledWith(mockUrl, mockInitCopy);
+            });
         });
 
-        it('should handle error using handleError function when response is not successful', async () => {
+        it('should handle error using handleError function when response is not successful', () => {
             const mockInitCopy = { method: 'mock-method' };
             const mockResponse = {
                 ok: false,
@@ -293,89 +296,98 @@ describe('services utils', function () {
 
             const expectedErrorMessage = `HttpResponseError : ${mockStatus.serverError} mock-status-text, message : mock-resolved-text-value`;
 
-            await expect(safeFetch(mockUrl, mockInitCopy)).rejects.toThrow(
-                expectedErrorMessage
-            );
-            expect(mockFetch).toHaveBeenCalledWith(mockUrl, mockInitCopy);
+            return expect(safeFetch(mockUrl, mockInitCopy))
+                .rejects.toThrow(expectedErrorMessage)
+                .then(() => {
+                    expect(mockFetch).toHaveBeenCalledWith(
+                        mockUrl,
+                        mockInitCopy
+                    );
+                });
         });
     });
 
     describe('backendFetch', () => {
-        it('should fetch from the provided URL for safeFetch with the correct headers prepared by prepareRequest and return the good corresponding result', async () => {
+        it('should fetch from the provided URL for safeFetch with the correct headers prepared by prepareRequest and return the good corresponding result', () => {
             mockFetch.mockResolvedValue({
                 ok: true,
                 json: 'mocked json response',
             });
 
-            const response = await backendFetch(mockUrl, mockInit, mockToken);
-
-            expect(global.fetch).toHaveBeenCalledWith(mockUrl, mockInitCopy);
-            expect(response.ok).toBe(true);
-            expect(response.json).toEqual('mocked json response');
+            return backendFetch(mockUrl, mockInit, mockToken).then(
+                (response) => {
+                    expect(global.fetch).toHaveBeenCalledWith(
+                        mockUrl,
+                        mockInitCopy
+                    );
+                    expect(response.ok).toBe(true);
+                    expect(response.json).toEqual('mocked json response');
+                }
+            );
         });
 
-        it('should throw an error if the request fails', async () => {
+        it('should throw an error if the request fails', () => {
             mockFetch.mockResolvedValue({
                 ok: false,
                 text: () => Promise.resolve('Error message'),
             });
 
-            await expect(
+            return expect(
                 backendFetch(mockUrl, mockInit, mockToken)
             ).rejects.toThrow('HttpResponseError');
         });
     });
 
     describe('backendFetchText', () => {
-        it('should make a request correctly and return the good response', async () => {
+        it('should make a request correctly and return the good response', () => {
             mockFetch.mockResolvedValue({
                 ok: true,
                 text: () => Promise.resolve('mocked response'),
             });
 
-            const response = await backendFetchText(
-                mockUrl,
-                mockInit,
-                mockToken
+            return backendFetchText(mockUrl, mockInit, mockToken).then(
+                (response) => {
+                    expect(global.fetch).toHaveBeenCalledWith(
+                        mockUrl,
+                        mockInitCopy
+                    );
+                    expect(response).toBe('mocked response');
+                }
             );
-
-            expect(global.fetch).toHaveBeenCalledWith(mockUrl, mockInitCopy);
-            expect(response).toBe('mocked response');
         });
     });
 
     describe('backendFetchJson', () => {
-        it('should make the request correctly and return a safe successfully response corresponding to a status different to 204', async () => {
+        it('should make the request correctly and return a safe successfully response corresponding to a status different to 204', () => {
             mockFetch.mockResolvedValue({
                 ok: true,
                 status: mockStatus.safe,
                 json: jest.fn().mockResolvedValue({ data: 'mocked response' }),
             });
 
-            const response = await backendFetchJson(
-                mockUrl,
-                mockInit,
-                mockToken
+            return backendFetchJson(mockUrl, mockInit, mockToken).then(
+                (response) => {
+                    expect(global.fetch).toHaveBeenCalledWith(
+                        mockUrl,
+                        mockInitCopy
+                    );
+                    expect(response).toEqual({ data: 'mocked response' });
+                }
             );
-
-            expect(global.fetch).toHaveBeenCalledWith(mockUrl, mockInitCopy);
-            expect(response).toEqual({ data: 'mocked response' });
         });
 
-        it('should return null if the response status is 204', async () => {
+        it('should return null if the response status is 204', () => {
             mockFetch.mockResolvedValue({
                 ok: true,
                 status: mockStatus.notSafe,
                 json: jest.fn().mockResolvedValue(null),
             });
 
-            const response = await backendFetchJson(
-                mockUrl,
-                mockInit,
-                mockToken
+            return backendFetchJson(mockUrl, mockInit, mockToken).then(
+                (response) => {
+                    expect(response).toBeNull();
+                }
             );
-
-            expect(response).toBeNull();
         });
     });
 
