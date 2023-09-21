@@ -40,6 +40,7 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
+    REACTIVE_LIMITS,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialogUtils';
 import { REGULATION_TYPES } from 'components/network/constants';
@@ -50,6 +51,7 @@ import {
 } from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
+    getReactiveLimitsFormData,
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
@@ -83,47 +85,44 @@ const emptyFormData = {
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
     ...getSetPointsEmptyFormData(true),
-    ...getReactiveLimitsEmptyFormData(true),
+    ...getReactiveLimitsEmptyFormData(),
 };
 
 const formSchema = yup
     .object()
-    .shape(
-        {
-            [EQUIPMENT_NAME]: yup.string(),
-            [ENERGY_SOURCE]: yup.string().nullable(),
-            [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
-            [MINIMUM_ACTIVE_POWER]: yup
-                .number()
-                .nullable()
-                .when([MAXIMUM_ACTIVE_POWER], {
-                    is: (maximumActivePower) => maximumActivePower != null,
-                    then: (schema) =>
-                        schema.max(
-                            yup.ref(MAXIMUM_ACTIVE_POWER),
-                            'MinActivePowerLessThanMaxActivePower'
-                        ),
-                }),
-            [RATED_NOMINAL_POWER]: yup.number().nullable(),
-            [TRANSIENT_REACTANCE]: yup.number().nullable(),
-            [TRANSFORMER_REACTANCE]: yup.number().nullable(),
-            [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
-            [MARGINAL_COST]: yup.number().nullable(),
-            [PLANNED_OUTAGE_RATE]: yup
-                .number()
-                .nullable()
-                .min(0, 'RealPercentage')
-                .max(1, 'RealPercentage'),
-            [FORCED_OUTAGE_RATE]: yup
-                .number()
-                .nullable()
-                .min(0, 'RealPercentage')
-                .max(1, 'RealPercentage'),
-            ...getSetPointsSchema(true),
-            ...getReactiveLimitsSchema(true),
-        },
-        [MAXIMUM_REACTIVE_POWER, MINIMUM_REACTIVE_POWER]
-    )
+    .shape({
+        [EQUIPMENT_NAME]: yup.string(),
+        [ENERGY_SOURCE]: yup.string().nullable(),
+        [MAXIMUM_ACTIVE_POWER]: yup.number().nullable(),
+        [MINIMUM_ACTIVE_POWER]: yup
+            .number()
+            .nullable()
+            .when([MAXIMUM_ACTIVE_POWER], {
+                is: (maximumActivePower) => maximumActivePower != null,
+                then: (schema) =>
+                    schema.max(
+                        yup.ref(MAXIMUM_ACTIVE_POWER),
+                        'MinActivePowerLessThanMaxActivePower'
+                    ),
+            }),
+        [RATED_NOMINAL_POWER]: yup.number().nullable(),
+        [TRANSIENT_REACTANCE]: yup.number().nullable(),
+        [TRANSFORMER_REACTANCE]: yup.number().nullable(),
+        [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
+        [MARGINAL_COST]: yup.number().nullable(),
+        [PLANNED_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0, 'RealPercentage')
+            .max(1, 'RealPercentage'),
+        [FORCED_OUTAGE_RATE]: yup
+            .number()
+            .nullable()
+            .min(0, 'RealPercentage')
+            .max(1, 'RealPercentage'),
+        ...getSetPointsSchema(true),
+        ...getReactiveLimitsSchema({ isEquipmentModification: true }),
+    })
     .required();
 
 const GeneratorModificationDialog = ({
@@ -181,21 +180,23 @@ const GeneratorModificationDialog = ({
                     editData?.stepUpTransformerReactance?.value ?? null,
                 [VOLTAGE_REGULATION_TYPE]:
                     editData?.voltageRegulationType?.value ?? null,
-                [MINIMUM_REACTIVE_POWER]:
-                    editData?.minimumReactivePower?.value ?? null,
-                [MAXIMUM_REACTIVE_POWER]:
-                    editData?.maximumReactivePower?.value ?? null,
                 [Q_PERCENT]: editData?.qPercent?.value ?? null,
-                [REACTIVE_CAPABILITY_CURVE_CHOICE]: editData
-                    ?.reactiveCapabilityCurve?.value
-                    ? 'CURVE'
-                    : 'MINMAX',
-                [REACTIVE_CAPABILITY_CURVE_TABLE]:
-                    editData?.reactiveCapabilityCurvePoints?.length > 0
-                        ? completeReactiveCapabilityCurvePointsData(
-                              editData?.reactiveCapabilityCurvePoints
-                          )
-                        : [getRowEmptyFormData(), getRowEmptyFormData()],
+                ...getReactiveLimitsFormData({
+                    reactiveCapabilityCurveChoice: editData
+                        ?.reactiveCapabilityCurve?.value
+                        ? 'CURVE'
+                        : 'MINMAX',
+                    maximumReactivePower:
+                        editData?.maximumReactivePower?.value ?? null,
+                    minimumReactivePower:
+                        editData?.minimumReactivePower?.value ?? null,
+                    reactiveCapabilityCurveTable:
+                        editData?.reactiveCapabilityCurvePoints?.length > 0
+                            ? completeReactiveCapabilityCurvePointsData(
+                                  editData?.reactiveCapabilityCurvePoints
+                              )
+                            : [getRowEmptyFormData(), getRowEmptyFormData()],
+                }),
                 ...getRegulatingTerminalFormData({
                     equipmentId: editData?.regulatingTerminalId?.value,
                     equipmentType: editData?.regulatingTerminalType?.value,
@@ -262,7 +263,9 @@ const GeneratorModificationDialog = ({
                             // we need to check if the generator we fetch has reactive capability curve table
                             if (previousReactiveCapabilityCurveTable) {
                                 const currentReactiveCapabilityCurveTable =
-                                    getValues(REACTIVE_CAPABILITY_CURVE_TABLE);
+                                    getValues(
+                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`
+                                    );
 
                                 const sizeDiff =
                                     previousReactiveCapabilityCurveTable.length -
@@ -276,7 +279,7 @@ const GeneratorModificationDialog = ({
                                         );
                                     }
                                     setValue(
-                                        REACTIVE_CAPABILITY_CURVE_TABLE,
+                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                         currentReactiveCapabilityCurveTable
                                     );
                                 } else if (sizeDiff < 0) {
@@ -333,13 +336,14 @@ const GeneratorModificationDialog = ({
 
     const onSubmit = useCallback(
         (generator) => {
+            const reactiveLimits = generator[REACTIVE_LIMITS];
             const buildCurvePointsToStore = calculateCurvePointsToStore(
-                generator[REACTIVE_CAPABILITY_CURVE_TABLE],
+                reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
                 generatorToModify
             );
 
             const isReactiveCapabilityCurveOn =
-                generator[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+                reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
             const isDistantRegulation =
                 generator?.[VOLTAGE_REGULATION_TYPE] ===
@@ -381,10 +385,10 @@ const GeneratorModificationDialog = ({
                 generator[DROOP],
                 isReactiveCapabilityCurveOn
                     ? null
-                    : generator[MAXIMUM_REACTIVE_POWER],
+                    : reactiveLimits[MAXIMUM_REACTIVE_POWER],
                 isReactiveCapabilityCurveOn
                     ? null
-                    : generator[MINIMUM_REACTIVE_POWER],
+                    : reactiveLimits[MINIMUM_REACTIVE_POWER],
                 isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null
             ).catch((error) => {
                 snackError({
