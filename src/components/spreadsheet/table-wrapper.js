@@ -46,7 +46,7 @@ import {
     modifyGenerator,
     modifyLoad,
     modifyVoltageLevel,
-    requestNetworkChange
+    requestNetworkChange,
 } from '../../services/study/network-modifications';
 import { kiloUnitToUnit } from '../../utils/rounding';
 import { Box } from '@mui/system';
