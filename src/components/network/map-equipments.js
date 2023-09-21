@@ -50,11 +50,10 @@ export default class MapEquipments {
             .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
-                    this.errHandler(
-                        this.intlRef.current.formatMessage({
-                            id: 'MapEquipmentsLoadError',
-                        })
-                    );
+                    this.errHandler({
+                        messageTxt: error.message,
+                        headerId: 'MapEquipmentsLoadError',
+                    });
                 }
             });
         fetchLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
@@ -66,11 +65,10 @@ export default class MapEquipments {
             .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
-                    this.errHandler(
-                        this.intlRef.current.formatMessage({
-                            id: 'MapEquipmentsLoadError',
-                        })
-                    );
+                    this.errHandler({
+                        messageTxt: error.message,
+                        headerId: 'MapEquipmentsLoadError',
+                    });
                 }
             });
         fetchHvdcLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
@@ -82,11 +80,10 @@ export default class MapEquipments {
             .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
-                    this.errHandler(
-                        this.intlRef.current.formatMessage({
-                            id: 'MapEquipmentsLoadError',
-                        })
-                    );
+                    this.errHandler({
+                        messageTxt: error.message,
+                        headerId: 'MapEquipmentsLoadError',
+                    });
                 }
             });
     }
@@ -138,11 +135,10 @@ export default class MapEquipments {
         updatedSubstations.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
-                this.errHandler(
-                    this.intlRef.current.formatMessage({
-                        id: 'MapEquipmentsLoadError',
-                    })
-                );
+                this.errHandler({
+                    messageTxt: error.message,
+                    headerId: 'MapEquipmentsLoadError',
+                });
             }
         });
         updatedLines.catch((error) => {
@@ -158,11 +154,10 @@ export default class MapEquipments {
         updatedHvdcLines.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
-                this.errHandler(
-                    this.intlRef.current.formatMessage({
-                        id: 'MapEquipmentsLoadError',
-                    })
-                );
+                this.errHandler({
+                    messageTxt: error.message,
+                    headerId: 'MapEquipmentsLoadError',
+                });
             }
         });
         return [updatedSubstations, updatedLines, updatedHvdcLines];

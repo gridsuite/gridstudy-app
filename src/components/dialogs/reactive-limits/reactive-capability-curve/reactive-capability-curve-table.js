@@ -64,7 +64,7 @@ export const ReactiveCapabilityCurveTable = ({
                 } else if (index === displayedValues.length - 1) {
                     labelSuffix = 'max';
                 } else {
-                    labelSuffix = index.toString();
+                    labelSuffix = index - 1;
                 }
                 return (
                     <Grid key={value.id} container spacing={3} item>
