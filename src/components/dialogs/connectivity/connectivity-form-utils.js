@@ -138,9 +138,9 @@ export const getConnectivityFormData = (
         voltageLevelId,
         busbarSectionId,
         busbarSectionName,
-        connectionDirection = null,
-        connectionName = '',
-        connectionPosition = null,
+        connectionDirection,
+        connectionName,
+        connectionPosition,
     },
     id = CONNECTIVITY
 ) => {
@@ -151,9 +151,9 @@ export const getConnectivityFormData = (
                 busbarSectionId,
                 busbarSectionName,
             }),
-            [CONNECTION_DIRECTION]: connectionDirection,
-            [CONNECTION_NAME]: connectionName,
-            [CONNECTION_POSITION]: connectionPosition,
+            [CONNECTION_DIRECTION]: connectionDirection ?? null,
+            [CONNECTION_NAME]: connectionName ?? '',
+            [CONNECTION_POSITION]: connectionPosition ?? null,
         },
     };
 };
