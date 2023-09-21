@@ -1105,5 +1105,10 @@
     "p0Label": "P0",
     "droopLabel": "Droop",
     "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
-    "side1InverterSide2Rectifier": "Flow (Side2->Side1)"
+    "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
+
+    "Connected": "Connected",
+    "ConnectedSide1": "Connected 1",
+    "ConnectedSide2": "Connected 2",
+    "ConnectedSide3": "Connected 3"
 }

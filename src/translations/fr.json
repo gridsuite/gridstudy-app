@@ -1127,5 +1127,10 @@
     "p0Label": "P0",
     "droopLabel": "Gain",
     "side1RectifierSide2Inverter": "Flux (Or->Ex)",
-    "side1InverterSide2Rectifier": "Flux (Ex->Or)"
+    "side1InverterSide2Rectifier": "Flux (Ex->Or)",
+
+    "Connected": "Connecté",
+    "ConnectedSide1": "Connecté 1",
+    "ConnectedSide2": "Connecté 2",
+    "ConnectedSide3": "Connecté 3"
 }
