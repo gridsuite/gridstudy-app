@@ -17,7 +17,10 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import { fetchSensitivityAnalysisResult } from '../../../services/study/sensitivity-analysis';
+import {
+    fetchSensitivityAnalysisFilterOptions,
+    fetchSensitivityAnalysisResult
+} from "../../../services/study/sensitivity-analysis";
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
 
@@ -99,9 +102,9 @@ const PagedSensitivityAnalysisResult = ({
             functionType: FUNCTION_TYPES[sensiKindIndex],
         };
 
-        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
+        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, selector)
             .then((res) => {
-                setOptions(res);
+                console.log('test results',res);
             })
             .catch((error) => {
                 snackError({
