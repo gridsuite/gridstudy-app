@@ -112,8 +112,9 @@ const BatteryCreationDialog = ({
             [MINIMUM_ACTIVE_POWER]: battery.minP,
             [ACTIVE_POWER_SET_POINT]: battery.targetP,
             [REACTIVE_POWER_SET_POINT]: battery.targetQ,
-            [FREQUENCY_REGULATION]: battery.activePowerControlOn,
-            [DROOP]: battery.droop,
+            [FREQUENCY_REGULATION]:
+                battery?.activePowerControl?.activePowerControlOn,
+            [DROOP]: battery?.activePowerControl?.droop,
             [MINIMUM_REACTIVE_POWER]:
                 battery?.minMaxReactiveLimits?.minimumReactivePower ?? null,
             [MAXIMUM_REACTIVE_POWER]:

@@ -163,8 +163,9 @@ const GeneratorCreationDialog = ({
             [MARGINAL_COST]: generator.marginalCost,
             [PLANNED_OUTAGE_RATE]: generator.plannedOutageRate,
             [FORCED_OUTAGE_RATE]: generator.forcedOutageRate,
-            [FREQUENCY_REGULATION]: generator.activePowerControlOn,
-            [DROOP]: generator.droop,
+            [FREQUENCY_REGULATION]:
+                generator?.activePowerControl?.activePowerControlOn,
+            [DROOP]: generator?.activePowerControl?.droop,
             [TRANSIENT_REACTANCE]: generator.transientReactance,
             [TRANSFORMER_REACTANCE]: generator.stepUpTransformerReactance,
             [VOLTAGE_REGULATION_TYPE]:

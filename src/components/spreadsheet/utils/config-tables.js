@@ -908,7 +908,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControlOn',
+                field: 'activePowerControl.activePowerControlOn',
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
