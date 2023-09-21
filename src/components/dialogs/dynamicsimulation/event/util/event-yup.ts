@@ -32,7 +32,7 @@ export const getSchema = (eventPropertyDefinition: EventPropertyDefinition) => {
 
     // set required
     if (eventPropertyDefinition.isRequired) {
-        schema = schema.nullable().required();
+        schema = schema.required();
     } else {
         schema = schema.nullable();
     }

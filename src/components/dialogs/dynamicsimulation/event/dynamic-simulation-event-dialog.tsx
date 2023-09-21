@@ -228,7 +228,6 @@ export const DynamicSimulationEventDialog = (
         <FormProvider
             {...{
                 validationSchema: formSchema,
-                removeOptional: true,
                 ...formMethods,
             }}
         >
