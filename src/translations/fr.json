@@ -445,12 +445,14 @@
     "EnergiseOnOneEndLine": "Mettre sous tension à vide depuis {substation}",
     "SwitchOnLine": "Mettre en service la ligne",
     "Trip2WTransformer": "Déclencher le transformateur",
+    "Lockout2WTransformer": "Consigner le transformateur",
 
     "UnableToLockoutLine": "Impossible de consigner la ligne",
     "UnableToTripLine": "Impossible de déclencher la ligne",
     "UnableToEnergiseOnOneEndLine": "Impossible de mettre sous tension à vide",
     "UnableToSwitchOnLine": "Impossible de mettre la ligne en service",
     "UnableToTrip2WTransformer": "Impossible de déclencher le transformateur",
+    "UnableToLockout2WTransformer": "Impossible de consigner le transformateur",
 
     "Provider": "Simulateur",
     "LimitReduction": "Abattement des seuils",
