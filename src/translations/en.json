@@ -443,12 +443,14 @@
     "EnergiseOnOneEndLine": "Energise on one end ({substation})",
     "SwitchOnLine": "Switch on the line",
     "Trip2WTransformer": "Trip the transformer",
+    "Lockout2WTransformer": "Lock out the transformer",
 
     "UnableToLockoutLine": "Unable to lockout the line",
     "UnableToTripLine": "Unable to trip the line",
     "UnableToEnergiseOnOneEndLine": "Unable to energise the line end",
     "UnableToSwitchOnLine": "Unable to switch on the line",
     "UnableToTrip2WTransformer": "Unable to trip the transformer",
+    "UnableToLockout2WTransformer": "Unable to lockout the transformer",
 
     "Provider": "Provider",
     "LimitReduction": "Limit reduction",
