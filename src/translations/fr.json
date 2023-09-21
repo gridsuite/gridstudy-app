@@ -1101,5 +1101,10 @@
     "IpMax": "ICC max (kA)",
     "StartupCost": "Coût de démarrage",
 
-    "Connect": "Reconnexion ?"
+    "Connect": "Reconnexion ?",
+
+    "Connected": "Connecté",
+    "ConnectedSide1": "Connecté 1",
+    "ConnectedSide2": "Connecté 2",
+    "ConnectedSide3": "Connecté 3"
 }

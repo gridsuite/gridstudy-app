@@ -1079,5 +1079,10 @@
     "IpMax": "ISC max (kA)",
     "StartupCost": "Startup cost",
 
-    "Connect": "Reconnect ?"
+    "Connect": "Reconnect ?",
+
+    "Connected": "Connected",
+    "ConnectedSide1": "Connected 1",
+    "ConnectedSide2": "Connected 2",
+    "ConnectedSide3": "Connected 3"
 }
