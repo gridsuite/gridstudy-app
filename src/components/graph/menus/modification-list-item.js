@@ -66,6 +66,7 @@ export const ModificationListItem = ({
     const intl = useIntl();
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const mapDataLoading = useSelector((state) => state.mapDataLoading);
     const [computedValues, setComputedValues] = useState();
 
     /*
@@ -131,7 +132,9 @@ export const ModificationListItem = ({
         <Draggable
             draggableId={modif.uuid}
             index={index}
-            isDragDisabled={isOneNodeBuilding || isRestorationDialog}
+            isDragDisabled={
+                isOneNodeBuilding || isRestorationDialog || mapDataLoading
+            }
         >
             {(provided) => (
                 <div
@@ -150,7 +153,8 @@ export const ModificationListItem = ({
                                     hover &&
                                     !isDragging &&
                                     !isOneNodeBuilding &&
-                                    !isRestorationDialog
+                                    !isRestorationDialog &&
+                                    !mapDataLoading
                                         ? '1'
                                         : '0',
                             }}
@@ -168,6 +172,7 @@ export const ModificationListItem = ({
                         </ListItemIcon>
                         <OverflowableText sx={styles.label} text={getLabel()} />
                         {!isOneNodeBuilding &&
+                            !mapDataLoading &&
                             hover &&
                             !isDragging &&
                             !isRestorationDialog &&
