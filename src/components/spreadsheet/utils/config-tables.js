@@ -29,6 +29,8 @@ const applyFluxConvention = (convention, val) => {
 };
 
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter
+// The columns we want to include in the global filter at the date of this comment : ID (all), Name, Country, Type and Nominal Voltage (all).
+// All the others should be excluded.
 const excludeFromGlobalFilter = () => '';
 
 export const MIN_COLUMN_WIDTH = 160;
@@ -115,6 +117,7 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: propertiesGetter, // valueFormatter does not work here
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
     },
@@ -1233,6 +1236,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'TransformerReactance',
@@ -1240,6 +1244,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'PlannedActivePowerSetPoint',
@@ -1247,6 +1252,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'StartupCost',
@@ -1254,6 +1260,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'PlannedOutageRate',
@@ -1261,6 +1268,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 2,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'ForcedOutageRate',
@@ -1268,6 +1276,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 2,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'Connected',
