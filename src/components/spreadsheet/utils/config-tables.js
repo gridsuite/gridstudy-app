@@ -151,7 +151,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.nominalVoltage,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
