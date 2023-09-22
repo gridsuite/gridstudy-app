@@ -102,10 +102,11 @@ export function fetchSensitivityAnalysisFilterOptions(
     const url = `${getStudyUrlWithNodeUuid(
       studyUuid,
       currentNodeUuid
-    )}/sensitivity-analysis/result/filter/options?${urlSearchParams}`;
+    )}/sensitivity-analysis/result/filter_options?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
 }
+
 export function fetchSensitivityAnalysisProvider(studyUuid) {
     console.info('fetch sensitivity analysis provider');
     const url = `${getStudyUrl(studyUuid)}/sensitivity-analysis/provider`;

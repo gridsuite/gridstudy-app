@@ -96,7 +96,7 @@ const PagedSensitivityAnalysisResult = ({
         [setPage, updateFilter]
     );
 
-    const fetchColumnOptions = useCallback(() => {
+    const fetchFilterOptions = useCallback(() => {
         const selector = {
             isJustBefore: !nOrNkIndex,
             functionType: FUNCTION_TYPES[sensiKindIndex],
@@ -138,8 +138,8 @@ const PagedSensitivityAnalysisResult = ({
     }, [nOrNkIndex, sensiKindIndex, studyUuid, nodeUuid, snackError, intl]);
 
     useEffect(() => {
-        fetchColumnOptions();
-    }, [fetchColumnOptions]);
+        fetchFilterOptions();
+    }, [fetchFilterOptions]);
 
     useEffect(() => {
         fetchColumnOptions2();
