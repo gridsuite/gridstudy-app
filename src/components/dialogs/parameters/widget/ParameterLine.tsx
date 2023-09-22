@@ -6,12 +6,13 @@
  */
 
 import React, { FunctionComponent, useState } from 'react';
-import { useParameterState, useStyles } from '../parameters';
+import { useParameterState, styles } from '../parameters';
 import { Grid, MenuItem, Select, Slider, Switch } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { Mark } from '@mui/base/useSlider';
 import DirectoryItemsInput from '../../../utils/rhf-inputs/directory-items-input';
 import { SelectInputProps } from '@mui/material/Select/SelectInput';
+import { mergeSx } from '../../../utils/functions';
 
 export enum ParameterType {
     Switch,
@@ -107,14 +108,13 @@ const ParamLineSwitch: FunctionComponent<
     const [parameterValue, handleChangeParameterValue] = useParameterState(
         props.param_name_id
     );
-    const classes = useStyles();
 
     return (
         <>
-            <Grid item xs={8} className={classes.parameterName}>
+            <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={props.label} />
             </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
+            <Grid item container xs={4} sx={styles.controlItem}>
                 <Switch
                     checked={parameterValue}
                     onChange={(event, isChecked) => {
@@ -135,14 +135,13 @@ const ParamLineDropdown: FunctionComponent<
     const [parameterValue, handleChangeParameterValue] = useParameterState(
         props.param_name_id
     );
-    const classes = useStyles();
 
     return (
         <>
-            <Grid item xs={8} className={classes.parameterName}>
+            <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={props.labelTitle} />
             </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
+            <Grid item container xs={4} sx={styles.controlItem}>
                 <Select
                     labelId={props.labelValue}
                     value={
@@ -174,8 +173,6 @@ const ParamLineDropdown: FunctionComponent<
 const ParamLineSlider: FunctionComponent<
     BaseParameterLineProps & SliderParameterLineProps
 > = (props, context) => {
-    const classes = useStyles();
-
     const [parameterValue, handleChangeParameterValue] = useParameterState(
         props.param_name_id
     );
@@ -183,15 +180,14 @@ const ParamLineSlider: FunctionComponent<
 
     return (
         <>
-            <Grid item xs={8} className={classes.parameterName}>
+            <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={props.label} />
             </Grid>
             <Grid
                 item
                 container
                 xs={4}
-                className={classes.controlItem}
-                sx={{ paddingRight: 2 }}
+                sx={mergeSx(styles.controlItem, { paddingRight: 2 })}
             >
                 <Slider
                     min={props.minValue ?? 0}
@@ -215,15 +211,13 @@ const ParamLineSlider: FunctionComponent<
 const ParamLineDirectoryItemsInput: FunctionComponent<
     BaseParameterLineProps & DirectoryItemsInputLineProps
 > = (props, context) => {
-    const classes = useStyles();
-
     return (
         <Grid item container spacing={1} padding={1}>
-            <Grid item xs={8} className={classes.parameterName}>
+            <Grid item xs={8} sx={styles.parameterName}>
                 {/*<Typography component="span" variant="body1"> as suggested in the doc?*/}
                 <FormattedMessage id={props.label} />
             </Grid>
-            <Grid item xs={4} className={classes.controlItem}>
+            <Grid item xs={4} sx={styles.controlItem}>
                 <DirectoryItemsInput
                     name={props.name}
                     equipmentTypes={props.equipmentTypes}

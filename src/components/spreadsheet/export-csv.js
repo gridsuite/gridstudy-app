@@ -5,25 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import { useCallback } from 'react';
 import { EDIT_COLUMN } from './utils/config-tables';
 
-const styles = {
-    exportCsv: (theme) => ({
-        marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(6),
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'baseline',
-        position: 'absolute',
-        right: 0,
-    }),
-};
-
-export const CsvExport = ({ gridRef, columns, tableName, disabled }) => {
+export const CsvExport = ({
+    gridRef,
+    columns,
+    tableNamePrefix = '',
+    tableName,
+    disabled,
+}) => {
     const intl = useIntl();
 
     const getCSVFilename = useCallback(() => {
@@ -42,12 +36,12 @@ export const CsvExport = ({ gridRef, columns, tableName, disabled }) => {
         gridRef?.current?.api?.exportDataAsCsv({
             suppressQuotes: true,
             columnKeys: filteredColumnsKeys,
-            fileName: getCSVFilename(),
+            fileName: tableNamePrefix.concat(getCSVFilename()),
         });
-    }, [columns, getCSVFilename, gridRef]);
+    }, [columns, getCSVFilename, gridRef, tableNamePrefix]);
 
     return (
-        <Grid item sx={styles.exportCsv}>
+        <>
             <span>
                 <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
             </span>
@@ -60,6 +54,6 @@ export const CsvExport = ({ gridRef, columns, tableName, disabled }) => {
                     <GetAppIcon />
                 </IconButton>
             </span>
-        </Grid>
+        </>
     );
 };

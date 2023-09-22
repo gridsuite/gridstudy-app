@@ -5,12 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { BooleanCellRenderer } from './cell-renderers';
+import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
+import { unitToMicroUnit } from '../../../utils/rounding';
 
 const generateTapPositions = (params) => {
     return params
@@ -109,6 +110,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'Properties',
                 field: 'properties',
                 valueGetter: propertiesGetter, // valueFormatter does not work here
+                cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
             },
         ],
@@ -251,6 +253,58 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 canBeInvalidated: true,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'SeriesResistance',
+                field: 'r',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'SeriesReactance',
+                field: 'x',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ShuntConductance1',
+                field: 'g1',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.g1),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ShuntConductance2',
+                field: 'g2',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.g2),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ShuntSusceptance1',
+                field: 'b1',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.b1),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ShuntSusceptance2',
+                field: 'b2',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.b2),
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
@@ -1319,7 +1373,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'VoltageSetpoint',
+                id: 'VoltageSetpointKV',
                 field: 'voltageSetpoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1327,7 +1381,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePowerSetpoint',
+                id: 'ReactivePowerSetpointMVAR',
                 field: 'reactivePowerSetpoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
