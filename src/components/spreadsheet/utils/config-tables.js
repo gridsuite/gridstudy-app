@@ -1123,14 +1123,14 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'TransientReactance',
-                field: 'transientReactance',
+                field: 'generatorShortCircuit.transientReactance',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
             },
             {
                 id: 'TransformerReactance',
-                field: 'stepUpTransformerReactance',
+                field: 'generatorShortCircuit.stepUpTransformerReactance',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,

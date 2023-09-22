@@ -165,8 +165,10 @@ const GeneratorCreationDialog = ({
             [FREQUENCY_REGULATION]:
                 generator?.activePowerControl?.activePowerControlOn,
             [DROOP]: generator?.activePowerControl?.droop,
-            [TRANSIENT_REACTANCE]: generator.transientReactance,
-            [TRANSFORMER_REACTANCE]: generator.stepUpTransformerReactance,
+            [TRANSIENT_REACTANCE]:
+                generator?.generatorShortCircuit?.transientReactance,
+            [TRANSFORMER_REACTANCE]:
+                generator?.generatorShortCircuit?.stepUpTransformerReactance,
             [VOLTAGE_REGULATION_TYPE]:
                 generator?.regulatingTerminalId ||
                 generator?.regulatingTerminalConnectableId
