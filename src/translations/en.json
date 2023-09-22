@@ -1084,6 +1084,11 @@
     "StartupCost": "Startup cost",
 
     "Connect": "Reconnect ?",
+    "Connected": "Connected",
+    "ConnectedSide1": "Connected 1",
+    "ConnectedSide2": "Connected 2",
+    "ConnectedSide3": "Connected 3",
+
     "converterStationId": "Converter station ID",
     "converterStationName": "Converter station name",
     "converterStation1" : "Converter station 1",
@@ -1098,5 +1103,9 @@
     "p0Label": "P0",
     "droopLabel": "Droop",
     "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
-    "side1InverterSide2Rectifier": "Flow (Side2->Side1)"
+    "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
+    "MagnetizingConductanceWithUnit": "Magnetizing conductance (μS)",
+    "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
+    "RatedNominalPower": "Rated nominal power (MVA)"
+
 }
