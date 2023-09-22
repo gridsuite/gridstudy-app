@@ -1101,6 +1101,10 @@
     "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
     "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
 
+    "MagnetizingConductanceWithUnit": "Magnetizing conductance (μS)",
+    "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
+    "RatedNominalPower": "Rated nominal power (MVA)",
+
     "studyIndexationDone": "Study indexation done. Search functionality is now available",
     "studyIndexationError": "Study indexation process has failed.",
     "checkstudyIndexationError": "Study indexation checking has failed.",

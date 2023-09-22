@@ -1123,6 +1123,10 @@
     "side1RectifierSide2Inverter": "Flux (Or->Ex)",
     "side1InverterSide2Rectifier": "Flux (Ex->Or)",
 
+    "MagnetizingConductanceWithUnit": "Conductance magnétisante (μS)",
+    "MagnetizingSusceptanceWithUnit": "Susceptance magnétisante (μS)",
+    "RatedNominalPower": "Puissance nominale (MVA)",
+
     "studyIndexationDone": "L'indexation de l'étude est terminée. La fonctionnalité de recherche est disponible",
     "studyIndexationError": "L'indexation de l'étude a échoué.",
     "checkstudyIndexationError": "La récupération de l'état d'indexation de l'étude a échoué.",
