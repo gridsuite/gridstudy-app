@@ -155,7 +155,6 @@ export const TABLES_DEFINITIONS = {
                         colDef: params.colDef,
                     };
                 },
-                getQuickFilterText: excludeFromGlobalFilter,
             },
             generateEditableNumericColumnDefinition(
                 'LowVoltageLimitkV',
