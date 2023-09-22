@@ -1097,7 +1097,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.minP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1118,7 +1117,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.maxP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1145,7 +1143,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1166,7 +1163,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetQ,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1220,7 +1216,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetV,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1366,7 +1361,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.p0,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1386,7 +1380,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.q0,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
