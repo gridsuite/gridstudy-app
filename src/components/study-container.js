@@ -501,7 +501,7 @@ export function StudyContainer({ view, onChangeTab }) {
                             BUILD_STATUS.BUILT,
                             BUILD_STATUS.BUILT_WITH_WARNING,
                             BUILD_STATUS.BUILT_WITH_ERROR,
-                        ]) ?? firstSelectedNode;
+                        ]) || firstSelectedNode;
                 }
 
                 // To get positions we must get the node from the model class
