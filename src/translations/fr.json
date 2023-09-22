@@ -1106,6 +1106,11 @@
     "StartupCost": "Coût de démarrage",
 
     "Connect": "Reconnexion ?",
+    "Connected": "Connecté",
+    "ConnectedSide1": "Connecté 1",
+    "ConnectedSide2": "Connecté 2",
+    "ConnectedSide3": "Connecté 3",
+
     "converterStationId": "ID de la station",
     "converterStationName": "Nom de la station",
     "converterStation1" : "Station origine",
