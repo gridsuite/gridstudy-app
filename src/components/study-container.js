@@ -236,6 +236,8 @@ export function StudyContainer({ view, onChangeTab }) {
     );
     const studyIndexationStatusRef = useRef();
     studyIndexationStatusRef.current = studyIndexationStatus;
+    const [isStudyIndexationPending, setIsStudyIndexationPending] =
+        useState(false);
 
     const [initialTitle] = useState(document.title);
 
@@ -487,7 +489,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
                 // Select root node by default
                 let firstSelectedNode = getFirstNodeOfType(tree, 'ROOT');
-                // if reidexation is ongoing then stay on root node, all variants will be removed
+                // if reindexation is ongoing then stay on root node, all variants will be removed
                 // if indexation is done then look for the next built node.
                 // This is to avoid future fetch on variants removed during reindexation process
                 if (
@@ -574,48 +576,52 @@ export function StudyContainer({ view, onChangeTab }) {
     );
 
     const checkStudyIndexation = useCallback(() => {
+        setIsStudyIndexationPending(true);
         fetchStudyIndexationStatus(studyUuid)
             .then((status) => {
                 switch (status) {
-                    case STUDY_INDEXATION_STATUS.INDEXED:
+                    case STUDY_INDEXATION_STATUS.INDEXED: {
+                        dispatch(setStudyIndexationStatus(status));
+                        setIsStudyIndexationPending(false);
+                        break;
+                    }
                     case STUDY_INDEXATION_STATUS.INDEXING_ONGOING: {
                         dispatch(setStudyIndexationStatus(status));
                         break;
                     }
                     case STUDY_INDEXATION_STATUS.NOT_INDEXED: {
                         dispatch(setStudyIndexationStatus(status));
-                        reindexAllStudy(studyUuid).catch((error) => {
-                            // unknown error when trying to reindex study
-                            setErrorMessage(
-                                intlRef.current.formatMessage({
-                                    id: 'studyIndexationError',
-                                })
-                            );
-                        });
+                        reindexAllStudy(studyUuid)
+                            .catch((error) => {
+                                // unknown error when trying to reindex study
+                                snackError({
+                                    headerId: 'studyIndexationError',
+                                    messageTxt: error,
+                                });
+                            })
+                            .finally(() => {
+                                setIsStudyIndexationPending(false);
+                            });
                         break;
                     }
                     default: {
-                        setErrorMessage(
-                            intlRef.current.formatMessage(
-                                {
-                                    id: 'studyIndexationStatusUnknown',
-                                },
-                                { status: status }
-                            )
-                        );
+                        setIsStudyIndexationPending(false);
+                        snackError({
+                            headerId: 'studyIndexationStatusUnknown',
+                            headerValues: { status: status },
+                        });
                         break;
                     }
                 }
             })
             .catch(() => {
-                // unknown error when checking network existence
-                setErrorMessage(
-                    intlRef.current.formatMessage({
-                        id: 'checkstudyIndexationError',
-                    })
-                );
+                // unknown error when checking study indexation status
+                setIsStudyIndexationPending(false);
+                snackError({
+                    headerId: 'checkstudyIndexationError',
+                });
             });
-    }, [studyUuid, dispatch, intlRef]);
+    }, [studyUuid, dispatch, snackError]);
 
     useEffect(() => {
         if (studyUuid && !isStudyNetworkFound) {
@@ -630,7 +636,7 @@ export function StudyContainer({ view, onChangeTab }) {
     useEffect(() => {
         if (
             studyUuid &&
-            studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEXED
+            studyIndexationStatus === STUDY_INDEXATION_STATUS.NOT_INDEXED
         ) {
             checkStudyIndexation();
         }
@@ -739,7 +745,6 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [
         studyUpdatedForce,
         checkNetworkExistenceAndRecreateIfNotFound,
-        checkStudyIndexation,
         snackInfo,
         dispatch,
     ]);
@@ -855,7 +860,9 @@ export function StudyContainer({ view, onChangeTab }) {
                     studyPending ||
                     !paramsLoaded ||
                     !isStudyNetworkFound ||
-                    studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEXED
+                    (studyIndexationStatus !==
+                        STUDY_INDEXATION_STATUS.INDEXED &&
+                        isStudyIndexationPending)
                 } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
                 message={'LoadingRemoteData'}
             >
