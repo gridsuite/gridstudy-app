@@ -100,7 +100,8 @@ function checkAllPValuesBetweenMinMax(values, isEquipmentModification) {
 
 export const getReactiveCapabilityCurveValidationSchema = (
     id = REACTIVE_CAPABILITY_CURVE_TABLE,
-    isEquipmentModification = false
+    isEquipmentModification = false,
+    positiveAndNegativePExist = false
 ) => ({
     [id]: yup
         .array()
@@ -114,6 +115,23 @@ export const getReactiveCapabilityCurveValidationSchema = (
                         then: (schema) => schema.of(getCreationRowSchema()),
                         otherwise: (schema) =>
                             schema.of(getModificationRowSchema()),
+                    })
+                    .when([], {
+                        is: () => positiveAndNegativePExist,
+                        then: (schema) =>
+                            schema
+                                .test(
+                                    'checkATLeastThereIsOneNegativeP',
+                                    'ReactiveCapabilityCurveCreationErrorMissingNegativeP',
+                                    (values) =>
+                                        values.some((value) => value.p < 0)
+                                )
+                                .test(
+                                    'checkATLeastThereIsOnePositiveP',
+                                    'ReactiveCapabilityCurveCreationErrorMissingPositiveP',
+                                    (values) =>
+                                        values.some((value) => value.p >= 0)
+                                ),
                     })
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
                     .test(

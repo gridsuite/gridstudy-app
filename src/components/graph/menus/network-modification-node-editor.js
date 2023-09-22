@@ -60,6 +60,7 @@ import BatteryCreationDialog from 'components/dialogs/network-modifications/batt
 import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
+import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
 
 import { fetchNetworkModification } from '../../../services/network-modification';
 import {
@@ -273,6 +274,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
                     label: 'SUBSTATION',
                     action: () => adapt(SubstationCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.VSC_CREATION.type,
+                    label: 'VSC',
+                    action: () => adapt(VscCreationDialog),
                 },
             ],
         },
@@ -575,6 +581,8 @@ const NetworkModificationNodeEditor = () => {
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
+    const mapDataLoading = useSelector((state) => state.mapDataLoading);
+
     const openNetworkModificationConfiguration = useCallback(() => {
         setOpenNetworkModificationsMenu(true);
     }, []);
@@ -791,7 +799,9 @@ const NetworkModificationNodeEditor = () => {
             >
                 <Droppable
                     droppableId="network-modification-list"
-                    isDropDisabled={isLoading() || isAnyNodeBuilding}
+                    isDropDisabled={
+                        isLoading() || isAnyNodeBuilding || mapDataLoading
+                    }
                 >
                     {(provided) => (
                         <Box
@@ -924,7 +934,7 @@ const NetworkModificationNodeEditor = () => {
                     size={'small'}
                     ref={buttonAddRef}
                     onClick={openNetworkModificationConfiguration}
-                    disabled={isAnyNodeBuilding}
+                    disabled={isAnyNodeBuilding || mapDataLoading}
                 >
                     <AddIcon />
                 </IconButton>
@@ -935,6 +945,7 @@ const NetworkModificationNodeEditor = () => {
                     disabled={
                         selectedItems.size === 0 ||
                         isAnyNodeBuilding ||
+                        mapDataLoading ||
                         !currentNode
                     }
                 >
@@ -944,7 +955,11 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doCopyModifications}
                     size={'small'}
                     sx={styles.toolbarIcon}
-                    disabled={selectedItems.size === 0 || isAnyNodeBuilding}
+                    disabled={
+                        selectedItems.size === 0 ||
+                        isAnyNodeBuilding ||
+                        mapDataLoading
+                    }
                 >
                     <ContentCopyIcon />
                 </IconButton>
@@ -968,6 +983,7 @@ const NetworkModificationNodeEditor = () => {
                             disabled={
                                 !(copiedModifications.length > 0) ||
                                 isAnyNodeBuilding ||
+                                mapDataLoading ||
                                 !currentNode
                             }
                         >
@@ -982,6 +998,7 @@ const NetworkModificationNodeEditor = () => {
                     disabled={
                         !(selectedItems?.size > 0) ||
                         isAnyNodeBuilding ||
+                        mapDataLoading ||
                         !currentNode
                     }
                 >
