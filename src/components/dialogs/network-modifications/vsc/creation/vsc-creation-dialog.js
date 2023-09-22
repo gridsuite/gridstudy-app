@@ -205,7 +205,7 @@ const VscCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
-    const onValidationError = (errors: any) => {
+    const onValidationError = (errors) => {
         let tabsInError = [];
         if (errors?.[HVDC_LINE_TAB] !== undefined) {
             tabsInError.push(VSC_CREATION_TABS.HVDC_LINE_TAB);
