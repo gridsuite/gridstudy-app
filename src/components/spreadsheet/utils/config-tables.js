@@ -56,9 +56,11 @@ const generateEditableNumericColumnDefinition = (
     field,
     fractionDigits,
     changeCmd,
+    optional,
     minExpression,
     maxExpression,
-    excludeFromGlobalFilter
+    excludeFromGlobalFilter,
+    extraDef
 ) => {
     return {
         id: id,
@@ -71,18 +73,19 @@ const generateEditableNumericColumnDefinition = (
         cellEditor: NumericalField,
         cellEditorParams: (params) => {
             return {
+                optional,
                 ...(minExpression && { minExpression: minExpression }),
                 ...(maxExpression && { maxExpression: maxExpression }),
                 defaultValue: params.data[field],
                 gridContext: params.context,
                 gridApi: params.api,
-                data: params.data,
                 colDef: params.colDef,
             };
         },
         ...(excludeFromGlobalFilter && {
             getQuickFilterText: excludeFromGlobalFilter,
         }),
+        ...extraDef,
     };
 };
 
@@ -147,6 +150,7 @@ export const TABLES_DEFINITIONS = {
                 'lowVoltageLimit',
                 1,
                 'equipment.setLowVoltageLimit({})\n',
+                true,
                 undefined,
                 'highVoltageLimit',
                 excludeFromGlobalFilter
@@ -156,6 +160,7 @@ export const TABLES_DEFINITIONS = {
                 'highVoltageLimit',
                 1,
                 'equipment.setHighVoltageLimit({})\n',
+                true,
                 'lowVoltageLimit',
                 undefined,
                 excludeFromGlobalFilter
@@ -165,7 +170,9 @@ export const TABLES_DEFINITIONS = {
                 'ipMin',
                 1,
                 'equipment.setIpMin({})\n',
+                true,
                 undefined,
+                'ipMax',
                 excludeFromGlobalFilter
             ),
             generateEditableNumericColumnDefinition(
@@ -173,9 +180,17 @@ export const TABLES_DEFINITIONS = {
                 'ipMax',
                 1,
                 'equipment.setIpMax({})\n',
+                false,
                 'ipMin',
                 undefined,
-                excludeFromGlobalFilter
+                excludeFromGlobalFilter,
+                {
+                    crossValidation: {
+                        requiredOn: {
+                            dependencyColumn: 'ipMin',
+                        },
+                    },
+                }
             ),
         ],
     },
@@ -305,6 +320,20 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b2),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide1',
+                field: 'terminal1Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide2',
+                field: 'terminal2Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
@@ -491,6 +520,62 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger?.regulationValue,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'SeriesResistance',
+                field: 'r',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'SeriesReactance',
+                field: 'x',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'MagnetizingConductanceWithUnit',
+                field: 'g',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.g),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'MagnetizingSusceptanceWithUnit',
+                field: 'b',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.b),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RatedNominalPower',
+                field: 'ratedS',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide1',
+                field: 'terminal1Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide2',
+                field: 'terminal2Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
@@ -893,6 +978,27 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'ConnectedSide1',
+                field: 'terminal1Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide2',
+                field: 'terminal2Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide3',
+                field: 'terminal3Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
@@ -1163,6 +1269,13 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 2,
             },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
     LOADS: {
@@ -1268,6 +1381,13 @@ export const TABLES_DEFINITIONS = {
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
@@ -1323,6 +1443,13 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
@@ -1389,6 +1516,13 @@ export const TABLES_DEFINITIONS = {
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
@@ -1452,6 +1586,13 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
@@ -1622,6 +1763,13 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
@@ -1705,6 +1853,13 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
@@ -1771,6 +1926,13 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
