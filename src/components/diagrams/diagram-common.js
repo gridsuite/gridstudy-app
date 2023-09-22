@@ -65,7 +65,7 @@ export const styles = {
     divNetworkAreaDiagram: (theme) => ({
         '& .nad-label-box': {
             color: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
+            fontFamily: theme.typography.fontFamily,
         },
         '& .nad-text-edges': {
             stroke: theme.palette.text.primary,
@@ -77,7 +77,7 @@ export const styles = {
         },
         '& .sld-label, .sld-graph-label, .sld-legend': {
             fill: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
+            fontFamily: theme.typography.fontFamily,
         },
         '& .sld-disconnector:not(.sld-fictitious), :not(.sld-breaker):not(.sld-disconnector):not(.sld-load-break-switch):not(.sld-lock .sld-disconnected):not(.sld-flash .sld-disconnected).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
             {
