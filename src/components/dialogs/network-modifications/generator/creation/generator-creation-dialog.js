@@ -158,10 +158,11 @@ const GeneratorCreationDialog = ({
             [VOLTAGE_SET_POINT]: generator.targetV,
             [REACTIVE_POWER_SET_POINT]: generator.targetQ,
             [PLANNED_ACTIVE_POWER_SET_POINT]:
-                generator.plannedActivePowerSetPoint,
-            [MARGINAL_COST]: generator.marginalCost,
-            [PLANNED_OUTAGE_RATE]: generator.plannedOutageRate,
-            [FORCED_OUTAGE_RATE]: generator.forcedOutageRate,
+                generator?.generatorStartup?.plannedActivePowerSetPoint,
+            [MARGINAL_COST]: generator?.generatorStartup?.marginalCost,
+            [PLANNED_OUTAGE_RATE]:
+                generator?.generatorStartup?.plannedOutageRate,
+            [FORCED_OUTAGE_RATE]: generator?.generatorStartup?.forcedOutageRate,
             [FREQUENCY_REGULATION]:
                 generator?.activePowerControl?.activePowerControlOn,
             [DROOP]: generator?.activePowerControl?.droop,
