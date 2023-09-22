@@ -117,7 +117,7 @@ export const getReactiveCapabilityCurveValidationSchema = (
                             schema.of(getModificationRowSchema()),
                     })
                     .when([], {
-                        is: positiveAndNegativePExist,
+                        is: () => positiveAndNegativePExist,
                         then: (schema) =>
                             schema
                                 .test(
