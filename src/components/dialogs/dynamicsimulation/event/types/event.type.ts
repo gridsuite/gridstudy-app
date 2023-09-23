@@ -38,6 +38,7 @@ export type EventDefinition = {
 };
 
 export interface EventProperty {
+    uuid?: string;
     name: EventPropertyName;
     value: string;
     type: PrimitiveTypes;

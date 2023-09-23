@@ -151,6 +151,7 @@ export const DynamicSimulationEventDialog = (
                 eventDefinition ?? {}
             ) as EventPropertyName[];
 
+            // new or changed properties
             const properties = propertyNames.reduce(
                 (arr, propertyName) => [
                     ...arr,
@@ -173,9 +174,21 @@ export const DynamicSimulationEventDialog = (
 
             const submitEvent: Event = event
                 ? {
-                      // existing event for the equipment => override only properties
+                      // existing event for the equipment => merge changed properties to old properties
                       ...event,
-                      properties,
+                      properties: properties.reduce((arr, changedProperty) => {
+                          return [
+                              ...arr,
+                              {
+                                  // lookup the corresponding old property by name
+                                  ...event.properties.find(
+                                      (elem) =>
+                                          elem.name === changedProperty.name
+                                  ),
+                                  ...changedProperty,
+                              } as EventProperty,
+                          ];
+                      }, [] as EventProperty[]),
                   }
                 : {
                       // create a new event for the equipment
