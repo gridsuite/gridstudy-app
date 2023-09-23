@@ -56,9 +56,11 @@ const generateEditableNumericColumnDefinition = (
     field,
     fractionDigits,
     changeCmd,
+    optional,
     minExpression,
     maxExpression,
-    excludeFromGlobalFilter
+    excludeFromGlobalFilter,
+    extraDef
 ) => {
     return {
         id: id,
@@ -71,18 +73,19 @@ const generateEditableNumericColumnDefinition = (
         cellEditor: NumericalField,
         cellEditorParams: (params) => {
             return {
+                optional,
                 ...(minExpression && { minExpression: minExpression }),
                 ...(maxExpression && { maxExpression: maxExpression }),
                 defaultValue: params.data[field],
                 gridContext: params.context,
                 gridApi: params.api,
-                data: params.data,
                 colDef: params.colDef,
             };
         },
         ...(excludeFromGlobalFilter && {
             getQuickFilterText: excludeFromGlobalFilter,
         }),
+        ...extraDef,
     };
 };
 
@@ -130,6 +133,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
+                editable: true,
             },
             {
                 id: 'SubstationId',
@@ -141,12 +145,23 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.nominalVoltage,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
             },
             generateEditableNumericColumnDefinition(
                 'LowVoltageLimitkV',
                 'lowVoltageLimit',
                 1,
                 'equipment.setLowVoltageLimit({})\n',
+                true,
                 undefined,
                 'highVoltageLimit',
                 excludeFromGlobalFilter
@@ -156,6 +171,7 @@ export const TABLES_DEFINITIONS = {
                 'highVoltageLimit',
                 1,
                 'equipment.setHighVoltageLimit({})\n',
+                true,
                 'lowVoltageLimit',
                 undefined,
                 excludeFromGlobalFilter
@@ -165,7 +181,9 @@ export const TABLES_DEFINITIONS = {
                 'ipMin',
                 1,
                 'equipment.setIpMin({})\n',
+                true,
                 undefined,
+                'ipMax',
                 excludeFromGlobalFilter
             ),
             generateEditableNumericColumnDefinition(
@@ -173,9 +191,17 @@ export const TABLES_DEFINITIONS = {
                 'ipMax',
                 1,
                 'equipment.setIpMax({})\n',
+                false,
                 'ipMin',
                 undefined,
-                excludeFromGlobalFilter
+                excludeFromGlobalFilter,
+                {
+                    crossValidation: {
+                        requiredOn: {
+                            dependencyColumn: 'ipMin',
+                        },
+                    },
+                }
             ),
         ],
     },
@@ -1071,7 +1097,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.minP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1092,7 +1117,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.maxP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1119,7 +1143,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1140,7 +1163,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetQ,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1194,7 +1216,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetV,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1340,7 +1361,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.p0,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1360,7 +1380,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.q0,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
