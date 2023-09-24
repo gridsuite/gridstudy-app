@@ -156,6 +156,10 @@ export const DynamicSimulationEventDialog = (
                 (arr, propertyName) => [
                     ...arr,
                     {
+                        // lookup the corresponding old property by name to merge
+                        ...event?.properties.find(
+                            (elem) => elem.name === propertyName
+                        ),
                         name: propertyName,
                         value: formObj[propertyName],
                         type: eventDefinition
@@ -163,32 +167,14 @@ export const DynamicSimulationEventDialog = (
                             : PrimitiveTypes.STRING,
                     } as EventProperty,
                 ],
-                [
-                    {
-                        name: 'staticId',
-                        value: equipmentId,
-                        type: PrimitiveTypes.STRING,
-                    },
-                ] as EventProperty[]
+                [] as EventProperty[]
             );
 
             const submitEvent: Event = event
                 ? {
-                      // existing event for the equipment => merge changed properties to old properties
+                      // existing event for the equipment => merge only properties
                       ...event,
-                      properties: properties.reduce((arr, changedProperty) => {
-                          return [
-                              ...arr,
-                              {
-                                  // lookup the corresponding old property by name
-                                  ...event.properties.find(
-                                      (elem) =>
-                                          elem.name === changedProperty.name
-                                  ),
-                                  ...changedProperty,
-                              } as EventProperty,
-                          ];
-                      }, [] as EventProperty[]),
+                      properties,
                   }
                 : {
                       // create a new event for the equipment
@@ -204,7 +190,6 @@ export const DynamicSimulationEventDialog = (
                 currentNodeId,
                 submitEvent
             ).catch((error) => {
-                // should use snackError from useSnackMessage in common-ui
                 snackError({
                     messageTxt: error.message,
                     headerId: 'DynamicSimulationEventSaveError',
