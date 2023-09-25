@@ -167,7 +167,16 @@ export const DynamicSimulationEventDialog = (
                             : PrimitiveTypes.STRING,
                     } as EventProperty,
                 ],
-                [] as EventProperty[]
+                [
+                    {
+                        ...event?.properties.find(
+                            (elem) => elem.name === 'staticId'
+                        ),
+                        name: 'staticId',
+                        value: equipmentId,
+                        type: PrimitiveTypes.STRING,
+                    },
+                ] as EventProperty[]
             );
 
             const submitEvent: Event = event
