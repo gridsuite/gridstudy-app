@@ -91,7 +91,7 @@ export function fetchSensitivityAnalysisFilterOptions(
     selector
 ) {
     console.info(
-      `Fetching sensitivity analysis filter options on ${studyUuid} and node ${currentNodeUuid}  ...`
+        `Fetching sensitivity analysis filter options on ${studyUuid} and node ${currentNodeUuid}  ...`
     );
 
     // Add params to Url
@@ -100,8 +100,8 @@ export function fetchSensitivityAnalysisFilterOptions(
     urlSearchParams.append('selector', jsoned);
 
     const url = `${getStudyUrlWithNodeUuid(
-      studyUuid,
-      currentNodeUuid
+        studyUuid,
+        currentNodeUuid
     )}/sensitivity-analysis/result/filter_options?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
