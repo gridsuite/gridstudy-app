@@ -26,14 +26,28 @@ import {
     VoltageAdornment,
 } from '../../../dialogUtils';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 interface VscHvdcLinePaneProps {
     id: string;
 }
 
 const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
+    const { trigger } = useFormContext();
+
+    const angleDroopWatch = useWatch({
+        name: `${id}.${ANGLE_DROOP_ACTIVE_POWER_CONTROL}`,
+    });
+
+    useEffect(() => {
+        if (!angleDroopWatch) {
+            trigger(`${id}.${P0}`);
+            trigger(`${id}.${DROOP}`);
+        }
+    }, [angleDroopWatch, trigger]);
+
     const dcNominalVoltageField = (
         <FloatInput
             name={`${id}.${DC_NOMINAL_VOLTAGE}`}
@@ -54,7 +68,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
         <FloatInput
             name={`${id}.${MAXIMUM_ACTIVE_POWER}`}
             adornment={ActivePowerAdornment}
-            label={'MinimumActivePowerText'}
+            label={'MaximumActivePowerText'}
         />
     );
 
