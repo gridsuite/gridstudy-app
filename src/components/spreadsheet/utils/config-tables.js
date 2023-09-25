@@ -133,6 +133,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
+                editable: true,
             },
             {
                 id: 'SubstationId',
@@ -144,6 +145,16 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.nominalVoltage,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
             },
             generateEditableNumericColumnDefinition(
                 'LowVoltageLimitkV',
@@ -1086,7 +1097,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.minP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1107,7 +1117,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.maxP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1134,7 +1143,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1155,7 +1163,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetQ,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1209,7 +1216,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetV,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1355,7 +1361,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.p0,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1375,7 +1380,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.q0,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
