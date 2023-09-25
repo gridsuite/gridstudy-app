@@ -297,6 +297,7 @@
     "ShortCircuitAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de court-circuit",
     "ShortCircuitAnalysisTabOneBus": "Unitaire",
     "ShortCircuitAnalysisTabAllBuses": "Réseau",
+    "OneBusShortCircuitAnalysis": "Analyse de court-circuit unitaire",
     "IDNode": "ID nœud",
     "IscKA": "Icc (kA)",
     "IscMinKA": "Icc min (kA)",
@@ -1128,5 +1129,7 @@
     "side1InverterSide2Rectifier": "Flux (Ex->Or)",
     "MagnetizingConductanceWithUnit": "Conductance magnétisante (μS)",
     "MagnetizingSusceptanceWithUnit": "Susceptance magnétisante (μS)",
-    "RatedNominalPower": "Puissance nominale (MVA)"
+    "RatedNominalPower": "Puissance nominale (MVA)",
+
+    "tableChangingError": "Une erreur est survenue lors de la modification des données"
 }

@@ -346,6 +346,7 @@ export function DiagramPane({
     currentNode,
     visible,
     loadFlowStatus,
+    oneBusShortCircuitStatus,
 }) {
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -1097,6 +1098,9 @@ export function DiagramPane({
                                         DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
                                         loadFlowStatus={loadFlowStatus}
+                                        oneBusShortCircuitStatus={
+                                            oneBusShortCircuitStatus
+                                        }
                                         showInSpreadsheet={showInSpreadsheet}
                                         studyUuid={studyUuid}
                                         diagramId={diagramView.id}
@@ -1171,5 +1175,6 @@ DiagramPane.propTypes = {
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
     loadFlowStatus: PropTypes.any,
+    oneBusShortCircuitStatus: PropTypes.any,
     visible: PropTypes.bool,
 };

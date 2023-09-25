@@ -297,6 +297,7 @@
     "ShortCircuitAnalysisResultsError": "An error occurred while retrieving short circuit analysis result",
     "ShortCircuitAnalysisTabOneBus": "One bus",
     "ShortCircuitAnalysisTabAllBuses": "All buses",
+    "OneBusShortCircuitAnalysis": "One bus short circuit analysis",
     "IDNode": "ID bus",
     "IscKA": "Isc (kA)",
     "IscMinKA": "Isc min (kA)",
@@ -1106,6 +1107,7 @@
     "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
     "MagnetizingConductanceWithUnit": "Magnetizing conductance (μS)",
     "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
-    "RatedNominalPower": "Rated nominal power (MVA)"
+    "RatedNominalPower": "Rated nominal power (MVA)",
 
+    "tableChangingError": "An error occured when modifying the data"
 }
