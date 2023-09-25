@@ -346,6 +346,11 @@
     "resetProviderValuesToDefault": "Réinitialiser les paramètres du simulateur",
     "showAdvancedParameters": "Paramètres avancés",
     "showSpecificParameters": "Paramètres spécifiques",
+    "saveParameters": "Enregistrer des paramètres",
+    "loadParameters": "Paramètres prédéfinis",
+    "showSelectDirectoryDialog": "Modifier dossier",
+    "showSelectParameterDialog": "Choisir paramètre",
+    "nameAlreadyUsed": "Ce nom est déjà utilisé",
 
     "descLfReadSlackBus": "Utiliser le nœud bilan défini dans le réseau",
     "descLfWriteSlackBus": "Écrire le nœud bilan calculé automatiquement dans le réseau",

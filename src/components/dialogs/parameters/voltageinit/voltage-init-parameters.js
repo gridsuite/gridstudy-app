@@ -8,7 +8,7 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Tabs, Tab, Grid, Button, DialogActions } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { styles, TabPanel, CloseButton } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
@@ -25,14 +25,13 @@ import {
     ID,
     LOW_VOLTAGE_LIMIT,
     NAME,
-    PRIORITY,
     VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
     VOLTAGE_LIMITS,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import {
-    getVoltageInitParameters,
+    getVoltageInitStudyParameters,
     updateVoltageInitParameters,
 } from '../../../../services/study/voltage-init';
 import {
@@ -41,6 +40,10 @@ import {
 } from '../../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
+import CreateParameterDialog from '../common/parameters-creation-dialog';
+import { formatNewParams } from './voltage-init-utils';
+import DirectoryItemSelector from 'components/directory-item-selector';
+import { getVoltageInitParameters } from 'services/voltage-init';
 
 export const useGetVoltageInitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -56,7 +59,7 @@ export const useGetVoltageInitParameters = () => {
             studyUuid &&
             voltageInitAvailability === OptionalServicesStatus.Up
         ) {
-            getVoltageInitParameters(studyUuid)
+            getVoltageInitStudyParameters(studyUuid)
                 .then((params) => setVoltageInitParams(params))
                 .catch((error) => {
                     snackError({
@@ -115,7 +118,12 @@ export const VoltageInitParameters = ({
     hideParameters,
     useVoltageInitParameters,
 }) => {
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
+        useState(false);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
+        useState(false);
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const [tabValue, setTabValue] = useState(
         TAB_VALUES.voltageLimitsParamsTabValue
@@ -134,7 +142,7 @@ export const VoltageInitParameters = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, handleSubmit } = formMethods;
+    const { reset, handleSubmit, getValues } = formMethods;
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -147,7 +155,7 @@ export const VoltageInitParameters = ({
     const resetVoltageInitParameters = useCallback(() => {
         updateVoltageInitParameters(studyUuid, emptyFormData)
             .then(() => {
-                return getVoltageInitParameters(studyUuid)
+                return getVoltageInitStudyParameters(studyUuid)
                     .then((params) => setVoltageInitParams(params))
                     .catch((error) => {
                         snackError({
@@ -164,46 +172,6 @@ export const VoltageInitParameters = ({
             });
     }, [studyUuid, emptyFormData, setVoltageInitParams, snackError]);
 
-    const formatNewParams = useCallback((newParams) => {
-        return {
-            [VOLTAGE_LIMITS]: newParams.voltageLimits.map((voltageLimit) => {
-                return {
-                    [PRIORITY]: newParams.voltageLimits.indexOf(voltageLimit),
-                    [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT] ?? 0,
-                    [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT] ?? 0,
-                    [FILTERS]: voltageLimit[FILTERS].map((filter) => {
-                        return {
-                            [FILTER_ID]: filter[ID],
-                            [FILTER_NAME]: filter[NAME],
-                        };
-                    }),
-                };
-            }),
-            [FIXED_GENERATORS]: newParams[FIXED_GENERATORS]?.map((filter) => {
-                return {
-                    [FILTER_ID]: filter[ID],
-                    [FILTER_NAME]: filter[NAME],
-                };
-            }),
-            [VARIABLE_TRANSFORMERS]: newParams[VARIABLE_TRANSFORMERS]?.map(
-                (filter) => {
-                    return {
-                        [FILTER_ID]: filter[ID],
-                        [FILTER_NAME]: filter[NAME],
-                    };
-                }
-            ),
-            [VARIABLE_SHUNT_COMPENSATORS]: newParams[
-                VARIABLE_SHUNT_COMPENSATORS
-            ]?.map((filter) => {
-                return {
-                    [FILTER_ID]: filter[ID],
-                    [FILTER_NAME]: filter[NAME],
-                };
-            }),
-        };
-    }, []);
-
     const onSubmit = useCallback(
         (newParams) => {
             updateVoltageInitParameters(studyUuid, formatNewParams(newParams))
@@ -218,52 +186,57 @@ export const VoltageInitParameters = ({
                 });
             onValidationError();
         },
-        [setVoltageInitParams, snackError, studyUuid, formatNewParams]
+        [setVoltageInitParams, snackError, studyUuid]
     );
 
     const fromVoltageInitParamsDataToFormValues = useCallback(
-        (parameters) => {
-            reset({
-                [VOLTAGE_LIMITS]:
-                    parameters.voltageLimits?.map((voltageLimit) => {
-                        return {
-                            [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {
-                                return {
-                                    [ID]: filter[FILTER_ID],
-                                    [NAME]: filter[FILTER_NAME],
-                                };
-                            }),
-                            [LOW_VOLTAGE_LIMIT]:
-                                voltageLimit[LOW_VOLTAGE_LIMIT],
-                            [HIGH_VOLTAGE_LIMIT]:
-                                voltageLimit[HIGH_VOLTAGE_LIMIT],
-                        };
-                    }) ?? [],
-                [FIXED_GENERATORS]: parameters[FIXED_GENERATORS]?.map(
-                    (filter) => {
+        (parameters, resetParam) => {
+            reset(
+                {
+                    [VOLTAGE_LIMITS]:
+                        parameters.voltageLimits?.map((voltageLimit) => {
+                            return {
+                                [FILTERS]: voltageLimit[FILTERS]?.map(
+                                    (filter) => {
+                                        return {
+                                            [ID]: filter[FILTER_ID],
+                                            [NAME]: filter[FILTER_NAME],
+                                        };
+                                    }
+                                ),
+                                [LOW_VOLTAGE_LIMIT]:
+                                    voltageLimit[LOW_VOLTAGE_LIMIT],
+                                [HIGH_VOLTAGE_LIMIT]:
+                                    voltageLimit[HIGH_VOLTAGE_LIMIT],
+                            };
+                        }) ?? [],
+                    [FIXED_GENERATORS]: parameters[FIXED_GENERATORS]?.map(
+                        (filter) => {
+                            return {
+                                [ID]: filter[FILTER_ID],
+                                [NAME]: filter[FILTER_NAME],
+                            };
+                        }
+                    ),
+                    [VARIABLE_TRANSFORMERS]: parameters[
+                        VARIABLE_TRANSFORMERS
+                    ]?.map((filter) => {
                         return {
                             [ID]: filter[FILTER_ID],
                             [NAME]: filter[FILTER_NAME],
                         };
-                    }
-                ),
-                [VARIABLE_TRANSFORMERS]: parameters[VARIABLE_TRANSFORMERS]?.map(
-                    (filter) => {
+                    }),
+                    [VARIABLE_SHUNT_COMPENSATORS]: parameters[
+                        VARIABLE_SHUNT_COMPENSATORS
+                    ]?.map((filter) => {
                         return {
                             [ID]: filter[FILTER_ID],
                             [NAME]: filter[FILTER_NAME],
                         };
-                    }
-                ),
-                [VARIABLE_SHUNT_COMPENSATORS]: parameters[
-                    VARIABLE_SHUNT_COMPENSATORS
-                ]?.map((filter) => {
-                    return {
-                        [ID]: filter[FILTER_ID],
-                        [NAME]: filter[FILTER_NAME],
-                    };
-                }),
-            });
+                    }),
+                },
+                { ...resetParam }
+            );
         },
         [reset]
     );
@@ -292,77 +265,154 @@ export const VoltageInitParameters = ({
         onValidationError();
     }, [emptyFormData, reset, resetVoltageInitParameters]);
 
+    const handleLoadParameter = useCallback(
+        (newParams) => {
+            if (newParams && newParams.length > 0) {
+                setOpenSelectParameterDialog(false);
+                getVoltageInitParameters(newParams[0].id)
+                    .then((parameters) => {
+                        console.log(parameters);
+                        console.info(
+                            'loading the following voltage init parameters : ' +
+                                parameters.uuid
+                        );
+                        fromVoltageInitParamsDataToFormValues(parameters, {
+                            keepDefaultValues: true,
+                        });
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            }
+            setOpenSelectParameterDialog(false);
+        },
+        [fromVoltageInitParamsDataToFormValues, snackError]
+    );
+
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid
-                container
-                key="voltageInitParameters"
-                sx={styles.scrollableGrid}
-            >
-                <Grid item maxWidth="md" width="100%">
-                    <Tabs
-                        value={tabValue}
-                        variant="scrollable"
-                        onChange={handleTabChange}
-                        TabIndicatorProps={{
-                            sx: getTabIndicatorStyle(
-                                tabIndexesWithError,
-                                tabValue
-                            ),
-                        }}
-                    >
-                        <Tab
-                            label={<FormattedMessage id="VoltageLimits" />}
-                            value={TAB_VALUES.voltageLimitsParamsTabValue}
-                            sx={getTabStyle(
-                                tabIndexesWithError,
-                                TAB_VALUES.voltageLimitsParamsTabValue
-                            )}
-                        />
-                        <Tab
-                            label={<FormattedMessage id="EquipmentSelection" />}
-                            value={TAB_VALUES.equipmentSelectionParamsTabValue}
-                            sx={getTabStyle(
-                                tabIndexesWithError,
-                                TAB_VALUES.equipmentSelectionParamsTabValue
-                            )}
-                        />
-                    </Tabs>
-                    <Grid container>
-                        <TabPanel
+        <>
+            <FormProvider validationSchema={formSchema} {...formMethods}>
+                <Grid
+                    container
+                    key="voltageInitParameters"
+                    sx={styles.scrollableGrid}
+                >
+                    <Grid item maxWidth="md" width="100%">
+                        <Tabs
                             value={tabValue}
-                            index={TAB_VALUES.voltageLimitsParamsTabValue}
+                            variant="scrollable"
+                            onChange={handleTabChange}
+                            TabIndicatorProps={{
+                                sx: getTabIndicatorStyle(
+                                    tabIndexesWithError,
+                                    tabValue
+                                ),
+                            }}
                         >
-                            <VoltageLimitsParameters
-                                reset={reset}
-                                useVoltageInitParameters={
-                                    useVoltageInitParameters
-                                }
+                            <Tab
+                                label={<FormattedMessage id="VoltageLimits" />}
+                                value={TAB_VALUES.voltageLimitsParamsTabValue}
+                                sx={getTabStyle(
+                                    tabIndexesWithError,
+                                    TAB_VALUES.voltageLimitsParamsTabValue
+                                )}
                             />
-                        </TabPanel>
-                        <TabPanel
-                            value={tabValue}
-                            index={TAB_VALUES.equipmentSelectionParamsTabValue}
-                        >
-                            <EquipmentSelectionParameters
-                                reset={reset}
-                                useVoltageInitParameters={
-                                    useVoltageInitParameters
+                            <Tab
+                                label={
+                                    <FormattedMessage id="EquipmentSelection" />
                                 }
+                                value={
+                                    TAB_VALUES.equipmentSelectionParamsTabValue
+                                }
+                                sx={getTabStyle(
+                                    tabIndexesWithError,
+                                    TAB_VALUES.equipmentSelectionParamsTabValue
+                                )}
                             />
-                        </TabPanel>
+                        </Tabs>
+                        <Grid container>
+                            <TabPanel
+                                value={tabValue}
+                                index={TAB_VALUES.voltageLimitsParamsTabValue}
+                            >
+                                <VoltageLimitsParameters
+                                    reset={reset}
+                                    useVoltageInitParameters={
+                                        useVoltageInitParameters
+                                    }
+                                />
+                            </TabPanel>
+                            <TabPanel
+                                value={tabValue}
+                                index={
+                                    TAB_VALUES.equipmentSelectionParamsTabValue
+                                }
+                            >
+                                <EquipmentSelectionParameters
+                                    reset={reset}
+                                    useVoltageInitParameters={
+                                        useVoltageInitParameters
+                                    }
+                                />
+                            </TabPanel>
+                        </Grid>
+                        <DialogActions>
+                            <Button
+                                onClick={() =>
+                                    setOpenSelectParameterDialog(true)
+                                }
+                            >
+                                <FormattedMessage id="loadParameters" />
+                            </Button>
+                            <Button
+                                onClick={() =>
+                                    setOpenCreateParameterDialog(true)
+                                }
+                            >
+                                <FormattedMessage id="save" />
+                            </Button>
+                            <Button onClick={clear}>
+                                <FormattedMessage id="resetToDefault" />
+                            </Button>
+                            <SubmitButton
+                                onClick={handleSubmit(
+                                    onSubmit,
+                                    onValidationError
+                                )}
+                            />
+                            <CloseButton hideParameters={hideParameters} />
+                        </DialogActions>
                     </Grid>
-                    <DialogActions>
-                        <Button onClick={clear}>
-                            <FormattedMessage id="resetToDefault" />
-                        </Button>
-                        <SubmitButton
-                            onClick={handleSubmit(onSubmit, onValidationError)}
-                        />
-                        <CloseButton hideParameters={hideParameters} />
-                    </DialogActions>
                 </Grid>
-            </Grid>
-        </FormProvider>
+            </FormProvider>
+
+            {openCreateParameterDialog && (
+                <CreateParameterDialog
+                    open={openCreateParameterDialog}
+                    onClose={() => setOpenCreateParameterDialog(false)}
+                    parameterValues={getValues}
+                />
+            )}
+
+            {openSelectParameterDialog && (
+                <DirectoryItemSelector
+                    open={openSelectParameterDialog}
+                    onClose={handleLoadParameter}
+                    types={['VOLTAGE_INIT_PARAMETERS']}
+                    title={intl.formatMessage({
+                        id: 'showSelectParameterDialog',
+                    })}
+                    onlyLeaves={true}
+                    multiselect={false}
+                    validationButtonText={intl.formatMessage({
+                        id: 'validate',
+                    })}
+                />
+            )}
+        </>
     );
 };
