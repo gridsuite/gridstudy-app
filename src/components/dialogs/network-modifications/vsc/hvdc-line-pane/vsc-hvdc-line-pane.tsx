@@ -46,7 +46,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({ id }) => {
             trigger(`${id}.${P0}`);
             trigger(`${id}.${DROOP}`);
         }
-    }, [angleDroopWatch, trigger]);
+    }, [angleDroopWatch, trigger, id]);
 
     const dcNominalVoltageField = (
         <FloatInput
