@@ -1618,6 +1618,12 @@ export const TABLES_DEFINITIONS = {
                         colDef: params.colDef,
                     };
                 },
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'activePowerControlOn',
+                        columnValue: 1,
+                    },
+                },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
