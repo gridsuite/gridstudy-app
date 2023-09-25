@@ -29,6 +29,8 @@ const applyFluxConvention = (convention, val) => {
 };
 
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter
+// The columns we want to include in the global filter at the date of this comment : ID (all), Name, Country, Type and Nominal Voltage (all).
+// All the others should be excluded.
 const excludeFromGlobalFilter = () => '';
 
 export const MIN_COLUMN_WIDTH = 160;
@@ -115,6 +117,7 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: propertiesGetter, // valueFormatter does not work here
                 cellRenderer: PropertiesCellRenderer,
                 minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
     },
@@ -133,6 +136,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
+                editable: true,
             },
             {
                 id: 'SubstationId',
@@ -144,6 +148,16 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.nominalVoltage,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
             },
             generateEditableNumericColumnDefinition(
                 'LowVoltageLimitkV',
@@ -1086,7 +1100,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.minP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1107,7 +1120,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.maxP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1134,7 +1146,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetP,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1155,7 +1166,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetQ,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1209,7 +1219,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.targetV,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1233,6 +1242,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'TransformerReactance',
@@ -1240,6 +1250,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'PlannedActivePowerSetPoint',
@@ -1247,6 +1258,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'StartupCost',
@@ -1254,6 +1266,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'PlannedOutageRate',
@@ -1261,6 +1274,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 2,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'ForcedOutageRate',
@@ -1268,6 +1282,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 2,
+                getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'Connected',
@@ -1355,7 +1370,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.p0,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
@@ -1375,7 +1389,6 @@ export const TABLES_DEFINITIONS = {
                         defaultValue: params.data.q0,
                         gridContext: params.context,
                         gridApi: params.api,
-                        data: params.data,
                         colDef: params.colDef,
                     };
                 },
