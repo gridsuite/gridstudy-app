@@ -76,6 +76,7 @@ const CreateNodeMenu = ({
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
     );
+    const mapDataLoading = useSelector((state) => state.mapDataLoading);
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
@@ -203,6 +204,7 @@ const CreateNodeMenu = ({
         CREATE_MODIFICATION_NODE: {
             onRoot: true,
             id: 'createNetworkModificationNode',
+            disabled: mapDataLoading,
             subMenuItems: {
                 CREATE_MODIFICATION_NODE: {
                     onRoot: true,
@@ -244,7 +246,7 @@ const CreateNodeMenu = ({
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
             id: 'pasteNetworkModificationNode',
-            disabled: !isNodePastingAllowed(),
+            disabled: !isNodePastingAllowed() || mapDataLoading,
             subMenuItems: {
                 PASTE_MODIFICATION_NODE: {
                     onRoot: true,
@@ -273,7 +275,7 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => removeNode(),
             id: 'removeNode',
-            disabled: isAnyNodeBuilding,
+            disabled: isAnyNodeBuilding || mapDataLoading,
             sectionEnd: true,
         },
         COPY_SUBTREE: {
@@ -300,18 +302,22 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => pasteSubtree(),
             id: 'pasteNetworkModificationSubtree',
-            disabled: !isSubtreePastingAllowed(),
+            disabled: !isSubtreePastingAllowed() || mapDataLoading,
         },
         REMOVE_SUBTREE: {
             onRoot: false,
             action: () => removeSubtree(),
             id: 'removeNetworkModificationSubtree',
-            disabled: isAnyNodeBuilding || !isSubtreeRemovingAllowed(),
+            disabled:
+                isAnyNodeBuilding ||
+                mapDataLoading ||
+                !isSubtreeRemovingAllowed(),
         },
         RESTORE_NODES: {
             onRoot: true,
             action: () => restoreNodes(),
             id: 'restoreNodes',
+            disabled: mapDataLoading,
         },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,
