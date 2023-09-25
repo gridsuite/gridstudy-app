@@ -35,10 +35,7 @@ import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import DirectoryItemsInput from '../rhf-inputs/directory-items-input';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
-import {
-    filledTextField,
-    italicFontTextField,
-} from '../../dialogs/dialogUtils';
+import { filledTextField } from '../../dialogs/dialogUtils';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -146,8 +143,11 @@ function EditableTableCell({
                     options={column.equipmentTypes}
                     fullWidth
                     disableClearable={true}
+                    formProps={{
+                        filledTextField,
+                        multiline: true,
+                    }}
                     size="small"
-                    formProps={{ ...italicFontTextField, ...filledTextField }}
                 />
             )}
             {column.checkboxItems && (
@@ -173,6 +173,7 @@ const DndTable = ({
     handleResetButton,
     resetButtonMessageId,
     disabled = false,
+    dropDisabled = false,
     withResetButton = false,
     withLeftButtons = true,
     withAddRowsDialog = true,
@@ -342,9 +343,11 @@ const DndTable = ({
         return (
             <TableHead>
                 <TableRow>
-                    <TableCell sx={{ width: '3%' }}>
-                        {/* empty cell for the drag and drop column */}
-                    </TableCell>
+                    {!dropDisabled && (
+                        <TableCell sx={{ width: '3%' }}>
+                            {/* empty cell for the drag and drop column */}
+                        </TableCell>
+                    )}
                     <TableCell sx={{ width: '5%', textAlign: 'center' }}>
                         <MultiCheckbox
                             arrayFormName={arrayFormName}
@@ -387,21 +390,25 @@ const DndTable = ({
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                             >
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'DragAndDrop',
-                                    })}
-                                    placement="right"
-                                >
-                                    <TableCell
-                                        sx={{ textAlign: 'center' }}
-                                        {...(disabled
-                                            ? {}
-                                            : { ...provided.dragHandleProps })}
+                                {!dropDisabled && (
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DragAndDrop',
+                                        })}
+                                        placement="right"
                                     >
-                                        <DragIndicatorIcon />
-                                    </TableCell>
-                                </Tooltip>
+                                        <TableCell
+                                            sx={{ textAlign: 'center' }}
+                                            {...(disabled
+                                                ? {}
+                                                : {
+                                                      ...provided.dragHandleProps,
+                                                  })}
+                                        >
+                                            <DragIndicatorIcon />
+                                        </TableCell>
+                                    </Tooltip>
+                                )}
                                 <TableCell sx={{ textAlign: 'center' }}>
                                     <CheckboxInput
                                         name={`${arrayFormName}[${index}].${SELECTED}`}
