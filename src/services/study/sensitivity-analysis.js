@@ -102,7 +102,7 @@ export function fetchSensitivityAnalysisFilterOptions(
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,
         currentNodeUuid
-    )}/sensitivity-analysis/result/filter_options?${urlSearchParams}`;
+    )}/sensitivity-analysis/result/filter-options?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
 }
