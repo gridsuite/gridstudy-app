@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, elementType } from '@gridsuite/commons-ui';
 import { Tabs, Tab, Grid, Button, DialogActions } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -17,8 +17,6 @@ import { SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
-    FILTER_ID,
-    FILTER_NAME,
     FILTERS,
     FIXED_GENERATORS,
     HIGH_VOLTAGE_LIMIT,
@@ -41,7 +39,10 @@ import {
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
-import { formatNewParams } from './voltage-init-utils';
+import {
+    formatNewParams,
+    fromVoltageInitParamsDataToFormValues,
+} from './voltage-init-utils';
 import DirectoryItemSelector from 'components/directory-item-selector';
 import { getVoltageInitParameters } from 'services/voltage-init';
 
@@ -189,63 +190,11 @@ export const VoltageInitParameters = ({
         [setVoltageInitParams, snackError, studyUuid]
     );
 
-    const fromVoltageInitParamsDataToFormValues = useCallback(
-        (parameters, resetParam) => {
-            reset(
-                {
-                    [VOLTAGE_LIMITS]:
-                        parameters.voltageLimits?.map((voltageLimit) => {
-                            return {
-                                [FILTERS]: voltageLimit[FILTERS]?.map(
-                                    (filter) => {
-                                        return {
-                                            [ID]: filter[FILTER_ID],
-                                            [NAME]: filter[FILTER_NAME],
-                                        };
-                                    }
-                                ),
-                                [LOW_VOLTAGE_LIMIT]:
-                                    voltageLimit[LOW_VOLTAGE_LIMIT],
-                                [HIGH_VOLTAGE_LIMIT]:
-                                    voltageLimit[HIGH_VOLTAGE_LIMIT],
-                            };
-                        }) ?? [],
-                    [FIXED_GENERATORS]: parameters[FIXED_GENERATORS]?.map(
-                        (filter) => {
-                            return {
-                                [ID]: filter[FILTER_ID],
-                                [NAME]: filter[FILTER_NAME],
-                            };
-                        }
-                    ),
-                    [VARIABLE_TRANSFORMERS]: parameters[
-                        VARIABLE_TRANSFORMERS
-                    ]?.map((filter) => {
-                        return {
-                            [ID]: filter[FILTER_ID],
-                            [NAME]: filter[FILTER_NAME],
-                        };
-                    }),
-                    [VARIABLE_SHUNT_COMPENSATORS]: parameters[
-                        VARIABLE_SHUNT_COMPENSATORS
-                    ]?.map((filter) => {
-                        return {
-                            [ID]: filter[FILTER_ID],
-                            [NAME]: filter[FILTER_NAME],
-                        };
-                    }),
-                },
-                { ...resetParam }
-            );
-        },
-        [reset]
-    );
-
     useEffect(() => {
         if (voltageInitParams) {
-            fromVoltageInitParamsDataToFormValues(voltageInitParams);
+            reset(fromVoltageInitParamsDataToFormValues(voltageInitParams));
         }
-    }, [fromVoltageInitParamsDataToFormValues, voltageInitParams]);
+    }, [reset, voltageInitParams]);
 
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const onValidationError = (errors) => {
@@ -276,9 +225,12 @@ export const VoltageInitParameters = ({
                             'loading the following voltage init parameters : ' +
                                 parameters.uuid
                         );
-                        fromVoltageInitParamsDataToFormValues(parameters, {
-                            keepDefaultValues: true,
-                        });
+                        reset(
+                            fromVoltageInitParamsDataToFormValues(parameters),
+                            {
+                                keepDefaultValues: true,
+                            }
+                        );
                     })
                     .catch((error) => {
                         console.error(error);
@@ -290,7 +242,7 @@ export const VoltageInitParameters = ({
             }
             setOpenSelectParameterDialog(false);
         },
-        [fromVoltageInitParamsDataToFormValues, snackError]
+        [reset, snackError]
     );
 
     return (
@@ -395,6 +347,7 @@ export const VoltageInitParameters = ({
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
                     parameterValues={getValues}
+                    parameterType={elementType.VOLTAGE_INIT_PARAMETERS}
                 />
             )}
 
@@ -402,7 +355,7 @@ export const VoltageInitParameters = ({
                 <DirectoryItemSelector
                     open={openSelectParameterDialog}
                     onClose={handleLoadParameter}
-                    types={['VOLTAGE_INIT_PARAMETERS']}
+                    types={[elementType.VOLTAGE_INIT_PARAMETERS]}
                     title={intl.formatMessage({
                         id: 'showSelectParameterDialog',
                     })}

@@ -346,6 +346,7 @@
     "resetProviderValuesToDefault": "Reset provider default values",
     "showAdvancedParameters": "Advanced settings",
     "showSpecificParameters": "Specific settings",
+    "save": "Save",
     "saveParameters": "Save settings",
     "loadParameters": "Predefined settings",
     "showSelectDirectoryDialog": "Choose folder",

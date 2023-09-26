@@ -26,7 +26,6 @@ const emptyFormData = {
     [NAME]: null,
 };
 
-// we use both schemas then we can change the type of filter without losing the filled form fields
 const formSchema = yup
     .object()
     .shape({
@@ -34,7 +33,12 @@ const formSchema = yup
     })
     .required();
 
-const CreateParameterDialog = ({ open, onClose, parameterValues }) => {
+const CreateParameterDialog = ({
+    open,
+    onClose,
+    parameterValues,
+    parameterType,
+}) => {
     const intl = useIntl();
     const [defaultFolder, setDefaultFolder] = useState({
         id: null,
@@ -82,11 +86,11 @@ const CreateParameterDialog = ({ open, onClose, parameterValues }) => {
             createParameter(
                 formatNewParams(parameterValues()),
                 values.name,
-                'VOLTAGE_INIT_PARAMETERS',
+                parameterType,
                 defaultFolder.id
             );
         },
-        [defaultFolder.id, parameterValues]
+        [defaultFolder.id, parameterType, parameterValues]
     );
 
     const handleChangeFolder = () => {
@@ -139,7 +143,7 @@ const CreateParameterDialog = ({ open, onClose, parameterValues }) => {
             >
                 <NameWrapper
                     titleMessage="Name"
-                    contentType={'VOLTAGE_INIT_PARAMETERS'}
+                    contentType={parameterType}
                     handleNameValidation={handleNameChange}
                     activeDirectory={defaultFolder.id}
                     isChoosedFolderChanged={isChoosedFolderChanged}
