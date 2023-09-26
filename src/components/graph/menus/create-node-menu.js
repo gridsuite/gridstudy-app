@@ -204,7 +204,6 @@ const CreateNodeMenu = ({
         CREATE_MODIFICATION_NODE: {
             onRoot: true,
             id: 'createNetworkModificationNode',
-            disabled: mapDataLoading,
             subMenuItems: {
                 CREATE_MODIFICATION_NODE: {
                     onRoot: true,
