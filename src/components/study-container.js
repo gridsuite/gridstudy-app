@@ -239,14 +239,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
-    const [isImportStudyDialogDisplayed, setIsImportStudyDialogDisplayed] =
-        useState(false);
-
     const wsRef = useRef();
-
-    const closeImportStudyDialog = useCallback(() => {
-        setIsImportStudyDialogDisplayed(false);
-    }, []);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -764,9 +757,6 @@ export function StudyContainer({ view, onChangeTab }) {
                     setErrorMessage={setErrorMessage}
                 />
             </WaitingLoader>
-            {isImportStudyDialogDisplayed && (
-                <CreateStudyDialog closeDialog={closeImportStudyDialog} />
-            )}
         </>
     );
 }
