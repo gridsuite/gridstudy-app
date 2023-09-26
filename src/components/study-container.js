@@ -47,7 +47,6 @@ import {
 } from '../services/directory-notification';
 import { fetchPath } from '../services/directory';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { CreateStudyDialog } from './create-study-dialog/create-study-dialog';
 import { fetchAllEquipments } from '../services/study/network-map';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
@@ -522,11 +521,12 @@ export function StudyContainer({ view, onChangeTab }) {
                                     error.status ===
                                     HttpStatusCode.FAILED_DEPENDENCY
                                 ) {
-                                    // when trying to recreate study network, if case can't be found (424 error), we let the user select a new one
-                                    setIsImportStudyDialogDisplayed(true);
-                                    snackError({
-                                        headerId: 'StudyUnrecoverableState',
-                                    });
+                                    // when trying to recreate study network, if case can't be found (424 error), we display an error
+                                    setErrorMessage(
+                                        intlRef.current.formatMessage({
+                                            id: 'invalidStudyError',
+                                        })
+                                    );
                                 } else {
                                     // unknown error when trying to recreate network from study case
                                     setErrorMessage(
@@ -547,7 +547,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     );
                 });
         },
-        [studyUuid, loadTree, snackError, snackWarning, intlRef]
+        [studyUuid, loadTree, snackWarning, intlRef]
     );
 
     useEffect(() => {
