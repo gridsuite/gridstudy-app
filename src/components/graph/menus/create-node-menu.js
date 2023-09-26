@@ -174,7 +174,7 @@ const CreateNodeMenu = ({
         return !isAnyNodeBuilding && !mapDataLoading;
     }
 
-    function isRestoreNodeAllowed() {
+    function isNodeRestorationAllowed() {
         return !isAnyNodeBuilding && !mapDataLoading;
     }
 
@@ -327,7 +327,7 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => restoreNodes(),
             id: 'restoreNodes',
-            disabled: !isRestoreNodeAllowed(),
+            disabled: !isNodeRestorationAllowed(),
         },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,
