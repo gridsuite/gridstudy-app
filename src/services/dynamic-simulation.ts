@@ -75,30 +75,17 @@ export function saveDynamicSimulationEvent(
 
     const url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        `/dynamic-simulation/events/`;
+        `/dynamic-simulation/events`;
     console.debug(url);
 
-    if (event.uuid) {
-        // update an existing event
-        return backendFetch(url, {
-            method: 'PUT',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(event),
-        });
-    } else {
-        // create a new event
-        return backendFetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(event),
-        });
-    }
+    return backendFetch(url, {
+        method: event.uuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(event),
+    });
 }
 
 export function deleteDynamicSimulationEvents(
