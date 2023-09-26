@@ -216,7 +216,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                     voltageInitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderVoltageInitResult,
             },
-        ];
+        ].filter(({ displayed }: IService) => displayed);
     }, [
         sensitivityAnalysisUnavailability,
         securityAnalysisAvailability,
@@ -234,15 +234,13 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
 
     const renderTab = (service: IService) => {
         return (
-            service.displayed && (
-                <Tab
-                    key={service.id + 'tab'}
-                    label={intl.formatMessage({
-                        id: service.id,
-                    })}
-                    disabled={disabled}
-                />
-            )
+            <Tab
+                key={service.id + 'tab'}
+                label={intl.formatMessage({
+                    id: service.id,
+                })}
+                disabled={disabled}
+            />
         );
     };
     const renderTabPanelLazy = (
@@ -250,16 +248,12 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         index: number
     ): React.ReactNode => {
         return (
-            <>
-                {service.displayed && (
-                    <TabPanelLazy
-                        key={service.id + 'tabPanel'}
-                        selected={tabIndex === index && !disabled}
-                    >
-                        {service.renderResult}
-                    </TabPanelLazy>
-                )}
-            </>
+            <TabPanelLazy
+                key={service.id + 'tabPanel'}
+                selected={tabIndex === index && !disabled}
+            >
+                {service.renderResult}
+            </TabPanelLazy>
         );
     };
 

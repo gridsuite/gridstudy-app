@@ -30,6 +30,7 @@ import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import Grid from '@mui/material/Grid';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 
 interface VscConverterStationPaneProps {
     id: string;
@@ -46,6 +47,18 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
+
+    const { trigger } = useFormContext();
+
+    const voltageRegulationOnWatch = useWatch({
+        name: `${id}.${VOLTAGE_REGULATION_ON}`,
+    });
+
+    useEffect(() => {
+        if (!voltageRegulationOnWatch) {
+            trigger(`${id}.${VOLTAGE_REGULATION_ON}`);
+        }
+    });
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
