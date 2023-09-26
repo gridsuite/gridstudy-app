@@ -55,16 +55,18 @@ const ratioTapChangerValidationSchema = (id) => ({
         [REGULATION_MODE]: yup
             .string()
             .nullable()
-            .when([ENABLED], {
-                is: true,
+            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES], {
+                is: (enabled, loadTapChangingCapabilities) =>
+                    enabled && loadTapChangingCapabilities,
                 then: (schema) => schema.required(),
             }),
         [REGULATION_TYPE]: yup
             .string()
             .nullable()
-            .when([ENABLED, REGULATION_MODE], {
-                is: (enabled, regulationMode) =>
+            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_MODE], {
+                is: (enabled, loadTapChangingCapabilities, regulationMode) =>
                     enabled &&
+                    loadTapChangingCapabilities &&
                     regulationMode ===
                         RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id,
                 then: (schema) => schema.required(),
@@ -72,26 +74,60 @@ const ratioTapChangerValidationSchema = (id) => ({
         [REGULATION_SIDE]: yup
             .string()
             .nullable()
-            .when([ENABLED, REGULATION_MODE, REGULATION_TYPE], {
-                is: (enabled, regulationMode, regulationType) =>
-                    enabled &&
-                    regulationMode ===
-                        RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
-                    regulationType === REGULATION_TYPES.LOCAL.id,
-                then: (schema) => schema.required(),
-            }),
+            .when(
+                [
+                    ENABLED,
+                    LOAD_TAP_CHANGING_CAPABILITIES,
+                    REGULATION_MODE,
+                    REGULATION_TYPE,
+                ],
+                {
+                    is: (
+                        enabled,
+                        loadTapChangingCapabilities,
+                        regulationMode,
+                        regulationType
+                    ) =>
+                        enabled &&
+                        loadTapChangingCapabilities &&
+                        regulationMode ===
+                            RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
+                        regulationType === REGULATION_TYPES.LOCAL.id,
+                    then: (schema) => schema.required(),
+                }
+            ),
         [TARGET_V]: yup
-            .number()
-            .nullable()
-            .positive('TargetVoltageGreaterThanZero')
-            .when(REGULATION_MODE, {
-                is: RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id,
+            .mixed()
+            .when([LOAD_TAP_CHANGING_CAPABILITIES], {
+                is: true,
+                then: () =>
+                    yup
+                        .number()
+                        .nullable()
+                        .positive('TargetVoltageGreaterThanZero'),
+            })
+            .when([REGULATION_MODE, LOAD_TAP_CHANGING_CAPABILITIES], {
+                is: (regulationMode, loadTapChangingCapabilities) => {
+                    return (
+                        loadTapChangingCapabilities === true &&
+                        regulationMode ===
+                            RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id
+                    );
+                },
                 then: (schema) => schema.required(),
+                otherwise: (schema) => schema.nullable(),
             }),
         [TARGET_DEADBAND]: yup
-            .number()
+            .mixed()
             .nullable()
-            .min(0, 'TargetDeadbandGreaterThanZero'),
+            .when(LOAD_TAP_CHANGING_CAPABILITIES, {
+                is: true,
+                then: () =>
+                    yup
+                        .number()
+                        .nullable()
+                        .min(0, 'TargetDeadbandGreaterThanZero'),
+            }),
         [LOW_TAP_POSITION]: yup
             .number()
             .nullable()
@@ -152,13 +188,28 @@ const ratioTapChangerValidationSchema = (id) => ({
                 [NOMINAL_VOLTAGE]: yup.string(),
                 [TOPOLOGY_KIND]: yup.string().nullable(),
             })
-            .when([REGULATION_MODE, REGULATION_TYPE], {
-                is: (regulationMode, regulationType) =>
-                    regulationMode ===
-                        RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
-                    regulationType === REGULATION_TYPES.DISTANT.id,
-                then: (schema) => schema.required(),
-            }),
+            .when(
+                [
+                    ENABLED,
+                    LOAD_TAP_CHANGING_CAPABILITIES,
+                    REGULATION_MODE,
+                    REGULATION_TYPE,
+                ],
+                {
+                    is: (
+                        enabled,
+                        loadTapChangingCapabilities,
+                        regulationMode,
+                        regulationType
+                    ) =>
+                        enabled &&
+                        loadTapChangingCapabilities &&
+                        regulationMode ===
+                            RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
+                        regulationType === REGULATION_TYPES.DISTANT.id,
+                    then: (schema) => schema.required(),
+                }
+            ),
         [EQUIPMENT]: yup
             .object()
             .nullable()
@@ -167,13 +218,28 @@ const ratioTapChangerValidationSchema = (id) => ({
                 [NAME]: yup.string().nullable(),
                 [TYPE]: yup.string(),
             })
-            .when([REGULATION_MODE, REGULATION_TYPE], {
-                is: (regulationMode, regulationType) =>
-                    regulationMode ===
-                        RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
-                    regulationType === REGULATION_TYPES.DISTANT.id,
-                then: (schema) => schema.required(),
-            }),
+            .when(
+                [
+                    ENABLED,
+                    LOAD_TAP_CHANGING_CAPABILITIES,
+                    REGULATION_MODE,
+                    REGULATION_TYPE,
+                ],
+                {
+                    is: (
+                        enabled,
+                        loadTapChangingCapabilities,
+                        regulationMode,
+                        regulationType
+                    ) =>
+                        enabled &&
+                        loadTapChangingCapabilities &&
+                        regulationMode ===
+                            RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
+                        regulationType === REGULATION_TYPES.DISTANT.id,
+                    then: (schema) => schema.required(),
+                }
+            ),
     }),
 });
 
