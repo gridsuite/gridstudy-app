@@ -22,6 +22,8 @@ import {
 } from '../redux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
+import { useParameterState } from './dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
 const styles = {
     selected: (theme) => ({
@@ -44,6 +46,7 @@ export function HorizontalToolbar() {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
@@ -82,44 +85,46 @@ export function HorizontalToolbar() {
                 flexDirection: 'row',
             }}
         >
-            <Tooltip
-                title={intl.formatMessage({
-                    id: 'DynamicSimulationEventScenario',
-                })}
-                placement="right"
-                arrow
-                enterDelay={TOOLTIP_DELAY}
-                enterNextDelay={TOOLTIP_DELAY}
-                slotProps={{
-                    popper: {
-                        sx: {
-                            '& .MuiTooltip-tooltip': styles.tooltip,
+            {enableDeveloperMode && (
+                <Tooltip
+                    title={intl.formatMessage({
+                        id: 'DynamicSimulationEventScenario',
+                    })}
+                    placement="right"
+                    arrow
+                    enterDelay={TOOLTIP_DELAY}
+                    enterNextDelay={TOOLTIP_DELAY}
+                    slotProps={{
+                        popper: {
+                            sx: {
+                                '& .MuiTooltip-tooltip': styles.tooltip,
+                            },
                         },
-                    },
-                }}
-                style={{
-                    marginRight: '8px',
-                }}
-            >
-                <span>
-                    <IconButton
-                        size={'small'}
-                        sx={
-                            isEventScenarioDrawerOpen
-                                ? styles.selected
-                                : styles.notSelected
-                        }
-                        disabled={
-                            studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
-                            currentNode === null ||
-                            currentNode?.type !== 'NETWORK_MODIFICATION'
-                        }
-                        onClick={toggleEventScenarioDrawer}
-                    >
-                        <OfflineBoltOutlinedIcon />
-                    </IconButton>
-                </span>
-            </Tooltip>
+                    }}
+                    style={{
+                        marginRight: '8px',
+                    }}
+                >
+                    <span>
+                        <IconButton
+                            size={'small'}
+                            sx={
+                                isEventScenarioDrawerOpen
+                                    ? styles.selected
+                                    : styles.notSelected
+                            }
+                            disabled={
+                                studyDisplayMode === STUDY_DISPLAY_MODE.MAP ||
+                                currentNode === null ||
+                                currentNode?.type !== 'NETWORK_MODIFICATION'
+                            }
+                            onClick={toggleEventScenarioDrawer}
+                        >
+                            <OfflineBoltOutlinedIcon />
+                        </IconButton>
+                    </span>
+                </Tooltip>
+            )}
             <Tooltip
                 title={intl.formatMessage({ id: 'NetworkModifications' })}
                 placement="right"
