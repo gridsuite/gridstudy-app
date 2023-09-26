@@ -153,19 +153,29 @@ const CreateNodeMenu = ({
 
     function isNodePastingAllowed() {
         return (
-            (selectionForCopy.nodeId !== activeNode.id &&
+            !mapDataLoading &&
+            ((selectionForCopy.nodeId !== activeNode.id &&
                 selectionForCopy.copyType === CopyType.NODE_CUT) ||
-            selectionForCopy.copyType === CopyType.NODE_COPY
+                selectionForCopy.copyType === CopyType.NODE_COPY)
         );
     }
 
     function isSubtreePastingAllowed() {
         return (
-            (selectionForCopy.nodeId !== activeNode.id &&
+            !mapDataLoading &&
+            ((selectionForCopy.nodeId !== activeNode.id &&
                 !selectionForCopy.allChildrenIds?.includes(activeNode.id) &&
                 selectionForCopy.copyType === CopyType.SUBTREE_CUT) ||
-            selectionForCopy.copyType === CopyType.SUBTREE_COPY
+                selectionForCopy.copyType === CopyType.SUBTREE_COPY)
         );
+    }
+
+    function isNodeRemovingAllowed() {
+        return !isAnyNodeBuilding && !mapDataLoading;
+    }
+
+    function isRestoreNodeAllowed() {
+        return !isAnyNodeBuilding && !mapDataLoading;
     }
 
     function isNodeAlreadySelectedForCut() {
@@ -188,7 +198,11 @@ const CreateNodeMenu = ({
     }
     function isSubtreeRemovingAllowed() {
         // check if the subtree has children
-        return isNodeHasChildren(activeNode, treeModel);
+        return (
+            !isAnyNodeBuilding &&
+            !mapDataLoading &&
+            isNodeHasChildren(activeNode, treeModel)
+        );
     }
 
     const NODE_MENU_ITEMS = {
@@ -245,7 +259,7 @@ const CreateNodeMenu = ({
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
             id: 'pasteNetworkModificationNode',
-            disabled: !isNodePastingAllowed() || mapDataLoading,
+            disabled: !isNodePastingAllowed(),
             subMenuItems: {
                 PASTE_MODIFICATION_NODE: {
                     onRoot: true,
@@ -274,7 +288,7 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => removeNode(),
             id: 'removeNode',
-            disabled: isAnyNodeBuilding || mapDataLoading,
+            disabled: !isNodeRemovingAllowed(),
             sectionEnd: true,
         },
         COPY_SUBTREE: {
@@ -301,22 +315,19 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => pasteSubtree(),
             id: 'pasteNetworkModificationSubtree',
-            disabled: !isSubtreePastingAllowed() || mapDataLoading,
+            disabled: !isSubtreePastingAllowed(),
         },
         REMOVE_SUBTREE: {
             onRoot: false,
             action: () => removeSubtree(),
             id: 'removeNetworkModificationSubtree',
-            disabled:
-                isAnyNodeBuilding ||
-                mapDataLoading ||
-                !isSubtreeRemovingAllowed(),
+            disabled: !isSubtreeRemovingAllowed(),
         },
         RESTORE_NODES: {
             onRoot: true,
             action: () => restoreNodes(),
             id: 'restoreNodes',
-            disabled: mapDataLoading,
+            disabled: !isRestoreNodeAllowed(),
         },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,
