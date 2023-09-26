@@ -100,17 +100,18 @@ export const NumericalField = forwardRef(
 
         const isValid = useCallback(
             (val, minVal, maxVal) => {
-                if (!val && optional) {
-                    return true;
-                }
-                if (!val && colDef.crossValidation?.requiredOn) {
-                    const isConditionFulfiled = checkCrossValidationRequiredOn(
-                        gridApi,
-                        colDef
-                    );
-                    if (isConditionFulfiled) {
+                if (!val) {
+                    if (optional) {
                         return true;
                     }
+                    if (colDef.crossValidation?.requiredOn) {
+                        const isConditionFulfiled =
+                            checkCrossValidationRequiredOn(gridApi, colDef);
+                        if (isConditionFulfiled) {
+                            return true;
+                        }
+                    }
+                    return false;
                 }
                 return (
                     (minVal === undefined || val >= minVal) &&
