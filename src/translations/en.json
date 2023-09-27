@@ -136,6 +136,7 @@
     "ShuntConductance2": "Shunt conductance 2 (μS)",
     "ShuntSusceptance2": "Shunt susceptance 2 (μS)",
     "ActivePowerControl": "Active power control",
+    "DroopColumnName": "Droop (%)",
     "TargetP": "target P (MW)",
     "TargetQ": "target Q (MVar)",
     "RatioTap": "Ratio tap",
