@@ -30,13 +30,7 @@ export function getVscHvdcLinePaneSchema(id: string) {
                 [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: yup.number().nullable(),
                 [CONVERTERS_MODE]: yup.string().required(),
                 [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: yup.boolean(),
-                [ACTIVE_POWER]: yup
-                    .number()
-                    .nullable()
-                    .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL], {
-                        is: false,
-                        then: (schema) => schema.required(),
-                    }),
+                [ACTIVE_POWER]: yup.number().nullable().required(),
                 [P0]: yup
                     .number()
                     .nullable()
