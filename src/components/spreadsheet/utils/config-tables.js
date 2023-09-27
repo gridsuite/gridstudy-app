@@ -1553,6 +1553,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
+                editable: true,
             },
             {
                 id: 'VoltageLevelId',
@@ -1586,11 +1587,99 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
+                id: 'ActivePowerControl',
+                field: 'activePowerControlOn',
+                cellRenderer: BooleanCellRenderer,
+                editable: true,
+                cellEditor: BooleanListField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.activePowerControlOn | 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'DroopColumnName',
+                field: 'droop',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.droop,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'activePowerControlOn',
+                        columnValue: 1,
+                    },
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'MinP',
+                field: 'minP',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        maxExpression: 'maxP',
+                        defaultValue: params.data.minP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'MaxP',
+                field: 'maxP',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        minExpression: 'minP',
+                        defaultValue: params.data.maxP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
                 id: 'TargetP',
                 field: 'targetP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.targetP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1599,6 +1688,16 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.targetQ,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
