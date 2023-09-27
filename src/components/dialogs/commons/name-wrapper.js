@@ -154,6 +154,9 @@ NameWrapper.propTypes = {
     contentType: PropTypes.string,
     children: PropTypes.node,
     handleNameValidation: PropTypes.func,
+    activeDirectory: PropTypes.object,
+    isChoosedFolderChanged: PropTypes.bool,
+    setIsChoosedFolderChanged: PropTypes.func,
 };
 
 export default NameWrapper;

@@ -346,7 +346,7 @@ export const VoltageInitParameters = ({
                 <CreateParameterDialog
                     open={openCreateParameterDialog}
                     onClose={() => setOpenCreateParameterDialog(false)}
-                    parameterValues={getValues}
+                    parameterGetValues={getValues}
                     parameterType={elementType.VOLTAGE_INIT_PARAMETERS}
                 />
             )}

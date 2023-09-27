@@ -36,7 +36,7 @@ const formSchema = yup
 const CreateParameterDialog = ({
     open,
     onClose,
-    parameterValues,
+    parameterGetValues,
     parameterType,
 }) => {
     const intl = useIntl();
@@ -84,13 +84,13 @@ const CreateParameterDialog = ({
     const onSubmit = useCallback(
         (values) => {
             createParameter(
-                formatNewParams(parameterValues()),
+                formatNewParams(parameterGetValues()),
                 values.name,
                 parameterType,
                 defaultFolder.id
             );
         },
-        [defaultFolder.id, parameterType, parameterValues]
+        [defaultFolder.id, parameterType, parameterGetValues]
     );
 
     const handleChangeFolder = () => {
@@ -173,6 +173,8 @@ const CreateParameterDialog = ({
 CreateParameterDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    parameterGetValues: PropTypes.object,
+    parameterType: PropTypes.string,
 };
 
 export default CreateParameterDialog;
