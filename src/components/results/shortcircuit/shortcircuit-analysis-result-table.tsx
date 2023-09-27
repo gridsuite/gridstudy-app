@@ -54,8 +54,8 @@ interface ShortCircuitAnalysisResultsFaultHeader {
     limitMin?: number | null;
     limitMax?: number | null;
     limitName?: string;
-    deltaIscIscMax?: number | null;
-    deltaIscIscMin?: number | null;
+    deltaCurrentIpMax?: number | null;
+    deltaCurrentIpMin?: number | null;
 }
 
 interface ShortCircuitAnalysisResultsLimitViolation {
@@ -162,18 +162,16 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 isNumeric: true,
             }),
             makeColumn({
-                headerName: intl.formatMessage({ id: 'DeltaIscIscMax' }),
-                field: 'deltaIscIscMax',
+                headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
+                field: 'deltaCurrentIpMax',
                 fractionDigits: 1,
                 isNumeric: true,
-                isSortable: false,
             }),
             makeColumn({
-                headerName: intl.formatMessage({ id: 'DeltaIscIscMin' }),
-                field: 'deltaIscIscMin',
+                headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
+                field: 'deltaCurrentIpMin',
                 fractionDigits: 1,
                 isNumeric: true,
-                isSortable: false,
             }),
             makeColumn({
                 field: 'linkedElementId',
@@ -250,26 +248,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 };
             }
 
-            let current = NaN;
-            let deltaIscIscMax = NaN;
-            let deltaIscIscMin = NaN;
-            if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
-                current = faultResult.current;
-                deltaIscIscMax =
-                    faultResult.current -
-                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0);
-                deltaIscIscMin =
-                    faultResult.current -
-                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0);
-            } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
-                current = faultResult.positiveMagnitude;
-                deltaIscIscMax =
-                    faultResult.positiveMagnitude -
-                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0);
-                deltaIscIscMin =
-                    faultResult.positiveMagnitude -
-                    (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0);
-            }
+            const current = faultResult.current;
+            const deltaCurrentIpMax =
+                faultResult.current -
+                (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0);
+            const deltaCurrentIpMin =
+                faultResult.current -
+                (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0);
+
             rows.push({
                 faultId: fault.id,
                 elementId: fault.elementId,
@@ -277,8 +263,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 shortCircuitPower: faultResult.shortCircuitPower,
                 limitMin: unitToKiloUnit(faultResult.shortCircuitLimits.ipMin),
                 limitMax: unitToKiloUnit(faultResult.shortCircuitLimits.ipMax),
-                deltaIscIscMax: deltaIscIscMax,
-                deltaIscIscMin: deltaIscIscMin,
+                deltaCurrentIpMax: deltaCurrentIpMax,
+                deltaCurrentIpMin: deltaCurrentIpMin,
                 current: current,
                 ...firstLimitViolation,
             });
