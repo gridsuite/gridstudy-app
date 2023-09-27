@@ -136,6 +136,7 @@
     "ShuntConductance2": "Conductance parallèle 2 (μS)",
     "ShuntSusceptance2": "Susceptance parallèle 2 (μS)",
     "ActivePowerControl": "En compensation",
+    "DroopColumnName": "Participation (%)",
     "TargetP": "P consigne (MW)",
     "TargetQ": "Q consigne (MVar)",
     "RatioTap": "Prise régleur",
