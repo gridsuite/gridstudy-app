@@ -121,7 +121,7 @@ export function fetchAppsAndUrls() {
         });
 }
 
-export const fetchDefaultParametersValues = () => {
+export const fetchStudyMetadata = () => {
     return fetchAppsAndUrls().then((res) => {
         console.info(
             'fecthing default parameters values from apps-metadata file'
@@ -133,9 +133,22 @@ export const fetchDefaultParametersValues = () => {
             );
         }
 
-        return studyMetadata.defaultParametersValues;
+        return studyMetadata;
     });
 };
+
+export const fetchDefaultParametersValues = () => {
+    return fetchStudyMetadata().then(
+        (studyMetadata) => studyMetadata.defaultParametersValues
+    );
+};
+
+export const fetchStudyExportParamsDefaultValues = () => {
+    return fetchStudyMetadata().then(
+      (studyMetadata) => studyMetadata.defaultExportStudyParametersValues
+    );
+}
+
 export const getQueryParamsList = (params, paramName) => {
     if (params !== undefined && params.length > 0) {
         const urlSearchParams = new URLSearchParams();
