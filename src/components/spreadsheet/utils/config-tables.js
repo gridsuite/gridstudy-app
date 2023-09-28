@@ -11,7 +11,11 @@ import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
-import { unitToMicroUnit } from '../../../utils/rounding';
+import {
+    kiloUnitToUnit,
+    unitToKiloUnit,
+    unitToMicroUnit,
+} from '../../../utils/rounding';
 
 const generateTapPositions = (params) => {
     return params
@@ -165,33 +169,67 @@ export const TABLES_DEFINITIONS = {
                 undefined,
                 excludeFromGlobalFilter
             ),
-            generateEditableNumericColumnDefinition(
-                'IpMin',
-                'identifiableShortCircuit.ipMin',
-                1,
-                'equipment.setIpMin({})\n',
-                true,
-                undefined,
-                'ipMax',
-                excludeFromGlobalFilter
-            ),
-            generateEditableNumericColumnDefinition(
-                'IpMax',
-                'identifiableShortCircuit.ipMax',
-                1,
-                'equipment.setIpMax({})\n',
-                false,
-                'ipMin',
-                undefined,
-                excludeFromGlobalFilter,
-                {
+            {
+                id: 'IpMin',
+                field: 'identifiableShortCircuit.ipMin',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                valueGetter: (params) => {
+                    unitToKiloUnit(params.data.identifiableShortCircuit.ipMin);
+                },
+                valueSetter: (params) => {
+                    params.data.identifiableShortCircuit = {
+                        ...params.data.identifiableShortCircuit,
+                        ipMin: params.newValue,
+                    };
+                    return params.data.identifiableShortCircuit.ipMin;
+                },
+                cellEditorParams: (params) => {
+                    return params.data.identifiableShortCircuit.ipMin;
+                },
+                ...(excludeFromGlobalFilter && {
+                    getQuickFilterText: excludeFromGlobalFilter,
+                }),
+                ...{
                     crossValidation: {
                         requiredOn: {
                             dependencyColumn: 'ipMin',
                         },
                     },
-                }
-            ),
+                },
+            },
+            {
+                id: 'IpMax',
+                field: 'identifiableShortCircuit.ipMax',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                valueGetter: (params) =>
+                    unitToKiloUnit(params.data.identifiableShortCircuit.ipMax),
+                valueSetter: (params) => {
+                    params.data.identifiableShortCircuit = {
+                        ...params.data.identifiableShortCircuit,
+                        ipMax: params.newValue,
+                    };
+                    return params.data.identifiableShortCircuit.ipMax;
+                },
+                cellEditorParams: (params) => {
+                    return params.data.identifiableShortCircuit.ipMax;
+                },
+                ...(excludeFromGlobalFilter && {
+                    getQuickFilterText: excludeFromGlobalFilter,
+                }),
+                ...{
+                    crossValidation: {
+                        requiredOn: {
+                            dependencyColumn: 'ipMax',
+                        },
+                    },
+                },
+            },
         ],
     },
 

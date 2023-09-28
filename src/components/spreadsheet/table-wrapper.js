@@ -47,7 +47,7 @@ import {
     modifyVoltageLevel,
     requestNetworkChange,
 } from '../../services/study/network-modifications';
-import { kiloUnitToUnit } from '../../utils/rounding';
+import { kiloUnitToUnit, unitToKiloUnit } from '../../utils/rounding';
 import { Box } from '@mui/system';
 
 const useEditBuffer = () => {
@@ -544,6 +544,10 @@ const TableWrapper = (props) => {
                         undefined
                     );
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+                    console.log(
+                        editingData.identifiableShortCircuit,
+                        '  editingData $$$$'
+                    );
                     return modifyVoltageLevel(
                         props.studyUuid,
                         props.currentNode?.id,
@@ -552,8 +556,8 @@ const TableWrapper = (props) => {
                         editingData.nominalVoltage,
                         editingData.lowVoltageLimit,
                         editingData.highVoltageLimit,
-                        kiloUnitToUnit(editingData.ipMin),
-                        kiloUnitToUnit(editingData.ipMax),
+                        editingData.identifiableShortCircuit.ipMin,
+                        editingData.identifiableShortCircuit.ipMax,
                         false,
                         undefined
                     );
