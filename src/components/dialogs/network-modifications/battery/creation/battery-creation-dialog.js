@@ -78,7 +78,19 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
         [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [ACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
+        [ACTIVE_POWER_SET_POINT]: yup
+            .number()
+            .nullable()
+            .when([MAXIMUM_ACTIVE_POWER], {
+                is: (maximumActivePower) => maximumActivePower != null,
+                then: (schema) =>
+                    schema
+                        .required()
+                        .max(
+                            yup.ref(MAXIMUM_ACTIVE_POWER),
+                            'ActivePowerLessThanMaxActivePower'
+                        ),
+            }),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
         ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
