@@ -42,6 +42,7 @@ import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
+    modifyBattery,
     modifyGenerator,
     modifyLoad,
     modifyVoltageLevel,
@@ -557,6 +558,22 @@ const TableWrapper = (props) => {
                         false,
                         undefined
                     );
+                case EQUIPMENT_TYPES.BATTERY:
+                    return modifyBattery(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        editingData.name,
+                        editingData.minP,
+                        editingData.maxP,
+                        editingData.targetP,
+                        editingData.targetQ,
+                        undefined,
+                        undefined,
+                        undefined,
+                        editingData.activePowerControlOn,
+                        editingData.droop
+                    );
                 default:
                     return requestNetworkChange(
                         props.studyUuid,
@@ -645,6 +662,11 @@ const TableWrapper = (props) => {
         [validateEdit]
     );
 
+    const handleEditingStarted = useCallback((params) => {
+        // we initialize the dynamicValidation with the initial data
+        params.context.dynamicValidation = { ...params.data };
+    }, []);
+
     const handleEditingStopped = useCallback(
         (params) => {
             if (
@@ -731,6 +753,7 @@ const TableWrapper = (props) => {
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}
+                        handleEditingStarted={handleEditingStarted}
                         handleEditingStopped={handleEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}

@@ -232,13 +232,13 @@ const ModelFilter = forwardRef(({ equipment = CURVE_EQUIPMENTS.LOAD }, ref) => {
                     </Typography>
                 </Grid>
                 <Grid xs>
-                    <Box sx={styles.grid} className={theme.aggrid}>
+                    <Box sx={styles.grid}>
                         <CheckboxTreeview
                             ref={variablesRef}
                             data={filteredVariables}
                             checkAll
                             sx={{
-                                maxHeight: '460px',
+                                maxHeight: '440px',
                                 maxWidth: '50px',
                             }}
                         />

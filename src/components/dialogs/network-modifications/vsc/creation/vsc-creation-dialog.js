@@ -92,8 +92,7 @@ const VscCreationDialog = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState(VSC_CREATION_TABS.HVDC_LINE_TAB);
-    const empty: number[] = [];
-    const [tabIndexesWithError, setTabIndexesWithError] = useState(empty);
+    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -206,7 +205,7 @@ const VscCreationDialog = ({
         reset(emptyFormData);
     }, [reset]);
 
-    const onValidationError = (errors: any) => {
+    const onValidationError = (errors) => {
         let tabsInError = [];
         if (errors?.[HVDC_LINE_TAB] !== undefined) {
             tabsInError.push(VSC_CREATION_TABS.HVDC_LINE_TAB);
