@@ -187,12 +187,14 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const isRatioTapChangerEnabled = useCallback(
         (twtEditData) => {
-            //enable ratio tap changer if it is enabled in the edit data or changes has been made in the form
+            const ratioTapEnabledInEditData =
+                twtEditData?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value; 
+            const ratioTapFormHasBeenEdited =
+                Object.keys(twtEditData?.[RATIO_TAP_CHANGER] ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
+            const ratioTapEnabledInTwtToModify = !!twtToModify?.ratioTapChanger; // used when we have twt element (built node)
             return (
-                twtEditData?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value ??
-                (Object.keys(twtEditData?.[RATIO_TAP_CHANGER] ?? {}).length > // to solve problem when unbuilt node
-                    0 ||
-                    !!twtToModify?.ratioTapChanger)
+                ratioTapEnabledInEditData ??
+                (ratioTapFormHasBeenEdited || ratioTapEnabledInTwtToModify)
             );
         },
         [twtToModify]
@@ -200,12 +202,14 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const isPhaseTapChangerEnabled = useCallback(
         (twtEditData) => {
-            //enable phase tap changer if it is enabled in the edit data or changes has been made in the form
+            const phaseTapEnabledInEditData =
+                twtEditData?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value;
+            const phaseTapFormHasBeenEdited =
+                Object.keys(twtEditData?.[PHASE_TAP_CHANGER] ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
+            const phaseTapEnabledInTwtToModify = !!twtToModify?.phaseTapChanger; // used when we have twt element (built node)
             return (
-                twtEditData?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value ??
-                (Object.keys(twtEditData?.[PHASE_TAP_CHANGER] ?? {}).length > // to solve problem when unbuilt node
-                    0 ||
-                    !!twtToModify?.phaseTapChanger)
+                phaseTapEnabledInEditData ??
+                (phaseTapFormHasBeenEdited || phaseTapEnabledInTwtToModify)
             );
         },
         [twtToModify]
