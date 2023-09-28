@@ -109,6 +109,7 @@ import {
     fetchVoltageLevelsListInfos,
 } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
+import _ from 'lodash';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -226,7 +227,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getRatioTapChangerFormData({
                     enabled:
                         twt?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value ??
-                        !!twtToModify?.ratioTapChanger,
+                        (!_.isEmpty(twt?.[RATIO_TAP_CHANGER]) ||
+                            !!twtToModify?.ratioTapChanger),
                     loadTapChangingCapabilities:
                         twt?.[RATIO_TAP_CHANGER]?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
@@ -263,7 +265,8 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getPhaseTapChangerFormData({
                     enabled:
                         twt?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value ??
-                        !!twtToModify?.phaseTapChanger,
+                        (!_.isEmpty(twt?.[PHASE_TAP_CHANGER]) ||
+                            !!twtToModify?.phaseTapChanger),
                     regulationMode:
                         twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
                     regulationType:
