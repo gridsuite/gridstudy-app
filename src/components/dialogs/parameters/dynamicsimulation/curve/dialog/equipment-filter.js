@@ -16,7 +16,6 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { AgGridReact } from 'ag-grid-react';
 import CountrySelect from '../country-select';
 import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';
@@ -24,6 +23,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
 import { Box } from '@mui/system';
+import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 
 export const CURVE_EQUIPMENTS = {
     [EQUIPMENT_TYPES.GENERATOR]: {
@@ -304,7 +304,7 @@ const EquipmentFilter = forwardRef(
                     checkboxSelection: true,
                     headerCheckboxSelection: true,
                     headerCheckboxSelectionFilteredOnly: true,
-                    minWidth: '80',
+                    minWidth: 80,
                     headerName: intl.formatMessage({
                         id: 'DynamicSimulationCurveDynamicModelHeader',
                     }),
@@ -452,8 +452,8 @@ const EquipmentFilter = forwardRef(
                         </Typography>
                     </Grid>
                     <Grid xs>
-                        <Box sx={styles.grid} className={theme.aggrid}>
-                            <AgGridReact
+                        <Box sx={styles.grid}>
+                            <CustomAGGrid
                                 ref={equipmentsRef}
                                 rowData={equipmentRowData}
                                 columnDefs={columnDefs}
@@ -463,7 +463,7 @@ const EquipmentFilter = forwardRef(
                                 onSelectionChanged={
                                     handleEquipmentSelectionChanged
                                 }
-                            ></AgGridReact>
+                            ></CustomAGGrid>
                         </Box>
                     </Grid>
                 </Grid>
