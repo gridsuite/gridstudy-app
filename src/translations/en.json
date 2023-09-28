@@ -353,7 +353,6 @@
     "showSelectParameterDialog": "Choose parameter",
     "nameAlreadyUsed": "This name is already used",
 
-
     "descLfReadSlackBus": "Read slack bus in the network",
     "descLfWriteSlackBus": "Write slack bus in the network",
     "descLfDC": "Run a DC power flow",
