@@ -76,6 +76,7 @@ const CreateNodeMenu = ({
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
     );
+    const mapDataLoading = useSelector((state) => state.mapDataLoading);
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
@@ -152,19 +153,29 @@ const CreateNodeMenu = ({
 
     function isNodePastingAllowed() {
         return (
-            (selectionForCopy.nodeId !== activeNode.id &&
+            !mapDataLoading &&
+            ((selectionForCopy.nodeId !== activeNode.id &&
                 selectionForCopy.copyType === CopyType.NODE_CUT) ||
-            selectionForCopy.copyType === CopyType.NODE_COPY
+                selectionForCopy.copyType === CopyType.NODE_COPY)
         );
     }
 
     function isSubtreePastingAllowed() {
         return (
-            (selectionForCopy.nodeId !== activeNode.id &&
+            !mapDataLoading &&
+            ((selectionForCopy.nodeId !== activeNode.id &&
                 !selectionForCopy.allChildrenIds?.includes(activeNode.id) &&
                 selectionForCopy.copyType === CopyType.SUBTREE_CUT) ||
-            selectionForCopy.copyType === CopyType.SUBTREE_COPY
+                selectionForCopy.copyType === CopyType.SUBTREE_COPY)
         );
+    }
+
+    function isNodeRemovingAllowed() {
+        return !isAnyNodeBuilding && !mapDataLoading;
+    }
+
+    function isNodeRestorationAllowed() {
+        return !isAnyNodeBuilding && !mapDataLoading;
     }
 
     function isNodeAlreadySelectedForCut() {
@@ -187,7 +198,11 @@ const CreateNodeMenu = ({
     }
     function isSubtreeRemovingAllowed() {
         // check if the subtree has children
-        return isNodeHasChildren(activeNode, treeModel);
+        return (
+            !isAnyNodeBuilding &&
+            !mapDataLoading &&
+            isNodeHasChildren(activeNode, treeModel)
+        );
     }
 
     const NODE_MENU_ITEMS = {
@@ -273,7 +288,7 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => removeNode(),
             id: 'removeNode',
-            disabled: isAnyNodeBuilding,
+            disabled: !isNodeRemovingAllowed(),
             sectionEnd: true,
         },
         COPY_SUBTREE: {
@@ -306,12 +321,13 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => removeSubtree(),
             id: 'removeNetworkModificationSubtree',
-            disabled: isAnyNodeBuilding || !isSubtreeRemovingAllowed(),
+            disabled: !isSubtreeRemovingAllowed(),
         },
         RESTORE_NODES: {
             onRoot: true,
             action: () => restoreNodes(),
             id: 'restoreNodes',
+            disabled: !isNodeRestorationAllowed(),
         },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,

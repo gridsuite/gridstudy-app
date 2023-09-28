@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const MAX_TITLE_LENGTH = 106;
+const MAX_TITLE_LENGTH = 300;
+const MAX_STUDY_NAME_LENGTH = 200;
 const SEPARATOR = ' | ';
 
 export const computeFullPath = (parents) => {
@@ -55,7 +56,7 @@ export const computePageTitle = (appName, studyName, parents) => {
     if (!studyName) {
         return appName;
     }
-    let pageTitle = appName + SEPARATOR + limitChar(studyName, 30);
+    let pageTitle = limitChar(studyName, MAX_STUDY_NAME_LENGTH);
     if (!parents?.length) {
         return pageTitle;
     }
