@@ -215,7 +215,7 @@ export const TABLES_DEFINITIONS = {
                 valueSetter: (params) => {
                     params.data.identifiableShortCircuit = {
                         ...params.data.identifiableShortCircuit,
-                        ipMin: kiloUnitToUnit(params.newValue),
+                        ipMax: kiloUnitToUnit(params.newValue),
                     };
                     return params;
                 },
