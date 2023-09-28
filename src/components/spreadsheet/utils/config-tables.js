@@ -190,30 +190,19 @@ export const TABLES_DEFINITIONS = {
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 editable: true,
-                valueGetter: (params) => {
-                    unitToKiloUnit(params.data.identifiableShortCircuit.ipMin);
-                },
+                valueGetter: (params) =>
+                    unitToKiloUnit(params.data.identifiableShortCircuit.ipMin),
                 valueSetter: (params) => {
                     params.data.identifiableShortCircuit = {
                         ...params.data.identifiableShortCircuit,
-                        ipMin: params.newValue,
+                        ipMin: kiloUnitToUnit(params.newValue),
                     };
-                    return params.data.identifiableShortCircuit.ipMin;
-                },
-                cellEditorParams: (params) => {
-                    return params.data.identifiableShortCircuit.ipMin;
+                    return params;
                 },
                 ...(excludeFromGlobalFilter && {
                     getQuickFilterText: excludeFromGlobalFilter,
                 }),
-                ...{
-                    crossValidation: {
-                        requiredOn: {
-                            dependencyColumn: 'ipMin',
-                        },
-                    },
-                },
-            },
+                           },
             {
                 id: 'IpMax',
                 field: 'identifiableShortCircuit.ipMax',
@@ -222,16 +211,13 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 editable: true,
                 valueGetter: (params) =>
-                    unitToKiloUnit(params.data.identifiableShortCircuit.ipMax),
+                    unitToKiloUnit(params.data.identifiableShortCircuit.ipMin),
                 valueSetter: (params) => {
                     params.data.identifiableShortCircuit = {
                         ...params.data.identifiableShortCircuit,
-                        ipMax: params.newValue,
+                        ipMin: kiloUnitToUnit(params.newValue),
                     };
-                    return params.data.identifiableShortCircuit.ipMax;
-                },
-                cellEditorParams: (params) => {
-                    return params.data.identifiableShortCircuit.ipMax;
+                    return params;
                 },
                 ...(excludeFromGlobalFilter && {
                     getQuickFilterText: excludeFromGlobalFilter,
@@ -239,7 +225,7 @@ export const TABLES_DEFINITIONS = {
                 ...{
                     crossValidation: {
                         requiredOn: {
-                            dependencyColumn: 'ipMax',
+                            dependencyColumn: 'ipMin',
                         },
                     },
                 },
