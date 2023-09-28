@@ -202,7 +202,7 @@ export const TABLES_DEFINITIONS = {
                 ...(excludeFromGlobalFilter && {
                     getQuickFilterText: excludeFromGlobalFilter,
                 }),
-                           },
+            },
             {
                 id: 'IpMax',
                 field: 'identifiableShortCircuit.ipMax',
