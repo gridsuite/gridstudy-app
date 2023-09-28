@@ -188,7 +188,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const isRatioTapChangerEnabled = useCallback(
         (twtEditData) => {
             const ratioTapEnabledInEditData =
-                twtEditData?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value; 
+                twtEditData?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value;
             const ratioTapFormHasBeenEdited =
                 Object.keys(twtEditData?.[RATIO_TAP_CHANGER] ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
             const ratioTapEnabledInTwtToModify = !!twtToModify?.ratioTapChanger; // used when we have twt element (built node)
@@ -329,7 +329,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
             });
         },
-        [reset, twtToModify]
+        [reset, twtToModify, isRatioTapChangerEnabled, isPhaseTapChangerEnabled]
     );
 
     useEffect(() => {
