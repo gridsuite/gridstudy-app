@@ -145,7 +145,7 @@ export function stashSubtree(studyUuid, parentNodeId) {
 }
 
 export function updateTreeNode(studyUuid, node) {
-    const nodeUpdateUrl = getStudyUrl(studyUuid) + '/tree/nodes/';
+    const nodeUpdateUrl = getStudyUrl(studyUuid) + '/tree/nodes';
     console.debug(nodeUpdateUrl);
     return backendFetch(nodeUpdateUrl, {
         method: 'put',
