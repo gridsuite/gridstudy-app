@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { UUID } from 'crypto';
 import { backendFetchJson } from './utils';
 
 export const PREFIX_VOLTAGE_INIT_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/voltage-init`;
@@ -12,7 +13,7 @@ export function getVoltageInitUrl() {
     return `${PREFIX_VOLTAGE_INIT_QUERIES}/v1/`;
 }
 
-export function getVoltageInitParameters(parameterUuid) {
+export function getVoltageInitParameters(parameterUuid: UUID) {
     console.info('get voltage init parameters');
     const getVoltageInitParams =
         getVoltageInitUrl() + 'parameters/' + encodeURIComponent(parameterUuid);

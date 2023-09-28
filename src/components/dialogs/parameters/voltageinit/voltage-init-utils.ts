@@ -12,8 +12,45 @@ import {
     VARIABLE_TRANSFORMERS,
     VOLTAGE_LIMITS,
 } from 'components/utils/field-constants';
+import { UUID } from 'crypto';
 
-export const formatNewParams = (newParams) => {
+export type Identifier = {
+    [ID]: UUID | null;
+    [NAME]: string | null;
+};
+
+type FilterIdentifier = {
+    [FILTER_ID]: UUID | null;
+    [FILTER_NAME]: string | null;
+};
+
+type VoltageLimitParam = {
+    [FILTERS]: FilterIdentifier[];
+    [LOW_VOLTAGE_LIMIT]: number;
+    [HIGH_VOLTAGE_LIMIT]: number;
+};
+
+type VoltageLimitForm = {
+    [FILTERS]: Identifier[];
+    [LOW_VOLTAGE_LIMIT]: number;
+    [HIGH_VOLTAGE_LIMIT]: number;
+};
+
+export type VoltageInitParam = {
+    [VOLTAGE_LIMITS]: VoltageLimitParam[];
+    [FIXED_GENERATORS]: FilterIdentifier[];
+    [VARIABLE_TRANSFORMERS]: FilterIdentifier[];
+    [VARIABLE_SHUNT_COMPENSATORS]: FilterIdentifier[];
+};
+
+export type VoltageInitForm = {
+    [VOLTAGE_LIMITS]: VoltageLimitForm[];
+    [FIXED_GENERATORS]: Identifier[];
+    [VARIABLE_TRANSFORMERS]: Identifier[];
+    [VARIABLE_SHUNT_COMPENSATORS]: Identifier[];
+};
+
+export const formatNewParams = (newParams: VoltageInitForm) => {
     return {
         [VOLTAGE_LIMITS]: newParams.voltageLimits.map((voltageLimit) => {
             return {
@@ -53,7 +90,9 @@ export const formatNewParams = (newParams) => {
     };
 };
 
-export const fromVoltageInitParamsDataToFormValues = (parameters) => {
+export const fromVoltageInitParamsDataToFormValues = (
+    parameters: VoltageInitParam
+) => {
     return {
         [VOLTAGE_LIMITS]:
             parameters.voltageLimits?.map((voltageLimit) => {

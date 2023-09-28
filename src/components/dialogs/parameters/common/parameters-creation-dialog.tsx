@@ -5,60 +5,73 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { elementType } from '@gridsuite/commons-ui';
 import { NAME } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, UseFormGetValues } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import PropTypes from 'prop-types';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DirectoryItemSelector from 'components/directory-item-selector';
 import { fetchPath } from 'services/directory';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
-import NameWrapper from 'components/dialogs/commons/name-wrapper';
 import { createParameter } from 'services/explore';
-import { formatNewParams } from '../voltageinit/voltage-init-utils';
+import {
+    formatNewParams,
+    Identifier,
+    VoltageInitForm,
+} from '../voltageinit/voltage-init-utils';
+import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
+import { ReduxState } from 'redux/reducer.type';
+import { elementType } from '@gridsuite/commons-ui';
+
+interface FormData {
+    [NAME]: string;
+}
+
+interface CreateParameterProps {
+    open: boolean;
+    onClose: () => void;
+    parameterGetValues: UseFormGetValues<VoltageInitForm>;
+    parameterType: string;
+}
 
 const emptyFormData = {
-    [NAME]: null,
+    [NAME]: '',
 };
 
 const formSchema = yup
     .object()
     .shape({
-        [NAME]: yup.string().required(),
+        [NAME]: yup.string().trim().required(),
     })
     .required();
 
-const CreateParameterDialog = ({
+const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
     open,
     onClose,
     parameterGetValues,
     parameterType,
 }) => {
     const intl = useIntl();
-    const [defaultFolder, setDefaultFolder] = useState({
+    const [defaultFolder, setDefaultFolder] = useState<Identifier>({
         id: null,
         name: null,
     });
-    const [parameterNameValid, setParameterNameValid] = useState(false);
     const [openDirectoryFolders, setOpenDirectoryFolders] = useState(false);
-    const [isChoosedFolderChanged, setIsChoosedFolderChanged] = useState(false);
-    const studyUuid = useSelector((state) => state.studyUuid);
+    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, setValue } = formMethods;
+    const {
+        reset,
+        formState: { errors },
+    } = formMethods;
 
-    const handleNameChange = (isValid, newName) => {
-        setParameterNameValid(isValid);
-        setValue(NAME, newName, { shouldDirty: true });
-    };
+    const nameError = errors[NAME];
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         fetchPath(studyUuid).then((res) => {
@@ -82,7 +95,7 @@ const CreateParameterDialog = ({
     }, [fetchDefaultDirectoryForStudy, studyUuid]);
 
     const onSubmit = useCallback(
-        (values) => {
+        (values: FormData) => {
             createParameter(
                 formatNewParams(parameterGetValues()),
                 values.name,
@@ -97,14 +110,13 @@ const CreateParameterDialog = ({
         setOpenDirectoryFolders(true);
     };
 
-    const setSelectedFolder = (folder) => {
+    const setSelectedFolder = (folder: Identifier[]) => {
         if (folder && folder.length > 0) {
-            if (folder[0].id !== defaultFolder.id) {
+            if (folder[0].id !== defaultFolder?.id) {
                 setDefaultFolder({
                     id: folder[0].id,
                     name: folder[0].name,
                 });
-                setIsChoosedFolderChanged(true);
             }
         }
         setOpenDirectoryFolders(false);
@@ -129,8 +141,10 @@ const CreateParameterDialog = ({
         </Grid>
     );
 
+    console.log(errors);
+
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
+        <FormProvider {...formMethods}>
             <ModificationDialog
                 fullWidth
                 open={open}
@@ -138,43 +152,34 @@ const CreateParameterDialog = ({
                 onClear={clear}
                 onSave={onSubmit}
                 titleId={'saveParameters'}
-                disabledSave={!parameterNameValid}
+                disabledSave={!!nameError}
                 maxWidth={'sm'}
             >
-                <NameWrapper
-                    titleMessage="Name"
-                    contentType={parameterType}
-                    handleNameValidation={handleNameChange}
+                <UniqueNameInput
+                    name={NAME}
+                    label={'Name'}
+                    elementType={parameterType}
                     activeDirectory={defaultFolder.id}
-                    isChoosedFolderChanged={isChoosedFolderChanged}
-                    setIsChoosedFolderChanged={setIsChoosedFolderChanged}
-                >
-                    {folderChooser}
-                </NameWrapper>
+                    autoFocus
+                />
+                {folderChooser}
 
                 <DirectoryItemSelector
                     open={openDirectoryFolders}
                     onClose={setSelectedFolder}
                     types={[elementType.DIRECTORY]}
-                    title={intl.formatMessage({
-                        id: 'showSelectDirectoryDialog',
-                    })}
                     onlyLeaves={false}
                     multiselect={false}
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
+                    title={intl.formatMessage({
+                        id: 'showSelectDirectoryDialog',
+                    })}
                 />
             </ModificationDialog>
         </FormProvider>
     );
-};
-
-CreateParameterDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    parameterGetValues: PropTypes.object,
-    parameterType: PropTypes.string,
 };
 
 export default CreateParameterDialog;
