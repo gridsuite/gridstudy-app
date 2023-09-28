@@ -20,7 +20,6 @@ import LogReport from './log-report';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
-import LogReportItem from './log-report-item';
 
 const MAX_SUB_REPORTS = 500;
 
@@ -36,6 +35,8 @@ const styles = {
 
 export default function ReportViewer({
     jsonReport,
+    selectedSeverity,
+    setSelectedSeverity,
     maxSubReports = MAX_SUB_REPORTS,
 }) {
     const [selectedNode, setSelectedNode] = useState(null);
@@ -47,20 +48,6 @@ export default function ReportViewer({
     const rootReport = useRef(null);
     const allReports = useRef({});
     const treeView = useRef(null);
-
-    const defaultSeverityFilter = useMemo(() => {
-        const filterConfig = {};
-        Object.values(LogReportItem.SEVERITY).forEach((severity) => {
-            // by default display only INFO severity and higher
-            filterConfig[severity.name] =
-                severity.level >= LogReportItem.SEVERITY.INFO.level;
-        });
-        return filterConfig;
-    }, []);
-
-    const [selectedSeverity, setSelectedSeverity] = useState(
-        defaultSeverityFilter
-    );
 
     const createReporterItem = useCallback(
         (logReport) => {

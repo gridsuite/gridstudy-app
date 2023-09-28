@@ -18,6 +18,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { fetchReport } from '../services/study';
 import { Box } from '@mui/system';
+import LogReportItem from './ReportViewer/log-report-item';
 
 const styles = {
     div: {
@@ -68,6 +69,16 @@ export const ReportViewerTab = ({
     const { snackError } = useSnackMessage();
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
 
+    const [severityFilter, setSeverityFilter] = useState(() => {
+        const filterConfig = {};
+        Object.values(LogReportItem.SEVERITY).forEach((severity) => {
+            // by default display only INFO severity and higher
+            filterConfig[severity.name] =
+                severity.level >= LogReportItem.SEVERITY.INFO.level;
+        });
+        return filterConfig;
+    });
+
     const handleChangeValue = useCallback((event) => {
         setNodeOnlyReport(event.target.checked);
     }, []);
@@ -89,10 +100,25 @@ export const ReportViewerTab = ({
         [nodesNames]
     );
 
+    const setSelectedSeverity = useCallback((newFilter) => {
+        setSeverityFilter(newFilter);
+    }, []);
+
     const fetchAndProcessReport = useCallback(
         (studyId, currentNode) => {
             setWaitingLoadReport(true);
-            fetchReport(studyId, currentNode.id, nodeOnlyReport)
+            let severityFilterList = [];
+            for (const [severity, selected] of Object.entries(severityFilter)) {
+                if (selected) {
+                    severityFilterList.push(severity);
+                }
+            }
+            fetchReport(
+                studyId,
+                currentNode.id,
+                nodeOnlyReport,
+                severityFilterList
+            )
                 .then((fetchedReport) => {
                     if (fetchedReport.length === 1) {
                         setReport(setNodeName(fetchedReport[0]));
@@ -114,7 +140,7 @@ export const ReportViewerTab = ({
                     setWaitingLoadReport(false);
                 });
         },
-        [nodeOnlyReport, setNodeName, snackError]
+        [nodeOnlyReport, setNodeName, snackError, severityFilter]
     );
 
     // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
@@ -165,7 +191,13 @@ export const ReportViewerTab = ({
                         <AlertCustomMessageNode message={'InvalidNode'} />
                     )}
                 </Box>
-                {!!report && !disabled && <ReportViewer jsonReport={report} />}
+                {!!report && !disabled && (
+                    <ReportViewer
+                        jsonReport={report}
+                        selectedSeverity={severityFilter}
+                        setSelectedSeverity={setSelectedSeverity}
+                    />
+                )}
             </Paper>
         </WaitingLoader>
     );
