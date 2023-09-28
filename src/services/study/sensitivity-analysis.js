@@ -85,6 +85,28 @@ export function fetchSensitivityAnalysisResult(
     return backendFetchJson(url);
 }
 
+export function fetchSensitivityAnalysisFilterOptions(
+    studyUuid,
+    currentNodeUuid,
+    selector
+) {
+    console.info(
+        `Fetching sensitivity analysis filter options on ${studyUuid} and node ${currentNodeUuid}  ...`
+    );
+
+    // Add params to Url
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(selector);
+    urlSearchParams.append('selector', jsoned);
+
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/sensitivity-analysis/result/filter-options?${urlSearchParams}`;
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
 export function fetchSensitivityAnalysisProvider(studyUuid) {
     console.info('fetch sensitivity analysis provider');
     const url = `${getStudyUrl(studyUuid)}/sensitivity-analysis/provider`;
