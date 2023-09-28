@@ -109,7 +109,6 @@ import {
     fetchVoltageLevelsListInfos,
 } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
-import _ from 'lodash';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -186,6 +185,32 @@ const TwoWindingsTransformerModificationDialog = ({
         }
     };
 
+    const isRatioTapChangerEnabled = useCallback(
+        (twtEditData) => {
+            //enable ratio tap changer if it is enabled in the edit data or changes has been made in the form
+            return (
+                twtEditData?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value ??
+                (Object.keys(twtEditData?.[RATIO_TAP_CHANGER] ?? {}).length > // to solve problem when unbuilt node
+                    0 ||
+                    !!twtToModify?.ratioTapChanger)
+            );
+        },
+        [twtToModify]
+    );
+
+    const isPhaseTapChangerEnabled = useCallback(
+        (twtEditData) => {
+            //enable phase tap changer if it is enabled in the edit data or changes has been made in the form
+            return (
+                twtEditData?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value ??
+                (Object.keys(twtEditData?.[PHASE_TAP_CHANGER] ?? {}).length > // to solve problem when unbuilt node
+                    0 ||
+                    !!twtToModify?.phaseTapChanger)
+            );
+        },
+        [twtToModify]
+    );
+
     const fromEditDataToFormValues = useCallback(
         (twt, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
             if (twt?.equipmentId) {
@@ -225,10 +250,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     ),
                 }),
                 ...getRatioTapChangerFormData({
-                    enabled:
-                        twt?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value ??
-                        (!_.isEmpty(twt?.[RATIO_TAP_CHANGER]) ||
-                            !!twtToModify?.ratioTapChanger),
+                    enabled: isRatioTapChangerEnabled(twt),
                     loadTapChangingCapabilities:
                         twt?.[RATIO_TAP_CHANGER]?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
@@ -263,10 +285,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId?.value,
                 }),
                 ...getPhaseTapChangerFormData({
-                    enabled:
-                        twt?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value ??
-                        (!_.isEmpty(twt?.[PHASE_TAP_CHANGER]) ||
-                            !!twtToModify?.phaseTapChanger),
+                    enabled: isPhaseTapChangerEnabled(twt),
                     regulationMode:
                         twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
                     regulationType:
