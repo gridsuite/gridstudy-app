@@ -150,15 +150,6 @@ declare module '@gridsuite/commons-ui' {
         debounceDelay: number
     ): (...args: any[]) => void;
 
-    export enum elementType {
-        DIRECTORY = 'DIRECTORY',
-        STUDY = 'STUDY',
-        FILTER = 'FILTER',
-        CONTINGENCY_LIST = 'CONTINGENCY_LIST',
-        CASE = 'CASE',
-        VOLTAGE_INIT_PARAMETERS = 'VOLTAGE_INIT_PARAMETERS',
-    }
-
     export const elementType = {
         DIRECTORY: 'DIRECTORY',
         STUDY: 'STUDY',
