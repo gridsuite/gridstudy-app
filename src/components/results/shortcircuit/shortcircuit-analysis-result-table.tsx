@@ -162,14 +162,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 isNumeric: true,
             }),
             makeColumn({
-                headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
-                field: 'deltaCurrentIpMax',
+                headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
+                field: 'deltaCurrentIpMin',
                 fractionDigits: 1,
                 isNumeric: true,
             }),
             makeColumn({
-                headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
-                field: 'deltaCurrentIpMin',
+                headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
+                field: 'deltaCurrentIpMax',
                 fractionDigits: 1,
                 isNumeric: true,
             }),
@@ -250,11 +250,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
 
             const current = faultResult.current;
             const deltaCurrentIpMax =
-                faultResult.current -
-                (unitToKiloUnit(faultResult.shortCircuitLimits.ipMax) ?? 0);
+                faultResult.shortCircuitLimits.deltaCurrentIpMax;
             const deltaCurrentIpMin =
-                faultResult.current -
-                (unitToKiloUnit(faultResult.shortCircuitLimits.ipMin) ?? 0);
+                faultResult.shortCircuitLimits.deltaCurrentIpMin;
 
             rows.push({
                 faultId: fault.id,
