@@ -69,6 +69,13 @@ export const CopyType = {
     SUBTREE_COPY: 'SUBTREE_COPY',
     SUBTREE_CUT: 'SUBTREE_CUT',
 };
+export const UpdateType = {
+    NODE_CREATED: 'nodeCreated',
+    SUBTREE_CREATED: 'subtreeCreated',
+    NODE_MOVED: 'nodeMoved',
+    SUBTREE_MOVED: 'subtreeMoved',
+    NODE_DELETED: 'nodeDeleted',
+};
 
 const noSelectionForCopy = {
     sourceStudyUuid: null,
@@ -356,11 +363,11 @@ export const NetworkModificationTreePane = ({
             }
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                    'nodeCreated' ||
-                'subtreeCreated' ||
-                'nodeMoved' ||
-                'subtreeMoved' ||
-                'nodeDeleted'
+                    UpdateType.NODE_CREATED ||
+                UpdateType.SUBTREE_CREATED ||
+                UpdateType.NODE_MOVED ||
+                UpdateType.SUBTREE_MOVED ||
+                UpdateType.NODE_DELETED
             ) {
                 fetchStashedNodes(studyUuid).then((res) => {
                     setNodesToRestore(res);
