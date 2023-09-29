@@ -20,6 +20,9 @@ import CustomTablePagination from '../../utils/custom-table-pagination';
 import { fetchSensitivityAnalysisResult } from '../../../services/study/sensitivity-analysis';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
+import { useSelector } from 'react-redux';
+import { ComputingType } from 'components/computing-status/computing-type';
+import { RunningStatus } from '../../utils/running-status';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
@@ -39,6 +42,9 @@ const PagedSensitivityAnalysisResult = ({
     const [count, setCount] = useState(0);
     const [result, setResult] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const sensiStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
 
     const filtersDef = useMemo(() => {
         const baseFilters = [
@@ -146,8 +152,13 @@ const PagedSensitivityAnalysisResult = ({
     ]);
 
     useEffect(() => {
-        fetchResult();
-    }, [fetchResult]);
+        if (sensiStatus === RunningStatus.RUNNING) {
+            setResult(null);
+        }
+        if (sensiStatus === RunningStatus.SUCCEED) {
+            fetchResult();
+        }
+    }, [sensiStatus, fetchResult]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: isLoading,
