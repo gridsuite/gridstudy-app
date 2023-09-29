@@ -141,8 +141,6 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
         </Grid>
     );
 
-    console.log(errors);
-
     return (
         <FormProvider {...formMethods}>
             <ModificationDialog
