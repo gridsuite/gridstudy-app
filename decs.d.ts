@@ -39,7 +39,7 @@ declare module '@gridsuite/commons-ui' {
             'value' | 'onChange' | 'renderInput'
         > {
         name: string;
-        options: ({ id: string, label: string } | string)[];
+        options: ({ id: string; label: string } | string)[];
         label?: string;
         outputTransform?: (value: string) => string;
         inputTransform?: (value: string) => string;
@@ -120,7 +120,7 @@ declare module '@gridsuite/commons-ui' {
     interface SwitchInputProps {
         name: string;
         label?: string;
-        formProps?: Omit<SwitchInputProps, 'disabled'>,
+        formProps?: Omit<SwitchInputProps, 'disabled'>;
     }
 
     export const SwitchInput: FunctionComponent<SwitchInputProps>;
@@ -158,4 +158,12 @@ declare module '@gridsuite/commons-ui' {
         CASE = 'CASE',
         VOLTAGE_INIT_PARAMETERS = 'VOLTAGE_INIT_PARAMETERS',
     }
+
+    export const elementType = {
+        DIRECTORY: 'DIRECTORY',
+        STUDY: 'STUDY',
+        FILTER: 'FILTER',
+        CONTINGENCY_LIST: 'CONTINGENCY_LIST',
+        VOLTAGE_INIT_PARAMETERS: 'VOLTAGE_INIT_PARAMETERS',
+    };
 }
