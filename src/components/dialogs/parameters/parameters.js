@@ -39,7 +39,6 @@ import {
     useGetShortCircuitParameters,
 } from './short-circuit-parameters';
 import { SecurityAnalysisParameters } from './security-analysis-parameters';
-import { SensitivityAnalysisParameters } from './sensitivity-analysis-parameters';
 import DynamicSimulationParameters from './dynamicsimulation/dynamic-simulation-parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import {
@@ -52,14 +51,6 @@ import {
     getLoadFlowSpecificParametersDescription,
 } from '../../../services/loadflow';
 import { fetchSecurityAnalysisProviders } from '../../../services/security-analysis';
-import { fetchSensitivityAnalysisProviders } from '../../../services/sensitivity-analysis';
-import {
-    fetchDefaultSensitivityAnalysisProvider,
-    fetchSensitivityAnalysisProvider,
-    getSensitivityAnalysisParameters,
-    setSensitivityAnalysisParameters,
-    updateSensitivityAnalysisProvider,
-} from '../../../services/study/sensitivity-analysis';
 import {
     getDefaultLoadFlowProvider,
     getLoadFlowParameters,
@@ -74,6 +65,16 @@ import {
     setSecurityAnalysisParameters,
     updateSecurityAnalysisProvider,
 } from '../../../services/study/security-analysis';
+import {
+    SensitivityAnalysisParameters,
+    useGetSensitivityAnalysisParameters,
+} from './sensi/sensitivity-analysis-parameters';
+import {
+    fetchDefaultSensitivityAnalysisProvider,
+    fetchSensitivityAnalysisProvider,
+    updateSensitivityAnalysisProvider,
+} from '../../../services/study/sensitivity-analysis';
+import { fetchSensitivityAnalysisProviders } from '../../../services/sensitivity-analysis';
 import {
     OptionalServicesNames,
     OptionalServicesStatus,
@@ -630,17 +631,18 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         setSecurityAnalysisParameters
     );
 
-    const sensitivityAnalysisParametersBackend = useParametersBackend(
+    const sensitivityAnalysisBackend = useParametersBackend(
         user,
         'SensitivityAnalysis',
         sensitivityAnalysisAvailability,
         fetchSensitivityAnalysisProviders,
         fetchSensitivityAnalysisProvider,
         fetchDefaultSensitivityAnalysisProvider,
-        updateSensitivityAnalysisProvider,
-        getSensitivityAnalysisParameters,
-        setSensitivityAnalysisParameters
+        updateSensitivityAnalysisProvider
     );
+
+    const useSensitivityAnalysisParameters =
+        useGetSensitivityAnalysisParameters();
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
@@ -823,9 +825,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             >
                                 {studyUuid && (
                                     <SensitivityAnalysisParameters
-                                        hideParameters={hideParameters}
+                                        user={user}
                                         parametersBackend={
-                                            sensitivityAnalysisParametersBackend
+                                            sensitivityAnalysisBackend
+                                        }
+                                        hideParameters={hideParameters}
+                                        useSensitivityAnalysisParameters={
+                                            useSensitivityAnalysisParameters
                                         }
                                     />
                                 )}
