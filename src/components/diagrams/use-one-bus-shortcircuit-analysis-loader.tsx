@@ -27,7 +27,7 @@ import Box from '@mui/material/Box';
  */
 
 type oneBusShortcircuitAnalysisLoader = [
-    () => ReactElement,
+    ReactElement,
     boolean,
     () => void,
     () => void
@@ -75,22 +75,23 @@ export function useOneBusShortcircuitAnalysisLoader(
         }
     }, [resetOneBusShortcircuitAnalysisLoader, studyUpdatedForce]);
 
-    function renderOneBusShortcircuitAnalysisLoaderMessage(): ReactElement {
-        return (
-            <>
-                {isDiagramRunningOneBusShortcircuitAnalysis && (
-                    <Box style={{ textAlign: 'center' }}>
-                        {intl.formatMessage({
-                            id: 'ShortcircuitInProgress',
-                        })}
-                    </Box>
-                )}
-            </>
-        );
-    }
+    const oneBusShortcircuitAnalysisLoaderMessage =
+        useMemo<ReactElement>(() => {
+            return (
+                <>
+                    {isDiagramRunningOneBusShortcircuitAnalysis && (
+                        <Box style={{ textAlign: 'center' }}>
+                            {intl.formatMessage({
+                                id: 'ShortcircuitInProgress',
+                            })}
+                        </Box>
+                    )}
+                </>
+            );
+        }, [intl, isDiagramRunningOneBusShortcircuitAnalysis]);
 
     return [
-        renderOneBusShortcircuitAnalysisLoaderMessage,
+        oneBusShortcircuitAnalysisLoaderMessage,
         isDiagramRunningOneBusShortcircuitAnalysis,
         displayOneBusShortcircuitAnalysisLoader,
         resetOneBusShortcircuitAnalysisLoader,

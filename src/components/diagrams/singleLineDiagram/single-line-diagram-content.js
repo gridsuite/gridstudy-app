@@ -91,7 +91,7 @@ function SingleLineDiagramContent(props) {
     const computationRunning = useSelector((state) => state.computationRunning);
 
     const [
-        renderOneBusShortcircuitAnalysisLoaderMessage,
+        oneBusShortcircuitAnalysisLoaderMessage,
         isDiagramRunningOneBusShortcircuitAnalysis,
         displayOneBusShortcircuitAnalysisLoader,
         resetOneBusShortcircuitAnalysisLoader,
@@ -597,7 +597,7 @@ function SingleLineDiagramContent(props) {
                     isDiagramRunningOneBusShortcircuitAnalysis) && (
                     <LinearProgress />
                 )}
-                {renderOneBusShortcircuitAnalysisLoaderMessage()}
+                {oneBusShortcircuitAnalysisLoaderMessage}
             </Box>
             {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <Box
