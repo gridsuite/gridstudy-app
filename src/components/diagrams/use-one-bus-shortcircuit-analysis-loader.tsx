@@ -47,13 +47,6 @@ export function useOneBusShortcircuitAnalysisLoader(
     const dispatch = useDispatch();
     const intl = useIntl();
 
-    const isDiagramRunningOneBusShortcircuitAnalysis = useMemo(
-        () =>
-            diagramId === oneBusShortCircuitAnalysisDiagram?.diagramId &&
-            nodeId === oneBusShortCircuitAnalysisDiagram?.nodeId,
-        [nodeId, diagramId, oneBusShortCircuitAnalysisDiagram]
-    );
-
     const displayOneBusShortcircuitAnalysisLoader = useCallback(() => {
         dispatch(setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId));
     }, [nodeId, diagramId, dispatch]);
@@ -62,18 +55,12 @@ export function useOneBusShortcircuitAnalysisLoader(
         dispatch(setOneBusShortcircuitAnalysisDiagram(null));
     }, [dispatch]);
 
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    'oneBusShortCircuitAnalysisResult' ||
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    'oneBusShortCircuitAnalysis_failed'
-            ) {
-                resetOneBusShortcircuitAnalysisLoader();
-            }
-        }
-    }, [resetOneBusShortcircuitAnalysisLoader, studyUpdatedForce]);
+    const isDiagramRunningOneBusShortcircuitAnalysis = useMemo(
+        () =>
+            diagramId === oneBusShortCircuitAnalysisDiagram?.diagramId &&
+            nodeId === oneBusShortCircuitAnalysisDiagram?.nodeId,
+        [nodeId, diagramId, oneBusShortCircuitAnalysisDiagram]
+    );
 
     const oneBusShortcircuitAnalysisLoaderMessage =
         useMemo<ReactElement>(() => {
@@ -89,6 +76,19 @@ export function useOneBusShortcircuitAnalysisLoader(
                 </>
             );
         }, [intl, isDiagramRunningOneBusShortcircuitAnalysis]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'oneBusShortCircuitAnalysisResult' ||
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'oneBusShortCircuitAnalysis_failed'
+            ) {
+                resetOneBusShortcircuitAnalysisLoader();
+            }
+        }
+    }, [resetOneBusShortcircuitAnalysisLoader, studyUpdatedForce]);
 
     return [
         oneBusShortcircuitAnalysisLoaderMessage,
