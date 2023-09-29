@@ -15,6 +15,7 @@ import {
     CardContent,
     CardHeader,
     ToggleButton,
+    Tooltip,
     Typography,
 } from '@mui/material';
 import { memo, useCallback, useState } from 'react';
@@ -104,15 +105,28 @@ const DynamicSimulationResultSeriesChart = ({
                             onChange={() => handlePlotScale(id)}
                         >
                             {plotScale ? (
-                                <FullscreenExitSharpIcon />
+                                <Tooltip
+                                    title={intl.formatMessage({
+                                        id: 'DynamicSimulationPlotScaleDisable',
+                                    })}
+                                >
+                                    <FullscreenExitSharpIcon />
+                                </Tooltip>
                             ) : (
-                                <FitScreenSharpIcon />
+                                <Tooltip
+                                    title={intl.formatMessage({
+                                        id: 'DynamicSimulationPlotScaleEnable',
+                                    })}
+                                >
+                                    <FitScreenSharpIcon />
+                                </Tooltip>
                             )}
                         </ToggleButton>
                         {!plotScale && (
                             <TooltipIconButton
-                                toolTip={'Close graph'}
-                                sx={styles.CloseButton}
+                                toolTip={intl.formatMessage({
+                                    id: 'DynamicSimulationCloseGraph',
+                                })}
                                 onClick={() => onClose(index)}
                             >
                                 <CloseIcon />
