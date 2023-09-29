@@ -81,15 +81,14 @@ const formSchema = yup
         [ACTIVE_POWER_SET_POINT]: yup
             .number()
             .nullable()
+            .required()
             .when([MAXIMUM_ACTIVE_POWER], {
                 is: (maximumActivePower) => maximumActivePower != null,
                 then: (schema) =>
-                    schema
-                        .required()
-                        .max(
-                            yup.ref(MAXIMUM_ACTIVE_POWER),
-                            'ActivePowerLessThanMaxActivePower'
-                        ),
+                    schema.max(
+                        yup.ref(MAXIMUM_ACTIVE_POWER),
+                        'ActivePowerLessThanMaxActivePower'
+                    ),
             }),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
         ...getReactiveLimitsSchema(),
