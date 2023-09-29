@@ -1,0 +1,98 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { UUID } from 'crypto';
+import { ReactElement, useCallback, useEffect, useMemo } from 'react';
+import { useIntl } from 'react-intl';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { setOneBusShortcircuitAnalysisDiagram } from 'redux/actions';
+import { ReduxState } from 'redux/reducer.type';
+import Box from '@mui/material/Box';
+
+/**
+ * A hook that handles the logic behind the diagram one bus shortcircuit analysis loader
+ *
+ * @param {string} diagramId - Identifier for the diagram which launched the computation
+ * @param {UUID} currentNodeId - Identifier for the node which launched the computation
+
+ * @returns {oneBusShortcircuitAnalysisLoader} array which contains the controls necessary for the one bus
+ * shortcircuit analysis loader. It also comes with a boolean to check if the loader needs to be displayed
+ * and the message to display for the UI
+ *
+ */
+
+type oneBusShortcircuitAnalysisLoader = [
+    () => ReactElement,
+    boolean,
+    () => void,
+    () => void
+];
+
+export function useOneBusShortcircuitAnalysisLoader(
+    diagramId: string,
+    nodeId: UUID
+): oneBusShortcircuitAnalysisLoader {
+    const studyUpdatedForce = useSelector(
+        (state: ReduxState) => state.studyUpdated
+    );
+    const oneBusShortCircuitAnalysisDiagram = useSelector(
+        (state: ReduxState) => state.oneBusShortCircuitAnalysisDiagram
+    );
+
+    const dispatch = useDispatch();
+    const intl = useIntl();
+
+    const isDiagramRunningOneBusShortcircuitAnalysis = useMemo(
+        () =>
+            diagramId === oneBusShortCircuitAnalysisDiagram?.diagramId &&
+            nodeId === oneBusShortCircuitAnalysisDiagram?.nodeId,
+        [nodeId, diagramId, oneBusShortCircuitAnalysisDiagram]
+    );
+
+    const displayOneBusShortcircuitAnalysisLoader = useCallback(() => {
+        dispatch(setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId));
+    }, [nodeId, diagramId, dispatch]);
+
+    const resetOneBusShortcircuitAnalysisLoader = useCallback(() => {
+        dispatch(setOneBusShortcircuitAnalysisDiagram(null));
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'oneBusShortCircuitAnalysisResult' ||
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'oneBusShortCircuitAnalysis_failed'
+            ) {
+                resetOneBusShortcircuitAnalysisLoader();
+            }
+        }
+    }, [resetOneBusShortcircuitAnalysisLoader, studyUpdatedForce]);
+
+    function renderOneBusShortcircuitAnalysisLoaderMessage(): ReactElement {
+        return (
+            <>
+                {isDiagramRunningOneBusShortcircuitAnalysis && (
+                    <Box style={{ textAlign: 'center' }}>
+                        {intl.formatMessage({
+                            id: 'ShortcircuitInProgress',
+                        })}
+                    </Box>
+                )}
+            </>
+        );
+    }
+
+    return [
+        renderOneBusShortcircuitAnalysisLoaderMessage,
+        isDiagramRunningOneBusShortcircuitAnalysis,
+        displayOneBusShortcircuitAnalysisLoader,
+        resetOneBusShortcircuitAnalysisLoader,
+    ];
+}

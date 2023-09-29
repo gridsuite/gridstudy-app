@@ -19,6 +19,12 @@ export interface ReduxState {
     computingStatus: ComputingStatus;
     optionalServices: IOptionalService[];
     limitReduction: string;
+    oneBusShortCircuitAnalysisDiagram: oneBusShortCircuitAnalysisDiagram;
+}
+
+export interface oneBusShortCircuitAnalysisDiagram {
+    diagramId: string;
+    nodeId: UUID;
 }
 
 export interface StudyUpdatedEventDataHeader {

@@ -1134,5 +1134,7 @@
     "side1InverterSide2Rectifier": "Flux (Ex->Or)",
     "MagnetizingConductanceWithUnit": "Conductance magnétisante (μS)",
     "MagnetizingSusceptanceWithUnit": "Susceptance magnétisante (μS)",
-    "RatedNominalPower": "Puissance nominale (MVA)"
+    "RatedNominalPower": "Puissance nominale (MVA)",
+
+    "ShortcircuitInProgress": "Calcul de court-circuit en cours..."
 }

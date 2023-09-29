@@ -702,3 +702,14 @@ export const setOptionalServices = (optionalServices) => {
         optionalServices: optionalServices,
     };
 };
+
+export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM =
+    'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
+
+export function setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId) {
+    return {
+        type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+        diagramId: diagramId,
+        nodeId: nodeId,
+    };
+}

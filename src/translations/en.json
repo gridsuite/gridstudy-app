@@ -1113,6 +1113,7 @@
     "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
     "MagnetizingConductanceWithUnit": "Magnetizing conductance (μS)",
     "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
-    "RatedNominalPower": "Rated nominal power (MVA)"
+    "RatedNominalPower": "Rated nominal power (MVA)",
 
+    "ShortcircuitInProgress": "Shortcircuit computation in progress..."
 }
