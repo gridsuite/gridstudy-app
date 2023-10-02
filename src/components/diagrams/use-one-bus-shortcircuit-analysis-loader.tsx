@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { setOneBusShortcircuitAnalysisDiagram } from 'redux/actions';
 import { ReduxState } from 'redux/reducer.type';
-import { Chip, Theme } from '@mui/material';
+import { Chip, darken, lighten, Theme } from '@mui/material';
 
 /**
  * A hook that handles the logic behind the diagram one bus shortcircuit analysis loader
@@ -32,7 +32,10 @@ const styles = {
         position: 'relative',
         width: 'fit-content',
         margin: '5px auto',
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor:
+            theme.palette.mode === 'light'
+                ? darken(theme.palette.background.paper, 0.1)
+                : lighten(theme.palette.background.paper, 0.2),
     }),
 };
 
