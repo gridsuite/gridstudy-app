@@ -131,7 +131,7 @@ mat3 calculateRotation(vec3 commonPosition1, vec3 commonPosition2) {
 // Adjustment factor for low zoom levels
 float project_size_at_latitude(float lat) {
   float y = clamp(lat, -89.9, 89.9);
-  return 1.0 / cos(radians(y)); // can't use Taylor series here
+  return 1.0 / cos(radians(y));
 }
 
 /**
@@ -140,7 +140,6 @@ float project_size_at_latitude(float lat) {
 float project_size_at_latitude(float meters, float lat) {
   return meters * project_uCommonUnitsPerMeter.z * project_size_at_latitude(lat);
 }
-
 
 void main(void) {
   if (instanceArrowDirection < 1.0) {
@@ -173,8 +172,8 @@ void main(void) {
       vec3 commonPosition1 = project_position(linePosition1, position64Low);
       vec3 commonPosition2 = project_position(linePosition2, position64Low);
 
-      // calculate offset in the common space using arrow latitude in worldspace to increase precision.
-      // Projecting at latitudes geometry.worldSpace.y or geometry.position.y as in project_size() introduces an offset at certain zoom levels.
+      // project offset in the common space using arrow latitude in worldspace to increase precision.
+      // Projecting with latitudes geometry.worldSpace.y or geometry.position.y as in project_size() introduces an offset at certain zoom levels.
       // This is not necessary for parallel-path or fork-line layers as they require less precision.
       vec3 arrowPositionWorldSpace = mix(linePosition1, linePosition2, interpolationValue);
       float offsetCommonSpace = clamp(project_size_at_latitude(distanceBetweenLines, arrowPositionWorldSpace.y), project_pixel_size(minParallelOffset), project_pixel_size(maxParallelOffset));
