@@ -14,13 +14,9 @@ import React, {
     useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-//import { validateField } from '../validation-functions';
 import {
     CircularProgress,
-    //FormHelperText,
     InputLabel,
-    // MenuItem,
-    // Select,
     TextField,
     Tooltip,
     Button,
