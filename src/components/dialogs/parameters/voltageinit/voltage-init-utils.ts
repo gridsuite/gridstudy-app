@@ -8,6 +8,7 @@ import {
     LOW_VOLTAGE_LIMIT,
     NAME,
     PRIORITY,
+    SELECTED,
     VARIABLE_SHUNT_COMPENSATORS,
     VARIABLE_TRANSFORMERS,
     VOLTAGE_LIMITS,
@@ -97,6 +98,7 @@ export const fromVoltageInitParamsDataToFormValues = (
         [VOLTAGE_LIMITS]:
             parameters.voltageLimits?.map((voltageLimit) => {
                 return {
+                    [SELECTED]: false,
                     [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {
                         return {
                             [ID]: filter[FILTER_ID],
