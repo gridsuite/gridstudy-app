@@ -80,16 +80,11 @@ const formSchema = yup
         [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
         [ACTIVE_POWER_SET_POINT]: yup
             .number()
-            .nullable()
             .required()
-            .when([MAXIMUM_ACTIVE_POWER], {
-                is: (maximumActivePower) => maximumActivePower != null,
-                then: (schema) =>
-                    schema.max(
-                        yup.ref(MAXIMUM_ACTIVE_POWER),
-                        'ActivePowerLessThanMaxActivePower'
-                    ),
-            }),
+            .max(
+                yup.ref(MAXIMUM_ACTIVE_POWER),
+                'ActivePowerLessThanMaxActivePower'
+            ),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
         ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
