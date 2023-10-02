@@ -39,6 +39,8 @@ const styles = {
     }),
 };
 
+//Here's the rundown of the signature : the ReactElement is related to the loader JSX component, the boolean indicated wether the loader should be active,
+//the first function submits the sld data on hand to the redux store and the second function reset the redux store state
 type oneBusShortcircuitAnalysisLoader = [
     ReactElement,
     boolean,
