@@ -37,6 +37,7 @@ import {
     stashTreeNode,
     fetchNetworkModificationSubtree,
     fetchNetworkModificationTreeNode,
+    fetchStashedNodes,
 } from '../services/study/tree-subtree';
 import { buildNode, getUniqueNodeName } from '../services/study';
 import RestoreNodesDialog from './dialogs/restore-node-dialog';
@@ -68,6 +69,10 @@ export const CopyType = {
     SUBTREE_COPY: 'SUBTREE_COPY',
     SUBTREE_CUT: 'SUBTREE_CUT',
 };
+export const UpdateType = {
+    NODE_CREATED: 'nodeCreated',
+    NODE_DELETED: 'nodeDeleted',
+};
 
 const noSelectionForCopy = {
     sourceStudyUuid: null,
@@ -75,7 +80,6 @@ const noSelectionForCopy = {
     copyType: null,
     allChilddrenIds: null,
 };
-
 export const NetworkModificationTreePane = ({
     studyUuid,
     studyMapTreeDisplay,
@@ -85,6 +89,7 @@ export const NetworkModificationTreePane = ({
     const { snackError, snackInfo } = useSnackMessage();
     const DownloadIframe = 'downloadIframe';
     const isInitiatingCopyTab = useRef(false);
+    const [nodesToRestore, setNodesToRestore] = useState([]);
 
     const dispatchSelectionForCopy = useCallback(
         (sourceStudyUuid, nodeId, copyType) => {
@@ -123,7 +128,11 @@ export const NetworkModificationTreePane = ({
         };
         return broadcast;
     });
-
+    useEffect(() => {
+        fetchStashedNodes(studyUuid).then((res) => {
+            setNodesToRestore(res);
+        });
+    }, [studyUuid]);
     useEffect(() => {
         //If the tab is closed we want to invalidate the copy on all tabs because we won't able to track the node modification
         window.addEventListener('beforeunload', (event) => {
@@ -348,6 +357,15 @@ export const NetworkModificationTreePane = ({
                 ) {
                     resetNodeClipboard();
                 }
+            }
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    UpdateType.NODE_DELETED ||
+                UpdateType.NODE_CREATED
+            ) {
+                fetchStashedNodes(studyUuid).then((res) => {
+                    setNodesToRestore(res);
+                });
             }
         }
     }, [
@@ -576,7 +594,6 @@ export const NetworkModificationTreePane = ({
         },
         [studyUuid, dispatch, snackError]
     );
-
     return (
         <>
             <Box sx={styles.container}>
@@ -617,6 +634,7 @@ export const NetworkModificationTreePane = ({
                     handleCopySubtree={handleCopySubtree}
                     handlePasteSubtree={handlePasteSubtree}
                     handleOpenRestoreNodesDialog={handleOpenRestoreNodesDialog}
+                    disableRestoreNodes={nodesToRestore.length === 0}
                 />
             )}
             {openExportDialog && (
