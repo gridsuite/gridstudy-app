@@ -28,6 +28,8 @@ export interface SCAResultFaultFeederResult {
 interface SCAShortCircuitLimits {
     ipMin: number;
     ipMax: number;
+    deltaCurrentIpMax: number | null;
+    deltaCurrentIpMin: number | null;
 }
 
 export interface SCAResultFault {
