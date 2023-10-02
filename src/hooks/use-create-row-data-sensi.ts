@@ -1,0 +1,28 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { SELECTED } from '../components/utils/field-constants';
+import { useFieldArray } from 'react-hook-form';
+import { ISensiParameters } from '../components/dialogs/parameters/sensi/columns-definitions';
+import { useMemo } from 'react';
+
+export const useCreateRowDataSensi = (sensiParam: ISensiParameters) => {
+    const useFieldArrayOutput = useFieldArray({
+        name: sensiParam.name || '',
+    });
+    const newRowData = useMemo(() => {
+        const newRowData: { [key: string]: any } = { [SELECTED]: false };
+        sensiParam.columnsDef.forEach((column) => {
+            newRowData[column.dataKey] = column.initialValue;
+        });
+        return newRowData;
+    }, [sensiParam.columnsDef]);
+
+    const createNewRowData = () => [newRowData];
+
+    return [createNewRowData, useFieldArrayOutput];
+};
