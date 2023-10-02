@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { setOneBusShortcircuitAnalysisDiagram } from 'redux/actions';
 import { ReduxState } from 'redux/reducer.type';
-import Box from '@mui/material/Box';
+import { Chip, Theme } from '@mui/material';
 
 /**
  * A hook that handles the logic behind the diagram one bus shortcircuit analysis loader
@@ -25,6 +25,16 @@ import Box from '@mui/material/Box';
  * and the message to display for the UI
  *
  */
+
+const styles = {
+    loaderMessage: (theme: Theme) => ({
+        display: 'flex',
+        position: 'relative',
+        width: 'fit-content',
+        margin: '5px auto',
+        backgroundColor: theme.palette.background.paper,
+    }),
+};
 
 type oneBusShortcircuitAnalysisLoader = [
     ReactElement,
@@ -67,11 +77,13 @@ export function useOneBusShortcircuitAnalysisLoader(
             return (
                 <>
                     {isDiagramRunningOneBusShortcircuitAnalysis && (
-                        <Box style={{ textAlign: 'center' }}>
-                            {intl.formatMessage({
+                        <Chip
+                            label={intl.formatMessage({
                                 id: 'ShortcircuitInProgress',
                             })}
-                        </Box>
+                            variant="outlined"
+                            sx={styles.loaderMessage}
+                        />
                     )}
                 </>
             );
