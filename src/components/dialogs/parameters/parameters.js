@@ -838,26 +838,24 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             </TabPanel>
                         )}
                         {shortCircuitAvailability ===
-                            OptionalServicesStatus.Up &&
+                            OptionalServicesStatus.Up && (
                             //To be removed when ShortCircuit is not in developer mode only.
-                            enableDeveloperMode && (
-                                <TabPanel
-                                    value={tabValue}
-                                    index={
-                                        TAB_VALUES.shortCircuitParamsTabValue
-                                    }
-                                    keepState
-                                >
-                                    {studyUuid && (
-                                        <ShortCircuitParameters
-                                            hideParameters={hideParameters}
-                                            useShortCircuitParameters={
-                                                useShortCircuitParameters
-                                            }
-                                        />
-                                    )}
-                                </TabPanel>
-                            )}
+
+                            <TabPanel
+                                value={tabValue}
+                                index={TAB_VALUES.shortCircuitParamsTabValue}
+                                keepState
+                            >
+                                {studyUuid && (
+                                    <ShortCircuitParameters
+                                        hideParameters={hideParameters}
+                                        useShortCircuitParameters={
+                                            useShortCircuitParameters
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )}
                         {dynamicSimulationAvailability ===
                             OptionalServicesStatus.Up &&
                             //To be removed when DynamicSimulation is not in developer mode only.
