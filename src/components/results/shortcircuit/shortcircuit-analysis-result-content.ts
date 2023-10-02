@@ -9,5 +9,7 @@ export const DATA_KEY_TO_SORT_KEY: Record<string, string> = {
     limitType: 'limitViolations.limitType',
     limitMin: 'ipMin',
     limitMax: 'ipMax',
+    deltaCurrentIpMin: 'deltaCurrentIpMin',
+    deltaCurrentIpMax: 'deltaCurrentIpMax',
     shortCircuitPower: 'shortCircuitPower',
 };

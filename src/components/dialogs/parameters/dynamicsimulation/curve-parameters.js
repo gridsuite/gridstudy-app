@@ -11,10 +11,10 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { Grid, Typography, useTheme } from '@mui/material';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
-import { AgGridReact } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
 import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
 import { GlobalFilter } from '../../../spreadsheet/global-filter';
+import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
 import { Box } from '@mui/system';
 
 const styles = {
@@ -63,14 +63,14 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
         return [
             {
                 field: 'equipmentId',
-                minWidth: '80',
+                minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveDynamicModelHeader',
                 }),
             },
             {
                 field: 'variableId',
-                minWidth: '80',
+                minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveVariableHeader',
                 }),
@@ -167,8 +167,8 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
                     </Grid>
                     {/* aggrid for configured curves */}
                     <Grid item xs>
-                        <Box sx={styles.grid} className={theme.aggrid}>
-                            <AgGridReact
+                        <Box sx={styles.grid}>
+                            <CustomAGGrid
                                 ref={gridRef}
                                 rowData={rowData}
                                 columnDefs={columnDefs}
@@ -176,7 +176,7 @@ const CurveParameters = ({ curves, onUpdateCurve }) => {
                                 rowSelection={'multiple'}
                                 onGridReady={onGridReady}
                                 onSelectionChanged={onSelectionChanged}
-                            ></AgGridReact>
+                            ></CustomAGGrid>
                         </Box>
                     </Grid>
                 </Grid>
