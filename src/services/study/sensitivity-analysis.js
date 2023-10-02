@@ -12,31 +12,16 @@ import {
 } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
-export function startSensitivityAnalysis(
-    studyUuid,
-    currentNodeUuid,
-    sensiConfiguration
-) {
+export function startSensitivityAnalysis(studyUuid, currentNodeUuid) {
     console.info(
         `Running sensi on ${studyUuid} and node ${currentNodeUuid} ...`
     );
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        currentNodeUuid
-    )}/sensitivity-analysis/run`;
+    const startSensiAnalysisUrl =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/sensitivity-analysis/run';
 
-    console.debug(url);
-
-    const body = JSON.stringify(sensiConfiguration);
-
-    return backendFetch(url, {
-        method: 'post',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: body,
-    });
+    console.debug(startSensiAnalysisUrl);
+    return backendFetch(startSensiAnalysisUrl, { method: 'post' });
 }
 
 export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
@@ -81,6 +66,28 @@ export function fetchSensitivityAnalysisResult(
         studyUuid,
         currentNodeUuid
     )}/sensitivity-analysis/result?${urlSearchParams}`;
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchSensitivityAnalysisFilterOptions(
+    studyUuid,
+    currentNodeUuid,
+    selector
+) {
+    console.info(
+        `Fetching sensitivity analysis filter options on ${studyUuid} and node ${currentNodeUuid}  ...`
+    );
+
+    // Add params to Url
+    const urlSearchParams = new URLSearchParams();
+    const jsoned = JSON.stringify(selector);
+    urlSearchParams.append('selector', jsoned);
+
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/sensitivity-analysis/result/filter-options?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
 }

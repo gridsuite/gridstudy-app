@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { AgGridReact } from 'ag-grid-react';
 import React, {
     forwardRef,
     useCallback,
@@ -15,8 +14,9 @@ import React, {
     useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, Typography, useTheme } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 
 const styles = {
     grid: {
@@ -30,7 +30,6 @@ const styles = {
 
 const CurvePreview = forwardRef((props, ref) => {
     const intl = useIntl();
-    const theme = useTheme();
     const gridRef = useRef();
 
     const [rowData, setRowData] = useState([]);
@@ -39,14 +38,14 @@ const CurvePreview = forwardRef((props, ref) => {
         return [
             {
                 field: 'equipmentId',
-                minWidth: '80',
+                minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveDynamicModelHeader',
                 }),
             },
             {
                 field: 'variableId',
-                minWidth: '80',
+                minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveVariableHeader',
                 }),
@@ -129,15 +128,15 @@ const CurvePreview = forwardRef((props, ref) => {
                 </Typography>
             </Grid>
             <Grid xs>
-                <Box sx={styles.grid} className={theme.aggrid}>
-                    <AgGridReact
+                <Box sx={styles.grid}>
+                    <CustomAGGrid
                         ref={gridRef}
                         rowData={rowData}
                         columnDefs={columnDefs}
                         defaultColDef={defaultColDef}
                         rowSelection={'multiple'}
                         onSelectionChanged={onSelectionChanged}
-                    ></AgGridReact>
+                    ></CustomAGGrid>
                 </Box>
             </Grid>
         </>

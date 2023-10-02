@@ -145,6 +145,13 @@ declare module '@gridsuite/commons-ui' {
 
     export const FlatParameters: FunctionComponent<FlatParametersProps>;
 
+    export const elementType = {
+        DIRECTORY: 'DIRECTORY',
+        STUDY: 'STUDY',
+        FILTER: 'FILTER',
+        CONTINGENCY_LIST: 'CONTINGENCY_LIST',
+    };
+
     interface OverflowableTextProps {
         sx: SxProps,
         text?: string;
