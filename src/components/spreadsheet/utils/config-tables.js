@@ -194,7 +194,7 @@ export const TABLES_DEFINITIONS = {
                 'ipMax',
                 1,
                 'equipment.setIpMax({})\n',
-                true,
+                false,
                 'ipMin',
                 undefined,
                 excludeFromGlobalFilter,
