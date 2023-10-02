@@ -14,13 +14,13 @@ import React, {
     useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { validateField } from '../validation-functions';
+//import { validateField } from '../validation-functions';
 import {
     CircularProgress,
-    FormHelperText,
+    //FormHelperText,
     InputLabel,
-    MenuItem,
-    Select,
+    // MenuItem,
+    // Select,
     TextField,
     Tooltip,
     Button,
@@ -118,114 +118,6 @@ export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
     }, [label, handleClick, icon]);
 };
 
-const getObjectId = (e) => e.id;
-const getLabel = (e) => e.label;
-
-export const useEnumValue = ({
-    label,
-    defaultValue,
-    previousValue,
-    validation = {},
-    inputForm,
-    formProps,
-    enumValues,
-    doTranslation = true,
-    getId = getObjectId,
-    getEnumLabel = getLabel,
-}) => {
-    const [value, setValue] = useState(defaultValue);
-    const [error, setError] = useState();
-
-    useEffect(() => {
-        function validate() {
-            const res = validateField(value, validation);
-            setError(res?.errorMsgId);
-            return !res.error;
-        }
-
-        inputForm.addValidation(label, validate);
-    }, [label, validation, inputForm, value]);
-
-    const handleChangeValue = useCallback(
-        (event) => {
-            setValue(event.target.value);
-            inputForm.setHasChanged(true);
-        },
-        [inputForm]
-    );
-
-    const field = useMemo(() => {
-        return (
-            <FormControl fullWidth size="small" error={!!error}>
-                {/*This InputLabel is necessary in order to display
-                            the label describing the content of the Select*/}
-                <InputLabel id="enum-type-label" {...formProps}>
-                    <FieldLabel
-                        label={label}
-                        optional={validation.isFieldRequired === false}
-                    />
-                </InputLabel>
-                <Select
-                    label={label}
-                    id={label}
-                    value={value || ''}
-                    onChange={handleChangeValue}
-                    fullWidth
-                    {...formProps}
-                >
-                    {enumValues.map((e, index) => (
-                        <MenuItem value={getId(e)} key={e.id + '_' + index}>
-                            <em>
-                                {doTranslation && (
-                                    <FormattedMessage id={getEnumLabel(e)} />
-                                )}
-                                {!doTranslation && getEnumLabel(e)}
-                            </em>
-                        </MenuItem>
-                    ))}
-                </Select>
-                {previousValue && (
-                    <FormHelperText>
-                        {doTranslation ? (
-                            <FormattedMessage
-                                id={getEnumLabel(previousValue)}
-                            />
-                        ) : (
-                            getEnumLabel(previousValue)
-                        )}
-                    </FormHelperText>
-                )}
-                {error && (
-                    <FormHelperText>
-                        <FormattedMessage id={error} />
-                    </FormHelperText>
-                )}
-            </FormControl>
-        );
-    }, [
-        error,
-        formProps,
-        label,
-        validation.isFieldRequired,
-        value,
-        handleChangeValue,
-        enumValues,
-        previousValue,
-        getId,
-        doTranslation,
-        getEnumLabel,
-    ]);
-
-    useEffect(() => {
-        setValue('');
-    }, [inputForm.toggleClear]);
-
-    useEffect(() => {
-        setValue(defaultValue || '');
-    }, [defaultValue]);
-
-    return [value, field];
-};
 export const useSimpleTextValue = ({
     defaultValue,
     adornment,
@@ -344,7 +236,6 @@ export const useDirectoryElements = ({
     equipmentTypes,
     titleId,
     elementStyle,
-    required = false,
     itemFilter = undefined,
     errorMsg = undefined,
     inputForm = undefined,

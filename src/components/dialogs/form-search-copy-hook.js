@@ -31,7 +31,7 @@ export const useFormSearchCopy = ({
             currentNodeUuid,
             elementType,
             EQUIPMENT_INFOS_TYPES.FORM.type,
-            element?.id,
+            element.id,
             true
         );
         return fetchElementPromise
