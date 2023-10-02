@@ -7,32 +7,39 @@
 
 import { makeComponentsFor, TYPES } from '../../util/make-component-utils';
 import { useCallback } from 'react';
+import yup from '../../../../utils/yup-config';
 
 const IdaSolverParameters = ({ idaSolver, onUpdateIdaSolver }) => {
     const defParams = {
         order: {
             type: TYPES.integer,
             description: 'DynamicSimulationIDASolverOrder',
+            validator: yup.number().integer().required(),
         },
         initStep: {
             type: TYPES.float,
             description: 'DynamicSimulationIDASolverInitStep',
+            validator: yup.number().required(),
         },
         minStep: {
             type: TYPES.float,
             description: 'DynamicSimulationIDASolverMinStep',
+            validator: yup.number().required(),
         },
         maxStep: {
             type: TYPES.float,
             description: 'DynamicSimulationIDASolverMaxStep',
+            validator: yup.number().required(),
         },
         absAccuracy: {
             type: TYPES.float,
             description: 'DynamicSimulationIDASolverAbsAccuracy',
+            validator: yup.number().required(),
         },
         relAccuracy: {
             type: TYPES.float,
             description: 'DynamicSimulationIDASolverRelAccuracy',
+            validator: yup.number().required(),
         },
     };
 

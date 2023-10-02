@@ -7,6 +7,7 @@
 
 import { makeComponentsFor, TYPES } from '../../util/make-component-utils';
 import { useCallback } from 'react';
+import yup from '../../../../utils/yup-config';
 
 const SimplifiedSolverParameters = ({
     simplifiedSolver,
@@ -16,30 +17,37 @@ const SimplifiedSolverParameters = ({
         hMin: {
             type: TYPES.float,
             description: 'DynamicSimulationSimplifiedSolverHMin',
+            validator: yup.number().required(),
         },
         hMax: {
             type: TYPES.float,
             description: 'DynamicSimulationSimplifiedSolverHMax',
+            validator: yup.number().required(),
         },
         kReduceStep: {
             type: TYPES.float,
             description: 'DynamicSimulationSimplifiedSolverKReduceStep',
+            validator: yup.number().required(),
         },
         nEff: {
             type: TYPES.integer,
             description: 'DynamicSimulationSimplifiedSolverNEff',
+            validator: yup.number().integer().required(),
         },
         nDeadband: {
             type: TYPES.integer,
             description: 'DynamicSimulationSimplifiedSolverNDeadband',
+            validator: yup.number().integer().required(),
         },
         maxNewtonTry: {
             type: TYPES.integer,
             description: 'DynamicSimulationSimplifiedSolverMaxNewtonTry',
+            validator: yup.number().integer().required(),
         },
         linearSolverName: {
             type: TYPES.text,
             description: 'DynamicSimulationSimplifiedSolverLinearSolverName',
+            validator: yup.string().required(),
         },
         recalculateStep: {
             type: TYPES.bool,

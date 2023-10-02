@@ -45,6 +45,7 @@ export const makeRenderIntegerField =
                 value={value}
                 label={defParam.description}
                 callback={({ value }) => setter({ ...params, [key]: value })}
+                validator={defParam.validator}
             />
         );
     };
@@ -55,6 +56,7 @@ export const makeRenderFloatField =
                 value={value}
                 label={defParam.description}
                 callback={({ value }) => setter({ ...params, [key]: value })}
+                validator={defParam.validator}
             />
         );
     };
@@ -66,6 +68,7 @@ export const makeRenderTextField =
                 value={value}
                 label={defParam.description}
                 callback={({ value }) => setter({ ...params, [key]: value })}
+                validator={defParam.validator}
             />
         );
     };

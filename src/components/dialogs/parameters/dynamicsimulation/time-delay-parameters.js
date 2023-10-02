@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { makeComponentsFor, TYPES } from '../util/make-component-utils';
 import { useCallback } from 'react';
@@ -21,10 +22,12 @@ const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
         startTime: {
             type: TYPES.float,
             description: 'DynamicSimulationStartTime',
+            validator: yup.number().required(),
         },
         stopTime: {
             type: TYPES.float,
             description: 'DynamicSimulationStopTime',
+            validator: yup.number().required(),
         },
     };
     return (

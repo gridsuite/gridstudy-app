@@ -5,12 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import * as yup from 'yup';
 import { TextInput as RHFTextInput } from '@gridsuite/commons-ui';
 import WrapperInput from './wrapper-input';
 
-const TextInput = ({ value, label, callback }) => {
-    const validator = yup.string();
+const TextInput = ({ value, label, callback, validator }) => {
     return (
         <WrapperInput
             value={value}

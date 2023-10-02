@@ -6,9 +6,9 @@
  */
 
 import { styles } from '../parameters';
-import * as yup from 'yup';
+import yup from '../../../utils/yup-config';
 import { FormProvider, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import React, { useEffect } from 'react';
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';

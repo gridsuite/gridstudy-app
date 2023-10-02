@@ -8,6 +8,7 @@
 import { useCallback } from 'react';
 import { Grid } from '@mui/material';
 import { makeComponentsFor, TYPES } from '../util/make-component-utils';
+import yup from '../../../utils/yup-config';
 
 const NetworkParameters = ({ network, onUpdateNetwork }) => {
     const handleUpdateNetwork = useCallback(
@@ -21,40 +22,49 @@ const NetworkParameters = ({ network, onUpdateNetwork }) => {
         capacitorNoReclosingDelay: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkCapacitorNoReclosingDelay',
+            validator: yup.number().required(),
         },
         danglingLineCurrentLimitMaxTimeOperation: {
             type: TYPES.float,
             description:
                 'DynamicSimulationNetworkDanglingLineCurrentLimitMaxTimeOperation',
+            validator: yup.number().required(),
         },
         lineCurrentLimitMaxTimeOperation: {
             type: TYPES.float,
             description:
                 'DynamicSimulationNetworkLineCurrentLimitMaxTimeOperation',
+            validator: yup.number().required(),
         },
         loadTp: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkLoadTp',
+            validator: yup.number().required(),
         },
         loadTq: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkLoadTq',
+            validator: yup.number().required(),
         },
         loadAlpha: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkLoadAlpha',
+            validator: yup.number().required(),
         },
         loadAlphaLong: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkLoadAlphaLong',
+            validator: yup.number().required(),
         },
         loadBeta: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkLoadBeta',
+            validator: yup.number().required(),
         },
         loadBetaLong: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkLoadBetaLong',
+            validator: yup.number().required(),
         },
         loadIsControllable: {
             type: TYPES.bool,
@@ -67,39 +77,48 @@ const NetworkParameters = ({ network, onUpdateNetwork }) => {
         loadZPMax: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkLoadZPMax',
+            validator: yup.number().required(),
         },
         loadZQMax: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkLoadZQMax',
+            validator: yup.number().required(),
         },
         reactanceNoReclosingDelay: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkReactanceNoReclosingDelay',
+            validator: yup.number().required(),
         },
         transformerCurrentLimitMaxTimeOperation: {
             type: TYPES.float,
             description:
                 'DynamicSimulationNetworkTransformerCurrentLimitMaxTimeOperation',
+            validator: yup.number().required(),
         },
         transformerT1StHT: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkTransformerT1StHT',
+            validator: yup.number().required(),
         },
         transformerT1StTHT: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkTransformerT1StTHT',
+            validator: yup.number().required(),
         },
         transformerTNextHT: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkTransformerTNextHT',
+            validator: yup.number().required(),
         },
         transformerTNextTHT: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkTransformerTNextTHT',
+            validator: yup.number().required(),
         },
         transformerTolV: {
             type: TYPES.float,
             description: 'DynamicSimulationNetworkTransformerTolV',
+            validator: yup.number().required(),
         },
     };
 
