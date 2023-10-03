@@ -381,10 +381,7 @@ const TwoWindingsTransformerModificationDialog = ({
             const regulationType =
                 phaseTapChangerFormValues?.[REGULATION_TYPE] ??
                 getComputedPreviousPhaseRegulationType(twtToModify);
-            if (
-                regulationMode &&
-                regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id
-            ) {
+            if (regulationMode) {
                 phaseTap.regulationType = toModificationOperation(
                     phaseTapChangerFormValues?.[REGULATION_TYPE]
                 );

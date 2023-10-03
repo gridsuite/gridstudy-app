@@ -57,6 +57,7 @@ export const PLANNED_ACTIVE_POWER_SET_POINT = 'plannedActivePowerSetPoint';
 export const MARGINAL_COST = 'marginalCost';
 export const PLANNED_OUTAGE_RATE = 'plannedOutageRate';
 export const FORCED_OUTAGE_RATE = 'forcedOutageRate';
+export const REACTIVE_LIMITS = 'reactiveLimits';
 export const REACTIVE_CAPABILITY_CURVE_CHOICE = 'reactiveCapabilityCurveChoice';
 export const REACTIVE_CAPABILITY_CURVE_TABLE = 'reactiveCapabilityCurveTable';
 export const MINIMUM_REACTIVE_POWER = 'minimumReactivePower';
@@ -152,6 +153,8 @@ export const SWITCH_KINDS = 'switchKinds';
 // dnd table
 export const SELECTED = 'selected';
 
+export const ACTIVATED = 'activated';
+
 //generator
 export const VOLTAGE_REGULATION_ON = 'voltageRegulationOn';
 export const REGULATING_TERMINAL = 'regulatingTerminal';
@@ -185,6 +188,7 @@ export const VARIATION_TYPE = 'variationType';
 export const VARIATION_VALUE = 'variationValue';
 export const REACTIVE_VARIATION_MODE = 'reactiveVariationMode';
 
+export const MONITORED_BRANCHES_EQUIPMENT = 'monitoredBranchesEquipment';
 // elements and directories
 export const SPECIFIC_METADATA = 'specificMetadata';
 
@@ -227,6 +231,10 @@ export const LEG_SIDE = 'legSide';
 export const PRIORITY = 'priority';
 export const FILTER_ID = 'filterId';
 export const FILTER_NAME = 'filterName';
+export const CONNECT = 'connect';
+
+export const CONTAINER_ID = 'containerId';
+export const CONTAINER_NAME = 'containerName';
 
 // HVDC deletion
 export const DELETION_SPECIFIC_DATA = 'equipmentInfos';
@@ -235,3 +243,43 @@ export const HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE = 'HVDC_LINE_WITH_LCC';
 export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
 export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const MCS_SELECTED = 'connectedToHvdc';
+export const FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD =
+    'flowFlowSensitivityValueThreshold';
+export const ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD =
+    'angleFlowSensitivityValueThreshold';
+export const FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD =
+    'flowVoltageSensitivityValueThreshold';
+export const PARAMETER_SENSI_INJECTIONS_SET = 'sensitivityInjectionsSet';
+export const SENSI_INJECTIONS_SET = 'sensitivityInjectionsSet';
+export const SENSI_INJECTION = 'sensiInjection';
+export const PARAMETER_SENSI_INJECTION = 'sensitivityInjection';
+export const PARAMETER_SENSI_HVDC = 'sensitivityHVDC';
+export const PARAMETER_SENSI_PST = 'sensitivityPST';
+export const PARAMETER_SENSI_NODES = 'sensitivityNodes';
+export const CONTINGENCIES = 'contingencies';
+export const EQUIPMENTS_IN_VOLTAGE_REGULATION = 'equipmentsInVoltageRegulation';
+export const SUPERVISED_VOLTAGE_LEVELS = 'monitoredVoltageLevels';
+export const MONITORED_BRANCHES = 'monitoredBranches';
+export const HVDC_LINES = 'hvdcs';
+export const SENSITIVITY_TYPE = 'sensitivityType';
+export const INJECTIONS = 'injections';
+export const DISTRIBUTION_TYPE = 'distributionType';
+export const PSTS = 'psts';
+
+// VSC
+export const DC_NOMINAL_VOLTAGE = 'dcNominalVoltage';
+export const DC_RESISTANCE = 'dcResistance';
+export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =
+    'operatorActivePowerLimitSide1';
+export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 =
+    'operatorActivePowerLimitSide2';
+export const CONVERTERS_MODE = 'convertersMode';
+export const ANGLE_DROOP_ACTIVE_POWER_CONTROL = 'angleDroopActivePowerControl';
+export const P0 = 'p0';
+export const CONVERTER_STATION_ID = 'converterStationId';
+export const CONVERTER_STATION_NAME = 'converterStationName';
+export const LOSS_FACTOR = 'lossFactor';
+export const VOLTAGE = 'voltage';
+export const HVDC_LINE_TAB = 'hvdcLineTab';
+export const CONVERTER_STATION_1 = 'converterStation1';
+export const CONVERTER_STATION_2 = 'converterStation2';

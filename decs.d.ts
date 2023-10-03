@@ -39,6 +39,7 @@ declare module '@gridsuite/commons-ui' {
             'value' | 'onChange' | 'renderInput'
         > {
         name: string;
+        options: ({ id: string, label: string } | string)[];
         label?: string;
         outputTransform?: (value: string) => string;
         inputTransform?: (value: string) => string;
@@ -116,6 +117,14 @@ declare module '@gridsuite/commons-ui' {
 
     export const RadioInput: FunctionComponent<RadioInputProps>;
 
+    interface SwitchInputProps {
+        name: string;
+        label?: string;
+        formProps?: Omit<SwitchInputProps, 'disabled'>,
+    }
+
+    export const SwitchInput: FunctionComponent<SwitchInputProps>;
+
     export const SubmitButton: FunctionComponent<{
         onClick: () => void;
         disabled?: boolean;
@@ -135,4 +144,17 @@ declare module '@gridsuite/commons-ui' {
     }
 
     export const FlatParameters: FunctionComponent<FlatParametersProps>;
+
+    export function useDebounce(
+        debouncedFunction: (...args: any[]) => void,
+        debounceDelay: number
+    ): (...args: any[]) => void;
+
+    export const elementType = {
+        DIRECTORY: 'DIRECTORY',
+        STUDY: 'STUDY',
+        FILTER: 'FILTER',
+        CONTINGENCY_LIST: 'CONTINGENCY_LIST',
+        VOLTAGE_INIT_PARAMETERS: 'VOLTAGE_INIT_PARAMETERS',
+    };
 }

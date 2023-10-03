@@ -606,23 +606,43 @@ const TwoWindingsTransformerCreationDialog = ({
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
+                const hasLoadTapCapabilities =
+                    ratioTapChangerFormValues[LOAD_TAP_CHANGING_CAPABILITIES];
+
+                const getRegulatingValue = (computeFunc, ...args) => {
+                    return hasLoadTapCapabilities ? computeFunc(...args) : null;
+                };
+
+                const getValueOrDefault = (key) => {
+                    return hasLoadTapCapabilities
+                        ? ratioTapChangerFormValues[key]
+                        : null;
+                };
+
                 ratioTap = {
+                    ...ratioTapChangerFormValues,
                     regulating: computeRatioTapChangerRegulating(
                         ratioTapChangerFormValues
                     ),
-                    regulatingTerminalId: computeRegulatingTerminalId(
+                    regulatingTerminalId: getRegulatingValue(
+                        computeRegulatingTerminalId,
                         ratioTapChangerFormValues,
                         twt[EQUIPMENT_ID]
                     ),
-                    regulatingTerminalType: computeRegulatingTerminalType(
+                    regulatingTerminalType: getRegulatingValue(
+                        computeRegulatingTerminalType,
                         ratioTapChangerFormValues
                     ),
-                    regulatingTerminalVlId: computeTapTerminalVlId(
+                    regulatingTerminalVlId: getRegulatingValue(
+                        computeTapTerminalVlId,
                         ratioTapChangerFormValues,
                         characteristics[CONNECTIVITY_1],
                         characteristics[CONNECTIVITY_2]
                     ),
-                    ...ratioTapChangerFormValues,
+                    targetV: getValueOrDefault(TARGET_V),
+                    targetDeadband: getValueOrDefault(TARGET_DEADBAND),
+                    regulationMode: getValueOrDefault(REGULATION_MODE),
+                    regulationType: getValueOrDefault(REGULATION_TYPE),
                 };
             }
             let phaseTap = undefined;

@@ -42,6 +42,7 @@ import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
+    modifyBattery,
     modifyGenerator,
     modifyLoad,
     modifyVoltageLevel,
@@ -90,11 +91,20 @@ const styles = {
         top: '30%',
         left: '43%',
     },
+    toolbar: (theme) => ({
+        marginTop: theme.spacing(2),
+    }),
+    filter: (theme) => ({
+        marginLeft: theme.spacing(1),
+    }),
+    selectColumns: (theme) => ({
+        marginLeft: theme.spacing(6),
+    }),
 };
 
 const TableWrapper = (props) => {
     const gridRef = useRef();
-
+    const timerRef = useRef(null);
     const intl = useIntl();
 
     const { snackError } = useSnackMessage();
@@ -123,6 +133,7 @@ const TableWrapper = (props) => {
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
     const [editingData, setEditingData] = useState();
+    const editingDataRef = useRef(editingData);
 
     const isLockedColumnNamesEmpty = useMemo(
         () => lockedColumnsNames.size === 0,
@@ -156,8 +167,9 @@ const TableWrapper = (props) => {
         });
         resetBuffer();
         setEditingData();
+        editingDataRef.current = editingData;
         isValidatingData.current = false;
-    }, [priorValuesBuffer, resetBuffer]);
+    }, [priorValuesBuffer, resetBuffer, editingData]);
 
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
@@ -291,7 +303,7 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const { equipments, errorMessage } = useSpreadsheetEquipments({
+    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments({
         type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
         fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
     });
@@ -331,7 +343,10 @@ const TableWrapper = (props) => {
         },
         [cleanTableState]
     );
-
+    useEffect(() => {
+        gridRef.current?.api?.showLoadingOverlay();
+        return () => clearTimeout(timerRef.current);
+    }, [tabIndex]);
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
         const newSelectedColumns = new Set(
@@ -415,8 +430,15 @@ const TableWrapper = (props) => {
 
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
-    }, [scrollToEquipmentIndex]);
-
+        // wait a moment  before removing the loading message.
+        timerRef.current = setTimeout(() => {
+            gridRef.current?.api?.hideOverlay();
+            if (rowData.length === 0 && !isFetching) {
+                // we need to call showNoRowsOverlay in order to show message when rowData is empty
+                gridRef.current?.api?.showNoRowsOverlay();
+            }
+        }, 50);
+    }, [scrollToEquipmentIndex, isFetching, rowData]);
     useEffect(() => {
         const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
             .columns.filter((column) => lockedColumnsNames.has(column.id))
@@ -489,6 +511,10 @@ const TableWrapper = (props) => {
         ]
     );
 
+    const getFieldValue = useCallback((newField, oldField) => {
+        return newField !== oldField ? newField : null;
+    }, []);
+
     const buildEditPromise = useCallback(
         (editingData, groovyCr) => {
             switch (editingData?.metadata.equipmentType) {
@@ -497,10 +523,22 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        editingData.name,
-                        editingData.type,
-                        editingData.p0,
-                        editingData.q0,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.type,
+                            editingDataRef.current.type
+                        ),
+                        getFieldValue(
+                            editingData.p0,
+                            editingDataRef.current.p0
+                        ),
+                        getFieldValue(
+                            editingData.q0,
+                            editingDataRef.current.q0
+                        ),
                         undefined,
                         undefined,
                         false,
@@ -511,15 +549,39 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        editingData.name,
-                        editingData.energySource,
-                        editingData.minP,
-                        editingData.maxP,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.energySource,
+                            editingDataRef.current.energySource
+                        ),
+                        getFieldValue(
+                            editingData.minP,
+                            editingDataRef.current.minP
+                        ),
+                        getFieldValue(
+                            editingData.maxP,
+                            editingDataRef.current.maxP
+                        ),
                         undefined,
-                        editingData.targetP,
-                        editingData.targetQ,
-                        editingData.voltageRegulatorOn,
-                        editingData.targetV,
+                        getFieldValue(
+                            editingData.targetP,
+                            editingDataRef.current.targetP
+                        ),
+                        getFieldValue(
+                            editingData.targetQ,
+                            editingDataRef.current.targetQ
+                        ),
+                        getFieldValue(
+                            editingData.voltageRegulatorOn,
+                            editingDataRef.current.voltageRegulatorOn
+                        ),
+                        getFieldValue(
+                            editingData.targetV,
+                            editingDataRef.current.targetV
+                        ),
                         undefined,
                         undefined,
                         undefined
@@ -529,14 +591,73 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        editingData.name,
-                        editingData.nominalVoltage,
-                        editingData.lowVoltageLimit,
-                        editingData.highVoltageLimit,
-                        kiloUnitToUnit(editingData.ipMin),
-                        kiloUnitToUnit(editingData.ipMax),
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.nominalVoltage,
+                            editingDataRef.current.nominalVoltage
+                        ),
+                        getFieldValue(
+                            editingData.lowVoltageLimit,
+                            editingDataRef.current.lowVoltageLimit
+                        ),
+                        getFieldValue(
+                            editingData.highVoltageLimit,
+                            editingDataRef.current.highVoltageLimit
+                        ),
+                        kiloUnitToUnit(
+                            getFieldValue(
+                                editingData.ipMin,
+                                editingDataRef.current.ipMin
+                            )
+                        ),
+                        kiloUnitToUnit(
+                            getFieldValue(
+                                editingData.ipMax,
+                                editingDataRef.current.ipMax
+                            )
+                        ),
                         false,
                         undefined
+                    );
+                case EQUIPMENT_TYPES.BATTERY:
+                    return modifyBattery(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.minP,
+                            editingDataRef.current.minP
+                        ),
+                        getFieldValue(
+                            editingData.maxP,
+                            editingDataRef.current.maxP
+                        ),
+                        getFieldValue(
+                            editingData.targetP,
+                            editingDataRef.current.targetP
+                        ),
+                        getFieldValue(
+                            editingData.targetQ,
+                            editingDataRef.current.targetQ
+                        ),
+                        undefined,
+                        undefined,
+                        undefined,
+                        getFieldValue(
+                            editingData.activePowerControlOn,
+                            editingDataRef.current.activePowerControlOn
+                        ),
+                        getFieldValue(
+                            editingData.droop,
+                            editingDataRef.current.droop
+                        )
                     );
                 default:
                     return requestNetworkChange(
@@ -546,7 +667,7 @@ const TableWrapper = (props) => {
                     );
             }
         },
-        [props.currentNode?.id, props.studyUuid]
+        [props.currentNode?.id, props.studyUuid, getFieldValue]
     );
 
     const validateEdit = useCallback(
@@ -583,23 +704,20 @@ const TableWrapper = (props) => {
                     setEditingData();
                     resetBuffer();
                     isValidatingData.current = false;
+                    editingDataRef.current = editingData;
                 })
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
                     rollbackEdit();
-                    let message = intl.formatMessage({
-                        id: 'paramsChangingDenied',
-                    });
                     snackError({
-                        messageTxt: message,
-                        headerId: 'paramsChangingError',
+                        messageTxt: promiseErrorMsg,
+                        headerId: 'tableChangingError',
                     });
                 });
         },
         [
             buildEditPromise,
             editingData,
-            intl,
             priorValuesBuffer,
             resetBuffer,
             rollbackEdit,
@@ -626,6 +744,11 @@ const TableWrapper = (props) => {
         [validateEdit]
     );
 
+    const handleEditingStarted = useCallback((params) => {
+        // we initialize the dynamicValidation with the initial data
+        params.context.dynamicValidation = { ...params.data };
+    }, []);
+
     const handleEditingStopped = useCallback(
         (params) => {
             if (
@@ -639,11 +762,14 @@ const TableWrapper = (props) => {
         [priorValuesBuffer, rollbackEdit]
     );
 
-    const topPinnedData = useMemo(
-        () => (editingData ? [editingData] : undefined),
-        [editingData]
-    );
-
+    const topPinnedData = useMemo(() => {
+        if (editingData) {
+            editingDataRef.current = { ...editingData };
+            return [editingData];
+        } else {
+            return undefined;
+        }
+    }, [editingData]);
     return (
         <>
             <Grid container justifyContent={'space-between'}>
@@ -652,39 +778,48 @@ const TableWrapper = (props) => {
                     tabIndex={tabIndex}
                     handleSwitchTab={handleSwitchTab}
                 />
-                <Grid container>
-                    <GlobalFilter
-                        disabled={!!(props.disabled || editingData)}
-                        visible={props.visible}
-                        gridRef={gridRef}
-                        ref={globalFilterRef}
-                    />
-                    <ColumnsConfig
-                        tabIndex={tabIndex}
-                        disabled={!!(props.disabled || editingData)}
-                        reorderedTableDefinitionIndexes={
-                            reorderedTableDefinitionIndexes
-                        }
-                        setReorderedTableDefinitionIndexes={
-                            setReorderedTableDefinitionIndexes
-                        }
-                        selectedColumnsNames={selectedColumnsNames}
-                        setSelectedColumnsNames={setSelectedColumnsNames}
-                        lockedColumnsNames={lockedColumnsNames}
-                        setLockedColumnsNames={setLockedColumnsNames}
-                    />
-                    <CsvExport
-                        gridRef={gridRef}
-                        columns={columnData}
-                        tableName={TABLES_DEFINITION_INDEXES.get(tabIndex).name}
-                        disabled={
-                            !!(
-                                props.disabled ||
-                                rowData.length === 0 ||
-                                editingData
-                            )
-                        }
-                    />
+                <Grid container sx={styles.toolbar}>
+                    <Grid item sx={styles.filter}>
+                        <GlobalFilter
+                            disabled={!!(props.disabled || editingData)}
+                            visible={props.visible}
+                            gridRef={gridRef}
+                            ref={globalFilterRef}
+                        />
+                    </Grid>
+                    <Grid item sx={styles.selectColumns}>
+                        <ColumnsConfig
+                            tabIndex={tabIndex}
+                            disabled={!!(props.disabled || editingData)}
+                            reorderedTableDefinitionIndexes={
+                                reorderedTableDefinitionIndexes
+                            }
+                            setReorderedTableDefinitionIndexes={
+                                setReorderedTableDefinitionIndexes
+                            }
+                            selectedColumnsNames={selectedColumnsNames}
+                            setSelectedColumnsNames={setSelectedColumnsNames}
+                            lockedColumnsNames={lockedColumnsNames}
+                            setLockedColumnsNames={setLockedColumnsNames}
+                        />
+                    </Grid>
+                    <Grid item style={{ flexGrow: 1 }}></Grid>
+                    <Grid item>
+                        <CsvExport
+                            gridRef={gridRef}
+                            columns={columnData}
+                            tableName={
+                                TABLES_DEFINITION_INDEXES.get(tabIndex).name
+                            }
+                            disabled={
+                                !!(
+                                    props.disabled ||
+                                    rowData.length === 0 ||
+                                    editingData
+                                )
+                            }
+                        />
+                    </Grid>
                 </Grid>
             </Grid>
             {props.disabled ? (
@@ -704,6 +839,7 @@ const TableWrapper = (props) => {
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}
+                        handleEditingStarted={handleEditingStarted}
                         handleEditingStopped={handleEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}

@@ -25,7 +25,6 @@ import {
     LINE_FLOW_ALERT_THRESHOLD,
     LINE_FULL_PATH,
     LINE_PARALLEL_PATH,
-    LOAD_GEO_DATA_SUCCESS,
     OPEN_STUDY,
     SELECT_THEME,
     USE_NAME,
@@ -94,7 +93,10 @@ import {
     RESET_EQUIPMENTS_POST_LOADFLOW,
     SET_COMPUTING_STATUS,
     SET_OPTIONAL_SERVICES,
+    SET_STUDY_INDEXATION_STATUS,
+    STUDY_INDEXATION_STATUS,
     SET_COMPUTATION_RUNNING,
+    MAP_DATA_LOADING,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -211,6 +213,7 @@ const initialState = {
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
+    mapDataLoading: false,
     loadflowNotif: false,
     saNotif: false,
     voltageInitNotif: false,
@@ -238,6 +241,7 @@ const initialState = {
     computingStatus: { ...initialComputingStatus },
     computationRunning: false,
     optionalServices: defaultOptionalServicesState,
+    studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -282,10 +286,6 @@ export const reducer = createReducer(initialState, {
             newMapEquipments.completeHvdcLinesInfos();
         }
         state.mapEquipments = newMapEquipments;
-    },
-
-    [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
-        state.geoData = action.geoData;
     },
 
     [LOAD_NETWORK_MODIFICATION_TREE_SUCCESS]: (state, action) => {
@@ -424,6 +424,10 @@ export const reducer = createReducer(initialState, {
             force: 1 - state.studyUpdated.force,
             eventData: action.eventData,
         };
+    },
+
+    [MAP_DATA_LOADING]: (state, action) => {
+        state.mapDataLoading = action.mapDataLoading;
     },
 
     [SELECT_THEME]: (state, action) => {
@@ -1042,6 +1046,9 @@ export const reducer = createReducer(initialState, {
 
     [SET_OPTIONAL_SERVICES]: (state, action) => {
         state.optionalServices = action.optionalServices;
+    },
+    [SET_STUDY_INDEXATION_STATUS]: (state, action) => {
+        state.studyIndexationStatus = action.studyIndexationStatus;
     },
 });
 

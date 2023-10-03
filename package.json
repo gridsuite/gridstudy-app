@@ -6,12 +6,11 @@
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
-        "@gridsuite/commons-ui": "0.35.6",
+        "@gridsuite/commons-ui": "0.36.1",
         "@hookform/resolvers": "^3.0.0",
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
         "@mui/material": "^5.5.3",
-        "@mui/styles": "^5.5.3",
         "@powsybl/diagram-viewer": "0.1.11",
         "@reduxjs/toolkit": "^1.2.3",
         "@svgdotjs/svg.js": "^3.0.12",

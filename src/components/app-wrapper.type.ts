@@ -18,6 +18,9 @@ declare module '@mui/material/styles' {
         link: {
             color: string;
         };
+        overlay: {
+            background: string;
+        };
     }
 
     interface ThemeOptions {
@@ -28,13 +31,10 @@ declare module '@mui/material/styles' {
         link: {
             color: string;
         };
+        overlay: {
+            background: string;
+        };
     }
-}
-
-// used to accept properties from muiV4 like spacing, palette...
-// https://mui.com/material-ui/migration/troubleshooting/#types-property-quot-palette-quot-quot-spacing-quot-does-not-exist-on-type-defaulttheme
-declare module '@mui/styles/defaultTheme' {
-    interface DefaultTheme extends Theme {}
 }
 
 declare module 'ag-grid-community' {

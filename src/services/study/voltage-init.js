@@ -70,12 +70,21 @@ export function updateVoltageInitParameters(studyUuid, newParams) {
     });
 }
 
-export function getVoltageInitParameters(studyUuid) {
-    console.info('get voltage init parameters');
+export function getVoltageInitStudyParameters(studyUuid) {
+    console.info('get voltage init study parameters');
     const getVoltageInitParams =
         getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(getVoltageInitParams);
     return backendFetchJson(getVoltageInitParams);
+}
+
+export function getVoltageInitModifications(studyUuid, currentNodeId) {
+    console.info('get voltage init modifications');
+    const getVoltageInitModifications =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeId) +
+        '/voltage-init/modifications';
+    console.debug(getVoltageInitModifications);
+    return backendFetchJson(getVoltageInitModifications);
 }
 
 export function cloneVoltageInitModifications(studyUuid, currentNodeId) {
