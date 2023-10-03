@@ -131,7 +131,7 @@ mat3 calculateRotation(vec3 commonPosition1, vec3 commonPosition2) {
 /**
  * Adjustment factor for low zoom levels
  * Code from deck.gl/modules/core/src/shaderlib/project/project.glsl.ts. We don't have access to this method from here. 
- * We have to call it to fork the project_size() method from deck.gl.
+ * Just to call it from project_size_all_zoom_levels().
  */
 float project_size_at_latitude(float lat) {
   float y = clamp(lat, -89.9, 89.9);
@@ -139,16 +139,16 @@ float project_size_at_latitude(float lat) {
 }
 
 /**
+ * Forked version of project_size() from deck.gl deck.gl/modules/core/src/shaderlib/project/project.glsl.ts
  * Converts the size from the world space (meters) to the common space.
  * When the zoom level is lower than 12 (zoomed out), we use the arrow latitude to calculate the projection. 
- * When the zoom level is higher than 12 (zoomed in), we fallback on the standard deck.gl project_size(). 
+ * When the zoom level is higher than 12 (zoomed in), we fallback on the standard deck.gl project_size() which uses geometry.position.y. 
  * I'm not sure why there is a change at zoomLevel = 12, but there seem to be some optimizations on the deck.gl side
  * (see: https://github.com/visgl/deck.gl/blob/401d624c0529faaa62125714c376b3ba3b8f379f/dev-docs/RFCs/v6.1/improved-lnglat-projection-rfc.md?plain=1#L29)
  */
-float project_size_at_latitude(float meters, float lat) {
-   // project_uScale = 2^(zoom)
-   if (log2(project_uScale) < 12.0) { 
-    // Code from deck.gl/modules/core/src/shaderlib/project/project.glsl.ts. We don't have access to this method from here. 
+float project_size_all_zoom_levels(float meters, float lat) {
+   // We use project_uScale = 4096 (2^12) which corresponds to zoom = 12 
+   if (project_uScale < 4096.0) { 
     return meters * project_uCommonUnitsPerMeter.z * project_size_at_latitude(lat);
   }
   return project_size(meters);
@@ -185,15 +185,11 @@ void main(void) {
       vec3 commonPosition1 = project_position(linePosition1, position64Low);
       vec3 commonPosition2 = project_position(linePosition2, position64Low);
 
-      // project offset in the common space using arrow latitude instead of geometry.position.y at low zoom levels (zoom < 12).
-      // When zoom < 12, we pass a different second argument to project_size_at_latitude() compared with the deck.gl project_size().
-      // When using the standard deck.gl project_size(), it uses geometry.position.y to project meters to the common space. 
-      // The deck.gl project_size() introduces an offset when zoom level < 12 for this case. 
-      // I'm not sure why there is a change at zoomLevel = 12, but there seem to be some optimizations on the deck.gl side
-      // (see: https://github.com/visgl/deck.gl/blob/401d624c0529faaa62125714c376b3ba3b8f379f/dev-docs/RFCs/v6.1/improved-lnglat-projection-rfc.md?plain=1#L29)
+      // We call our own project_size_all_zoom_levels() instead of project_size() from deck.gl as the latter causes a bug: the arrows
+      // are not correctly positioned on the lines, they are slightly off. 
       // This hack does not seem necessary for parallel-path or fork-line layers.
       vec3 arrowPositionWorldSpace = mix(linePosition1, linePosition2, interpolationValue);
-      float offsetCommonSpace = clamp(project_size_at_latitude(distanceBetweenLines, arrowPositionWorldSpace.y), project_pixel_size(minParallelOffset), project_pixel_size(maxParallelOffset));
+      float offsetCommonSpace = clamp(project_size_all_zoom_levels(distanceBetweenLines, arrowPositionWorldSpace.y), project_pixel_size(minParallelOffset), project_pixel_size(maxParallelOffset));
 
       // calculate translation for the parallels lines, use the angle calculated from origin/destination
       // to maintain the same translation between segments
