@@ -1174,7 +1174,7 @@ DiagramPane.propTypes = {
     currentNode: PropTypes.object,
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
-    loadFlowStatus: PropTypes.any,
-    oneBusShortCircuitStatus: PropTypes.any,
+    loadFlowStatus: PropTypes.string.isRequired,
+    oneBusShortCircuitStatus: PropTypes.string.isRequired,
     visible: PropTypes.bool,
 };
