@@ -464,8 +464,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [runnable[ComputingType.SENSITIVITY_ANALYSIS]]
                 : []),
-            ...(shortCircuitAvailability === OptionalServicesStatus.Up &&
-            enableDeveloperMode
+            ...(shortCircuitAvailability === OptionalServicesStatus.Up
                 ? [runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]]
                 : []),
             ...(dynamicSimulationAvailability === OptionalServicesStatus.Up &&

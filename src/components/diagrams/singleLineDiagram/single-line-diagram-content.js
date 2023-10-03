@@ -477,7 +477,6 @@ function SingleLineDiagramContent(props) {
 
                 // callback on the buses
                 isReadyForInteraction &&
-                enableDeveloperMode &&
                 shortCircuitAvailability === OptionalServicesStatus.Up
                     ? showBusMenu
                     : null,
