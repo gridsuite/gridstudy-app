@@ -130,7 +130,7 @@ mat3 calculateRotation(vec3 commonPosition1, vec3 commonPosition2) {
 
 /**
  * Adjustment factor for low zoom levels
- * Code from deck.gl/modules/core/src/shaderlib/project/project.glsl.ts
+ * Code from deck.gl/modules/core/src/shaderlib/project/project.glsl.ts. We don't have access to this method from here. 
  */
 float project_size_at_latitude(float lat) {
   float y = clamp(lat, -89.9, 89.9);
@@ -139,7 +139,7 @@ float project_size_at_latitude(float lat) {
 
 /**
  * Converts the size from the world space (meters) to the common space at given latitude.
- * Code from deck.gl/modules/core/src/shaderlib/project/project.glsl.ts
+ * Code from deck.gl/modules/core/src/shaderlib/project/project.glsl.ts. We don't have access to this method from here. 
  */
 float project_size_at_latitude(float meters, float lat) {
   return meters * project_uCommonUnitsPerMeter.z * project_size_at_latitude(lat);
