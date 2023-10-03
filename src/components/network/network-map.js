@@ -432,7 +432,9 @@ const NetworkMap = (props) => {
         longitude: props.initialPosition[0],
         latitude: props.initialPosition[1],
         zoom: props.initialZoom,
-        maxZoom: 12,
+        // Use a maximum zoom level of 11.5 to avoid zoom level = 12 which introduces
+        // an offset between arrows and lines.
+        maxZoom: 11.5,
         pitch: 0,
         bearing: 0,
     };
