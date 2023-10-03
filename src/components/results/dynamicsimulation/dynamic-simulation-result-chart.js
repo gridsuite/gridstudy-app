@@ -12,6 +12,7 @@ import {
     Paper,
     TextField,
     ToggleButton,
+    Tooltip,
     Typography,
 } from '@mui/material';
 
@@ -32,7 +33,6 @@ import { lighten } from '@mui/material/styles';
 import { useDebounce } from '@gridsuite/commons-ui';
 import { mergeSx } from '../../utils/functions';
 
-const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
 const styles = {
     root: {
         display: 'flex',
@@ -93,6 +93,17 @@ const DynamicSimulationResultChart = ({
     loadTimeSeries,
 }) => {
     const intl = useIntl();
+
+    const headers = useMemo(
+        () => [
+            intl.formatMessage({ id: 'DynamicSimulationSeriesListLeftAxis' }),
+            intl.formatMessage({
+                id: 'DynamicSimulationSeriesListAvailableCurves',
+            }),
+            intl.formatMessage({ id: 'DynamicSimulationSeriesListRightAxis' }),
+        ],
+        [intl]
+    );
 
     // store the previous layout when scaling in order to restore later
     const prevLayoutRef = useRef([]);
@@ -289,11 +300,6 @@ const DynamicSimulationResultChart = ({
 
             // set the current plot id in scaling
             setPlotIdScale(plotScale ? plotId : undefined);
-
-            // auto switch in full view
-            if (plotScale) {
-                setFullView(plotScale);
-            }
         },
         [prevLayoutRef]
     );
@@ -352,7 +358,23 @@ const DynamicSimulationResultChart = ({
                                     selected={sync}
                                     onChange={handleSync}
                                 >
-                                    {sync ? <SyncIcon /> : <SyncDisabledIcon />}
+                                    {sync ? (
+                                        <Tooltip
+                                            title={intl.formatMessage({
+                                                id: 'DynamicSimulationSyncPlotEnable',
+                                            })}
+                                        >
+                                            <SyncIcon />
+                                        </Tooltip>
+                                    ) : (
+                                        <Tooltip
+                                            title={intl.formatMessage({
+                                                id: 'DynamicSimulationSyncPlotDisable',
+                                            })}
+                                        >
+                                            <SyncDisabledIcon />
+                                        </Tooltip>
+                                    )}
                                 </ToggleButton>
                                 <Typography sx={styles.colsLabel}>
                                     {`${intl.formatMessage({
@@ -378,7 +400,9 @@ const DynamicSimulationResultChart = ({
                     {!plotIdScale && (
                         <Grid item ml={2}>
                             <TooltipIconButton
-                                toolTip={'Add a graph'}
+                                toolTip={intl.formatMessage({
+                                    id: 'DynamicSimulationAddGraph',
+                                })}
                                 sx={styles.addButton}
                                 onClick={handleAddNewPlot}
                             >
@@ -397,9 +421,21 @@ const DynamicSimulationResultChart = ({
                                 onChange={handleFullView}
                             >
                                 {fullView ? (
-                                    <FullscreenExitSharpIcon />
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DynamicSimulationFullViewDisable',
+                                        })}
+                                    >
+                                        <FullscreenExitSharpIcon />
+                                    </Tooltip>
                                 ) : (
-                                    <FitScreenSharpIcon />
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DynamicSimulationFullViewEnable',
+                                        })}
+                                    >
+                                        <FitScreenSharpIcon />
+                                    </Tooltip>
                                 )}
                             </ToggleButton>
                             <ToggleButton
@@ -409,9 +445,21 @@ const DynamicSimulationResultChart = ({
                                 onChange={handleShowSeriesList}
                             >
                                 {showSeriesList ? (
-                                    <MenuOpen sx={styles.menuCloseButton} />
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DynamicSimulationShowSeriesListDisable',
+                                        })}
+                                    >
+                                        <MenuOpen sx={styles.menuCloseButton} />
+                                    </Tooltip>
                                 ) : (
-                                    <MenuOpen />
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DynamicSimulationShowSeriesListEnable',
+                                        })}
+                                    >
+                                        <MenuOpen />
+                                    </Tooltip>
                                 )}
                             </ToggleButton>
                         </Paper>

@@ -23,6 +23,8 @@ import {
     deleteEquipment,
     resetEquipments,
     resetEquipmentsPostLoadflow,
+    setStudyIndexationStatus,
+    STUDY_INDEXATION_STATUS,
 } from '../redux/actions';
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
@@ -51,8 +53,11 @@ import { CreateStudyDialog } from './create-study-dialog/create-study-dialog';
 import { fetchAllEquipments } from '../services/study/network-map';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
-import { fetchNetworkExistence } from '../services/study/network';
-import { recreateStudyNetwork } from 'services/study/study';
+import {
+    fetchNetworkExistence,
+    fetchStudyIndexationStatus,
+} from '../services/study/network';
+import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
 import { HttpStatusCode } from 'utils/http-status-code';
 
 function isWorthUpdate(
@@ -196,6 +201,9 @@ function usePrevious(value) {
 export const UPDATE_TYPE_HEADER = 'updateType';
 const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE =
     'study_network_recreation_done';
+const UPDATE_TYPE_INDEXATION_STATUS = 'indexation_status_updated';
+const HEADER_INDEXATION_STATUS = 'indexation_status';
+
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
@@ -223,6 +231,13 @@ export function StudyContainer({ view, onChangeTab }) {
     const [errorMessage, setErrorMessage] = useState(undefined);
 
     const [isStudyNetworkFound, setIsStudyNetworkFound] = useState(false);
+    const studyIndexationStatus = useSelector(
+        (state) => state.studyIndexationStatus
+    );
+    const studyIndexationStatusRef = useRef();
+    studyIndexationStatusRef.current = studyIndexationStatus;
+    const [isStudyIndexationPending, setIsStudyIndexationPending] =
+        useState(false);
 
     const [initialTitle] = useState(document.title);
 
@@ -472,12 +487,22 @@ export function StudyContainer({ view, onChangeTab }) {
                         });
                     });
 
-                const firstSelectedNode =
-                    getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
-                        BUILD_STATUS.BUILT,
-                        BUILD_STATUS.BUILT_WITH_WARNING,
-                        BUILD_STATUS.BUILT_WITH_ERROR,
-                    ]) || getFirstNodeOfType(tree, 'ROOT');
+                // Select root node by default
+                let firstSelectedNode = getFirstNodeOfType(tree, 'ROOT');
+                // if reindexation is ongoing then stay on root node, all variants will be removed
+                // if indexation is done then look for the next built node.
+                // This is to avoid future fetch on variants removed during reindexation process
+                if (
+                    studyIndexationStatusRef.current ===
+                    STUDY_INDEXATION_STATUS.INDEXED
+                ) {
+                    firstSelectedNode =
+                        getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
+                            BUILD_STATUS.BUILT,
+                            BUILD_STATUS.BUILT_WITH_WARNING,
+                            BUILD_STATUS.BUILT_WITH_ERROR,
+                        ]) || firstSelectedNode;
+                }
 
                 // To get positions we must get the node from the model class
                 const ModelFirstSelectedNode = {
@@ -550,6 +575,54 @@ export function StudyContainer({ view, onChangeTab }) {
         [studyUuid, loadTree, snackError, snackWarning, intlRef]
     );
 
+    const checkStudyIndexation = useCallback(() => {
+        setIsStudyIndexationPending(true);
+        fetchStudyIndexationStatus(studyUuid)
+            .then((status) => {
+                switch (status) {
+                    case STUDY_INDEXATION_STATUS.INDEXED: {
+                        dispatch(setStudyIndexationStatus(status));
+                        setIsStudyIndexationPending(false);
+                        break;
+                    }
+                    case STUDY_INDEXATION_STATUS.INDEXING_ONGOING: {
+                        dispatch(setStudyIndexationStatus(status));
+                        break;
+                    }
+                    case STUDY_INDEXATION_STATUS.NOT_INDEXED: {
+                        dispatch(setStudyIndexationStatus(status));
+                        reindexAllStudy(studyUuid)
+                            .catch((error) => {
+                                // unknown error when trying to reindex study
+                                snackError({
+                                    headerId: 'studyIndexationError',
+                                    messageTxt: error,
+                                });
+                            })
+                            .finally(() => {
+                                setIsStudyIndexationPending(false);
+                            });
+                        break;
+                    }
+                    default: {
+                        setIsStudyIndexationPending(false);
+                        snackError({
+                            headerId: 'studyIndexationStatusUnknown',
+                            headerValues: { status: status },
+                        });
+                        break;
+                    }
+                }
+            })
+            .catch(() => {
+                // unknown error when checking study indexation status
+                setIsStudyIndexationPending(false);
+                snackError({
+                    headerId: 'checkstudyIndexationError',
+                });
+            });
+    }, [studyUuid, dispatch, snackError]);
+
     useEffect(() => {
         if (studyUuid && !isStudyNetworkFound) {
             checkNetworkExistenceAndRecreateIfNotFound();
@@ -559,6 +632,15 @@ export function StudyContainer({ view, onChangeTab }) {
         checkNetworkExistenceAndRecreateIfNotFound,
         studyUuid,
     ]);
+
+    useEffect(() => {
+        if (
+            studyUuid &&
+            studyIndexationStatus === STUDY_INDEXATION_STATUS.NOT_INDEXED
+        ) {
+            checkStudyIndexation();
+        }
+    }, [checkStudyIndexation, studyIndexationStatus, studyUuid]);
 
     function parseStudyNotification(studyUpdatedForce) {
         const payload = studyUpdatedForce.eventData.payload;
@@ -639,11 +721,32 @@ export function StudyContainer({ view, onChangeTab }) {
                 });
 
             checkNetworkExistenceAndRecreateIfNotFound(successCallback);
+        } else if (
+            studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] ===
+            UPDATE_TYPE_INDEXATION_STATUS
+        ) {
+            dispatch(
+                setStudyIndexationStatus(
+                    studyUpdatedForce.eventData.headers?.[
+                        HEADER_INDEXATION_STATUS
+                    ]
+                )
+            );
+            if (
+                studyUpdatedForce.eventData.headers?.[
+                    HEADER_INDEXATION_STATUS
+                ] === STUDY_INDEXATION_STATUS.INDEXED
+            ) {
+                snackInfo({
+                    headerId: 'studyIndexationDone',
+                });
+            }
         }
     }, [
         studyUpdatedForce,
         checkNetworkExistenceAndRecreateIfNotFound,
         snackInfo,
+        dispatch,
     ]);
 
     //handles map automatic mode network reload
@@ -753,7 +856,14 @@ export function StudyContainer({ view, onChangeTab }) {
         <>
             <WaitingLoader
                 errMessage={studyErrorMessage || errorMessage}
-                loading={studyPending || !paramsLoaded || !isStudyNetworkFound} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+                loading={
+                    studyPending ||
+                    !paramsLoaded ||
+                    !isStudyNetworkFound ||
+                    (studyIndexationStatus !==
+                        STUDY_INDEXATION_STATUS.INDEXED &&
+                        isStudyIndexationPending)
+                } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
                 message={'LoadingRemoteData'}
             >
                 <StudyPane
