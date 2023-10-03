@@ -669,6 +669,7 @@
     "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
     "MinReactivePowerLessThanMaxReactivePower": "Minimum reactive power value must be less or equal than maximum reactive power value",
     "MaxReactivePowerGreaterThanMinReactivePower": "Maximum reactive power value must be greater or equal than minimum reactive power value",
+    "ActivePowerLessThanMaxActivePower": "Active power value must be less or equal than maximum active power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "DroopGreaterThanZero": "The droop value must be strictly positive",
