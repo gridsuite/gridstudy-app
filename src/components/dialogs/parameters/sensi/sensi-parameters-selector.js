@@ -145,6 +145,7 @@ const SensiParametersSelector = () => {
                                         tableHeight={270}
                                         withAddRowsDialog={false}
                                         withLeftButtons={false}
+                                        dropDisabled={true}
                                     />
                                 </TabPanel>
                                 <TabPanel
@@ -163,6 +164,7 @@ const SensiParametersSelector = () => {
                                         tableHeight={270}
                                         withAddRowsDialog={false}
                                         withLeftButtons={false}
+                                        dropDisabled={true}
                                     />
                                 </TabPanel>
                                 <TabPanel
@@ -181,6 +183,7 @@ const SensiParametersSelector = () => {
                                         tableHeight={270}
                                         withAddRowsDialog={false}
                                         withLeftButtons={false}
+                                        dropDisabled={true}
                                     />
                                 </TabPanel>
                                 <TabPanel
@@ -199,6 +202,7 @@ const SensiParametersSelector = () => {
                                         tableHeight={270}
                                         withAddRowsDialog={false}
                                         withLeftButtons={false}
+                                        dropDisabled={true}
                                     />
                                 </TabPanel>
                             </>
@@ -214,6 +218,7 @@ const SensiParametersSelector = () => {
                                 tableHeight={270}
                                 withAddRowsDialog={false}
                                 withLeftButtons={false}
+                                dropDisabled={true}
                             />
                         )}
                     </TabPanel>
