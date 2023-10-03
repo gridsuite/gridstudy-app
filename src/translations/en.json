@@ -363,6 +363,12 @@
     "resetProviderValuesToDefault": "Reset provider default values",
     "showAdvancedParameters": "Advanced settings",
     "showSpecificParameters": "Specific settings",
+    "save": "Save",
+    "saveParameters": "Save settings",
+    "loadParameters": "Predefined settings",
+    "showSelectDirectoryDialog": "Choose folder",
+    "showSelectParameterDialog": "Choose parameter",
+    "nameAlreadyUsed": "This name is already used",
 
     "descLfReadSlackBus": "Read slack bus in the network",
     "descLfWriteSlackBus": "Write slack bus in the network",
@@ -1126,8 +1132,14 @@
     "droopLabel": "Droop",
     "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
     "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
+
     "MagnetizingConductanceWithUnit": "Magnetizing conductance (μS)",
     "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
-    "RatedNominalPower": "Rated nominal power (MVA)"
+    "RatedNominalPower": "Rated nominal power (MVA)",
 
+    "studyIndexationDone": "Study indexation done. Search functionality is now available",
+    "studyIndexationError": "Study indexation process has failed.",
+    "checkstudyIndexationError": "Study indexation checking has failed.",
+    "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
+    "waitingStudyIndexation": "Waiting for Study indexation..."
 }
