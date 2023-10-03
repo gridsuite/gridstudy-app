@@ -314,6 +314,7 @@
     "ShortCircuitAnalysisResultsError": "Une erreur s'est produite lors de la récupération du résultat de court-circuit",
     "ShortCircuitAnalysisTabOneBus": "Unitaire",
     "ShortCircuitAnalysisTabAllBuses": "Réseau",
+    "OneBusShortCircuitAnalysis": "Analyse de court-circuit unitaire",
     "IDNode": "ID nœud",
     "IscKA": "Icc (kA)",
     "IscMinKA": "Icc min (kA)",
@@ -1159,6 +1160,7 @@
     "MagnetizingSusceptanceWithUnit": "Susceptance magnétisante (μS)",
     "RatedNominalPower": "Puissance nominale (MVA)",
 
+    "tableChangingError": "Une erreur est survenue lors de la modification des données",
     "studyIndexationDone": "L'indexation de l'étude est terminée. La fonctionnalité de recherche est disponible",
     "studyIndexationError": "L'indexation de l'étude a échoué.",
     "checkstudyIndexationError": "La récupération de l'état d'indexation de l'étude a échoué.",

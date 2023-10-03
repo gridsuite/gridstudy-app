@@ -709,19 +709,15 @@ const TableWrapper = (props) => {
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
                     rollbackEdit();
-                    let message = intl.formatMessage({
-                        id: 'paramsChangingDenied',
-                    });
                     snackError({
-                        messageTxt: message,
-                        headerId: 'paramsChangingError',
+                        messageTxt: promiseErrorMsg,
+                        headerId: 'tableChangingError',
                     });
                 });
         },
         [
             buildEditPromise,
             editingData,
-            intl,
             priorValuesBuffer,
             resetBuffer,
             rollbackEdit,

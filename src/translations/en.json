@@ -313,6 +313,7 @@
     "ShortCircuitAnalysisResultsError": "An error occurred while retrieving short circuit analysis result",
     "ShortCircuitAnalysisTabOneBus": "One bus",
     "ShortCircuitAnalysisTabAllBuses": "All buses",
+    "OneBusShortCircuitAnalysis": "One bus short circuit analysis",
     "startSensitivityAnalysisError": "An error occurred while executing the sensitivity analysis",
     "IDNode": "ID bus",
     "IscKA": "Isc (kA)",
@@ -1138,6 +1139,7 @@
     "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
     "RatedNominalPower": "Rated nominal power (MVA)",
 
+    "tableChangingError": "An error occured when modifying the data",
     "studyIndexationDone": "Study indexation done. Search functionality is now available",
     "studyIndexationError": "Study indexation process has failed.",
     "checkstudyIndexationError": "Study indexation checking has failed.",
