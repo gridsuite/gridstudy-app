@@ -189,7 +189,9 @@ void main(void) {
       // When zoom < 12, we pass a different second argument to project_size_at_latitude() compared with the deck.gl project_size().
       // When using the standard deck.gl project_size(), it uses geometry.position.y to project meters to the common space. 
       // The deck.gl project_size() introduces an offset when zoom level < 12 for this case. 
-      // This hack not seem necessary for parallel-path or fork-line layers.
+      // I'm not sure why there is a change at zoomLevel = 12, but there seem to be some optimizations on the deck.gl side
+      // (see: https://github.com/visgl/deck.gl/blob/401d624c0529faaa62125714c376b3ba3b8f379f/dev-docs/RFCs/v6.1/improved-lnglat-projection-rfc.md?plain=1#L29)
+      // This hack does not seem necessary for parallel-path or fork-line layers.
       vec3 arrowPositionWorldSpace = mix(linePosition1, linePosition2, interpolationValue);
       float offsetCommonSpace = clamp(project_size_at_latitude(distanceBetweenLines, arrowPositionWorldSpace.y), project_pixel_size(minParallelOffset), project_pixel_size(maxParallelOffset));
 
