@@ -25,59 +25,61 @@ export const useFormSearchCopy = ({
     const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
 
     const handleSelectionChange = (element) => {
-        let msg;
-        const fetchElementPromise = fetchNetworkElementInfos(
-            studyUuid,
-            currentNodeUuid,
-            elementType,
-            EQUIPMENT_INFOS_TYPES.FORM.type,
-            element.id,
-            true
-        );
-        return fetchElementPromise
-            .then((response) => {
-                const equipmentFormValues = toFormValues(response);
-                setFormValues(equipmentFormValues);
+        if (element) {
+            let msg;
+            const fetchElementPromise = fetchNetworkElementInfos(
+                studyUuid,
+                currentNodeUuid,
+                elementType,
+                EQUIPMENT_INFOS_TYPES.FORM.type,
+                element.id,
+                true
+            );
+            return fetchElementPromise
+                .then((response) => {
+                    const equipmentFormValues = toFormValues(response);
+                    setFormValues(equipmentFormValues);
 
-                msg = intl.formatMessage(
-                    { id: 'EquipmentCopied' },
-                    {
-                        equipmentId: element.id,
-                    }
-                );
-                snackInfo({
-                    messageTxt: msg,
-                });
-            })
-            .catch((error) => {
-                console.error(
-                    'error while fetching equipment {equipmentId} : message = {message}',
-                    element.id,
-                    error.message
-                );
-                if (error.status === 404) {
                     msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed404' },
+                        { id: 'EquipmentCopied' },
                         {
                             equipmentId: element.id,
                         }
                     );
-                } else {
-                    msg =
-                        intl.formatMessage(
-                            { id: 'EquipmentCopyFailed' },
+                    snackInfo({
+                        messageTxt: msg,
+                    });
+                })
+                .catch((error) => {
+                    console.error(
+                        'error while fetching equipment {equipmentId} : message = {message}',
+                        element.id,
+                        error.message
+                    );
+                    if (error.status === 404) {
+                        msg = intl.formatMessage(
+                            { id: 'EquipmentCopyFailed404' },
                             {
                                 equipmentId: element.id,
                             }
-                        ) +
-                        ' ' +
-                        error.message;
-                }
-                snackError({
-                    messageTxt: msg,
-                });
-            })
-            .finally(() => handleCloseSearchDialog());
+                        );
+                    } else {
+                        msg =
+                            intl.formatMessage(
+                                { id: 'EquipmentCopyFailed' },
+                                {
+                                    equipmentId: element.id,
+                                }
+                            ) +
+                            ' ' +
+                            error.message;
+                    }
+                    snackError({
+                        messageTxt: msg,
+                    });
+                })
+                .finally(() => handleCloseSearchDialog());
+        }
     };
 
     const handleCloseSearchDialog = () => {
