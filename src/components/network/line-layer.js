@@ -916,7 +916,7 @@ class LineLayer extends CompositeLayer {
                             ? Math.round(activePower.p).toString()
                             : '',
                     // The position passed to this layer introduces an offset when zooming and maxParallelOffset is reached.
-                    // In the custom layers, we clamp the distanceBeweenLines. This is not done in the deck.gl TextLayer
+                    // In the custom layers, we clamp the distanceBetweenLines. This is not done in the deck.gl TextLayer
                     // and IconLayer or in the position calculated here.
                     getPosition: (activePower) => activePower.printPosition,
                     getColor: this.props.labelColor,
@@ -954,7 +954,7 @@ class LineLayer extends CompositeLayer {
                     id: 'BranchStatus' + compositeData.nominalVoltage,
                     data: compositeData.branchStatus,
                     // The position passed to this layer introduces an offset when zooming and maxParallelOffset is reached.
-                    // In the custom layers, we clamp the distanceBeweenLines. This is not done in the deck.gl TextLayer
+                    // In the custom layers, we clamp the distanceBetweenLines. This is not done in the deck.gl TextLayer
                     // and IconLayer or in the position calculated here.
                     getPosition: (branchStatus) => branchStatus.printPosition,
                     getIcon: (branchStatus) => getLineIcon(branchStatus.status),
