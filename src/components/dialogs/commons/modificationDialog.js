@@ -46,8 +46,24 @@ const ModificationDialog = ({
         closeAndClear(data, 'validateButtonClick');
     };
 
-    const handleValidationError = (errors) =>
+    const handleValidationError = (errors) => {
         onValidationError && onValidationError(errors);
+
+        // When scrolling to the field with focus, you can end up with the label not completely displayed
+        // We ensure that field with focus is displayed in the middle of the dialog
+        // Delay focusing to ensure it happens after the validation. without timout, document.activeElement will return the validation button.
+        // Delay of 0 milliseconds, effectively running at the next opportunity;
+        setTimeout(() => {
+            const focusedElement = document.activeElement;
+
+            if (focusedElement instanceof HTMLElement) {
+                focusedElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }
+        }, 0);
+    };
 
     const submitButton = (
         <SubmitButton

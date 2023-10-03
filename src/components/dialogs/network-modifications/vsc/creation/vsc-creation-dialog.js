@@ -217,6 +217,11 @@ const VscCreationDialog = ({
         if (errors?.[CONVERTER_STATION_2] !== undefined) {
             tabsInError.push(VSC_CREATION_TABS.CONVERTER_STATION_2);
         }
+
+        if (tabsInError.length > 0) {
+            setTabIndex(tabsInError[0]);
+        }
+
         setTabIndexesWithError(tabsInError);
     };
 
