@@ -146,6 +146,7 @@ float project_size_at_latitude(float lat) {
  * (see: https://github.com/visgl/deck.gl/blob/401d624c0529faaa62125714c376b3ba3b8f379f/dev-docs/RFCs/v6.1/improved-lnglat-projection-rfc.md?plain=1#L29)
  */
 float project_size_at_latitude(float meters, float lat) {
+   // project_uScale = 2^(zoom)
    if (log2(project_uScale) < 12.0) { 
     // Code from deck.gl/modules/core/src/shaderlib/project/project.glsl.ts. We don't have access to this method from here. 
     return meters * project_uCommonUnitsPerMeter.z * project_size_at_latitude(lat);
