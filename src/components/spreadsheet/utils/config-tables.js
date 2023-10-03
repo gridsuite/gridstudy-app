@@ -191,7 +191,9 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 editable: true,
                 valueGetter: (params) =>
-                    unitToKiloUnit(params.data.identifiableShortCircuit.ipMin),
+                    unitToKiloUnit(
+                        params.data?.identifiableShortCircuit?.ipMin
+                    ),
                 valueSetter: (params) => {
                     params.data.identifiableShortCircuit = {
                         ...params.data.identifiableShortCircuit,
@@ -211,7 +213,9 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 editable: true,
                 valueGetter: (params) =>
-                    unitToKiloUnit(params.data.identifiableShortCircuit.ipMax),
+                    unitToKiloUnit(
+                        params.data?.identifiableShortCircuit?.ipMax
+                    ),
                 valueSetter: (params) => {
                     params.data.identifiableShortCircuit = {
                         ...params.data.identifiableShortCircuit,

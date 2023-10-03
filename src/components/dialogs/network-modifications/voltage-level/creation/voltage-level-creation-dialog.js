@@ -148,12 +148,12 @@ const VoltageLevelCreationDialog = ({
                 [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
                     fromCopy
-                        ? voltageLevel?.identifiableShortCircuit?.ipMin
+                        ? voltageLevel.identifiableShortCircuit?.ipMin
                         : voltageLevel.ipMin
                 ),
                 [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
                     fromCopy
-                        ? voltageLevel?.identifiableShortCircuit?.ipMax
+                        ? voltageLevel.identifiableShortCircuit?.ipMax
                         : voltageLevel.ipMax
                 ),
                 [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,

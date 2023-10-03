@@ -70,6 +70,7 @@ const CreateNodeMenu = ({
     handleCopySubtree,
     handlePasteSubtree,
     handleOpenRestoreNodesDialog,
+    disableRestoreNodes,
 }) => {
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -175,7 +176,7 @@ const CreateNodeMenu = ({
     }
 
     function isNodeRestorationAllowed() {
-        return !isAnyNodeBuilding && !mapDataLoading;
+        return !isAnyNodeBuilding && !mapDataLoading && !disableRestoreNodes;
     }
 
     function isNodeAlreadySelectedForCut() {
@@ -204,7 +205,6 @@ const CreateNodeMenu = ({
             isNodeHasChildren(activeNode, treeModel)
         );
     }
-
     const NODE_MENU_ITEMS = {
         BUILD_NODE: {
             onRoot: false,

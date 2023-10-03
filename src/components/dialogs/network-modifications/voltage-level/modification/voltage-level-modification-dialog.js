@@ -115,13 +115,11 @@ const VoltageLevelModificationDialog = ({
                             //We convert values of low short circuit current limit and high short circuit current limit from A to KA
                             voltageLevel.identifiableShortCircuit.ipMax =
                                 unitToKiloUnit(
-                                    voltageLevel?.identifiableShortCircuit
-                                        ?.ipMax
+                                    voltageLevel.identifiableShortCircuit?.ipMax
                                 );
                             voltageLevel.identifiableShortCircuit.ipMin =
                                 unitToKiloUnit(
-                                    voltageLevel?.identifiableShortCircuit
-                                        ?.ipMin
+                                    voltageLevel.identifiableShortCircuit?.ipMin
                                 );
                             setVoltageLevelInfos(voltageLevel);
                             setDataFetchStatus(FetchStatus.SUCCEED);
