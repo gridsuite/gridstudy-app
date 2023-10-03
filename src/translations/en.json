@@ -363,6 +363,12 @@
     "resetProviderValuesToDefault": "Reset provider default values",
     "showAdvancedParameters": "Advanced settings",
     "showSpecificParameters": "Specific settings",
+    "save": "Save",
+    "saveParameters": "Save settings",
+    "loadParameters": "Predefined settings",
+    "showSelectDirectoryDialog": "Choose folder",
+    "showSelectParameterDialog": "Choose parameter",
+    "nameAlreadyUsed": "This name is already used",
 
     "descLfReadSlackBus": "Read slack bus in the network",
     "descLfWriteSlackBus": "Write slack bus in the network",
