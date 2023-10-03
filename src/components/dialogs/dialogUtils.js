@@ -119,28 +119,6 @@ export const percentageTextField = {
 };
 export const func_identity = (e) => e;
 
-export function toIntValue(val) {
-    if (val === '-') {
-        return val;
-    }
-    return parseInt(val) || 0;
-}
-
-export function toPositiveIntValue(val) {
-    val.replace('-', '');
-    return parseInt(val) || 0;
-}
-
-export function toIntOrEmptyValue(val) {
-    if (val === '-') {
-        return val;
-    }
-    if (val === '0') {
-        return 0;
-    }
-    return parseInt(val) || '';
-}
-
 export function parseIntData(val, defaultValue) {
     const intValue = parseInt(val);
     return isNaN(intValue) ? defaultValue : intValue;
@@ -150,30 +128,6 @@ export function sanitizeString(val) {
     const trimedValue = val?.trim();
     return trimedValue === '' ? null : trimedValue;
 }
-
-export const toFloatValue = (val) => {
-    if (val === '-') {
-        return val;
-    }
-    if (val === '') {
-        return '';
-    }
-    // TODO: remove replace when parsing behaviour will be made according to locale
-    // Replace ',' by '.' to ensure double values can be parsed correctly
-    const tmp = val?.replace(',', '.') || '';
-    if (tmp.endsWith('.') || tmp.endsWith('0')) {
-        return val;
-    }
-    return parseFloat(tmp) || 0;
-};
-
-export const removeNullDataValues = (data) => {
-    Object.keys(data).forEach((key) => {
-        if (data[key] === null) {
-            delete data[key];
-        }
-    });
-};
 
 export const GridSection = ({
     title,
