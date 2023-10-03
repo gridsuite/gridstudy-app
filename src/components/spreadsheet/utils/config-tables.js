@@ -1811,14 +1811,14 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'AcEmulation',
-                field: 'isEnabled',
+                field: 'hvdcAngleDroopActivePowerControl.isEnabled',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'K',
-                field: 'k',
+                field: 'hvdcAngleDroopActivePowerControl.droop',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
@@ -1826,7 +1826,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'P0',
-                field: 'p0',
+                field: 'hvdcAngleDroopActivePowerControl.p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
