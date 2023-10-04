@@ -24,7 +24,10 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import {
+    PARAM_DEVELOPER_MODE,
+    PARAM_LIMIT_REDUCTION,
+} from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
@@ -119,6 +122,10 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
 
     const isModificationsInProgress = useSelector(
         (state) => state.isModificationsInProgress
+    );
+
+    const limitReductionParam = useSelector((state) =>
+        Number(state[PARAM_LIMIT_REDUCTION])
     );
 
     const securityAnalysisAvailability = useOptionalServiceStatus(
@@ -314,7 +321,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 )
             );
             setComputationStopped(false);
-            startLoadFlow(studyUuid, currentNode?.id)
+            startLoadFlow(
+                studyUuid,
+                currentNode?.id,
+                limitReductionParam / 100.0
+            )
                 .then(setRanLoadflow(true))
                 .catch((error) => {
                     dispatch(

@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { PARAMS_LOADED } from '../utils/config-params';
+import { PARAMS_LOADED, PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
@@ -58,6 +58,8 @@ import {
     fetchStudyIndexationStatus,
 } from '../services/study/network';
 import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
+import { invalidateLoadFlowStatus } from 'services/study/loadflow';
+
 import { HttpStatusCode } from 'utils/http-status-code';
 
 function isWorthUpdate(
@@ -259,6 +261,11 @@ export function StudyContainer({ view, onChangeTab }) {
         useState(false);
 
     const wsRef = useRef();
+
+    const limitReductionParam = useSelector((state) =>
+        Number(state[PARAM_LIMIT_REDUCTION])
+    );
+    const limitReductionParamRef = useRef(limitReductionParam);
 
     const closeImportStudyDialog = useCallback(() => {
         setIsImportStudyDialogDisplayed(false);
@@ -851,6 +858,21 @@ export function StudyContainer({ view, onChangeTab }) {
         connectNotifications,
         connectDeletedStudyNotifications,
     ]);
+
+    useEffect(() => {
+        if (studyUuid) {
+            if (limitReductionParam !== limitReductionParamRef.current) {
+                limitReductionParamRef.current = limitReductionParam;
+                // limit reduction param has changed : we invalidate the load flow status
+                invalidateLoadFlowStatus(studyUuid).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'invalidateLoadFlowStatusError',
+                    });
+                });
+            }
+        }
+    }, [studyUuid, limitReductionParam, snackError]);
 
     return (
         <>

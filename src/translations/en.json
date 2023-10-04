@@ -1146,5 +1146,7 @@
     "studyIndexationError": "Study indexation process has failed.",
     "checkstudyIndexationError": "Study indexation checking has failed.",
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
-    "waitingStudyIndexation": "Waiting for Study indexation..."
+    "waitingStudyIndexation": "Waiting for Study indexation...",
+
+    "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status"
 }
