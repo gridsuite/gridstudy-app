@@ -57,7 +57,7 @@ import {
     fetchNetworkExistence,
     fetchStudyIndexationStatus,
 } from '../services/study/network';
-import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
+import { recreateStudyNetwork, reindexAllStudy, reindexStudyIfNeeded } from 'services/study/study';
 import { HttpStatusCode } from 'utils/http-status-code';
 
 function isWorthUpdate(
@@ -577,49 +577,23 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const checkStudyIndexation = useCallback(() => {
         setIsStudyIndexationPending(true);
-        fetchStudyIndexationStatus(studyUuid)
-            .then((status) => {
-                switch (status) {
-                    case STUDY_INDEXATION_STATUS.INDEXED: {
-                        dispatch(setStudyIndexationStatus(status));
-                        setIsStudyIndexationPending(false);
-                        break;
-                    }
-                    case STUDY_INDEXATION_STATUS.INDEXING_ONGOING: {
-                        dispatch(setStudyIndexationStatus(status));
-                        break;
-                    }
-                    case STUDY_INDEXATION_STATUS.NOT_INDEXED: {
-                        dispatch(setStudyIndexationStatus(status));
-                        reindexAllStudy(studyUuid)
-                            .catch((error) => {
-                                // unknown error when trying to reindex study
-                                snackError({
-                                    headerId: 'studyIndexationError',
-                                    messageTxt: error,
-                                });
-                            })
-                            .finally(() => {
-                                setIsStudyIndexationPending(false);
-                            });
-                        break;
-                    }
-                    default: {
-                        setIsStudyIndexationPending(false);
-                        snackError({
-                            headerId: 'studyIndexationStatusUnknown',
-                            headerValues: { status: status },
-                        });
-                        break;
-                    }
-                }
+        reindexStudyIfNeeded(studyUuid)
+            .then(() => {
+                dispatch(
+                    setStudyIndexationStatus(
+                        STUDY_INDEXATION_STATUS.INDEXING_ONGOING
+                    )
+                );
             })
-            .catch(() => {
-                // unknown error when checking study indexation status
-                setIsStudyIndexationPending(false);
+            .catch((error) => {
+                // unknown error when trying to reindex study
                 snackError({
-                    headerId: 'checkstudyIndexationError',
+                    headerId: 'studyIndexationError',
+                    messageTxt: error,
                 });
+            })
+            .finally(() => {
+                setIsStudyIndexationPending(false);
             });
     }, [studyUuid, dispatch, snackError]);
 

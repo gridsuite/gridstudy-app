@@ -70,3 +70,18 @@ export const reindexAllStudy = (studyUuid: UUID): Promise<void> => {
         headers: { 'Content-Type': 'application/json' },
     });
 };
+
+export const reindexStudyIfNeeded = (studyUuid: UUID): Promise<void> => {
+    const reindexStudyIfNeededUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/reindex-if-needed';
+
+    console.debug(reindexStudyIfNeededUrl);
+
+    return backendFetch(reindexStudyIfNeededUrl, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+    });
+};
