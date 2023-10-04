@@ -1160,6 +1160,8 @@
     "MagnetizingSusceptanceWithUnit": "Susceptance magnétisante (μS)",
     "RatedNominalPower": "Puissance nominale (MVA)",
 
+    "ShortcircuitInProgress": "Calcul de court-circuit en cours...",
+    
     "tableChangingError": "Une erreur est survenue lors de la modification des données",
     "studyIndexationDone": "L'indexation de l'étude est terminée. La fonctionnalité de recherche est disponible",
     "studyIndexationError": "L'indexation de l'étude a échoué.",
