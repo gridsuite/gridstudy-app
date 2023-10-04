@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, useLayoutEffect, useRef } from 'react';
+import {
+    useCallback,
+    useState,
+    useLayoutEffect,
+    useRef,
+    useEffect,
+} from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
@@ -44,7 +50,7 @@ import {
     updateSwitchState,
 } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { setComputingStatus } from 'redux/actions';
+import { setComputationRunning, setComputingStatus } from 'redux/actions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { useDispatch } from 'react-redux';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
@@ -257,12 +263,14 @@ function SingleLineDiagramContent(props) {
                 )
             );
             displayOneBusShortcircuitAnalysisLoader();
+            dispatch(setComputationRunning(true));
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startShortCircuitError',
                     });
+                    dispatch(setComputationRunning(false));
                     dispatch(
                         setComputingStatus(
                             ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
@@ -452,6 +460,14 @@ function SingleLineDiagramContent(props) {
         }
     };
 
+    useEffect(() => {
+        dispatch(
+            setComputationRunning(
+                props.oneBusShortCircuitStatus === RunningStatus.RUNNING
+            )
+        );
+    }, [props.oneBusShortCircuitStatus, dispatch]);
+
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -495,7 +511,6 @@ function SingleLineDiagramContent(props) {
 
                 // callback on the buses
                 isReadyForInteraction &&
-                enableDeveloperMode &&
                 shortCircuitAvailability === OptionalServicesStatus.Up
                     ? showBusMenu
                     : null,
