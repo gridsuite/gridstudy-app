@@ -49,7 +49,6 @@ import {
     requestNetworkChange,
 } from '../../services/study/network-modifications';
 import { Box } from '@mui/system';
-import { kiloUnitToUnit } from 'utils/rounding';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -649,12 +648,13 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         getFieldValue(
-                            editingData.activePowerControlOn,
-                            editingDataRef.current.activePowerControlOn
+                            editingData.activePowerControl.activePowerControlOn,
+                            editingDataRef.current.activePowerControl
+                                .activePowerControlOn
                         ),
                         getFieldValue(
-                            editingData.droop,
-                            editingDataRef.current.droop
+                            editingData.activePowerControl.droop,
+                            editingDataRef.current.activePowerControl.droop
                         )
                     );
                 default:

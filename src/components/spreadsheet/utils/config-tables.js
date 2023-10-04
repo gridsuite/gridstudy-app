@@ -1616,13 +1616,22 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControlOn',
+                field: 'activePowerControl.activePowerControlOn',
                 cellRenderer: BooleanCellRenderer,
                 editable: true,
                 cellEditor: BooleanListField,
+                valueSetter: (params) => {
+                    params.data.activePowerControl = {
+                        ...params.data.activePowerControl,
+                        activePowerControlOn: params.newValue,
+                    };
+
+                    return params;
+                },
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue: params.data.activePowerControlOn | 0,
+                        defaultValue:
+                            params.data.activePowerControl.activePowerControlOn,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1632,7 +1641,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'DroopColumnName',
-                field: 'droop',
+                field: 'activePowerControl.droop',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
@@ -1640,15 +1649,23 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue: params.data.droop,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                     };
                 },
+                valueGetter: (params) => params.data?.activePowerControl?.droop,
+                valueSetter: (params) => {
+                    params.data.activePowerControl = {
+                        ...params.data.activePowerControl,
+                        droop: params.newValue,
+                    };
+                    return params;
+                },
                 crossValidation: {
                     requiredOn: {
-                        dependencyColumn: 'activePowerControlOn',
+                        dependencyColumn:
+                            'activePowerControl.activePowerControlOn',
                         columnValue: 1,
                     },
                 },
