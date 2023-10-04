@@ -185,6 +185,7 @@
     "DynamicSimulationParametersSelection": "Dynamic simulation parameters selection",
     "DynamicSimulationStartTime": "Start time",
     "DynamicSimulationStopTime": "Stop time",
+    "DynamicSimulationStartTimeGreaterThanOrEqualToStopTime": "Stop time must be greater or equal to start time",
     "DynamicSimulationWithVariant": "Run simulation with a variant",
     "DynamicSimulationMappingSelection": "Select a mapping",
     "DynamicSimulationResultReport": "Report",

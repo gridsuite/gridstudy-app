@@ -7,36 +7,52 @@
 
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { makeComponentsFor, TYPES } from '../util/make-component-utils';
-import { useCallback } from 'react';
+import { makeComponents } from '../util/make-component-utils';
+import { FloatInput } from '@gridsuite/commons-ui';
 
-const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
-    const handleUpdateTimeDelay = useCallback(
-        (newTimeDelay) => {
-            onUpdateTimeDelay(newTimeDelay);
-        },
-        [onUpdateTimeDelay]
-    );
+export const TIME_DELAY = 'timeDelay';
 
+export const START_TIME = 'startTime';
+export const STOP_TIME = 'stopTime';
+
+export const formSchema = yup.object().shape({
+    [START_TIME]: yup.number().required(),
+    [STOP_TIME]: yup
+        .number()
+        .required()
+        .when([START_TIME], ([startTime], schema) => {
+            if (startTime) {
+                return schema.min(
+                    startTime,
+                    'DynamicSimulationStartTimeGreaterThanOrEqualToStopTime'
+                );
+            }
+        }),
+});
+
+export const emptyFormData = {
+    [START_TIME]: 0,
+    [STOP_TIME]: 0,
+};
+
+const TimeDelayParameters = ({ path }) => {
+    // define param structure for rendering inputs
     const defParams = {
-        startTime: {
-            type: TYPES.float,
-            description: 'DynamicSimulationStartTime',
-            validator: yup.number().required(),
+        [START_TIME]: {
+            label: 'DynamicSimulationStartTime',
+            render: (defParam, key) => {
+                return <FloatInput name={`${path}.${key}`} label={''} />;
+            },
         },
-        stopTime: {
-            type: TYPES.float,
-            description: 'DynamicSimulationStopTime',
-            validator: yup.number().required(),
+        [STOP_TIME]: {
+            label: 'DynamicSimulationStopTime',
+            render: (defParam, key) => {
+                return <FloatInput name={`${path}.${key}`} label={''} />;
+            },
         },
     };
-    return (
-        timeDelay && (
-            <Grid container>
-                {makeComponentsFor(defParams, timeDelay, handleUpdateTimeDelay)}
-            </Grid>
-        )
-    );
+
+    return <Grid container>{makeComponents(defParams)}</Grid>;
 };
 
 export default TimeDelayParameters;

@@ -5,72 +5,93 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { makeComponentsFor, TYPES } from '../util/make-component-utils';
-import { useCallback, useMemo } from 'react';
-import IdaSolverParameters from './solver/ida-solver-parameters';
-import SimplifiedSolverParameters from './solver/simplified-solver-parameters';
+import { useMemo } from 'react';
+import { useWatch } from 'react-hook-form';
+import { SelectInput } from '@gridsuite/commons-ui';
+import { makeComponents } from '../util/make-component-utils';
+import IdaSolverParameters, {
+    getFormSchema as getIdaFormSchema,
+} from './solver/ida-solver-parameters';
+import SimplifiedSolverParameters, {
+    getFormSchema as getSimplifiedFormSchema,
+} from './solver/simplified-solver-parameters';
+import { TabPanel } from '../parameters';
 
-const SOLVER_TYPES = {
+export const SOLVER_TYPES = {
     IDA: 'IDA',
     SIM: 'SIM',
 };
 
-const SolverParameters = ({ solver, onUpdateSolver }) => {
-    const { solverId, solvers } = solver ?? {};
+export const SOLVER = 'solver';
 
-    const handleUpdateSolver = useCallback(
-        (newSolver) => {
-            onUpdateSolver({ ...solver, ...newSolver });
-        },
-        [onUpdateSolver, solver]
-    );
+export const SOLVER_ID = 'solverId';
 
-    const handleUpdateSolverParameters = useCallback(
-        (newSolverParameters) => {
-            const newSolvers = Array.from(solvers);
-            const foundIndex = newSolvers.findIndex(
-                (elem) => elem.id === newSolverParameters.id
-            );
-            newSolvers.splice(foundIndex, 1, newSolverParameters);
-            onUpdateSolver({ ...solver, solvers: newSolvers });
-        },
-        [onUpdateSolver, solver, solvers]
-    );
+export const SOLVERS = 'solvers';
 
-    const defParams = {
-        solverId: {
-            type: TYPES.enum,
-            description: 'DynamicSimulationSolverType',
-            values: solvers?.reduce((obj, curr) => {
-                obj[curr.id] = `DynamicSimulationSolver${curr.type}`;
-                return obj;
-            }, {}),
-        },
-    };
+export const formSchema = yup.object().shape({
+    [SOLVER_ID]: yup.string().required(),
+    [SOLVERS]: yup.array().of(
+        yup.lazy((item) => {
+            const { type } = item;
+            if (type === SOLVER_TYPES.IDA) {
+                return getIdaFormSchema();
+            } else if (type === SOLVER_TYPES.SIM) {
+                return getSimplifiedFormSchema(yup.object());
+            }
+        })
+    ),
+});
+
+export const emptyFormData = {
+    [SOLVER_ID]: '',
+    [SOLVERS]: [],
+};
+
+const SolverParameters = ({ solver, path }) => {
+    const { solvers } = solver ?? {};
+
+    const solverId = useWatch({ name: `${path}.${SOLVER_ID}` });
 
     const selectedSolver = useMemo(() => {
         return solvers?.find((elem) => elem.id === solverId);
     }, [solvers, solverId]);
 
+    const defParams = {
+        [SOLVER_ID]: {
+            label: 'DynamicSimulationSolverType',
+            values: solvers?.reduce((arr, curr) => {
+                return [
+                    ...arr,
+                    {
+                        id: curr.id,
+                        label: `DynamicSimulationSolver${curr.type}`,
+                    },
+                ];
+            }, []),
+            render: (defParam, key) => {
+                return (
+                    <SelectInput
+                        name={`${SOLVER}.${key}`}
+                        label={''}
+                        options={defParam.values}
+                    />
+                );
+            },
+        },
+    };
+
     return (
-        solver && (
-            <Grid container>
-                {makeComponentsFor(defParams, solver, handleUpdateSolver)}
-                {selectedSolver?.type === SOLVER_TYPES.IDA && (
-                    <IdaSolverParameters
-                        idaSolver={selectedSolver}
-                        onUpdateIdaSolver={handleUpdateSolverParameters}
-                    />
-                )}
-                {selectedSolver?.type === SOLVER_TYPES.SIM && (
-                    <SimplifiedSolverParameters
-                        simplifiedSolver={selectedSolver}
-                        onUpdateSimplifiedSolver={handleUpdateSolverParameters}
-                    />
-                )}
-            </Grid>
-        )
+        <Grid container>
+            {makeComponents(defParams)}
+            <TabPanel value={selectedSolver?.type} index={SOLVER_TYPES.IDA}>
+                <IdaSolverParameters path={`${path}.${SOLVERS}[0]`} />
+            </TabPanel>
+            <TabPanel value={selectedSolver?.type} index={SOLVER_TYPES.SIM}>
+                <SimplifiedSolverParameters path={`${path}.${SOLVERS}[1]`} />
+            </TabPanel>
+        </Grid>
     );
 };
 

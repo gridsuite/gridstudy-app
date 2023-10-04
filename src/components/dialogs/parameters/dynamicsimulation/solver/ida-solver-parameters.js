@@ -5,54 +5,68 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { makeComponentsFor, TYPES } from '../../util/make-component-utils';
-import { useCallback } from 'react';
+import { makeComponents } from '../../util/make-component-utils';
+import { FloatInput, IntegerInput } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 
-const IdaSolverParameters = ({ idaSolver, onUpdateIdaSolver }) => {
+export const IDA_ORDER = 'order';
+export const IDA_INIT_STEP = 'initStep';
+export const IDA_MIN_STEP = 'minStep';
+export const IDA_MAX_STEP = 'maxStep';
+export const IDA_ABS_ACCURACY = 'absAccuracy';
+export const IDA_REL_ACCURACY = 'relAccuracy';
+
+export const getFormSchema = () =>
+    yup.object().shape({
+        [IDA_ORDER]: yup.number().integer().required(),
+        [IDA_INIT_STEP]: yup.number().required(),
+        [IDA_MIN_STEP]: yup.number().required(),
+        [IDA_MAX_STEP]: yup.number().required(),
+        [IDA_ABS_ACCURACY]: yup.number().required(),
+        [IDA_REL_ACCURACY]: yup.number().required(),
+    });
+
+const IdaSolverParameters = ({ path }) => {
     const defParams = {
-        order: {
-            type: TYPES.integer,
-            description: 'DynamicSimulationIDASolverOrder',
-            validator: yup.number().integer().required(),
+        [IDA_ORDER]: {
+            label: 'DynamicSimulationIDASolverOrder',
+            render: (defParam, key) => {
+                return <IntegerInput name={`${path}.${key}`} label={''} />;
+            },
         },
-        initStep: {
-            type: TYPES.float,
-            description: 'DynamicSimulationIDASolverInitStep',
-            validator: yup.number().required(),
+        [IDA_INIT_STEP]: {
+            label: 'DynamicSimulationIDASolverInitStep',
+            render: (defParam, key) => {
+                return <FloatInput name={`${path}.${key}`} label={''} />;
+            },
         },
-        minStep: {
-            type: TYPES.float,
-            description: 'DynamicSimulationIDASolverMinStep',
-            validator: yup.number().required(),
+        [IDA_MIN_STEP]: {
+            label: 'DynamicSimulationIDASolverMinStep',
+            render: (defParam, key) => {
+                return <FloatInput name={`${path}.${key}`} label={''} />;
+            },
         },
-        maxStep: {
-            type: TYPES.float,
-            description: 'DynamicSimulationIDASolverMaxStep',
-            validator: yup.number().required(),
+        [IDA_MAX_STEP]: {
+            label: 'DynamicSimulationIDASolverMaxStep',
+            render: (defParam, key) => {
+                return <FloatInput name={`${path}.${key}`} label={''} />;
+            },
         },
-        absAccuracy: {
-            type: TYPES.float,
-            description: 'DynamicSimulationIDASolverAbsAccuracy',
-            validator: yup.number().required(),
+        [IDA_ABS_ACCURACY]: {
+            label: 'DynamicSimulationIDASolverAbsAccuracy',
+            render: (defParam, key) => {
+                return <FloatInput name={`${path}.${key}`} label={''} />;
+            },
         },
-        relAccuracy: {
-            type: TYPES.float,
-            description: 'DynamicSimulationIDASolverRelAccuracy',
-            validator: yup.number().required(),
+        [IDA_REL_ACCURACY]: {
+            label: 'DynamicSimulationIDASolverRelAccuracy',
+            render: (defParam, key) => {
+                return <FloatInput name={`${path}.${key}`} label={''} />;
+            },
         },
     };
 
-    const handleUpdateIdaSolver = useCallback(
-        (newIdaParameters) => {
-            onUpdateIdaSolver(newIdaParameters);
-        },
-        [onUpdateIdaSolver]
-    );
-
-    return (
-        <>{makeComponentsFor(defParams, idaSolver, handleUpdateIdaSolver)}</>
-    );
+    return <>{makeComponents(defParams)}</>;
 };
 
 export default IdaSolverParameters;

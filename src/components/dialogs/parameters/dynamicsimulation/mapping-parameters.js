@@ -5,38 +5,44 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { makeComponentsFor, TYPES } from '../util/make-component-utils';
-import { useCallback } from 'react';
+import { makeComponents } from '../util/make-component-utils';
+import { SelectInput } from '@gridsuite/commons-ui';
 
-const MappingParameters = ({ mapping, onUpdateMapping }) => {
+export const MAPPING = 'mapping';
+
+export const formSchema = yup.object().shape({
+    [MAPPING]: yup.string().required(),
+});
+
+export const emptyFormData = {
+    [MAPPING]: '',
+};
+
+const MappingParameters = ({ mapping, path }) => {
     const { mappings } = mapping ?? {};
 
-    const handleUpdateMapping = useCallback(
-        (newMapping) => {
-            onUpdateMapping(newMapping);
-        },
-        [onUpdateMapping]
-    );
-
     const defParams = {
-        mapping: {
-            type: TYPES.enum,
-            description: 'DynamicSimulationMapping',
-            values: mappings?.reduce((obj, curr) => {
-                obj[curr.name] = curr.name;
-                return obj;
-            }, {}),
+        [MAPPING]: {
+            label: 'DynamicSimulationMapping',
+            values: mappings?.reduce(
+                (arr, curr) => [...arr, { id: curr.name, label: curr.name }],
+                []
+            ),
+            render: (defParam, key) => {
+                return (
+                    <SelectInput
+                        name={`${path}.${key}`}
+                        label={''}
+                        options={defParam.values}
+                    />
+                );
+            },
         },
     };
 
-    return (
-        mapping && (
-            <Grid container>
-                {makeComponentsFor(defParams, mapping, handleUpdateMapping)}
-            </Grid>
-        )
-    );
+    return <Grid container>{makeComponents(defParams)}</Grid>;
 };
 
 export default MappingParameters;
