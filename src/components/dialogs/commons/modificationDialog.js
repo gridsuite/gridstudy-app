@@ -69,11 +69,8 @@ const ModificationDialog = ({
 };
 
 ModificationDialog.propTypes = {
-    titleId: PropTypes.string,
     showNodeNotBuiltWarning: PropTypes.bool,
     isDataFetching: PropTypes.bool,
-    open: PropTypes.bool,
-    children: PropTypes.object,
     onClose: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
