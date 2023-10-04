@@ -368,7 +368,7 @@
     "saveParameters": "Save settings",
     "loadParameters": "Predefined settings",
     "showSelectDirectoryDialog": "Choose folder",
-    "showSelectParameterDialog": "Choose parameter",
+    "showSelectParameterDialog": "Choose parameters",
     "nameAlreadyUsed": "This name is already used",
 
     "descLfReadSlackBus": "Read slack bus in the network",
