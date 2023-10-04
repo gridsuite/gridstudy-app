@@ -320,7 +320,7 @@
     "IscMinKA": "Icc min (kA)",
     "IscMaxKA": "IMACC (kA)",
     "PscMVA": "Pcc (MVA)",
-    "deltaCurrentIpMax": "Icc - Icc IMACC (kA)",
+    "deltaCurrentIpMax": "Icc - IMACC (kA)",
     "deltaCurrentIpMin": "Icc - Icc min (kA)",
     "SINGLE_PHASE": "Monophasé",
     "THREE_PHASE": "Triphasé",
