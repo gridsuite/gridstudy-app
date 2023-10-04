@@ -915,6 +915,10 @@ class LineLayer extends CompositeLayer {
                         activePower.p !== undefined
                             ? Math.round(activePower.p).toString()
                             : '',
+                    // The position passed to this layer causes a bug when zooming and maxParallelOffset is reached:
+                    // the label is not correctly positioned on the lines, they are slightly off.
+                    // In the custom layers, we clamp the distanceBetweenLines. This is not done in the deck.gl TextLayer
+                    // and IconLayer or in the position calculated here.
                     getPosition: (activePower) => activePower.printPosition,
                     getColor: this.props.labelColor,
                     fontFamily: 'Roboto',
@@ -950,6 +954,10 @@ class LineLayer extends CompositeLayer {
                 this.getSubLayerProps({
                     id: 'BranchStatus' + compositeData.nominalVoltage,
                     data: compositeData.branchStatus,
+                    // The position passed to this layer causes a bug when zooming and maxParallelOffset is reached:
+                    // the icon is not correctly positioned on the lines, they are slightly off.
+                    // In the custom layers, we clamp the distanceBetweenLines. This is not done in the deck.gl TextLayer
+                    // and IconLayer or in the position calculated here.
                     getPosition: (branchStatus) => branchStatus.printPosition,
                     getIcon: (branchStatus) => getLineIcon(branchStatus.status),
                     getSize: this.props.iconSize,

@@ -5,9 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetchJson, getRequestParamFromList } from './utils';
+import {
+    backendFetch,
+    backendFetchJson,
+    getRequestParamFromList,
+} from './utils';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/explore`;
+const PREFIX_DIRECTORY_SERVER_QUERIES = `${process.env.REACT_APP_API_GATEWAY}/directory`;
 
 export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     console.info('Fetching elements metadata');
@@ -39,4 +44,37 @@ export function fetchElementsMetadata(ids, elementTypes, equipmentTypes) {
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/metadata?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function createParameter(
+    newParameter,
+    name,
+    parameterType,
+    parentDirectoryUuid
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('type', parameterType);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES +
+            '/v1/explore/parameters?' +
+            urlSearchParams.toString(),
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newParameter),
+        }
+    );
+}
+
+export function elementExists(directoryUuid, elementName, type) {
+    const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
+
+    console.debug(existsElementUrl);
+    return backendFetch(existsElementUrl, { method: 'head' }).then(
+        (response) => {
+            return response.status !== 204; // HTTP 204 : No-content
+        }
+    );
 }

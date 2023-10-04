@@ -93,8 +93,11 @@ import {
     RESET_EQUIPMENTS_POST_LOADFLOW,
     SET_COMPUTING_STATUS,
     SET_OPTIONAL_SERVICES,
+    SET_STUDY_INDEXATION_STATUS,
+    STUDY_INDEXATION_STATUS,
     SET_COMPUTATION_RUNNING,
     MAP_DATA_LOADING,
+    SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -239,6 +242,8 @@ const initialState = {
     computingStatus: { ...initialComputingStatus },
     computationRunning: false,
     optionalServices: defaultOptionalServicesState,
+    oneBusShortCircuitAnalysisDiagram: null,
+    studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1043,6 +1048,15 @@ export const reducer = createReducer(initialState, {
 
     [SET_OPTIONAL_SERVICES]: (state, action) => {
         state.optionalServices = action.optionalServices;
+    },
+    [SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM]: (state, action) => {
+        state.oneBusShortCircuitAnalysisDiagram = {
+            diagramId: action.diagramId,
+            nodeId: action.nodeId,
+        };
+    },
+    [SET_STUDY_INDEXATION_STATUS]: (state, action) => {
+        state.studyIndexationStatus = action.studyIndexationStatus;
     },
 });
 

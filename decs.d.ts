@@ -152,10 +152,16 @@ declare module '@gridsuite/commons-ui' {
 
     export const FlatParameters: FunctionComponent<FlatParametersProps>;
 
+    export function useDebounce(
+        debouncedFunction: (...args: any[]) => void,
+        debounceDelay: number
+    ): (...args: any[]) => void;
+
     export const elementType = {
         DIRECTORY: 'DIRECTORY',
         STUDY: 'STUDY',
         FILTER: 'FILTER',
         CONTINGENCY_LIST: 'CONTINGENCY_LIST',
+        VOLTAGE_INIT_PARAMETERS: 'VOLTAGE_INIT_PARAMETERS',
     };
 }
