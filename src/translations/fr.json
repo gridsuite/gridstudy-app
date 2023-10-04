@@ -368,7 +368,7 @@
     "saveParameters": "Enregistrer des paramètres",
     "loadParameters": "Paramètres prédéfinis",
     "showSelectDirectoryDialog": "Modifier dossier",
-    "showSelectParameterDialog": "Choisir paramètre",
+    "showSelectParameterDialog": "Choisir paramètres",
     "nameAlreadyUsed": "Ce nom est déjà utilisé",
 
     "descLfReadSlackBus": "Utiliser le nœud bilan défini dans le réseau",
