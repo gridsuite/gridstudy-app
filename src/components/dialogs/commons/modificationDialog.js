@@ -80,6 +80,11 @@ ModificationDialog.propTypes = {
     disabledSave: PropTypes.bool,
     onValidated: PropTypes.func,
     onValidationError: PropTypes.func,
+    fullWidth: PropTypes.bool,
+    open: PropTypes.bool,
+    titleId: PropTypes.string,
+    maxWidth: PropTypes.string,
+    children: PropTypes.node,
 };
 
 export default ModificationDialog;

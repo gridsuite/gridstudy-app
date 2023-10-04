@@ -703,6 +703,21 @@ export function setComputationRunning(computationRunning) {
     };
 }
 
+export const STUDY_INDEXATION_STATUS = {
+    NOT_INDEXED: 'NOT_INDEXED',
+    INDEXING_ONGOING: 'INDEXING_ONGOING',
+    INDEXED: 'INDEXED',
+};
+
+export const SET_STUDY_INDEXATION_STATUS = 'SET_STUDY_INDEXATION_STATUS';
+
+export function setStudyIndexationStatus(studyIndexationStatus) {
+    return {
+        type: SET_STUDY_INDEXATION_STATUS,
+        studyIndexationStatus: studyIndexationStatus,
+    };
+}
+
 export const SET_OPTIONAL_SERVICES = 'SET_SERVICES';
 
 export const setOptionalServices = (optionalServices) => {
@@ -711,3 +726,14 @@ export const setOptionalServices = (optionalServices) => {
         optionalServices: optionalServices,
     };
 };
+
+export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM =
+    'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
+
+export function setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId) {
+    return {
+        type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+        diagramId: diagramId,
+        nodeId: nodeId,
+    };
+}
