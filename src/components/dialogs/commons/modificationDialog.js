@@ -80,7 +80,7 @@ ModificationDialog.propTypes = {
     fullWidth: PropTypes.bool,
     open: PropTypes.bool,
     titleId: PropTypes.string,
-    maxWidth: PropTypes.string,
+    maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     children: PropTypes.node,
 };
 
