@@ -13,14 +13,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import TimeDelayParameters, {
     formSchema as timeDelayFormSchema,
     emptyFormData as timeDelayEmptyFormData,
-    TIME_DELAY,
     START_TIME,
     STOP_TIME,
 } from './time-delay-parameters';
 import SolverParameters, {
     formSchema as solverFormSchema,
     emptyFormData as solverEmptyFormData,
-    SOLVER,
     SOLVER_ID,
     SOLVERS,
 } from './solver-parameters';
@@ -58,13 +56,14 @@ import { mergeSx } from '../../../utils/functions';
 import { SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
+import { getTabStyle } from '../../../utils/tab-utils';
 
 const TAB_VALUES = {
-    timeDelayParamsTabValue: 'TimeDelay',
-    solverParamsTabValue: 'Solver',
-    mappingParamsTabValue: 'Mapping',
-    networkParamsTabValue: 'Network',
-    curveParamsTabValue: 'Curve',
+    TIME_DELAY: 'timeDelay',
+    SOLVER: 'solver',
+    MAPPING: 'mapping',
+    NETWORK: 'network',
+    CURVE: 'curve',
 };
 
 const DynamicSimulationParameters = ({ user, hideParameters }) => {
@@ -92,9 +91,9 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         updateDynamicSimulationParameters
     );
 
-    const [tabValue, setTabValue] = useState(
-        TAB_VALUES.timeDelayParamsTabValue
-    );
+    const [tabValue, setTabValue] = useState(TAB_VALUES.TIME_DELAY);
+
+    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
     // to force remount a component having internal states
     const [resetRevision, setResetRevision] = useState(0);
@@ -118,18 +117,18 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
 
     const emptyFormData = useMemo(() => {
         return {
-            [TIME_DELAY]: { ...timeDelayEmptyFormData },
-            [SOLVER]: { ...solverEmptyFormData },
-            [MAPPING]: { ...mappingEmptyFormData },
-            [NETWORK]: { ...networkEmptyFormData },
+            [TAB_VALUES.TIME_DELAY]: { ...timeDelayEmptyFormData },
+            [TAB_VALUES.SOLVER]: { ...solverEmptyFormData },
+            [TAB_VALUES.MAPPING]: { ...mappingEmptyFormData },
+            [TAB_VALUES.NETWORK]: { ...networkEmptyFormData },
         };
     }, []);
 
     const formSchema = yup.object().shape({
-        [TIME_DELAY]: timeDelayFormSchema,
-        [SOLVER]: solverFormSchema,
-        [MAPPING]: mappingFormSchema,
-        [NETWORK]: networkFormSchema,
+        [TAB_VALUES.TIME_DELAY]: timeDelayFormSchema,
+        [TAB_VALUES.SOLVER]: solverFormSchema,
+        [TAB_VALUES.MAPPING]: mappingFormSchema,
+        [TAB_VALUES.NETWORK]: networkFormSchema,
     });
 
     const formMethods = useForm({
@@ -137,7 +136,35 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, handleSubmit } = formMethods;
+    const {
+        reset,
+        handleSubmit,
+        formState: { errors },
+    } = formMethods;
+
+    const onError = useCallback((errors) => {
+        let tabsInError = [];
+        if (errors?.[TAB_VALUES.TIME_DELAY]) {
+            tabsInError.push(TAB_VALUES.TIME_DELAY);
+        }
+        if (errors?.[TAB_VALUES.SOLVER]) {
+            tabsInError.push(TAB_VALUES.SOLVER);
+        }
+        if (errors?.[TAB_VALUES.MAPPING]) {
+            tabsInError.push(TAB_VALUES.MAPPING);
+        }
+        if (errors?.[TAB_VALUES.NETWORK]) {
+            tabsInError.push(TAB_VALUES.NETWORK);
+        }
+        setTabIndexesWithError(tabsInError);
+    }, []);
+
+    // errors is a mutable object => convert to json to activate useEffect
+    const errorsJSON = JSON.stringify(errors);
+
+    useEffect(() => {
+        onError(JSON.parse(errorsJSON));
+    }, [errorsJSON, onError]);
 
     const onSubmit = useCallback((newParams) => {
         // use hook setter to set with new parameters
@@ -147,18 +174,18 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
     useEffect(() => {
         if (parameters) {
             reset({
-                [TIME_DELAY]: {
+                [TAB_VALUES.TIME_DELAY]: {
                     [START_TIME]: parameters[START_TIME],
                     [STOP_TIME]: parameters[STOP_TIME],
                 },
-                [SOLVER]: {
+                [TAB_VALUES.SOLVER]: {
                     [SOLVER_ID]: parameters[SOLVER_ID],
                     [SOLVERS]: parameters[SOLVERS],
                 },
-                [MAPPING]: {
+                [TAB_VALUES.MAPPING]: {
                     [MAPPING]: parameters[MAPPING],
                 },
-                [NETWORK]: {
+                [TAB_VALUES.NETWORK]: {
                     ...parameters[NETWORK],
                 },
             });
@@ -209,47 +236,57 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                             label={
                                 <FormattedMessage id="DynamicSimulationTimeDelay" />
                             }
-                            value={TAB_VALUES.timeDelayParamsTabValue}
+                            value={TAB_VALUES.TIME_DELAY}
+                            sx={getTabStyle(
+                                tabIndexesWithError,
+                                TAB_VALUES.TIME_DELAY
+                            )}
                         />
                         <Tab
                             label={
                                 <FormattedMessage id="DynamicSimulationSolver" />
                             }
-                            value={TAB_VALUES.solverParamsTabValue}
+                            value={TAB_VALUES.SOLVER}
+                            sx={getTabStyle(
+                                tabIndexesWithError,
+                                TAB_VALUES.SOLVER
+                            )}
                         />
                         <Tab
                             label={
                                 <FormattedMessage id="DynamicSimulationMapping" />
                             }
-                            value={TAB_VALUES.mappingParamsTabValue}
+                            value={TAB_VALUES.MAPPING}
+                            sx={getTabStyle(
+                                tabIndexesWithError,
+                                TAB_VALUES.MAPPING
+                            )}
                         />
                         <Tab
                             label={
                                 <FormattedMessage id="DynamicSimulationNetwork" />
                             }
-                            value={TAB_VALUES.networkParamsTabValue}
+                            value={TAB_VALUES.NETWORK}
+                            sx={getTabStyle(
+                                tabIndexesWithError,
+                                TAB_VALUES.NETWORK
+                            )}
                         />
                         <Tab
                             label={
                                 <FormattedMessage id="DynamicSimulationCurve" />
                             }
-                            value={TAB_VALUES.curveParamsTabValue}
+                            value={TAB_VALUES.CURVE}
                         />
                     </Tabs>
 
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.timeDelayParamsTabValue}
-                    >
+                    <TabPanel value={tabValue} index={TAB_VALUES.TIME_DELAY}>
                         <TimeDelayParameters
                             key={`time-delay-${resetRevision}`} // to force remount a component having internal states
-                            path={TIME_DELAY}
+                            path={TAB_VALUES.TIME_DELAY}
                         />
                     </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.solverParamsTabValue}
-                    >
+                    <TabPanel value={tabValue} index={TAB_VALUES.SOLVER}>
                         <SolverParameters
                             key={`solver-${resetRevision}`} // to force remount a component having internal states
                             solver={
@@ -260,13 +297,10 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                                       }
                                     : undefined
                             }
-                            path={SOLVER}
+                            path={TAB_VALUES.SOLVER}
                         />
                     </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.mappingParamsTabValue}
-                    >
+                    <TabPanel value={tabValue} index={TAB_VALUES.MAPPING}>
                         <MappingParameters
                             mapping={
                                 parameters
@@ -276,22 +310,16 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                                       }
                                     : undefined
                             }
-                            path={MAPPING}
+                            path={TAB_VALUES.MAPPING}
                         />
                     </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.networkParamsTabValue}
-                    >
+                    <TabPanel value={tabValue} index={TAB_VALUES.NETWORK}>
                         <NetworkParameters
                             key={`network-${resetRevision}`} // to force remount a component having internal states
-                            path={NETWORK}
+                            path={TAB_VALUES.NETWORK}
                         />
                     </TabPanel>
-                    <TabPanel
-                        value={tabValue}
-                        index={TAB_VALUES.curveParamsTabValue}
-                    >
+                    <TabPanel value={tabValue} index={TAB_VALUES.CURVE}>
                         <CurveParameters
                             key={`curve-${resetRevision}`} // to force remount a component having internal states
                             curves={

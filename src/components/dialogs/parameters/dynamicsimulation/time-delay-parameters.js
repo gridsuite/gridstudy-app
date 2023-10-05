@@ -10,8 +10,6 @@ import { Grid } from '@mui/material';
 import { makeComponents } from '../util/make-component-utils';
 import { FloatInput } from '@gridsuite/commons-ui';
 
-export const TIME_DELAY = 'timeDelay';
-
 export const START_TIME = 'startTime';
 export const STOP_TIME = 'stopTime';
 

@@ -24,8 +24,6 @@ export const SOLVER_TYPES = {
     SIM: 'SIM',
 };
 
-export const SOLVER = 'solver';
-
 export const SOLVER_ID = 'solverId';
 
 export const SOLVERS = 'solvers';
@@ -73,7 +71,7 @@ const SolverParameters = ({ solver, path }) => {
             render: (defParam, key) => {
                 return (
                     <SelectInput
-                        name={`${SOLVER}.${key}`}
+                        name={`${path}.${key}`}
                         label={''}
                         options={defParam.values}
                     />
