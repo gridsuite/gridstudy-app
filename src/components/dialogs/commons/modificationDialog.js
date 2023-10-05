@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
@@ -46,13 +46,11 @@ const ModificationDialog = ({
         closeAndClear(data, 'validateButtonClick');
     };
 
-    const handleValidationError = (errors) => {
-        onValidationError && onValidationError(errors);
-
+    const handleScrollWhenError = useCallback(() => {
         // When scrolling to the field with focus, you can end up with the label not completely displayed
         // We ensure that field with focus is displayed in the middle of the dialog
         // Delay focusing to ensure it happens after the validation. without timout, document.activeElement will return the validation button.
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
             const focusedElement = document.activeElement;
 
             if (focusedElement instanceof HTMLElement) {
@@ -62,6 +60,13 @@ const ModificationDialog = ({
                 });
             }
         }, 0); // Delay of 0 milliseconds, effectively running at the next opportunity
+
+        return () => clearTimeout(timeoutId);
+    }, []);
+
+    const handleValidationError = (errors) => {
+        onValidationError && onValidationError(errors);
+        handleScrollWhenError();
     };
 
     const submitButton = (
