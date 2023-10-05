@@ -167,12 +167,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 field: 'deltaCurrentIpMin',
                 fractionDigits: 1,
                 isNumeric: true,
+                isSortable: analysisType === ShortcircuitAnalysisType.ALL_BUSES,
             }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
                 field: 'deltaCurrentIpMax',
                 fractionDigits: 1,
                 isNumeric: true,
+                isSortable: analysisType === ShortcircuitAnalysisType.ALL_BUSES,
             }),
             makeColumn({
                 field: 'linkedElementId',
@@ -180,7 +182,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 isSortable: false,
             }),
         ],
-        [intl, makeColumn]
+        [intl, makeColumn, analysisType]
     );
 
     const shortCircuitAnalysisStatus = useSelector(

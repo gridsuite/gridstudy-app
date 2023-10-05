@@ -22,6 +22,7 @@ import {
     VOLTAGE_REGULATION,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
+    MAXIMUM_ACTIVE_POWER,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { REGULATION_TYPES } from 'components/network/constants';
@@ -150,7 +151,13 @@ const getActivePowerSetPointSchema = (isEquipmentModification) => ({
         .nullable()
         .when([], {
             is: () => !isEquipmentModification,
-            then: (schema) => schema.required(),
+            then: (schema) =>
+                schema
+                    .required()
+                    .max(
+                        yup.ref(MAXIMUM_ACTIVE_POWER),
+                        'ActivePowerLessThanMaxActivePower'
+                    ),
         }),
 });
 

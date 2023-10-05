@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, useLayoutEffect, useRef } from 'react';
+import {
+    useCallback,
+    useState,
+    useLayoutEffect,
+    useRef,
+    useEffect,
+} from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
@@ -44,7 +50,7 @@ import {
     updateSwitchState,
 } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { setComputingStatus } from 'redux/actions';
+import { setComputationRunning, setComputingStatus } from 'redux/actions';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { useDispatch } from 'react-redux';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
@@ -62,6 +68,7 @@ import {
     OptionalServicesStatus,
 } from '../../utils/optional-services';
 import { mergeSx } from '../../utils/functions';
+import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 function SingleLineDiagramContent(props) {
     const { diagramSizeSetter, studyUuid } = props;
     const theme = useTheme();
@@ -88,6 +95,13 @@ function SingleLineDiagramContent(props) {
         OptionalServicesNames.ShortCircuit
     );
     const computationRunning = useSelector((state) => state.computationRunning);
+
+    const [
+        oneBusShortcircuitAnalysisLoaderMessage,
+        isDiagramRunningOneBusShortcircuitAnalysis,
+        displayOneBusShortcircuitAnalysisLoader,
+        resetOneBusShortcircuitAnalysisLoader,
+    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode.id);
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -248,22 +262,34 @@ function SingleLineDiagramContent(props) {
                     RunningStatus.RUNNING
                 )
             );
+            displayOneBusShortcircuitAnalysisLoader();
+            dispatch(setComputationRunning(true));
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'startShortCircuitError',
                     });
+                    dispatch(setComputationRunning(false));
                     dispatch(
                         setComputingStatus(
                             ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
                             RunningStatus.FAILED
                         )
                     );
+                    resetOneBusShortcircuitAnalysisLoader();
                 })
                 .finally(closeBusMenu());
         },
-        [closeBusMenu, currentNode?.id, studyUuid, snackError, dispatch]
+        [
+            dispatch,
+            displayOneBusShortcircuitAnalysisLoader,
+            studyUuid,
+            currentNode?.id,
+            closeBusMenu,
+            snackError,
+            resetOneBusShortcircuitAnalysisLoader,
+        ]
     );
 
     const displayBusMenu = () => {
@@ -434,6 +460,14 @@ function SingleLineDiagramContent(props) {
         }
     };
 
+    useEffect(() => {
+        dispatch(
+            setComputationRunning(
+                props.oneBusShortCircuitStatus === RunningStatus.RUNNING
+            )
+        );
+    }, [props.oneBusShortCircuitStatus, dispatch]);
+
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -477,7 +511,6 @@ function SingleLineDiagramContent(props) {
 
                 // callback on the buses
                 isReadyForInteraction &&
-                enableDeveloperMode &&
                 shortCircuitAvailability === OptionalServicesStatus.Up
                     ? showBusMenu
                     : null,
@@ -574,9 +607,12 @@ function SingleLineDiagramContent(props) {
     return (
         <>
             <Box height={2}>
-                {(props.loadingState || modificationInProgress) && (
+                {(props.loadingState ||
+                    modificationInProgress ||
+                    isDiagramRunningOneBusShortcircuitAnalysis) && (
                     <LinearProgress />
                 )}
+                {oneBusShortcircuitAnalysisLoaderMessage}
             </Box>
             {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <Box
