@@ -198,7 +198,6 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'ShortCircuitAnalysis',
                 displayed:
-                    enableDeveloperMode &&
                     shortCircuitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderShortCircuitAnalysisResult,
             },

@@ -117,6 +117,11 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
         (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
 
+    const oneBusShortCircuitStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+    );
+
     const { openDiagramView } = useDiagram();
 
     const disabled = !isNodeBuilt(currentNode);
@@ -229,6 +234,9 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
                                 }
                                 loadFlowStatus={loadFlowStatus}
+                                oneBusShortCircuitStatus={
+                                    oneBusShortCircuitStatus
+                                }
                             />
                         </Box>
                     </div>

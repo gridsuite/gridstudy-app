@@ -70,8 +70,8 @@ export function updateVoltageInitParameters(studyUuid, newParams) {
     });
 }
 
-export function getVoltageInitParameters(studyUuid) {
-    console.info('get voltage init parameters');
+export function getVoltageInitStudyParameters(studyUuid) {
+    console.info('get voltage init study parameters');
     const getVoltageInitParams =
         getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(getVoltageInitParams);

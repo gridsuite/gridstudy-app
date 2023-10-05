@@ -24,6 +24,7 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import { mergeSx } from '../../../../../utils/functions';
 
 const CurveSelectorDialog = ({ open, onClose, onSave }) => {
     const theme = useTheme();
@@ -84,7 +85,13 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
                 </Typography>
             </DialogTitle>
             <DialogContent style={{ overflowY: 'hidden', height: '60vh' }}>
-                <Grid container maxWidth={'xl'} sx={{ height: '100%' }}>
+                <Grid
+                    container
+                    sx={mergeSx(styles.scrollableGrid, {
+                        maxWidth: 'xl',
+                        height: '100%',
+                    })}
+                >
                     <Grid item container xs={8} spacing={theme.spacing(1)}>
                         <CurveSelector ref={selectorRef} />
                     </Grid>
