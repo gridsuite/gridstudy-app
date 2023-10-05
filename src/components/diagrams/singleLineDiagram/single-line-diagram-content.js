@@ -68,6 +68,7 @@ import {
     OptionalServicesStatus,
 } from '../../utils/optional-services';
 import { mergeSx } from '../../utils/functions';
+import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 function SingleLineDiagramContent(props) {
     const { diagramSizeSetter, studyUuid } = props;
     const theme = useTheme();
@@ -94,6 +95,13 @@ function SingleLineDiagramContent(props) {
         OptionalServicesNames.ShortCircuit
     );
     const computationRunning = useSelector((state) => state.computationRunning);
+
+    const [
+        oneBusShortcircuitAnalysisLoaderMessage,
+        isDiagramRunningOneBusShortcircuitAnalysis,
+        displayOneBusShortcircuitAnalysisLoader,
+        resetOneBusShortcircuitAnalysisLoader,
+    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode.id);
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -254,6 +262,7 @@ function SingleLineDiagramContent(props) {
                     RunningStatus.RUNNING
                 )
             );
+            displayOneBusShortcircuitAnalysisLoader();
             dispatch(setComputationRunning(true));
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
                 .catch((error) => {
@@ -268,10 +277,19 @@ function SingleLineDiagramContent(props) {
                             RunningStatus.FAILED
                         )
                     );
+                    resetOneBusShortcircuitAnalysisLoader();
                 })
                 .finally(closeBusMenu());
         },
-        [closeBusMenu, currentNode?.id, studyUuid, snackError, dispatch]
+        [
+            dispatch,
+            displayOneBusShortcircuitAnalysisLoader,
+            studyUuid,
+            currentNode?.id,
+            closeBusMenu,
+            snackError,
+            resetOneBusShortcircuitAnalysisLoader,
+        ]
     );
 
     const displayBusMenu = () => {
@@ -589,9 +607,12 @@ function SingleLineDiagramContent(props) {
     return (
         <>
             <Box height={2}>
-                {(props.loadingState || modificationInProgress) && (
+                {(props.loadingState ||
+                    modificationInProgress ||
+                    isDiagramRunningOneBusShortcircuitAnalysis) && (
                     <LinearProgress />
                 )}
+                {oneBusShortcircuitAnalysisLoaderMessage}
             </Box>
             {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <Box
