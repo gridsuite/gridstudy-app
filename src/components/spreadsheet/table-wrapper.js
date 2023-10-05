@@ -42,6 +42,7 @@ import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
+    modifyBattery,
     modifyGenerator,
     modifyLoad,
     modifyVoltageLevel,
@@ -132,6 +133,7 @@ const TableWrapper = (props) => {
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
     const [editingData, setEditingData] = useState();
+    const editingDataRef = useRef(editingData);
 
     const isLockedColumnNamesEmpty = useMemo(
         () => lockedColumnsNames.size === 0,
@@ -165,8 +167,9 @@ const TableWrapper = (props) => {
         });
         resetBuffer();
         setEditingData();
+        editingDataRef.current = editingData;
         isValidatingData.current = false;
-    }, [priorValuesBuffer, resetBuffer]);
+    }, [priorValuesBuffer, resetBuffer, editingData]);
 
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
@@ -508,6 +511,10 @@ const TableWrapper = (props) => {
         ]
     );
 
+    const getFieldValue = useCallback((newField, oldField) => {
+        return newField !== oldField ? newField : null;
+    }, []);
+
     const buildEditPromise = useCallback(
         (editingData, groovyCr) => {
             switch (editingData?.metadata.equipmentType) {
@@ -516,10 +523,22 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        editingData.name,
-                        editingData.type,
-                        editingData.p0,
-                        editingData.q0,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.type,
+                            editingDataRef.current.type
+                        ),
+                        getFieldValue(
+                            editingData.p0,
+                            editingDataRef.current.p0
+                        ),
+                        getFieldValue(
+                            editingData.q0,
+                            editingDataRef.current.q0
+                        ),
                         undefined,
                         undefined,
                         false,
@@ -530,15 +549,39 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        editingData.name,
-                        editingData.energySource,
-                        editingData.minP,
-                        editingData.maxP,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.energySource,
+                            editingDataRef.current.energySource
+                        ),
+                        getFieldValue(
+                            editingData.minP,
+                            editingDataRef.current.minP
+                        ),
+                        getFieldValue(
+                            editingData.maxP,
+                            editingDataRef.current.maxP
+                        ),
                         undefined,
-                        editingData.targetP,
-                        editingData.targetQ,
-                        editingData.voltageRegulatorOn,
-                        editingData.targetV,
+                        getFieldValue(
+                            editingData.targetP,
+                            editingDataRef.current.targetP
+                        ),
+                        getFieldValue(
+                            editingData.targetQ,
+                            editingDataRef.current.targetQ
+                        ),
+                        getFieldValue(
+                            editingData.voltageRegulatorOn,
+                            editingDataRef.current.voltageRegulatorOn
+                        ),
+                        getFieldValue(
+                            editingData.targetV,
+                            editingDataRef.current.targetV
+                        ),
                         undefined,
                         undefined,
                         undefined
@@ -548,14 +591,73 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        editingData.name,
-                        editingData.nominalVoltage,
-                        editingData.lowVoltageLimit,
-                        editingData.highVoltageLimit,
-                        kiloUnitToUnit(editingData.ipMin),
-                        kiloUnitToUnit(editingData.ipMax),
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.nominalVoltage,
+                            editingDataRef.current.nominalVoltage
+                        ),
+                        getFieldValue(
+                            editingData.lowVoltageLimit,
+                            editingDataRef.current.lowVoltageLimit
+                        ),
+                        getFieldValue(
+                            editingData.highVoltageLimit,
+                            editingDataRef.current.highVoltageLimit
+                        ),
+                        kiloUnitToUnit(
+                            getFieldValue(
+                                editingData.ipMin,
+                                editingDataRef.current.ipMin
+                            )
+                        ),
+                        kiloUnitToUnit(
+                            getFieldValue(
+                                editingData.ipMax,
+                                editingDataRef.current.ipMax
+                            )
+                        ),
                         false,
                         undefined
+                    );
+                case EQUIPMENT_TYPES.BATTERY:
+                    return modifyBattery(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.minP,
+                            editingDataRef.current.minP
+                        ),
+                        getFieldValue(
+                            editingData.maxP,
+                            editingDataRef.current.maxP
+                        ),
+                        getFieldValue(
+                            editingData.targetP,
+                            editingDataRef.current.targetP
+                        ),
+                        getFieldValue(
+                            editingData.targetQ,
+                            editingDataRef.current.targetQ
+                        ),
+                        undefined,
+                        undefined,
+                        undefined,
+                        getFieldValue(
+                            editingData.activePowerControlOn,
+                            editingDataRef.current.activePowerControlOn
+                        ),
+                        getFieldValue(
+                            editingData.droop,
+                            editingDataRef.current.droop
+                        )
                     );
                 default:
                     return requestNetworkChange(
@@ -565,7 +667,7 @@ const TableWrapper = (props) => {
                     );
             }
         },
-        [props.currentNode?.id, props.studyUuid]
+        [props.currentNode?.id, props.studyUuid, getFieldValue]
     );
 
     const validateEdit = useCallback(
@@ -602,23 +704,20 @@ const TableWrapper = (props) => {
                     setEditingData();
                     resetBuffer();
                     isValidatingData.current = false;
+                    editingDataRef.current = editingData;
                 })
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
                     rollbackEdit();
-                    let message = intl.formatMessage({
-                        id: 'paramsChangingDenied',
-                    });
                     snackError({
-                        messageTxt: message,
-                        headerId: 'paramsChangingError',
+                        messageTxt: promiseErrorMsg,
+                        headerId: 'tableChangingError',
                     });
                 });
         },
         [
             buildEditPromise,
             editingData,
-            intl,
             priorValuesBuffer,
             resetBuffer,
             rollbackEdit,
@@ -663,10 +762,14 @@ const TableWrapper = (props) => {
         [priorValuesBuffer, rollbackEdit]
     );
 
-    const topPinnedData = useMemo(
-        () => (editingData ? [editingData] : undefined),
-        [editingData]
-    );
+    const topPinnedData = useMemo(() => {
+        if (editingData) {
+            editingDataRef.current = { ...editingData };
+            return [editingData];
+        } else {
+            return undefined;
+        }
+    }, [editingData]);
     return (
         <>
             <Grid container justifyContent={'space-between'}>
