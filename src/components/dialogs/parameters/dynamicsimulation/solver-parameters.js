@@ -7,7 +7,7 @@
 
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { SelectInput } from '@gridsuite/commons-ui';
 import { makeComponents } from '../util/make-component-utils';
@@ -18,6 +18,7 @@ import SimplifiedSolverParameters, {
     getFormSchema as getSimplifiedFormSchema,
 } from './solver/simplified-solver-parameters';
 import { TabPanel } from '../parameters';
+import { useIntl } from 'react-intl';
 
 export const SOLVER_TYPES = {
     IDA: 'IDA',
@@ -36,7 +37,7 @@ export const formSchema = yup.object().shape({
             if (type === SOLVER_TYPES.IDA) {
                 return getIdaFormSchema();
             } else if (type === SOLVER_TYPES.SIM) {
-                return getSimplifiedFormSchema(yup.object());
+                return getSimplifiedFormSchema();
             }
         })
     ),
@@ -47,14 +48,58 @@ export const emptyFormData = {
     [SOLVERS]: [],
 };
 
-const SolverParameters = ({ solver, path }) => {
+const SolverParameters = ({ solver, path, errors = {} }) => {
     const { solvers } = solver ?? {};
+    const intl = useIntl();
 
     const solverId = useWatch({ name: `${path}.${SOLVER_ID}` });
+
+    const [solversWithError, setSolversWithError] = useState([]);
 
     const selectedSolver = useMemo(() => {
         return solvers?.find((elem) => elem.id === solverId);
     }, [solvers, solverId]);
+
+    const onError = useCallback((errors) => {
+        const solversInError = [];
+        if (errors[SOLVERS]?.[0]) {
+            solversInError.push(SOLVER_TYPES.IDA);
+        }
+        if (errors[SOLVERS]?.[1]) {
+            solversInError.push(SOLVER_TYPES.SIM);
+        }
+
+        setSolversWithError(solversInError);
+    }, []);
+
+    const errorsJSON = JSON.stringify(errors);
+
+    useEffect(() => {
+        onError(JSON.parse(errorsJSON));
+    }, [errorsJSON, onError]);
+
+    const buildSolverErrorMessage = useCallback(() => {
+        // do not show message on the current selected solver
+        if (solversWithError.includes(selectedSolver.type)) {
+            return null;
+        }
+
+        // ignore current selected type in the message content
+        return solversWithError
+            .filter((elem) => elem !== selectedSolver.type)
+            .map((elem) =>
+                intl.formatMessage({
+                    id: `DynamicSimulationSolver${elem}`,
+                })
+            )
+            .join(', ')
+            .concat(' ')
+            .concat(
+                intl.formatMessage({
+                    id: `DynamicSimulationSolverInvalid`,
+                })
+            );
+    }, [solversWithError, selectedSolver, intl]);
 
     const defParams = {
         [SOLVER_ID]: {
@@ -74,6 +119,14 @@ const SolverParameters = ({ solver, path }) => {
                         name={`${path}.${key}`}
                         label={''}
                         options={defParam.values}
+                        fullWidth
+                        size={'small'}
+                        formProps={
+                            solversWithError.length && {
+                                error: true,
+                                helperText: buildSolverErrorMessage(),
+                            }
+                        }
                     />
                 );
             },

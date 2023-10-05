@@ -18,7 +18,11 @@ export const IDA_REL_ACCURACY = 'relAccuracy';
 
 export const getFormSchema = () =>
     yup.object().shape({
-        [IDA_ORDER]: yup.number().integer().required(),
+        [IDA_ORDER]: yup
+            .number()
+            .integer()
+            .oneOf([1, 2], 'DynamicSimulationIDASolverOrderMustBeOneOfValues')
+            .required(),
         [IDA_INIT_STEP]: yup.number().required(),
         [IDA_MIN_STEP]: yup.number().required(),
         [IDA_MAX_STEP]: yup.number().required(),

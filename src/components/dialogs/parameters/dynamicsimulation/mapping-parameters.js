@@ -36,6 +36,8 @@ const MappingParameters = ({ mapping, path }) => {
                         name={`${path}.${key}`}
                         label={''}
                         options={defParam.values}
+                        fullWidth
+                        size={'small'}
                     />
                 );
             },

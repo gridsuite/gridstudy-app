@@ -166,10 +166,21 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         onError(JSON.parse(errorsJSON));
     }, [errorsJSON, onError]);
 
-    const onSubmit = useCallback((newParams) => {
-        // use hook setter to set with new parameters
-        console.log('set new parameters', newParams);
-    }, []);
+    const onSubmit = useCallback(
+        (newParams) => {
+            // use updater to set with new parameters
+            console.log('set new parameters', newParams);
+            updateParameters({
+                ...parameters,
+                ...newParams[TAB_VALUES.TIME_DELAY],
+                ...newParams[TAB_VALUES.SOLVER],
+                ...newParams[TAB_VALUES.MAPPING],
+                ...newParams[TAB_VALUES.MAPPING],
+                [NETWORK]: newParams[TAB_VALUES.NETWORK],
+            });
+        },
+        [parameters, updateParameters]
+    );
 
     useEffect(() => {
         if (parameters) {
@@ -298,6 +309,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                                     : undefined
                             }
                             path={TAB_VALUES.SOLVER}
+                            errors={errors[TAB_VALUES.SOLVER]}
                         />
                     </TabPanel>
                     <TabPanel value={tabValue} index={TAB_VALUES.MAPPING}>
