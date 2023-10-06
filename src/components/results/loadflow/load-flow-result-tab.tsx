@@ -13,7 +13,6 @@ import { LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
 import { fetchLoadFlowResult } from '../../../services/study/loadflow';
-import WaitingLoader from '../../utils/waiting-loader';
 
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     studyUuid,
@@ -56,14 +55,13 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                     />
                 </Tabs>
             </div>
-            <WaitingLoader message={'LoadingRemoteData'} loading={isWaiting}>
-                <LoadFlowResult
-                    result={loadflowResult}
-                    studyUuid={studyUuid}
-                    nodeUuid={nodeUuid}
-                    tabIndex={tabIndex}
-                />
-            </WaitingLoader>
+            <LoadFlowResult
+                result={loadflowResult}
+                studyUuid={studyUuid}
+                nodeUuid={nodeUuid}
+                tabIndex={tabIndex}
+                isWaiting={isWaiting}
+            />
         </>
     );
 };
