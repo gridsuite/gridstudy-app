@@ -18,6 +18,11 @@ import {
 } from './sensitivity-analysis-content';
 import { SORT_WAYS, useAgGridSort } from '../../../hooks/use-aggrid-sort';
 
+export const SensitivityResultTabs = [
+    { id: 'N', label: 'N' },
+    { id: 'N_K', label: 'N-K' },
+];
+
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
     const [sensiKindIndex, setSensiKindIndex] = useState(0);
@@ -54,6 +59,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     };
 
     const handleSensiNOrNkIndexChange = (event, newNOrNKIndex) => {
+        console.log('newNOrNKIndex : ', newNOrNKIndex);
         initTable(newNOrNKIndex);
         setNOrNkIndex(newNOrNKIndex);
     };
@@ -65,8 +71,9 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                 setSensiKindIndex={handleSensiKindIndexChange}
             />
             <Tabs value={nOrNkIndex} onChange={handleSensiNOrNkIndexChange}>
-                <Tab label="N" />
-                <Tab label="N-K" />
+                {SensitivityResultTabs.map((tab) => (
+                    <Tab label={tab.label} />
+                ))}
             </Tabs>
             <PagedSensitivityAnalysisResult
                 nOrNkIndex={nOrNkIndex}
