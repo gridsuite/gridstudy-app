@@ -36,6 +36,7 @@ export interface LoadFlowTabProps {
 export interface LoadflowResultProps extends LoadFlowTabProps {
     result: LoadFlowResult;
     tabIndex: number;
+    isWaiting: boolean;
 }
 
 export interface OverloadedEquipment {

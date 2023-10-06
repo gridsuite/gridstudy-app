@@ -19,8 +19,11 @@ import {
 } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
-import LoaderWithOverlay from 'components/utils/loader-with-overlay';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RunningStatus } from '../../utils/running-status';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { Box, LinearProgress } from '@mui/material';
 
 function makeRows(resultRecord) {
     // Replace NaN values by empty string
@@ -41,7 +44,7 @@ const SensitivityAnalysisResult = ({
     sortConfig,
     updateFilter,
     filterSelector,
-    openLoader,
+    isLoading,
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
@@ -184,19 +187,23 @@ const SensitivityAnalysisResult = ({
             params.api.sizeColumnsToFit();
         }
     }, []);
-    const message = getNoRowsMessage(messages, rows, sensitivityAnalysisStatus);
+    const message = getNoRowsMessage(
+        messages,
+        rows,
+        sensitivityAnalysisStatus,
+        !isLoading
+    );
+
+    const openLoader = useOpenLoaderShortWait({
+        isLoading:
+            sensitivityAnalysisStatus === RunningStatus.RUNNING || isLoading,
+        delay: RESULTS_LOADING_DELAY,
+    });
 
     const rowsToShow = getRows(rows, sensitivityAnalysisStatus);
     return (
         <div style={{ position: 'relative', flexGrow: 1 }}>
-            {openLoader && (
-                <LoaderWithOverlay
-                    color="inherit"
-                    loaderSize={70}
-                    isFixed={false}
-                    loadingMessageText={'LoadingRemoteData'}
-                />
-            )}
+            <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
             <CustomAGGrid
                 ref={gridRef}
                 rowData={rowsToShow}
@@ -223,6 +230,7 @@ SensitivityAnalysisResult.propTypes = {
     nOrNkIndex: PropTypes.number,
     sensiToIndex: PropTypes.number,
     onSortChanged: PropTypes.func.isRequired,
+    isLoading: PropTypes.bool,
 };
 
 export default SensitivityAnalysisResult;
