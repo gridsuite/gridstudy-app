@@ -27,7 +27,7 @@ const MappingParameters = ({ mapping, path }) => {
         [MAPPING]: {
             label: 'DynamicSimulationMapping',
             values: mappings?.reduce(
-                (arr, curr) => [...arr, { id: curr.name, label: curr.name }],
+                (arr, curr) => [...arr, { id: curr.name }],
                 []
             ),
             render: (defParam, key) => {

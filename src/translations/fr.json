@@ -256,6 +256,7 @@
     "DynamicSimulationNetworkTransformerTNextHT": "Transformateur temporisation entre passage de prises coté distribution",
     "DynamicSimulationNetworkTransformerTNextTHT": "Transformateur temporisation entre passage de prises coté transport",
     "DynamicSimulationNetworkTransformerTolV": "Transformer bande morte autour de la consigne",
+    "DynamicSimulationCurveSelectedNumber": "Sélectionné",
     "DynamicSimulationCurveDynamicModelHeader": "Nom objet réseau",
     "DynamicSimulationCurveVariableHeader": "Variable",
     "DynamicSimulationCurveSelectorDialogTitle": "Éditer la list des courbes à tracer",

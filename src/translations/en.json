@@ -256,6 +256,7 @@
     "DynamicSimulationNetworkTransformerTNextHT": "Transformer T Next HT",
     "DynamicSimulationNetworkTransformerTNextTHT": "Transformer T Next THT",
     "DynamicSimulationNetworkTransformerTolV": "Transformer To lV",
+    "DynamicSimulationCurveSelectedNumber": "Selected",
     "DynamicSimulationCurveDynamicModelHeader": "Network object name",
     "DynamicSimulationCurveVariableHeader": "Variable",
     "DynamicSimulationCurveSelectorDialogTitle": "Edit curves list to trace",

@@ -41,7 +41,11 @@ import NetworkParameters, {
     emptyFormData as networkEmptyFormData,
     NETWORK,
 } from './network-parameters';
-import CurveParameters from './curve-parameters';
+import CurveParameters, {
+    formSchema as curveFormSchema,
+    emptyFormData as curveEmptyFormData,
+    CURVES,
+} from './curve-parameters';
 import { fetchDynamicSimulationProviders } from '../../../../services/dynamic-simulation';
 import {
     fetchDefaultDynamicSimulationProvider,
@@ -121,6 +125,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
             [TAB_VALUES.SOLVER]: { ...solverEmptyFormData },
             [TAB_VALUES.MAPPING]: { ...mappingEmptyFormData },
             [TAB_VALUES.NETWORK]: { ...networkEmptyFormData },
+            [TAB_VALUES.CURVE]: { ...curveEmptyFormData },
         };
     }, []);
 
@@ -129,6 +134,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
         [TAB_VALUES.SOLVER]: solverFormSchema,
         [TAB_VALUES.MAPPING]: mappingFormSchema,
         [TAB_VALUES.NETWORK]: networkFormSchema,
+        [TAB_VALUES.CURVE]: curveFormSchema,
     });
 
     const formMethods = useForm({
@@ -177,6 +183,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                 ...newParams[TAB_VALUES.MAPPING],
                 ...newParams[TAB_VALUES.MAPPING],
                 [NETWORK]: newParams[TAB_VALUES.NETWORK],
+                ...newParams[TAB_VALUES.CURVE],
             });
         },
         [parameters, updateParameters]
@@ -199,16 +206,12 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                 [TAB_VALUES.NETWORK]: {
                     ...parameters[NETWORK],
                 },
+                [TAB_VALUES.CURVE]: {
+                    [CURVES]: parameters[CURVES],
+                },
             });
         }
     }, [reset, parameters]);
-
-    const handleUpdateCurve = useCallback(
-        (newCurves) => {
-            updateParameters({ ...parameters, curves: newCurves });
-        },
-        [updateParameters, parameters]
-    );
 
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue);
@@ -334,14 +337,7 @@ const DynamicSimulationParameters = ({ user, hideParameters }) => {
                     <TabPanel value={tabValue} index={TAB_VALUES.CURVE}>
                         <CurveParameters
                             key={`curve-${resetRevision}`} // to force remount a component having internal states
-                            curves={
-                                parameters
-                                    ? parameters.curves
-                                        ? [...parameters.curves]
-                                        : []
-                                    : undefined
-                            }
-                            onUpdateCurve={handleUpdateCurve}
+                            path={TAB_VALUES.CURVE}
                         />
                     </TabPanel>
                 </Grid>
