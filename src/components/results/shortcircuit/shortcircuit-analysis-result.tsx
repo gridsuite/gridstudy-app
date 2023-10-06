@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import WaitingLoader from 'components/utils/waiting-loader';
 import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
 import {
@@ -36,6 +35,9 @@ import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
+import { Box, LinearProgress } from '@mui/material';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortcircuitAnalysisType;
@@ -62,6 +64,14 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const oneBusShortCircuitAnalysisState = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+    );
+    const shortCircuitAnalysisStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[
+                analysisType === ShortcircuitAnalysisType.ALL_BUSES
+                    ? ComputingType.SHORTCIRCUIT_ANALYSIS
+                    : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
+            ]
     );
     const shortCircuitNotif = useSelector(
         (state: ReduxState) => state.shortCircuitNotif
@@ -162,16 +172,22 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         oneBusShortCircuitAnalysisState,
     ]);
 
+    const openLoader = useOpenLoaderShortWait({
+        isLoading:
+            shortCircuitAnalysisStatus === RunningStatus.RUNNING || isFetching,
+        delay: RESULTS_LOADING_DELAY,
+    });
+
     return (
         <>
-            <WaitingLoader message={'LoadingRemoteData'} loading={isFetching}>
-                <ShortCircuitAnalysisResultTable
-                    result={result}
-                    onSortChanged={onSortChanged}
-                    sortConfig={sortConfig}
-                    analysisType={analysisType}
-                />
-            </WaitingLoader>
+            <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
+            <ShortCircuitAnalysisResultTable
+                result={result}
+                onSortChanged={onSortChanged}
+                sortConfig={sortConfig}
+                analysisType={analysisType}
+                isFetching={isFetching}
+            />
             {isAllBusesType && (
                 <CustomTablePagination
                     rowsPerPageOptions={PAGE_OPTIONS}
