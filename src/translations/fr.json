@@ -935,6 +935,7 @@
 
     "root": "Racine",
     "LogOnlySingleNode": "Log nœud seul",
+    "ReportFetchError": "Erreur lors de la récupération des logs",
 
     "RegulatingMode": "Mode de réglage déphaseur",
     "RegulatingPhase": "Déphaseur en réglage",

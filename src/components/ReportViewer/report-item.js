@@ -9,10 +9,10 @@ import React, { useContext } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/system';
 import PropTypes from 'prop-types';
-import TreeItem from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
 import Label from '@mui/icons-material/Label';
 import ReportTreeViewContext from './report-tree-view-context';
+import CustomTreeItem from './custom-tree-item';
 import { alpha } from '@mui/system';
 
 const styles = {
@@ -92,7 +92,7 @@ const ReportItem = (props) => {
     const { labelText, labelIconColor, className, ...other } = props;
 
     return (
-        <TreeItem
+        <CustomTreeItem
             className={className}
             sx={{
                 '&': styles.root,

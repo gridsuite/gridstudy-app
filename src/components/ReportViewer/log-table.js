@@ -97,14 +97,16 @@ const LogTable = ({
     };
 
     const generateTableRows = () => {
-        return logs.map((log) => {
-            return {
-                severity: log.getSeverityName(),
-                message: log.getLog(),
-                backgroundColor: log.getColorName(),
-                reportId: log.getReportId(),
-            };
-        });
+        return !logs
+            ? []
+            : logs.map((log) => {
+                  return {
+                      severity: log.getSeverityName(),
+                      message: log.getLog(),
+                      backgroundColor: log.getColorName(),
+                      reportId: log.getReportId(),
+                  };
+              });
     };
 
     const handleRowClick = (event) => {

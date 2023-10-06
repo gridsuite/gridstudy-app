@@ -16,7 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { fetchReport } from '../services/study';
+import { fetchNodeReport } from '../services/study';
 import { Box } from '@mui/system';
 import LogReportItem from './ReportViewer/log-report-item';
 
@@ -89,58 +89,87 @@ export const ReportViewerTab = ({
         );
     }, [treeModel]);
 
+    const rootNodeId = useMemo(() => {
+        const rootNode = treeModel.treeNodes.find(
+            (node) => node?.data?.label === 'Root'
+        );
+        return rootNode?.id;
+    }, [treeModel]);
+
     const setNodeName = useCallback(
         (report) => {
-            report.defaultName =
-                report.taskKey === 'Root'
-                    ? report.taskKey
-                    : nodesNames.get(report.taskKey);
+            if (report.taskKey === 'Root') {
+                report.taskKey = rootNodeId;
+            } else {
+                report.defaultName = nodesNames.get(report.taskKey);
+            }
             return report;
         },
-        [nodesNames]
+        [nodesNames, rootNodeId]
     );
 
     const setSelectedSeverity = useCallback((newFilter) => {
         setSeverityFilter(newFilter);
     }, []);
 
+    const severityFilterList = useMemo(() => {
+        let severityFilterList = [];
+        for (const [severity, selected] of Object.entries(severityFilter)) {
+            if (selected) {
+                severityFilterList.push(severity);
+            }
+        }
+        return severityFilterList;
+    }, [severityFilter]);
+
+    const makeSingleReport = useCallback(
+        (reportData) => {
+            if (reportData.length === 1) {
+                return setNodeName(reportData[0]);
+            } else {
+                let globalReport = {
+                    taskKey: 'root',
+                    defaultName: 'Logs',
+                    taskValues: {
+                        globalReport: {
+                            value: true,
+                            type: 'UNTYPED',
+                        },
+                    },
+                    reports: [],
+                    subReporters: reportData.map((r) => setNodeName(r)),
+                };
+                return globalReport;
+            }
+        },
+        [setNodeName]
+    );
+
     const fetchAndProcessReport = useCallback(
         (studyId, currentNode) => {
             setWaitingLoadReport(true);
-            let severityFilterList = [];
-            for (const [severity, selected] of Object.entries(severityFilter)) {
-                if (selected) {
-                    severityFilterList.push(severity);
-                }
-            }
-            fetchReport(
+            fetchNodeReport(
                 studyId,
                 currentNode.id,
                 nodeOnlyReport,
                 severityFilterList
             )
                 .then((fetchedReport) => {
-                    if (fetchedReport.length === 1) {
-                        setReport(setNodeName(fetchedReport[0]));
-                    } else {
-                        let globalReport = {
-                            taskKey: 'root',
-                            defaultName: 'Logs',
-                            taskValues: {},
-                            reports: [],
-                            subReporters: fetchedReport.map((r) =>
-                                setNodeName(r)
-                            ),
-                        };
-                        setReport(globalReport);
-                    }
+                    console.log('DBR global fetch', fetchedReport);
+                    setReport(makeSingleReport(fetchedReport));
                 })
-                .catch((error) => snackError({ messageTxt: error.message }))
+                .catch((error) => {
+                    setReport();
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'ReportFetchError',
+                    });
+                })
                 .finally(() => {
                     setWaitingLoadReport(false);
                 });
         },
-        [nodeOnlyReport, setNodeName, snackError, severityFilter]
+        [nodeOnlyReport, snackError, severityFilterList, makeSingleReport]
     );
 
     // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
@@ -196,6 +225,10 @@ export const ReportViewerTab = ({
                         jsonReport={report}
                         selectedSeverity={severityFilter}
                         setSelectedSeverity={setSelectedSeverity}
+                        studyId={studyId}
+                        currentNode={currentNode}
+                        makeSingleReport={makeSingleReport}
+                        globalFetch={fetchAndProcessReport}
                     />
                 )}
             </Paper>

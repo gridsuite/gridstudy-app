@@ -20,6 +20,9 @@ import LogReport from './log-report';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
+import { fetchNodeReport, fetchReporter } from '../../services/study';
+import { useSnackMessage } from '@gridsuite/commons-ui';
+import WaitingLoader from '../utils/waiting-loader';
 
 const MAX_SUB_REPORTS = 500;
 
@@ -37,11 +40,17 @@ export default function ReportViewer({
     jsonReport,
     selectedSeverity,
     setSelectedSeverity,
+    studyId,
+    currentNode,
+    makeSingleReport,
+    globalFetch,
     maxSubReports = MAX_SUB_REPORTS,
 }) {
     const [selectedNode, setSelectedNode] = useState(null);
     const [expandedNodes, setExpandedNodes] = useState([]);
     const [logs, setLogs] = useState(null);
+    const [waitingLoadReport, setWaitingLoadReport] = useState(false);
+    const { snackError } = useSnackMessage();
 
     const [highlightedReportId, setHighlightedReportId] = useState();
 
@@ -99,11 +108,59 @@ export default function ReportViewer({
         selectNode(nodeId);
     };
 
+    const severityFilterList = useMemo(() => {
+        let severityList = [];
+        for (const [severity, selected] of Object.entries(selectedSeverity)) {
+            if (selected) {
+                severityList.push(severity);
+            }
+        }
+        return severityList;
+    }, [selectedSeverity]);
+
+    const buildFetchPromise = (nodeId) => {
+        if (allReports.current[nodeId].isModificationNode()) {
+            return fetchNodeReport(
+                studyId,
+                allReports.current[nodeId].getKey(),
+                true,
+                severityFilterList
+            );
+        } else {
+            return fetchReporter(
+                studyId,
+                currentNode.id,
+                nodeId,
+                severityFilterList
+            );
+        }
+    };
+
     const selectNode = (nodeId) => {
         if (selectedNode !== nodeId) {
-            setSelectedNode(nodeId);
-            setLogs(allReports.current[nodeId].getAllLogs());
-            setHighlightedReportId(null);
+            if (allReports.current[nodeId].isGlobalLog()) {
+                globalFetch(studyId, currentNode);
+            } else {
+                setWaitingLoadReport(true);
+                const fetchPromise = buildFetchPromise(nodeId);
+                Promise.resolve(fetchPromise)
+                    .then((fetchedData) => {
+                        let reporterData = makeSingleReport(fetchedData);
+                        let logReporter = new LogReport(reporterData);
+                        setSelectedNode(nodeId);
+                        setLogs(logReporter.getAllLogs());
+                        setHighlightedReportId(null);
+                    })
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'ReportFetchError',
+                        });
+                    })
+                    .finally(() => {
+                        setWaitingLoadReport(false);
+                    });
+            }
         }
     };
 
@@ -172,12 +229,17 @@ export default function ReportViewer({
                     </ReportTreeViewContext.Provider>
                 </Grid>
                 <Grid item xs={12} sm={9} style={{ height: '95%' }}>
-                    <LogTable
-                        logs={logs}
-                        onRowClick={onRowClick}
-                        selectedSeverity={selectedSeverity}
-                        setSelectedSeverity={setSelectedSeverity}
-                    />
+                    <WaitingLoader
+                        loading={waitingLoadReport}
+                        message={'loadingReport'}
+                    >
+                        <LogTable
+                            logs={logs}
+                            onRowClick={onRowClick}
+                            selectedSeverity={selectedSeverity}
+                            setSelectedSeverity={setSelectedSeverity}
+                        />
+                    </WaitingLoader>
                 </Grid>
             </Grid>
         )

@@ -933,6 +933,7 @@
 
     "root": "Root",
     "LogOnlySingleNode": "Log single node",
+    "ReportFetchError": "An error occurred while fetching the logs",
 
     "RegulatingMode": "Phase regulation mode",
     "RegulatingPhase": "Phase regulating",
