@@ -21,6 +21,9 @@ import {
     fetchSensitivityAnalysisFilterOptions,
     fetchSensitivityAnalysisResult,
 } from '../../../services/study/sensitivity-analysis';
+import { useSelector } from 'react-redux';
+import { ComputingType } from 'components/computing-status/computing-type';
+import { RunningStatus } from '../../utils/running-status';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,
@@ -41,6 +44,9 @@ const PagedSensitivityAnalysisResult = ({
     const [result, setResult] = useState(null);
     const [options, setOptions] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const sensiStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+    );
 
     const filtersDef = useMemo(() => {
         const baseFilters = [
@@ -172,8 +178,13 @@ const PagedSensitivityAnalysisResult = ({
     ]);
 
     useEffect(() => {
-        fetchResult();
-    }, [fetchResult]);
+        if (sensiStatus === RunningStatus.RUNNING) {
+            setResult(null);
+        }
+        if (sensiStatus === RunningStatus.SUCCEED) {
+            fetchResult();
+        }
+    }, [sensiStatus, fetchResult]);
 
     return (
         <>
