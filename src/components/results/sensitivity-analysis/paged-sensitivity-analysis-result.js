@@ -65,7 +65,7 @@ const PagedSensitivityAnalysisResult = ({
             },
         ];
 
-        if (nOrNkIndex === 1) {
+        if (nOrNkIndex > 0) {
             baseFilters.push({
                 field: 'contingencyId',
                 label: intl.formatMessage({ id: 'ContingencyId' }),

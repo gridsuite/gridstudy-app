@@ -59,7 +59,6 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     };
 
     const handleSensiNOrNkIndexChange = (event, newNOrNKIndex) => {
-        console.log('newNOrNKIndex : ', newNOrNKIndex);
         initTable(newNOrNKIndex);
         setNOrNkIndex(newNOrNKIndex);
     };
