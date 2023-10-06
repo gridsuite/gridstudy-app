@@ -27,6 +27,7 @@ export interface LimitViolationsResultFromBack {
 export interface PreContingencyResult {
     status?: string;
     limitViolationsResult?: LimitViolationsResultFromBack;
+    isWaiting: boolean;
 }
 export interface Contingency {
     id: string;
@@ -41,6 +42,7 @@ export interface SecurityAnalysisResultTableNmKProps {
     postContingencyResults?: PostContingencyResult[];
     onClickNmKConstraint: (row: NmKConstraintRow, codDef?: ColDef) => void;
     nmkTypeResult: string;
+    isWaiting: boolean;
 }
 export interface SecurityAnalysisResult {
     preContingencyResult: PreContingencyResult;
@@ -50,6 +52,7 @@ export interface SecurityAnalysisResult {
 export interface SecurityAnalysisResultProps {
     result: SecurityAnalysisResult;
     onClickNmKConstraint: (row: NmKConstraintRow, codDef?: ColDef) => void;
+    isWaiting: boolean;
 }
 export interface SecurityAnalysisTabProps {
     studyUuid: UUID;

@@ -37,6 +37,7 @@ interface ShortCircuitAnalysisResultProps {
     onSortChanged: (colKey: string, sortWay: number) => void;
     sortConfig: ISortConfig;
     analysisType: ShortcircuitAnalysisType;
+    isFetching: boolean;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -83,7 +84,7 @@ interface ColumnConfig {
 
 const ShortCircuitAnalysisResultTable: FunctionComponent<
     ShortCircuitAnalysisResultProps
-> = ({ result, onSortChanged, sortConfig, analysisType }) => {
+> = ({ result, onSortChanged, sortConfig, analysisType, isFetching }) => {
     const intl = useIntl();
     const theme = useTheme();
 
@@ -166,12 +167,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 field: 'deltaCurrentIpMin',
                 fractionDigits: 1,
                 isNumeric: true,
+                isSortable: analysisType === ShortcircuitAnalysisType.ALL_BUSES,
             }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
                 field: 'deltaCurrentIpMax',
                 fractionDigits: 1,
                 isNumeric: true,
+                isSortable: analysisType === ShortcircuitAnalysisType.ALL_BUSES,
             }),
             makeColumn({
                 field: 'linkedElementId',
@@ -179,7 +182,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 isSortable: false,
             }),
         ],
-        [intl, makeColumn]
+        [intl, makeColumn, analysisType]
     );
 
     const shortCircuitAnalysisStatus = useSelector(
@@ -331,7 +334,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const message = getNoRowsMessage(
         messages,
         rows,
-        shortCircuitAnalysisStatus
+        shortCircuitAnalysisStatus,
+        !isFetching
     );
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 

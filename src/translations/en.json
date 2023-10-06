@@ -368,7 +368,7 @@
     "saveParameters": "Save settings",
     "loadParameters": "Predefined settings",
     "showSelectDirectoryDialog": "Choose folder",
-    "showSelectParameterDialog": "Choose parameter",
+    "showSelectParameterDialog": "Choose parameters",
     "nameAlreadyUsed": "This name is already used",
 
     "descLfReadSlackBus": "Read slack bus in the network",
@@ -1139,6 +1139,8 @@
     "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
     "RatedNominalPower": "Rated nominal power (MVA)",
 
+    "ShortcircuitInProgress": "Shortcircuit computation in progress...",
+    
     "tableChangingError": "An error occured when modifying the data",
     "studyIndexationDone": "Study indexation done. Search functionality is now available",
     "studyIndexationError": "Study indexation process has failed.",
