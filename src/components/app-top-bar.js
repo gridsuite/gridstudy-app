@@ -193,7 +193,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const sensiNotif = useSelector((state) => state.sensiNotif);
 
-    const allBusesShortCircuitNotif = useSelector((state) => state.allBusesShortCircuitNotif);
+    const allBusesShortCircuitNotif = useSelector(
+        (state) => state.allBusesShortCircuitNotif
+    );
 
     const oneBusShortCircuitNotif = useSelector(
         (state) => state.oneBusShortCircuitNotif
