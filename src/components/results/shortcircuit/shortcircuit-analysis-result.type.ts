@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export interface SCAResultFaultFault {
+export interface SCAFault {
     id: string;
     elementId: string;
     faultType: string;
 }
 
-export interface SCAResultFaultLimitViolation {
+export interface SCALimitViolation {
     subjectId: string;
     limitType: string;
     limit: number;
@@ -19,7 +19,7 @@ export interface SCAResultFaultLimitViolation {
     value: number;
 }
 
-export interface SCAResultFaultFeederResult {
+export interface SCAFeederResult {
     connectableId: string;
     current: number;
     positiveMagnitude: number;
@@ -32,14 +32,14 @@ interface SCAShortCircuitLimits {
     deltaCurrentIpMin: number | null;
 }
 
-export interface SCAResultFault {
-    fault: SCAResultFaultFault;
+export interface SCAFaultResult {
+    fault: SCAFault;
     current: number;
     positiveMagnitude: number;
     shortCircuitPower: number;
     shortCircuitLimits: SCAShortCircuitLimits;
-    limitViolations: SCAResultFaultLimitViolation[];
-    feederResults: SCAResultFaultFeederResult[];
+    limitViolations?: SCALimitViolation[];
+    feederResults?: SCAFeederResult[];
 }
 
 type Pageable = {
@@ -55,8 +55,19 @@ type Pageable = {
     unpaged: boolean;
 };
 
-export type ShortcircuitAnalysisResult = {
-    content: SCAResultFault[];
+export type SCAResult = SCAAllBusesResult | SCAOneBusResult;
+
+export type SCAAllBusesResult = {
+    page: Page<SCAFaultResult>;
+};
+
+export type SCAOneBusResult = {
+    faultResult: SCAFaultResult;
+    page: Page<SCAFeederResult>;
+};
+
+interface Page<ResultType> {
+    content: ResultType[];
     pageable: Pageable;
     last: boolean;
     totalPages: number;
@@ -71,36 +82,25 @@ export type ShortcircuitAnalysisResult = {
     };
     numberOfElements: number;
     empty: boolean;
-    faults?: SCAResultFault[];
-};
+}
 
-export type ShortCircuitAnalysisResultFetch = (
-    studyUuid: string,
-    nodeId: string,
-    selector?: {
-        page?: number;
-        size?: number;
-        sort?: string;
-    }
-) => Promise<any>;
-
-export enum ShortcircuitAnalysisResultTabs {
+export enum ShortCircuitAnalysisResultTabs {
     ALL_BUSES = 0,
     ONE_BUS = 1,
 }
 
-export enum ShortcircuitAnalysisType {
+export enum ShortCircuitAnalysisType {
     ALL_BUSES = 0,
     ONE_BUS = 1,
 }
 
-export const getShortcircuitAnalysisTypeFromEnum = (
-    type: ShortcircuitAnalysisType
+export const getShortCircuitAnalysisTypeFromEnum = (
+    type: ShortCircuitAnalysisType
 ) => {
     switch (type) {
-        case ShortcircuitAnalysisType.ALL_BUSES:
+        case ShortCircuitAnalysisType.ALL_BUSES:
             return 'ALL_BUSES';
-        case ShortcircuitAnalysisType.ONE_BUS:
+        case ShortCircuitAnalysisType.ONE_BUS:
             return 'ONE_BUS';
         default:
             return null;

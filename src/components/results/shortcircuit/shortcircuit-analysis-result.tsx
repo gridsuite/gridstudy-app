@@ -9,10 +9,9 @@ import WaitingLoader from 'components/utils/waiting-loader';
 import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
 import {
-    SCAResultFault,
-    ShortCircuitAnalysisResultFetch,
-    ShortcircuitAnalysisResult,
-    ShortcircuitAnalysisType,
+    SCAFaultResult,
+    SCAResult,
+    ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import { ReduxState } from 'redux/reducer.type';
 import { ComputingType } from 'components/computing-status/computing-type';
@@ -23,14 +22,11 @@ import React, {
     useEffect,
     useState,
 } from 'react';
+import { fetchShortCircuitAnalysisResult } from '../../../services/study/short-circuit-analysis';
 import {
-    fetchOneBusShortCircuitAnalysisResult,
-    fetchShortCircuitAnalysisResult,
-} from '../../../services/study/short-circuit-analysis';
-import {
-    PAGE_OPTIONS,
-    DEFAULT_PAGE_COUNT,
     DATA_KEY_TO_SORT_KEY,
+    DEFAULT_PAGE_COUNT,
+    PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
@@ -38,12 +34,13 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 
 interface IShortCircuitAnalysisGlobalResultProps {
-    analysisType: ShortcircuitAnalysisType;
+    analysisType: ShortCircuitAnalysisType;
+    formatResult: (result: SCAResult) => SCAFaultResult[];
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<
     IShortCircuitAnalysisGlobalResultProps
-> = ({ analysisType }) => {
+> = ({ analysisType, formatResult }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
@@ -53,7 +50,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
     const [isFetching, setIsFetching] = useState<boolean>(false);
-    const [result, setResult] = useState<SCAResultFault[]>([]);
+    const [result, setResult] = useState<SCAFaultResult[]>([]);
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
@@ -66,8 +63,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const shortCircuitNotif = useSelector(
         (state: ReduxState) => state.shortCircuitNotif
     );
-
-    const isAllBusesType = analysisType === ShortcircuitAnalysisType.ALL_BUSES;
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -104,20 +99,25 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             sort: parsedSortConfig,
         };
 
-        const fetchAnalysisResult = (
-            fetchFunction: ShortCircuitAnalysisResultFetch
-        ) => {
+        if (
+            analysisType === ShortCircuitAnalysisType.ALL_BUSES ||
+            oneBusShortCircuitAnalysisState !== RunningStatus.RUNNING
+        ) {
             setResult([]);
 
-            fetchFunction(studyUuid, currentNode?.id)
-                .then((result: ShortcircuitAnalysisResult) => {
+            fetchShortCircuitAnalysisResult({
+                studyUuid,
+                currentNodeUuid: currentNode?.id,
+                type: analysisType,
+                selector,
+            })
+                .then((result: SCAResult) => {
                     const {
-                        content = [],
-                        totalElements,
-                        faults = [],
-                    } = result || {};
+                        page: { content, totalElements },
+                    } = result;
 
-                    setResult(faults.length ? faults : content);
+                    const formattedResults = formatResult(result);
+                    setResult(formattedResults);
                     if (totalElements && content.length) {
                         setCount(totalElements);
                     }
@@ -131,29 +131,13 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     })
                 )
                 .finally(() => setIsFetching(false));
-        };
-
-        if (isAllBusesType) {
-            fetchAnalysisResult(
-                fetchShortCircuitAnalysisResult.bind(null, {
-                    studyUuid,
-                    currentNodeUuid: currentNode?.id,
-                    selector,
-                })
-            );
-        } else if (oneBusShortCircuitAnalysisState !== RunningStatus.RUNNING) {
-            fetchAnalysisResult(
-                fetchOneBusShortCircuitAnalysisResult.bind(null, {
-                    studyUuid,
-                    currentNodeUuid: currentNode?.id,
-                })
-            );
         }
     }, [
         page,
         rowsPerPage,
         snackError,
-        isAllBusesType,
+        analysisType,
+        formatResult,
         sortConfig,
         studyUuid,
         currentNode?.id,
@@ -172,16 +156,14 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     analysisType={analysisType}
                 />
             </WaitingLoader>
-            {isAllBusesType && (
-                <CustomTablePagination
-                    rowsPerPageOptions={PAGE_OPTIONS}
-                    count={count}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            )}
+            <CustomTablePagination
+                rowsPerPageOptions={PAGE_OPTIONS}
+                count={count}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
         </>
     );
 };

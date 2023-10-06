@@ -7,17 +7,15 @@
 
 import { Tab, Tabs } from '@mui/material';
 import { FunctionComponent, useCallback, useState } from 'react';
+import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
-    ShortcircuitAnalysisResultTabs,
-    ShortcircuitAnalysisType,
-} from './shortcircuit-analysis-result.type';
-import {
-    ResultTabIndexRedirection,
     ResultsTabsLevel,
+    ResultTabIndexRedirection,
     useResultsTab,
 } from '../use-results-tab';
-import { ShortCircuitAnalysisResult } from './shortcircuit-analysis-result';
 import { FormattedMessage } from 'react-intl';
+import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
+import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
 
 interface ShortCircuitAnalysisResultTabProps {
     resultTabIndexRedirection: ResultTabIndexRedirection;
@@ -57,13 +55,11 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                     }
                 />
             </Tabs>
-            <ShortCircuitAnalysisResult
-                analysisType={
-                    tabIndex === ShortcircuitAnalysisResultTabs.ALL_BUSES
-                        ? ShortcircuitAnalysisType.ALL_BUSES
-                        : ShortcircuitAnalysisType.ONE_BUS
-                }
-            />
+            {tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ? (
+                <ShortCircuitAnalysisAllBusesResult />
+            ) : (
+                <ShortCircuitAnalysisOneBusResult />
+            )}
         </>
     );
 };

@@ -10,8 +10,8 @@ import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import {
-    SCAResultFault,
-    ShortcircuitAnalysisType,
+    SCAFaultResult,
+    ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import {
     GridReadyEvent,
@@ -33,10 +33,10 @@ import { ISortConfig } from '../../../hooks/use-aggrid-sort';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 
 interface ShortCircuitAnalysisResultProps {
-    result: SCAResultFault[];
+    result: SCAFaultResult[];
     onSortChanged: (colKey: string, sortWay: number) => void;
     sortConfig: ISortConfig;
-    analysisType: ShortcircuitAnalysisType;
+    analysisType: ShortCircuitAnalysisType;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -166,14 +166,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 field: 'deltaCurrentIpMin',
                 fractionDigits: 1,
                 isNumeric: true,
-                isSortable: analysisType === ShortcircuitAnalysisType.ALL_BUSES,
+                isSortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
             }),
             makeColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
                 field: 'deltaCurrentIpMax',
                 fractionDigits: 1,
                 isNumeric: true,
-                isSortable: analysisType === ShortcircuitAnalysisType.ALL_BUSES,
+                isSortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
             }),
             makeColumn({
                 field: 'linkedElementId',
@@ -187,7 +187,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const shortCircuitAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[
-                analysisType === ShortcircuitAnalysisType.ALL_BUSES
+                analysisType === ShortCircuitAnalysisType.ALL_BUSES
                     ? ComputingType.SHORTCIRCUIT_ANALYSIS
                     : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
             ]
@@ -233,12 +233,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         [theme.selectedRow.background]
     );
 
-    const flattenResult = (shortCircuitAnalysisResult: SCAResultFault[]) => {
+    const flattenResult = (shortCircuitAnalysisResult: SCAFaultResult[]) => {
         const rows: ShortCircuitAnalysisAGGridResult[] = [];
 
-        shortCircuitAnalysisResult?.forEach((faultResult: SCAResultFault) => {
+        shortCircuitAnalysisResult?.forEach((faultResult: SCAFaultResult) => {
             const fault = faultResult.fault;
-            const limitViolations = faultResult.limitViolations;
+            const limitViolations = faultResult.limitViolations ?? [];
             let firstLimitViolation;
             if (limitViolations.length > 0) {
                 let lv = limitViolations[0];
@@ -285,12 +285,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     current: lv.value,
                 });
             });
-            const feederResults = faultResult.feederResults;
+            const feederResults = faultResult.feederResults ?? [];
             feederResults.forEach((feederResult) => {
                 let current = NaN;
-                if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+                if (analysisType === ShortCircuitAnalysisType.ALL_BUSES) {
                     current = feederResult.current;
-                } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
+                } else if (analysisType === ShortCircuitAnalysisType.ONE_BUS) {
                     current = feederResult.positiveMagnitude;
                 }
 
