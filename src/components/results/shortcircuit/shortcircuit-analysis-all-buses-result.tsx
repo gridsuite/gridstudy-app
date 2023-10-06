@@ -11,8 +11,14 @@ import {
     ShortCircuitAnalysisType,
 } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
+import { useSelector } from 'react-redux';
+import { ReduxState } from 'redux/reducer.type';
 
 export const ShortCircuitAnalysisAllBusesResult = () => {
+    const allBusesShortCircuitNotif = useSelector(
+        (state: ReduxState) => state.allBusesShortCircuitNotif
+    );
+
     function formatResult(result: SCAResult) {
         const {
             page: { content },
@@ -24,6 +30,7 @@ export const ShortCircuitAnalysisAllBusesResult = () => {
         <ShortCircuitAnalysisResult
             analysisType={ShortCircuitAnalysisType.ALL_BUSES}
             formatResult={formatResult}
+            shortCircuitNotif={allBusesShortCircuitNotif}
         />
     );
 };

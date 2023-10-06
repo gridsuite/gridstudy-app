@@ -188,7 +188,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         (state: ReduxState) =>
             state.computingStatus[
                 analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                    ? ComputingType.SHORTCIRCUIT_ANALYSIS
+                    ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
                     : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
             ]
     );

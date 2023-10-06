@@ -14,8 +14,6 @@ import {
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import { ReduxState } from 'redux/reducer.type';
-import { ComputingType } from 'components/computing-status/computing-type';
-import { RunningStatus } from 'components/utils/running-status';
 import React, {
     FunctionComponent,
     useCallback,
@@ -36,11 +34,12 @@ import { useIntl } from 'react-intl';
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
     formatResult: (result: SCAResult) => SCAFaultResult[];
+    shortCircuitNotif: boolean;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<
     IShortCircuitAnalysisGlobalResultProps
-> = ({ analysisType, formatResult }) => {
+> = ({ analysisType, formatResult, shortCircuitNotif }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
@@ -55,13 +54,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
-    );
-    const oneBusShortCircuitAnalysisState = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
-    );
-    const shortCircuitNotif = useSelector(
-        (state: ReduxState) => state.shortCircuitNotif
     );
 
     const handleChangePage = useCallback(
@@ -83,6 +75,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     // Effects
     useEffect(() => {
+        let active = true; // to manage race condition
         setIsFetching(true);
 
         const { colKey, sortWay } = sortConfig;
@@ -99,19 +92,16 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             sort: parsedSortConfig,
         };
 
-        if (
-            analysisType === ShortCircuitAnalysisType.ALL_BUSES ||
-            oneBusShortCircuitAnalysisState !== RunningStatus.RUNNING
-        ) {
-            setResult([]);
+        setResult([]);
 
-            fetchShortCircuitAnalysisResult({
-                studyUuid,
-                currentNodeUuid: currentNode?.id,
-                type: analysisType,
-                selector,
-            })
-                .then((result: SCAResult) => {
+        fetchShortCircuitAnalysisResult({
+            studyUuid,
+            currentNodeUuid: currentNode?.id,
+            type: analysisType,
+            selector,
+        })
+            .then((result: SCAResult) => {
+                if (active) {
                     const {
                         page: { content, totalElements },
                     } = result;
@@ -121,17 +111,25 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     if (totalElements && content.length) {
                         setCount(totalElements);
                     }
+                }
+            })
+            .catch((error) =>
+                snackError({
+                    messageTxt: error.message,
+                    headerId: intl.formatMessage({
+                        id: 'ShortCircuitAnalysisResultsError',
+                    }),
                 })
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: intl.formatMessage({
-                            id: 'ShortCircuitAnalysisResultsError',
-                        }),
-                    })
-                )
-                .finally(() => setIsFetching(false));
-        }
+            )
+            .finally(() => {
+                if (active) {
+                    setIsFetching(false);
+                }
+            });
+
+        return () => {
+            active = false;
+        };
     }, [
         page,
         rowsPerPage,
@@ -143,7 +141,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         currentNode?.id,
         intl,
         shortCircuitNotif,
-        oneBusShortCircuitAnalysisState,
     ]);
 
     return (

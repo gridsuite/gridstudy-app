@@ -33,14 +33,14 @@ import {
     addLoadflowNotif,
     addSANotif,
     addSensiNotif,
-    addShortCircuitNotif,
+    addAllBusesShortCircuitNotif,
     addDynamicSimulationNotif,
     centerOnSubstation,
     openDiagram,
     resetLoadflowNotif,
     resetSANotif,
     resetSensiNotif,
-    resetShortCircuitNotif,
+    resetAllBusesShortCircuitNotif,
     resetDynamicSimulationNotif,
     STUDY_DISPLAY_MODE,
     addVoltageInitNotif,
@@ -237,8 +237,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const shortCircuitAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
+    const allBusesShortCircuitAnalysisStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
     );
 
     const oneBusShortCircuitAnalysisStatus = useSelector(
@@ -322,13 +323,19 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            shortCircuitAnalysisStatus === RunningStatus.SUCCEED
+            allBusesShortCircuitAnalysisStatus === RunningStatus.SUCCEED
         ) {
-            dispatch(addShortCircuitNotif());
+            dispatch(addAllBusesShortCircuitNotif());
         } else {
-            dispatch(resetShortCircuitNotif());
+            dispatch(resetAllBusesShortCircuitNotif());
         }
-    }, [currentNode, dispatch, shortCircuitAnalysisStatus, tabIndex, user]);
+    }, [
+        currentNode,
+        dispatch,
+        allBusesShortCircuitAnalysisStatus,
+        tabIndex,
+        user,
+    ]);
 
     useEffect(() => {
         if (
