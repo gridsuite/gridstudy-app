@@ -12,7 +12,6 @@ import {
 } from './security-analysis.type';
 import { useNodeData } from '../../study-container';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
-import WaitingLoader from '../../utils/waiting-loader';
 import { SecurityAnalysisResult } from './security-analysis-result';
 import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -72,11 +71,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         }
     }
     return (
-        <WaitingLoader message={'LoadingRemoteData'} loading={isWaiting}>
-            <SecurityAnalysisResult
-                result={securityAnalysisResult}
-                onClickNmKConstraint={onClickNmKConstraint}
-            />
-        </WaitingLoader>
+        <SecurityAnalysisResult
+            result={securityAnalysisResult}
+            onClickNmKConstraint={onClickNmKConstraint}
+            isWaiting={isWaiting}
+        />
     );
 };

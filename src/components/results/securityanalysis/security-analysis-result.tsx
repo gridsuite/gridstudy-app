@@ -17,6 +17,13 @@ import { SecurityAnalysisTableN } from './security-analysis-result-tableN';
 import { SecurityAnalysisResultTableNmK } from './security-analysis-result-tableNmK';
 import { NMK_TYPE_RESULT } from './security-analysis-result-utils';
 import { Box } from '@mui/system';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RunningStatus } from '../../utils/running-status';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../../redux/reducer.type';
+import { ComputingType } from '../../computing-status/computing-type';
+import { LinearProgress } from '@mui/material';
 
 const styles = {
     container: {
@@ -36,7 +43,7 @@ const styles = {
 
 export const SecurityAnalysisResult: FunctionComponent<
     SecurityAnalysisResultProps
-> = ({ result, onClickNmKConstraint }) => {
+> = ({ result, onClickNmKConstraint, isWaiting }) => {
     const [tabIndex, setTabIndex] = React.useState(0);
 
     const [nmkTypeResult, setNmkTypeResult] = React.useState(
@@ -50,6 +57,17 @@ export const SecurityAnalysisResult: FunctionComponent<
                 : NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
         );
     };
+
+    const securityAnalysisStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+    );
+
+    const openLoader = useOpenLoaderShortWait({
+        isLoading:
+            securityAnalysisStatus === RunningStatus.RUNNING || isWaiting,
+        delay: RESULTS_LOADING_DELAY,
+    });
 
     return (
         <>
@@ -65,7 +83,6 @@ export const SecurityAnalysisResult: FunctionComponent<
                         <Tab label="N-K" />
                     </Tabs>
                 </Box>
-
                 {tabIndex === 1 && (
                     <Box sx={styles.nmkResultSelect}>
                         <Select
@@ -93,12 +110,14 @@ export const SecurityAnalysisResult: FunctionComponent<
                     </Box>
                 )}
             </Box>
+            <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
             <div style={{ flexGrow: 1 }}>
                 {tabIndex === 0 && (
                     <SecurityAnalysisTableN
                         limitViolationsResult={
                             result?.preContingencyResult?.limitViolationsResult
                         }
+                        isWaiting={isWaiting}
                     />
                 )}
                 {tabIndex === 1 &&
@@ -112,6 +131,7 @@ export const SecurityAnalysisResult: FunctionComponent<
                             nmkTypeResult={
                                 NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
                             }
+                            isWaiting={isWaiting}
                         />
                     )}
 
@@ -126,6 +146,7 @@ export const SecurityAnalysisResult: FunctionComponent<
                             nmkTypeResult={
                                 NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS
                             }
+                            isWaiting={isWaiting}
                         />
                     )}
             </div>
