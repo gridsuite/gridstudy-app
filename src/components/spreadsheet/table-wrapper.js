@@ -303,10 +303,16 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments({
-        type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
-        fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
-    });
+    const equipmentDefinition = useMemo(
+        () => ({
+            type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+            fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
+        }),
+        [tabIndex]
+    );
+
+    const { equipments, errorMessage, isFetching } =
+        useSpreadsheetEquipments(equipmentDefinition);
 
     useEffect(() => {
         if (errorMessage) {
