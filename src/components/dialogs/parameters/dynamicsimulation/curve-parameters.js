@@ -29,12 +29,15 @@ const EQUIPMENT_ID = 'equipmentId';
 const VARIABLE_ID = 'variableId';
 
 export const formSchema = yup.object().shape({
-    [CURVES]: yup.array().of(
-        yup.object().shape({
-            [EQUIPMENT_ID]: yup.string().required(),
-            [VARIABLE_ID]: yup.string().required(),
-        })
-    ),
+    [CURVES]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [EQUIPMENT_ID]: yup.string().required(),
+                [VARIABLE_ID]: yup.string().required(),
+            })
+        )
+        .nullable(),
 });
 
 export const emptyFormData = {
