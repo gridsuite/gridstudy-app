@@ -25,6 +25,7 @@ import {
     resetEquipmentsPostLoadflow,
     setStudyIndexationStatus,
     STUDY_INDEXATION_STATUS,
+    limitReductionModified,
 } from '../redux/actions';
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
@@ -262,7 +263,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const wsRef = useRef();
 
-    const limitReductionModified = useSelector(
+    const isLimitReductionModified = useSelector(
         (state) => state.limitReductionModified
     );
 
@@ -860,7 +861,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUuid) {
-            if (limitReductionModified) {
+            if (isLimitReductionModified) {
                 // limit reduction param has changed : we invalidate the load flow status
                 invalidateLoadFlowStatus(studyUuid).catch((error) => {
                     snackError({
@@ -868,9 +869,10 @@ export function StudyContainer({ view, onChangeTab }) {
                         headerId: 'invalidateLoadFlowStatusError',
                     });
                 });
+                dispatch(limitReductionModified(false));
             }
         }
-    }, [studyUuid, limitReductionModified, snackError]);
+    }, [studyUuid, isLimitReductionModified, snackError, dispatch]);
 
     return (
         <>
