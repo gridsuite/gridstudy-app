@@ -44,12 +44,14 @@ export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications/stash?uuids=' +
+        '/network-modifications' +
+        '?stashed=' +
+        encodeURIComponent(true) +
+        '&uuids=' +
         encodeURIComponent(modificationUuids);
-
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
-        method: 'POST',
+        method: 'PUT',
     });
 }
 
@@ -60,12 +62,15 @@ export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications/restore?uuids=' +
+        '/network-modifications' +
+        '?stashed=' +
+        encodeURIComponent(false) +
+        '&uuids=' +
         encodeURIComponent(modificationUuids);
 
     console.debug(RestoreModificationsUrl);
     return backendFetch(RestoreModificationsUrl, {
-        method: 'POST',
+        method: 'PUT',
     });
 }
 
