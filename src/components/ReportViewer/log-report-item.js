@@ -12,38 +12,59 @@ export default class LogReportItem {
             level: 0,
             colorName: 'cornflowerblue',
             colorHexCode: '#6495ED',
+            displayedByDefault: false,
         },
         TRACE: {
             name: 'TRACE',
             level: 1,
             colorName: 'silver',
             colorHexCode: '#C0C0C0',
+            displayedByDefault: false,
         },
         INFO: {
             name: 'INFO',
             level: 2,
             colorName: 'mediumseagreen',
             colorHexCode: '#3CB371',
+            displayedByDefault: true,
         },
         WARN: {
             name: 'WARN',
             level: 3,
             colorName: 'orange',
             colorHexCode: '#FFA500',
+            displayedByDefault: true,
         },
         ERROR: {
             name: 'ERROR',
             level: 4,
             colorName: 'crimson',
             colorHexCode: '#DC143C',
+            displayedByDefault: true,
         },
         FATAL: {
             name: 'FATAL',
             level: 5,
             colorName: 'mediumorchid',
             colorHexCode: '#BA55D3',
+            displayedByDefault: true,
         },
     };
+
+    static getDefaultSeverityFilter() {
+        const filterConfig = {};
+        Object.values(LogReportItem.SEVERITY).forEach((s) => {
+            filterConfig[s.name] = s.displayedByDefault;
+        });
+        return filterConfig;
+    }
+
+    static getDefaultSeverityList() {
+        // return name list like ['WARN', 'INFO']
+        return Object.values(LogReportItem.SEVERITY)
+            .filter((s) => s.displayedByDefault)
+            .map((s) => s.name);
+    }
 
     static resolveTemplateMessage(templateMessage, templateValues) {
         const templateVars = {};
@@ -86,8 +107,8 @@ export default class LogReportItem {
         return this.severity.colorName;
     }
 
-    getColorHexCode() {
-        return this.severity.colorHexCode;
+    displayedByDefault() {
+        return this.severity.displayedByDefault();
     }
 
     initSeverity(jsonSeverity) {

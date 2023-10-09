@@ -20,9 +20,9 @@ import LogReport from './log-report';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
-import { fetchNodeReport, fetchReporter } from '../../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import WaitingLoader from '../utils/waiting-loader';
+import LogReportItem from './log-report-item';
 
 const MAX_SUB_REPORTS = 500;
 
@@ -38,12 +38,12 @@ const styles = {
 
 export default function ReportViewer({
     jsonReport,
-    selectedSeverity,
-    setSelectedSeverity,
     studyId,
     currentNode,
     makeSingleReport,
-    globalFetch,
+    reporterElementsPromise,
+    nodeElementsPromise,
+    allLogsElementsPromise,
     maxSubReports = MAX_SUB_REPORTS,
 }) {
     const [selectedNode, setSelectedNode] = useState(null);
@@ -57,6 +57,10 @@ export default function ReportViewer({
     const rootReport = useRef(null);
     const allReports = useRef({});
     const treeView = useRef(null);
+
+    const [selectedSeverity, setSelectedSeverity] = useState(
+        LogReportItem.getDefaultSeverityFilter()
+    );
 
     const createReporterItem = useCallback(
         (logReport) => {
@@ -108,60 +112,65 @@ export default function ReportViewer({
         selectNode(nodeId);
     };
 
-    const severityFilterList = useMemo(() => {
-        let severityList = [];
-        for (const [severity, selected] of Object.entries(selectedSeverity)) {
-            if (selected) {
-                severityList.push(severity);
-            }
-        }
-        return severityList;
-    }, [selectedSeverity]);
-
-    const buildFetchPromise = (nodeId) => {
+    const getFetchPromise = (nodeId, severityList) => {
         if (allReports.current[nodeId].isModificationNode()) {
-            return fetchNodeReport(
+            return nodeElementsPromise(
                 studyId,
                 allReports.current[nodeId].getKey(),
-                true,
-                severityFilterList
+                severityList
+            );
+        } else if (allReports.current[nodeId].isGlobalLog()) {
+            return allLogsElementsPromise(
+                studyId,
+                currentNode.id,
+                severityList
             );
         } else {
-            return fetchReporter(
+            return reporterElementsPromise(
                 studyId,
                 currentNode.id,
                 nodeId,
-                severityFilterList
+                severityList
             );
         }
     };
 
-    const selectNode = (nodeId) => {
-        if (selectedNode !== nodeId) {
-            if (allReports.current[nodeId].isGlobalLog()) {
-                globalFetch(studyId, currentNode);
-            } else {
-                setWaitingLoadReport(true);
-                const fetchPromise = buildFetchPromise(nodeId);
-                Promise.resolve(fetchPromise)
-                    .then((fetchedData) => {
-                        let reporterData = makeSingleReport(fetchedData);
-                        let logReporter = new LogReport(reporterData);
-                        setSelectedNode(nodeId);
-                        setLogs(logReporter.getAllLogs());
-                        setHighlightedReportId(null);
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'ReportFetchError',
-                        });
-                    })
-                    .finally(() => {
-                        setWaitingLoadReport(false);
-                    });
+    const refreshNode = (nodeId, severityFilter) => {
+        let severityList = [];
+        for (const [severity, selected] of Object.entries(severityFilter)) {
+            if (selected) {
+                severityList.push(severity);
             }
         }
+        setWaitingLoadReport(true);
+        Promise.resolve(getFetchPromise(nodeId, severityList))
+            .then((fetchedData) => {
+                let reporterData = makeSingleReport(fetchedData);
+                let logReporter = new LogReport(reporterData);
+                setSelectedNode(nodeId);
+                setLogs(logReporter.getAllLogs());
+                setHighlightedReportId(null);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'ReportFetchError',
+                });
+            })
+            .finally(() => {
+                setWaitingLoadReport(false);
+            });
+    };
+
+    const selectNode = (nodeId) => {
+        if (selectedNode !== nodeId) {
+            refreshNode(nodeId, selectedSeverity);
+        }
+    };
+
+    const onSeverityChange = (newSeverityFilter) => {
+        refreshNode(selectedNode, newSeverityFilter);
+        setSelectedSeverity(newSeverityFilter);
     };
 
     // The MUI TreeView/TreeItems use useMemo on our items, so it's important to avoid changing the context
@@ -237,7 +246,7 @@ export default function ReportViewer({
                             logs={logs}
                             onRowClick={onRowClick}
                             selectedSeverity={selectedSeverity}
-                            setSelectedSeverity={setSelectedSeverity}
+                            setSelectedSeverity={onSeverityChange}
                         />
                     </WaitingLoader>
                 </Grid>

@@ -8,6 +8,7 @@ import React, { useMemo, useState } from 'react';
 import { Box, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { MultiSelectList } from './multi-select-list';
+import LogReportItem from './log-report-item';
 
 const styles = {
     notificationDot: {
@@ -36,7 +37,6 @@ const styles = {
  */
 
 export const FilterButton = ({ selectedItems, setSelectedItems }) => {
-    const [initialState] = useState(selectedItems);
     const [anchorEl, setAnchorEl] = useState();
 
     const handleClick = (event) => {
@@ -58,9 +58,11 @@ export const FilterButton = ({ selectedItems, setSelectedItems }) => {
 
     const isInitialStateModified = useMemo(() => {
         return Object.keys(selectedItems).some(
-            (key) => initialState[key] !== selectedItems[key]
+            (key) =>
+                LogReportItem.getDefaultSeverityFilter()[key] !==
+                selectedItems[key]
         );
-    }, [initialState, selectedItems]);
+    }, [selectedItems]);
 
     return (
         <Box sx={styles.container}>

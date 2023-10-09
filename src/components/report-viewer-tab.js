@@ -16,7 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { fetchNodeReport } from '../services/study';
+import { fetchNodeReport, fetchReporter } from '../services/study';
 import { Box } from '@mui/system';
 import LogReportItem from './ReportViewer/log-report-item';
 
@@ -69,16 +69,6 @@ export const ReportViewerTab = ({
     const { snackError } = useSnackMessage();
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
 
-    const [severityFilter, setSeverityFilter] = useState(() => {
-        const filterConfig = {};
-        Object.values(LogReportItem.SEVERITY).forEach((severity) => {
-            // by default display only INFO severity and higher
-            filterConfig[severity.name] =
-                severity.level >= LogReportItem.SEVERITY.INFO.level;
-        });
-        return filterConfig;
-    });
-
     const handleChangeValue = useCallback((event) => {
         setNodeOnlyReport(event.target.checked);
     }, []);
@@ -108,26 +98,12 @@ export const ReportViewerTab = ({
         [nodesNames, rootNodeId]
     );
 
-    const setSelectedSeverity = useCallback((newFilter) => {
-        setSeverityFilter(newFilter);
-    }, []);
-
-    const severityFilterList = useMemo(() => {
-        let severityFilterList = [];
-        for (const [severity, selected] of Object.entries(severityFilter)) {
-            if (selected) {
-                severityFilterList.push(severity);
-            }
-        }
-        return severityFilterList;
-    }, [severityFilter]);
-
     const makeSingleReport = useCallback(
         (reportData) => {
             if (reportData.length === 1) {
                 return setNodeName(reportData[0]);
             } else {
-                let globalReport = {
+                return {
                     taskKey: 'root',
                     defaultName: 'Logs',
                     taskValues: {
@@ -139,7 +115,6 @@ export const ReportViewerTab = ({
                     reports: [],
                     subReporters: reportData.map((r) => setNodeName(r)),
                 };
-                return globalReport;
             }
         },
         [setNodeName]
@@ -152,10 +127,11 @@ export const ReportViewerTab = ({
                 studyId,
                 currentNode.id,
                 nodeOnlyReport,
-                severityFilterList
+                LogReportItem.getDefaultSeverityList()
+                // TODO only tree True
             )
                 .then((fetchedReport) => {
-                    console.log('DBR global fetch', fetchedReport);
+                    console.log('DBR outsideFetch/setReport', fetchedReport);
                     setReport(makeSingleReport(fetchedReport));
                 })
                 .catch((error) => {
@@ -169,7 +145,7 @@ export const ReportViewerTab = ({
                     setWaitingLoadReport(false);
                 });
         },
-        [nodeOnlyReport, snackError, severityFilterList, makeSingleReport]
+        [nodeOnlyReport, snackError, makeSingleReport]
     );
 
     // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
@@ -195,6 +171,44 @@ export const ReportViewerTab = ({
         fetchAndProcessReport,
         oneBusShortCircuitNotif,
     ]);
+
+    const nodeElementsPromise = (studyId, studyNodeId, severityFilterList) => {
+        return fetchNodeReport(
+            studyId,
+            studyNodeId,
+            true,
+            severityFilterList
+            // TODO onlyTree false
+        );
+    };
+
+    const allLogsElementsPromise = (
+        studyId,
+        studyNodeId,
+        severityFilterList
+    ) => {
+        return fetchNodeReport(
+            studyId,
+            studyNodeId,
+            nodeOnlyReport,
+            severityFilterList
+            // TODO onlyTree false
+        );
+    };
+
+    const reporterElementsPromise = (
+        studyId,
+        studyNodeId,
+        reporterId,
+        severityFilterList
+    ) => {
+        return fetchReporter(
+            studyId,
+            studyNodeId,
+            reporterId,
+            severityFilterList
+        );
+    };
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
@@ -223,12 +237,12 @@ export const ReportViewerTab = ({
                 {!!report && !disabled && (
                     <ReportViewer
                         jsonReport={report}
-                        selectedSeverity={severityFilter}
-                        setSelectedSeverity={setSelectedSeverity}
                         studyId={studyId}
                         currentNode={currentNode}
                         makeSingleReport={makeSingleReport}
-                        globalFetch={fetchAndProcessReport}
+                        reporterElementsPromise={reporterElementsPromise}
+                        nodeElementsPromise={nodeElementsPromise}
+                        allLogsElementsPromise={allLogsElementsPromise}
                     />
                 )}
             </Paper>
