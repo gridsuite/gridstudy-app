@@ -4,17 +4,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import * as React from 'react';
 import clsx from 'clsx';
 import Typography from '@mui/material/Typography';
-import TreeItem from '@mui/lab/TreeItem';
-import { useTreeItem } from '@mui/lab/TreeItem';
+import TreeItem, {
+    TreeItemProps,
+    useTreeItem,
+    TreeItemContentProps,
+} from '@mui/lab/TreeItem';
 
 /**
  To have a custom MUI TreeItem where we can toggle a node without changing the current node / triggering handleSelection.
  */
-const CustomContent = React.forwardRef(function CustomContent(props, ref) {
+const CustomContent = React.forwardRef(function CustomContent(
+    props: TreeItemContentProps,
+    ref
+) {
     const {
         classes,
         className,
@@ -37,15 +42,21 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
 
     const icon = iconProp || expansionIcon || displayIcon;
 
-    const handleMouseDown = (event) => {
+    const handleMouseDown = (
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>
+    ) => {
         preventSelection(event);
     };
 
-    const handleExpansionClick = (event) => {
+    const handleExpansionClick = (
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>
+    ) => {
         handleExpansion(event);
     };
 
-    const handleSelectionClick = (event) => {
+    const handleSelectionClick = (
+        event: React.MouseEvent<HTMLDivElement, MouseEvent>
+    ) => {
         handleSelection(event);
     };
 
@@ -58,7 +69,7 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
                 [classes.disabled]: disabled,
             })}
             onMouseDown={handleMouseDown}
-            ref={ref}
+            ref={ref as React.Ref<HTMLDivElement>}
         >
             <div
                 onClick={handleExpansionClick}
@@ -77,7 +88,10 @@ const CustomContent = React.forwardRef(function CustomContent(props, ref) {
     );
 });
 
-const CustomTreeItem = React.forwardRef(function CustomTreeItem(props, ref) {
+const CustomTreeItem = React.forwardRef(function CustomTreeItem(
+    props: TreeItemProps,
+    ref: React.Ref<HTMLLIElement>
+) {
     return <TreeItem ContentComponent={CustomContent} {...props} ref={ref} />;
 });
 
