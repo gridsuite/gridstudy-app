@@ -7,7 +7,7 @@
 
 import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import Divider from '@mui/material/Divider';
 import EditIcon from '@mui/icons-material/Edit';
@@ -63,15 +63,15 @@ export const EventListItem = ({
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
-    const [computedValues, setComputedValues] = useState({});
 
     const toggle = useCallback(() => handleToggle(item), [item, handleToggle]);
 
-    useEffect(() => {
+    const itemLabel = useMemo(() => {
         if (!studyUuid || !currentNode || !item) {
             return;
         }
-        setComputedValues({
+
+        const computedValues = {
             computedLabel: (
                 <>
                     <strong>{item.equipmentId}</strong>
@@ -80,20 +80,15 @@ export const EventListItem = ({
                     )}`}</i>
                 </>
             ),
-        });
-    }, [item, studyUuid, currentNode]);
+        } as {};
 
-    const getLabel = useCallback(() => {
-        if (!item || !computedValues) {
-            return undefined;
-        }
         return intl.formatMessage(
             { id: `${item.eventType}/${item.equipmentType}` },
             {
                 ...computedValues,
             }
         );
-    }, [item, intl, computedValues]);
+    }, [item, studyUuid, currentNode]);
 
     const [hover, setHover] = useState(false);
 
@@ -113,7 +108,7 @@ export const EventListItem = ({
                         disableRipple
                     />
                 </ListItemIcon>
-                <OverflowableText sx={styles.label} text={getLabel()} />
+                <OverflowableText sx={styles.label} text={itemLabel} />
                 {!isOneNodeBuilding && hover && (
                     <IconButton
                         onClick={() => onEdit(item)}

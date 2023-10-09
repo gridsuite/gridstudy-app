@@ -607,14 +607,12 @@ export const NetworkModificationTreePane = ({
                     onNodeContextMenu={onNodeContextMenu}
                     studyUuid={studyUuid}
                     studyMapTreeDisplay={studyMapTreeDisplay}
-                    isModificationsDrawerOpen={isStudyDrawerOpen}
+                    isStudyDrawerOpen={isStudyDrawerOpen}
                     prevTreeDisplay={prevTreeDisplay}
                 />
 
                 <StudyDrawer
-                    open={
-                        isModificationsDrawerOpen || isEventScenarioDrawerOpen
-                    }
+                    open={isStudyDrawerOpen}
                     anchor={
                         prevTreeDisplay === STUDY_DISPLAY_MODE.TREE
                             ? 'right'
