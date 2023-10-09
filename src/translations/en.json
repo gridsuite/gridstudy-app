@@ -313,6 +313,7 @@
     "ShortCircuitAnalysisResultsError": "An error occurred while retrieving short circuit analysis result",
     "ShortCircuitAnalysisTabOneBus": "One bus",
     "ShortCircuitAnalysisTabAllBuses": "All buses",
+    "OneBusShortCircuitAnalysis": "One bus short circuit analysis",
     "startSensitivityAnalysisError": "An error occurred while executing the sensitivity analysis",
     "IDNode": "ID bus",
     "IscKA": "Isc (kA)",
@@ -363,6 +364,12 @@
     "resetProviderValuesToDefault": "Reset provider default values",
     "showAdvancedParameters": "Advanced settings",
     "showSpecificParameters": "Specific settings",
+    "save": "Save",
+    "saveParameters": "Save settings",
+    "loadParameters": "Predefined settings",
+    "showSelectDirectoryDialog": "Choose folder",
+    "showSelectParameterDialog": "Choose parameters",
+    "nameAlreadyUsed": "This name is already used",
 
     "descLfReadSlackBus": "Read slack bus in the network",
     "descLfWriteSlackBus": "Write slack bus in the network",
@@ -663,6 +670,7 @@
     "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
     "MinReactivePowerLessThanMaxReactivePower": "Minimum reactive power value must be less or equal than maximum reactive power value",
     "MaxReactivePowerGreaterThanMinReactivePower": "Maximum reactive power value must be greater or equal than minimum reactive power value",
+    "ActivePowerLessThanMaxActivePower": "Active power value must be less or equal than maximum active power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
     "DroopGreaterThanZero": "The droop value must be strictly positive",
@@ -1126,8 +1134,17 @@
     "droopLabel": "Droop",
     "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
     "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
+
     "MagnetizingConductanceWithUnit": "Magnetizing conductance (μS)",
     "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
-    "RatedNominalPower": "Rated nominal power (MVA)"
+    "RatedNominalPower": "Rated nominal power (MVA)",
 
+    "ShortcircuitInProgress": "Shortcircuit computation in progress...",
+    
+    "tableChangingError": "An error occured when modifying the data",
+    "studyIndexationDone": "Study indexation done. Search functionality is now available",
+    "studyIndexationError": "Study indexation process has failed.",
+    "checkstudyIndexationError": "Study indexation checking has failed.",
+    "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
+    "waitingStudyIndexation": "Waiting for Study indexation..."
 }

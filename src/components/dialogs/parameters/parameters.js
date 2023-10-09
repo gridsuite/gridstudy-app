@@ -723,18 +723,13 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             />
                         )}
                         {shortCircuitAvailability ===
-                            OptionalServicesStatus.Up &&
-                            enableDeveloperMode && (
-                                <Tab
-                                    disabled={!studyUuid}
-                                    label={
-                                        <FormattedMessage id="ShortCircuit" />
-                                    }
-                                    value={
-                                        TAB_VALUES.shortCircuitParamsTabValue
-                                    }
-                                />
-                            )}
+                            OptionalServicesStatus.Up && (
+                            <Tab
+                                disabled={!studyUuid}
+                                label={<FormattedMessage id="ShortCircuit" />}
+                                value={TAB_VALUES.shortCircuitParamsTabValue}
+                            />
+                        )}
                         {dynamicSimulationAvailability ===
                             OptionalServicesStatus.Up &&
                             enableDeveloperMode && (
@@ -838,26 +833,22 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                             </TabPanel>
                         )}
                         {shortCircuitAvailability ===
-                            OptionalServicesStatus.Up &&
-                            //To be removed when ShortCircuit is not in developer mode only.
-                            enableDeveloperMode && (
-                                <TabPanel
-                                    value={tabValue}
-                                    index={
-                                        TAB_VALUES.shortCircuitParamsTabValue
-                                    }
-                                    keepState
-                                >
-                                    {studyUuid && (
-                                        <ShortCircuitParameters
-                                            hideParameters={hideParameters}
-                                            useShortCircuitParameters={
-                                                useShortCircuitParameters
-                                            }
-                                        />
-                                    )}
-                                </TabPanel>
-                            )}
+                            OptionalServicesStatus.Up && (
+                            <TabPanel
+                                value={tabValue}
+                                index={TAB_VALUES.shortCircuitParamsTabValue}
+                                keepState
+                            >
+                                {studyUuid && (
+                                    <ShortCircuitParameters
+                                        hideParameters={hideParameters}
+                                        useShortCircuitParameters={
+                                            useShortCircuitParameters
+                                        }
+                                    />
+                                )}
+                            </TabPanel>
+                        )}
                         {dynamicSimulationAvailability ===
                             OptionalServicesStatus.Up &&
                             //To be removed when DynamicSimulation is not in developer mode only.

@@ -26,7 +26,7 @@ import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 
 export const SecurityAnalysisTableN: FunctionComponent<
     PreContingencyResult
-> = ({ limitViolationsResult }) => {
+> = ({ limitViolationsResult, isWaiting }) => {
     const intl: IntlShape = useIntl();
     const messages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
@@ -48,7 +48,12 @@ export const SecurityAnalysisTableN: FunctionComponent<
         }
     );
 
-    const message = getNoRowsMessage(messages, rows, securityAnalysisStatus);
+    const message = getNoRowsMessage(
+        messages,
+        rows,
+        securityAnalysisStatus,
+        !isWaiting
+    );
     const defaultColDef = useMemo(
         () => ({
             sortable: true,
