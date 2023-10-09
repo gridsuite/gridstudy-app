@@ -1515,7 +1515,7 @@ export function fetchNetworkModifications(
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications?stashed=' +
+        '/network-modifications?onlyStashed=' +
         encodeURIComponent(stashedModifications) +
         '&onlyMetadata=true';
     console.debug(modificationsGetUrl);
