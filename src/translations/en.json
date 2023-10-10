@@ -1132,7 +1132,7 @@
     "lossFactorLabel": "Loss Factor",
     "angleDroopActivePowerControlLabel": "Angle droop active power control",
     "p0Label": "P0",
-    "droopLabel": "Droop",
+    "droopLabel": "k",
     "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
     "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
 
