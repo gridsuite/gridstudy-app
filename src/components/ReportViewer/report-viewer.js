@@ -142,9 +142,13 @@ export default function ReportViewer({
                 severityList.push(severity);
             }
         }
-        setWaitingLoadReport(true);
+        // use a timout to avoid having a loader in case of fast request (avoid blink)
+        const timer = setTimeout(() => {
+            setWaitingLoadReport(true);
+        }, 600);
         Promise.resolve(getFetchPromise(nodeId, severityList))
             .then((fetchedData) => {
+                clearTimeout(timer);
                 let reporterData = makeSingleReport(fetchedData);
                 let logReporter = new LogReport(reporterData);
                 setSelectedNode(nodeId);
@@ -158,6 +162,7 @@ export default function ReportViewer({
                 });
             })
             .finally(() => {
+                clearTimeout(timer);
                 setWaitingLoadReport(false);
             });
     };
