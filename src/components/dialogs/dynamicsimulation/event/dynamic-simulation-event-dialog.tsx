@@ -93,12 +93,11 @@ export const DynamicSimulationEventDialog = (
     } = useMemo(
         () =>
             eventDefinition
-                ? Object.entries(eventDefinition).reduce(
-                      (obj, [key, value]) => ({
-                          ...obj,
-                          [key]: value.default,
-                      }),
-                      {}
+                ? Object.fromEntries(
+                      Object.entries(eventDefinition).map(([key, value]) => [
+                          key,
+                          value.default,
+                      ])
                   )
                 : {},
         [eventDefinition]
@@ -125,14 +124,12 @@ export const DynamicSimulationEventDialog = (
     // reset form data when event available after fetch
     useEffect(() => {
         if (event && eventDefinition) {
-            const formData = Object.entries(eventDefinition).reduce(
-                (obj, [key, value]) => ({
-                    ...obj,
-                    [key]: event.properties.find(
-                        (property) => property.name === key
-                    )?.value,
-                }),
-                {}
+            const formData = Object.fromEntries(
+                Object.entries(eventDefinition).map(([key, value]) => [
+                    key,
+                    event.properties.find((property) => property.name === key)
+                        ?.value,
+                ])
             );
             reset(formData);
         }

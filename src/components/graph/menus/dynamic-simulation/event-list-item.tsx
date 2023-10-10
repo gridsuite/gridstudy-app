@@ -88,7 +88,7 @@ export const EventListItem = ({
                 ...computedValues,
             }
         );
-    }, [item, studyUuid, currentNode]);
+    }, [item, studyUuid, currentNode, intl]);
 
     const [hover, setHover] = useState(false);
 
