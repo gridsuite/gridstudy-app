@@ -48,12 +48,12 @@ export const FilterButton = ({ selectedItems, setSelectedItems }) => {
     };
 
     const handleChange = (event) => {
-        setSelectedItems((previousSelection) => {
-            return {
-                ...previousSelection,
-                [event.target.name]: !selectedItems[event.target.name],
-            };
-        });
+        const newFilter = {
+            ...selectedItems,
+            [event.target.name]: !selectedItems[event.target.name],
+        };
+        setSelectedItems(newFilter);
+        handleClose();
     };
 
     const isInitialStateModified = useMemo(() => {

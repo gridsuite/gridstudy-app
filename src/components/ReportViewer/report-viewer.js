@@ -145,7 +145,7 @@ export default function ReportViewer({
         // use a timout to avoid having a loader in case of fast request (avoid blink)
         const timer = setTimeout(() => {
             setWaitingLoadReport(true);
-        }, 600);
+        }, 700);
         Promise.resolve(getFetchPromise(nodeId, severityList))
             .then((fetchedData) => {
                 clearTimeout(timer);
