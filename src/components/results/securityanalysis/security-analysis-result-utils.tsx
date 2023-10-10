@@ -17,6 +17,8 @@ import {
     IRowNode,
     ValueFormatterParams,
 } from 'ag-grid-community';
+import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { ValueGetterParams } from 'ag-grid-community';
 
 export const computeLoading = (
     limitViolation: LimitViolationFromBack
@@ -104,6 +106,15 @@ export const flattenNmKresultsContingencies = (
     return rows;
 };
 
+const contingencyGetterValues = (params: ValueGetterParams) => {
+    if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
+        return {
+            cellValue: params.data?.contingencyId,
+            tooltipValue: params.data?.contingencyEquipmentsIds.join('\n'),
+        };
+    }
+};
+
 export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: (
@@ -114,6 +125,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
+            valueGetter: contingencyGetterValues,
+            cellRenderer: ContingencyCellRenderer,
         },
         {
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -305,6 +318,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
+            valueGetter: contingencyGetterValues,
+            cellRenderer: ContingencyCellRenderer,
         },
         {
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
