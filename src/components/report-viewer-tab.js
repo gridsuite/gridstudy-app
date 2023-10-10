@@ -52,7 +52,9 @@ export const ReportViewerTab = ({
     const saNotif = useSelector((state) => state.saNotif);
     const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
     const sensiNotif = useSelector((state) => state.sensiNotif);
-    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+    const allBusesShortCircuitNotif = useSelector(
+        (state) => state.allBusesShortCircuitNotif
+    );
     const dynamicSimulationNotif = useSelector(
         (state) => state.dynamicSimulationNotif
     );
@@ -132,7 +134,7 @@ export const ReportViewerTab = ({
         loadflowNotif,
         voltageInitNotif,
         sensiNotif,
-        shortCircuitNotif,
+        allBusesShortCircuitNotif,
         dynamicSimulationNotif,
         fetchAndProcessReport,
         oneBusShortCircuitNotif,
