@@ -12,7 +12,7 @@ import { IOptionalService } from '../components/utils/optional-services';
 
 export interface ReduxState {
     studyUpdated: StudyUpdated;
-    shortCircuitNotif: boolean;
+    allBusesShortCircuitNotif: boolean;
     oneBusShortCircuitNotif: boolean;
     studyUuid: UUID;
     currentTreeNode: CurrentTreeNode;
@@ -69,7 +69,7 @@ export interface ComputingStatus {
     [ComputingType.LOADFLOW]: RunningStatus;
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
-    [ComputingType.SHORTCIRCUIT_ANALYSIS]: RunningStatus;
+    [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: RunningStatus;
     [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
     [ComputingType.VOLTAGE_INIT]: RunningStatus;
