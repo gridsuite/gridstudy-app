@@ -390,16 +390,18 @@ export function resetSensiNotif() {
     return { type: RESET_SENSI_NOTIF };
 }
 
-export const ADD_SHORT_CIRCUIT_NOTIF = 'ADD_SHORT_CIRCUIT_NOTIF';
+export const ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF =
+    'ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF';
 
-export function addShortCircuitNotif() {
-    return { type: ADD_SHORT_CIRCUIT_NOTIF };
+export function addAllBusesShortCircuitNotif() {
+    return { type: ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF };
 }
 
-export const RESET_SHORT_CIRCUIT_NOTIF = 'RESET_SHORT_CIRCUIT_NOTIF';
+export const RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF =
+    'RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF';
 
-export function resetShortCircuitNotif() {
-    return { type: RESET_SHORT_CIRCUIT_NOTIF };
+export function resetAllBusesShortCircuitNotif() {
+    return { type: RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF };
 }
 
 export const ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF =
@@ -428,6 +430,7 @@ export const RESET_DYNAMIC_SIMULATION_NOTIF = 'RESET_DYNAMIC_SIMULATION_NOTIF';
 export function resetDynamicSimulationNotif() {
     return { type: RESET_DYNAMIC_SIMULATION_NOTIF };
 }
+
 // --- Dynamic simulation ACTION - END
 
 export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';

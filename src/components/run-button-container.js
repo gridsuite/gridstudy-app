@@ -15,7 +15,7 @@ import {
     addLoadflowNotif,
     addSANotif,
     addSensiNotif,
-    addShortCircuitNotif,
+    addAllBusesShortCircuitNotif,
     addDynamicSimulationNotif,
     addVoltageInitNotif,
     setComputingStatus,
@@ -73,8 +73,9 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-    const shortCircuitAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
+    const allBusesShortCircuitAnalysisStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
     );
     const oneBusShortCircuitAnalysisStatus = useSelector(
         (state) =>
@@ -153,9 +154,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             [ComputingType.SENSITIVITY_ANALYSIS]: intl.formatMessage({
                 id: 'SensitivityAnalysis',
             }),
-            [ComputingType.SHORTCIRCUIT_ANALYSIS]: intl.formatMessage({
-                id: 'ShortCircuitAnalysis',
-            }),
+            [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: intl.formatMessage(
+                {
+                    id: 'ShortCircuitAnalysis',
+                }
+            ),
             [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: intl.formatMessage({
                 id: 'OneBusShortCircuitAnalysis',
             }),
@@ -192,7 +195,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'shortCircuitAnalysisResult'
         ) {
-            dispatch(addShortCircuitNotif());
+            dispatch(addAllBusesShortCircuitNotif());
         } else if (
             ranDynamicSimulation &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
@@ -231,8 +234,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     type = ComputingType.SENSITIVITY_ANALYSIS;
                     stopSensitivityAnalysis(studyUuid, currentNode?.id);
                     break;
-                case runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]:
-                    type = ComputingType.SHORTCIRCUIT_ANALYSIS;
+                case runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]:
+                    type = ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS;
                     stopShortCircuitAnalysis(studyUuid, currentNode?.id);
                     break;
                 case runnable[ComputingType.DYNAMIC_SIMULATION]:
@@ -364,10 +367,12 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                         headerId: 'startSensitivityAnalysisError',
                     });
                 });
-        } else if (action === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]) {
+        } else if (
+            action === runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+        ) {
             dispatch(
                 setComputingStatus(
-                    ComputingType.SHORTCIRCUIT_ANALYSIS,
+                    ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
                     RunningStatus.RUNNING
                 )
             );
@@ -376,7 +381,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 .catch((error) => {
                     dispatch(
                         setComputingStatus(
-                            ComputingType.SHORTCIRCUIT_ANALYSIS,
+                            ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
                             RunningStatus.FAILED
                         )
                     );
@@ -448,9 +453,10 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             ) {
                 return sensitivityAnalysisStatus;
             } else if (
-                runnableType === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]
+                runnableType ===
+                runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
             ) {
-                return shortCircuitAnalysisStatus;
+                return allBusesShortCircuitAnalysisStatus;
             } else if (
                 runnableType ===
                 runnable[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
@@ -469,7 +475,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             loadFlowStatus,
             securityAnalysisStatus,
             sensitivityAnalysisStatus,
-            shortCircuitAnalysisStatus,
+            allBusesShortCircuitAnalysisStatus,
             oneBusShortCircuitAnalysisStatus,
             dynamicSimulationStatus,
             voltageInitStatus,
@@ -490,7 +496,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 ? [runnable[ComputingType.SENSITIVITY_ANALYSIS]]
                 : []),
             ...(shortCircuitAvailability === OptionalServicesStatus.Up
-                ? [runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]]
+                ? [runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]]
                 : []),
             ...(dynamicSimulationAvailability === OptionalServicesStatus.Up &&
             enableDeveloperMode

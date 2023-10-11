@@ -65,8 +65,8 @@ import {
     TOGGLE_PIN_DIAGRAM,
     CLOSE_DIAGRAM,
     CLOSE_DIAGRAMS,
-    ADD_SHORT_CIRCUIT_NOTIF,
-    RESET_SHORT_CIRCUIT_NOTIF,
+    ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF,
+    RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF,
     ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF,
     RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF,
     ADD_DYNAMIC_SIMULATION_NOTIF,
@@ -167,7 +167,7 @@ const initialComputingStatus = {
     [ComputingType.LOADFLOW]: RunningStatus.IDLE,
     [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
-    [ComputingType.SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
     [ComputingType.VOLTAGE_INIT]: RunningStatus.IDLE,
@@ -220,7 +220,7 @@ const initialState = {
     saNotif: false,
     voltageInitNotif: false,
     sensiNotif: false,
-    shortCircuitNotif: false,
+    allBusesShortCircuitNotif: false,
     oneBusShortCircuitNotif: false,
     dynamicSimulationNotif: false,
     fullScreenDiagram: null,
@@ -574,12 +574,12 @@ export const reducer = createReducer(initialState, {
         state.sensiNotif = false;
     },
 
-    [ADD_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.shortCircuitNotif = true;
+    [ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.allBusesShortCircuitNotif = true;
     },
 
-    [RESET_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.shortCircuitNotif = false;
+    [RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.allBusesShortCircuitNotif = false;
     },
 
     [ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
