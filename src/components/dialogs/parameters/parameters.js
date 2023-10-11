@@ -87,6 +87,14 @@ export const CloseButton = ({ hideParameters, ...props }) => {
     );
 };
 
+export const CloseButtonWithConfirm = ({ callback, label, ...props }) => {
+    return (
+        <CloseButton onClick={callback} {...props}>
+            <FormattedMessage id={label} />
+        </CloseButton>
+    );
+};
+
 export const LabelledButton = ({ callback, label, ...props }) => {
     return (
         <Button onClick={callback} {...props}>
@@ -664,12 +672,18 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
         });
     }, [enableDeveloperMode]);
 
+    const getDynamicWidth = useCallback(() => {
+        return tabValue === TAB_VALUES.sensitivityAnalysisParamsTabValue
+            ? 'lg'
+            : 'md';
+    }, [tabValue]);
     return (
         <Dialog
             open={isParametersOpen}
             onClose={hideParameters}
             aria-labelledby="form-dialog-title"
-            maxWidth={'md'}
+            //maxWidth={getDynamicWidth()}
+            maxWidth={getDynamicWidth()}
             fullWidth={true}
         >
             <DialogTitle id="form-dialog-title">
@@ -678,7 +692,7 @@ const Parameters = ({ user, isParametersOpen, hideParameters }) => {
                 </Typography>
             </DialogTitle>
             <DialogContent style={{ overflowY: 'hidden' }}>
-                <Container maxWidth="md">
+                <Container maxWidth={getDynamicWidth()}>
                     <Tabs
                         value={tabValue}
                         variant="scrollable"

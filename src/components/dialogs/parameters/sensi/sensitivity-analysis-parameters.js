@@ -10,7 +10,7 @@ import { Grid, Button, DialogActions } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { CloseButton, DropDown } from '../parameters';
+import { CloseButtonWithConfirm, DropDown, styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import {
@@ -43,7 +43,7 @@ import {
     setSensitivityAnalysisParameters,
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
-import SensiParametersSelector from './sensi-parameters-selector';
+import SensitivityParametersSelector from './sensitivity-parameters-selector';
 import { LineSeparator } from '../../dialogUtils';
 import {
     getSensiHvdcformatNewParams,
@@ -57,6 +57,8 @@ import {
     getSensiPstformatNewParams,
     getSensiPSTsFormSchema,
 } from './utils';
+import { SelectOptionsDialog } from '../../../../utils/dialogs';
+import DialogContentText from '@mui/material/DialogContentText';
 
 export const useGetSensitivityAnalysisParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -101,8 +103,19 @@ export const SensitivityAnalysisParameters = ({
 }) => {
     const { snackError } = useSnackMessage();
 
+    const [popupConfirm, setPopupConfirm] = useState(false);
+
     const [providers, provider, updateProvider, resetProvider] =
         parametersBackend;
+
+    const handlePopupConfirm = useCallback(() => {
+        hideParameters();
+        setPopupConfirm(false);
+    }, []);
+
+    const handleClosePopupConfirm = useCallback(() => {
+        setPopupConfirm(false);
+    }, []);
 
     const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
     const updateProviderCallback = useCallback(handleUpdateProvider, [
@@ -131,7 +144,7 @@ export const SensitivityAnalysisParameters = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, handleSubmit } = formMethods;
+    const { reset, handleSubmit, formState, register } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
@@ -391,14 +404,9 @@ export const SensitivityAnalysisParameters = ({
     ]);
 
     return (
-        <FormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid item>
-                <Grid
-                    container
-                    spacing={1}
-                    paddingTop={1}
-                    sx={{ paddingLeft: 0, paddingRight: 0 }}
-                >
+        <>
+            <FormProvider validationSchema={formSchema} {...formMethods}>
+                <Grid container spacing={1} paddingTop={1}>
                     <DropDown
                         value={provider}
                         label="Provider"
@@ -406,7 +414,11 @@ export const SensitivityAnalysisParameters = ({
                         callback={updateProviderCallback}
                     />
                 </Grid>
-                <Grid container key="sensitivityAnalysisParameters">
+                <Grid
+                    container
+                    sx={styles.scrollableGrid}
+                    key="sensitivityAnalysisParameters"
+                >
                     <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
@@ -416,10 +428,10 @@ export const SensitivityAnalysisParameters = ({
                             useSensitivityAnalysisParameters
                         }
                     />
-                    <Grid container paddingTop={1}>
+                    <Grid container paddingTop={1} paddingBottom={2}>
                         <LineSeparator />
                     </Grid>
-                    <SensiParametersSelector
+                    <SensitivityParametersSelector
                         reset={reset}
                         useSensitivityAnalysisParameters={
                             useSensitivityAnalysisParameters
@@ -430,12 +442,45 @@ export const SensitivityAnalysisParameters = ({
                     <Button onClick={clear}>
                         <FormattedMessage id="resetToDefault" />
                     </Button>
-                    <SubmitButton onClick={handleSubmit(onSubmit)}>
-                        <FormattedMessage id="validate" />
-                    </SubmitButton>
-                    <CloseButton hideParameters={hideParameters} />
+
+                    <Button variant="outlined">
+                        <SubmitButton onClick={handleSubmit(onSubmit)}>
+                            <FormattedMessage id="validate" />
+                        </SubmitButton>
+                    </Button>
+                    <CloseButtonWithConfirm
+                        callback={() => {
+                            if (
+                                formState.dirtyFields &&
+                                Object.keys(formState.dirtyFields).length === 0
+                            ) {
+                                hideParameters();
+                            } else {
+                                setPopupConfirm(true);
+                            }
+                        }}
+                        label={'Annuler'}
+                    />
                 </DialogActions>
-            </Grid>
-        </FormProvider>
+            </FormProvider>
+
+            <SelectOptionsDialog
+                open={popupConfirm}
+                onClose={handleClosePopupConfirm}
+                onClick={handlePopupConfirm}
+                child={
+                    <DialogContentText>
+                        <FormattedMessage
+                            id={'Are you sur that you want to abord ?'}
+                        />
+                    </DialogContentText>
+                }
+                style={{
+                    '& .MuiPaper-root': {
+                        overflowY: 'visible',
+                    },
+                }}
+            />
+        </>
     );
 };

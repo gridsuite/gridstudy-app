@@ -14,7 +14,6 @@ import { Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as sensiParam from './columns-definitions';
-import DndTable from '../../../utils/dnd-table/dnd-table';
 import {
     SensiHvdcs,
     SensiInjection,
@@ -23,8 +22,9 @@ import {
     SensiPsts,
     TAB_VALUES,
 } from './columns-definitions';
+import SensitivityTable from './sensitivity-table';
 
-const SensiParametersSelector = () => {
+const SensitivityParametersSelector = () => {
     const intl = useIntl();
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
@@ -74,9 +74,7 @@ const SensiParametersSelector = () => {
             if (sensiColumns) {
                 return sensiColumns.map((column) => ({
                     ...column,
-                    label: intl
-                        .formatMessage({ id: column.label })
-                        .toUpperCase(),
+                    label: intl.formatMessage({ id: column.label }),
                 }));
             }
             return [];
@@ -86,41 +84,39 @@ const SensiParametersSelector = () => {
 
     return (
         <>
-            <Grid>
-                <Tabs
-                    value={tabValue}
-                    variant="scrollable"
-                    onChange={handleTabChange}
-                >
+            <Grid sx={{ width: '100%' }}>
+                <Tabs value={tabValue} onChange={handleTabChange}>
                     {tabInfo.map((tab, index) => (
                         <Tab
                             key={tab.label}
                             label={<FormattedMessage id={tab.label} />}
                             value={index}
+                            sx={{
+                                fontSize: 17,
+                                fontWeight: 'bold',
+                                textTransform: 'capitalize',
+                            }}
                         />
                     ))}
                 </Tabs>
 
                 {tabInfo.map((tab, index) => (
-                    <TabPanel
-                        key={tab.label}
-                        value={tabValue}
-                        index={index}
-                        sx={{ padding: '0px' }}
-                    >
+                    <TabPanel key={tab.label} value={tabValue} index={index}>
                         {tabValue === TAB_VALUES.SensitivityBranches &&
                         tab.subTabs ? (
                             <>
                                 <Tabs
                                     value={subTabValue}
-                                    variant="scrollable"
                                     onChange={handleSubTabChange}
-                                    sx={{ padding: '0px' }}
                                 >
                                     {tab.subTabs.map((subTab, subIndex) => (
                                         <Tab
                                             key={subTab.label}
                                             value={subIndex}
+                                            sx={{
+                                                fontWeight: 'bold',
+                                                textTransform: 'capitalize',
+                                            }}
                                             label={
                                                 <FormattedMessage
                                                     id={subTab.label}
@@ -133,7 +129,7 @@ const SensiParametersSelector = () => {
                                     index={TAB_VALUES.SensiInjectionsSet}
                                     value={subTabValue}
                                 >
-                                    <DndTable
+                                    <SensitivityTable
                                         arrayFormName={`${SensiInjectionsSet.name}`}
                                         columnsDefinition={getColumnsDefinition(
                                             sensiParam.COLUMNS_DEFINITIONS_INJECTIONS_SET
@@ -142,17 +138,14 @@ const SensiParametersSelector = () => {
                                             useFieldArrayOutputInjectionsSet
                                         }
                                         createRows={rowDataInjectionsSet}
-                                        tableHeight={270}
-                                        withAddRowsDialog={false}
-                                        withLeftButtons={false}
-                                        dropDisabled={true}
+                                        tableHeight={300}
                                     />
                                 </TabPanel>
                                 <TabPanel
                                     index={TAB_VALUES.SensiInjection}
                                     value={subTabValue}
                                 >
-                                    <DndTable
+                                    <SensitivityTable
                                         arrayFormName={`${SensiInjection.name}`}
                                         columnsDefinition={getColumnsDefinition(
                                             sensiParam.COLUMNS_DEFINITIONS_INJECTIONS
@@ -161,17 +154,14 @@ const SensiParametersSelector = () => {
                                             useFieldArrayOutputInjections
                                         }
                                         createRows={rowDataInjections}
-                                        tableHeight={270}
-                                        withAddRowsDialog={false}
-                                        withLeftButtons={false}
-                                        dropDisabled={true}
+                                        tableHeight={300}
                                     />
                                 </TabPanel>
                                 <TabPanel
                                     index={TAB_VALUES.SensiHVDC}
                                     value={subTabValue}
                                 >
-                                    <DndTable
+                                    <SensitivityTable
                                         arrayFormName={`${SensiHvdcs.name}`}
                                         columnsDefinition={getColumnsDefinition(
                                             sensiParam.COLUMNS_DEFINITIONS_HVDCS
@@ -180,17 +170,14 @@ const SensiParametersSelector = () => {
                                             useFieldArrayOutputHvdc
                                         }
                                         createRows={rowDataHvdc}
-                                        tableHeight={270}
-                                        withAddRowsDialog={false}
-                                        withLeftButtons={false}
-                                        dropDisabled={true}
+                                        tableHeight={300}
                                     />
                                 </TabPanel>
                                 <TabPanel
                                     index={TAB_VALUES.SensiPST}
                                     value={subTabValue}
                                 >
-                                    <DndTable
+                                    <SensitivityTable
                                         arrayFormName={`${SensiPsts.name}`}
                                         columnsDefinition={getColumnsDefinition(
                                             sensiParam.COLUMNS_DEFINITIONS_PSTS
@@ -199,26 +186,20 @@ const SensiParametersSelector = () => {
                                             useFieldArrayOutputPst
                                         }
                                         createRows={rowDataPst}
-                                        tableHeight={270}
-                                        withAddRowsDialog={false}
-                                        withLeftButtons={false}
-                                        dropDisabled={true}
+                                        tableHeight={300}
                                     />
                                 </TabPanel>
                             </>
                         ) : undefined}
                         {tabValue === TAB_VALUES.SensitivityNodes && (
-                            <DndTable
+                            <SensitivityTable
                                 arrayFormName={`${SensiNodes.name}`}
                                 columnsDefinition={getColumnsDefinition(
                                     sensiParam.COLUMNS_DEFINITIONS_NODES
                                 )}
                                 useFieldArrayOutput={useFieldArrayOutputNodes}
                                 createRows={rowDataNodes}
-                                tableHeight={270}
-                                withAddRowsDialog={false}
-                                withLeftButtons={false}
-                                dropDisabled={true}
+                                tableHeight={367}
                             />
                         )}
                     </TabPanel>
@@ -228,4 +209,4 @@ const SensiParametersSelector = () => {
     );
 };
 
-export default SensiParametersSelector;
+export default SensitivityParametersSelector;
