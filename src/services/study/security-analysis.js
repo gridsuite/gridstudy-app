@@ -57,13 +57,18 @@ export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
     return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
-export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid) {
+export function fetchSecurityAnalysisResult(
+    studyUuid,
+    currentNodeUuid,
+    resultType
+) {
     console.info(
         `Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`
     );
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/security-analysis/result';
+        '/security-analysis/result?resultType=' +
+        resultType;
     console.debug(url);
     return backendFetchJson(url);
 }
