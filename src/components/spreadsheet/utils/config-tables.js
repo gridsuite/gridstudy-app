@@ -1814,7 +1814,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'OprFromCS1toCS2',
-                field: 'oprFromCS1toCS2',
+                field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
@@ -1823,7 +1823,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'OprFromCS2toCS1',
-                field: 'oprFromCS2toCS1',
+                field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,

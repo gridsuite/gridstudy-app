@@ -108,9 +108,9 @@ const VscCreationDialog = ({
                 dcResistance: hvdcLine.dcResistance,
                 maximumActivePower: hvdcLine.maximumActivePower,
                 operatorActivePowerLimitFromSide1ToSide2:
-                    hvdcLine.operatorActivePowerLimitFromSide1ToSide2,
+                    hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
                 operatorActivePowerLimitFromSide2ToSide1:
-                    hvdcLine.operatorActivePowerLimitFromSide2ToSide1,
+                    hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
                 convertersMode: hvdcLine.convertersMode,
                 activePower: hvdcLine.activePower,
                 angleDroopActivePowerControl:
