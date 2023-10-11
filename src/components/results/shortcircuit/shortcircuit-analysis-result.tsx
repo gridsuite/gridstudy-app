@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import WaitingLoader from 'components/utils/waiting-loader';
 import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-table';
 import { useSelector } from 'react-redux';
 import {
@@ -18,18 +17,18 @@ import React, {
     FunctionComponent,
     useCallback,
     useEffect,
+    useRef,
     useState,
 } from 'react';
 import { fetchShortCircuitAnalysisResult } from '../../../services/study/short-circuit-analysis';
 import {
-    DATA_KEY_TO_SORT_KEY,
     DEFAULT_PAGE_COUNT,
     PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
-import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
+import { AgGridReact } from 'ag-grid-react';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -42,15 +41,16 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 > = ({ analysisType, formatResult, shortCircuitNotif }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const gridRef = useRef<AgGridReact>(null);
 
     const [rowsPerPage, setRowsPerPage] = useState<number>(
         DEFAULT_PAGE_COUNT as number
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
-    const [isFetching, setIsFetching] = useState<boolean>(false);
     const [result, setResult] = useState<SCAFaultResult[]>([]);
-
+    const [filter, setFilter] = useState({});
+    const [sort, setSort] = useState([]);
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
@@ -71,28 +71,19 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         [setPage]
     );
 
-    const { onSortChanged, sortConfig } = useAgGridSort();
-
     // Effects
     useEffect(() => {
         let active = true; // to manage race condition
-        setIsFetching(true);
-
-        const { colKey, sortWay } = sortConfig;
-
-        const sortKey = DATA_KEY_TO_SORT_KEY[colKey];
-        const sortWayValue = sortWay && (sortWay > 0 ? 'ASC' : 'DESC');
-
-        const parsedSortConfig =
-            sortKey && sortWayValue ? `${sortKey},${sortWayValue}` : '';
+        gridRef.current?.api?.showLoadingOverlay();
 
         const selector = {
             page,
             size: rowsPerPage,
-            sort: parsedSortConfig,
+            filter: filter,
+            sort: sort,
         };
 
-        setResult([]);
+        setResult([]); // bad glitch if we remove it...
 
         fetchShortCircuitAnalysisResult({
             studyUuid,
@@ -123,7 +114,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             )
             .finally(() => {
                 if (active) {
-                    setIsFetching(false);
+                    gridRef.current?.api?.hideOverlay();
                 }
             });
 
@@ -131,12 +122,13 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             active = false;
         };
     }, [
+        filter,
+        sort,
         page,
         rowsPerPage,
         snackError,
         analysisType,
         formatResult,
-        sortConfig,
         studyUuid,
         currentNode?.id,
         intl,
@@ -145,14 +137,13 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
 
     return (
         <>
-            <WaitingLoader message={'LoadingRemoteData'} loading={isFetching}>
-                <ShortCircuitAnalysisResultTable
-                    result={result}
-                    onSortChanged={onSortChanged}
-                    sortConfig={sortConfig}
-                    analysisType={analysisType}
-                />
-            </WaitingLoader>
+            <ShortCircuitAnalysisResultTable
+                gridRef={gridRef}
+                result={result}
+                analysisType={analysisType}
+                setFilter={setFilter}
+                setSort={setSort}
+            />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}
                 count={count}

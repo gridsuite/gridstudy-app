@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import React, { FunctionComponent, Ref, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
@@ -14,10 +14,12 @@ import {
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import {
+    FilterChangedEvent,
     GridReadyEvent,
     IRowNode,
     PostSortRowsParams,
     RowClassParams,
+    SortChangedEvent,
 } from 'ag-grid-community';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import {
@@ -28,15 +30,16 @@ import {
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
-import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
-import { ISortConfig } from '../../../hooks/use-aggrid-sort';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
+import { TextMatcherParams } from 'ag-grid-community/dist/lib/filter/provided/text/textFilter';
+import { AgGridReact } from 'ag-grid-react';
 
 interface ShortCircuitAnalysisResultProps {
+    gridRef: Ref<AgGridReact>;
     result: SCAFaultResult[];
-    onSortChanged: (colKey: string, sortWay: number) => void;
-    sortConfig: ISortConfig;
     analysisType: ShortCircuitAnalysisType;
+    setFilter: (filter: any) => void;
+    setSort: (sort: any) => void;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -83,105 +86,96 @@ interface ColumnConfig {
 
 const ShortCircuitAnalysisResultTable: FunctionComponent<
     ShortCircuitAnalysisResultProps
-> = ({ result, onSortChanged, sortConfig, analysisType }) => {
+> = ({ gridRef, result, analysisType, setFilter, setSort }) => {
     const intl = useIntl();
     const theme = useTheme();
 
-    const makeColumn = useCallback(
-        ({
-            headerName,
-            field,
-            isNumeric = false,
-            fractionDigits,
-            isHidden = false,
-            isSortable = true,
-        }: ColumnConfig) => {
-            return {
-                headerName,
-                field,
-                numeric: isNumeric,
-                fractionDigits,
-                hide: isHidden,
-                headerComponent: CustomHeaderComponent,
-                headerComponentParams: {
-                    field,
-                    displayName: headerName,
-                    sortConfig,
-                    onSortChanged: (newSortValue: number) => {
-                        onSortChanged(field, newSortValue);
-                    },
-                    isSortable,
-                    isFilterable: false,
-                },
-            };
-        },
-        [sortConfig, onSortChanged]
-    );
-
     const columns = useMemo(
         () => [
-            makeColumn({
+            {
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
-            }),
-            makeColumn({
+            },
+            {
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
-            }),
-            makeColumn({
+            },
+            {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
-                isSortable: false,
-            }),
-            makeColumn({
+                sortable: analysisType === ShortCircuitAnalysisType.ONE_BUS,
+                comparator: (): number => 0, // we disable the AGGrid sort because we do it in the server
+                filter:
+                    analysisType === ShortCircuitAnalysisType.ONE_BUS
+                        ? 'agTextColumnFilter'
+                        : null,
+                filterParams: {
+                    debounceMs: 1200, // we don't want to fetch the back end too fast
+                    filterOptions: ['contains', 'startsWith'],
+                    textMatcher: (): boolean => true, // we disable the AGGrid filter because we do it in the server
+                },
+            },
+            {
                 headerName: intl.formatMessage({ id: 'IscKA' }),
                 field: 'current',
                 fractionDigits: 1,
-                isNumeric: true,
-            }),
-            makeColumn({
+                numeric: true,
+                sortable: analysisType === ShortCircuitAnalysisType.ONE_BUS,
+                comparator: (): number => 0, // we disable the AGGrid sort because we do it in the server
+                filter:
+                    analysisType === ShortCircuitAnalysisType.ONE_BUS
+                        ? 'agNumberColumnFilter'
+                        : null,
+                filterParams: {
+                    debounceMs: 1200, // we don't want to fetch the back end too fast
+                    filterOptions: [
+                        'notEqual',
+                        'lessThanOrEqual',
+                        'greaterThanOrEqual',
+                    ],
+                    // didn't find a way to disable filters here
+                },
+            },
+            {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
-            }),
-            makeColumn({
+            },
+            {
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
                 fractionDigits: 1,
-                isNumeric: true,
-            }),
-            makeColumn({
+                numeric: true,
+            },
+            {
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
                 fractionDigits: 1,
-                isNumeric: true,
-            }),
-            makeColumn({
+                numeric: true,
+            },
+            {
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
                 fractionDigits: 1,
-                isNumeric: true,
-            }),
-            makeColumn({
+                numeric: true,
+            },
+            {
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
                 field: 'deltaCurrentIpMin',
                 fractionDigits: 1,
-                isNumeric: true,
-                isSortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
-            }),
-            makeColumn({
+                numeric: true,
+            },
+            {
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
                 field: 'deltaCurrentIpMax',
                 fractionDigits: 1,
-                isNumeric: true,
-                isSortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
-            }),
-            makeColumn({
+                numeric: true,
+            },
+            {
                 field: 'linkedElementId',
-                isHidden: true,
-                isSortable: false,
-            }),
+                hide: true,
+            },
         ],
-        [intl, makeColumn, analysisType]
+        [intl, analysisType]
     );
 
     const shortCircuitAnalysisStatus = useSelector(
@@ -266,6 +260,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 deltaCurrentIpMax: deltaCurrentIpMax,
                 deltaCurrentIpMin: deltaCurrentIpMin,
                 current: current,
+                connectableId: '', // we have to add this otherwise it's automatically filtered
                 ...firstLimitViolation,
             });
             limitViolations.slice(1).forEach((lv) => {
@@ -308,7 +303,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         () => ({
             suppressMovable: true,
             resizable: true,
-            sortable: true,
             flex: 1,
             cellRenderer: DefaultCellRenderer,
         }),
@@ -319,6 +313,31 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         if (params?.api) {
             params.api.sizeColumnsToFit();
         }
+    }, []);
+
+    const onFilterChanged = useCallback((e: FilterChangedEvent) => {
+        setFilter(e.api.getFilterModel());
+    }, []);
+
+    const onSortChanged = useCallback((e: SortChangedEvent) => {
+        // We filter and sort the array and only keep the fields we need
+        // The order is important, it decides in which order the columns are sorted in the back-end
+        const columnStates = e.columnApi
+            .getColumnState()
+            .filter(function (s) {
+                return s.sort != null;
+            })
+            .sort(function (a, b) {
+                if (a.sortIndex == null || b.sortIndex == null) {
+                    return 0;
+                }
+                return a.sortIndex - b.sortIndex;
+            })
+            .map(function (s) {
+                return { colId: s.colId, sort: s.sort };
+            });
+
+        setSort(columnStates);
     }, []);
 
     const handlePostSortRows = useCallback((params: PostSortRowsParams) => {
@@ -340,6 +359,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     return (
         <Box sx={{ flexGrow: 1 }}>
             <CustomAGGrid
+                ref={gridRef}
                 rowData={rowsToShow}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
@@ -348,6 +368,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 postSortRows={handlePostSortRows}
                 columnDefs={columns}
                 overlayNoRowsTemplate={message}
+                onFilterChanged={onFilterChanged}
+                onSortChanged={onSortChanged}
             />
         </Box>
     );

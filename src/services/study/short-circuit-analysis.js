@@ -11,6 +11,7 @@ import {
     ShortCircuitAnalysisType,
 } from '../../components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import { isObjectEmpty } from "utils/functions";
 
 export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     console.info(
@@ -89,15 +90,18 @@ export function fetchShortCircuitAnalysisResult({
         urlSearchParams.append('type', analysisType);
     }
 
-    const { page = '0', sort, size } = selector;
+    const { page = '0', sort, size, filter } = selector;
 
     urlSearchParams.append('page', page);
 
-    if (sort) {
-        urlSearchParams.append('sort', sort);
-    }
+    sort.map((s) => urlSearchParams.append('sort', `${s.colId},${s.sort}`));
+
     if (size) {
         urlSearchParams.append('size', size);
+    }
+
+    if (!isObjectEmpty(filter)) {
+        urlSearchParams.append('filter', JSON.stringify(filter));
     }
 
     const url =
