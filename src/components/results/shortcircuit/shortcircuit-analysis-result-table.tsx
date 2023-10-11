@@ -251,7 +251,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 };
             }
 
-            const current = faultResult.current;
+            let current = NaN;
+            if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+                current = faultResult.current;
+            } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
+                current = faultResult.positiveMagnitude;
+            }
+
             const deltaCurrentIpMax =
                 faultResult.shortCircuitLimits.deltaCurrentIpMax;
             const deltaCurrentIpMin =
