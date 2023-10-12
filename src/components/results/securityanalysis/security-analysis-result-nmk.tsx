@@ -12,20 +12,16 @@ import {
     ContingenciesFromConstraintItem,
     SecurityAnalysisNmkTableRow,
     SecurityAnalysisResultNmkProps,
-} from './security-analysis-types';
+} from './security-analysis.type';
 import {
     flattenNmKResultsConstraints,
     flattenNmKResultsContingencies,
-    groupPostSort,
+    handlePostSortRows,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { SecurityAnalysisTable } from './security-analysis-table';
-import {
-    ICellRendererParams,
-    PostSortRowsParams,
-    RowClassParams,
-} from 'ag-grid-community';
+import { ICellRendererParams, RowClassParams } from 'ag-grid-community';
 import { Button, useTheme } from '@mui/material';
 import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
 import { fetchLineOrTransformer } from '../../../services/study/network-map';
@@ -118,6 +114,20 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
         [onClickNmKConstraint]
     );
 
+    const columnDefs = useMemo(
+        () =>
+            isFromContingency
+                ? securityAnalysisTableNmKContingenciesColumnsDefinition(
+                      intl,
+                      SubjectIdRenderer
+                  )
+                : securityAnalysisTableNmKConstraintsColumnsDefinition(
+                      intl,
+                      SubjectIdRenderer
+                  ),
+        [intl, SubjectIdRenderer, isFromContingency]
+    );
+
     const rows = isFromContingency
         ? flattenNmKResultsContingencies(
               intl,
@@ -127,19 +137,6 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
               intl,
               result as ContingenciesFromConstraintItem[]
           );
-
-    const columnDefs = useMemo(() => {
-        if (isFromContingency) {
-            return securityAnalysisTableNmKContingenciesColumnsDefinition(
-                intl,
-                SubjectIdRenderer
-            );
-        }
-        return securityAnalysisTableNmKConstraintsColumnsDefinition(
-            intl,
-            SubjectIdRenderer
-        );
-    }, [intl, SubjectIdRenderer, isFromContingency]);
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
@@ -153,22 +150,6 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
             }
         },
         [isFromContingency, theme.selectedRow.background]
-    );
-
-    const handlePostSortRows = useCallback(
-        (params: PostSortRowsParams) => {
-            const rows = params.nodes;
-            return Object.assign(
-                rows,
-                groupPostSort(
-                    rows,
-                    isFromContingency ? 'contingencyId' : 'subjectId',
-                    'linkedElementId',
-                    !isFromContingency
-                )
-            );
-        },
-        [isFromContingency]
     );
 
     const agGridProps = {

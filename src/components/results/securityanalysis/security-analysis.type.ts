@@ -5,82 +5,108 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ColDef } from 'ag-grid-community/dist/lib/entities/colDef';
-import { UUID } from 'crypto';
+import { ColDef } from 'ag-grid-community';
+import { AgGridReactProps } from 'ag-grid-react';
 
-export interface LimitViolation {
-    subjectId: string;
-    limitType: string;
+export interface LimitViolationBase {
     limit: number;
+    limitType?: string;
+    loading?: number | undefined;
+    subjectId?: string;
     value: number;
-    loading: number | undefined;
 }
-export interface LimitViolationFromBack extends LimitViolation {
+
+export interface LimitViolation extends LimitViolationBase {
     limitReduction: number;
-    limitName?: string;
-    acceptableDuration?: number;
     side?: string;
 }
-export interface LimitViolationsResultFromBack {
-    limitViolations: LimitViolationFromBack[];
-}
+
 export interface PreContingencyResult {
-    status?: string;
-    limitViolationsResult?: LimitViolationsResultFromBack;
-    isWaiting: boolean;
-}
-export interface Contingency {
-    id: string;
-    elements: { id: string }[];
-}
-export interface PostContingencyResult {
-    contingency: Contingency;
-    status: string;
-    limitViolationsResult: LimitViolationsResultFromBack;
-}
-export interface SecurityAnalysisResultTableNmKProps {
-    postContingencyResults?: PostContingencyResult[];
-    onClickNmKConstraint: (row: NmKConstraintRow, codDef?: ColDef) => void;
-    nmkTypeResult: string;
-    isWaiting: boolean;
-}
-export interface SecurityAnalysisResult {
-    preContingencyResult: PreContingencyResult;
-    postContingencyResults: PostContingencyResult[];
+    limitViolationsResult?: {
+        limitViolations?: LimitViolation[];
+    };
 }
 
-export interface SecurityAnalysisResultProps {
-    result: SecurityAnalysisResult;
-    onClickNmKConstraint: (row: NmKConstraintRow, codDef?: ColDef) => void;
-    isWaiting: boolean;
+interface Element {
+    elementType?: string;
+    id?: string;
 }
+
+export interface Contingency extends LimitViolationBase {
+    acceptableDuration?: number;
+    computationStatus?: string;
+    contingencyId?: string;
+    elements?: Element[];
+    limitName?: string | null;
+    side?: string | undefined;
+}
+
+export interface subjectLimitViolations extends LimitViolationBase {
+    acceptableDuration?: number;
+    limitName?: string | null;
+    side?: string | undefined;
+}
+
+export interface ContingenciesFromConstraintItem {
+    subjectId?: string;
+    contingencies?: Contingency[];
+}
+
+export interface ConstraintsFromContingencyItem {
+    id?: string;
+    status?: string;
+    elements?: Element[];
+    subjectLimitViolations?: subjectLimitViolations[];
+}
+
+export type SecurityAnalysisResultType =
+    | PreContingencyResult
+    | ContingenciesFromConstraintItem[]
+    | ConstraintsFromContingencyItem[]
+    | null;
+
+// Components props interfaces
 export interface SecurityAnalysisTabProps {
-    studyUuid: UUID;
-    nodeUuid: UUID;
+    studyUuid: string;
+    nodeUuid: string;
     openVoltageLevelDiagram: (id: string) => void;
 }
 
-export interface NmKConstraintRow {
-    subjectId: string;
-    side: string;
+export interface SecurityAnalysisResultNProps {
+    result: SecurityAnalysisResultType;
+    isLoadingResult: boolean;
 }
 
-export interface ResultContingencie {
-    contingencyId?: string;
-    contingencyEquipmentsIds?: string[];
-    computationStatus?: string;
-    subjectId?: string;
-    limitType?: string;
-    limit?: number;
-    value?: number;
-    loading?: number | undefined;
+export interface SecurityAnalysisResultNmkProps
+    extends SecurityAnalysisResultNProps {
+    isFromContingency: boolean;
+    openVoltageLevelDiagram?: (voltageLevelId: string) => void;
+    studyUuid?: string;
+    nodeUuid?: string;
+}
+
+export interface SecurityAnalysisNTableRow extends LimitViolationBase {}
+
+export interface SecurityAnalysisNmkTableRow {
+    acceptableDuration?: number;
+    elements?: Element[];
+    limitName?: string | null;
     side?: string | undefined;
     linkedElementId?: string;
+    contingencyId?: string;
+    contingencyEquipmentsIds?: (string | undefined)[];
+    computationStatus?: string;
     violationCount?: number;
+    limit?: number;
+    limitType?: string;
+    loading?: number | undefined;
+    subjectId?: string;
+    value?: number;
 }
 
-export interface ResultConstraint extends ResultContingencie {
-    constraintId?: string;
-    acceptableDuration?: number;
-    limitName?: string | undefined;
+export interface SecurityAnalysisResultProps {
+    rows: SecurityAnalysisNTableRow[] | SecurityAnalysisNmkTableRow[];
+    columnDefs: ColDef[];
+    isLoadingResult: boolean;
+    agGridProps?: AgGridReactProps;
 }

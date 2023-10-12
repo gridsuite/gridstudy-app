@@ -9,9 +9,9 @@ import { FunctionComponent, useMemo } from 'react';
 import {
     PreContingencyResult,
     SecurityAnalysisResultNProps,
-} from './security-analysis-types';
+} from './security-analysis.type';
 import { IntlShape, useIntl } from 'react-intl';
-import { LimitViolation } from './security-analysis-types';
+import { LimitViolation } from './security-analysis.type';
 import { SecurityAnalysisTable } from './security-analysis-table';
 import { computeLoading } from './security-analysis-result-utils';
 import { ValueFormatterParams } from 'ag-grid-community';

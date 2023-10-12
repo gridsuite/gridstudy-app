@@ -5,25 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import React from 'react';
 import {
-    Constraint,
+    subjectLimitViolations,
     ConstraintsFromContingencyItem,
     Contingency,
     LimitViolation,
     SecurityAnalysisNmkTableRow,
-} from './security-analysis-types';
+    ContingenciesFromConstraintItem,
+} from './security-analysis.type';
 import { IntlShape } from 'react-intl';
-import { CONVERGED_STATUS } from './security-analysis-content';
 import {
     ColDef,
     ICellRendererParams,
-    IRowNode,
+    PostSortRowsParams,
     ValueFormatterParams,
 } from 'ag-grid-community';
-import { ResultConstraint } from '../securityanalysis/security-analysis.type';
 
 export const computeLoading = (
-    limitViolation: LimitViolation | Constraint | Contingency
+    limitViolation: LimitViolation | subjectLimitViolations | Contingency
 ): number | undefined => {
     return (limitViolation.loading =
         limitViolation.limitType === 'CURRENT'
@@ -41,12 +41,12 @@ export const flattenNmKResultsContingencies = (
 
     result?.forEach(
         ({
-            constraints = [],
+            subjectLimitViolations = [],
             elements = [],
             id,
             status,
         }: ConstraintsFromContingencyItem) => {
-            if (!!constraints.length) {
+            if (!!subjectLimitViolations.length) {
                 rows.push({
                     limit: 0,
                     limitType: '',
@@ -57,21 +57,23 @@ export const flattenNmKResultsContingencies = (
                         (element) => element.id
                     ),
                     computationStatus: status,
-                    violationCount: constraints.length,
+                    violationCount: subjectLimitViolations.length,
                 });
-                constraints?.forEach((constraint: Constraint) => {
-                    rows.push({
-                        subjectId: constraint.subjectId,
-                        limitType: intl.formatMessage({
-                            id: constraint.limitType,
-                        }),
-                        limit: constraint.limit,
-                        value: constraint.value,
-                        loading: constraint.loading,
-                        side: constraint.side,
-                        linkedElementId: id,
-                    });
-                });
+                subjectLimitViolations?.forEach(
+                    (constraint: subjectLimitViolations) => {
+                        rows.push({
+                            subjectId: constraint.subjectId,
+                            limitType: intl.formatMessage({
+                                id: constraint.limitType,
+                            }),
+                            limit: constraint.limit,
+                            value: constraint.value,
+                            loading: constraint.loading,
+                            side: constraint.side,
+                            linkedElementId: id,
+                        });
+                    }
+                );
             }
         }
     );
@@ -81,37 +83,33 @@ export const flattenNmKResultsContingencies = (
 
 export const flattenNmKResultsConstraints = (
     intl: IntlShape,
-    result?: any[]
+    result?: ContingenciesFromConstraintItem[]
 ) => {
-    console.log({ result });
-    const rows: any[] = [];
+    const rows: SecurityAnalysisNmkTableRow[] = [];
 
-    result?.forEach(({ contingencies, subjectId }) => {
-        rows.push({
-            subjectId,
-        });
-
-        contingencies?.forEach((contingency: ResultConstraint) => {
-            rows.push({
-                contingencyId: contingency.contingencyId,
-                //@ts-ignore
-                contingencyEquipmentsIds: contingency.elements.map(
-                    //@ts-ignore
-                    (element) => element.id
-                ),
-                computationStatus: contingency.computationStatus,
-                limitType: contingency.limitType,
-                limitName: contingency.limitName,
-                side: contingency.side,
-                acceptableDuration: contingency.acceptableDuration,
-                limit: contingency.limit,
-                value: contingency.value,
-                loading: contingency.loading,
-                linkedElementId: subjectId,
-
-                constraintId: contingency.constraintId,
-            });
-        });
+    result?.forEach(({ contingencies = [], subjectId }) => {
+        if (!rows.find((row) => row.subjectId === subjectId)) {
+            if (contingencies.length) {
+                rows.push({ subjectId });
+                contingencies?.forEach((contingency: Contingency) => {
+                    rows.push({
+                        contingencyId: contingency.contingencyId,
+                        contingencyEquipmentsIds: contingency.elements?.map(
+                            (element) => element.id
+                        ),
+                        computationStatus: contingency.computationStatus,
+                        limitType: contingency.limitType,
+                        limitName: contingency.limitName,
+                        side: contingency.side,
+                        acceptableDuration: contingency.acceptableDuration,
+                        limit: contingency.limit,
+                        value: contingency.value,
+                        loading: contingency.loading,
+                        linkedElementId: subjectId,
+                    });
+                });
+            }
+        }
     });
 
     return rows;
@@ -247,40 +245,47 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     ];
 };
 
-export const groupPostSort = (
-    sortedRows: IRowNode[],
-    idField: string,
-    linkedElementId: string,
-    isContingency: boolean
-): IRowNode[] => {
+export const handlePostSortRows = (params: PostSortRowsParams) => {
+    const isFromContingency = !params.nodes.find(
+        (node) => Object.keys(node.data).length === 1
+    );
+
+    const agGridRows = params.nodes;
+    const idField = isFromContingency ? 'contingencyId' : 'subjectId';
+    const linkedElementId = 'linkedElementId';
+    const isContingency = !isFromContingency;
+
     // Because Map remembers the original insertion order of the keys.
-    const rowsMap = new Map();
+    const mappedRows = new Map();
+
     if (isContingency) {
-        rowsMap.set('contingencies', []);
+        mappedRows.set('contingencies', []);
     }
+
     // first index by main resource idField
-    sortedRows.forEach((row) => {
+    agGridRows.forEach((row) => {
         if (row.data[idField] != null) {
-            rowsMap.set(row.data[idField], [row]);
+            mappedRows.set(row.data[idField], [row]);
         }
     });
 
     // then index by linked resource linkedElementId
     let currentRows;
-    sortedRows.forEach((row) => {
+    agGridRows.forEach((row) => {
         if (isContingency && !row.data[linkedElementId] && !row.data[idField]) {
-            currentRows = rowsMap.get('contingencies');
+            currentRows = mappedRows.get('contingencies');
             if (currentRows) {
                 currentRows.push(row);
-                rowsMap.set('contingencies', currentRows);
+                mappedRows.set('contingencies', currentRows);
             }
         } else if (row.data[idField] == null) {
-            currentRows = rowsMap.get(row.data[linkedElementId]);
+            currentRows = mappedRows.get(row.data[linkedElementId]);
             if (currentRows) {
                 currentRows.push(row);
-                rowsMap.set(row.data[linkedElementId], currentRows);
+                mappedRows.set(row.data[linkedElementId], currentRows);
             }
         }
     });
-    return [...rowsMap.values()].flat();
+
+    return Object.assign(agGridRows, [...mappedRows.values()].flat());
 };
