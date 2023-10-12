@@ -1143,6 +1143,7 @@
     
     "tableChangingError": "An error occured when modifying the data",
     "studyIndexationDone": "Study indexation done. Search functionality is now available",
+    "studyIndexationNotIndexed": "Serverside warning: Something went wrong, Study equipments aren't indexed anymore. Please refresh the page (F5)",
     "studyIndexationError": "Study indexation process has failed.",
     "checkstudyIndexationError": "Study indexation checking has failed.",
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
