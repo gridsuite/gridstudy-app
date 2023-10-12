@@ -27,7 +27,7 @@ const isEditableModification = (modif) => {
     if (!modif) {
         return false;
     }
-    return !nonEditableModificationTypes.has(modif.type);
+    return !nonEditableModificationTypes.has(modif.messageType);
 };
 
 const styles = {
@@ -76,25 +76,31 @@ export const ModificationListItem = ({
         finally, we uses the default value of equipmentId or empty string
     */
     const getComputedLabel = useCallback(() => {
-        switch (modif.type) {
+        const modificationMetadata = JSON.parse(modif?.messageValues);
+
+        switch (modif.messageType) {
             case 'LINE_SPLIT_WITH_VOLTAGE_LEVEL':
-                return modif.lineToSplitId;
+                return modificationMetadata.lineToSplitId;
             case 'LINE_ATTACH_TO_VOLTAGE_LEVEL':
-                return modif.lineToAttachToId;
+                return modificationMetadata.lineToAttachToId;
             case 'LINES_ATTACH_TO_SPLIT_LINES':
-                return modif.attachedLineId;
+                return modificationMetadata.attachedLineId;
             case 'DELETE_VOLTAGE_LEVEL_ON_LINE':
-                return modif.lineToAttachTo1Id + '/' + modif.lineToAttachTo2Id;
+                return (
+                    modificationMetadata.lineToAttachTo1Id +
+                    '/' +
+                    modificationMetadata.lineToAttachTo2Id
+                );
             case 'DELETE_ATTACHING_LINE':
                 return (
-                    modif.attachedLineId +
+                    modificationMetadata.attachedLineId +
                     '/' +
-                    modif.lineToAttachTo1Id +
+                    modificationMetadata.lineToAttachTo1Id +
                     '/' +
-                    modif.lineToAttachTo2Id
+                    modificationMetadata.lineToAttachTo2Id
                 );
             default:
-                return modif.equipmentId || '';
+                return modificationMetadata.equipmentId || '';
         }
     }, [modif]);
 
@@ -103,14 +109,43 @@ export const ModificationListItem = ({
         [modif, handleToggle]
     );
 
+    const getBranchStatusModificationValues = (modification) => {
+        return {
+            action: modification?.action,
+            energizedEnd: modification?.energizedVoltageLevelId,
+            computedLabel: <strong>{modification?.equipmentId}</strong>,
+        };
+    };
+
+    const getEquipmentAttributeModificationValues = (modification) => {
+        return {
+            equipmentAttributeName: modification?.equipmentAttributeName,
+            equipmentAttributeValue: modification?.equipmentAttributeValue,
+            computedLabel: <strong>{modification?.equipmentId}</strong>,
+        };
+    };
+
     useEffect(() => {
         if (!studyUuid || !currentNode || !modif) {
             return;
         }
-        setComputedValues({
-            energizedEnd: modif.energizedVoltageLevelId,
-            computedLabel: <strong>{getComputedLabel()}</strong>,
-        });
+        const modificationValues = JSON.parse(modif.messageValues);
+        switch (modif.messageType) {
+            case 'BRANCH_STATUS_MODIFICATION':
+                setComputedValues(
+                    getBranchStatusModificationValues(modificationValues)
+                );
+                break;
+            case 'EQUIPMENT_ATTRIBUTE_MODIFICATION':
+                setComputedValues(
+                    getEquipmentAttributeModificationValues(modificationValues)
+                );
+                break;
+            default:
+                setComputedValues({
+                    computedLabel: <strong>{getComputedLabel()}</strong>,
+                });
+        }
     }, [modif, studyUuid, currentNode, getComputedLabel]);
 
     const getLabel = useCallback(() => {
@@ -118,7 +153,7 @@ export const ModificationListItem = ({
             return null;
         }
         return intl.formatMessage(
-            { id: 'network_modifications/' + modif.type },
+            { id: 'network_modifications/' + modif.messageType },
             {
                 ...modif,
                 ...computedValues,
@@ -179,7 +214,7 @@ export const ModificationListItem = ({
                             isEditableModification(modif) && (
                                 <IconButton
                                     onClick={() =>
-                                        onEdit(modif.uuid, modif?.type)
+                                        onEdit(modif.uuid, modif?.messageType)
                                     }
                                     size={'small'}
                                     sx={styles.iconEdit}
