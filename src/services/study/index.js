@@ -58,26 +58,41 @@ export function getNetworkAreaDiagramUrl(
     );
 }
 
-export function fetchNodeReport(
+export function fetchNodeReportTree(studyUuid, nodeUuid, nodeOnlyReport) {
+    console.info(
+        'get report tree for node : ' +
+            nodeUuid +
+            ' with nodeOnlyReport = ' +
+            nodeOnlyReport +
+            ' in study ' +
+            studyUuid
+    );
+
+    let url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/report?nodeOnlyReport=' +
+        (nodeOnlyReport ? 'true' : 'false');
+    return backendFetchJson(url);
+}
+
+export function fetchNodeReportElements(
     studyUuid,
     nodeUuid,
     nodeOnlyReport,
     severityFilterList
 ) {
     console.info(
-        'get report for node : ' +
+        'get report elements for node : ' +
             nodeUuid +
             ' with nodeOnlyReport = ' +
             nodeOnlyReport +
             ' in study ' +
-            studyUuid +
-            ' with severities ' +
-            severityFilterList
+            studyUuid
     );
 
     let url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        '/report?nodeOnlyReport=' +
+        '/report/elements?nodeOnlyReport=' +
         (nodeOnlyReport ? 'true' : 'false');
     if (severityFilterList?.length) {
         url +=
@@ -86,14 +101,14 @@ export function fetchNodeReport(
     return backendFetchJson(url);
 }
 
-export function fetchReporter(
+export function fetchReporterElements(
     studyUuid,
     nodeUuid,
     reporterUuid,
     severityFilterList
 ) {
     console.info(
-        'get report for reporter : ' +
+        'get report elements for reporter : ' +
             reporterUuid +
             ' with severities ' +
             severityFilterList
@@ -102,7 +117,8 @@ export function fetchReporter(
     let url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
         '/reporters/' +
-        reporterUuid;
+        reporterUuid +
+        '/elements';
     if (severityFilterList?.length) {
         url +=
             '?' + getRequestParamFromList(severityFilterList, 'severityLevels');

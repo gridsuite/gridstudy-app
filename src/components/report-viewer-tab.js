@@ -16,9 +16,12 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { fetchNodeReport, fetchReporter } from '../services/study';
+import {
+    fetchNodeReportElements,
+    fetchNodeReportTree,
+    fetchReporterElements,
+} from '../services/study';
 import { Box } from '@mui/system';
-import LogReportItem from './ReportViewer/log-report-item';
 
 const styles = {
     div: {
@@ -100,21 +103,25 @@ export const ReportViewerTab = ({
 
     const makeSingleReport = useCallback(
         (reportData) => {
-            if (reportData.length === 1) {
-                return setNodeName(reportData[0]);
+            if (!Array.isArray(reportData)) {
+                return setNodeName(reportData);
             } else {
-                return {
-                    taskKey: 'root',
-                    defaultName: 'Logs',
-                    taskValues: {
-                        globalReport: {
-                            value: true,
-                            type: 'UNTYPED',
+                if (reportData.length === 1) {
+                    return setNodeName(reportData[0]);
+                } else {
+                    return {
+                        taskKey: 'Logs',
+                        defaultName: 'Logs',
+                        taskValues: {
+                            globalReport: {
+                                value: true,
+                                type: 'UNTYPED',
+                            },
                         },
-                    },
-                    reports: [],
-                    subReporters: reportData.map((r) => setNodeName(r)),
-                };
+                        reports: [],
+                        subReporters: reportData.map((r) => setNodeName(r)),
+                    };
+                }
             }
         },
         [setNodeName]
@@ -123,15 +130,8 @@ export const ReportViewerTab = ({
     const fetchAndProcessReport = useCallback(
         (studyId, currentNode) => {
             setWaitingLoadReport(true);
-            fetchNodeReport(
-                studyId,
-                currentNode.id,
-                nodeOnlyReport,
-                LogReportItem.getDefaultSeverityList()
-                // TODO only tree True
-            )
+            fetchNodeReportTree(studyId, currentNode.id, nodeOnlyReport)
                 .then((fetchedReport) => {
-                    console.log('DBR outsideFetch/setReport', fetchedReport);
                     setReport(makeSingleReport(fetchedReport));
                 })
                 .catch((error) => {
@@ -173,12 +173,11 @@ export const ReportViewerTab = ({
     ]);
 
     const nodeElementsPromise = (studyId, studyNodeId, severityFilterList) => {
-        return fetchNodeReport(
+        return fetchNodeReportElements(
             studyId,
             studyNodeId,
             true,
             severityFilterList
-            // TODO onlyTree false
         );
     };
 
@@ -187,12 +186,11 @@ export const ReportViewerTab = ({
         studyNodeId,
         severityFilterList
     ) => {
-        return fetchNodeReport(
+        return fetchNodeReportElements(
             studyId,
             studyNodeId,
             nodeOnlyReport,
             severityFilterList
-            // TODO onlyTree false
         );
     };
 
@@ -202,7 +200,7 @@ export const ReportViewerTab = ({
         reporterId,
         severityFilterList
     ) => {
-        return fetchReporter(
+        return fetchReporterElements(
             studyId,
             studyNodeId,
             reporterId,
@@ -236,7 +234,7 @@ export const ReportViewerTab = ({
                 </Box>
                 {!!report && !disabled && (
                     <ReportViewer
-                        jsonReport={report}
+                        jsonReportTree={report}
                         studyId={studyId}
                         currentNode={currentNode}
                         makeSingleReport={makeSingleReport}

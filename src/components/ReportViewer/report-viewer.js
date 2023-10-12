@@ -37,7 +37,7 @@ const styles = {
 };
 
 export default function ReportViewer({
-    jsonReport,
+    jsonReportTree,
     studyId,
     currentNode,
     makeSingleReport,
@@ -91,14 +91,84 @@ export default function ReportViewer({
         [maxSubReports]
     );
 
+    const getFetchPromise = useCallback(
+        (nodeId, severityList) => {
+            if (allReports.current[nodeId].isModificationNode()) {
+                return nodeElementsPromise(
+                    studyId,
+                    allReports.current[nodeId].getKey(),
+                    severityList
+                );
+            } else if (allReports.current[nodeId].isGlobalLog()) {
+                return allLogsElementsPromise(
+                    studyId,
+                    currentNode.id,
+                    severityList
+                );
+            } else {
+                return reporterElementsPromise(
+                    studyId,
+                    currentNode.id,
+                    nodeId,
+                    severityList
+                );
+            }
+        },
+        [
+            studyId,
+            currentNode.id,
+            nodeElementsPromise,
+            allLogsElementsPromise,
+            reporterElementsPromise,
+        ]
+    );
+
+    const refreshNode = useCallback(
+        (nodeId, severityFilter) => {
+            let severityList = [];
+            for (const [severity, selected] of Object.entries(severityFilter)) {
+                if (selected) {
+                    severityList.push(severity);
+                }
+            }
+            // use a timout to avoid having a loader in case of fast promise return (avoid blink)
+            const timer = setTimeout(() => {
+                setWaitingLoadReport(true);
+            }, 700);
+            Promise.resolve(getFetchPromise(nodeId, severityList))
+                .then((fetchedData) => {
+                    clearTimeout(timer);
+                    let reporterData = makeSingleReport(fetchedData);
+                    let logReporter = new LogReport(reporterData);
+                    setSelectedNode(nodeId);
+                    setLogs(logReporter.getAllLogs());
+                    setHighlightedReportId(null);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'ReportFetchError',
+                    });
+                })
+                .finally(() => {
+                    clearTimeout(timer);
+                    setWaitingLoadReport(false);
+                });
+        },
+        [snackError, makeSingleReport, getFetchPromise]
+    );
+
     useEffect(() => {
-        rootReport.current = new LogReport(jsonReport);
+        const rootReportLoading = rootReport.current === null;
+        rootReport.current = new LogReport(jsonReportTree);
         let rootId = rootReport.current.getId().toString();
         treeView.current = createReporterItem(rootReport.current);
         setSelectedNode(rootId);
         setExpandedNodes([rootId]);
-        setLogs(rootReport.current.getAllLogs());
-    }, [jsonReport, createReporterItem]);
+        if (rootReportLoading) {
+            refreshNode(rootId, LogReportItem.getDefaultSeverityFilter());
+        }
+    }, [jsonReportTree, createReporterItem, refreshNode]);
 
     const handleToggleNode = (event, nodeIds) => {
         event.persist();
@@ -110,61 +180,6 @@ export default function ReportViewer({
 
     const handleSelectNode = (event, nodeId) => {
         selectNode(nodeId);
-    };
-
-    const getFetchPromise = (nodeId, severityList) => {
-        if (allReports.current[nodeId].isModificationNode()) {
-            return nodeElementsPromise(
-                studyId,
-                allReports.current[nodeId].getKey(),
-                severityList
-            );
-        } else if (allReports.current[nodeId].isGlobalLog()) {
-            return allLogsElementsPromise(
-                studyId,
-                currentNode.id,
-                severityList
-            );
-        } else {
-            return reporterElementsPromise(
-                studyId,
-                currentNode.id,
-                nodeId,
-                severityList
-            );
-        }
-    };
-
-    const refreshNode = (nodeId, severityFilter) => {
-        let severityList = [];
-        for (const [severity, selected] of Object.entries(severityFilter)) {
-            if (selected) {
-                severityList.push(severity);
-            }
-        }
-        // use a timout to avoid having a loader in case of fast request (avoid blink)
-        const timer = setTimeout(() => {
-            setWaitingLoadReport(true);
-        }, 700);
-        Promise.resolve(getFetchPromise(nodeId, severityList))
-            .then((fetchedData) => {
-                clearTimeout(timer);
-                let reporterData = makeSingleReport(fetchedData);
-                let logReporter = new LogReport(reporterData);
-                setSelectedNode(nodeId);
-                setLogs(logReporter.getAllLogs());
-                setHighlightedReportId(null);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'ReportFetchError',
-                });
-            })
-            .finally(() => {
-                clearTimeout(timer);
-                setWaitingLoadReport(false);
-            });
     };
 
     const selectNode = (nodeId) => {

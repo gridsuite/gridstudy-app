@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TableCell from '@mui/material/TableCell';
 import { styled } from '@mui/system';
@@ -129,18 +129,6 @@ const LogTable = ({
         setSelectedRowIndex(-1);
     }, [logs]);
 
-    const filter = useCallback(
-        (row) => {
-            return (
-                row.severity &&
-                Object.entries(selectedSeverity).some(
-                    ([key, value]) => key === row.severity && value
-                )
-            );
-        },
-        [selectedSeverity]
-    );
-
     return (
         //TODO do we need to useMemo/useCallback these props to avoid rerenders ?
         <VirtualizedTable
@@ -149,7 +137,6 @@ const LogTable = ({
             sortable={false}
             onRowClick={handleRowClick}
             rowStyle={rowStyleFormat}
-            filter={filter}
         />
     );
 };
