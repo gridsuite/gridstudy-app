@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import yup from '../../utils/yup-config';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     Dialog,
@@ -17,14 +18,14 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { useInputForm } from '../../utils/inputs/input-hooks';
-import { getIdOrSelf, gridItem } from '../dialogUtils';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { useAutocompleteField } from '../../utils/inputs/use-autocomplete-field';
+import { AutocompleteInput, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     fetchDynamicSimulationParameters,
     updateDynamicSimulationParameters,
 } from '../../../services/study/dynamic-simulation';
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { getIdOrSelf, gridItem } from '../dialogUtils';
 
 export const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -37,29 +38,45 @@ export const checkDynamicSimulationParameters = (studyUuid) => {
 };
 
 const MAPPING_SELECTION_LABEL = 'DynamicSimulationMappingSelection';
+const MAPPING = 'mapping';
+
+const formSchema = yup.object().shape({
+    [MAPPING]: yup.string().required(),
+});
+
+const emptyFormData = {
+    [MAPPING]: '',
+};
 
 const DynamicSimulationParametersSelector = (props) => {
     const { open, onClose, onStart, studyUuid } = props;
 
     const [mappingNames, setMappingNames] = useState([]);
-    const [dynamicSimulationParams, setDynamicSimulationParams] =
-        useState(null);
+    const [dynamicSimulationParams, setDynamicSimulationParams] = useState();
 
     const { snackError } = useSnackMessage();
 
-    const inputForm = useInputForm();
+    const formMethods = useForm({
+        defaultValues: emptyFormData,
+        resolver: yupResolver(formSchema),
+    });
 
-    const [mappingName, mappingNameField, setMappingName] =
-        useAutocompleteField({
-            label: MAPPING_SELECTION_LABEL,
-            inputForm: inputForm,
-            values: mappingNames,
-            defaultValue: '',
-            validation: {
-                isFieldRequired: true,
-            },
-            getLabel: getIdOrSelf,
-        });
+    const {
+        handleSubmit,
+        reset,
+        formState: { isDirty },
+    } = formMethods;
+
+    const mappingNameField = (
+        <AutocompleteInput
+            name={MAPPING}
+            options={mappingNames}
+            label={MAPPING_SELECTION_LABEL}
+            fullWidth
+            size={'small'}
+            getOptionLabel={getIdOrSelf}
+        />
+    );
 
     useEffect(() => {
         fetchDynamicSimulationParameters(studyUuid)
@@ -70,7 +87,7 @@ const DynamicSimulationParametersSelector = (props) => {
                 const mappings = params.mappings.map((elem) => elem.name);
                 const mapping = params.mapping;
                 setMappingNames(mappings);
-                setMappingName(mapping);
+                reset({ ...emptyFormData, [MAPPING]: mapping });
             })
             .catch((error) => {
                 snackError({
@@ -78,18 +95,18 @@ const DynamicSimulationParametersSelector = (props) => {
                     headerId: 'DynamicSimulationGetMappingError',
                 });
             });
-    }, [snackError, studyUuid, setMappingName]);
+    }, [snackError, studyUuid, reset]);
 
     const handleClose = () => {
         onClose();
     };
 
-    const handleStart = () => {
-        if (inputForm.validate()) {
+    const handleStart = useCallback(
+        (formData) => {
             // save parameters before start computation
             const newDynamicSimulationParams = {
                 ...dynamicSimulationParams,
-                mapping: mappingName,
+                mapping: formData[MAPPING],
             };
             updateDynamicSimulationParameters(
                 studyUuid,
@@ -105,8 +122,9 @@ const DynamicSimulationParametersSelector = (props) => {
                         headerId: 'DynamicSimulationParametersChangeError',
                     });
                 });
-        }
-    };
+        },
+        [studyUuid, onStart, snackError, dynamicSimulationParams]
+    );
 
     const makeButton = (onClick, message, disabled) => {
         return (
@@ -126,13 +144,13 @@ const DynamicSimulationParametersSelector = (props) => {
         return (
             <Grid container spacing={1} item justifyContent={'right'}>
                 {makeButton(handleClose, 'close', false)}
-                {makeButton(handleStart, 'Execute', false)}
+                {makeButton(handleSubmit(handleStart), 'Execute', !isDirty)}
             </Grid>
         );
     };
 
     return (
-        <>
+        <FormProvider validationSchema={formSchema} {...formMethods}>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -159,7 +177,7 @@ const DynamicSimulationParametersSelector = (props) => {
                 </DialogContent>
                 <DialogActions>{renderButtons()}</DialogActions>
             </Dialog>
-        </>
+        </FormProvider>
     );
 };
 
