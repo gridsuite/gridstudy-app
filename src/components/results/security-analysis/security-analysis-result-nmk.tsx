@@ -9,10 +9,12 @@ import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { IntlShape, useIntl } from 'react-intl';
 import {
     ConstraintsFromContingencyItem,
+    ContingenciesFromConstraintItem,
     SecurityAnalysisNmkTableRow,
     SecurityAnalysisResultNmkProps,
 } from './security-analysis-types';
 import {
+    flattenNmKResultsConstraints,
     flattenNmKResultsContingencies,
     groupPostSort,
     securityAnalysisTableNmKConstraintsColumnsDefinition,
@@ -121,7 +123,10 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
               intl,
               result as ConstraintsFromContingencyItem[]
           )
-        : []; // flattenNmKResultsConstraints(intl, result);
+        : flattenNmKResultsConstraints(
+              intl,
+              result as ContingenciesFromConstraintItem[]
+          );
 
     const columnDefs = useMemo(() => {
         if (isFromContingency) {

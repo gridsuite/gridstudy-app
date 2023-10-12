@@ -20,6 +20,7 @@ import {
     IRowNode,
     ValueFormatterParams,
 } from 'ag-grid-community';
+import { ResultConstraint } from '../securityanalysis/security-analysis.type';
 
 export const computeLoading = (
     limitViolation: LimitViolation | Constraint | Contingency
@@ -37,6 +38,7 @@ export const flattenNmKResultsContingencies = (
     result: ConstraintsFromContingencyItem[] = []
 ) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
+
     result?.forEach(
         ({
             constraints = [],
@@ -44,7 +46,7 @@ export const flattenNmKResultsContingencies = (
             id,
             status,
         }: ConstraintsFromContingencyItem) => {
-            if (!!constraints.length || status !== CONVERGED_STATUS) {
+            if (!!constraints.length) {
                 rows.push({
                     limit: 0,
                     limitType: '',
@@ -65,7 +67,7 @@ export const flattenNmKResultsContingencies = (
                         }),
                         limit: constraint.limit,
                         value: constraint.value,
-                        loading: computeLoading(constraint),
+                        loading: constraint.loading,
                         side: constraint.side,
                         linkedElementId: id,
                     });
@@ -73,18 +75,47 @@ export const flattenNmKResultsContingencies = (
             }
         }
     );
+
     return rows;
 };
 
-// export const flattenNmKResultsConstraints = (
-//     intl: IntlShape,
-//     result?: PostContingencyResult[]
-// ) => {
-//     const rows: any[] = [];
-//     let mapConstraints = new Map();
-//
-//     return rows;
-// };
+export const flattenNmKResultsConstraints = (
+    intl: IntlShape,
+    result?: any[]
+) => {
+    console.log({ result });
+    const rows: any[] = [];
+
+    result?.forEach(({ contingencies, subjectId }) => {
+        rows.push({
+            subjectId,
+        });
+
+        contingencies?.forEach((contingency: ResultConstraint) => {
+            rows.push({
+                contingencyId: contingency.contingencyId,
+                //@ts-ignore
+                contingencyEquipmentsIds: contingency.elements.map(
+                    //@ts-ignore
+                    (element) => element.id
+                ),
+                computationStatus: contingency.computationStatus,
+                limitType: contingency.limitType,
+                limitName: contingency.limitName,
+                side: contingency.side,
+                acceptableDuration: contingency.acceptableDuration,
+                limit: contingency.limit,
+                value: contingency.value,
+                loading: contingency.loading,
+                linkedElementId: subjectId,
+
+                constraintId: contingency.constraintId,
+            });
+        });
+    });
+
+    return rows;
+};
 
 export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
