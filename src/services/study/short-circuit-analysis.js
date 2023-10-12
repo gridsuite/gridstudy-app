@@ -100,8 +100,8 @@ export function fetchShortCircuitAnalysisResult({
         urlSearchParams.append('size', size);
     }
 
-    if (!isObjectEmpty(filter)) {
-        urlSearchParams.append('filter', JSON.stringify(filter));
+    if (filter.length) {
+        urlSearchParams.append('filters', JSON.stringify(filter));
     }
 
     const url =

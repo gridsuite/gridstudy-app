@@ -49,7 +49,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
     const [result, setResult] = useState<SCAFaultResult[]>([]);
-    const [filter, setFilter] = useState({});
+    const [filter, setFilter] = useState([]);
     const [sort, setSort] = useState([]);
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
