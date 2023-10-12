@@ -16,6 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useSelector } from 'react-redux';
+import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 
 const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
@@ -79,19 +80,19 @@ export const ModificationListItem = ({
         const modificationMetadata = JSON.parse(modif?.messageValues);
 
         switch (modif.messageType) {
-            case 'LINE_SPLIT_WITH_VOLTAGE_LEVEL':
+            case MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type:
                 return modificationMetadata.lineToSplitId;
-            case 'LINE_ATTACH_TO_VOLTAGE_LEVEL':
+            case MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type:
                 return modificationMetadata.lineToAttachToId;
-            case 'LINES_ATTACH_TO_SPLIT_LINES':
+            case MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type:
                 return modificationMetadata.attachedLineId;
-            case 'DELETE_VOLTAGE_LEVEL_ON_LINE':
+            case MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type:
                 return (
                     modificationMetadata.lineToAttachTo1Id +
                     '/' +
                     modificationMetadata.lineToAttachTo2Id
                 );
-            case 'DELETE_ATTACHING_LINE':
+            case MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type:
                 return (
                     modificationMetadata.attachedLineId +
                     '/' +
@@ -130,13 +131,14 @@ export const ModificationListItem = ({
             return;
         }
         const modificationValues = JSON.parse(modif.messageValues);
+
         switch (modif.messageType) {
-            case 'BRANCH_STATUS_MODIFICATION':
+            case MODIFICATION_TYPES.BRANCH_STATUS_MODIFICATION.type:
                 setComputedValues(
                     getBranchStatusModificationValues(modificationValues)
                 );
                 break;
-            case 'EQUIPMENT_ATTRIBUTE_MODIFICATION':
+            case MODIFICATION_TYPES.EQUIPMENT_ATTRIBUTE_MODIFICATION.type:
                 setComputedValues(
                     getEquipmentAttributeModificationValues(modificationValues)
                 );

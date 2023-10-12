@@ -1465,7 +1465,8 @@ export function deleteEquipment(
 export function fetchNetworkModifications(
     studyUuid,
     nodeUuid,
-    stashedModifications
+    stashedModifications,
+    onlyMetadata
 ) {
     console.info('Fetching network modifications for nodeUuid : ', nodeUuid);
     const modificationsGetUrl =
@@ -1475,7 +1476,9 @@ export function fetchNetworkModifications(
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
         '/network-modifications?stashed=' +
-        encodeURIComponent(stashedModifications);
+        encodeURIComponent(stashedModifications) +
+        '&onlyMetadata=' +
+        encodeURIComponent(onlyMetadata);
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }

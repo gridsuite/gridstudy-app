@@ -444,7 +444,7 @@ const NetworkModificationNodeEditor = () => {
             return;
         }
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentNode.id, true)
+        fetchNetworkModifications(studyUuid, currentNode.id, true, true)
             .then((res) => {
                 if (currentNode.id === currentNodeIdRef.current) {
                     setModificationsToRestore(res);
@@ -468,7 +468,7 @@ const NetworkModificationNodeEditor = () => {
             return;
         }
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentNode.id, false)
+        fetchNetworkModifications(studyUuid, currentNode.id, false, true)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
