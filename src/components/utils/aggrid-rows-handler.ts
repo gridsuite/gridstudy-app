@@ -13,7 +13,8 @@ export interface RunningStatusMessage {
 export function getNoRowsMessage(
     messages: RunningStatusMessage,
     rows: any[] | undefined,
-    status: string
+    status: string,
+    isDataReady?: boolean
 ): string | undefined {
     switch (status) {
         case RunningStatus.IDLE:
@@ -23,7 +24,9 @@ export function getNoRowsMessage(
         case RunningStatus.FAILED:
             return messages.failed;
         case RunningStatus.SUCCEED:
-            if (!rows || rows?.length === 0) {
+            if (!isDataReady) {
+                return messages.running;
+            } else if (!rows || rows?.length === 0) {
                 return messages.noData
                     ? messages.noData
                     : messages.noLimitViolation;

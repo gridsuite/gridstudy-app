@@ -37,6 +37,7 @@ interface ShortCircuitAnalysisResultProps {
     onSortChanged: (colKey: string, sortWay: number) => void;
     sortConfig: ISortConfig;
     analysisType: ShortcircuitAnalysisType;
+    isFetching: boolean;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -83,7 +84,7 @@ interface ColumnConfig {
 
 const ShortCircuitAnalysisResultTable: FunctionComponent<
     ShortCircuitAnalysisResultProps
-> = ({ result, onSortChanged, sortConfig, analysisType }) => {
+> = ({ result, onSortChanged, sortConfig, analysisType, isFetching }) => {
     const intl = useIntl();
     const theme = useTheme();
 
@@ -188,7 +189,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         (state: ReduxState) =>
             state.computingStatus[
                 analysisType === ShortcircuitAnalysisType.ALL_BUSES
-                    ? ComputingType.SHORTCIRCUIT_ANALYSIS
+                    ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
                     : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
             ]
     );
@@ -333,7 +334,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const message = getNoRowsMessage(
         messages,
         rows,
-        shortCircuitAnalysisStatus
+        shortCircuitAnalysisStatus,
+        !isFetching
     );
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 
