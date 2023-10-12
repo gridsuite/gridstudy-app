@@ -8,7 +8,8 @@
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { makeComponents } from '../util/make-component-utils';
-import { SelectInput } from '@gridsuite/commons-ui';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { getIdOrSelf } from '../../dialogUtils';
 
 export const MAPPING = 'mapping';
 
@@ -26,18 +27,16 @@ const MappingParameters = ({ mapping, path }) => {
     const defParams = {
         [MAPPING]: {
             label: 'DynamicSimulationMapping',
-            values: mappings?.reduce(
-                (arr, curr) => [...arr, { id: curr.name }],
-                []
-            ),
+            values: mappings?.map((elem) => elem.name) ?? [],
             render: (defParam, key) => {
                 return (
-                    <SelectInput
+                    <AutocompleteInput
                         name={`${path}.${key}`}
                         label={''}
                         options={defParam.values}
                         fullWidth
                         size={'small'}
+                        getOptionLabel={getIdOrSelf}
                     />
                 );
             },
