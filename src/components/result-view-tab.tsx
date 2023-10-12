@@ -30,7 +30,7 @@ import {
 import { CurrentTreeNode } from '../redux/reducer.type';
 import { UUID } from 'crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
-import { SecurityAnalysisResultTab } from './results/./securityanalysis/security-analysis-result-tab';
+import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import { Box } from '@mui/system';
 
