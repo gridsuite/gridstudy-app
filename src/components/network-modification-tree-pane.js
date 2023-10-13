@@ -150,6 +150,9 @@ export const NetworkModificationTreePane = ({
     currentNodeRef.current = currentNode;
 
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
+    const networkModificationTreeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
     const selectionForCopyRef = useRef();
     selectionForCopyRef.current = selectionForCopy;
 
@@ -209,29 +212,78 @@ export const NetworkModificationTreePane = ({
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeCreated'
             ) {
+                console.log('MMT inside our scope');
+
                 fetchNetworkModificationTreeNode(
                     studyUuid,
                     studyUpdatedForce.eventData.headers['newNode']
                 ).then((node) => {
-                    dispatch(
-                        networkModificationTreeNodeAdded(
+                    networkModificationTreeModel.updateLayout(() => {
+                        dispatch(
+                            networkModificationTreeNodeAdded(
+                                node,
+                                studyUpdatedForce.eventData.headers[
+                                    'parentNode'
+                                ],
+                                studyUpdatedForce.eventData.headers[
+                                    'insertMode'
+                                ],
+                                studyUpdatedForce.eventData.headers[
+                                    'referenceNodeUuid'
+                                ]
+                            )
+                        );
+                        if (
+                            isSubtreeImpacted([
+                                studyUpdatedForce.eventData.headers[
+                                    'parentNode'
+                                ],
+                            ])
+                        ) {
+                            resetNodeClipboard();
+                        }
+
+                        networkModificationTreeModel.addChild(
                             node,
                             studyUpdatedForce.eventData.headers['parentNode'],
                             studyUpdatedForce.eventData.headers['insertMode'],
                             studyUpdatedForce.eventData.headers[
                                 'referenceNodeUuid'
                             ]
-                        )
-                    );
+                        );
+                        console.log(
+                            'MMT networkModificationTreeModel',
+                            networkModificationTreeModel
+                        );
+                    });
                 });
-
-                if (
-                    isSubtreeImpacted([
-                        studyUpdatedForce.eventData.headers['parentNode'],
-                    ])
-                ) {
-                    resetNodeClipboard();
-                }
+                // .then((node) => {
+                //     dispatch(
+                //         networkModificationTreeNodeAdded(
+                //             node,
+                //             studyUpdatedForce.eventData.headers[
+                //                 'parentNode'
+                //             ],
+                //             studyUpdatedForce.eventData.headers[
+                //                 'insertMode'
+                //             ],
+                //             studyUpdatedForce.eventData.headers[
+                //                 'referenceNodeUuid'
+                //             ]
+                //         )
+                //     );
+                //     return node;
+                // })
+                // .then((node) => {
+                //     newModel.addChild(
+                //         node,
+                //         studyUpdatedForce.eventData.headers['parentNode'],
+                //         studyUpdatedForce.eventData.headers['insertMode'],
+                //         studyUpdatedForce.eventData.headers[
+                //             'referenceNodeUuid'
+                //         ]
+                //     );
+                // });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'subtreeCreated'

@@ -298,24 +298,29 @@ export const reducer = createReducer(initialState, {
 
     [NETWORK_MODIFICATION_TREE_NODE_ADDED]: (state, action) => {
         if (state.networkModificationTreeModel) {
-            let newModel =
-                state.networkModificationTreeModel.newSharedForUpdate();
-            newModel.addChild(
-                action.networkModificationTreeNode,
-                action.parentNodeId,
-                action.insertMode,
-                action.referenceNodeId
-            );
-            newModel.updateLayout();
-            state.networkModificationTreeModel = newModel;
+            // let newModel =
+            //     state.networkModificationTreeModel.newSharedForUpdate();
+            // newModel.addChild(
+            //     action.networkModificationTreeNode,
+            //     action.parentNodeId,
+            //     action.insertMode,
+            //     action.referenceNodeId
+            // );
+            //
+            // state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
+            console.log('MMT hereeee');
+            console.log(
+                'MMT action.networkModificationTreeNode?.childrenIds',
+                action.networkModificationTreeNode?.childrenIds
+            );
+            synchCurrentTreeNode(state, state.currentTreeNode?.id);
             if (
                 action.networkModificationTreeNode?.childrenIds.includes(
                     state.currentTreeNode?.id
                 )
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
-                synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
     },
@@ -330,7 +335,7 @@ export const reducer = createReducer(initialState, {
                 action.parentNodeId,
                 action.insertMode
             );
-            newModel.updateLayout();
+            newModel.updateLayout(() => console.log('tree moved'));
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
@@ -354,7 +359,7 @@ export const reducer = createReducer(initialState, {
                 action.networkModificationTreeNodes
             );
 
-            newModel.updateLayout();
+            newModel.updateLayout(() => console.log('subtree created'));
             state.networkModificationTreeModel = newModel;
         }
     },
@@ -379,7 +384,7 @@ export const reducer = createReducer(initialState, {
                 );
 
             newModel.removeNodes(action.networkModificationTreeNodes);
-            newModel.updateLayout();
+            newModel.updateLayout(() => console.log('Node removed'));
             state.networkModificationTreeModel = newModel;
 
             // check if current node is in the nodes deleted list
@@ -1166,11 +1171,13 @@ function updateEquipments(currentEquipments, newOrUpdatedEquipments) {
 }
 
 function synchCurrentTreeNode(state, nextCurrentNodeUuid) {
+    console.log('MMT avant ', state.currentTreeNode);
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
         (node) => node?.id === nextCurrentNodeUuid
     );
     //  we need to overwrite state.currentTreeNode to consider label change for example.
     state.currentTreeNode = { ...nextCurrentNode };
+    console.log('MMT après ', state.currentTreeNode);
 }
 
 function unravelSubTree(treeModel, subtreeParentId, node) {

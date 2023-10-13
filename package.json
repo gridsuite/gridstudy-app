@@ -23,7 +23,7 @@
         "cheap-ruler": "^3.0.0",
         "clsx": "^1.0.4",
         "core-js": "^3.6.4",
-        "dagre": "^0.8.5",
+        "elkjs": "^0.8.2",
         "deck.gl": "^8.0.0",
         "eventemitter3": "^5.0.0",
         "geolib": "^3.2.1",

@@ -111,7 +111,7 @@ export function networkModificationTreeNodeAdded(
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODE_ADDED,
-        networkModificationTreeNode: networkModificationTreeNode,
+        networkModificationTreeNode: { ...networkModificationTreeNode },
         parentNodeId: parentNodeId,
         insertMode: insertMode,
         referenceNodeId: referenceNodeId,

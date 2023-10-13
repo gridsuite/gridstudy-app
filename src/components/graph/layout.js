@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import dagre from 'dagre';
 import {
     nodeWidth,
     nodeHeight,
@@ -13,39 +12,67 @@ import {
     rootNodeHeight,
 } from './util/model-constants';
 
-export function getLayoutedNodes(nodes, edges) {
-    const dagreGraph = new dagre.graphlib.Graph();
-    dagreGraph.setDefaultEdgeLabel(() => ({}));
-    dagreGraph.setGraph({ direction: 'TB', align: 'UL' });
+import ELK from 'elkjs/lib/elk.bundled';
+const elk = new ELK();
+const layoutOptions = {
+    'elk.algorithm': 'layered',
+    'elk.direction': 'DOWN',
+    'elk.spacing.nodeNode': 40,
+};
 
+export function getLayoutedNodes(nodes, edges) {
+    // Créer le modèle ELK
+    const elkGraph = {
+        id: 'root',
+        layoutOptions,
+        children: [],
+        edges: [],
+    };
+
+    //Ajouter les nœuds au modèle ELK
     nodes.forEach((node) => {
-        dagreGraph.setNode(node.id, {
+        const elkNode = {
+            id: node.id,
             width: node?.type === 'ROOT' ? rootNodeWidth : nodeWidth,
             height: node?.type === 'ROOT' ? rootNodeHeight : nodeHeight,
+        };
+        elkGraph.children.push(elkNode);
+    });
+
+    //Ajouter les arêtes au modèle ELK
+    edges.forEach((edge) => {
+        elkGraph.edges.push({
+            id: `${edge.source}-${edge.target}`,
+            sources: [edge.source],
+            targets: [edge.target],
         });
     });
-    edges.forEach((edge) => {
-        dagreGraph.setEdge(edge.source, edge.target);
-    });
 
-    dagre.layout(dagreGraph, { debugTiming: true });
+    // Exécuter la mise en page avec ELK et gérer le résultat avec un callback
+    return elk.layout(elkGraph).then((layoutResult) => {
+        // Mettre à jour les positions des nœuds dans nodes
+        nodes.map((el) => {
+            const elkNode = layoutResult.children.find(
+                (node) => node.id === el.id
+            );
+            el.targetPosition = 'top';
+            el.sourcePosition = 'bottom';
+            const width = el.type === 'ROOT' ? rootNodeWidth : nodeWidth;
+            const height = el.type === 'ROOT' ? rootNodeHeight : nodeHeight;
 
-    return nodes.map((el) => {
-        const nodeWithPosition = dagreGraph.node(el.id);
-        el.targetPosition = 'top';
-        el.sourcePosition = 'bottom';
-        const width = el?.type === 'ROOT' ? rootNodeWidth : nodeWidth;
-        const height = el?.type === 'ROOT' ? rootNodeHeight : nodeHeight;
+            el.position = {
+                x: elkNode.x - width / 2,
+                y: elkNode.y - height / 2,
+            };
+            // Pour initialiser le style du nœud React Flow
+            el.style = {
+                width: width,
+                height: height,
+            };
+            return el;
+        });
 
-        el.position = {
-            x: nodeWithPosition.x - width / 2,
-            y: nodeWithPosition.y - height / 2,
-        };
-        // To init react flow node style
-        el.style = {
-            width: width,
-            height: height,
-        };
-        return el;
+        // Renvoyer les nœuds mis en page
+        return nodes;
     });
 }

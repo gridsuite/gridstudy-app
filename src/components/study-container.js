@@ -468,49 +468,48 @@ export function StudyContainer({ view, onChangeTab }) {
                 const networkModificationTreeModel =
                     new NetworkModificationTreeModel();
                 networkModificationTreeModel.setTreeElements(tree);
-                networkModificationTreeModel.updateLayout();
-
-                fetchCaseName(studyUuid)
-                    .then((res) => {
-                        if (res) {
-                            networkModificationTreeModel.setCaseName(res);
-                            dispatch(
-                                loadNetworkModificationTreeSuccess(
-                                    networkModificationTreeModel
-                                )
-                            );
-                        }
-                    })
-                    .catch((err) => {
-                        snackWarning({
-                            headerId: 'CaseNameLoadError',
+                networkModificationTreeModel.updateLayout(() => {
+                    // Le callback pour gérer la fin de la mise en page
+                    fetchCaseName(studyUuid)
+                        .then((res) => {
+                            if (res) {
+                                networkModificationTreeModel.setCaseName(res);
+                                dispatch(
+                                    loadNetworkModificationTreeSuccess(
+                                        networkModificationTreeModel
+                                    )
+                                );
+                            }
+                        })
+                        .catch((err) => {
+                            snackWarning({
+                                headerId: 'CaseNameLoadError',
+                            });
                         });
-                    });
+                    // Select root node by default
+                    let firstSelectedNode = getFirstNodeOfType(tree, 'ROOT');
+                    // if indexation is done then look for the next built node.
+                    // This is to avoid future fetch on variants removed during reindexation process
+                    if (
+                        studyIndexationStatusRef.current ===
+                        STUDY_INDEXATION_STATUS.INDEXED
+                    ) {
+                        firstSelectedNode =
+                            getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
+                                BUILD_STATUS.BUILT,
+                                BUILD_STATUS.BUILT_WITH_WARNING,
+                                BUILD_STATUS.BUILT_WITH_ERROR,
+                            ]) || firstSelectedNode;
+                    }
 
-                // Select root node by default
-                let firstSelectedNode = getFirstNodeOfType(tree, 'ROOT');
-                // if reindexation is ongoing then stay on root node, all variants will be removed
-                // if indexation is done then look for the next built node.
-                // This is to avoid future fetch on variants removed during reindexation process
-                if (
-                    studyIndexationStatusRef.current ===
-                    STUDY_INDEXATION_STATUS.INDEXED
-                ) {
-                    firstSelectedNode =
-                        getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
-                            BUILD_STATUS.BUILT,
-                            BUILD_STATUS.BUILT_WITH_WARNING,
-                            BUILD_STATUS.BUILT_WITH_ERROR,
-                        ]) || firstSelectedNode;
-                }
-
-                // To get positions we must get the node from the model class
-                const ModelFirstSelectedNode = {
-                    ...networkModificationTreeModel.treeNodes.find(
-                        (node) => node.id === firstSelectedNode.id
-                    ),
-                };
-                dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
+                    // To get positions we must get the node from the model class
+                    const ModelFirstSelectedNode = {
+                        ...networkModificationTreeModel.treeNodes.find(
+                            (node) => node.id === firstSelectedNode.id
+                        ),
+                    };
+                    dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
+                });
             })
             .catch((error) => {
                 snackError({
