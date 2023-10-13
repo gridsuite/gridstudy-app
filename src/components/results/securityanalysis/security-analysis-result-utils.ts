@@ -21,6 +21,17 @@ import {
     PostSortRowsParams,
     ValueFormatterParams,
 } from 'ag-grid-community';
+import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { ValueGetterParams } from 'ag-grid-community';
+
+const contingencyGetterValues = (params: ValueGetterParams) => {
+    if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
+        return {
+            cellValue: params.data?.contingencyId,
+            tooltipValue: params.data?.contingencyEquipmentsIds.join('\n'),
+        };
+    }
+};
 
 export const computeLoading = (
     limitViolation: LimitViolation | subjectLimitViolations | Contingency
@@ -125,6 +136,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
+            valueGetter: contingencyGetterValues,
+            cellRenderer: ContingencyCellRenderer,
         },
         {
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
@@ -195,6 +208,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         {
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
             field: 'contingencyId',
+            valueGetter: contingencyGetterValues,
+            cellRenderer: ContingencyCellRenderer,
         },
         {
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
