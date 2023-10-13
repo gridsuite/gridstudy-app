@@ -166,6 +166,9 @@ const VoltageInitResult = ({ result, status }) => {
                             label: '',
                         },
                     ]}
+                    enableExportCSV={true}
+                    exportCSVDataKeys={['key', 'value']}
+                    name={intl.formatMessage({ id: 'Indicators' })}
                 />
             </>
         );
@@ -188,6 +191,9 @@ const VoltageInitResult = ({ result, status }) => {
                         dataKey: 'slack',
                     },
                 ]}
+                enableExportCSV={true}
+                exportCSVDataKeys={['busId', 'slack']}
+                name={intl.formatMessage({ id: 'ReactiveSlacks' })}
             />
         );
     }

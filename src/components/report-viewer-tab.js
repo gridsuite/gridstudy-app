@@ -105,7 +105,10 @@ export const ReportViewerTab = ({
         [nodeOnlyReport, setNodeName, snackError]
     );
 
+    // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
+    // and when the application receives a notification.
     useEffect(() => {
+        // Visible and !disabled ensure that the user has the LOGS tab open and the current node is built.
         if (visible && !disabled) {
             fetchAndProcessReport(studyId, currentNode);
         }

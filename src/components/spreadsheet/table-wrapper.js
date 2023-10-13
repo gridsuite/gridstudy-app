@@ -48,7 +48,6 @@ import {
     modifyVoltageLevel,
     requestNetworkChange,
 } from '../../services/study/network-modifications';
-import { kiloUnitToUnit } from '../../utils/rounding';
 import { Box } from '@mui/system';
 
 const useEditBuffer = () => {
@@ -303,10 +302,16 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments({
-        type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
-        fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
-    });
+    const equipmentDefinition = useMemo(
+        () => ({
+            type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+            fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
+        }),
+        [tabIndex]
+    );
+
+    const { equipments, errorMessage, isFetching } =
+        useSpreadsheetEquipments(equipmentDefinition);
 
     useEffect(() => {
         if (errorMessage) {
@@ -607,17 +612,15 @@ const TableWrapper = (props) => {
                             editingData.highVoltageLimit,
                             editingDataRef.current.highVoltageLimit
                         ),
-                        kiloUnitToUnit(
-                            getFieldValue(
-                                editingData.ipMin,
-                                editingDataRef.current.ipMin
-                            )
+                        getFieldValue(
+                            editingData.identifiableShortCircuit.ipMin,
+                            editingDataRef.current.identifiableShortCircuit
+                                .ipMin
                         ),
-                        kiloUnitToUnit(
-                            getFieldValue(
-                                editingData.ipMax,
-                                editingDataRef.current.ipMax
-                            )
+                        getFieldValue(
+                            editingData.identifiableShortCircuit.ipMax,
+                            editingDataRef.current.identifiableShortCircuit
+                                .ipMax
                         ),
                         false,
                         undefined
@@ -651,12 +654,13 @@ const TableWrapper = (props) => {
                         undefined,
                         undefined,
                         getFieldValue(
-                            editingData.activePowerControlOn,
-                            editingDataRef.current.activePowerControlOn
+                            editingData.activePowerControl.activePowerControlOn,
+                            editingDataRef.current.activePowerControl
+                                .activePowerControlOn
                         ),
                         getFieldValue(
-                            editingData.droop,
-                            editingDataRef.current.droop
+                            editingData.activePowerControl.droop,
+                            editingDataRef.current.activePowerControl.droop
                         )
                     );
                 default:

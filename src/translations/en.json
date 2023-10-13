@@ -368,7 +368,7 @@
     "saveParameters": "Save settings",
     "loadParameters": "Predefined settings",
     "showSelectDirectoryDialog": "Choose folder",
-    "showSelectParameterDialog": "Choose parameter",
+    "showSelectParameterDialog": "Choose parameters",
     "nameAlreadyUsed": "This name is already used",
 
     "descLfReadSlackBus": "Read slack bus in the network",
@@ -1131,7 +1131,7 @@
     "lossFactorLabel": "Loss Factor",
     "angleDroopActivePowerControlLabel": "Angle droop active power control",
     "p0Label": "P0",
-    "droopLabel": "Droop",
+    "droopLabel": "k",
     "side1RectifierSide2Inverter": "Flow (Side1->Side2)",
     "side1InverterSide2Rectifier": "Flow (Side2->Side1)",
 
@@ -1139,8 +1139,11 @@
     "MagnetizingSusceptanceWithUnit": "Magnetizing susceptance (μS)",
     "RatedNominalPower": "Rated nominal power (MVA)",
 
+    "ShortcircuitInProgress": "Shortcircuit computation in progress...",
+    
     "tableChangingError": "An error occured when modifying the data",
     "studyIndexationDone": "Study indexation done. Search functionality is now available",
+    "studyIndexationNotIndexed": "Serverside warning: Something went wrong, Study equipments aren't indexed anymore. Please refresh the page (F5)",
     "studyIndexationError": "Study indexation process has failed.",
     "checkstudyIndexationError": "Study indexation checking has failed.",
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
