@@ -193,7 +193,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const sensiNotif = useSelector((state) => state.sensiNotif);
 
-    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+    const allBusesShortCircuitNotif = useSelector(
+        (state) => state.allBusesShortCircuitNotif
+    );
 
     const oneBusShortCircuitNotif = useSelector(
         (state) => state.oneBusShortCircuitNotif
@@ -489,7 +491,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                     (loadflowNotif ||
                                         saNotif ||
                                         sensiNotif ||
-                                        shortCircuitNotif ||
+                                        allBusesShortCircuitNotif ||
                                         oneBusShortCircuitNotif ||
                                         dynamicSimulationNotif ||
                                         voltageInitNotif)
@@ -500,7 +502,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                                 loadflowNotif +
                                                 saNotif +
                                                 sensiNotif +
-                                                shortCircuitNotif +
+                                                allBusesShortCircuitNotif +
                                                 oneBusShortCircuitNotif +
                                                 dynamicSimulationNotif +
                                                 voltageInitNotif

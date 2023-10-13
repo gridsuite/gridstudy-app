@@ -30,6 +30,9 @@ import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { AgGridReact } from 'ag-grid-react';
+import { Box, LinearProgress } from '@mui/material';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -57,6 +60,21 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
+    );
+    const oneBusShortCircuitAnalysisState = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+    );
+    const shortCircuitAnalysisStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[
+                analysisType === ShortcircuitAnalysisType.ALL_BUSES
+                    ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
+                    : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
+            ]
+    );
+    const allBusesShortCircuitNotif = useSelector(
+        (state: ReduxState) => state.allBusesShortCircuitNotif
     );
 
     const handleChangePage = useCallback(
@@ -130,11 +148,19 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         studyUuid,
         currentNode?.id,
         intl,
-        shortCircuitNotif,
+        allBusesShortCircuitNotif,
+        oneBusShortCircuitAnalysisState,
     ]);
+
+  const openLoader = useOpenLoaderShortWait({
+    isLoading:
+      shortCircuitAnalysisStatus === RunningStatus.RUNNING || isFetching,
+    delay: RESULTS_LOADING_DELAY,
+  });
 
     return (
         <>
+            <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
             <ShortCircuitAnalysisResultTable
                 gridRef={gridRef}
                 result={result}

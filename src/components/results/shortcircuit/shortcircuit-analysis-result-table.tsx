@@ -12,6 +12,8 @@ import { unitToKiloUnit } from 'utils/rounding';
 import {
     SCAFaultResult,
     ShortCircuitAnalysisType,
+    SCAResultFaultFeederResult,
+    ShortcircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import {
     FilterChangedEvent,
@@ -227,6 +229,18 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         [theme.selectedRow.background]
     );
 
+    const getCurrent = (
+        faultResult: SCAFaultResult | SCAResultFaultFeederResult
+    ) => {
+        let current = NaN;
+        if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+            current = faultResult.current;
+        } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
+            current = faultResult.positiveMagnitude;
+        }
+        return current;
+    };
+
     const flattenResult = (shortCircuitAnalysisResult: SCAFaultResult[]) => {
         const rows: ShortCircuitAnalysisAGGridResult[] = [];
 
@@ -244,7 +258,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 };
             }
 
-            const current = faultResult.current;
+            const current = getCurrent(faultResult);
+
             const deltaCurrentIpMax =
                 faultResult.shortCircuitLimits.deltaCurrentIpMax;
             const deltaCurrentIpMin =
@@ -282,12 +297,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             });
             const feederResults = faultResult.feederResults ?? [];
             feederResults.forEach((feederResult) => {
-                let current = NaN;
-                if (analysisType === ShortCircuitAnalysisType.ALL_BUSES) {
-                    current = feederResult.current;
-                } else if (analysisType === ShortCircuitAnalysisType.ONE_BUS) {
-                    current = feederResult.positiveMagnitude;
-                }
+                const current = getCurrent(feederResult);
 
                 rows.push({
                     connectableId: feederResult.connectableId,
@@ -380,7 +390,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const message = getNoRowsMessage(
         messages,
         rows,
-        shortCircuitAnalysisStatus
+        shortCircuitAnalysisStatus,
     );
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 
