@@ -6,30 +6,34 @@
  */
 
 import {
-    SCAAllBusesResult,
-    SCAResult,
+    SCAFaultResult,
+    SCAFeederResult,
     ShortCircuitAnalysisType,
 } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
+import { useCallback, useState } from 'react';
 
 export const ShortCircuitAnalysisAllBusesResult = () => {
     const allBusesShortCircuitNotif = useSelector(
         (state: ReduxState) => state.allBusesShortCircuitNotif
     );
 
-    function formatResult(result: SCAResult) {
-        const {
-            page: { content },
-        } = result as SCAAllBusesResult;
-        return content;
-    }
+    const [result, setResult] = useState<SCAFaultResult[]>([]);
+
+    const handleFetchResultPage = useCallback(
+        (results: SCAFaultResult[] | SCAFeederResult[]) => {
+            setResult(results as SCAFaultResult[]);
+        },
+        []
+    );
 
     return (
         <ShortCircuitAnalysisResult
             analysisType={ShortCircuitAnalysisType.ALL_BUSES}
-            formatResult={formatResult}
+            result={result}
+            handleFetchResultPage={handleFetchResultPage}
             shortCircuitNotif={allBusesShortCircuitNotif}
         />
     );

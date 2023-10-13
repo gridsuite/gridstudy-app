@@ -9,7 +9,8 @@ import ShortCircuitAnalysisResultTable from './shortcircuit-analysis-result-tabl
 import { useSelector } from 'react-redux';
 import {
     SCAFaultResult,
-    SCAResult,
+    SCAFeederResult,
+    SCAPagedResults,
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import { ReduxState } from 'redux/reducer.type';
@@ -20,7 +21,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { fetchShortCircuitAnalysisResult } from '../../../services/study/short-circuit-analysis';
+import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
     DEFAULT_PAGE_COUNT,
     PAGE_OPTIONS,
@@ -32,13 +33,16 @@ import { AgGridReact } from 'ag-grid-react';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
-    formatResult: (result: SCAResult) => SCAFaultResult[];
+    result: SCAFaultResult[];
+    handleFetchResultPage: (
+        result: SCAFaultResult[] | SCAFeederResult[]
+    ) => void;
     shortCircuitNotif: boolean;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<
     IShortCircuitAnalysisGlobalResultProps
-> = ({ analysisType, formatResult, shortCircuitNotif }) => {
+> = ({ analysisType, result, handleFetchResultPage, shortCircuitNotif }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const gridRef = useRef<AgGridReact>(null);
@@ -48,7 +52,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     );
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
-    const [result, setResult] = useState<SCAFaultResult[]>([]);
     const [filter, setFilter] = useState([]);
     const [sort, setSort] = useState([]);
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
@@ -83,22 +86,17 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             sort: sort,
         };
 
-        setResult([]); // bad glitch if we remove it...
-
-        fetchShortCircuitAnalysisResult({
+        //TODO FM fix bad glitch one bus
+        fetchShortCircuitAnalysisPagedResults({
             studyUuid,
             currentNodeUuid: currentNode?.id,
             type: analysisType,
             selector,
         })
-            .then((result: SCAResult) => {
+            .then((result: SCAPagedResults) => {
                 if (active) {
-                    const {
-                        page: { content, totalElements },
-                    } = result;
-
-                    const formattedResults = formatResult(result);
-                    setResult(formattedResults);
+                    const { content, totalElements } = result;
+                    handleFetchResultPage(content);
                     if (totalElements && content.length) {
                         setCount(totalElements);
                     }
@@ -128,7 +126,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         rowsPerPage,
         snackError,
         analysisType,
-        formatResult,
+        handleFetchResultPage,
         studyUuid,
         currentNode?.id,
         intl,

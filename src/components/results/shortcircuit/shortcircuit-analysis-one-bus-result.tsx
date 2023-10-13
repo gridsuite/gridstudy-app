@@ -7,37 +7,76 @@
 
 import {
     SCAFaultResult,
-    SCAOneBusResult,
+    SCAFeederResult,
     SCAResult,
     ShortCircuitAnalysisType,
 } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
+import { useCallback, useEffect, useState } from 'react';
+import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 export const ShortCircuitAnalysisOneBusResult = () => {
+    const { snackError } = useSnackMessage();
+
     const oneBusShortCircuitNotif = useSelector(
         (state: ReduxState) => state.oneBusShortCircuitNotif
     );
 
-    function formatResult(result: SCAResult) {
-        const {
-            page: { content },
-            faultResult,
-        } = result as SCAOneBusResult;
+    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const currentNode = useSelector(
+        (state: ReduxState) => state.currentTreeNode
+    );
+    const [faultResult, setFaultResult] = useState<SCAFaultResult>();
+    const [feederResults, setFeederResults] = useState<SCAFeederResult[]>([]);
+    const [result, setResult] = useState<SCAFaultResult[]>([]);
+
+    useEffect(() => {
+        fetchShortCircuitAnalysisResult({
+            studyUuid,
+            currentNodeUuid: currentNode?.id,
+            type: ShortCircuitAnalysisType.ONE_BUS,
+            mode: 'BASIC',
+        }).then((result: SCAResult) => {
+            if (result.faults.length !== 1) {
+                snackError({
+                    messageTxt:
+                        'We should have one and only one fault for one bus results',
+                });
+                return;
+            }
+            setFaultResult(result.faults[0]);
+        });
+    }, [snackError, studyUuid, currentNode]);
+
+    useEffect(() => {
+        if (!faultResult || !feederResults.length) {
+            setResult([]);
+            return;
+        }
         const faultWithPagedFeeders: SCAFaultResult[] = [
             {
                 ...faultResult,
-                feederResults: content,
+                feederResults,
             },
         ];
-        return faultWithPagedFeeders;
-    }
+        setResult(faultWithPagedFeeders);
+    }, [faultResult, feederResults]);
+
+    const handleFetchResultPage = useCallback(
+        (results: SCAFaultResult[] | SCAFeederResult[]) => {
+            setFeederResults(results as SCAFeederResult[]);
+        },
+        []
+    );
 
     return (
         <ShortCircuitAnalysisResult
             analysisType={ShortCircuitAnalysisType.ONE_BUS}
-            formatResult={formatResult}
+            result={result}
+            handleFetchResultPage={handleFetchResultPage}
             shortCircuitNotif={oneBusShortCircuitNotif}
         />
     );

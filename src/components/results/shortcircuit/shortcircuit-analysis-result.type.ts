@@ -55,16 +55,13 @@ type Pageable = {
     unpaged: boolean;
 };
 
-export type SCAResult = SCAAllBusesResult | SCAOneBusResult;
-
-export type SCAAllBusesResult = {
-    page: Page<SCAFaultResult>;
+export type SCAResult = {
+    resultUuid: string;
+    writeTimeStamp: any;
+    faults: SCAFaultResult[];
 };
 
-export type SCAOneBusResult = {
-    faultResult: SCAFaultResult;
-    page: Page<SCAFeederResult>;
-};
+export type SCAPagedResults = Page<SCAFaultResult> | Page<SCAFeederResult>;
 
 interface Page<ResultType> {
     content: ResultType[];

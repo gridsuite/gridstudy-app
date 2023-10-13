@@ -73,6 +73,32 @@ export function fetchOneBusShortCircuitAnalysisStatus(
 export function fetchShortCircuitAnalysisResult({
     studyUuid,
     currentNodeUuid,
+    type,
+    mode,
+}) {
+    const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
+
+    console.info(
+        `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+    );
+
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('mode', mode);
+    if (analysisType) {
+        urlSearchParams.append('type', analysisType);
+    }
+
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/result?' +
+        urlSearchParams.toString();
+    console.debug(url);
+    return backendFetchJson(url);
+}
+
+export function fetchShortCircuitAnalysisPagedResults({
+    studyUuid,
+    currentNodeUuid,
     selector = {},
     type = ShortCircuitAnalysisType.ALL_BUSES,
 }) {
