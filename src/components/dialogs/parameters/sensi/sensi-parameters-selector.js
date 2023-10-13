@@ -99,7 +99,6 @@ const SensiParametersSelector = () => {
                             value={index}
                             sx={{
                                 fontWeight: 'bold',
-                                minWidth: '50%',
                             }}
                         />
                     ))}
@@ -128,7 +127,6 @@ const SensiParametersSelector = () => {
                                             sx={{
                                                 fontWeight: 'bold',
                                                 textTransform: 'capitalize',
-                                                minWidth: '25%',
                                             }}
                                             label={
                                                 <FormattedMessage
