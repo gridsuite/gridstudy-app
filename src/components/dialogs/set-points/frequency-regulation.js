@@ -27,12 +27,14 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
     });
 
     const previousFrequencyRegulation = useMemo(() => {
-        if (previousValues?.activePowerControlOn) {
+        if (previousValues?.activePowerControl?.activePowerControlOn) {
             return intl.formatMessage({ id: 'On' });
         } else if (
-            previousValues?.activePowerControlOn === false ||
+            previousValues?.activePowerControl?.activePowerControlOn ===
+                false ||
             (previousValues &&
-                previousValues?.activePowerControlOn === undefined)
+                previousValues?.activePowerControl?.activePowerControlOn ===
+                    undefined)
         ) {
             return intl.formatMessage({ id: 'Off' });
         }
@@ -62,7 +64,9 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
             label={'Droop'}
             adornment={percentageTextField}
             previousValue={
-                !isNaN(previousValues?.droop) ? previousValues?.droop : null
+                !isNaN(previousValues?.activePowerControl?.droop)
+                    ? previousValues?.activePowerControl?.droop
+                    : null
             }
             clearable={true}
         />
