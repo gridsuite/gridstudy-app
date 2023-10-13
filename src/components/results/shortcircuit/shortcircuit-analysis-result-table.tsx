@@ -11,6 +11,7 @@ import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import {
     SCAResultFault,
+    SCAResultFaultFeederResult,
     ShortcircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import {
@@ -189,7 +190,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         (state: ReduxState) =>
             state.computingStatus[
                 analysisType === ShortcircuitAnalysisType.ALL_BUSES
-                    ? ComputingType.SHORTCIRCUIT_ANALYSIS
+                    ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
                     : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
             ]
     );
@@ -234,6 +235,18 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         [theme.selectedRow.background]
     );
 
+    const getCurrent = (
+        faultResult: SCAResultFault | SCAResultFaultFeederResult
+    ) => {
+        let current = NaN;
+        if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+            current = faultResult.current;
+        } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
+            current = faultResult.positiveMagnitude;
+        }
+        return current;
+    };
+
     const flattenResult = (shortCircuitAnalysisResult: SCAResultFault[]) => {
         const rows: ShortCircuitAnalysisAGGridResult[] = [];
 
@@ -251,7 +264,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 };
             }
 
-            const current = faultResult.current;
+            const current = getCurrent(faultResult);
+
             const deltaCurrentIpMax =
                 faultResult.shortCircuitLimits.deltaCurrentIpMax;
             const deltaCurrentIpMin =
@@ -288,12 +302,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             });
             const feederResults = faultResult.feederResults;
             feederResults.forEach((feederResult) => {
-                let current = NaN;
-                if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
-                    current = feederResult.current;
-                } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
-                    current = feederResult.positiveMagnitude;
-                }
+                const current = getCurrent(feederResult);
 
                 rows.push({
                     connectableId: feederResult.connectableId,

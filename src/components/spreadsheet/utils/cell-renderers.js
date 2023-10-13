@@ -138,6 +138,26 @@ export const PropertiesCellRenderer = (props) => {
     );
 };
 
+export const ContingencyCellRenderer = ({ value }) => {
+    const { cellValue, tooltipValue } = value ?? {};
+
+    if (cellValue == null || tooltipValue == null) {
+        return null;
+    }
+
+    return (
+        <Box sx={styles.tableCell}>
+            <Tooltip
+                title={
+                    <div style={{ whiteSpace: 'pre-line' }}>{tooltipValue}</div>
+                }
+            >
+                <Box sx={styles.overflow} children={cellValue} />
+            </Tooltip>
+        </Box>
+    );
+};
+
 export const EditableCellRenderer = (props) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const isRootNode = useMemo(
