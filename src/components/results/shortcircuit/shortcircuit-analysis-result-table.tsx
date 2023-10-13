@@ -11,9 +11,8 @@ import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
 import {
     SCAFaultResult,
+    SCAFeederResult,
     ShortCircuitAnalysisType,
-    SCAResultFaultFeederResult,
-    ShortcircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import {
     FilterChangedEvent,
@@ -33,7 +32,6 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { TextMatcherParams } from 'ag-grid-community/dist/lib/filter/provided/text/textFilter';
 import { AgGridReact } from 'ag-grid-react';
 
 interface ShortCircuitAnalysisResultProps {
@@ -229,13 +227,11 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         [theme.selectedRow.background]
     );
 
-    const getCurrent = (
-        faultResult: SCAFaultResult | SCAResultFaultFeederResult
-    ) => {
+    const getCurrent = (faultResult: SCAFaultResult | SCAFeederResult) => {
         let current = NaN;
-        if (analysisType === ShortcircuitAnalysisType.ALL_BUSES) {
+        if (analysisType === ShortCircuitAnalysisType.ALL_BUSES) {
             current = faultResult.current;
-        } else if (analysisType === ShortcircuitAnalysisType.ONE_BUS) {
+        } else if (analysisType === ShortCircuitAnalysisType.ONE_BUS) {
             current = faultResult.positiveMagnitude;
         }
         return current;
@@ -390,7 +386,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const message = getNoRowsMessage(
         messages,
         rows,
-        shortCircuitAnalysisStatus,
+        shortCircuitAnalysisStatus
     );
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 
