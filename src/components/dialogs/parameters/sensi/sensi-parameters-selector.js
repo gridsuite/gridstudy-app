@@ -97,6 +97,10 @@ const SensiParametersSelector = () => {
                             key={tab.label}
                             label={<FormattedMessage id={tab.label} />}
                             value={index}
+                            sx={{
+                                fontWeight: 'bold',
+                                minWidth: '50%',
+                            }}
                         />
                     ))}
                 </Tabs>
@@ -121,6 +125,11 @@ const SensiParametersSelector = () => {
                                         <Tab
                                             key={subTab.label}
                                             value={subIndex}
+                                            sx={{
+                                                fontWeight: 'bold',
+                                                textTransform: 'capitalize',
+                                                minWidth: '25%',
+                                            }}
                                             label={
                                                 <FormattedMessage
                                                     id={subTab.label}
