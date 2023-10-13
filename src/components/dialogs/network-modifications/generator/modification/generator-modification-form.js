@@ -144,7 +144,9 @@ const GeneratorModificationForm = ({
             name={TRANSIENT_REACTANCE}
             label={'TransientReactanceForm'}
             adornment={OhmAdornment}
-            previousValue={generatorToModify?.transientReactance}
+            previousValue={
+                generatorToModify?.generatorShortCircuit?.transientReactance
+            }
             clearable={true}
         />
     );
@@ -155,9 +157,13 @@ const GeneratorModificationForm = ({
             label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
             previousValue={
-                isNaN(generatorToModify?.stepUpTransformerReactance)
+                isNaN(
+                    generatorToModify?.generatorShortCircuit
+                        ?.stepUpTransformerReactance
+                )
                     ? null
-                    : generatorToModify?.stepUpTransformerReactance
+                    : generatorToModify?.generatorShortCircuit
+                          ?.stepUpTransformerReactance
             }
             clearable={true}
         />
@@ -168,7 +174,9 @@ const GeneratorModificationForm = ({
             name={PLANNED_ACTIVE_POWER_SET_POINT}
             label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
-            previousValue={generatorToModify?.plannedActivePowerSetPoint}
+            previousValue={
+                generatorToModify?.generatorStartup?.plannedActivePowerSetPoint
+            }
             clearable={true}
         />
     );
@@ -177,7 +185,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={MARGINAL_COST}
             label={'MarginalCost'}
-            previousValue={generatorToModify?.marginalCost}
+            previousValue={generatorToModify?.generatorStartup?.marginalCost}
             clearable={true}
         />
     );
@@ -186,7 +194,9 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={PLANNED_OUTAGE_RATE}
             label={'PlannedOutageRate'}
-            previousValue={generatorToModify?.plannedOutageRate}
+            previousValue={
+                generatorToModify?.generatorStartup?.plannedOutageRate
+            }
             clearable={true}
         />
     );
@@ -195,7 +205,9 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={FORCED_OUTAGE_RATE}
             label={'ForcedOutageRate'}
-            previousValue={generatorToModify?.forcedOutageRate}
+            previousValue={
+                generatorToModify?.generatorStartup?.forcedOutageRate
+            }
             clearable={true}
         />
     );

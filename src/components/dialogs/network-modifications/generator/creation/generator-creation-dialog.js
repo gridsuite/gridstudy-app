@@ -158,14 +158,18 @@ const GeneratorCreationDialog = ({
             [VOLTAGE_SET_POINT]: generator.targetV,
             [REACTIVE_POWER_SET_POINT]: generator.targetQ,
             [PLANNED_ACTIVE_POWER_SET_POINT]:
-                generator.plannedActivePowerSetPoint,
-            [MARGINAL_COST]: generator.marginalCost,
-            [PLANNED_OUTAGE_RATE]: generator.plannedOutageRate,
-            [FORCED_OUTAGE_RATE]: generator.forcedOutageRate,
-            [FREQUENCY_REGULATION]: generator.activePowerControlOn,
-            [DROOP]: generator.droop,
-            [TRANSIENT_REACTANCE]: generator.transientReactance,
-            [TRANSFORMER_REACTANCE]: generator.stepUpTransformerReactance,
+                generator.generatorStartup?.plannedActivePowerSetPoint,
+            [MARGINAL_COST]: generator.generatorStartup?.marginalCost,
+            [PLANNED_OUTAGE_RATE]:
+                generator.generatorStartup?.plannedOutageRate,
+            [FORCED_OUTAGE_RATE]: generator.generatorStartup?.forcedOutageRate,
+            [FREQUENCY_REGULATION]:
+                generator.activePowerControl?.activePowerControlOn,
+            [DROOP]: generator.activePowerControl?.droop,
+            [TRANSIENT_REACTANCE]:
+                generator.generatorShortCircuit?.transientReactance,
+            [TRANSFORMER_REACTANCE]:
+                generator.generatorShortCircuit?.stepUpTransformerReactance,
             [VOLTAGE_REGULATION_TYPE]:
                 generator?.regulatingTerminalId ||
                 generator?.regulatingTerminalConnectableId
