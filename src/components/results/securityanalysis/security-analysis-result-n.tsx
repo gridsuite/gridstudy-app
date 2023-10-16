@@ -13,8 +13,10 @@ import {
 import { IntlShape, useIntl } from 'react-intl';
 import { LimitViolation } from './security-analysis.type';
 import { SecurityAnalysisTable } from './security-analysis-table';
-import { computeLoading } from './security-analysis-result-utils';
-import { ValueFormatterParams } from 'ag-grid-community';
+import {
+    computeLoading,
+    securityAnalysisTableNColumnsDefinition,
+} from './security-analysis-result-utils';
 
 export const SecurityAnalysisResultN: FunctionComponent<
     SecurityAnalysisResultNProps
@@ -38,36 +40,7 @@ export const SecurityAnalysisResultN: FunctionComponent<
     });
 
     const columnDefs = useMemo(
-        () => [
-            {
-                headerName: intl.formatMessage({ id: 'Equipment' }),
-                field: 'subjectId',
-                filter: 'agTextColumnFilter',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'LimitType' }),
-                field: 'limitType',
-                filter: 'agTextColumnFilter',
-            },
-            {
-                headerName: intl.formatMessage({ id: 'Limit' }),
-                field: 'limit',
-                valueFormatter: (params: ValueFormatterParams) =>
-                    params.data?.limit?.toFixed(1),
-            },
-            {
-                headerName: intl.formatMessage({ id: 'Value' }),
-                field: 'value',
-                valueFormatter: (params: ValueFormatterParams) =>
-                    params.data?.value?.toFixed(1),
-            },
-            {
-                headerName: intl.formatMessage({ id: 'Loading' }),
-                field: 'loading',
-                valueFormatter: (params: ValueFormatterParams) =>
-                    params.data.loading?.toFixed(1),
-            },
-        ],
+        () => securityAnalysisTableNColumnsDefinition(intl),
         [intl]
     );
 

@@ -7,12 +7,12 @@
 
 import React from 'react';
 import {
-    subjectLimitViolations,
     ConstraintsFromContingencyItem,
+    ContingenciesFromConstraintItem,
     Contingency,
     LimitViolation,
     SecurityAnalysisNmkTableRow,
-    ContingenciesFromConstraintItem,
+    subjectLimitViolations,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
@@ -20,9 +20,9 @@ import {
     ICellRendererParams,
     PostSortRowsParams,
     ValueFormatterParams,
+    ValueGetterParams,
 } from 'ag-grid-community';
 import { ContingencyCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
-import { ValueGetterParams } from 'ag-grid-community';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -38,9 +38,9 @@ export const computeLoading = (
 ): number | undefined => {
     return (limitViolation.loading =
         limitViolation.limitType === 'CURRENT'
-            ? (100 * limitViolation?.value) /
-              (limitViolation?.limit *
-                  (limitViolation as LimitViolation)?.limitReduction)
+            ? (100 * limitViolation.value) /
+              (limitViolation.limit *
+                  (limitViolation as LimitViolation).limitReduction)
             : undefined);
 };
 
@@ -50,7 +50,7 @@ export const flattenNmKResultsContingencies = (
 ) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
 
-    result?.forEach(
+    result.forEach(
         ({
             subjectLimitViolations = [],
             elements = [],
@@ -102,7 +102,7 @@ export const flattenNmKResultsConstraints = (
         if (!rows.find((row) => row.subjectId === subjectId)) {
             if (contingencies.length) {
                 rows.push({ subjectId });
-                contingencies?.forEach((contingency: Contingency) => {
+                contingencies.forEach((contingency: Contingency) => {
                     rows.push({
                         contingencyId: contingency.contingencyId,
                         contingencyEquipmentsIds: contingency.elements?.map(
@@ -125,6 +125,39 @@ export const flattenNmKResultsConstraints = (
 
     return rows;
 };
+
+export const securityAnalysisTableNColumnsDefinition = (
+    intl: IntlShape
+): ColDef[] => [
+    {
+        headerName: intl.formatMessage({ id: 'Equipment' }),
+        field: 'subjectId',
+        filter: 'agTextColumnFilter',
+    },
+    {
+        headerName: intl.formatMessage({ id: 'LimitType' }),
+        field: 'limitType',
+        filter: 'agTextColumnFilter',
+    },
+    {
+        headerName: intl.formatMessage({ id: 'Limit' }),
+        field: 'limit',
+        valueFormatter: (params: ValueFormatterParams) =>
+            params.data?.limit?.toFixed(1),
+    },
+    {
+        headerName: intl.formatMessage({ id: 'Value' }),
+        field: 'value',
+        valueFormatter: (params: ValueFormatterParams) =>
+            params.data?.value?.toFixed(1),
+    },
+    {
+        headerName: intl.formatMessage({ id: 'Loading' }),
+        field: 'loading',
+        valueFormatter: (params: ValueFormatterParams) =>
+            params.data.loading?.toFixed(1),
+    },
+];
 
 export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
@@ -260,6 +293,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     ];
 };
 
+// TODO This needs to be modified when the sort is done on backend.
 export const handlePostSortRows = (params: PostSortRowsParams) => {
     const isFromContingency = !params.nodes.find(
         (node) => Object.keys(node.data).length === 1
@@ -304,3 +338,14 @@ export const handlePostSortRows = (params: PostSortRowsParams) => {
 
     return Object.assign(agGridRows, [...mappedRows.values()].flat());
 };
+
+export enum NMK_TYPE {
+    CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
+    CONTINGENCIES_FROM_CONSTRAINTS = 'contingencies-from-constraints',
+}
+
+export enum RESULT_TYPE {
+    N = 'N',
+    NMK_CONSTRAINTS = 'NMK_CONSTRAINTS',
+    NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
+}

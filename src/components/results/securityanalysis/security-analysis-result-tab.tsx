@@ -16,7 +16,6 @@ import { FormattedMessage } from 'react-intl';
 import { ReduxState } from '../../../redux/reducer.type';
 import { Box } from '@mui/system';
 import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
-import { NMK_TYPE, RESULT_TYPE } from './security-analysis-content';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
@@ -28,6 +27,7 @@ import {
     SecurityAnalysisResultType,
     SecurityAnalysisTabProps,
 } from './security-analysis.type';
+import { NMK_TYPE, RESULT_TYPE } from './security-analysis-result-utils';
 
 const styles = {
     container: {

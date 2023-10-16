@@ -80,14 +80,14 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const isAllBusesType = analysisType === ShortcircuitAnalysisType.ALL_BUSES;
 
     const handleChangePage = useCallback(
-        (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+        (_: any, newPage: number) => {
             setPage(newPage);
         },
         [setPage]
     );
 
     const handleChangeRowsPerPage = useCallback(
-        (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        (event: any) => {
             setRowsPerPage(parseInt(event.target.value, 10));
             setPage(0);
         },

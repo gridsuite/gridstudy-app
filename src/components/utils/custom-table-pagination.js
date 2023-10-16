@@ -6,23 +6,13 @@
  */
 
 import { useIntl } from 'react-intl';
+import PropTypes from 'prop-types';
 import { TablePagination } from '@mui/material';
-import { FunctionComponent } from 'react';
-import {
-    LabelDisplayedRowsArgs,
-    TablePaginationProps,
-} from '@mui/material/TablePagination/TablePagination';
 
-export const CustomTablePagination: FunctionComponent<TablePaginationProps> = (
-    props
-) => {
+const CustomTablePagination = (props) => {
     const intl = useIntl();
 
-    const customLabelDisplayedRows = ({
-        from,
-        to,
-        count,
-    }: LabelDisplayedRowsArgs): string => {
+    const customLabelDisplayedRows = ({ from, to, count }) => {
         return `${from}-${to} ${intl.formatMessage({
             id: 'muiTablePaginationOfLabel',
         })} ${count}`;
@@ -70,8 +60,20 @@ export const CustomTablePagination: FunctionComponent<TablePaginationProps> = (
                 }
             }}
             {...props}
-        />
+        >
+            {props.children}
+        </TablePagination>
     );
+};
+
+CustomTablePagination.propTypes = {
+    children: PropTypes.node,
+    rowsPerPageOptions: PropTypes.arrayOf(PropTypes.number),
+    count: PropTypes.number,
+    rowsPerPage: PropTypes.number,
+    page: PropTypes.number,
+    onPageChange: PropTypes.func,
+    onRowsPerPageChange: PropTypes.func,
 };
 
 export default CustomTablePagination;
