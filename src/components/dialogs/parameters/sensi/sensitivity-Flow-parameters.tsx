@@ -14,49 +14,43 @@ import {
     FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
 } from '../../../utils/field-constants';
 import { FormattedMessage } from 'react-intl';
-import { styles } from '../parameters';
 import { FloatInput } from '@gridsuite/commons-ui';
 
-interface IFlowInputParameters {
-    formattedMessageId: string;
-    name: string;
-}
-
 const SensitivityAnalysisFields: FunctionComponent = () => {
-    const flowInputParameters: IFlowInputParameters[] = [
-        {
-            formattedMessageId: 'flowFlowSensitivityValueThreshold',
-            name: FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD,
-        },
-        {
-            formattedMessageId: 'angleFlowSensitivityValueThreshold',
-            name: ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD,
-        },
-        {
-            formattedMessageId: 'flowVoltageSensitivityValueThreshold',
-            name: FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
-        },
-    ];
-    const renderInput = (key: number, input: IFlowInputParameters) => {
-        return (
-            <React.Fragment key={key}>
-                <Grid item xs={8} alignItems="center" sx={styles.parameterName}>
-                    <FormattedMessage id={input.formattedMessageId} />
-                </Grid>
-                <Grid item xs={4} sx={styles.controlItem} alignItems="center">
+    return (
+        <Grid container>
+            <Grid
+                item
+                sx={{
+                    fontWeight: 'bold',
+                    marginBottom: '10px',
+                }}
+            >
+                <FormattedMessage id={'flowSensitivityValue'} />
+            </Grid>
+            <Grid container spacing={1}>
+                <Grid item xs={4}>
                     <FloatInput
-                        name={input.name}
-                        label=""
+                        name={FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD}
+                        label="flowFlowSensitivityValueThreshold"
                         formProps={{ margin: '1' }}
                     />
                 </Grid>
-            </React.Fragment>
-        );
-    };
-
-    return (
-        <Grid container spacing={1}>
-            {flowInputParameters.map((input, key) => renderInput(key, input))}
+                <Grid item xs={4}>
+                    <FloatInput
+                        name={ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD}
+                        label="angleFlowSensitivityValueThreshold"
+                        formProps={{ margin: '1' }}
+                    />
+                </Grid>
+                <Grid item xs={4}>
+                    <FloatInput
+                        name={FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD}
+                        label="flowVoltageSensitivityValueThreshold"
+                        formProps={{ margin: '1' }}
+                    />
+                </Grid>
+            </Grid>
         </Grid>
     );
 };
