@@ -50,7 +50,7 @@ export const flattenNmKResultsContingencies = (
 ) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
 
-    result.forEach(
+    result?.forEach(
         ({
             subjectLimitViolations = [],
             elements = [],
