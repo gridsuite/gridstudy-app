@@ -94,10 +94,18 @@ export default function ReportViewer({
     const getFetchPromise = useCallback(
         (nodeId, severityList) => {
             if (allReports.current[nodeId].isModificationNode()) {
+                let nodeFilter;
+                if (allReports.current[nodeId].getTitle() !== 'Root') {
+                    // TODO today , filter is a "startsWith" the nodeId
+                    // Tommorrow it will be exact matching with nodeId@NetworkModification or @LoadFlow etc
+                    nodeFilter = allReports.current[nodeId].getKey();
+                }
                 return nodeElementsPromise(
                     studyId,
-                    allReports.current[nodeId].getKey(),
-                    severityList
+                    allReports.current[nodeId].getKey(), // modif nodeId
+                    allReports.current[nodeId].getNodeReportId(),
+                    severityList,
+                    nodeFilter
                 );
             } else if (allReports.current[nodeId].isGlobalLog()) {
                 return allLogsElementsPromise(
@@ -125,6 +133,13 @@ export default function ReportViewer({
 
     const refreshNode = useCallback(
         (nodeId, severityFilter) => {
+            if (
+                allReports.current[nodeId].isModificationNode() &&
+                !allReports.current[nodeId].getNodeReportId()
+            ) {
+                return;
+            }
+
             let severityList = [];
             for (const [severity, selected] of Object.entries(severityFilter)) {
                 if (selected) {

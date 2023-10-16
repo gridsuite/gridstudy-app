@@ -75,29 +75,67 @@ export function fetchNodeReportTree(studyUuid, nodeUuid, nodeOnlyReport) {
     return backendFetchJson(url);
 }
 
-export function fetchNodeReportElements(
+export function fetchAllNodesReportElements(
     studyUuid,
     nodeUuid,
-    nodeOnlyReport,
     severityFilterList
 ) {
     console.info(
-        'get report elements for node : ' +
+        'get report elements for node and all its parents : ' +
             nodeUuid +
-            ' with nodeOnlyReport = ' +
-            nodeOnlyReport +
             ' in study ' +
             studyUuid
     );
 
     let url =
-        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
-        '/report/elements?nodeOnlyReport=' +
-        (nodeOnlyReport ? 'true' : 'false');
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/reports/elements';
     if (severityFilterList?.length) {
         url +=
-            '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
+            '?' + getRequestParamFromList(severityFilterList, 'severityLevels');
     }
+    return backendFetchJson(url);
+}
+
+export function fetchSingleNodeReportElements(
+    studyUuid,
+    nodeUuid,
+    reportUuid,
+    severityFilterList,
+    nodeFilter
+) {
+    console.info(
+        'get report elements for single node : ' +
+            nodeUuid +
+            ' in study ' +
+            studyUuid +
+            ' with filter ' +
+            nodeFilter
+    );
+
+    let url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/reports/' +
+        reportUuid +
+        '/elements';
+
+    // Add 2 optional params
+    let urlParams = '';
+    if (severityFilterList?.length) {
+        urlParams = getRequestParamFromList(
+            severityFilterList,
+            'severityLevels'
+        );
+    }
+    if (nodeFilter) {
+        if (urlParams !== '') {
+            urlParams += '&';
+        }
+        urlParams += 'filter=' + nodeFilter;
+    }
+    if (urlParams !== '') {
+        url += '?' + urlParams;
+    }
+
     return backendFetchJson(url);
 }
 

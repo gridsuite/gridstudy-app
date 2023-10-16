@@ -11,14 +11,22 @@ import { v4 as uuid4 } from 'uuid';
 
 export default class LogReport {
     constructor(jsonReporter, parentReportId) {
+        this.reportId = undefined;
         if (jsonReporter?.taskValues?.id?.type === 'ID') {
+            // Reporter case
+            // we store the reporterId for direct access to its logs
             this.id = jsonReporter.taskValues.id.value;
-            this.noReporterId = false;
             this.isGlobal = false;
+            this.isNode = false;
         } else {
+            // Node (or global all-nodes) case
             this.id = uuid4();
-            this.noReporterId = true;
             this.isGlobal = jsonReporter?.taskValues?.globalReport?.value;
+            this.isNode = !this.isGlobal;
+            if (this.isNode) {
+                // For each Modification Node, we should get the reportId (if some logs are present)
+                this.reportId = jsonReporter?.taskValues?.reportId?.value;
+            }
         }
         this.key = jsonReporter.taskKey;
         this.title = LogReportItem.resolveTemplateMessage(
@@ -41,7 +49,11 @@ export default class LogReport {
     }
 
     isModificationNode() {
-        return this.noReporterId && !this.isGlobalLog();
+        return this.isNode;
+    }
+
+    getNodeReportId() {
+        return this.isModificationNode() ? this.reportId : undefined;
     }
 
     getTitle() {

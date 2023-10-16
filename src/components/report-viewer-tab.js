@@ -17,9 +17,10 @@ import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import {
-    fetchNodeReportElements,
+    fetchAllNodesReportElements,
     fetchNodeReportTree,
     fetchReporterElements,
+    fetchSingleNodeReportElements,
 } from '../services/study';
 import { Box } from '@mui/system';
 
@@ -172,12 +173,19 @@ export const ReportViewerTab = ({
         oneBusShortCircuitNotif,
     ]);
 
-    const nodeElementsPromise = (studyId, studyNodeId, severityFilterList) => {
-        return fetchNodeReportElements(
+    const nodeElementsPromise = (
+        studyId,
+        studyNodeId,
+        reportId,
+        severityFilterList,
+        nodeFilter
+    ) => {
+        return fetchSingleNodeReportElements(
             studyId,
             studyNodeId,
-            true,
-            severityFilterList
+            reportId,
+            severityFilterList,
+            nodeFilter
         );
     };
 
@@ -186,10 +194,9 @@ export const ReportViewerTab = ({
         studyNodeId,
         severityFilterList
     ) => {
-        return fetchNodeReportElements(
+        return fetchAllNodesReportElements(
             studyId,
             studyNodeId,
-            nodeOnlyReport,
             severityFilterList
         );
     };
