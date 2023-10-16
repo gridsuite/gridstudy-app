@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import {
     Button,
     Dialog,
@@ -12,19 +13,20 @@ import {
     DialogTitle,
     Grid,
     Typography,
+    useTheme,
 } from '@mui/material';
 import React, { useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useStyles } from '../../../parameters';
+import { styles } from '../../../parameters';
 import CurveSelector from './curve-selector';
 import CurvePreview from './curve-preview';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
-import { useTheme } from '@mui/styles';
+import { mergeSx } from '../../../../../utils/functions';
+
 const CurveSelectorDialog = ({ open, onClose, onSave }) => {
-    const classes = useStyles();
     const theme = useTheme();
 
     const selectorRef = useRef();
@@ -78,16 +80,18 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
             fullWidth={true}
         >
             <DialogTitle id="curve-selector-dialog-title">
-                <Typography
-                    component="span"
-                    variant="h5"
-                    className={classes.title}
-                >
+                <Typography component="span" variant="h5" sx={styles.title}>
                     <FormattedMessage id="DynamicSimulationCurveSelectorDialogTitle" />
                 </Typography>
             </DialogTitle>
             <DialogContent style={{ overflowY: 'hidden', height: '60vh' }}>
-                <Grid container maxWidth={'xl'} sx={{ height: '100%' }}>
+                <Grid
+                    container
+                    sx={mergeSx(styles.scrollableGrid, {
+                        maxWidth: 'xl',
+                        height: '100%',
+                    })}
+                >
                     <Grid item container xs={8} spacing={theme.spacing(1)}>
                         <CurveSelector ref={selectorRef} />
                     </Grid>

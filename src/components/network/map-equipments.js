@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 import { mapEquipmentsCreated } from '../../redux/actions';
 import {
-    fetchMapHvdcLines,
-    fetchMapLines,
-    fetchMapSubstations,
-} from '../../utils/rest-api';
+    fetchHvdcLinesMapInfos,
+    fetchLinesMapInfos,
+    fetchSubstationsMapInfos,
+} from '../../services/study/network';
 import { MapEquipmentsBase } from '@powsybl/network-map-viewer';
-import { MAX_NUMBER_OF_IMPACTED_SUBSTATIONS } from './constants';
 
 export default class MapEquipments extends MapEquipmentsBase {
     initEquipments(studyUuid, currentNodeUuid) {
-        fetchMapSubstations(studyUuid, currentNodeUuid, undefined, false)
+        fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.dispatch(
                     mapEquipmentsCreated(this, undefined, val, undefined)
@@ -25,14 +25,13 @@ export default class MapEquipments extends MapEquipmentsBase {
             .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
-                    this.errHandler(
-                        this.intlRef.current.formatMessage({
-                            id: 'MapEquipmentsLoadError',
-                        })
-                    );
+                    this.errHandler({
+                        messageTxt: error.message,
+                        headerId: 'MapEquipmentsLoadError',
+                    });
                 }
             });
-        fetchMapLines(studyUuid, currentNodeUuid, undefined, false)
+        fetchLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.dispatch(
                     mapEquipmentsCreated(this, val, undefined, undefined)
@@ -41,14 +40,13 @@ export default class MapEquipments extends MapEquipmentsBase {
             .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
-                    this.errHandler(
-                        this.intlRef.current.formatMessage({
-                            id: 'MapEquipmentsLoadError',
-                        })
-                    );
+                    this.errHandler({
+                        messageTxt: error.message,
+                        headerId: 'MapEquipmentsLoadError',
+                    });
                 }
             });
-        fetchMapHvdcLines(studyUuid, currentNodeUuid, undefined, false)
+        fetchHvdcLinesMapInfos(studyUuid, currentNodeUuid, undefined, false)
             .then((val) => {
                 this.dispatch(
                     mapEquipmentsCreated(this, undefined, undefined, val)
@@ -57,11 +55,10 @@ export default class MapEquipments extends MapEquipmentsBase {
             .catch((error) => {
                 console.error(error.message);
                 if (this.errHandler) {
-                    this.errHandler(
-                        this.intlRef.current.formatMessage({
-                            id: 'MapEquipmentsLoadError',
-                        })
-                    );
+                    this.errHandler({
+                        messageTxt: error.message,
+                        headerId: 'MapEquipmentsLoadError',
+                    });
                 }
             });
     }
@@ -85,29 +82,31 @@ export default class MapEquipments extends MapEquipmentsBase {
                 ? undefined
                 : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
 
-        const updatedSubstations = fetchMapSubstations(
+        const updatedSubstations = fetchSubstationsMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch
+            substationsIdsToFetch,
+            true
         );
-        const updatedLines = fetchMapLines(
+        const updatedLines = fetchLinesMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch
+            substationsIdsToFetch,
+            true
         );
-        const updatedHvdcLines = fetchMapHvdcLines(
+        const updatedHvdcLines = fetchHvdcLinesMapInfos(
             studyUuid,
             currentNode?.id,
-            substationsIdsToFetch
+            substationsIdsToFetch,
+            true
         );
         updatedSubstations.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
-                this.errHandler(
-                    this.intlRef.current.formatMessage({
-                        id: 'MapEquipmentsLoadError',
-                    })
-                );
+                this.errHandler({
+                    messageTxt: error.message,
+                    headerId: 'MapEquipmentsLoadError',
+                });
             }
         });
         updatedLines.catch((error) => {
@@ -123,11 +122,10 @@ export default class MapEquipments extends MapEquipmentsBase {
         updatedHvdcLines.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
-                this.errHandler(
-                    this.intlRef.current.formatMessage({
-                        id: 'MapEquipmentsLoadError',
-                    })
-                );
+                this.errHandler({
+                    messageTxt: error.message,
+                    headerId: 'MapEquipmentsLoadError',
+                });
             }
         });
         return [updatedSubstations, updatedLines, updatedHvdcLines];

@@ -45,6 +45,9 @@ const BorderedTreeItem = styled(TreeItem)(({ theme, root }) => {
             paddingLeft: 18,
             borderLeft: border,
         },
+        [`& .${treeItemClasses.label}`]: {
+            whiteSpace: 'nowrap',
+        },
     };
 });
 

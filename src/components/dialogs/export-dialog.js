@@ -18,16 +18,19 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
-import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
 import IconButton from '@mui/material/IconButton';
-import { useImportExportParams } from '@gridsuite/commons-ui';
+import { FlatParameters } from '@gridsuite/commons-ui';
+import { getAvailableExportFormats } from '../../services/study';
+import { getExportUrl } from '../../services/study/network';
+
+const STRING_LIST = 'STRING_LIST';
 
 /**
  * Dialog to export the network case
@@ -57,6 +60,20 @@ const ExportDialog = ({
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
+                // we check if the param is for extension, if it is, we select all possible values by default.
+                // the only way for the moment to check if the param is for extension, is by checking his type is name.
+                //TODO to be removed when extensions param default value corrected in backend to include all possible values
+                Object.values(formats).forEach((f) => {
+                    f.parameters = f.parameters.map((parameter) => {
+                        if (
+                            parameter.type === STRING_LIST &&
+                            parameter.name?.endsWith('extensions')
+                        ) {
+                            parameter.defaultValue = parameter.possibleValues;
+                        }
+                        return parameter;
+                    });
+                });
                 setFormatsWithParameters(formats);
             });
         }
@@ -68,13 +85,17 @@ const ExportDialog = ({
 
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
     const metasAsArray = formatWithParameter?.parameters || [];
-    const [currentParameters, paramsComponent] = useImportExportParams(
-        metasAsArray,
-        null,
-        null,
-        'standard'
-    );
-
+    const [currentParameters, setCurrentParameters] = useState({});
+    const onChange = useCallback((paramName, value, isEdit) => {
+        if (!isEdit) {
+            setCurrentParameters((prevCurrentParameters) => {
+                return {
+                    ...prevCurrentParameters,
+                    ...{ [paramName]: value },
+                };
+            });
+        }
+    }, []);
     const handleExportClick = () => {
         if (selectedFormat) {
             const downloadUrl = getExportUrl(
@@ -101,6 +122,7 @@ const ExportDialog = ({
     };
 
     const handleClose = () => {
+        setCurrentParameters({});
         setExportStudyErr('');
         setSelectedFormat('');
         setLoading(false);
@@ -165,7 +187,7 @@ const ExportDialog = ({
                             }
                             style={{ fontWeight: 'bold' }}
                         >
-                            Parameters
+                            <FormattedMessage id="parameters" />
                         </Typography>
                         <IconButton
                             onClick={handleFoldChange}
@@ -177,7 +199,17 @@ const ExportDialog = ({
                 </FormControl>
             </DialogTitle>
             <DialogContent>
-                <Collapse in={unfolded}>{paramsComponent}</Collapse>
+                <Collapse in={unfolded}>
+                    <FlatParameters
+                        paramsAsArray={metasAsArray}
+                        initValues={currentParameters}
+                        onChange={onChange}
+                        variant="standard"
+                        selectionWithDialog={(param) =>
+                            param?.possibleValues?.length > 10
+                        }
+                    />
+                </Collapse>
                 {exportStudyErr !== '' && (
                     <Alert severity="error">{exportStudyErr}</Alert>
                 )}

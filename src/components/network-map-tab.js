@@ -5,23 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NetworkMap, GeoData } from '@powsybl/network-map-viewer';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import {
-    deleteEquipment,
-    fetchLinePositions,
-    fetchSubstationPositions,
-    fetchMapBoxToken,
-} from '../utils/rest-api';
-import { equipments } from './network/network-equipments';
+import { NetworkMap, GeoData } from '@powsybl/network-map-viewer';
 import withBranchMenu from './menus/branch-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
-import makeStyles from '@mui/styles/makeStyles';
-import { RunButtonContainer } from './run-button-container';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     PARAM_MAP_MANUAL_REFRESH,
@@ -30,41 +21,45 @@ import {
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     isNodeBuilt,
-    isNodeReadOnly,
     isNodeRenamed,
     isSameNodeAndBuilt,
 } from './graph/util/model-functions';
-import { resetMapReloaded } from '../redux/actions';
+import { resetMapReloaded, setMapDataLoading } from '../redux/actions';
 import MapEquipments from './network/map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
 import { UPDATE_TYPE_HEADER } from './study-container';
+import SubstationModificationDialog from './dialogs/network-modifications/substation/modification/substation-modification-dialog';
+import VoltageLevelModificationDialog from './dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
+import LineModificationDialog from './dialogs/network-modifications/line/modification/line-modification-dialog';
+import { deleteEquipment } from '../services/study/network-modifications';
+import EquipmentDeletionDialog from './dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import {
+    fetchLinePositions,
+    fetchSubstationPositions,
+} from '../services/study/geo-data';
+import { fetchMapBoxToken } from '../services/utils';
+import { Box } from '@mui/system';
+import EquipmentPopover from './tooltips/equipment-popover';
 
 const INITIAL_POSITION = [0, 0];
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     divNominalVoltageFilter: {
         position: 'absolute',
-        right: 10,
-        bottom: 30,
+        right: '10px',
+        bottom: '30px',
         zIndex: 0,
         '&:hover': {
             zIndex: 1,
         },
-    },
-    divRunButton: {
-        position: 'absolute',
-        right: 100,
-        bottom: 30,
-        marginLeft: 8,
-        marginRight: 8,
-        marginTop: 8,
     },
     divTemporaryGeoDataLoading: {
         position: 'absolute',
         width: '100%',
         zIndex: 1,
     },
-}));
+};
 
 const NODE_CHANGED_ERROR =
     'Node has changed or is not built anymore. The Promise is rejected.';
@@ -73,13 +68,7 @@ export const NetworkMapTab = ({
     studyUuid,
     currentNode,
     /* results*/
-    securityAnalysisStatus,
-    runnable,
     loadFlowStatus,
-    sensiStatus,
-    shortCircuitStatus,
-    dynamicSimulationStatus,
-    voltageInitStatus,
     /* visual*/
     visible,
     lineFullPath,
@@ -89,17 +78,17 @@ export const NetworkMapTab = ({
     lineFlowAlertThreshold,
     /* callbacks */
     openVoltageLevel,
-    setIsComputationRunning,
     showInSpreadsheet,
     setErrorMessage,
 }) => {
     const mapEquipments = useSelector((state) => state.mapEquipments);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const mapDataLoading = useSelector((state) => state.mapDataLoading);
+
     const dispatch = useDispatch();
 
     const intlRef = useIntlRef();
     const [isInitialized, setInitialized] = useState(false);
-    const [waitingLoadData, setWaitingLoadData] = useState(true);
 
     const { snackError } = useSnackMessage();
 
@@ -154,21 +143,104 @@ export const NetworkMapTab = ({
     ] = useState(null);
 
     const [position, setPosition] = useState([-1, -1]);
-
-    const classes = useStyles();
     const currentNodeRef = useRef(null);
-
     const [updatedLines, setUpdatedLines] = useState([]);
     const [updatedHvdcLines, setUpdatedHvdcLines] = useState([]);
+    const [equipmentToModify, setEquipmentToModify] = useState();
+    const [modificationDialogOpen, setModificationDialogOpen] = useState(false);
+    const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
+
+    const closeModificationDialog = () => {
+        setEquipmentToModify();
+        setModificationDialogOpen(false);
+        setDeletionDialogOpen(false);
+    };
+
+    function renderModificationDialog() {
+        switch (equipmentToModify.equipmentType) {
+            case EQUIPMENT_TYPES.SUBSTATION:
+                return (
+                    <SubstationModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        isUpdate={true}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        onClose={() => closeModificationDialog()}
+                    />
+                );
+            case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+                return (
+                    <VoltageLevelModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        isUpdate={true}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        onClose={() => closeModificationDialog()}
+                    />
+                );
+            case EQUIPMENT_TYPES.LINE:
+                return (
+                    <LineModificationDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        isUpdate={true}
+                        onClose={() => closeModificationDialog()}
+                    />
+                );
+            default:
+                break;
+        }
+    }
+
+    function renderDeletionDialog() {
+        switch (equipmentToModify.equipmentType) {
+            case EQUIPMENT_TYPES.HVDC_LINE:
+                return (
+                    <EquipmentDeletionDialog
+                        open={true}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultIdValue={equipmentToModify.equipmentId}
+                        isUpdate={true}
+                        onClose={() => closeModificationDialog()}
+                    />
+                );
+            default:
+                break;
+        }
+    }
+
+    const handleOpenModificationDialog = useCallback(
+        (equipmentId, equipmentType) => {
+            setEquipmentToModify({ equipmentId, equipmentType });
+            setModificationDialogOpen(true);
+            closeEquipmentMenu();
+        },
+        []
+    );
+
+    const handleOpenDeletionDialog = useCallback(
+        (equipmentId, equipmentType) => {
+            setEquipmentToModify({ equipmentId, equipmentType });
+            setDeletionDialogOpen(true);
+            closeEquipmentMenu();
+        },
+        []
+    );
 
     function withEquipment(Menu, props) {
         return (
             <Menu
-                id={equipmentMenu.equipment.id}
+                equipment={equipmentMenu.equipment}
                 position={equipmentMenu.position}
                 handleClose={closeEquipmentMenu}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
                 handleDeleteEquipment={handleDeleteEquipment}
+                handleOpenModificationDialog={handleOpenModificationDialog}
                 {...props}
             />
         );
@@ -179,13 +251,19 @@ export const NetworkMapTab = ({
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
         'substation-menus',
-        equipments.substations
+        EQUIPMENT_TYPES.SUBSTATION
     );
 
     const MenuVoltageLevel = withEquipmentMenu(
         BaseEquipmentMenu,
         'voltage-level-menus',
-        equipments.voltageLevels
+        EQUIPMENT_TYPES.VOLTAGE_LEVEL
+    );
+
+    const MenuHvdcLine = withEquipmentMenu(
+        BaseEquipmentMenu,
+        'hvdc-line-menus',
+        EQUIPMENT_TYPES.HVDC_LINE
     );
 
     function showEquipmentMenu(equipment, x, y, type) {
@@ -213,21 +291,39 @@ export const NetworkMapTab = ({
 
     const handleDeleteEquipment = useCallback(
         (equipmentType, equipmentId) => {
-            deleteEquipment(
-                studyUuid,
-                currentNode?.id,
-                equipmentType,
-                equipmentId,
-                undefined
-            ).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'UnableToDeleteEquipment',
+            if (
+                equipmentType === EQUIPMENT_TYPES.HVDC_LINE &&
+                mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType ===
+                    'LCC'
+            ) {
+                // only hvdc line with LCC requires a Dialog (to select MCS)
+                handleOpenDeletionDialog(
+                    equipmentId,
+                    EQUIPMENT_TYPES.HVDC_LINE
+                );
+            } else {
+                deleteEquipment(
+                    studyUuid,
+                    currentNode?.id,
+                    equipmentType,
+                    equipmentId,
+                    undefined
+                ).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'UnableToDeleteEquipment',
+                    });
                 });
-            });
-            closeEquipmentMenu();
+                closeEquipmentMenu();
+            }
         },
-        [studyUuid, currentNode?.id, snackError]
+        [
+            studyUuid,
+            currentNode?.id,
+            snackError,
+            handleOpenDeletionDialog,
+            mapEquipments?.hvdcLinesById,
+        ]
     );
 
     function closeChoiceVoltageLevelMenu() {
@@ -240,7 +336,7 @@ export const NetworkMapTab = ({
     }
 
     const voltageLevelMenuClick = (equipment, x, y) => {
-        showEquipmentMenu(equipment, x, y, equipments.voltageLevels);
+        showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
     };
 
     const chooseVoltageLevelForSubstation = useCallback(
@@ -253,15 +349,13 @@ export const NetworkMapTab = ({
 
     const getEquipmentsNotFoundIds = useCallback(
         (foundEquipmentPositions, allEquipments) => {
-            const notFoundEquipmentsIds = allEquipments
+            return allEquipments
                 .filter(
                     (s) =>
                         !foundEquipmentPositions.has(s.id) ||
                         temporaryGeoDataIdsRef.current.has(s.id)
                 )
                 .map((s) => s.id);
-
-            return notFoundEquipmentsIds;
         },
         []
     );
@@ -407,8 +501,7 @@ export const NetworkMapTab = ({
             console.info(
                 `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLineIds}'...`
             );
-            setWaitingLoadData(true);
-
+            dispatch(setMapDataLoading(true));
             const missingSubstationPositions = getMissingEquipmentsPositions(
                 notFoundSubstationIds,
                 fetchSubstationPositions
@@ -473,19 +566,19 @@ export const NetworkMapTab = ({
                     if (!checkNodeConsistency(nodeBeforeFetch)) {
                         return;
                     }
-                    setErrorMessage(
-                        intlRef.current.formatMessage(
-                            { id: 'geoDataLoadingFail' },
-                            { studyUuid: studyUuid }
-                        )
-                    );
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'geoDataLoadingFail',
+                    });
                 })
-                .finally(() => setWaitingLoadData(false));
+                .finally(() => {
+                    dispatch(setMapDataLoading(false));
+                });
         }
     }, [
-        intlRef,
+        dispatch,
         lineFullPath,
-        setErrorMessage,
+        snackError,
         studyUuid,
         getEquipmentsNotFoundIds,
         getMissingEquipmentsPositions,
@@ -497,7 +590,7 @@ export const NetworkMapTab = ({
 
     const loadAllGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
-        setWaitingLoadData(true);
+        dispatch(setMapDataLoading(true));
         const nodeBeforeFetch = currentNodeRef.current;
 
         const substationPositionsDone = fetchSubstationPositions(
@@ -549,15 +642,15 @@ export const NetworkMapTab = ({
                 if (!checkNodeConsistency(nodeBeforeFetch)) {
                     return;
                 }
-                setErrorMessage(
-                    intlRef.current.formatMessage(
-                        { id: 'geoDataLoadingFail' },
-                        { studyUuid: studyUuid }
-                    )
-                );
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'geoDataLoadingFail',
+                });
             })
-            .finally(() => setWaitingLoadData(false));
-    }, [intlRef, lineFullPath, setErrorMessage, studyUuid]);
+            .finally(() => {
+                dispatch(setMapDataLoading(false));
+            });
+    }, [lineFullPath, studyUuid, dispatch, snackError]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
@@ -581,12 +674,12 @@ export const NetworkMapTab = ({
         new MapEquipments(
             studyUuid,
             currentNode?.id,
-            setErrorMessage,
+            snackError,
             dispatch,
             intlRef
         );
         dispatch(resetMapReloaded());
-    }, [currentNode, dispatch, intlRef, setErrorMessage, studyUuid]);
+    }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
 
     const updateMapEquipments = useCallback(
         (currentNodeAtReloadCalling) => {
@@ -594,7 +687,7 @@ export const NetworkMapTab = ({
                 return Promise.reject();
             }
             console.info('Update map equipments');
-            setWaitingLoadData(true);
+            dispatch(setMapDataLoading(true));
             const updatedSubstationsToSend =
                 !refIsMapManualRefreshEnabled.current &&
                 !isUpdatedSubstationsApplied &&
@@ -607,7 +700,7 @@ export const NetworkMapTab = ({
             }
 
             dispatch(resetMapReloaded());
-            const isFullReload = updatedSubstationsToSend ? false : true;
+            const isFullReload = !updatedSubstationsToSend;
             const [updatedSubstations, updatedLines, updatedHvdcLines] =
                 mapEquipments.reloadImpactedSubstationsEquipments(
                     studyUuid,
@@ -651,7 +744,7 @@ export const NetworkMapTab = ({
                 updatedLines,
                 updatedHvdcLines,
             ]).finally(() => {
-                setWaitingLoadData(false);
+                dispatch(setMapDataLoading(false));
             });
         },
         [
@@ -677,7 +770,7 @@ export const NetworkMapTab = ({
         if (isInitialized && studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'loadflow'
+                'loadflowResult'
             ) {
                 updateMapEquipments(currentNodeRef.current);
             }
@@ -782,17 +875,18 @@ export const NetworkMapTab = ({
         }
         return (
             <>
-                {(equipmentMenu.equipmentType === equipments.lines ||
-                    equipmentMenu.equipmentType === equipments.hvdcLines) &&
+                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE &&
                     withEquipment(MenuBranch, {
                         currentNode,
                         studyUuid,
                         equipmentType: equipmentMenu.equipmentType,
                     })}
-
-                {equipmentMenu.equipmentType === equipments.substations &&
+                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.HVDC_LINE &&
+                    withEquipment(MenuHvdcLine)}
+                {equipmentMenu.equipmentType === EQUIPMENT_TYPES.SUBSTATION &&
                     withEquipment(MenuSubstation)}
-                {equipmentMenu.equipmentType === equipments.voltageLevels &&
+                {equipmentMenu.equipmentType ===
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL &&
                     withEquipment(MenuVoltageLevel)}
             </>
         );
@@ -818,6 +912,18 @@ export const NetworkMapTab = ({
         fetchMapBoxToken().then((token) => setMapBoxToken(token || null));
     }, []);
 
+    function renderEquipmentPopover(sId, eId, eType, lfStatus, aEl) {
+        return (
+            <EquipmentPopover
+                studyUuid={sId}
+                anchorEl={aEl}
+                equipmentId={eId}
+                equipmentType={eType}
+                loadFlowStatus={lfStatus}
+            />
+        );
+    }
+
     const renderMap = () => (
         <NetworkMap
             mapEquipments={mapEquipments}
@@ -826,7 +932,7 @@ export const NetworkMapTab = ({
                 ...(updatedHvdcLines ?? []),
             ]}
             geoData={geoData}
-            displayOverlayLoader={!basicDataReady && waitingLoadData}
+            displayOverlayLoader={!basicDataReady && mapDataLoading}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={9}
             arrowsZoomThreshold={7}
@@ -840,17 +946,17 @@ export const NetworkMapTab = ({
             loadFlowStatus={loadFlowStatus}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.lines)
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE)
             }
             onHvdcLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.hvdcLines)
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.HVDC_LINE)
             }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.substations)
+                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.SUBSTATION)
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             disabled={disabled}
@@ -861,47 +967,42 @@ export const NetworkMapTab = ({
             currentNodeBuilt={currentNodeBuilt}
             useName={useName}
             mapBoxToken={mapBoxToken}
+            renderPopover={(eId, aEl) =>
+                renderEquipmentPopover(
+                    studyUuid,
+                    eId,
+                    EQUIPMENT_TYPES.LINE,
+                    loadFlowStatus,
+                    aEl
+                )
+            }
         />
     );
 
     function renderNominalVoltageFilter() {
         return (
-            <div className={classes.divNominalVoltageFilter}>
+            <Box sx={styles.divNominalVoltageFilter}>
                 <NominalVoltageFilter
                     nominalVoltages={mapEquipments.getNominalVoltages()}
                     filteredNominalVoltages={filteredNominalVoltages}
                     onChange={setFilteredNominalVoltages}
                 />
-            </div>
+            </Box>
         );
     }
 
     return (
         <>
-            <div className={classes.divTemporaryGeoDataLoading}>
-                {basicDataReady && waitingLoadData && <LinearProgress />}
-            </div>
+            <Box sx={styles.divTemporaryGeoDataLoading}>
+                {basicDataReady && mapDataLoading && <LinearProgress />}
+            </Box>
             {renderMap()}
             {renderEquipmentMenu()}
+            {modificationDialogOpen && renderModificationDialog()}
+            {deletionDialogOpen && renderDeletionDialog()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
-
-            <div className={classes.divRunButton}>
-                <RunButtonContainer
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    loadFlowStatus={loadFlowStatus}
-                    securityAnalysisStatus={securityAnalysisStatus}
-                    sensiStatus={sensiStatus}
-                    shortCircuitStatus={shortCircuitStatus}
-                    dynamicSimulationStatus={dynamicSimulationStatus}
-                    voltageInitStatus={voltageInitStatus}
-                    setIsComputationRunning={setIsComputationRunning}
-                    runnable={runnable}
-                    disabled={disabled || isNodeReadOnly(currentNode)}
-                />
-            </div>
         </>
     );
 };
@@ -914,7 +1015,6 @@ NetworkMapTab.propTypes = {
     lineFlowColorMode: PropTypes.any,
     lineFlowAlertThreshold: PropTypes.number,
     loadFlowStatus: PropTypes.string,
-    dynamicSimulationStatus: PropTypes.string,
     view: PropTypes.any,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,

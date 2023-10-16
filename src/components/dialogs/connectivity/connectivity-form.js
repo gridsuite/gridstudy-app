@@ -22,21 +22,21 @@ import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import {
-    fetchBusbarSectionsForVoltageLevel,
-    fetchBusesForVoltageLevel,
-} from '../../../utils/rest-api';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS } from '../../network/constants';
-import AutocompleteInput from '../../utils/rhf-inputs/autocomplete-input';
-import IntegerInput from '../../utils/rhf-inputs/integer-input';
-import SelectInput from '../../utils/rhf-inputs/select-input';
-import TextInput from '../../utils/rhf-inputs/text-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { IntegerInput } from '@gridsuite/commons-ui';
+import { SelectInput } from '@gridsuite/commons-ui';
+import { TextInput } from '@gridsuite/commons-ui';
 import {
     getConnectivityBusBarSectionData,
     getConnectivityVoltageLevelData,
 } from './connectivity-form-utils';
+import {
+    fetchBusbarSectionsForVoltageLevel,
+    fetchBusesForVoltageLevel,
+} from '../../../services/study/network';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -49,7 +49,7 @@ import {
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
  * @param onVoltageLevelChangeCallback callback to be called when the voltage level changes
- * @returns {[{voltageLevel: null, busOrBusbarSection: null},unknown]}
+ * @returns JSX.Element
  */
 export const ConnectivityForm = ({
     id = CONNECTIVITY,
@@ -58,10 +58,10 @@ export const ConnectivityForm = ({
     withDirectionsInfos = true,
     withPosition = false,
     voltageLevelOptions = [],
-    newBusOrBusbarSectionOptions,
+    newBusOrBusbarSectionOptions = [],
     studyUuid,
     currentNode,
-    onVoltageLevelChangeCallback,
+    onVoltageLevelChangeCallback = undefined,
 }) => {
     const currentNodeUuid = currentNode?.id;
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
@@ -81,7 +81,11 @@ export const ConnectivityForm = ({
     useEffect(() => {
         if (newBusOrBusbarSectionOptions?.length > 0) {
             setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
-        } else if (watchVoltageLevelId) {
+        }
+    }, [newBusOrBusbarSectionOptions]);
+
+    useEffect(() => {
+        if (watchVoltageLevelId) {
             const voltageLevelTopologyKind = voltageLevelOptions.find(
                 (vl) => vl.id === watchVoltageLevelId
             )?.topologyKind;
@@ -110,19 +114,20 @@ export const ConnectivityForm = ({
             }
         } else {
             setBusOrBusbarSectionOptions([]);
+            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
         }
     }, [
         watchVoltageLevelId,
         studyUuid,
         currentNodeUuid,
-        newBusOrBusbarSectionOptions,
         voltageLevelOptions,
+        setValue,
+        id,
     ]);
 
     const handleChange = useCallback(() => {
         onVoltageLevelChangeCallback?.();
-        setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
-    }, [id, onVoltageLevelChangeCallback, setValue]);
+    }, [onVoltageLevelChangeCallback]);
 
     useEffect(() => {
         const currentBusOrBusbarSection = getValues(
@@ -130,7 +135,10 @@ export const ConnectivityForm = ({
         );
         if (
             busOrBusbarSectionOptions?.length > 0 &&
-            !currentBusOrBusbarSection
+            !busOrBusbarSectionOptions.find(
+                (busOrBusbarSection) =>
+                    busOrBusbarSection.id === currentBusOrBusbarSection?.id
+            )
         ) {
             setValue(
                 `${id}.${BUS_OR_BUSBAR_SECTION}`,

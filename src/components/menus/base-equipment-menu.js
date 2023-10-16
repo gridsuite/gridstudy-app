@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import React from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import EditIcon from '@mui/icons-material/Edit';
 
@@ -18,24 +17,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { NestedMenuItem } from 'mui-nested-menu';
 
 import { useIntl } from 'react-intl';
-import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
-import { fetchSubstation, fetchVoltageLevel } from '../../utils/rest-api';
 import { isNodeReadOnly } from '../graph/util/model-functions';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     menuItem: {
-        padding: '0px',
-        margin: '7px',
+        // NestedMenu item manages only label prop of string type
+        // It fix paddings itself then we must force this padding
+        // to justify menu items texts
+        paddingLeft: '12px',
     },
-    listItemText: {
-        fontSize: 12,
-        padding: '0px',
-        margin: '4px',
-    },
-}));
+};
 
 const ViewInSpreadsheetItem = ({
     equipmentType,
@@ -43,11 +38,9 @@ const ViewInSpreadsheetItem = ({
     itemText,
     handleViewInSpreadsheet,
 }) => {
-    const classes = useStyles();
-
     return (
         <MenuItem
-            className={classes.menuItem}
+            sx={styles.menuItem}
             onClick={() => handleViewInSpreadsheet(equipmentType, equipmentId)}
             selected={false}
         >
@@ -56,7 +49,6 @@ const ViewInSpreadsheetItem = ({
             </ListItemIcon>
 
             <ListItemText
-                className={classes.listItemText}
                 primary={<Typography noWrap>{itemText}</Typography>}
             />
         </MenuItem>
@@ -70,11 +62,10 @@ const DeleteEquipmentItem = ({
     handleDeleteEquipment,
 }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const classes = useStyles();
 
     return (
         <MenuItem
-            className={classes.menuItem}
+            sx={styles.menuItem}
             onClick={() =>
                 handleDeleteEquipment(
                     getFeederTypeFromEquipmentType(equipmentType),
@@ -89,7 +80,36 @@ const DeleteEquipmentItem = ({
             </ListItemIcon>
 
             <ListItemText
-                className={classes.listItemText}
+                primary={<Typography noWrap>{itemText}</Typography>}
+            />
+        </MenuItem>
+    );
+};
+const ModifyEquipmentItem = ({
+    equipmentType,
+    equipmentId,
+    itemText,
+    handleOpenModificationDialog,
+}) => {
+    const currentNode = useSelector((state) => state.currentTreeNode);
+
+    return (
+        <MenuItem
+            sx={styles.menuItem}
+            onClick={() =>
+                handleOpenModificationDialog(
+                    equipmentId,
+                    getFeederTypeFromEquipmentType(equipmentType)
+                )
+            }
+            selected={false}
+            disabled={isNodeReadOnly(currentNode)}
+        >
+            <ListItemIcon>
+                <EditIcon />
+            </ListItemIcon>
+
+            <ListItemText
                 primary={<Typography noWrap>{itemText}</Typography>}
             />
         </MenuItem>
@@ -103,10 +123,10 @@ const ItemViewInForm = ({
     handleOpenModificationDialog,
 }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const classes = useStyles();
+
     return (
         <MenuItem
-            className={classes.menuItem}
+            sx={styles.menuItem}
             onClick={() =>
                 handleOpenModificationDialog(equipmentId, equipmentType)
             }
@@ -116,7 +136,6 @@ const ItemViewInForm = ({
                 <EditIcon></EditIcon>
             </ListItemIcon>
             <ListItemText
-                className={classes.listItemText}
                 primary={<Typography noWrap>{itemText}</Typography>}
             ></ListItemText>
         </MenuItem>
@@ -124,7 +143,7 @@ const ItemViewInForm = ({
 };
 
 const BaseEquipmentMenu = ({
-    equipmentId,
+    equipment,
     equipmentType,
     handleViewInSpreadsheet,
     handleDeleteEquipment,
@@ -132,73 +151,26 @@ const BaseEquipmentMenu = ({
 }) => {
     const intl = useIntl();
     const { getNameOrId } = useNameOrId();
-    const [equipment, setEquipment] = useState();
-    const [equipmentSubstationNameOrId, setEquipmentSubstationNameOrId] =
-        useState();
-
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
-
-    // Returns a promise
-    //TODO ideally we should have the equipment data from the props instead of doing a fetch,
-    // we can have it from mapEquipments in the map and metadata in the SVG
-    const getEquipment = useCallback(
-        (equipmentType, equipmentId) => {
-            if (!studyUuid || !currentNode) {
-                return Promise.reject('no study or node selected');
-            } else if (equipmentType === equipments.substations) {
-                return fetchSubstation(studyUuid, currentNode.id, equipmentId);
-            } else if (equipmentType === equipments.voltageLevels) {
-                return fetchVoltageLevel(
-                    studyUuid,
-                    currentNode.id,
-                    equipmentId
-                );
-            } else {
-                return Promise.reject('not a substation or a voltage level');
-            }
-        },
-        [studyUuid, currentNode]
-    );
 
     const equipmentsWithBranch = [
-        equipments.lines,
-        equipments.twoWindingsTransformers,
+        EQUIPMENT_TYPES.LINE,
+        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
     ];
     const equipmentsNotDeletable = [
-        equipments.lccConverterStations,
-        equipments.vscConverterStations,
-        equipments.hvdcLines,
+        EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
+        EQUIPMENT_TYPES.VSC_CONVERTER_STATIO,
     ];
-
-    useEffect(() => {
-        getEquipment(equipmentType, equipmentId)
-            .then((equipment) => {
-                setEquipment(equipment);
-                if (equipmentType === equipments.voltageLevels) {
-                    setEquipmentSubstationNameOrId(
-                        equipment.substationName ?? equipment.substationId
-                    );
-                }
-            })
-            .catch((reason) =>
-                console.log(
-                    'We did not fetch the equipment of contextual menu because ' +
-                        reason
-                )
-            );
-    }, [getEquipment, equipmentType, equipmentId]);
 
     return (
         <>
             {/* menus for equipment other than substation and voltage level */}
-            {equipmentType !== equipments.substations &&
-                equipmentType !== equipments.voltageLevels && (
+            {equipmentType !== EQUIPMENT_TYPES.SUBSTATION &&
+                equipmentType !== EQUIPMENT_TYPES.VOLTAGE_LEVEL && (
                     <>
                         <ViewInSpreadsheetItem
                             key="ViewOnSpreadsheet"
                             equipmentType={equipmentType}
-                            equipmentId={equipmentId}
+                            equipmentId={equipment.id}
                             itemText={intl.formatMessage({
                                 id: 'ViewOnSpreadsheet',
                             })}
@@ -214,7 +186,7 @@ const BaseEquipmentMenu = ({
                                 <DeleteEquipmentItem
                                     key="DeleteFromMenu"
                                     equipmentType={equipmentType}
-                                    equipmentId={equipmentId}
+                                    equipmentId={equipment.id}
                                     itemText={intl.formatMessage({
                                         id: 'DeleteFromMenu',
                                     })}
@@ -226,20 +198,22 @@ const BaseEquipmentMenu = ({
                         }
                     </>
                 )}
-            {/* menus for equipment generator and load */}
-            {(equipmentType === equipments.generators ||
-                equipmentType === equipments.loads) && (
+            {/* menus for equipment generator, load and shunt compensator */}
+            {(equipmentType === EQUIPMENT_TYPES.GENERATOR ||
+                equipmentType === EQUIPMENT_TYPES.BATTERY ||
+                equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR ||
+                equipmentType === EQUIPMENT_TYPES.LOAD) && (
                 <ItemViewInForm
-                    equipmentId={equipmentId}
+                    equipmentId={equipment.id}
                     equipmentType={equipmentType}
                     itemText={intl.formatMessage({
-                        id: 'edit',
+                        id: 'ModifyFromMenu',
                     })}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                 ></ItemViewInForm>
             )}
             {/* menus for equipment substation */}
-            {equipmentType === equipments.substations && equipment && (
+            {equipmentType === EQUIPMENT_TYPES.SUBSTATION && equipment && (
                 <>
                     {/* menus for the substation */}
                     <NestedMenuItem
@@ -258,7 +232,7 @@ const BaseEquipmentMenu = ({
                             // menus for all voltage levels in the substation
                             <ViewInSpreadsheetItem
                                 key={voltageLevel.id}
-                                equipmentType={equipments.voltageLevels}
+                                equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                                 equipmentId={voltageLevel.id}
                                 itemText={getNameOrId(voltageLevel)}
                                 handleViewInSpreadsheet={
@@ -283,10 +257,38 @@ const BaseEquipmentMenu = ({
                             // menus for all voltage levels in the substation
                             <DeleteEquipmentItem
                                 key={voltageLevel.id}
-                                equipmentType={equipments.voltageLevels}
+                                equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                                 equipmentId={voltageLevel.id}
                                 itemText={getNameOrId(voltageLevel)}
                                 handleDeleteEquipment={handleDeleteEquipment}
+                            />
+                        ))}
+                    </NestedMenuItem>
+                    <NestedMenuItem
+                        label={intl.formatMessage({ id: 'ModifyFromMenu' })}
+                        parentMenuOpen={true}
+                    >
+                        {/* menus for the substation */}
+                        <ModifyEquipmentItem
+                            key={equipment.id}
+                            equipmentType={equipmentType}
+                            equipmentId={equipment.id}
+                            itemText={getNameOrId(equipment)}
+                            handleOpenModificationDialog={
+                                handleOpenModificationDialog
+                            }
+                        />
+                        {/* menus for the voltage level */}
+                        {equipment.voltageLevels.map((voltageLevel) => (
+                            // menus for all voltage levels in the substation
+                            <ModifyEquipmentItem
+                                key={voltageLevel.id}
+                                equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
+                                equipmentId={voltageLevel.id}
+                                itemText={getNameOrId(voltageLevel)}
+                                handleOpenModificationDialog={
+                                    handleOpenModificationDialog
+                                }
                             />
                         ))}
                     </NestedMenuItem>
@@ -294,24 +296,29 @@ const BaseEquipmentMenu = ({
             )}
 
             {/* menus for equipment voltage level */}
-            {equipmentType === equipments.voltageLevels && equipment && (
+            {equipmentType === EQUIPMENT_TYPES.VOLTAGE_LEVEL && equipment && (
                 <>
                     <NestedMenuItem
-                        label={intl.formatMessage({ id: 'ViewOnSpreadsheet' })}
+                        label={intl.formatMessage({
+                            id: 'ViewOnSpreadsheet',
+                        })}
                         parentMenuOpen={true}
                     >
                         {/* menus for the substation */}
                         <ViewInSpreadsheetItem
                             key={equipment.substationId}
-                            equipmentType={equipments.substations}
+                            equipmentType={EQUIPMENT_TYPES.SUBSTATION}
                             equipmentId={equipment.substationId}
-                            itemText={equipmentSubstationNameOrId}
+                            itemText={
+                                equipment.substationName ??
+                                equipment.substationId
+                            }
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {/* menus for the voltage level */}
                         <ViewInSpreadsheetItem
                             key={equipment.id}
-                            equipmentType={equipments.voltageLevels}
+                            equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                             equipmentId={equipment.id}
                             itemText={getNameOrId(equipment)}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -324,18 +331,49 @@ const BaseEquipmentMenu = ({
                         {/* menus for the substation */}
                         <DeleteEquipmentItem
                             key={equipment.substationId}
-                            equipmentType={equipments.substations}
+                            equipmentType={EQUIPMENT_TYPES.SUBSTATION}
                             equipmentId={equipment.substationId}
-                            itemText={equipmentSubstationNameOrId}
+                            itemText={
+                                equipment.substationName ??
+                                equipment.substationId
+                            }
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
                         {/* menus for the voltage level */}
                         <DeleteEquipmentItem
                             key={equipment.id}
-                            equipmentType={equipments.voltageLevels}
+                            equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                             equipmentId={equipment.id}
                             itemText={getNameOrId(equipment)}
                             handleDeleteEquipment={handleDeleteEquipment}
+                        />
+                    </NestedMenuItem>
+                    <NestedMenuItem
+                        label={intl.formatMessage({ id: 'ModifyFromMenu' })}
+                        parentMenuOpen={true}
+                    >
+                        {/* menus for the substation */}
+                        <ModifyEquipmentItem
+                            key={equipment.substationId}
+                            equipmentType={EQUIPMENT_TYPES.SUBSTATION}
+                            equipmentId={equipment.substationId}
+                            itemText={
+                                equipment.substationName ??
+                                equipment.substationId
+                            }
+                            handleOpenModificationDialog={
+                                handleOpenModificationDialog
+                            }
+                        />
+                        {/* menus for the voltage level */}
+                        <ModifyEquipmentItem
+                            key={equipment.id}
+                            equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
+                            equipmentId={equipment.id}
+                            itemText={getNameOrId(equipment)}
+                            handleOpenModificationDialog={
+                                handleOpenModificationDialog
+                            }
                         />
                     </NestedMenuItem>
                 </>

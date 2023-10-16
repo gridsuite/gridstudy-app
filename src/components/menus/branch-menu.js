@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -19,50 +18,51 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import {
-    energiseBranchEnd,
-    fetchEquipmentInfos,
-    lockoutBranch,
-    switchOnBranch,
-    tripBranch,
-} from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { equipments } from '../network/network-equipments';
-import { isNodeReadOnly, isNodeBuilt } from '../graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../utils/equipment-types';
+import {
+    energiseBranchEnd,
+    lockoutBranch,
+    switchOnBranch,
+    tripBranch,
+} from '../../services/study/network-modifications';
+import { fetchNetworkElementInfos } from '../../services/study/network';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     menuItem: {
-        padding: '0px',
-        margin: '7px',
+        // NestedMenu item manages only label prop of string type
+        // It fix paddings itself then we must force this padding
+        // to justify menu items texts
+        paddingLeft: '12px',
     },
-    listItemText: {
-        fontSize: 12,
-        padding: '0px',
-        margin: '4px',
-    },
-}));
+};
 
 const withBranchMenu =
     (BaseMenu) =>
     ({
-        id,
+        equipment,
         equipmentType,
         position,
         handleClose,
         handleViewInSpreadsheet,
         handleDeleteEquipment,
+        handleOpenModificationDialog,
         currentNode,
         studyUuid,
         modificationInProgress,
         setModificationInProgress,
     }) => {
-        const classes = useStyles();
         const intl = useIntl();
         const { snackError } = useSnackMessage();
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
@@ -75,43 +75,45 @@ const withBranchMenu =
 
         const getEquipmentTranslation = useCallback((equipmentType) => {
             switch (equipmentType) {
-                case equipments.lines:
+                case EQUIPMENT_TYPES.LINE:
                     return 'Line';
-                case equipments.hvdcLines:
-                    return 'HvdcLine';
-                case equipments.twoWindingsTransformers:
+                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
                     return '2WTransformer';
                 default:
                     break;
             }
         }, []);
 
-        const getEquipmentPath = useCallback((equipmentType) => {
+        const getRealEquipmentType = useCallback((equipmentType) => {
             switch (equipmentType) {
-                case equipments.lines:
-                    return 'lines';
-                case equipments.hvdcLines:
-                    return 'hvdc-lines';
-                case equipments.twoWindingsTransformers:
-                    return '2-windings-transformers';
+                case EQUIPMENT_TYPES.LINE:
+                    return EQUIPMENT_TYPES.LINE;
+                case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+                    return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
                 default:
                     break;
             }
         }, []);
         useEffect(() => {
-            const equipmentPath = getEquipmentPath(equipmentType);
-            fetchEquipmentInfos(
+            fetchNetworkElementInfos(
                 studyUuid,
                 currentNode?.id,
-                equipmentPath,
-                id,
+                getRealEquipmentType(equipmentType),
+                EQUIPMENT_INFOS_TYPES.LIST.type,
+                equipment.id,
                 false
             ).then((value) => {
                 if (value) {
                     setBranch(value);
                 }
             });
-        }, [studyUuid, currentNode?.id, equipmentType, id, getEquipmentPath]);
+        }, [
+            studyUuid,
+            currentNode?.id,
+            equipmentType,
+            equipment.id,
+            getRealEquipmentType,
+        ]);
 
         const isNodeEditable = useMemo(
             function () {
@@ -145,35 +147,30 @@ const withBranchMenu =
 
         function handleLockout() {
             startModification();
-            lockoutBranch(studyUuid, currentNode?.id, branch.id).catch(
-                (error) => {
-                    handleError(error, 'UnableToLockout');
-                }
-            );
+            lockoutBranch(studyUuid, currentNode?.id, branch).catch((error) => {
+                handleError(error, 'UnableToLockout');
+            });
         }
 
         function handleTrip() {
             startModification();
-            tripBranch(studyUuid, currentNode?.id, branch.id).catch((error) => {
+            tripBranch(studyUuid, currentNode?.id, branch).catch((error) => {
                 handleError(error, 'UnableToTrip');
             });
         }
 
         function handleEnergise(side) {
             startModification();
-            energiseBranchEnd(
-                studyUuid,
-                currentNode?.id,
-                branch.id,
-                side
-            ).catch((error) => {
-                handleError(error, 'UnableToEnergiseOnOneEnd');
-            });
+            energiseBranchEnd(studyUuid, currentNode?.id, branch, side).catch(
+                (error) => {
+                    handleError(error, 'UnableToEnergiseOnOneEnd');
+                }
+            );
         }
 
         function handleSwitchOn() {
             startModification();
-            switchOnBranch(studyUuid, currentNode?.id, branch.id).catch(
+            switchOnBranch(studyUuid, currentNode?.id, branch).catch(
                 (error) => {
                     handleError(error, 'UnableToSwitchOn');
                 }
@@ -182,7 +179,6 @@ const withBranchMenu =
 
         return (
             <Menu
-                className={classes.menu}
                 anchorReference="anchorPosition"
                 anchorPosition={{
                     position: 'absolute',
@@ -194,14 +190,17 @@ const withBranchMenu =
                 onClose={handleClose}
             >
                 <BaseMenu
-                    equipmentId={id}
+                    equipment={equipment}
                     equipmentType={equipmentType}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
+                    handleOpenModificationDialog={handleOpenModificationDialog}
                 />
-                {equipmentType === equipments.lines && (
+                {(equipmentType === EQUIPMENT_TYPES.LINE ||
+                    equipmentType ===
+                        EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
                     <MenuItem
-                        className={classes.menuItem}
+                        sx={styles.menuItem}
                         onClick={() => handleLockout()}
                         disabled={
                             !isNodeEditable ||
@@ -213,7 +212,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
@@ -224,34 +222,31 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== equipments.hvdcLines && (
-                    <MenuItem
-                        className={classes.menuItem}
-                        onClick={() => handleTrip()}
-                        disabled={
-                            !isNodeEditable ||
-                            branch.branchStatus === 'FORCED_OUTAGE'
-                        }
-                    >
-                        <ListItemIcon>
-                            <OfflineBoltOutlinedIcon />
-                        </ListItemIcon>
+                <MenuItem
+                    sx={styles.menuItem}
+                    onClick={() => handleTrip()}
+                    disabled={
+                        !isNodeEditable ||
+                        branch.branchStatus === 'FORCED_OUTAGE'
+                    }
+                >
+                    <ListItemIcon>
+                        <OfflineBoltOutlinedIcon />
+                    </ListItemIcon>
 
-                        <ListItemText
-                            className={classes.listItemText}
-                            primary={
-                                <Typography noWrap>
-                                    {intl.formatMessage({
-                                        id: getTranslationKey('Trip'),
-                                    })}
-                                </Typography>
-                            }
-                        />
-                    </MenuItem>
-                )}
-                {equipmentType === equipments.lines && (
+                    <ListItemText
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({
+                                    id: getTranslationKey('Trip'),
+                                })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
+                {equipmentType === EQUIPMENT_TYPES.LINE && (
                     <MenuItem
-                        className={classes.menuItem}
+                        sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
                         disabled={
                             !isNodeEditable ||
@@ -264,7 +259,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage(
@@ -285,9 +279,9 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === equipments.lines && (
+                {equipmentType === EQUIPMENT_TYPES.LINE && (
                     <MenuItem
-                        className={classes.menuItem}
+                        sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
                         disabled={
                             !isNodeEditable ||
@@ -300,7 +294,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage(
@@ -321,9 +314,9 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType === equipments.lines && (
+                {equipmentType === EQUIPMENT_TYPES.LINE && (
                     <MenuItem
-                        className={classes.menuItem}
+                        sx={styles.menuItem}
                         onClick={() => handleSwitchOn()}
                         disabled={
                             !isNodeEditable ||
@@ -336,7 +329,6 @@ const withBranchMenu =
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
@@ -347,27 +339,51 @@ const withBranchMenu =
                         />
                     </MenuItem>
                 )}
-                {equipmentType !== equipments.hvdcLines && (
+                <MenuItem
+                    sx={styles.menuItem}
+                    onClick={() =>
+                        handleDeleteEquipment(
+                            getFeederTypeFromEquipmentType(equipmentType),
+                            equipment.id
+                        )
+                    }
+                    disabled={!isNodeEditable}
+                >
+                    <ListItemIcon>
+                        <DeleteIcon />
+                    </ListItemIcon>
+
+                    <ListItemText
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({
+                                    id: 'DeleteFromMenu',
+                                })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
+                {(equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ||
+                    equipmentType === EQUIPMENT_TYPES.LINE) && (
                     <MenuItem
-                        className={classes.menuItem}
+                        sx={styles.menuItem}
                         onClick={() =>
-                            handleDeleteEquipment(
-                                getFeederTypeFromEquipmentType(equipmentType),
-                                id
+                            handleOpenModificationDialog(
+                                equipment.id,
+                                equipmentType
                             )
                         }
                         disabled={!isNodeEditable}
                     >
                         <ListItemIcon>
-                            <DeleteIcon />
+                            <EditIcon />
                         </ListItemIcon>
 
                         <ListItemText
-                            className={classes.listItemText}
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
-                                        id: 'DeleteFromMenu',
+                                        id: 'ModifyFromMenu',
                                     })}
                                 </Typography>
                             }
@@ -385,6 +401,7 @@ withBranchMenu.propTypes = {
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
     handleDeleteEquipment: PropTypes.func.isRequired,
+    handleOpenModificationDialog: PropTypes.func.isRequired,
     currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
     modificationInProgress: PropTypes.func,

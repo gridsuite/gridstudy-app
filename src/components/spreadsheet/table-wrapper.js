@@ -14,25 +14,17 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import Network from '../network/network';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Grid, Alert } from '@mui/material';
 import {
-    modifyGenerator,
-    modifyLoad,
-    requestNetworkChange,
-    updateConfigParameter,
-} from '../../utils/rest-api';
-import {
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_DEFINITION_INDEXES,
-    TABLES_DEFINITIONS,
     TABLES_NAMES,
     MIN_COLUMN_WIDTH,
     EDIT_COLUMN,
+    TABLES_DEFINITION_TYPES,
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
@@ -47,6 +39,16 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
+import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
+import { updateConfigParameter } from '../../services/config';
+import {
+    modifyBattery,
+    modifyGenerator,
+    modifyLoad,
+    modifyVoltageLevel,
+    requestNetworkChange,
+} from '../../services/study/network-modifications';
+import { Box } from '@mui/system';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -66,12 +68,12 @@ const useEditBuffer = () => {
     return [data.current, addDataToBuffer, resetBuffer];
 };
 
-const useStyles = makeStyles((theme) => ({
-    table: {
+const styles = {
+    table: (theme) => ({
         marginTop: theme.spacing(2.5),
         lineHeight: 'unset',
         flexGrow: 1,
-    },
+    }),
     blink: {
         animation: '$blink 2s infinite',
     },
@@ -83,21 +85,26 @@ const useStyles = makeStyles((theme) => ({
             opacity: 0.1,
         },
     },
-    disabledLabel: {
-        color: theme.palette.text.disabled,
-    },
     invalidNode: {
         position: 'absolute',
         top: '30%',
         left: '43%',
     },
-}));
+    toolbar: (theme) => ({
+        marginTop: theme.spacing(2),
+    }),
+    filter: (theme) => ({
+        marginLeft: theme.spacing(1),
+    }),
+    selectColumns: (theme) => ({
+        marginLeft: theme.spacing(6),
+    }),
+};
 
 const TableWrapper = (props) => {
     const gridRef = useRef();
-
+    const timerRef = useRef(null);
     const intl = useIntl();
-    const classes = useStyles();
 
     const { snackError } = useSnackMessage();
 
@@ -111,10 +118,6 @@ const TableWrapper = (props) => {
         (state) => state.allReorderedTableDefinitionIndexes
     );
 
-    const equipmentFetched = useSelector(
-        (state) => state.networkEquipmentsFetched
-    );
-
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
     const [
@@ -125,11 +128,11 @@ const TableWrapper = (props) => {
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
     const [tabIndex, setTabIndex] = useState(0);
-    const [scrollToIndex, setScrollToIndex] = useState();
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
     const [editingData, setEditingData] = useState();
+    const editingDataRef = useRef(editingData);
 
     const isLockedColumnNamesEmpty = useMemo(
         () => lockedColumnsNames.size === 0,
@@ -163,8 +166,9 @@ const TableWrapper = (props) => {
         });
         resetBuffer();
         setEditingData();
+        editingDataRef.current = editingData;
         isValidatingData.current = false;
-    }, [priorValuesBuffer, resetBuffer]);
+    }, [priorValuesBuffer, resetBuffer, editingData]);
 
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
@@ -178,7 +182,7 @@ const TableWrapper = (props) => {
     const isEditColumnVisible = useCallback(() => {
         return (
             !props.disabled &&
-            TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType &&
+            TABLES_DEFINITION_INDEXES.get(tabIndex).type &&
             TABLES_DEFINITION_INDEXES.get(tabIndex)
                 .columns.filter((c) => c.editable)
                 .filter((c) => selectedColumnsNames.has(c.id)).length > 0
@@ -255,7 +259,7 @@ const TableWrapper = (props) => {
                                 setEditingData: setEditingData,
                                 equipmentType:
                                     TABLES_DEFINITION_INDEXES.get(tabIndex)
-                                        .modifiableEquipmentType,
+                                        .type,
                             },
                         };
                     }
@@ -281,6 +285,7 @@ const TableWrapper = (props) => {
                     reorderedTableDefinitionIndexes.indexOf(b.id)
                 );
             }
+
             generatedTableColumns.sort(sortByIndex);
 
             if (isEditColumnVisible()) {
@@ -297,25 +302,33 @@ const TableWrapper = (props) => {
         ]
     );
 
-    const getRows = useCallback(
-        (index) => {
-            if (props.disabled || !props.network) {
-                return [];
-            }
-            const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
-            const datasourceRows = tableDefinition.getter
-                ? tableDefinition.getter(props.network)
-                : props.network[tableDefinition.resource];
-
-            if (!datasourceRows) {
-                return [];
-            }
-
-            //the method returns a new array so that the table component detects its data changed thus rerendering its rows
-            return [...datasourceRows];
-        },
-        [props.disabled, props.network]
+    const equipmentDefinition = useMemo(
+        () => ({
+            type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+            fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
+        }),
+        [tabIndex]
     );
+
+    const { equipments, errorMessage, isFetching } =
+        useSpreadsheetEquipments(equipmentDefinition);
+
+    useEffect(() => {
+        if (errorMessage) {
+            snackError({
+                messageTxt: errorMessage,
+                headerId: 'SpreadsheetFetchError',
+            });
+        }
+    }, [errorMessage, snackError]);
+
+    const getRows = useCallback(() => {
+        if (props.disabled || !equipments) {
+            return [];
+        }
+
+        return equipments;
+    }, [equipments, props.disabled]);
 
     useEffect(() => {
         setColumnData(generateTableColumns(tabIndex));
@@ -325,18 +338,20 @@ const TableWrapper = (props) => {
     //is reinstanciated in order to notify components using it.
     //this variable is regenerated on every renders in order to gather latest external updates done to the dataset,
     //it is necessary since we curently lack the system to detect changes done to it after receiving a notification
-    const rowData = getRows(tabIndex);
+    const rowData = getRows();
 
     const handleSwitchTab = useCallback(
         (value) => {
             setManualTabSwitch(true);
-            setScrollToIndex();
             setTabIndex(value);
             cleanTableState();
         },
         [cleanTableState]
     );
-
+    useEffect(() => {
+        gridRef.current?.api?.showLoadingOverlay();
+        return () => clearTimeout(timerRef.current);
+    }, [tabIndex]);
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
         const newSelectedColumns = new Set(
@@ -364,23 +379,8 @@ const TableWrapper = (props) => {
     }, [allReorderedTableDefinitionIndexes, tabIndex]);
 
     useEffect(() => {
-        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        if (!props.network || props.disabled) {
-            return;
-        }
-        props.network.useEquipment(resource);
-    }, [props.network, props.disabled, tabIndex]);
-
-    useEffect(() => {
         setManualTabSwitch(false);
     }, [props.equipmentChanged]);
-
-    function getTabIndexFromEquipementType(equipmentType) {
-        const definition = Object.values(TABLES_DEFINITIONS).find(
-            (d) => d.name.toLowerCase() === equipmentType.toLowerCase()
-        );
-        return definition ? definition.index : 0;
-    }
 
     const scrollToEquipmentIndex = useCallback(() => {
         if (
@@ -394,9 +394,8 @@ const TableWrapper = (props) => {
                 props.equipmentId
             );
             if (selectedRow) {
-                setScrollToIndex(selectedRow.rowIndex);
                 gridRef.current.api?.ensureNodeVisible(selectedRow, 'top');
-                gridRef.current.api?.redrawRows(selectedRow);
+                selectedRow.setSelected(true, true);
             }
         }
     }, [manualTabSwitch, props.equipmentId, props.equipmentType]);
@@ -407,18 +406,22 @@ const TableWrapper = (props) => {
             props.equipmentType !== null &&
             !manualTabSwitch
         ) {
-            const newTabIndex = getTabIndexFromEquipementType(
-                props.equipmentType
-            );
-            setTabIndex(newTabIndex); // select the right table type
-        } else if (manualTabSwitch) {
-            setScrollToIndex();
+            const definition = TABLES_DEFINITION_TYPES.get(props.equipmentType);
+            if (tabIndex === definition.index) {
+                // already in expected tab => explicit call to scroll to expected row
+                scrollToEquipmentIndex();
+            } else {
+                // select the right table type. This will trigger handleRowDataUpdated + scrollToEquipmentIndex
+                setTabIndex(definition.index);
+            }
         }
     }, [
         props.equipmentId,
         props.equipmentType,
         props.equipmentChanged,
         manualTabSwitch,
+        tabIndex,
+        scrollToEquipmentIndex,
     ]);
 
     const handleGridReady = useCallback(() => {
@@ -432,15 +435,15 @@ const TableWrapper = (props) => {
 
     const handleRowDataUpdated = useCallback(() => {
         scrollToEquipmentIndex();
-    }, [scrollToEquipmentIndex]);
-
-    const handleBodyScroll = useCallback(() => {
-        if (scrollToIndex) {
-            setScrollToIndex();
-            setManualTabSwitch(true);
-        }
-    }, [scrollToIndex]);
-
+        // wait a moment  before removing the loading message.
+        timerRef.current = setTimeout(() => {
+            gridRef.current?.api?.hideOverlay();
+            if (rowData.length === 0 && !isFetching) {
+                // we need to call showNoRowsOverlay in order to show message when rowData is empty
+                gridRef.current?.api?.showNoRowsOverlay();
+            }
+        }, 50);
+    }, [scrollToEquipmentIndex, isFetching, rowData]);
     useEffect(() => {
         const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
             .columns.filter((column) => lockedColumnsNames.has(column.id))
@@ -513,40 +516,152 @@ const TableWrapper = (props) => {
         ]
     );
 
+    const getFieldValue = useCallback((newField, oldField) => {
+        return newField !== oldField ? newField : null;
+    }, []);
+
     const buildEditPromise = useCallback(
         (editingData, groovyCr) => {
             switch (editingData?.metadata.equipmentType) {
-                case EQUIPMENT_TYPES.LOAD.type:
+                case EQUIPMENT_TYPES.LOAD:
                     return modifyLoad(
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        editingData.name,
-                        editingData.type,
-                        editingData.p0,
-                        editingData.q0,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.type,
+                            editingDataRef.current.type
+                        ),
+                        getFieldValue(
+                            editingData.p0,
+                            editingDataRef.current.p0
+                        ),
+                        getFieldValue(
+                            editingData.q0,
+                            editingDataRef.current.q0
+                        ),
                         undefined,
                         undefined,
                         false,
                         undefined
                     );
-                case EQUIPMENT_TYPES.GENERATOR.type:
+                case EQUIPMENT_TYPES.GENERATOR:
                     return modifyGenerator(
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        editingData.name,
-                        editingData.energySource,
-                        editingData.minP,
-                        editingData.maxP,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.energySource,
+                            editingDataRef.current.energySource
+                        ),
+                        getFieldValue(
+                            editingData.minP,
+                            editingDataRef.current.minP
+                        ),
+                        getFieldValue(
+                            editingData.maxP,
+                            editingDataRef.current.maxP
+                        ),
                         undefined,
-                        editingData.targetP,
-                        editingData.targetQ,
-                        editingData.voltageRegulatorOn,
-                        editingData.targetV,
+                        getFieldValue(
+                            editingData.targetP,
+                            editingDataRef.current.targetP
+                        ),
+                        getFieldValue(
+                            editingData.targetQ,
+                            editingDataRef.current.targetQ
+                        ),
+                        getFieldValue(
+                            editingData.voltageRegulatorOn,
+                            editingDataRef.current.voltageRegulatorOn
+                        ),
+                        getFieldValue(
+                            editingData.targetV,
+                            editingDataRef.current.targetV
+                        ),
                         undefined,
                         undefined,
                         undefined
+                    );
+                case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+                    return modifyVoltageLevel(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.nominalVoltage,
+                            editingDataRef.current.nominalVoltage
+                        ),
+                        getFieldValue(
+                            editingData.lowVoltageLimit,
+                            editingDataRef.current.lowVoltageLimit
+                        ),
+                        getFieldValue(
+                            editingData.highVoltageLimit,
+                            editingDataRef.current.highVoltageLimit
+                        ),
+                        getFieldValue(
+                            editingData.identifiableShortCircuit.ipMin,
+                            editingDataRef.current.identifiableShortCircuit
+                                .ipMin
+                        ),
+                        getFieldValue(
+                            editingData.identifiableShortCircuit.ipMax,
+                            editingDataRef.current.identifiableShortCircuit
+                                .ipMax
+                        ),
+                        false,
+                        undefined
+                    );
+                case EQUIPMENT_TYPES.BATTERY:
+                    return modifyBattery(
+                        props.studyUuid,
+                        props.currentNode?.id,
+                        editingData.id,
+                        getFieldValue(
+                            editingData.name,
+                            editingDataRef.current.name
+                        ),
+                        getFieldValue(
+                            editingData.minP,
+                            editingDataRef.current.minP
+                        ),
+                        getFieldValue(
+                            editingData.maxP,
+                            editingDataRef.current.maxP
+                        ),
+                        getFieldValue(
+                            editingData.targetP,
+                            editingDataRef.current.targetP
+                        ),
+                        getFieldValue(
+                            editingData.targetQ,
+                            editingDataRef.current.targetQ
+                        ),
+                        undefined,
+                        undefined,
+                        undefined,
+                        getFieldValue(
+                            editingData.activePowerControl.activePowerControlOn,
+                            editingDataRef.current.activePowerControl
+                                .activePowerControlOn
+                        ),
+                        getFieldValue(
+                            editingData.activePowerControl.droop,
+                            editingDataRef.current.activePowerControl.droop
+                        )
                     );
                 default:
                     return requestNetworkChange(
@@ -556,7 +671,7 @@ const TableWrapper = (props) => {
                     );
             }
         },
-        [props.currentNode?.id, props.studyUuid]
+        [props.currentNode?.id, props.studyUuid, getFieldValue]
     );
 
     const validateEdit = useCallback(
@@ -593,23 +708,20 @@ const TableWrapper = (props) => {
                     setEditingData();
                     resetBuffer();
                     isValidatingData.current = false;
+                    editingDataRef.current = editingData;
                 })
                 .catch((promiseErrorMsg) => {
                     console.error(promiseErrorMsg);
                     rollbackEdit();
-                    let message = intl.formatMessage({
-                        id: 'paramsChangingDenied',
-                    });
                     snackError({
-                        messageTxt: message,
-                        headerId: 'paramsChangingError',
+                        messageTxt: promiseErrorMsg,
+                        headerId: 'tableChangingError',
                     });
                 });
         },
         [
             buildEditPromise,
             editingData,
-            intl,
             priorValuesBuffer,
             resetBuffer,
             rollbackEdit,
@@ -636,6 +748,11 @@ const TableWrapper = (props) => {
         [validateEdit]
     );
 
+    const handleEditingStarted = useCallback((params) => {
+        // we initialize the dynamicValidation with the initial data
+        params.context.dynamicValidation = { ...params.data };
+    }, []);
+
     const handleEditingStopped = useCallback(
         (params) => {
             if (
@@ -649,11 +766,14 @@ const TableWrapper = (props) => {
         [priorValuesBuffer, rollbackEdit]
     );
 
-    const topPinnedData = useMemo(
-        () => (editingData ? [editingData] : undefined),
-        [editingData]
-    );
-
+    const topPinnedData = useMemo(() => {
+        if (editingData) {
+            editingDataRef.current = { ...editingData };
+            return [editingData];
+        } else {
+            return undefined;
+        }
+    }, [editingData]);
     return (
         <>
             <Grid container justifyContent={'space-between'}>
@@ -662,81 +782,82 @@ const TableWrapper = (props) => {
                     tabIndex={tabIndex}
                     handleSwitchTab={handleSwitchTab}
                 />
-                <Grid container>
-                    <GlobalFilter
-                        disabled={!!(props.disabled || editingData)}
-                        visible={props.visible}
-                        gridRef={gridRef}
-                        ref={globalFilterRef}
-                    />
-                    <ColumnsConfig
-                        tabIndex={tabIndex}
-                        disabled={!!(props.disabled || editingData)}
-                        reorderedTableDefinitionIndexes={
-                            reorderedTableDefinitionIndexes
-                        }
-                        setReorderedTableDefinitionIndexes={
-                            setReorderedTableDefinitionIndexes
-                        }
-                        selectedColumnsNames={selectedColumnsNames}
-                        setSelectedColumnsNames={setSelectedColumnsNames}
-                        lockedColumnsNames={lockedColumnsNames}
-                        setLockedColumnsNames={setLockedColumnsNames}
-                    />
-                    <CsvExport
-                        gridRef={gridRef}
-                        columns={columnData}
-                        tableName={TABLES_DEFINITION_INDEXES.get(tabIndex).name}
-                        disabled={
-                            !!(
-                                props.disabled ||
-                                rowData.length === 0 ||
-                                editingData
-                            )
-                        }
-                    />
+                <Grid container sx={styles.toolbar}>
+                    <Grid item sx={styles.filter}>
+                        <GlobalFilter
+                            disabled={!!(props.disabled || editingData)}
+                            visible={props.visible}
+                            gridRef={gridRef}
+                            ref={globalFilterRef}
+                        />
+                    </Grid>
+                    <Grid item sx={styles.selectColumns}>
+                        <ColumnsConfig
+                            tabIndex={tabIndex}
+                            disabled={!!(props.disabled || editingData)}
+                            reorderedTableDefinitionIndexes={
+                                reorderedTableDefinitionIndexes
+                            }
+                            setReorderedTableDefinitionIndexes={
+                                setReorderedTableDefinitionIndexes
+                            }
+                            selectedColumnsNames={selectedColumnsNames}
+                            setSelectedColumnsNames={setSelectedColumnsNames}
+                            lockedColumnsNames={lockedColumnsNames}
+                            setLockedColumnsNames={setLockedColumnsNames}
+                        />
+                    </Grid>
+                    <Grid item style={{ flexGrow: 1 }}></Grid>
+                    <Grid item>
+                        <CsvExport
+                            gridRef={gridRef}
+                            columns={columnData}
+                            tableName={
+                                TABLES_DEFINITION_INDEXES.get(tabIndex).name
+                            }
+                            disabled={
+                                !!(
+                                    props.disabled ||
+                                    rowData.length === 0 ||
+                                    editingData
+                                )
+                            }
+                        />
+                    </Grid>
                 </Grid>
             </Grid>
             {props.disabled ? (
-                <Alert className={classes.invalidNode} severity="warning">
+                <Alert sx={styles.invalidNode} severity="warning">
                     <FormattedMessage id="InvalidNode" />
                 </Alert>
             ) : (
-                <div className={classes.table}>
+                <Box sx={styles.table}>
                     <EquipmentTable
                         gridRef={gridRef}
                         currentNode={props.currentNode}
                         rowData={rowData}
                         columnData={columnData}
                         topPinnedData={topPinnedData}
-                        fetched={
-                            equipmentFetched &&
-                            props.network?.isResourceFetched(
-                                TABLES_DEFINITION_INDEXES.get(tabIndex).resource
-                            )
-                        }
-                        scrollToIndex={scrollToIndex}
+                        fetched={equipments || errorMessage}
                         visible={props.visible}
-                        network={props.network}
                         handleColumnDrag={handleColumnDrag}
                         handleRowEditing={handleRowEditing}
                         handleCellEditing={handleCellEditing}
+                        handleEditingStarted={handleEditingStarted}
                         handleEditingStopped={handleEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
-                        handleBodyScroll={handleBodyScroll}
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
                     />
-                </div>
+                </Box>
             )}
         </>
     );
 };
 
 TableWrapper.defaultProps = {
-    network: null,
     studyUuid: '',
     currentNode: null,
     equipmentId: null,
@@ -747,7 +868,6 @@ TableWrapper.defaultProps = {
 };
 
 TableWrapper.propTypes = {
-    network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     equipmentId: PropTypes.string,

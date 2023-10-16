@@ -8,18 +8,15 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     Checkbox,
-    Grid,
     IconButton,
     ListItem,
     ListItemIcon,
     ListItemText,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
 import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
-import { updateConfigParameter } from 'utils/rest-api';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -30,33 +27,29 @@ import {
 } from './utils/config-tables';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import clsx from 'clsx';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { updateConfigParameter } from '../../services/config';
 
-const useStyles = makeStyles((theme) => ({
-    checkboxSelectAll: {
+const styles = {
+    checkboxSelectAll: (theme) => ({
         padding: theme.spacing(0, 3, 2, 2),
         fontWeight: 'bold',
         cursor: 'pointer',
-    },
+    }),
     checkboxItem: {
         cursor: 'pointer',
     },
-    columnConfigClosedLock: {
+    columnConfigClosedLock: (theme) => ({
         fontSize: '1.2em',
         color: theme.palette.action.active,
-    },
-    columnConfigOpenLock: {
+    }),
+    columnConfigOpenLock: (theme) => ({
         fontSize: '1.2em',
         color: theme.palette.action.disabled,
-    },
-    selectColumns: {
-        marginTop: theme.spacing(2),
-        marginLeft: theme.spacing(6),
-    },
-}));
+    }),
+};
 
 export const ColumnsConfig = ({
     tabIndex,
@@ -82,7 +75,6 @@ export const ColumnsConfig = ({
 
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const classes = useStyles();
 
     const handleOpenPopupSelectColumnNames = useCallback(() => {
         setPopupSelectColumnNames(true);
@@ -239,14 +231,10 @@ export const ColumnsConfig = ({
     const renderColumnConfigLockIcon = (value) => {
         if (selectedColumnsNames.has(value)) {
             if (lockedColumnsNames.has(value)) {
-                return <LockIcon className={classes.columnConfigClosedLock} />;
+                return <LockIcon sx={styles.columnConfigClosedLock} />;
             } else {
                 if (lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
-                    return (
-                        <LockOpenIcon
-                            className={classes.columnConfigOpenLock}
-                        />
-                    );
+                    return <LockOpenIcon sx={styles.columnConfigOpenLock} />;
                 }
             }
         }
@@ -260,7 +248,7 @@ export const ColumnsConfig = ({
         return (
             <>
                 <ListItem
-                    className={classes.checkboxSelectAll}
+                    sx={styles.checkboxSelectAll}
                     onClick={handleToggleAll}
                 >
                     <Checkbox
@@ -291,18 +279,13 @@ export const ColumnsConfig = ({
                                                     {...provided.draggableProps}
                                                 >
                                                     <ListItem
-                                                        className={
-                                                            classes.checkboxItem
-                                                        }
+                                                        sx={styles.checkboxItem}
                                                         style={{
                                                             padding: '0 16px',
                                                         }}
                                                     >
                                                         <IconButton
                                                             {...provided.dragHandleProps}
-                                                            className={
-                                                                classes.dragIcon
-                                                            }
                                                             size={'small'}
                                                         >
                                                             <DragIndicatorIcon
@@ -361,19 +344,12 @@ export const ColumnsConfig = ({
     };
 
     return (
-        <Grid item className={classes.selectColumns}>
-            <span
-                className={clsx({
-                    [classes.disabledLabel]: disabled,
-                })}
-            >
+        <>
+            <span>
                 <FormattedMessage id="LabelSelectList" />
             </span>
             <IconButton
                 disabled={disabled}
-                className={clsx({
-                    [classes.blink]: selectedColumnsNames.size === 0,
-                })}
                 aria-label="dialog"
                 onClick={handleOpenPopupSelectColumnNames}
             >
@@ -395,6 +371,6 @@ export const ColumnsConfig = ({
                     },
                 }}
             />
-        </Grid>
+        </>
     );
 };

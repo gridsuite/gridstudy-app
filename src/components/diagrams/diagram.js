@@ -1,9 +1,10 @@
-/*
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,7 +20,7 @@ import { useIntl } from 'react-intl';
 import {
     DiagramType,
     useDiagram,
-    useDiagramStyles,
+    styles,
     MIN_WIDTH,
     LOADING_WIDTH,
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
@@ -32,8 +33,6 @@ import AlertCustomMessageNode from '../utils/alert-custom-message-node';
 
 const Diagram = (props) => {
     const dispatch = useDispatch();
-
-    const classes = useDiagramStyles();
     const intl = useIntl();
 
     const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } =
@@ -105,14 +104,14 @@ const Diagram = (props) => {
             height={shouldBeFullscreen ? props.fullscreenHeight : props.height}
             width={shouldBeFullscreen ? props.fullscreenWidth : props.width}
             // We disable the resizeBox if a diagram is in fullscreen
-            disableResize={fullScreenDiagram?.id}
+            disableResize={!!fullScreenDiagram?.id}
             // We hide this diagram if another diagram is in fullscreen mode.
             hide={shouldBeHidden}
         >
             <Paper
                 elevation={4}
                 square={true}
-                className={classes.paperBorders}
+                sx={styles.paperBorders}
                 style={{
                     pointerEvents: 'auto',
                     width: '100%',
@@ -141,7 +140,7 @@ const Diagram = (props) => {
                     <Box position="relative" left={0} right={0} top={0}>
                         <AlertCustomMessageNode
                             message={props.warningToDisplay}
-                            noMargin={true}
+                            noMargin
                         />
                     </Box>
                 ) : (
@@ -189,7 +188,7 @@ Diagram.defaultProps = {
 
 Diagram.propTypes = {
     align: PropTypes.string,
-    diagramId: PropTypes.string.isRequired,
+    diagramId: PropTypes.string,
     diagramTitle: PropTypes.string.isRequired,
     warningToDisplay: PropTypes.string,
     pinned: PropTypes.bool,

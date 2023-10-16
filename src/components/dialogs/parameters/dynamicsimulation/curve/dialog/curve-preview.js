@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import clsx from 'clsx';
-import { AgGridReact } from 'ag-grid-react';
 import React, {
     forwardRef,
     useCallback,
@@ -15,21 +13,23 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { makeStyles, useTheme } from '@mui/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Grid, Typography } from '@mui/material';
+import { Box } from '@mui/system';
+import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     grid: {
         width: 'auto',
         height: '100%',
     },
-}));
+    h6: (theme) => ({
+        marginBottom: theme.spacing(2),
+    }),
+};
 
 const CurvePreview = forwardRef((props, ref) => {
     const intl = useIntl();
-    const classes = useStyles();
-    const theme = useTheme();
     const gridRef = useRef();
 
     const [rowData, setRowData] = useState([]);
@@ -38,14 +38,14 @@ const CurvePreview = forwardRef((props, ref) => {
         return [
             {
                 field: 'equipmentId',
-                minWidth: '80',
+                minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveDynamicModelHeader',
                 }),
             },
             {
                 field: 'variableId',
-                minWidth: '80',
+                minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveVariableHeader',
                 }),
@@ -120,10 +120,7 @@ const CurvePreview = forwardRef((props, ref) => {
     return (
         <>
             <Grid item>
-                <Typography
-                    sx={{ marginBottom: theme.spacing(2) }}
-                    variant="h6"
-                >
+                <Typography sx={styles.h6} variant="h6">
                     <FormattedMessage
                         id={'DynamicSimulationCurveToAdd'}
                     ></FormattedMessage>
@@ -131,16 +128,16 @@ const CurvePreview = forwardRef((props, ref) => {
                 </Typography>
             </Grid>
             <Grid xs>
-                <div className={clsx([theme.aggrid, classes.grid])}>
-                    <AgGridReact
+                <Box sx={styles.grid}>
+                    <CustomAGGrid
                         ref={gridRef}
                         rowData={rowData}
                         columnDefs={columnDefs}
                         defaultColDef={defaultColDef}
                         rowSelection={'multiple'}
                         onSelectionChanged={onSelectionChanged}
-                    ></AgGridReact>
-                </div>
+                    ></CustomAGGrid>
+                </Box>
             </Grid>
         </>
     );

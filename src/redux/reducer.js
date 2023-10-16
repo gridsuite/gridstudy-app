@@ -15,7 +15,7 @@ import {
     RESET_AUTHENTICATION_ROUTER_ERROR,
     SHOW_AUTH_INFO_LOGIN,
 } from '@gridsuite/commons-ui';
-
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     CENTER_LABEL,
     CLOSE_STUDY,
@@ -25,9 +25,6 @@ import {
     LINE_FLOW_ALERT_THRESHOLD,
     LINE_FULL_PATH,
     LINE_PARALLEL_PATH,
-    LOAD_GEO_DATA_SUCCESS,
-    NETWORK_CREATED,
-    NETWORK_EQUIPMENT_LOADED,
     OPEN_STUDY,
     SELECT_THEME,
     USE_NAME,
@@ -43,7 +40,9 @@ import {
     ADD_LOADFLOW_NOTIF,
     RESET_LOADFLOW_NOTIF,
     ADD_SA_NOTIF,
+    ADD_VOLTAGE_INIT_NOTIF,
     RESET_SA_NOTIF,
+    RESET_VOLTAGE_INIT_NOTIF,
     ADD_SENSI_NOTIF,
     RESET_SENSI_NOTIF,
     COMPONENT_LIBRARY,
@@ -66,8 +65,10 @@ import {
     TOGGLE_PIN_DIAGRAM,
     CLOSE_DIAGRAM,
     CLOSE_DIAGRAMS,
-    ADD_SHORT_CIRCUIT_NOTIF,
-    RESET_SHORT_CIRCUIT_NOTIF,
+    ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF,
+    RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF,
+    ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF,
+    RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF,
     ADD_DYNAMIC_SIMULATION_NOTIF,
     RESET_DYNAMIC_SIMULATION_NOTIF,
     RESET_MAP_RELOADED,
@@ -82,10 +83,21 @@ import {
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
     STOP_DIAGRAM_BLINK,
-    NETWORK_EQUIPMENT_FETCHED,
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     SELECTION_FOR_COPY,
     LIMIT_REDUCTION,
+    LOAD_EQUIPMENTS,
+    UPDATE_EQUIPMENTS,
+    DELETE_EQUIPMENT,
+    RESET_EQUIPMENTS,
+    RESET_EQUIPMENTS_POST_LOADFLOW,
+    SET_COMPUTING_STATUS,
+    SET_OPTIONAL_SERVICES,
+    SET_STUDY_INDEXATION_STATUS,
+    STUDY_INDEXATION_STATUS,
+    SET_COMPUTATION_RUNNING,
+    MAP_DATA_LOADING,
+    SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -121,6 +133,13 @@ import { loadDiagramStateFromSessionStorage } from './session-storage';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
+import { ComputingType } from 'components/computing-status/computing-type';
+import { RunningStatus } from 'components/utils/running-status';
+import { NodeInsertModes } from '../components/utils/node-insert-modes';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../components/utils/optional-services';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -143,16 +162,49 @@ const paramsInitialState = {
     [PARAMS_LOADED]: false,
 };
 
+const initialComputingStatus = {
+    [ComputingType.LOADFLOW]: RunningStatus.IDLE,
+    [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: RunningStatus.IDLE,
+    [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
+    [ComputingType.VOLTAGE_INIT]: RunningStatus.IDLE,
+};
+
+const initialSpreadsheetNetworkState = {
+    [EQUIPMENT_TYPES.SUBSTATION]: null,
+    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: null,
+    [EQUIPMENT_TYPES.LINE]: null,
+    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: null,
+    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: null,
+    [EQUIPMENT_TYPES.GENERATOR]: null,
+    [EQUIPMENT_TYPES.LOAD]: null,
+    [EQUIPMENT_TYPES.BATTERY]: null,
+    [EQUIPMENT_TYPES.DANGLING_LINE]: null,
+    [EQUIPMENT_TYPES.HVDC_LINE]: null,
+    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: null,
+    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: null,
+    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
+    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
+};
+
+export const defaultOptionalServicesState = Object.keys(
+    OptionalServicesNames
+).map((key) => ({
+    name: key,
+    status: OptionalServicesStatus.Pending,
+}));
+
 const initialState = {
     studyUuid: null,
     currentTreeNode: null,
     selectionForCopy: {
-        sourceStudyId: null,
+        sourceStudyUuid: null,
         nodeId: null,
         copyType: null,
         allChildrenIds: null,
     },
-    network: null,
     mapEquipments: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
@@ -162,10 +214,13 @@ const initialState = {
     authenticationRouterError: null,
     showAuthenticationRouterLogin: false,
     studyUpdated: { force: 0, eventData: {} },
+    mapDataLoading: false,
     loadflowNotif: false,
     saNotif: false,
+    voltageInitNotif: false,
     sensiNotif: false,
-    shortCircuitNotif: false,
+    allBusesShortCircuitNotif: false,
+    oneBusShortCircuitNotif: false,
     dynamicSimulationNotif: false,
     fullScreenDiagram: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
@@ -183,7 +238,12 @@ const initialState = {
     deletedEquipments: [],
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
-    networkEquipmentsFetched: false, // indicate if network equipments are fetched
+    spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
+    computingStatus: { ...initialComputingStatus },
+    computationRunning: false,
+    optionalServices: defaultOptionalServicesState,
+    oneBusShortCircuitAnalysisDiagram: null,
+    studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -203,17 +263,8 @@ export const reducer = createReducer(initialState, {
 
     [CLOSE_STUDY]: (state) => {
         state.studyUuid = null;
-        state.network = null;
         state.geoData = null;
         state.networkModificationTreeModel = null;
-    },
-
-    [NETWORK_CREATED]: (state, action) => {
-        state.network = action.network;
-    },
-
-    [NETWORK_EQUIPMENT_FETCHED]: (state, action) => {
-        state.networkEquipmentsFetched = action.networkEquipmentsFetched;
     },
 
     [MAP_EQUIPMENTS_CREATED]: (state, action) => {
@@ -239,17 +290,6 @@ export const reducer = createReducer(initialState, {
         state.mapEquipments = newMapEquipments;
     },
 
-    [NETWORK_EQUIPMENT_LOADED]: (state, action) => {
-        state.network = state.network.newSharedForUpdate(
-            action.equipmentsName,
-            action.values
-        );
-    },
-
-    [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
-        state.geoData = action.geoData;
-    },
-
     [LOAD_NETWORK_MODIFICATION_TREE_SUCCESS]: (state, action) => {
         state.networkModificationTreeModel =
             action.networkModificationTreeModel;
@@ -263,7 +303,8 @@ export const reducer = createReducer(initialState, {
             newModel.addChild(
                 action.networkModificationTreeNode,
                 action.parentNodeId,
-                action.insertMode
+                action.insertMode,
+                action.referenceNodeId
             );
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
@@ -323,6 +364,20 @@ export const reducer = createReducer(initialState, {
             let newModel =
                 state.networkModificationTreeModel.newSharedForUpdate();
 
+            //we assume all the deleted nodes are contiguous, so the new parent selected will be the nearest upstream node.
+            //in the future, if the deleted nodes are no longer contiguous we will need another implementation
+            const nextCurrentNodeUuid = newModel.treeNodes
+                .filter((node) =>
+                    action.networkModificationTreeNodes.includes(node.id)
+                )
+                .map((node) => node.data.parentNodeUuid)
+                .find(
+                    (parentNodeUuid) =>
+                        !action.networkModificationTreeNodes.includes(
+                            parentNodeUuid
+                        )
+                );
+
             newModel.removeNodes(action.networkModificationTreeNodes);
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
@@ -333,12 +388,7 @@ export const reducer = createReducer(initialState, {
                     state.currentTreeNode?.id
                 )
             ) {
-                // TODO Today we manage action.networkModificationTreeNodes which size is always 1 and then to delete one node at a time.
-                // If tomorrow we need to delete multiple nodes, we need to check that the parentNode here isn't in the action.networkModificationTreeNodes list
-                synchCurrentTreeNode(
-                    state,
-                    state.currentTreeNode?.data?.parentNodeUuid
-                );
+                synchCurrentTreeNode(state, nextCurrentNodeUuid);
             } // check if parent node of the current node is in the nodes deleted list
             else if (
                 action.networkModificationTreeNodes.includes(
@@ -376,6 +426,10 @@ export const reducer = createReducer(initialState, {
             force: 1 - state.studyUpdated.force,
             eventData: action.eventData,
         };
+    },
+
+    [MAP_DATA_LOADING]: (state, action) => {
+        state.mapDataLoading = action.mapDataLoading;
     },
 
     [SELECT_THEME]: (state, action) => {
@@ -498,6 +552,14 @@ export const reducer = createReducer(initialState, {
         state.saNotif = false;
     },
 
+    [ADD_VOLTAGE_INIT_NOTIF]: (state) => {
+        state.voltageInitNotif = true;
+    },
+
+    [RESET_VOLTAGE_INIT_NOTIF]: (state) => {
+        state.voltageInitNotif = false;
+    },
+
     [ADD_SENSI_NOTIF]: (state) => {
         state.sensiNotif = true;
     },
@@ -506,12 +568,20 @@ export const reducer = createReducer(initialState, {
         state.sensiNotif = false;
     },
 
-    [ADD_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.shortCircuitNotif = true;
+    [ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.allBusesShortCircuitNotif = true;
     },
 
-    [RESET_SHORT_CIRCUIT_NOTIF]: (state) => {
-        state.shortCircuitNotif = false;
+    [RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.allBusesShortCircuitNotif = false;
+    },
+
+    [ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.oneBusShortCircuitNotif = true;
+    },
+
+    [RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF]: (state) => {
+        state.oneBusShortCircuitNotif = false;
     },
 
     [ADD_DYNAMIC_SIMULATION_NOTIF]: (state) => {
@@ -578,6 +648,7 @@ export const reducer = createReducer(initialState, {
     [SELECTION_FOR_COPY]: (state, action) => {
         const selectionForCopy = action.selectionForCopy;
         if (
+            selectionForCopy.sourceStudyUuid === state.studyUuid &&
             selectionForCopy.nodeId &&
             (selectionForCopy.copyType === CopyType.SUBTREE_COPY ||
                 selectionForCopy.copyType === CopyType.SUBTREE_CUT)
@@ -884,7 +955,215 @@ export const reducer = createReducer(initialState, {
     [NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS]: (state, action) => {
         state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
     },
+    [LOAD_EQUIPMENTS]: (state, action) => {
+        state.spreadsheetNetwork[action.equipmentType] = action.equipments;
+    },
+    [UPDATE_EQUIPMENTS]: (state, action) => {
+        // for now, this action receives an object containing all equipments from a substation
+        // it will be modified when the notifications received after a network modification will be more precise
+        const updatedEquipments = action.equipments;
+
+        // equipmentType : type of equipment updated
+        // equipments : list of updated equipments of type <equipmentType>
+        for (const [updateType, equipments] of Object.entries(
+            updatedEquipments
+        )) {
+            const equipmentType = getEquipmentTypeFromUpdateType(updateType);
+            const currentEquipment = state.spreadsheetNetwork[equipmentType];
+
+            // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
+            if (currentEquipment != null) {
+                //since substations data contains voltage level ones, they have to be treated separatly
+                if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
+                    const [updatedSubtations, updatedVoltageLevels] =
+                        updateSubstationsAndVoltageLevels(
+                            state.spreadsheetNetwork[
+                                EQUIPMENT_TYPES.SUBSTATION
+                            ],
+                            state.spreadsheetNetwork[
+                                EQUIPMENT_TYPES.VOLTAGE_LEVEL
+                            ],
+                            equipments
+                        );
+
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] =
+                        updatedSubtations;
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL] =
+                        updatedVoltageLevels;
+                } else {
+                    state.spreadsheetNetwork[equipmentType] = updateEquipments(
+                        currentEquipment,
+                        equipments
+                    );
+                }
+            }
+        }
+    },
+    [DELETE_EQUIPMENT]: (state, action) => {
+        const equipmentToDeleteId = action.equipmentId;
+        const equipmentToDeleteType = action.equipmentType;
+
+        const currentEquipments =
+            state.spreadsheetNetwork[equipmentToDeleteType];
+        if (currentEquipments != null) {
+            // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
+            if (equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
+                const currentSubstations =
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION];
+                if (currentSubstations != null) {
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] =
+                        updateSubstationAfterVLDeletion(
+                            currentSubstations,
+                            equipmentToDeleteId
+                        );
+                }
+            }
+
+            state.spreadsheetNetwork[equipmentToDeleteType] = deleteEquipment(
+                currentEquipments,
+                equipmentToDeleteId
+            );
+        }
+    },
+    [RESET_EQUIPMENTS]: (state) => {
+        state.spreadsheetNetwork = { ...initialSpreadsheetNetworkState };
+    },
+    [RESET_EQUIPMENTS_POST_LOADFLOW]: (state) => {
+        state.spreadsheetNetwork = {
+            ...initialSpreadsheetNetworkState,
+            [EQUIPMENT_TYPES.SUBSTATION]:
+                state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
+            [EQUIPMENT_TYPES.VOLTAGE_LEVEL]:
+                state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
+            [EQUIPMENT_TYPES.HVDC_LINE]:
+                state.spreadsheetNetwork[EQUIPMENT_TYPES.HVDC_LINE],
+        };
+    },
+    [SET_COMPUTING_STATUS]: (state, action) => {
+        state.computingStatus[action.computingType] = action.runningStatus;
+    },
+    [SET_COMPUTATION_RUNNING]: (state, action) => {
+        state.computationRunning = action.computationRunning;
+    },
+
+    [SET_OPTIONAL_SERVICES]: (state, action) => {
+        state.optionalServices = action.optionalServices;
+    },
+    [SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM]: (state, action) => {
+        state.oneBusShortCircuitAnalysisDiagram = {
+            diagramId: action.diagramId,
+            nodeId: action.nodeId,
+        };
+    },
+    [SET_STUDY_INDEXATION_STATUS]: (state, action) => {
+        state.studyIndexationStatus = action.studyIndexationStatus;
+    },
 });
+
+function updateSubstationAfterVLDeletion(currentSubstations, VLToDeleteId) {
+    const substationToUpdateIndex = currentSubstations.findIndex((sub) =>
+        sub.voltageLevels.some((vl) => vl.id === VLToDeleteId)
+    );
+    if (substationToUpdateIndex >= 0) {
+        currentSubstations[substationToUpdateIndex].voltageLevels =
+            currentSubstations[substationToUpdateIndex].voltageLevels.filter(
+                (vl) => vl.id !== VLToDeleteId
+            );
+    }
+
+    return currentSubstations;
+}
+
+function getEquipmentTypeFromUpdateType(updateType) {
+    switch (updateType) {
+        case 'lines':
+            return EQUIPMENT_TYPES.LINE;
+        case 'twoWindingsTransformers':
+            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
+        case 'threeWindingsTransformers':
+            return EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER;
+        case 'generators':
+            return EQUIPMENT_TYPES.GENERATOR;
+        case 'loads':
+            return EQUIPMENT_TYPES.LOAD;
+        case 'batteries':
+            return EQUIPMENT_TYPES.BATTERY;
+        case 'danglingLines':
+            return EQUIPMENT_TYPES.DANGLING_LINE;
+        case 'hvdcLines':
+            return EQUIPMENT_TYPES.HVDC_LINE;
+        case 'lccConverterStations':
+            return EQUIPMENT_TYPES.LCC_CONVERTER_STATION;
+        case 'vscConverterStations':
+            return EQUIPMENT_TYPES.VSC_CONVERTER_STATION;
+        case 'shuntCompensators':
+            return EQUIPMENT_TYPES.SHUNT_COMPENSATOR;
+        case 'staticVarCompensators':
+            return EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR;
+        case 'voltageLevels':
+            return EQUIPMENT_TYPES.VOLTAGE_LEVEL;
+        case 'substations':
+            return EQUIPMENT_TYPES.SUBSTATION;
+        default:
+            return;
+    }
+}
+
+function deleteEquipment(currentEquipments, equipmentToDeleteId) {
+    const equipmentToDeleteIndex = currentEquipments.findIndex(
+        (eq) => eq.id === equipmentToDeleteId
+    );
+    if (equipmentToDeleteIndex >= 0) {
+        currentEquipments.splice(equipmentToDeleteIndex, 1);
+    }
+    return currentEquipments;
+}
+
+function updateSubstationsAndVoltageLevels(
+    currentSubstations,
+    currentVoltageLevels,
+    newOrUpdatedSubstations
+) {
+    const updatedSubstations = updateEquipments(
+        currentSubstations,
+        newOrUpdatedSubstations
+    );
+
+    let updatedVoltageLevels = null;
+
+    // if voltage levels are not loaded yet, we don't need to update them
+    if (currentVoltageLevels != null) {
+        const newOrUpdatedVoltageLevels = newOrUpdatedSubstations.reduce(
+            (acc, currentSub) => {
+                return acc.concat([...currentSub.voltageLevels]);
+            },
+            []
+        );
+
+        updatedVoltageLevels = updateEquipments(
+            currentVoltageLevels,
+            newOrUpdatedVoltageLevels
+        );
+    }
+
+    return [updatedSubstations, updatedVoltageLevels];
+}
+
+function updateEquipments(currentEquipments, newOrUpdatedEquipments) {
+    newOrUpdatedEquipments.forEach((equipment) => {
+        const existingEquipmentIndex = currentEquipments.findIndex(
+            (equip) => equip.id === equipment.id
+        );
+
+        if (existingEquipmentIndex >= 0) {
+            currentEquipments[existingEquipmentIndex] = equipment;
+        } else {
+            currentEquipments.push(equipment);
+        }
+    });
+
+    return currentEquipments;
+}
 
 function synchCurrentTreeNode(state, nextCurrentNodeUuid) {
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
@@ -899,7 +1178,7 @@ function unravelSubTree(treeModel, subtreeParentId, node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
-        treeModel.addChild(node, subtreeParentId, 'AFTER');
+        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After);
 
         if (node.children.length > 0) {
             node.children.forEach((child) => {

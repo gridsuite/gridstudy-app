@@ -17,7 +17,7 @@ const SOLVER_TYPES = {
 };
 
 const SolverParameters = ({ solver, onUpdateSolver }) => {
-    const { solverId, solvers } = solver;
+    const { solverId, solvers } = solver ?? {};
 
     const handleUpdateSolver = useCallback(
         (newSolver) => {
@@ -42,7 +42,7 @@ const SolverParameters = ({ solver, onUpdateSolver }) => {
         solverId: {
             type: TYPES.enum,
             description: 'DynamicSimulationSolverType',
-            values: solvers.reduce((obj, curr) => {
+            values: solvers?.reduce((obj, curr) => {
                 obj[curr.id] = `DynamicSimulationSolver${curr.type}`;
                 return obj;
             }, {}),
@@ -50,7 +50,7 @@ const SolverParameters = ({ solver, onUpdateSolver }) => {
     };
 
     const selectedSolver = useMemo(() => {
-        return solvers.find((elem) => elem.id === solverId);
+        return solvers?.find((elem) => elem.id === solverId);
     }, [solvers, solverId]);
 
     return (

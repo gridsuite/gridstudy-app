@@ -6,60 +6,87 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, AutocompleteInput } from '@gridsuite/commons-ui';
+import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
 import {
-    compareById,
-    filledTextField,
-    gridItem,
-} from 'components/dialogs/dialogUtils';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-import { EQUIPMENT_ID, TYPE } from 'components/utils/field-constants';
+    DELETION_SPECIFIC_DATA,
+    EQUIPMENT_ID,
+    HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE,
+    TYPE,
+} from 'components/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import HvdcLccDeletionSpecificForm from './hvdc-lcc-deletion/hvdc-lcc-deletion-specific-form';
+import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
-const richTypeEquals = (a, b) => a.type === b.type;
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
-const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
+const richTypeEquals = (a, b) => a === b;
+
+const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const editedIdRef = useRef(null);
+    const currentTypeRef = useRef(null);
 
     const watchType = useWatch({
         name: TYPE,
     });
-
+    const watchEquipmentId = useWatch({
+        name: EQUIPMENT_ID,
+    });
+    const watchSpecificData = useWatch({
+        name: DELETION_SPECIFIC_DATA,
+    });
+    const { specificUpdate: hvdcLccSpecificUpdate } = useHvdcLccDeletion();
     const { setValue } = useFormContext();
 
     const richTypeLabel = (rt) => {
-        return intl.formatMessage({ id: rt.type });
+        return intl.formatMessage({ id: rt });
     };
 
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
 
     const typesOptions = useMemo(() => {
         const equipmentTypesToExclude = new Set([
-            EQUIPMENT_TYPES.SWITCH.type,
-            EQUIPMENT_TYPES.LCC_CONVERTER_STATION.type,
-            EQUIPMENT_TYPES.VSC_CONVERTER_STATION.type,
+            EQUIPMENT_TYPES.SWITCH,
+            EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
+            EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
+            EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
         ]);
-        const ret = Object.values(EQUIPMENT_TYPES).filter(
-            (equipmentType) => !equipmentTypesToExclude.has(equipmentType.type)
+        return Object.values(EQUIPMENT_TYPES).filter(
+            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
         );
-        return ret;
     }, []);
 
     useEffect(() => {
         setEquipmentsOptions([]);
-        if (watchType?.fetchers?.length) {
-            Promise.all(
-                watchType.fetchers.map((fetchPromise) =>
-                    fetchPromise(studyUuid, currentNode.id)
-                )
+        if (watchType) {
+            if (watchType !== currentTypeRef.current) {
+                currentTypeRef.current = watchType;
+            }
+            let ignore = false;
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNode?.id,
+                undefined,
+                watchType,
+                true
             )
                 .then((vals) => {
-                    setEquipmentsOptions(vals.flat().sort(compareById));
+                    // check race condition here
+                    if (!ignore) {
+                        setEquipmentsOptions(vals.sort());
+                    }
                 })
                 .catch((error) => {
                     snackError({
@@ -67,8 +94,53 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
                         headerId: 'equipmentsLoadingError',
                     });
                 });
+            return () => {
+                ignore = true;
+            };
         }
     }, [studyUuid, currentNode?.id, watchType, snackError]);
+
+    useEffect(() => {
+        if (studyUuid && currentNode?.id) {
+            if (editData?.equipmentId) {
+                if (editedIdRef.current === null) {
+                    // The first time we render an edition, we want to merge the
+                    // dynamic data with the edition data coming from the database
+                    editedIdRef.current = editData.equipmentId;
+                } else if (
+                    watchEquipmentId !== editedIdRef.current &&
+                    editedIdRef.current !== ''
+                ) {
+                    // we have changed eqptId, leave the "first edit" mode (then if we circle back
+                    // to editData?.equipmentId, we wont make the merge anymore).
+                    editedIdRef.current = '';
+                }
+            }
+
+            if (
+                watchEquipmentId &&
+                currentTypeRef.current === EQUIPMENT_TYPES.HVDC_LINE
+            ) {
+                // need specific update related to HVDC LCC deletion (for MCS lists)
+                hvdcLccSpecificUpdate(
+                    studyUuid,
+                    currentNode?.id,
+                    watchEquipmentId,
+                    watchEquipmentId === editedIdRef.current ? editData : null
+                );
+            } else {
+                setValue(DELETION_SPECIFIC_DATA, null);
+            }
+        }
+    }, [
+        studyUuid,
+        currentNode?.id,
+        watchEquipmentId,
+        snackError,
+        setValue,
+        hvdcLccSpecificUpdate,
+        editData,
+    ]);
 
     const handleChange = useCallback(() => {
         setValue(EQUIPMENT_ID, null);
@@ -98,7 +170,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
             getOptionLabel={getObjectId}
             //hack to work with freesolo autocomplete
             //setting null programatically when freesolo is enable wont empty the field
-            inputTransform={(value) => (value === null ? '' : value)}
+            inputTransform={(value) => value}
             outputTransform={(value) =>
                 value === '' ? null : getObjectId(value)
             }
@@ -113,6 +185,10 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode }) => {
                 {gridItem(equipmentTypeField, 6)}
                 {gridItem(equipmentField, 6)}
             </Grid>
+            {watchSpecificData?.specificType ===
+                HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE && (
+                <HvdcLccDeletionSpecificForm />
+            )}
         </>
     );
 };

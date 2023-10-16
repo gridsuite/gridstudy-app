@@ -10,7 +10,6 @@ import ModificationDialog from '../../../commons/modificationDialog';
 import React, { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
@@ -22,17 +21,19 @@ import {
 import yup from 'components/utils/yup-config';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    FetchStatus,
-    fetchVoltageLevel,
-    modifyVoltageLevel,
-} from 'utils/rest-api';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from 'components/utils/equipment-types';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
+import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
-    [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     [SUBSTATION_ID]: null,
     [NOMINAL_VOLTAGE]: null,
@@ -42,8 +43,7 @@ const emptyFormData = {
     [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: null,
 };
 
-const schema = yup.object().shape({
-    [EQUIPMENT_ID]: yup.string().required(),
+const formSchema = yup.object().shape({
     [EQUIPMENT_NAME]: yup.string().nullable(),
     [SUBSTATION_ID]: yup.string().nullable(),
     [NOMINAL_VOLTAGE]: yup.number().nullable(),
@@ -54,7 +54,8 @@ const schema = yup.object().shape({
 });
 
 const VoltageLevelModificationDialog = ({
-    editData,
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
     studyUuid,
     isUpdate,
@@ -63,35 +64,37 @@ const VoltageLevelModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [voltageLevelInfos, setVoltageLevelInfos] = useState(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
 
-    const methods = useForm({
+    const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(schema),
+        resolver: yupResolver(formSchema),
     });
 
-    const { reset, setValue } = methods;
+    const { reset, resetField } = formMethods;
 
     useEffect(() => {
         if (editData) {
-            reset(
-                {
-                    [EQUIPMENT_ID]: editData?.equipmentId ?? '',
-                    [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                    [SUBSTATION_ID]: editData?.substationId?.value ?? null,
-                    [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value ?? null,
-                    [LOW_VOLTAGE_LIMIT]:
-                        editData?.lowVoltageLimit?.value ?? null,
-                    [HIGH_VOLTAGE_LIMIT]:
-                        editData?.highVoltageLimit?.value ?? null,
-                    [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                        unitToKiloUnit(editData?.ipMin?.value) ?? null,
-                    [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                        unitToKiloUnit(editData?.ipMax?.value) ?? null,
-                },
-                { keepDefaultValues: true }
-            );
+            if (editData?.equipmentId) {
+                setSelectedId(editData.equipmentId);
+            }
+            reset({
+                [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
+                [SUBSTATION_ID]: editData?.substationId?.value ?? null,
+                [NOMINAL_VOLTAGE]: editData?.nominalVoltage?.value ?? null,
+                [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value ?? null,
+                [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value ?? null,
+                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
+                    unitToKiloUnit(
+                        editData?.identifiableShortCircuit?.ipMin?.value
+                    ) ?? null,
+                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
+                    unitToKiloUnit(
+                        editData?.identifiableShortCircuit?.ipMax?.value
+                    ) ?? null,
+            });
         }
     }, [editData, reset]);
 
@@ -99,22 +102,34 @@ const VoltageLevelModificationDialog = ({
         (equipmentId) => {
             if (equipmentId) {
                 setDataFetchStatus(FetchStatus.RUNNING);
-                fetchVoltageLevel(studyUuid, currentNodeUuid, equipmentId)
+                fetchNetworkElementInfos(
+                    studyUuid,
+                    currentNodeUuid,
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+                    EQUIPMENT_INFOS_TYPES.FORM.type,
+                    equipmentId,
+                    true
+                )
                     .then((voltageLevel) => {
                         if (voltageLevel) {
                             //We convert values of low short circuit current limit and high short circuit current limit from A to KA
-                            voltageLevel.ipMax = unitToKiloUnit(
-                                voltageLevel?.ipMax
-                            );
-                            voltageLevel.ipMin = unitToKiloUnit(
-                                voltageLevel?.ipMin
-                            );
+                            voltageLevel.identifiableShortCircuit.ipMax =
+                                unitToKiloUnit(
+                                    voltageLevel.identifiableShortCircuit?.ipMax
+                                );
+                            voltageLevel.identifiableShortCircuit.ipMin =
+                                unitToKiloUnit(
+                                    voltageLevel.identifiableShortCircuit?.ipMin
+                                );
                             setVoltageLevelInfos(voltageLevel);
                             setDataFetchStatus(FetchStatus.SUCCEED);
 
                             //TODO We display the previous value of the substation id in the substation field because we can't change it
                             // To be removed when it is possible to change the substation of a voltage level in the backend (Powsybl)
-                            setValue(SUBSTATION_ID, voltageLevel?.substationId);
+                            // Note: we use resetField and a defaultValue instead of setValue to not trigger react hook form's dirty flag
+                            resetField(SUBSTATION_ID, {
+                                defaultValue: voltageLevel?.substationId,
+                            });
                         }
                     })
                     .catch(() => {
@@ -126,22 +141,28 @@ const VoltageLevelModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, reset, setValue]
+        [studyUuid, currentNodeUuid, resetField, reset]
     );
+
+    useEffect(() => {
+        if (selectedId) {
+            onEquipmentIdChange(selectedId);
+        }
+    }, [selectedId, onEquipmentIdChange]);
 
     const onSubmit = useCallback(
         (voltageLevel) => {
             modifyVoltageLevel(
                 studyUuid,
                 currentNodeUuid,
-                voltageLevel[EQUIPMENT_ID],
+                selectedId,
                 voltageLevel[EQUIPMENT_NAME],
                 voltageLevel[NOMINAL_VOLTAGE],
                 voltageLevel[LOW_VOLTAGE_LIMIT],
                 voltageLevel[HIGH_VOLTAGE_LIMIT],
                 kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
                 kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
-                isUpdate,
+                !!editData,
                 editData?.uuid
             ).catch((error) => {
                 snackError({
@@ -150,7 +171,7 @@ const VoltageLevelModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError, isUpdate]
+        [editData, studyUuid, currentNodeUuid, selectedId, snackError]
     );
 
     const clear = useCallback(() => {
@@ -169,9 +190,9 @@ const VoltageLevelModificationDialog = ({
 
     return (
         <FormProvider
-            validationSchema={schema}
+            validationSchema={formSchema}
             removeOptional={true}
-            {...methods}
+            {...formMethods}
         >
             <ModificationDialog
                 fullWidth
@@ -182,6 +203,7 @@ const VoltageLevelModificationDialog = ({
                 open={open}
                 titleId="ModifyVoltageLevel"
                 keepMounted={true}
+                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||
@@ -189,12 +211,22 @@ const VoltageLevelModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                <VoltageLevelModificationForm
-                    studyUuid={studyUuid}
-                    currentNodeUuid={currentNodeUuid}
-                    voltageLevelInfos={voltageLevelInfos}
-                    onEquipmentIdChange={onEquipmentIdChange}
-                />
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
+                        fillerHeight={4}
+                    />
+                )}
+                {selectedId != null && (
+                    <VoltageLevelModificationForm
+                        voltageLevelInfos={voltageLevelInfos}
+                        equipmentId={selectedId}
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );

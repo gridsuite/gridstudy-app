@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { debounce, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { makeComponentsFor, TYPES } from '../util/make-component-utils';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
     const handleUpdateTimeDelay = useCallback(
@@ -15,11 +15,6 @@ const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
             onUpdateTimeDelay(newTimeDelay);
         },
         [onUpdateTimeDelay]
-    );
-
-    const delayedHandleUpdateTimeDelay = useMemo(
-        () => debounce(handleUpdateTimeDelay, 500),
-        [handleUpdateTimeDelay]
     );
 
     const defParams = {
@@ -35,11 +30,7 @@ const TimeDelayParameters = ({ timeDelay, onUpdateTimeDelay }) => {
     return (
         timeDelay && (
             <Grid container>
-                {makeComponentsFor(
-                    defParams,
-                    timeDelay,
-                    delayedHandleUpdateTimeDelay
-                )}
+                {makeComponentsFor(defParams, timeDelay, handleUpdateTimeDelay)}
             </Grid>
         )
     );

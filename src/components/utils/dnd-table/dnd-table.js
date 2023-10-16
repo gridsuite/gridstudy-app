@@ -26,13 +26,16 @@ import DndTableBottomLeftButtons from './dnd-table-bottom-left-buttons';
 import DndTableBottomRightButtons from './dnd-table-bottom-right-buttons';
 import { TableNumericalInput } from '../rhf-inputs/table-inputs/table-numerical-input';
 import { TableTextInput } from '../rhf-inputs/table-inputs/table-text-input';
-import CheckboxInput from '../rhf-inputs/booleans/checkbox-input';
+import { CheckboxInput, SelectInput } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { SELECTED } from '../field-constants';
-import ErrorInput from '../rhf-inputs/error-inputs/error-input';
-import FieldErrorAlert from '../rhf-inputs/error-inputs/field-error-alert';
+import { ErrorInput } from '@gridsuite/commons-ui';
+import { FieldErrorAlert } from '@gridsuite/commons-ui';
 import { RawReadOnlyInput } from '../rhf-inputs/read-only/raw-read-only-input';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
+import DirectoryItemsInput from '../rhf-inputs/directory-items-input';
+import ChipItemsInput from '../rhf-inputs/chip-items-input';
+import { filledTextField } from '../../dialogs/dialogUtils';
 
 export const MAX_ROWS_NUMBER = 100;
 
@@ -101,14 +104,57 @@ function EditableTableCell({
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
                     previousValue={previousValue}
                     valueModified={valueModified}
+                    adornment={column?.adornment}
+                    isClearable={column?.clearable}
+                    style={{
+                        textAlign: column?.textAlign,
+                    }}
                     {...props}
                 />
             )}
-            {!column.numeric && (
-                <TableTextInput
+            {!column.numeric &&
+                !column.directoryItems &&
+                !column.chipItems &&
+                !column.menuItems &&
+                !column.checkboxItems && (
+                    <TableTextInput
+                        name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                        {...props}
+                    />
+                )}
+            {column.directoryItems && (
+                <DirectoryItemsInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    previousValue={previousValue}
-                    {...props}
+                    equipmentTypes={column.equipmentTypes}
+                    elementType={column.elementType}
+                    titleId={column.titleId}
+                    hideErrorMessage={true}
+                />
+            )}
+            {column.chipItems && (
+                <ChipItemsInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    hideErrorMessage={true}
+                />
+            )}
+            {column.menuItems && (
+                <SelectInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    options={column.equipmentTypes}
+                    fullWidth
+                    disableClearable={true}
+                    size="small"
+                    formProps={{
+                        filledTextField,
+                        multiline: true,
+                    }}
+                />
+            )}
+            {column.checkboxItems && (
+                <CheckboxInput
+                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
+                    options={column.equipmentTypes}
+                    size="small"
                 />
             )}
         </TableCell>
@@ -124,14 +170,18 @@ const DndTable = ({
     createRows,
     handleUploadButton,
     uploadButtonMessageId,
+    handleResetButton,
+    resetButtonMessageId,
     disabled = false,
+    dropDisabled = false,
+    withResetButton = false,
     withLeftButtons = true,
     withAddRowsDialog = true,
     previousValues,
-    modifiedValues,
     disableTableCell,
     getPreviousValue,
     isValueModified,
+    disableAddingRows = false,
 }) => {
     const intl = useIntl();
 
@@ -163,8 +213,7 @@ const DndTable = ({
                               rowIndex,
                               column,
                               arrayFormName,
-                              previousValues,
-                              modifiedValues
+                              previousValues
                           )
                         : disabled
                 }
@@ -174,18 +223,13 @@ const DndTable = ({
                               rowIndex,
                               column,
                               arrayFormName,
-                              previousValues,
-                              modifiedValues
+                              previousValues
                           )
                         : undefined
                 }
                 valueModified={
                     isValueModified
-                        ? isValueModified(
-                              rowIndex,
-                              arrayFormName,
-                              modifiedValues
-                          )
+                        ? isValueModified(rowIndex, arrayFormName)
                         : false
                 }
             />
@@ -299,9 +343,11 @@ const DndTable = ({
         return (
             <TableHead>
                 <TableRow>
-                    <TableCell sx={{ width: '3%' }}>
-                        {/* empty cell for the drag and drop column */}
-                    </TableCell>
+                    {!dropDisabled && (
+                        <TableCell sx={{ width: '3%' }}>
+                            {/* empty cell for the drag and drop column */}
+                        </TableCell>
+                    )}
                     <TableCell sx={{ width: '5%', textAlign: 'center' }}>
                         <MultiCheckbox
                             arrayFormName={arrayFormName}
@@ -344,21 +390,25 @@ const DndTable = ({
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                             >
-                                <Tooltip
-                                    title={intl.formatMessage({
-                                        id: 'DragAndDrop',
-                                    })}
-                                    placement="right"
-                                >
-                                    <TableCell
-                                        sx={{ textAlign: 'center' }}
-                                        {...(disabled
-                                            ? {}
-                                            : { ...provided.dragHandleProps })}
+                                {!dropDisabled && (
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DragAndDrop',
+                                        })}
+                                        placement="right"
                                     >
-                                        <DragIndicatorIcon />
-                                    </TableCell>
-                                </Tooltip>
+                                        <TableCell
+                                            sx={{ textAlign: 'center' }}
+                                            {...(disabled
+                                                ? {}
+                                                : {
+                                                      ...provided.dragHandleProps,
+                                                  })}
+                                        >
+                                            <DragIndicatorIcon />
+                                        </TableCell>
+                                    </Tooltip>
+                                )}
                                 <TableCell sx={{ textAlign: 'center' }}>
                                     <CheckboxInput
                                         name={`${arrayFormName}[${index}].${SELECTED}`}
@@ -386,7 +436,10 @@ const DndTable = ({
                             <TableContainer
                                 ref={provided.innerRef}
                                 {...provided.droppableProps}
-                                sx={{ height: tableHeight }}
+                                sx={{
+                                    height: tableHeight,
+                                    border: 'solid 1px rgba(0,0,0,0.1)',
+                                }}
                             >
                                 <Table stickyHeader size="small" padding="none">
                                     {renderTableHead()}
@@ -403,6 +456,10 @@ const DndTable = ({
                     <DndTableBottomLeftButtons
                         handleUploadButton={handleUploadButton}
                         uploadButtonMessageId={uploadButtonMessageId}
+                        handleResetButton={handleResetButton}
+                        resetButtonMessageId={resetButtonMessageId}
+                        withResetButton={withResetButton}
+                        disableUploadButton={disableAddingRows}
                         disabled={disabled}
                     />
                 )}
@@ -412,6 +469,7 @@ const DndTable = ({
                     handleDeleteButton={deleteSelectedRows}
                     handleMoveUpButton={moveUpSelectedRows}
                     handleMoveDownButton={moveDownSelectedRows}
+                    disableAddingRows={disableAddingRows}
                     disabled={disabled}
                 />
             </Grid>

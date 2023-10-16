@@ -1,9 +1,10 @@
-/*
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -14,17 +15,10 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../utils/config-params';
-import {
-    fetchSvg,
-    getSubstationSingleLineDiagram,
-    getVoltageLevelSingleLineDiagram,
-    getNetworkAreaDiagramUrl,
-} from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import makeStyles from '@mui/styles/makeStyles';
 import {
     useDiagram,
     ViewState,
@@ -39,6 +33,7 @@ import {
     DIAGRAM_MAP_RATIO_MIN_PERCENTAGE,
     NoSvg,
 } from './diagram-common';
+import { makeDiagramSorter } from './diagram-utils';
 import {
     isNodeBuilt,
     isNodeInNotificationList,
@@ -46,15 +41,20 @@ import {
 import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
-import clsx from 'clsx';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
-import { sortByAlign } from '../utils/sort-functions';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
+import {
+    getSubstationSingleLineDiagram,
+    getVoltageLevelSingleLineDiagram,
+} from '../../services/study/network';
+import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
+import { mergeSx } from '../utils/functions';
+import { Box } from '@mui/system';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -277,10 +277,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                             state: state,
                             name: nadTitle,
                             fetchSvg: () =>
-                                fetchSvgData(
-                                    svgUrl,
-                                    DiagramType.NETWORK_AREA_DIAGRAM
-                                ),
+                                createNetworkAreaDiagramView(ids, state, depth), // here 'name' and 'substationsIds' can change so we can't use fetchSvgData
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
                             substationIds: substationsIds,
@@ -323,7 +320,7 @@ const useDisplayView = (studyUuid, currentNode) => {
     );
 };
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     minimizedDiagram: {
         bottom: '60px',
         position: 'absolute',
@@ -333,23 +330,23 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         overflow: 'hidden',
     },
-    availableDiagramSurfaceArea: {
+    availableDiagramSurfaceArea: (theme) => ({
         flexDirection: 'row',
         display: 'inline-flex',
         paddingRight: theme.spacing(6),
-    },
+    }),
     fullscreen: {
         paddingRight: 0,
     },
-}));
+};
 
 export function DiagramPane({
     studyUuid,
-    isComputationRunning,
     showInSpreadsheet,
-    loadFlowStatus,
     currentNode,
     visible,
+    loadFlowStatus,
+    oneBusShortCircuitStatus,
 }) {
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -360,6 +357,7 @@ export function DiagramPane({
     const networkAreaDiagramDepth = useSelector(
         (state) => state.networkAreaDiagramDepth
     );
+
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const [diagramContentSizes, setDiagramContentSizes] = useState(new Map()); // When a diagram content gets its size from the backend, it will update this map of sizes.
 
@@ -373,7 +371,6 @@ export function DiagramPane({
     currentNodeRef.current = currentNode;
     const viewsRef = useRef([]);
     viewsRef.current = views;
-    const classes = useStyles();
 
     /**
      * BUILDS THE DIAGRAMS LIST
@@ -415,9 +412,7 @@ export function DiagramPane({
             if (diagramsToAdd?.length) {
                 // First we add the empty diagrams in the views
                 setViews((views) => {
-                    const updatedViews = views
-                        .concat(diagramsToAdd)
-                        .sort(sortByAlign);
+                    const updatedViews = views.concat(diagramsToAdd);
                     return updatedViews;
                 });
 
@@ -493,6 +488,8 @@ export function DiagramPane({
             // First we add the empty diagram in the views
             setViews((views) => {
                 const newDiagram = {
+                    id: networkAreaIds[0],
+                    ids: networkAreaIds,
                     name: intl.formatMessage(
                         { id: 'LoadingOf' },
                         { value: networkAreaIds.toString() }
@@ -504,14 +501,12 @@ export function DiagramPane({
                 };
                 const updatedViews = views.slice();
                 // if we already have a NAD, we replace it but keep the same object to avoid resizing
-                if (
-                    views.find(
-                        (view) =>
-                            view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                    )
-                ) {
-                    updatedViews[views.length - 1] = {
-                        ...updatedViews[views.length - 1], // trick to avoid resizing
+                const nadViewId = views.findIndex(
+                    (view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                );
+                if (nadViewId >= 0) {
+                    updatedViews[nadViewId] = {
+                        ...updatedViews[nadViewId], // trick to avoid resizing
                         ...newDiagram,
                     };
                 }
@@ -531,9 +526,12 @@ export function DiagramPane({
             }).then((networkAreaDiagramView) => {
                 setViews((views) => {
                     const updatedViews = views.slice();
-                    // the NAD is always in last position
-                    updatedViews[updatedViews.length - 1] = {
-                        ...updatedViews[updatedViews.length - 1],
+                    const nadViewId = views.findIndex(
+                        (view) =>
+                            view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                    );
+                    updatedViews[nadViewId] = {
+                        ...updatedViews[nadViewId],
                         ...networkAreaDiagramView,
                         loadingState: false,
                     };
@@ -684,7 +682,7 @@ export function DiagramPane({
         .filter((view) =>
             [ViewState.OPENED, ViewState.PINNED].includes(view.state)
         )
-        .sort(sortByAlign);
+        .sort(makeDiagramSorter(diagramStates));
     const minimizedDiagrams = views.filter((view) =>
         [ViewState.MINIMIZED].includes(view.state)
     );
@@ -718,12 +716,16 @@ export function DiagramPane({
     const updateDiagramsByIds = useCallback(
         (ids, fromScratch) => {
             if (ids?.length) {
+                // we remove duplicates (because of NAD)
+                let uniqueIds = ids.filter(
+                    (id, index) => ids.indexOf(id) === index
+                );
                 // Before we get the results, we set loadingState = true
                 setViews((views) => {
                     const updatedViews = views.slice();
                     for (let i = 0; i < views.length; i++) {
                         const currentView = views[i];
-                        if (ids.includes(currentView.id)) {
+                        if (uniqueIds.includes(currentView.id)) {
                             updatedViews[i] = {
                                 ...updatedViews[i],
                                 loadingState: true,
@@ -735,7 +737,7 @@ export function DiagramPane({
                 // Then we add the data once we have it
                 for (let i = 0; i < viewsRef.current.length; i++) {
                     const currentView = viewsRef.current[i];
-                    if (ids.includes(currentView.id)) {
+                    if (uniqueIds.includes(currentView.id)) {
                         let updatedDiagramPromise;
                         if (fromScratch) {
                             updatedDiagramPromise = createView(currentView);
@@ -766,25 +768,20 @@ export function DiagramPane({
         let idsToUpdate = viewsRef.current
             .filter(
                 (diagramView) =>
+                    !diagramView.loadingState && // no need to reload if it's already loading
                     diagramView.nodeId === currentNodeRef.current?.id
             )
             .map((diagramView) => diagramView.id);
         if (idsToUpdate?.length) {
-            // we remove duplicates (because of NAD)
-            idsToUpdate = idsToUpdate.filter(
-                (id, index) => idsToUpdate.indexOf(id) === index
-            );
             updateDiagramsByIds(idsToUpdate, false);
         }
     }, [updateDiagramsByIds]);
 
     // When the current node change, we reset all the diagrams
     useEffect(() => {
-        let allDiagramIds = viewsRef.current.map((view) => view.id);
-        // we remove duplicates (because of NAD)
-        allDiagramIds = allDiagramIds.filter(
-            (id, index) => allDiagramIds.indexOf(id) === index
-        );
+        let allDiagramIds = viewsRef.current
+            .filter((view) => !view.loadingState) // no need to reload if it's already loading
+            .map((view) => view.id);
         updateDiagramsByIds(allDiagramIds, true);
     }, [currentNode, updateDiagramsByIds]);
 
@@ -792,7 +789,8 @@ export function DiagramPane({
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'loadflowResult'
             ) {
                 //TODO reload data more intelligently
                 updateDiagramsByCurrentNode();
@@ -1047,10 +1045,11 @@ export function DiagramPane({
     return (
         <AutoSizer>
             {({ width, height }) => (
-                <div
-                    className={clsx(classes.availableDiagramSurfaceArea, {
-                        [classes.fullscreen]: fullScreenDiagram?.id,
-                    })}
+                <Box
+                    sx={mergeSx(
+                        styles.availableDiagramSurfaceArea,
+                        fullScreenDiagram?.id && styles.fullscreen
+                    )}
                     style={{
                         width: width + 'px',
                         height: height + 'px',
@@ -1069,9 +1068,7 @@ export function DiagramPane({
                                 array[index]?.align === 'right' &&
                                     (index === 0 ||
                                         array[index - 1]?.align === 'left') && (
-                                        <div
-                                            className={classes.separator}
-                                        ></div>
+                                        <Box sx={styles.separator}></Box>
                                     )
                             }
                             <Diagram
@@ -1101,8 +1098,8 @@ export function DiagramPane({
                                         DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
                                         loadFlowStatus={loadFlowStatus}
-                                        isComputationRunning={
-                                            isComputationRunning
+                                        oneBusShortCircuitStatus={
+                                            oneBusShortCircuitStatus
                                         }
                                         showInSpreadsheet={showInSpreadsheet}
                                         studyUuid={studyUuid}
@@ -1131,7 +1128,7 @@ export function DiagramPane({
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
                         spacing={1}
-                        className={classes.minimizedDiagram}
+                        sx={styles.minimizedDiagram}
                         style={{
                             display: !fullScreenDiagram?.id ? '' : 'none', // We hide this stack if a diagram is in fullscreen
                         }}
@@ -1166,7 +1163,7 @@ export function DiagramPane({
                             />
                         ))}
                     </Stack>
-                </div>
+                </Box>
             )}
         </AutoSizer>
     );
@@ -1177,6 +1174,7 @@ DiagramPane.propTypes = {
     currentNode: PropTypes.object,
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
-    loadFlowStatus: PropTypes.any,
+    loadFlowStatus: PropTypes.string.isRequired,
+    oneBusShortCircuitStatus: PropTypes.string.isRequired,
     visible: PropTypes.bool,
 };

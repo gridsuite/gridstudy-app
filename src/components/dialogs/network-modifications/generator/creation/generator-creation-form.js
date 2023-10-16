@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -17,7 +17,6 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
-    STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
 } from 'components/utils/field-constants';
@@ -30,15 +29,15 @@ import {
     MVAPowerAdornment,
     OhmAdornment,
 } from '../../../dialogUtils';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 import { ENERGY_SOURCES } from 'components/network/constants';
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
-import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
-import SetPointsForm from '../set-points/set-points-form';
-import { fetchVoltageLevelsIdAndTopology } from 'utils/rest-api';
+import { FloatInput } from '@gridsuite/commons-ui';
+import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import SetPointsForm from '../../../set-points/set-points-form';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
@@ -46,7 +45,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))
@@ -120,7 +119,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const transientReactanceField = (
         <FloatInput
             name={TRANSIENT_REACTANCE}
-            label={'TransientReactance'}
+            label={'TransientReactanceForm'}
             adornment={OhmAdornment}
         />
     );
@@ -128,7 +127,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const transformerReactanceField = (
         <FloatInput
             name={TRANSFORMER_REACTANCE}
-            label={'TransformerReactance'}
+            label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
         />
     );
@@ -136,13 +135,9 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const plannedActivePowerSetPointField = (
         <FloatInput
             name={PLANNED_ACTIVE_POWER_SET_POINT}
-            label={'PlannedActivePowerSetPoint'}
+            label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
         />
-    );
-
-    const startupCostField = (
-        <FloatInput name={STARTUP_COST} label={'StartupCost'} />
     );
 
     const marginalCostField = (
@@ -180,6 +175,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             </Grid>
 
             {/* Reactive limits part */}
+            <GridSection title="ReactiveLimits" />
             <ReactiveLimitsForm />
 
             {/* Set points part */}
@@ -197,13 +193,10 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             </Grid>
 
             {/* Cost of start part */}
-            <GridSection title="Startup" />
+            <GridSection title="GenerationDispatch" />
             <Grid container spacing={2}>
                 {gridItem(plannedActivePowerSetPointField, 4)}
-                <Grid container item spacing={2}>
-                    {gridItem(startupCostField, 4)}
-                    {gridItem(marginalCostField, 4)}
-                </Grid>
+                {gridItem(marginalCostField, 4)}
                 <Grid container item spacing={2}>
                     {gridItem(plannedOutageRateField, 4)}
                     {gridItem(forcedOutageRateField, 4)}

@@ -4,15 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { useNodeData } from '../../study-container';
-import {
-    fetchDynamicSimulationResult,
-    fetchDynamicSimulationResultTimeSeries,
-} from '../../../utils/rest-api';
 import WaitingLoader from '../../utils/waiting-loader';
 import DynamicSimulationResult from './dynamic-simulation-result';
 import { useCallback } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    fetchDynamicSimulationResult,
+    fetchDynamicSimulationResultTimeSeries,
+} from '../../../services/study/dynamic-simulation';
 
 const dynamicSimulationResultInvalidations = ['dynamicSimulationResult'];
 const loadingMessage = 'LoadingRemoteData';

@@ -10,6 +10,7 @@ export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
 export const MAX_NUMBER_OF_IMPACTED_SUBSTATIONS = 500;
 export const FORM_LOADING_DELAY = 200;
+export const RESULTS_LOADING_DELAY = 200;
 
 // Relevant LoadType Powsybl enum values
 export const LOAD_TYPES = [
@@ -152,4 +153,15 @@ export const BUILD_STATUS = {
 export const SWITCH_TYPE = {
     BREAKER: { id: 'BREAKER', label: 'Breaker' },
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
+};
+
+export const VSC_CONVERTER_MODE = {
+    SIDE_1_RECTIFIER_SIDE_2_INVERTER: {
+        id: 'SIDE_1_RECTIFIER_SIDE_2_INVERTER',
+        label: 'side1RectifierSide2Inverter',
+    },
+    SIDE_1_INVERTER_SIDE_2_RECTIFIER: {
+        id: 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
+        label: 'side1InverterSide2Rectifier',
+    },
 };

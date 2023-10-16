@@ -6,23 +6,14 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    changeNetworkModificationOrder,
-    copyOrMoveModifications,
-    deleteModifications,
-    fetchNetworkModification,
-    fetchNetworkModifications,
-} from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import NetworkModificationDialog from 'components/dialogs/network-modifications-dialog';
-import makeStyles from '@mui/styles/makeStyles';
+import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
 import { ModificationListItem } from './modification-list-item';
 import {
     Checkbox,
     CircularProgress,
-    Fab,
     Toolbar,
     Tooltip,
     Typography,
@@ -32,8 +23,8 @@ import { useParams } from 'react-router-dom';
 import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import LineCreationDialog from 'components/dialogs/network-modifications/line/creation/line-creation-dialog';
-import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer-creation/two-windings-transformer-creation-dialog';
-import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator-creation/shunt-compensator-creation-dialog';
+import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
+import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
 import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog.js';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -63,28 +54,40 @@ import GenerationDispatchDialog from 'components/dialogs/network-modifications/g
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
 import { UPDATE_TYPE } from 'components/network/constants';
-import { FetchStatus } from 'utils/rest-api';
 import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
+import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
+import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
+import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
+import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
+import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
 
-const useStyles = makeStyles((theme) => ({
-    listContainer: {
+import { fetchNetworkModification } from '../../../services/network-modification';
+import {
+    changeNetworkModificationOrder,
+    stashModifications,
+    fetchNetworkModifications,
+} from '../../../services/study/network-modifications';
+import { FetchStatus } from '../../../services/utils';
+import { copyOrMoveModifications } from '../../../services/study';
+import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
+import { Box } from '@mui/system';
+import { RestoreFromTrash } from '@mui/icons-material';
+
+const styles = {
+    listContainer: (theme) => ({
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
-    },
-    list: {
+    }),
+    list: (theme) => ({
         paddingTop: theme.spacing(0),
         flexGrow: 1,
-    },
-    addButton: {
-        position: 'absolute',
-        bottom: theme.spacing(-1.5),
-        right: 0,
-        margin: theme.spacing(3),
-    },
-    modificationsTitle: {
+    }),
+    modificationsTitle: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         margin: theme.spacing(0),
@@ -92,46 +95,42 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
         overflow: 'hidden',
-    },
-    toolbar: {
-        padding: theme.spacing(0),
+    }),
+    toolbar: (theme) => ({
+        '&': {
+            // Necessary to overrides some @media specific styles that are defined elsewhere
+            padding: 0,
+            minHeight: 0,
+        },
         border: theme.spacing(1),
-        minHeight: 0,
         margin: 0,
         flexShrink: 0,
-    },
-
-    toolbarIcon: {
+    }),
+    toolbarIcon: (theme) => ({
         marginRight: theme.spacing(1),
-    },
-    toolbarCheckbox: {
+    }),
+    toolbarCheckbox: (theme) => ({
         marginLeft: theme.spacing(1.5),
-    },
+    }),
     filler: {
         flexGrow: 1,
     },
-    dividerTool: {
-        background: theme.palette.primary.main,
-    },
-    circularProgress: {
+    circularProgress: (theme) => ({
         marginRight: theme.spacing(2),
         color: theme.palette.primary.contrastText,
-    },
-    formattedMessageProgress: {
-        marginTop: theme.spacing(2),
-    },
-    notification: {
+    }),
+    notification: (theme) => ({
         flex: 1,
         alignContent: 'center',
         justifyContent: 'center',
         marginTop: theme.spacing(4),
         textAlign: 'center',
         color: theme.palette.primary.main,
-    },
-    icon: {
+    }),
+    icon: (theme) => ({
         width: theme.spacing(3),
-    },
-}));
+    }),
+};
 
 function isChecked(s1) {
     return s1 !== 0;
@@ -154,6 +153,7 @@ const NetworkModificationNodeEditor = () => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackInfo, snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
+    const [modificationsToRestore, setModificationsToRestore] = useState([]);
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const currentNodeIdRef = useRef(); // initial empty to get first update
@@ -163,6 +163,8 @@ const NetworkModificationNodeEditor = () => {
     const [toggleSelectAll, setToggleSelectAll] = useState();
     const [copiedModifications, setCopiedModifications] = useState([]);
     const [copyInfos, setCopyInfos] = useState(null);
+    const copyInfosRef = useRef();
+    copyInfosRef.current = copyInfos;
 
     const [isDragging, setIsDragging] = useState(false);
 
@@ -171,22 +173,26 @@ const NetworkModificationNodeEditor = () => {
     const [editDataFetchStatus, setEditDataFetchStatus] = useState(
         FetchStatus.IDLE
     );
+    const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
+    const buttonAddRef = useRef();
 
     const cleanClipboard = useCallback(() => {
-        if (copiedModifications.length <= 0) {
-            return;
-        }
         setCopyInfos(null);
-        setCopiedModifications([]);
-        snackInfo({
-            messageId: 'CopiedModificationInvalidationMessage',
+        setCopiedModifications((oldCopiedModifications) => {
+            if (oldCopiedModifications.length) {
+                snackInfo({
+                    messageId: 'CopiedModificationInvalidationMessage',
+                });
+                return [];
+            }
         });
-    }, [snackInfo, copiedModifications]);
+    }, [snackInfo]);
 
     // TODO this is not complete.
     // We should clean Clipboard on notifications when another user edit
@@ -198,7 +204,7 @@ const NetworkModificationNodeEditor = () => {
         }
     };
 
-    const handleCloseDialog = (e, reason) => {
+    const handleCloseDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
@@ -223,113 +229,179 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    const dialogs = {
-        LOAD_CREATION: {
-            label: 'CreateLoad',
-            dialog: () => adapt(LoadCreationDialog),
-            icon: <AddIcon />,
+    const menuDefinition = [
+        {
+            id: 'CREATE',
+            label: 'Create',
+            subItems: [
+                {
+                    id: MODIFICATION_TYPES.BATTERY_CREATION.type,
+                    label: 'BATTERY',
+                    action: () => adapt(BatteryCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LOAD_CREATION.type,
+                    label: 'LOAD',
+                    action: () => adapt(LoadCreationDialog),
+                },
+                {
+                    id: 'GENERATOR_CREATION',
+                    label: 'GENERATOR',
+                    action: () => adapt(GeneratorCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
+                    label: 'ShuntCompensator',
+                    action: () => adapt(ShuntCompensatorCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LINE_CREATION.type,
+                    label: 'LINE',
+                    action: () => adapt(LineCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_CREATION
+                        .type,
+                    label: 'TWO_WINDINGS_TRANSFORMER',
+                    action: () => adapt(TwoWindingsTransformerCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_CREATION.type,
+                    label: 'VOLTAGE_LEVEL',
+                    action: () => adapt(VoltageLevelCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
+                    label: 'SUBSTATION',
+                    action: () => adapt(SubstationCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.VSC_CREATION.type,
+                    label: 'VSC',
+                    action: () => adapt(VscCreationDialog),
+                },
+            ],
         },
-        LOAD_MODIFICATION: {
-            label: 'ModifyLoad',
-            dialog: () => adapt(LoadModificationDialog),
-            icon: <AddIcon />,
+        {
+            id: 'EDIT',
+            label: 'ModifyFromMenu',
+            subItems: [
+                {
+                    id: MODIFICATION_TYPES.BATTERY_MODIFICATION.type,
+                    label: 'BATTERY',
+                    action: () => adapt(BatteryModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
+                    label: 'LOAD',
+                    action: () => adapt(LoadModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
+                    label: 'GENERATOR',
+                    action: () => adapt(GeneratorModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
+                    label: 'ShuntCompensator',
+                    action: () => adapt(ShuntCompensatorModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LINE_MODIFICATION.type,
+                    label: 'LINE',
+                    action: () => adapt(LineModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION
+                        .type,
+                    label: 'TWO_WINDINGS_TRANSFORMER',
+                    action: () =>
+                        adapt(TwoWindingsTransformerModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
+                    label: 'VoltageLevel',
+                    action: () => adapt(VoltageLevelModificationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
+                    label: 'SUBSTATION',
+                    action: () => adapt(SubstationModificationDialog),
+                },
+            ],
         },
-        GENERATOR_CREATION: {
-            label: 'CreateGenerator',
-            dialog: () => adapt(GeneratorCreationDialog),
-            icon: <AddIcon />,
+        {
+            id: 'EQUIPMENT_DELETION',
+            label: 'DeleteContingencyList',
+            action: () => adapt(EquipmentDeletionDialog),
         },
-        GENERATOR_MODIFICATION: {
-            label: 'ModifyGenerator',
-            dialog: () => adapt(GeneratorModificationDialog),
-            icon: <AddIcon />,
+        {
+            id: 'ATTACHING_SPLITTING_LINES',
+            label: 'AttachingAndSplittingLines',
+            subItems: [
+                {
+                    id: MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type,
+                    label: 'LineSplitWithVoltageLevel',
+                    action: () => adapt(LineSplitWithVoltageLevelDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type,
+                    label: 'LineAttachToVoltageLevel',
+                    action: () => adapt(LineAttachToVoltageLevelDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
+                    label: 'LinesAttachToSplitLines',
+                    action: () => adapt(LinesAttachToSplitLinesDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type,
+                    label: 'DeleteVoltageLevelOnLine',
+                    action: () => adapt(DeleteVoltageLevelOnLineDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type,
+                    label: 'DeleteAttachingLine',
+                    action: () => adapt(DeleteAttachingLineDialog),
+                },
+            ],
         },
-        SHUNT_COMPENSATOR_CREATION: {
-            label: 'CreateShuntCompensator',
-            dialog: () => adapt(ShuntCompensatorCreationDialog),
-            icon: <AddIcon />,
+        {
+            id: 'GENERATION_AND_LOAD',
+            label: 'GenerationAndLoad',
+            subItems: [
+                {
+                    id: MODIFICATION_TYPES.GENERATOR_SCALING.type,
+                    label: 'GeneratorScaling',
+                    action: () => adapt(GeneratorScalingDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.LOAD_SCALING.type,
+                    label: 'LoadScaling',
+                    action: () => adapt(LoadScalingDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
+                    label: 'GenerationDispatch',
+                    action: () => adapt(GenerationDispatchDialog),
+                },
+            ],
         },
-        LINE_CREATION: {
-            label: 'CreateLine',
-            dialog: () => adapt(LineCreationDialog),
-            icon: <AddIcon />,
+        {
+            id: 'VOLTAGE_INIT_MODIFICATION',
+            label: 'VoltageInitModification',
+            hide: true,
+            action: () => adapt(VoltageInitModificationDialog),
         },
-        LINE_MODIFICATION: {
-            label: 'ModifyLine',
-            dialog: () => adapt(LineModificationDialog),
-            icon: <AddIcon />,
-        },
-        TWO_WINDINGS_TRANSFORMER_CREATION: {
-            label: 'CreateTwoWindingsTransformer',
-            dialog: () => adapt(TwoWindingsTransformerCreationDialog),
-            icon: <AddIcon />,
-        },
-        SUBSTATION_CREATION: {
-            label: 'CreateSubstation',
-            dialog: () => adapt(SubstationCreationDialog),
-            icon: <AddIcon />,
-        },
-        SUBSTATION_MODIFICATION: {
-            label: 'ModifySubstation',
-            dialog: () => adapt(SubstationModificationDialog),
-            icon: <AddIcon />,
-        },
-        VOLTAGE_LEVEL_CREATION: {
-            label: 'CreateVoltageLevel',
-            dialog: () => adapt(VoltageLevelCreationDialog),
-            icon: <AddIcon />,
-        },
-        VOLTAGE_LEVEL_MODIFICATION: {
-            label: 'ModifyVoltageLevel',
-            dialog: () => adapt(VoltageLevelModificationDialog),
-            icon: <AddIcon />,
-        },
-        LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
-            label: 'LineSplitWithVoltageLevel',
-            dialog: () => adapt(LineSplitWithVoltageLevelDialog),
-            icon: <AddIcon />,
-        },
-        LINE_ATTACH_TO_VOLTAGE_LEVEL: {
-            label: 'LineAttachToVoltageLevel',
-            dialog: () => adapt(LineAttachToVoltageLevelDialog),
-            icon: <AddIcon />,
-        },
-        LINES_ATTACH_TO_SPLIT_LINES: {
-            label: 'LinesAttachToSplitLines',
-            dialog: () => adapt(LinesAttachToSplitLinesDialog),
-            icon: <AddIcon />,
-        },
-        GENERATOR_SCALING: {
-            label: 'GeneratorScaling',
-            dialog: () => adapt(GeneratorScalingDialog),
-            icon: <AddIcon />,
-        },
-        LOAD_SCALING: {
-            label: 'LoadScaling',
-            dialog: () => adapt(LoadScalingDialog),
-            icon: <AddIcon />,
-        },
-        DELETE_VOLTAGE_LEVEL_ON_LINE: {
-            label: 'DeleteVoltageLevelOnLine',
-            dialog: () => adapt(DeleteVoltageLevelOnLineDialog),
-            icon: <AddIcon />,
-        },
-        DELETE_ATTACHING_LINE: {
-            label: 'DeleteAttachingLine',
-            dialog: () => adapt(DeleteAttachingLineDialog),
-            icon: <AddIcon />,
-        },
-        EQUIPMENT_DELETION: {
-            label: 'DeleteEquipment',
-            dialog: () => adapt(EquipmentDeletionDialog),
-            icon: <DeleteIcon />,
-        },
-        GENERATION_DISPATCH: {
-            label: 'GenerationDispatch',
-            dialog: () => adapt(GenerationDispatchDialog),
-            icon: <AddIcon />,
-        },
-    };
+    ];
+
+    const subMenuItemsList = menuDefinition.reduce(
+        (actions, currentMenuItem) =>
+            currentMenuItem.subItems === undefined
+                ? [...actions, currentMenuItem]
+                : [...actions, ...currentMenuItem.subItems],
+        []
+    );
 
     const fillNotification = useCallback(
         (study, messageId) => {
@@ -367,13 +439,36 @@ const NetworkModificationNodeEditor = () => {
         [fillNotification]
     );
 
+    const dofetchNetworkModificationsToRestore = useCallback(() => {
+        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+            return;
+        }
+        setLaunchLoader(true);
+        fetchNetworkModifications(studyUuid, currentNode.id, true)
+            .then((res) => {
+                if (currentNode.id === currentNodeIdRef.current) {
+                    setModificationsToRestore(res);
+                }
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                });
+            })
+            .finally(() => {
+                setPendingState(false);
+                setLaunchLoader(false);
+                dispatch(setModificationsInProgress(false));
+            });
+    }, [studyUuid, currentNode?.id, currentNode?.type, snackError, dispatch]);
+
     const dofetchNetworkModifications = useCallback(() => {
         // Do not fetch modifications on the root node
         if (currentNode?.type !== 'NETWORK_MODIFICATION') {
             return;
         }
         setLaunchLoader(true);
-        fetchNetworkModifications(studyUuid, currentNode.id)
+        fetchNetworkModifications(studyUuid, currentNode.id, false)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -410,11 +505,33 @@ const NetworkModificationNodeEditor = () => {
             // Current node has changed then clear the modifications list
             setModifications([]);
             dofetchNetworkModifications();
+
+            setModificationsToRestore([]);
+            dofetchNetworkModificationsToRestore();
         }
-    }, [currentNode, dofetchNetworkModifications]);
+    }, [
+        currentNode,
+        dofetchNetworkModifications,
+        dofetchNetworkModificationsToRestore,
+    ]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeDeleted'
+            ) {
+                if (
+                    copyInfosRef.current &&
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) =>
+                            nodeId === copyInfosRef.current.originNodeUuid
+                    )
+                ) {
+                    // Must clean modifications clipboard if the origin Node is removed
+                    cleanClipboard();
+                }
+            }
             if (
                 currentNodeIdRef.current !==
                 studyUpdatedForce.eventData.headers['parentNode']
@@ -441,6 +558,7 @@ const NetworkModificationNodeEditor = () => {
                 // Do not clear the modifications list, because currentNode is the concerned one
                 // this allow to append new modifications to the existing list.
                 dofetchNetworkModifications();
+                dofetchNetworkModificationsToRestore();
                 dispatch(
                     removeNotificationByNode([
                         studyUpdatedForce.eventData.headers['parentNode'],
@@ -452,36 +570,38 @@ const NetworkModificationNodeEditor = () => {
     }, [
         dispatch,
         dofetchNetworkModifications,
+        dofetchNetworkModificationsToRestore,
         manageNotification,
         studyUpdatedForce,
+        cleanClipboard,
     ]);
 
-    const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
+    const [openNetworkModificationsMenu, setOpenNetworkModificationsMenu] =
         useState(false);
 
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
-    const classes = useStyles();
+    const mapDataLoading = useSelector((state) => state.mapDataLoading);
 
     const openNetworkModificationConfiguration = useCallback(() => {
-        setOpenNetworkModificationsDialog(true);
+        setOpenNetworkModificationsMenu(true);
     }, []);
 
     const closeNetworkModificationConfiguration = () => {
-        setOpenNetworkModificationsDialog(false);
+        setOpenNetworkModificationsMenu(false);
         setEditData(undefined);
         setEditDataFetchStatus(FetchStatus.IDLE);
     };
+    const openRestoreModificationDialog = useCallback(() => {
+        dofetchNetworkModificationsToRestore();
+        setRestoreDialogOpen(true);
+    }, [dofetchNetworkModificationsToRestore]);
 
     const doDeleteModification = useCallback(() => {
         const selectedModificationsUuid = [...selectedItems.values()].map(
             (item) => item.uuid
         );
-        deleteModifications(
-            studyUuid,
-            currentNode.id,
-            selectedModificationsUuid
-        )
+        stashModifications(studyUuid, currentNode.id, selectedModificationsUuid)
             .then(() => {
                 //if one of the deleted element was in the clipboard we invalidate the clipboard
                 if (
@@ -529,8 +649,11 @@ const NetworkModificationNodeEditor = () => {
 
     const doCopyModifications = useCallback(() => {
         setCopiedModifications(selectedModificationsIds());
-        setCopyInfos({ copyType: CopyType.COPY });
-    }, [selectedModificationsIds]);
+        setCopyInfos({
+            copyType: CopyType.COPY,
+            originNodeUuid: currentNode.id,
+        });
+    }, [currentNode?.id, selectedModificationsIds]);
 
     const doPasteModifications = useCallback(() => {
         if (copyInfos.copyType === CopyType.MOVE) {
@@ -607,7 +730,8 @@ const NetworkModificationNodeEditor = () => {
             });
     };
 
-    const onOpenDialog = (id) => {
+    const onItemClick = (id) => {
+        setOpenNetworkModificationsMenu(false);
         setEditDialogOpen(id);
         setIsUpdate(false);
     };
@@ -617,7 +741,9 @@ const NetworkModificationNodeEditor = () => {
     }, []);
 
     const renderDialog = () => {
-        return dialogs[editDialogOpen].dialog();
+        return subMenuItemsList
+            .find((menuItem) => menuItem.id === editDialogOpen)
+            .action();
     };
 
     const commit = useCallback(
@@ -673,16 +799,18 @@ const NetworkModificationNodeEditor = () => {
             >
                 <Droppable
                     droppableId="network-modification-list"
-                    isDropDisabled={isLoading() || isAnyNodeBuilding}
+                    isDropDisabled={
+                        isLoading() || isAnyNodeBuilding || mapDataLoading
+                    }
                 >
                     {(provided) => (
-                        <div
-                            className={classes.listContainer}
+                        <Box
+                            sx={styles.listContainer}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
                             <CheckboxList
-                                className={classes.list}
+                                sx={styles.list}
                                 onChecked={setSelectedItems}
                                 values={modifications}
                                 itemComparator={(a, b) => a.uuid === b.uuid}
@@ -693,13 +821,14 @@ const NetworkModificationNodeEditor = () => {
                                         isDragging={isDragging}
                                         isOneNodeBuilding={isAnyNodeBuilding}
                                         disabled={isLoading()}
+                                        listSize={modifications.length}
                                         {...props}
                                     />
                                 )}
                                 toggleSelectAll={toggleSelectAll}
                             />
                             {provided.placeholder}
-                        </div>
+                        </Box>
                     )}
                 </Droppable>
             </DragDropContext>
@@ -708,49 +837,49 @@ const NetworkModificationNodeEditor = () => {
 
     const renderNetworkModificationsListTitleLoading = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     <CircularProgress
                         size={'1em'}
-                        className={classes.circularProgress}
+                        sx={styles.circularProgress}
                     />
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage id={messageId} />
                 </Typography>
-            </div>
+            </Box>
         );
     };
 
     const renderNetworkModificationsListTitleUpdating = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     <CircularProgress
                         size={'1em'}
-                        className={classes.circularProgress}
+                        sx={styles.circularProgress}
                     />
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'network_modifications/modifications'}
                     />
                 </Typography>
-            </div>
+            </Box>
         );
     };
 
     const renderNetworkModificationsListTitle = () => {
         return (
-            <div className={classes.modificationsTitle}>
-                <div className={classes.icon}>
+            <Box sx={styles.modificationsTitle}>
+                <Box sx={styles.icon}>
                     {pendingState && (
                         <CircularProgress
                             size={'1em'}
-                            className={classes.circularProgress}
+                            sx={styles.circularProgress}
                         />
                     )}
-                </div>
+                </Box>
                 <Typography noWrap>
                     <FormattedMessage
                         id={'network_modification/modificationsCount'}
@@ -760,10 +889,20 @@ const NetworkModificationNodeEditor = () => {
                         }}
                     />
                 </Typography>
-            </div>
+            </Box>
         );
     };
-
+    const renderNetworkModificationsToRestoreDialog = () => {
+        return (
+            <RestoreModificationDialog
+                open={restoreDialogOpen}
+                modifToRestore={modificationsToRestore}
+                currentNode={currentNode}
+                studyUuid={studyUuid}
+                onClose={() => setRestoreDialogOpen(false)}
+            />
+        );
+    };
     const renderPaneSubtitle = () => {
         if (isLoading() && messageId) {
             return renderNetworkModificationsListTitleLoading();
@@ -776,9 +915,9 @@ const NetworkModificationNodeEditor = () => {
 
     return (
         <>
-            <Toolbar className={classes.toolbar}>
+            <Toolbar sx={styles.toolbar}>
                 <Checkbox
-                    className={classes.toolbarCheckbox}
+                    sx={styles.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
                     checked={isChecked(selectedItems.size)}
@@ -789,14 +928,24 @@ const NetworkModificationNodeEditor = () => {
                     disableRipple
                     onClick={toggleSelectAllModifications}
                 />
-                <div className={classes.filler} />
+                <Box sx={styles.filler} />
+                <IconButton
+                    sx={styles.toolbarIcon}
+                    size={'small'}
+                    ref={buttonAddRef}
+                    onClick={openNetworkModificationConfiguration}
+                    disabled={isAnyNodeBuilding || mapDataLoading}
+                >
+                    <AddIcon />
+                </IconButton>
                 <IconButton
                     onClick={doCutModifications}
                     size={'small'}
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     disabled={
                         selectedItems.size === 0 ||
                         isAnyNodeBuilding ||
+                        mapDataLoading ||
                         !currentNode
                     }
                 >
@@ -805,8 +954,12 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doCopyModifications}
                     size={'small'}
-                    className={classes.toolbarIcon}
-                    disabled={selectedItems.size === 0 || isAnyNodeBuilding}
+                    sx={styles.toolbarIcon}
+                    disabled={
+                        selectedItems.size === 0 ||
+                        isAnyNodeBuilding ||
+                        mapDataLoading
+                    }
                 >
                     <ContentCopyIcon />
                 </IconButton>
@@ -826,10 +979,11 @@ const NetworkModificationNodeEditor = () => {
                         <IconButton
                             onClick={doPasteModifications}
                             size={'small'}
-                            className={classes.toolbarIcon}
+                            sx={styles.toolbarIcon}
                             disabled={
                                 !(copiedModifications.length > 0) ||
                                 isAnyNodeBuilding ||
+                                mapDataLoading ||
                                 !currentNode
                             }
                         >
@@ -840,35 +994,57 @@ const NetworkModificationNodeEditor = () => {
                 <IconButton
                     onClick={doDeleteModification}
                     size={'small'}
-                    className={classes.toolbarIcon}
+                    sx={styles.toolbarIcon}
                     disabled={
                         !(selectedItems?.size > 0) ||
                         isAnyNodeBuilding ||
+                        mapDataLoading ||
                         !currentNode
                     }
                 >
                     <DeleteIcon />
                 </IconButton>
+                <Tooltip
+                    title={
+                        <FormattedMessage
+                            id={'NbModificationToRestore'}
+                            values={{
+                                nb: modificationsToRestore.length,
+                                several:
+                                    modificationsToRestore.length > 1
+                                        ? 's'
+                                        : '',
+                            }}
+                        />
+                    }
+                >
+                    <span>
+                        <IconButton
+                            onClick={openRestoreModificationDialog}
+                            size={'small'}
+                            sx={styles.toolbarIcon}
+                            disabled={
+                                modificationsToRestore.length === 0 ||
+                                isAnyNodeBuilding
+                            }
+                        >
+                            <RestoreFromTrash />
+                        </IconButton>
+                    </span>
+                </Tooltip>
             </Toolbar>
+            {restoreDialogOpen && renderNetworkModificationsToRestoreDialog()}
+
             {renderPaneSubtitle()}
 
             {renderNetworkModificationsList()}
-            <Fab
-                className={classes.addButton}
-                color="primary"
-                size="medium"
-                onClick={openNetworkModificationConfiguration}
-                disabled={isAnyNodeBuilding}
-            >
-                <AddIcon />
-            </Fab>
 
-            <NetworkModificationDialog
-                open={openNetworkModificationsDialog}
+            <NetworkModificationsMenu
+                open={openNetworkModificationsMenu}
                 onClose={closeNetworkModificationConfiguration}
-                currentNodeUuid={currentNode?.id}
-                onOpenDialog={onOpenDialog}
-                dialogs={dialogs}
+                onItemClick={onItemClick}
+                anchorEl={buttonAddRef.current}
+                menuDefinition={menuDefinition}
             />
             {editDialogOpen && renderDialog()}
         </>

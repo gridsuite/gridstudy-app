@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 export const MODIFICATION_TYPES = {
     GROOVY_SCRIPT: {
         type: 'GROOVY_SCRIPT',
@@ -7,6 +14,12 @@ export const MODIFICATION_TYPES = {
     },
     LOAD_MODIFICATION: {
         type: 'LOAD_MODIFICATION',
+    },
+    BATTERY_CREATION: {
+        type: 'BATTERY_CREATION',
+    },
+    BATTERY_MODIFICATION: {
+        type: 'BATTERY_MODIFICATION',
     },
     GENERATOR_CREATION: {
         type: 'GENERATOR_CREATION',
@@ -35,8 +48,17 @@ export const MODIFICATION_TYPES = {
     SHUNT_COMPENSATOR_CREATION: {
         type: 'SHUNT_COMPENSATOR_CREATION',
     },
+    SHUNT_COMPENSATOR_MODIFICATION: {
+        type: 'SHUNT_COMPENSATOR_MODIFICATION',
+    },
     TWO_WINDINGS_TRANSFORMER_CREATION: {
         type: 'TWO_WINDINGS_TRANSFORMER_CREATION',
+    },
+    TWO_WINDINGS_TRANSFORMER_MODIFICATION: {
+        type: 'TWO_WINDINGS_TRANSFORMER_MODIFICATION',
+    },
+    VSC_CREATION: {
+        type: 'VSC_CREATION',
     },
     EQUIPMENT_DELETION: {
         type: 'EQUIPMENT_DELETION',
@@ -70,5 +92,11 @@ export const MODIFICATION_TYPES = {
     },
     GENERATION_DISPATCH: {
         type: 'GENERATION_DISPATCH',
+    },
+    VOLTAGE_INIT_MODIFICATION: {
+        type: 'VOLTAGE_INIT_MODIFICATION',
+    },
+    CONVERTER_STATION_CREATION: {
+        type: 'CONVERTER_STATION_CREATION',
     },
 };

@@ -4,20 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import VirtualizedTable from '../../utils/virtualized-table';
 import { useIntl } from 'react-intl';
 import { Paper, TableCell } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { Lens } from '@mui/icons-material';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import { green, red } from '@mui/material/colors';
 
 /* must be coherent to LoadFlowResult component */
-const useStyles = makeStyles((theme) => ({
+const styles = {
     tablePaper: {
         flexGrow: 1,
-        height: 100,
+        height: '100px',
     },
     cell: {
         display: 'flex',
@@ -34,24 +34,19 @@ const useStyles = makeStyles((theme) => ({
     fail: {
         color: red[500],
     },
-}));
+};
 
 const DynamicSimulationResultTable = ({ result }) => {
     const intl = useIntl();
-    const classes = useStyles();
 
     function StatusCellRender(cellData) {
         const status = cellData.rowData[cellData.dataKey];
-        const color = status === 'CONVERGED' ? classes.succeed : classes.fail;
+        const color = status === 'CONVERGED' ? styles.succeed : styles.fail;
         return (
-            <TableCell
-                component={'div'}
-                id={cellData.dataKey}
-                className={classes.cell}
-            >
+            <TableCell component={'div'} id={cellData.dataKey} sx={styles.cell}>
                 <Grid container direction="row" spacing={4} alignItems="center">
                     <Grid item xs={1}>
-                        <Lens fontSize={'medium'} className={color} />
+                        <Lens fontSize={'medium'} sx={color} />
                     </Grid>
                     <Grid item xs={1}>
                         {status}
@@ -63,7 +58,7 @@ const DynamicSimulationResultTable = ({ result }) => {
 
     return (
         result && (
-            <Paper className={classes.tablePaper}>
+            <Paper sx={styles.tablePaper}>
                 {
                     <VirtualizedTable
                         rows={result}

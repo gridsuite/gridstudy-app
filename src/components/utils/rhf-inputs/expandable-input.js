@@ -14,9 +14,10 @@ import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
-import { useStyles } from '../../dialogs/dialogUtils';
-import ErrorInput from './error-inputs/error-input';
-import MidFormError from './error-inputs/mid-form-error';
+import { styles } from '../../dialogs/dialogUtils';
+import { ErrorInput } from '@gridsuite/commons-ui';
+import { MidFormError } from '@gridsuite/commons-ui';
+import { mergeSx } from '../functions';
 
 // This component is used to display Array of objects.
 // We can manage 2 states for deletion:
@@ -33,8 +34,8 @@ const ExpandableInput = ({
     deleteCallback = null,
     alignItems = 'stretch', // default value for a flex container
     watchProps = true,
+    disabled = false,
 }) => {
-    const classes = useStyles();
     const {
         fields: values,
         append,
@@ -60,7 +61,6 @@ const ExpandableInput = ({
                         <Field name={name} index={idx} {...fieldProps} />
                         <Grid item xs={1}>
                             <IconButton
-                                className={classes.icon}
                                 key={value.id}
                                 onClick={() => {
                                     if (deleteCallback) {
@@ -83,8 +83,9 @@ const ExpandableInput = ({
                 ))}
             <span>
                 <Button
+                    disabled={disabled}
                     fullWidth
-                    className={classes.button + ' ' + classes.paddingButton}
+                    sx={mergeSx(styles.button, styles.paddingButton)}
                     startIcon={<AddIcon />}
                     onClick={() => append(initialValue)}
                 >

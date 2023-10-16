@@ -7,28 +7,41 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
+import { Grid, MenuItem, Select } from '@mui/material';
 import {
     CloseButton,
     LabelledButton,
     SwitchWithLabel,
-    useStyles,
+    styles,
 } from './parameters';
-import {
-    getShortCircuitParameters,
-    setShortCircuitParameters,
-} from '../../../utils/rest-api';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { LabelledSlider, LineSeparator } from '../dialogUtils';
+import {
+    getShortCircuitParameters,
+    setShortCircuitParameters,
+} from '../../../services/study/short-circuit-analysis';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../../utils/optional-services';
+import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
+import { mergeSx } from '../../utils/functions';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [shortCircuitParams, setShortCircuitParams] = useState(null);
 
+    const shortCircuitAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.ShortCircuit
+    );
+
     useEffect(() => {
-        if (studyUuid) {
+        if (
+            studyUuid &&
+            shortCircuitAvailability === OptionalServicesStatus.Up
+        ) {
             getShortCircuitParameters(studyUuid)
                 .then((params) => setShortCircuitParams(params))
                 .catch((error) => {
@@ -38,7 +51,7 @@ export const useGetShortCircuitParameters = () => {
                     });
                 });
         }
-    }, [studyUuid, snackError]);
+    }, [shortCircuitAvailability, studyUuid, snackError]);
 
     return [shortCircuitParams, setShortCircuitParams];
 };
@@ -51,17 +64,12 @@ function getValue(param, key) {
 }
 
 const DropDown = ({ value, label, values, callback }) => {
-    const classes = useStyles();
     return (
         <>
-            <Grid item xs={8}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
+            <Grid item xs={8} sx={styles.parameterName}>
+                <FormattedMessage id={label} />
             </Grid>
-            <Grid item container xs={4} className={classes.controlItem}>
+            <Grid item container xs={4} sx={styles.controlItem}>
                 <Select
                     labelId={label}
                     value={value}
@@ -105,7 +113,7 @@ function makeComponentFor(defParam, key, scParams, setter) {
             );
         } else if (defParam.type === TYPES.slider) {
             return (
-                <LabelledSlider
+                <LabelledSlider // TODO We should use the ParameterLine.tsx one instead of this obsolete one. And remove/clean it.
                     value={Number(value)}
                     label={defParam.description}
                     onCommitCallback={(event, currentValue) => {
@@ -145,14 +153,6 @@ const BasicShortCircuitParameters = ({
             type: TYPES.bool,
             description: 'descWithFeederResult',
         },
-        studyType: {
-            type: TYPES.enum,
-            description: 'descStudyType',
-            values: {
-                TRANSIENT: 'descTransient',
-                SUB_TRANSIENT: 'descSubTransient',
-            },
-        },
     };
 
     return makeComponentsFor(
@@ -166,8 +166,6 @@ export const ShortCircuitParameters = ({
     hideParameters,
     useShortCircuitParameters,
 }) => {
-    const classes = useStyles();
-
     const { snackError } = useSnackMessage();
 
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -215,7 +213,7 @@ export const ShortCircuitParameters = ({
             <Grid
                 container
                 key="shortCircuitParameters"
-                className={classes.scrollableGrid}
+                sx={styles.scrollableGrid}
             >
                 <BasicShortCircuitParameters
                     shortCircuitParams={shortCircuitParams || {}}
@@ -224,17 +222,14 @@ export const ShortCircuitParameters = ({
             </Grid>
             <Grid
                 container
-                className={classes.controlItem + ' ' + classes.marginTopButton}
+                sx={mergeSx(styles.controlItem, styles.marginTopButton)}
                 maxWidth="md"
             >
                 <LabelledButton
                     callback={resetShortCircuitParameters}
                     label="resetToDefault"
                 />
-                <CloseButton
-                    hideParameters={hideParameters}
-                    className={classes.button}
-                />
+                <CloseButton hideParameters={hideParameters} />
             </Grid>
         </>
     );

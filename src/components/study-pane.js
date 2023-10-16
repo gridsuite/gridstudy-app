@@ -5,17 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import { STUDY_DISPLAY_MODE } from '../redux/actions';
 import Paper from '@mui/material/Paper';
-import { equipments } from './network/network-equipments';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
@@ -23,7 +20,6 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
-import { getLoadFlowRunningStatus } from './utils/running-status';
 import NetworkMapTab from './network-map-tab';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
@@ -35,18 +31,23 @@ import { ReactFlowProvider } from 'react-flow-renderer';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
+import { ComputingType } from './computing-status/computing-type';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     map: {
         display: 'flex',
         flexDirection: 'row',
+        height: '100%',
     },
-    horizontalToolbar: {
+    horizontalToolbar: (theme) => ({
         backgroundColor: darken(theme.palette.background.paper, 0.2),
-    },
-    error: {
+        display: 'flex',
+        flexDirection: 'row',
+    }),
+    error: (theme) => ({
         padding: theme.spacing(2),
-    },
+    }),
     rotate: {
         animation: 'spin 1000ms infinite',
     },
@@ -60,19 +61,25 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
-    mapCtrlBottomLeft: {
+    mapCtrlBottomLeft: (theme) => ({
         '& .mapboxgl-ctrl-bottom-left': {
             transition: theme.transitions.create('left', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
             }),
         },
-    },
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+    }),
     table: {
         display: 'flex',
         flexDirection: 'column',
+        height: '100%',
     },
-}));
+};
 
 export const StudyView = {
     MAP: 'Map',
@@ -81,20 +88,7 @@ export const StudyView = {
     LOGS: 'Logs',
 };
 
-const StudyPane = ({
-    studyUuid,
-    network,
-    currentNode,
-    loadFlowInfos,
-    securityAnalysisStatus,
-    sensiStatus,
-    shortCircuitStatus,
-    dynamicSimulationStatus,
-    voltageInitStatus,
-    runnable,
-    setErrorMessage,
-    ...props
-}) => {
+const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
     const lineParallelPath = useSelector(
@@ -113,15 +107,20 @@ const StudyPane = ({
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const [isComputationRunning, setIsComputationRunning] = useState(false);
-
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
         changed: false,
     });
 
-    const classes = useStyles();
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
+    );
+
+    const oneBusShortCircuitStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+    );
 
     const { openDiagramView } = useDiagram();
 
@@ -137,21 +136,10 @@ const StudyPane = ({
 
     const openVoltageLevel = useCallback(
         (vlId) => {
-            if (!network) {
-                return;
-            }
             openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
         },
-        [network, openDiagramView]
+        [openDiagramView]
     );
-
-    useEffect(() => {
-        if (!network) {
-            return;
-        }
-        network.useEquipment(equipments.substations);
-        network.useEquipment(equipments.lines);
-    }, [network]);
 
     function showInSpreadsheet(equipment) {
         let newTableEquipment = {
@@ -166,22 +154,10 @@ const StudyPane = ({
     function renderMapView() {
         return (
             <ReactFlowProvider>
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        height: '100%',
-                    }}
-                >
-                    <div
-                        className={classes.horizontalToolbar}
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                        }}
-                    >
+                <Box sx={styles.table}>
+                    <Box sx={styles.horizontalToolbar}>
                         <HorizontalToolbar />
-                    </div>
+                    </Box>
                     <div
                         style={{
                             display: 'flex',
@@ -208,11 +184,8 @@ const StudyPane = ({
                                 studyMapTreeDisplay={studyDisplayMode}
                             />
                         </div>
-                        <div
-                            className={clsx(
-                                'relative singlestretch-child',
-                                classes.map
-                            )}
+                        <Box
+                            sx={styles.map}
                             style={{
                                 display:
                                     studyDisplayMode === STUDY_DISPLAY_MODE.TREE
@@ -225,16 +198,7 @@ const StudyPane = ({
                                         : '100%',
                             }}
                         >
-                            <div
-                                className={classes.mapCtrlBottomLeft}
-                                style={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    bottom: 0,
-                                    left: 0,
-                                    right: 0,
-                                }}
-                            >
+                            <Box sx={styles.mapCtrlBottomLeft}>
                                 {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
                                 <NetworkMapTab
                                     /* TODO do we move redux param to container */
@@ -256,62 +220,43 @@ const StudyPane = ({
                                     currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
-                                    loadFlowStatus={getLoadFlowRunningStatus(
-                                        loadFlowInfos?.loadFlowStatus
-                                    )}
-                                    securityAnalysisStatus={
-                                        securityAnalysisStatus
-                                    }
-                                    sensiStatus={sensiStatus}
-                                    shortCircuitStatus={shortCircuitStatus}
-                                    dynamicSimulationStatus={
-                                        dynamicSimulationStatus
-                                    }
-                                    voltageInitStatus={voltageInitStatus}
-                                    setIsComputationRunning={
-                                        setIsComputationRunning
-                                    }
-                                    runnable={runnable}
                                     setErrorMessage={setErrorMessage}
+                                    loadFlowStatus={loadFlowStatus}
                                 />
-                            </div>
+                            </Box>
 
                             <DiagramPane
                                 studyUuid={studyUuid}
-                                network={network}
-                                isComputationRunning={isComputationRunning}
                                 showInSpreadsheet={showInSpreadsheet}
-                                loadFlowStatus={getLoadFlowRunningStatus(
-                                    loadFlowInfos?.loadFlowStatus
-                                )}
                                 currentNode={currentNode}
                                 visible={
                                     props.view === StudyView.MAP &&
                                     studyDisplayMode !== STUDY_DISPLAY_MODE.TREE
                                 }
+                                loadFlowStatus={loadFlowStatus}
+                                oneBusShortCircuitStatus={
+                                    oneBusShortCircuitStatus
+                                }
                             />
-                        </div>
+                        </Box>
                     </div>
-                </div>
+                </Box>
             </ReactFlowProvider>
         );
     }
 
     function renderTableView() {
         return (
-            <Paper className={clsx('singlestretch-child', classes.table)}>
+            <Paper sx={styles.table}>
                 <TableWrapper
-                    network={network}
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
-                    loadFlowStatus={getLoadFlowRunningStatus(
-                        loadFlowInfos?.loadFlowStatus
-                    )}
                     disabled={disabled}
                     visible={props.view === StudyView.SPREADSHEET}
+                    loadFlowStatus={loadFlowStatus}
                 />
             </Paper>
         );
@@ -328,23 +273,20 @@ const StudyPane = ({
             >
                 {renderMapView()}
             </div>
+            {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy
                 key={`spreadsheet-${currentNode?.id}`}
-                className="singlestretch-child"
                 selected={props.view === StudyView.SPREADSHEET}
             >
                 {renderTableView()}
             </TabPanelLazy>
-            {/* using a key in this tappanellazy because we can change the nodeuuid in this component */}
             <TabPanelLazy
                 key={`results-${currentNode?.id}`}
-                className="singlestretch-child"
                 selected={props.view === StudyView.RESULTS}
             >
                 <ResultViewTab
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    loadFlowInfos={loadFlowInfos}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                     disabled={disabled}
                 />
@@ -375,7 +317,6 @@ StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
     onChangeTab: PropTypes.func,
-    dynamicSimulationStatus: PropTypes.string,
 };
 
 export default StudyPane;

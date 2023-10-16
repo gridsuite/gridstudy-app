@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { AddCircle } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -13,13 +14,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    fetchContingencyAndFiltersLists,
-    updateConfigParameter,
-} from '../../utils/rest-api';
 import DirectoryItemSelector from '../directory-item-selector';
 import CheckboxList from '../utils/checkbox-list';
 import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
+import { updateConfigParameter } from '../../services/config';
+import { fetchContingencyAndFiltersLists } from '../../services/directory';
 
 const ContingenciesFiltersSelector = ({
     title,

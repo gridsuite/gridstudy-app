@@ -4,25 +4,25 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { OverflowableText } from '@gridsuite/commons-ui/';
+import { OverflowableText } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
 import { stopDiagramBlink } from '../../redux/actions';
+import { mergeSx } from '../utils/functions';
 
 const BLINK_LENGTH_MS = 1800;
 
-const useStyles = makeStyles((theme) => ({
-    header: {
-        padding: 5,
+const styles = {
+    header: (theme) => ({
+        padding: '5px',
         display: 'flex',
         flexDirection: 'row',
         wordBreak: 'break-all',
@@ -32,38 +32,38 @@ const useStyles = makeStyles((theme) => ({
             theme.palette.mode === 'light'
                 ? theme.palette.action.selected
                 : 'transparent',
-    },
-    actionIcon: {
+    }),
+    actionIcon: (theme) => ({
         padding: 0,
         borderRight: theme.spacing(1),
-    },
-    pinRotate: {
+    }),
+    pinRotate: (theme) => ({
         padding: 0,
         borderRight: theme.spacing(1),
         transform: 'rotate(45deg)',
-    },
-    close: {
+    }),
+    close: (theme) => ({
         padding: 0,
         borderRight: theme.spacing(1),
-    },
-    blink: {
-        animation: '$blink ' + BLINK_LENGTH_MS + 'ms',
-    },
-    '@keyframes blink': {
-        '0%, 25%': {
-            backgroundColor:
-                theme.palette.mode === 'light'
-                    ? theme.palette.action.disabled
-                    : theme.palette.action.selected,
+    }),
+    blink: (theme) => ({
+        animation: 'diagramHeaderBlinkAnimation ' + BLINK_LENGTH_MS + 'ms',
+        '@keyframes diagramHeaderBlinkAnimation': {
+            // This adds a global css rule, so we keep the rule's name specific.
+            '0%, 25%': {
+                backgroundColor:
+                    theme.palette.mode === 'light'
+                        ? theme.palette.action.disabled
+                        : theme.palette.action.selected,
+            },
+            '100%': {
+                backgroundColor: theme.palette.background.default,
+            },
         },
-        '100%': {
-            backgroundColor: theme.palette.background.default,
-        },
-    },
-}));
+    }),
+};
 
 const DiagramHeader = (props) => {
-    const classes = useStyles();
     const dispatch = useDispatch();
 
     const { onMinimize, onTogglePin, onClose } = props;
@@ -108,11 +108,7 @@ const DiagramHeader = (props) => {
      */
 
     return (
-        <Box
-            className={clsx(classes.header, {
-                [classes.blink]: blinking,
-            })}
-        >
+        <Box sx={mergeSx(styles.header, blinking && styles.blink)}>
             <OverflowableText
                 style={{ flexGrow: '1' }}
                 text={props.diagramTitle}
@@ -126,7 +122,7 @@ const DiagramHeader = (props) => {
                 >
                     {props.showMinimizeControl && (
                         <IconButton
-                            className={classes.actionIcon}
+                            sx={styles.actionIcon}
                             onClick={handleMinimize}
                         >
                             <MinimizeIcon />
@@ -134,10 +130,10 @@ const DiagramHeader = (props) => {
                     )}
                     {props.showTogglePinControl && (
                         <IconButton
-                            className={
+                            sx={
                                 props.pinned
-                                    ? classes.actionIcon
-                                    : classes.pinRotate
+                                    ? styles.actionIcon
+                                    : styles.pinRotate
                             }
                             onClick={handleTogglePin}
                         >
@@ -149,10 +145,7 @@ const DiagramHeader = (props) => {
                         </IconButton>
                     )}
                     {props.showCloseControl && (
-                        <IconButton
-                            className={classes.close}
-                            onClick={handleClose}
-                        >
+                        <IconButton sx={styles.close} onClick={handleClose}>
                             <CloseIcon />
                         </IconButton>
                     )}
@@ -177,7 +170,7 @@ DiagramHeader.propTypes = {
     pinned: PropTypes.bool,
     showCloseControl: PropTypes.bool,
     onClose: PropTypes.func,
-    diagramId: PropTypes.string.isRequired,
+    diagramId: PropTypes.string,
     svgType: PropTypes.string.isRequired,
 };
 

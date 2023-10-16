@@ -4,8 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useMemo } from 'react';
-import { debounce, Grid } from '@mui/material';
+
+import { useCallback } from 'react';
+import { Grid } from '@mui/material';
 import { makeComponentsFor, TYPES } from '../util/make-component-utils';
 
 const NetworkParameters = ({ network, onUpdateNetwork }) => {
@@ -14,11 +15,6 @@ const NetworkParameters = ({ network, onUpdateNetwork }) => {
             onUpdateNetwork(newNetwork);
         },
         [onUpdateNetwork]
-    );
-
-    const delayedHandleUpdateNetwork = useMemo(
-        () => debounce(handleUpdateNetwork, 500),
-        [handleUpdateNetwork]
     );
 
     const defParams = {
@@ -110,11 +106,7 @@ const NetworkParameters = ({ network, onUpdateNetwork }) => {
     return (
         network && (
             <Grid container>
-                {makeComponentsFor(
-                    defParams,
-                    network,
-                    delayedHandleUpdateNetwork
-                )}
+                {makeComponentsFor(defParams, network, handleUpdateNetwork)}
             </Grid>
         )
     );

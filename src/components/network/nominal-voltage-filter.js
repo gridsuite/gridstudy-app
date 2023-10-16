@@ -6,7 +6,6 @@
  */
 
 import React, { useEffect } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Checkbox from '@mui/material/Checkbox';
@@ -15,10 +14,10 @@ import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     nominalVoltageZone: {
-        minWidth: 90,
-        maxHeight: 300,
+        minWidth: '90px',
+        maxHeight: '300px',
         overflowY: 'auto',
     },
     nominalVoltageItem: {
@@ -41,15 +40,13 @@ const useStyles = makeStyles((theme) => ({
             textDecoration: 'underline',
         },
     },
-}));
+};
 
 const NominalVoltageFilter = ({
     nominalVoltages,
     filteredNominalVoltages,
     onChange,
 }) => {
-    const classes = useStyles();
-
     // Set up filteredNominalVoltages
     useEffect(() => {
         if (nominalVoltages && !filteredNominalVoltages) {
@@ -80,22 +77,22 @@ const NominalVoltageFilter = ({
     }
     return (
         <Paper>
-            <List className={classes.nominalVoltageZone}>
-                <ListItem className={classes.nominalVoltageItem}>
+            <List sx={styles.nominalVoltageZone}>
+                <ListItem sx={styles.nominalVoltageItem}>
                     <Button
                         size={'small'}
-                        className={classes.nominalVoltageSelectionControl}
+                        sx={styles.nominalVoltageSelectionControl}
                         onClick={handleToggle(nominalVoltages, false)}
                     >
                         <FormattedMessage id="CBAll" />
                     </Button>
                     <ListItemText
-                        className={classes.nominalVoltageText}
+                        sx={styles.nominalVoltageText}
                         secondary={'/'}
                     />
                     <Button
                         size={'small'}
-                        className={classes.nominalVoltageSelectionControl}
+                        sx={styles.nominalVoltageSelectionControl}
                         onClick={handleToggle([], false)}
                     >
                         <FormattedMessage id="CBNone" />
@@ -104,7 +101,7 @@ const NominalVoltageFilter = ({
                 {nominalVoltages.map((value) => {
                     return (
                         <ListItem
-                            className={classes.nominalVoltageItem}
+                            sx={styles.nominalVoltageItem}
                             key={value}
                             button
                             onClick={handleToggle([value], true)}
@@ -112,7 +109,7 @@ const NominalVoltageFilter = ({
                         >
                             <Checkbox
                                 color="default"
-                                className={classes.nominalVoltageCheck}
+                                sx={styles.nominalVoltageCheck}
                                 checked={
                                     !filteredNominalVoltages ||
                                     filteredNominalVoltages.indexOf(value) !==
@@ -120,7 +117,7 @@ const NominalVoltageFilter = ({
                                 }
                             />
                             <ListItemText
-                                className={classes.nominalVoltageText}
+                                sx={styles.nominalVoltageText}
                                 disableTypography
                                 primary={`${value} kV`}
                             />

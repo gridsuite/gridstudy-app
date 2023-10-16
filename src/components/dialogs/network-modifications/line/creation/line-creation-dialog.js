@@ -39,12 +39,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import {
-    createLine,
-    fetchVoltageLevelsIdAndTopology,
-    FetchStatus,
-} from 'utils/rest-api';
-
+import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/rounding';
 import {
     UNDEFINED_CONNECTION_DIRECTION,
@@ -79,10 +74,11 @@ import {
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { createLine } from '../../../../../services/study/network-modifications';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -102,7 +98,6 @@ export const LineCreationDialogTab = {
  * @param editData the data to edit
  * @param onCreateLine callback to customize line creation process
  * @param displayConnectivity to display connectivity section or not
- * @param voltageLevelOptionsPromise a promise that will bring available voltage levels
  * @param isUpdate check if edition form
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
@@ -113,7 +108,6 @@ const LineCreationDialog = ({
     currentNode,
     onCreateLine = createLine,
     displayConnectivity = true,
-    voltageLevelOptionsPromise,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -121,13 +115,10 @@ const LineCreationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const equipmentPath = 'lines';
-
     const [tabIndex, setTabIndex] = useState(
         LineCreationDialogTab.CHARACTERISTICS_TAB
     );
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] =
         useState(false);
@@ -174,8 +165,11 @@ const LineCreationDialog = ({
                             {
                                 voltageLevelId: line.voltageLevelId1,
                                 busbarSectionId: line.busOrBusbarSectionId1,
-                                connectionDirection: line.connectionDirection1,
-                                connectionName: line.connectionName1,
+                                connectionDirection:
+                                    line.connectablePosition1
+                                        .connectionDirection,
+                                connectionName:
+                                    line.connectablePosition1.connectionName,
                             },
                             CONNECTIVITY_1
                         )),
@@ -184,8 +178,11 @@ const LineCreationDialog = ({
                             {
                                 voltageLevelId: line.voltageLevelId2,
                                 busbarSectionId: line.busOrBusbarSectionId2,
-                                connectionDirection: line.connectionDirection2,
-                                connectionName: line.connectionName2,
+                                connectionDirection:
+                                    line.connectablePosition2
+                                        .connectionDirection,
+                                connectionName:
+                                    line.connectablePosition2.connectionName,
                             },
                             CONNECTIVITY_2
                         )),
@@ -266,22 +263,10 @@ const LineCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.LINE,
     });
-
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {
         if (editData) {
@@ -346,7 +331,7 @@ const LineCreationDialog = ({
                 sanitizeLimitNames(
                     limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
                 ),
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined,
                 sanitizeString(
                     characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]
@@ -463,7 +448,6 @@ const LineCreationDialog = ({
                         displayConnectivity={displayConnectivity}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        voltageLevelOptions={voltageLevelOptions}
                     />
                 </Box>
 
@@ -477,7 +461,7 @@ const LineCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.LINE.type}
+                    equipmentType={EQUIPMENT_TYPES.LINE}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

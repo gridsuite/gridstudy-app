@@ -99,14 +99,62 @@ export const buildNewBusbarSections = (
     return newBusbarSections;
 };
 
+export function toModificationOperation(value) {
+    return value === 0 || value === false || value
+        ? { value: value, op: 'SET' }
+        : null;
+}
+
+export function toModificationUnsetOperation(value) {
+    if (value === null) {
+        return null;
+    }
+    return value === 0 || value === false || value
+        ? { value: value, op: 'SET' }
+        : { op: 'UNSET' };
+}
+
 export const formatTemporaryLimits = (temporaryLimits) =>
     temporaryLimits?.map((limit) => {
         return {
             name: limit?.name ?? '',
             value: limit?.value ?? null,
             acceptableDuration: limit?.acceptableDuration ?? null,
+            modificationType: limit?.modificationType ?? null,
         };
     });
+
+export const computeHighTapPosition = (steps) => {
+    const values = steps?.map((step) => step['index']);
+    return values?.length > 0 ? Math.max(...values) : null;
+};
+
+export const compareStepsWithPreviousValues = (tapSteps, previousValues) => {
+    if (previousValues === undefined) {
+        return false;
+    }
+    if (tapSteps.length !== previousValues?.length) {
+        return false;
+    }
+    return tapSteps.every((step, index) => {
+        const previousStep = previousValues[index];
+        return Object.getOwnPropertyNames(previousStep).every((key) => {
+            return parseFloat(step[key]) === previousStep[key];
+        });
+    });
+};
+
+export const getTapChangerEquipmentSectionTypeValue = (tapChanger) => {
+    if (!tapChanger?.regulatingTerminalConnectableType) {
+        return null;
+    } else {
+        return (
+            tapChanger?.regulatingTerminalConnectableType +
+            ' : ' +
+            tapChanger?.regulatingTerminalConnectableId
+        );
+    }
+};
 
 export function calculateResistance(distance, linearResistance) {
     if (
@@ -150,3 +198,21 @@ export function calculateSusceptance(distance, linearCapacity) {
         Math.pow(10, 6)
     );
 }
+
+export const replaceAllDefaultValues = (arrayParams, oldValue, newValue) => {
+    return (
+        arrayParams &&
+        arrayParams.reduce((accumulator, current) => {
+            return [
+                ...accumulator,
+                {
+                    ...current,
+                    defaultValue:
+                        current.defaultValue === oldValue
+                            ? newValue
+                            : current.defaultValue,
+                },
+            ];
+        }, [])
+    );
+};

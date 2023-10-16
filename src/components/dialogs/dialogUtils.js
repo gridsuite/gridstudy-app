@@ -1,77 +1,62 @@
-/*
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import { Divider, Slider, Tooltip, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import { Box, styled } from '@mui/system';
 
-export const useStyles = makeStyles((theme) => ({
+export const styles = {
     helperText: {
         margin: 0,
-        marginTop: 4,
-    },
-    h4: {
-        marginBottom: 0,
-    },
-    popper: {
-        style: {
-            width: 'fit-content',
-        },
+        marginTop: '4px',
     },
     tooltip: {
         fontSize: 18,
         maxWidth: 'none',
     },
-    button: {
+    button: (theme) => ({
         justifyContent: 'flex-start',
         fontSize: 'small',
         marginTop: theme.spacing(1),
-    },
-    paddingButton: {
+    }),
+    paddingButton: (theme) => ({
         paddingLeft: theme.spacing(2),
-    },
-    emptyListError: {
-        color: theme.palette.error.main,
-        fontSize: 'small',
-        textAlign: 'center',
-        margin: theme.spacing(0.5),
-    },
+    }),
     formDirectoryElements1: {
         display: 'flex',
         gap: '8px',
         flexWrap: 'wrap',
         flexDirection: 'row',
         border: '2px solid lightgray',
-        padding: 4,
+        padding: '4px',
         borderRadius: '4px',
         overflow: 'hidden',
     },
-    formDirectoryElementsError: {
+    formDirectoryElementsError: (theme) => ({
         borderColor: theme.palette.error.main,
-    },
+    }),
     formDirectoryElements2: {
         display: 'flex',
         gap: '8px',
         flexWrap: 'wrap',
         flexDirection: 'row',
         marginTop: 0,
-        padding: 4,
+        padding: '4px',
         overflow: 'hidden',
     },
     labelDirectoryElements: {
-        marginTop: -10,
+        marginTop: '-10px',
     },
     addDirectoryElements: {
-        marginTop: -5,
+        marginTop: '-5px',
     },
-}));
+};
 
 export const MicroSusceptanceAdornment = {
     position: 'end',
@@ -134,28 +119,6 @@ export const percentageTextField = {
 };
 export const func_identity = (e) => e;
 
-export function toIntValue(val) {
-    if (val === '-') {
-        return val;
-    }
-    return parseInt(val) || 0;
-}
-
-export function toPositiveIntValue(val) {
-    val.replace('-', '');
-    return parseInt(val) || 0;
-}
-
-export function toIntOrEmptyValue(val) {
-    if (val === '-') {
-        return val;
-    }
-    if (val === '0') {
-        return 0;
-    }
-    return parseInt(val) || '';
-}
-
 export function parseIntData(val, defaultValue) {
     const intValue = parseInt(val);
     return isNaN(intValue) ? defaultValue : intValue;
@@ -166,32 +129,13 @@ export function sanitizeString(val) {
     return trimedValue === '' ? null : trimedValue;
 }
 
-export const toFloatValue = (val) => {
-    if (val === '-') {
-        return val;
-    }
-    if (val === '') {
-        return '';
-    }
-    // TODO: remove replace when parsing behaviour will be made according to locale
-    // Replace ',' by '.' to ensure double values can be parsed correctly
-    const tmp = val?.replace(',', '.') || '';
-    if (tmp.endsWith('.') || tmp.endsWith('0')) {
-        return val;
-    }
-    return parseFloat(tmp) || 0;
-};
-
-export const removeNullDataValues = (data) => {
-    Object.keys(data).forEach((key) => {
-        if (data[key] === null) {
-            delete data[key];
-        }
-    });
-};
-
-export const GridSection = ({ title, heading = '3', size = 12 }) => {
-    const CustomTag = `h${heading}`;
+export const GridSection = ({
+    title,
+    heading = '3',
+    size = 12,
+    customStyle = {},
+}) => {
+    const CustomTag = styled(`h${heading}`)(customStyle);
     return (
         <Grid container spacing={2}>
             <Grid item xs={size}>
@@ -265,8 +209,6 @@ export const LabelledSlider = ({
         setSliderValue(newValue);
     };
 
-    const classes = useStyles();
-
     return (
         <>
             <Grid item xs={7}>
@@ -276,7 +218,7 @@ export const LabelledSlider = ({
                     </Box>
                 </Typography>
             </Grid>
-            <Grid item container xs={5} className={classes.controlItem}>
+            <Grid item container xs={5}>
                 <Slider
                     min={minValue}
                     max={maxValue}

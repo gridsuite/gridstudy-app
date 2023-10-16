@@ -7,24 +7,22 @@
 
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
     LINE_TO_ATTACH_TO_2_ID,
     REPLACING_LINE_1_ID,
-    REPLACING_LINE_2_ID,
     REPLACING_LINE_1_NAME,
+    REPLACING_LINE_2_ID,
     REPLACING_LINE_2_NAME,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import {
-    fetchEquipmentsIds,
-    fetchVoltageLevelsIdAndTopology,
-} from 'utils/rest-api';
 import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
+import { fetchVoltageLevelsListInfos } from '../../../../services/study/network';
+import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 
 const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -33,7 +31,7 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))

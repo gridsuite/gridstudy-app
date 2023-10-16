@@ -26,19 +26,49 @@ import {
     PARAMS_LOADED,
 } from '../utils/config-params';
 
-export const NETWORK_EQUIPMENT_FETCHED = 'NETWORK_EQUIPMENT_FETCHED';
+export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 
-export function isNetworkEquipmentsFetched(fetched) {
+export function loadEquipments(equipmentType, equipments) {
     return {
-        type: NETWORK_EQUIPMENT_FETCHED,
-        networkEquipmentsFetched: fetched,
+        type: LOAD_EQUIPMENTS,
+        equipmentType: equipmentType,
+        equipments: equipments,
     };
 }
 
-export const NETWORK_CREATED = 'NETWORK_CREATED';
+export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 
-export function networkCreated(network) {
-    return { type: NETWORK_CREATED, network: network };
+export function updateEquipments(equipments) {
+    return {
+        type: UPDATE_EQUIPMENTS,
+        equipments: equipments,
+    };
+}
+
+export const DELETE_EQUIPMENT = 'DELETE_EQUIPMENT';
+
+export function deleteEquipment(equipmentType, equipmentId) {
+    return {
+        type: DELETE_EQUIPMENT,
+        equipmentId: equipmentId,
+        equipmentType: equipmentType,
+    };
+}
+
+export const RESET_EQUIPMENTS = 'RESET_EQUIPMENTS';
+
+export function resetEquipments() {
+    return {
+        type: RESET_EQUIPMENTS,
+    };
+}
+
+export const RESET_EQUIPMENTS_POST_LOADFLOW = 'RESET_EQUIPMENTS_POST_LOADFLOW';
+
+export function resetEquipmentsPostLoadflow() {
+    return {
+        type: RESET_EQUIPMENTS_POST_LOADFLOW,
+    };
 }
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
@@ -56,22 +86,6 @@ export function mapEquipmentsCreated(
         newSubstations: newSubstations,
         newHvdcLines: newHvdcLines,
     };
-}
-
-export const NETWORK_EQUIPMENT_LOADED = 'NETWORK_EQUIPMENT_LOADED';
-
-export function networkEquipmentLoaded(equipmentsName, values) {
-    return {
-        type: NETWORK_EQUIPMENT_LOADED,
-        equipmentsName: equipmentsName,
-        values: values,
-    };
-}
-
-export const LOAD_GEO_DATA_SUCCESS = 'LOAD_GEO_DATA_SUCCESS';
-
-export function loadGeoDataSuccess(geoData) {
-    return { type: LOAD_GEO_DATA_SUCCESS, geoData: geoData };
 }
 
 export const LOAD_NETWORK_MODIFICATION_TREE_SUCCESS =
@@ -92,13 +106,15 @@ export const NETWORK_MODIFICATION_TREE_NODE_ADDED =
 export function networkModificationTreeNodeAdded(
     networkModificationTreeNode,
     parentNodeId,
-    insertMode
+    insertMode,
+    referenceNodeId
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODE_ADDED,
         networkModificationTreeNode: networkModificationTreeNode,
         parentNodeId: parentNodeId,
         insertMode: insertMode,
+        referenceNodeId: referenceNodeId,
     };
 }
 
@@ -291,6 +307,15 @@ export function studyUpdated(eventData) {
     return { type: STUDY_UPDATED, eventData };
 }
 
+export const MAP_DATA_LOADING = 'MAP_DATA_LOADING';
+
+export function setMapDataLoading(mapDataLoading) {
+    return {
+        type: MAP_DATA_LOADING,
+        mapDataLoading,
+    };
+}
+
 export const MAP_MANUAL_REFRESH = 'MAP_MANUAL_REFRESH';
 
 export function selectMapManualRefresh(mapManualRefresh) {
@@ -332,6 +357,18 @@ export function resetSANotif() {
     return { type: RESET_SA_NOTIF };
 }
 
+export const ADD_VOLTAGE_INIT_NOTIF = 'ADD_VOLTAGE_INIT_NOTIF';
+
+export function addVoltageInitNotif() {
+    return { type: ADD_VOLTAGE_INIT_NOTIF };
+}
+
+export const RESET_VOLTAGE_INIT_NOTIF = 'RESET_VOLTAGE_INIT_NOTIF';
+
+export function resetVoltageInitNotif() {
+    return { type: RESET_VOLTAGE_INIT_NOTIF };
+}
+
 export const ADD_SENSI_NOTIF = 'ADD_SENSI_NOTIF';
 
 export function addSensiNotif() {
@@ -344,16 +381,32 @@ export function resetSensiNotif() {
     return { type: RESET_SENSI_NOTIF };
 }
 
-export const ADD_SHORT_CIRCUIT_NOTIF = 'ADD_SHORT_CIRCUIT_NOTIF';
+export const ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF =
+    'ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF';
 
-export function addShortCircuitNotif() {
-    return { type: ADD_SHORT_CIRCUIT_NOTIF };
+export function addAllBusesShortCircuitNotif() {
+    return { type: ADD_ALL_BUSES_SHORT_CIRCUIT_NOTIF };
 }
 
-export const RESET_SHORT_CIRCUIT_NOTIF = 'RESET_SHORT_CIRCUIT_NOTIF';
+export const RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF =
+    'RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF';
 
-export function resetShortCircuitNotif() {
-    return { type: RESET_SHORT_CIRCUIT_NOTIF };
+export function resetAllBusesShortCircuitNotif() {
+    return { type: RESET_ALL_BUSES_SHORT_CIRCUIT_NOTIF };
+}
+
+export const ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF =
+    'ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF';
+
+export function addOneBusShortCircuitNotif() {
+    return { type: ADD_ONE_BUS_SHORT_CIRCUIT_NOTIF };
+}
+
+export const RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF =
+    'RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF';
+
+export function resetOneBusShortCircuitNotif() {
+    return { type: RESET_ONE_BUS_SHORT_CIRCUIT_NOTIF };
 }
 
 // --- Dynamic simulation ACTION - BEGIN
@@ -368,6 +421,7 @@ export const RESET_DYNAMIC_SIMULATION_NOTIF = 'RESET_DYNAMIC_SIMULATION_NOTIF';
 export function resetDynamicSimulationNotif() {
     return { type: RESET_DYNAMIC_SIMULATION_NOTIF };
 }
+
 // --- Dynamic simulation ACTION - END
 
 export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
@@ -621,5 +675,59 @@ export function setDeletedEquipments(deletedEquipments) {
     return {
         type: SET_DELETED_EQUIPMENTS,
         deletedEquipments: deletedEquipments,
+    };
+}
+
+export const SET_COMPUTING_STATUS = 'SET_COMPUTING_STATUS';
+
+export function setComputingStatus(computingType, runningStatus) {
+    return {
+        type: SET_COMPUTING_STATUS,
+        computingType: computingType,
+        runningStatus: runningStatus,
+    };
+}
+
+export const SET_COMPUTATION_RUNNING = 'SET_COMPUTATION_RUNNING';
+
+export function setComputationRunning(computationRunning) {
+    return {
+        type: SET_COMPUTATION_RUNNING,
+        computationRunning: computationRunning,
+    };
+}
+
+export const STUDY_INDEXATION_STATUS = {
+    NOT_INDEXED: 'NOT_INDEXED',
+    INDEXING_ONGOING: 'INDEXING_ONGOING',
+    INDEXED: 'INDEXED',
+};
+
+export const SET_STUDY_INDEXATION_STATUS = 'SET_STUDY_INDEXATION_STATUS';
+
+export function setStudyIndexationStatus(studyIndexationStatus) {
+    return {
+        type: SET_STUDY_INDEXATION_STATUS,
+        studyIndexationStatus: studyIndexationStatus,
+    };
+}
+
+export const SET_OPTIONAL_SERVICES = 'SET_SERVICES';
+
+export const setOptionalServices = (optionalServices) => {
+    return {
+        type: SET_OPTIONAL_SERVICES,
+        optionalServices: optionalServices,
+    };
+};
+
+export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM =
+    'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
+
+export function setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId) {
+    return {
+        type: SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+        diagramId: diagramId,
+        nodeId: nodeId,
     };
 }

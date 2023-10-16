@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,10 +19,9 @@ import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
-import { fetchSvg } from '../../../utils/rest-api';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import {
-    useDiagramStyles,
+    styles,
     MAX_HEIGHT_VOLTAGE_LEVEL,
     MAX_WIDTH_VOLTAGE_LEVEL,
     NoSvg,
@@ -31,11 +30,11 @@ import {
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
-import clsx from 'clsx';
+import { fetchSvg } from '../../../services/study';
+import { mergeSx } from '../../utils/functions';
 
 const PositionDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(NoSvg);
-    const classes = useDiagramStyles();
     const svgUrl = useRef('');
     const svgDraw = useRef();
     const { snackError } = useSnackMessage();
@@ -147,7 +146,7 @@ const PositionDiagram = forwardRef((props, ref) => {
             ref={ref}
             elevation={4}
             square={true}
-            className={classes.paperBorders}
+            sx={styles.paperBorders}
             style={{
                 pointerEvents: 'auto',
                 width: serverWidth,
@@ -166,12 +165,12 @@ const PositionDiagram = forwardRef((props, ref) => {
             </Box>
             {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
             <Box position="relative">
-                <div
+                <Box
                     ref={svgRef}
-                    className={clsx(
-                        classes.divDiagram,
-                        classes.divSingleLineDiagram,
-                        classes.divDiagramReadOnly
+                    sx={mergeSx(
+                        styles.divDiagram,
+                        styles.divSingleLineDiagram,
+                        styles.divDiagramReadOnly
                     )}
                 />
             </Box>

@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
@@ -14,47 +15,42 @@ import {
     CardContent,
     CardHeader,
     ToggleButton,
+    Tooltip,
     Typography,
 } from '@mui/material';
 import { memo, useCallback, useState } from 'react';
 import TooltipIconButton from './common/tooltip-icon-button';
-import makeStyles from '@mui/styles/makeStyles';
 import { lighten } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
 import { SeriesType } from './plot/plot-types';
+import { mergeSx } from '../../utils/functions';
 
-const useStyles = makeStyles((theme) => ({
-    plotScaleButton: {
+const styles = {
+    plotScaleButton: (theme) => ({
         marginRight: theme.spacing(2),
         border: 'none',
         borderRadius: '50%',
-    },
-    closeButton: {
-        cursor: 'pointer',
-    },
-    cardActive: {
+    }),
+    cardActive: (theme) => ({
         border: 'solid',
         borderColor: lighten(theme.palette.primary.main, 0.2),
-    },
+    }),
     card: {
         height: '100%',
     },
-    cardHeaderRoot: {
+    cardHeader: (theme) => ({
         backgroundColor: lighten(theme.palette.background.paper, 0.2),
         '&:hover': {
             background: lighten(theme.palette.background.paper, 0.3),
             cursor: 'move',
         },
         padding: theme.spacing(0.5),
-    },
-    cardHeaderAction: {},
-    cardHeaderAvatar: {
         color: theme.palette.primary.main,
-    },
+    }),
     cardContent: {
         height: '100%',
     },
-}));
+};
 
 const DynamicSimulationResultSeriesChart = ({
     id,
@@ -68,7 +64,6 @@ const DynamicSimulationResultSeriesChart = ({
     sync,
     onPlotScale = () => {},
 }) => {
-    const classes = useStyles();
     const intl = useIntl();
 
     // button options switch scale plot / restore plot
@@ -88,19 +83,11 @@ const DynamicSimulationResultSeriesChart = ({
 
     return (
         <Card
-            className={
-                selected
-                    ? `${classes.cardActive} ${classes.card}`
-                    : classes.card
-            }
+            sx={mergeSx(selected && styles.cardActive, styles.card)}
             onClick={() => onSelect(index)}
         >
             <CardHeader
-                classes={{
-                    root: classes.cardHeaderRoot,
-                    action: classes.cardHeaderAction,
-                    avatar: classes.cardHeaderAvatar,
-                }}
+                sx={styles.cardHeader}
                 avatar={
                     <Typography variant={'subtitle1'}>
                         {`${intl.formatMessage({
@@ -111,22 +98,35 @@ const DynamicSimulationResultSeriesChart = ({
                 action={
                     <>
                         <ToggleButton
-                            className={classes.plotScaleButton}
+                            sx={styles.plotScaleButton}
                             size={'small'}
                             value={'plotScale'}
                             selected={plotScale}
                             onChange={() => handlePlotScale(id)}
                         >
                             {plotScale ? (
-                                <FullscreenExitSharpIcon />
+                                <Tooltip
+                                    title={intl.formatMessage({
+                                        id: 'DynamicSimulationPlotScaleDisable',
+                                    })}
+                                >
+                                    <FullscreenExitSharpIcon />
+                                </Tooltip>
                             ) : (
-                                <FitScreenSharpIcon />
+                                <Tooltip
+                                    title={intl.formatMessage({
+                                        id: 'DynamicSimulationPlotScaleEnable',
+                                    })}
+                                >
+                                    <FitScreenSharpIcon />
+                                </Tooltip>
                             )}
                         </ToggleButton>
                         {!plotScale && (
                             <TooltipIconButton
-                                toolTip={'Close graph'}
-                                className={classes.CloseButton}
+                                toolTip={intl.formatMessage({
+                                    id: 'DynamicSimulationCloseGraph',
+                                })}
                                 onClick={() => onClose(index)}
                             >
                                 <CloseIcon />
@@ -136,7 +136,7 @@ const DynamicSimulationResultSeriesChart = ({
                 }
             />
             <CardContent
-                className={classes.cardContent}
+                sx={styles.cardContent}
                 // to avoid the wrapper is dragged when zooming the plot
                 onMouseDown={(event) => {
                     event.stopPropagation();

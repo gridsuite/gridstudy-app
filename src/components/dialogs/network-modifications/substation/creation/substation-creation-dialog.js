@@ -24,10 +24,11 @@ import {
 } from 'components/utils/field-constants';
 import { getPropertiesSchema } from '../property/property-utils';
 import SubstationCreationForm from './substation-creation-form';
-import { createSubstation, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
+import { createSubstation } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -46,7 +47,7 @@ const getProperties = (properties) => {
         ? Object.entries(properties).map((p) => {
               return { [NAME]: p[0], [VALUE]: p[1] };
           })
-        : null;
+        : [];
 };
 const SubstationCreationDialog = ({
     editData,
@@ -58,8 +59,6 @@ const SubstationCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
-
-    const equipmentPath = 'substations';
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -83,9 +82,9 @@ const SubstationCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.SUBSTATION,
     });
 
     useEffect(() => {
@@ -152,7 +151,7 @@ const SubstationCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.SUBSTATION.type}
+                    equipmentType={EQUIPMENT_TYPES.SUBSTATION}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

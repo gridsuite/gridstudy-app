@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import TextInput from 'components/utils/rhf-inputs/text-input';
+import { TextInput } from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     MARGINAL_COST,
@@ -17,7 +16,6 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     RATED_NOMINAL_POWER,
-    STARTUP_COST,
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
 } from 'components/utils/field-constants';
@@ -29,62 +27,40 @@ import {
     MVAPowerAdornment,
     OhmAdornment,
 } from '../../../dialogUtils';
-import SelectInput from 'components/utils/rhf-inputs/select-input';
+import { SelectInput } from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCES,
     getEnergySourceLabel,
 } from 'components/network/constants';
 import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useState } from 'react';
-import FloatInput from 'components/utils/rhf-inputs/float-input';
-import {
-    fetchEquipmentsIds,
-    fetchVoltageLevelsIdAndTopology,
-} from 'utils/rest-api';
-import ReactiveLimitsForm from '../reactive-limits/reactive-limits-form';
-import SetPointsForm from '../set-points/set-points-form';
+import React, { useEffect, useState } from 'react';
+import { FloatInput } from '@gridsuite/commons-ui';
+import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import AutocompleteInput from 'components/utils/rhf-inputs/autocomplete-input';
-import { useWatch } from 'react-hook-form';
+import { TextField } from '@mui/material';
+import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 
 const GeneratorModificationForm = ({
     studyUuid,
     currentNode,
-    onEquipmentIdChange,
     generatorToModify,
     updatePreviousReactiveCapabilityCurveTable,
+    equipmentId,
 }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const [equipmentOptions, setEquipmentOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
 
-    const watchEquipmentId = useWatch({
-        name: EQUIPMENT_ID,
-    });
-
-    useEffect(() => {
-        onEquipmentIdChange(watchEquipmentId);
-    }, [watchEquipmentId, onEquipmentIdChange]);
-
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsIdAndTopology(studyUuid, currentNodeUuid).then(
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
                 (values) => {
                     setVoltageLevelOptions(
                         values.sort((a, b) => a.id.localeCompare(b.id))
                     );
                 }
             );
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                undefined,
-                'GENERATOR',
-                true
-            ).then((values) => {
-                setEquipmentOptions(values.sort());
-            });
         }
     }, [studyUuid, currentNodeUuid]);
 
@@ -96,18 +72,18 @@ const GeneratorModificationForm = ({
               id: energySourceLabelId,
           })
         : undefined;
-    const areIdsEqual = useCallback((val1, val2) => val1 === val2, []);
 
     const generatorIdField = (
-        <AutocompleteInput
-            allowNewValue
-            forcePopupIcon
-            name={EQUIPMENT_ID}
+        <TextField
+            size="small"
+            fullWidth
             label={'ID'}
-            options={equipmentOptions}
-            formProps={{ ...filledTextField }}
-            size={'small'}
-            isOptionEqualToValue={areIdsEqual}
+            value={equipmentId}
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
+            {...filledTextField}
         />
     );
 
@@ -166,9 +142,11 @@ const GeneratorModificationForm = ({
     const transientReactanceField = (
         <FloatInput
             name={TRANSIENT_REACTANCE}
-            label={'TransientReactance'}
+            label={'TransientReactanceForm'}
             adornment={OhmAdornment}
-            previousValue={generatorToModify?.transientReactance}
+            previousValue={
+                generatorToModify?.generatorShortCircuit?.transientReactance
+            }
             clearable={true}
         />
     );
@@ -176,12 +154,16 @@ const GeneratorModificationForm = ({
     const transformerReactanceField = (
         <FloatInput
             name={TRANSFORMER_REACTANCE}
-            label={'TransformerReactance'}
+            label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
             previousValue={
-                isNaN(generatorToModify?.stepUpTransformerReactance)
+                isNaN(
+                    generatorToModify?.generatorShortCircuit
+                        ?.stepUpTransformerReactance
+                )
                     ? null
-                    : generatorToModify?.stepUpTransformerReactance
+                    : generatorToModify?.generatorShortCircuit
+                          ?.stepUpTransformerReactance
             }
             clearable={true}
         />
@@ -190,18 +172,11 @@ const GeneratorModificationForm = ({
     const plannedActivePowerSetPointField = (
         <FloatInput
             name={PLANNED_ACTIVE_POWER_SET_POINT}
-            label={'PlannedActivePowerSetPoint'}
+            label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
-            previousValue={generatorToModify?.plannedActivePowerSetPoint}
-            clearable={true}
-        />
-    );
-
-    const startupCostField = (
-        <FloatInput
-            name={STARTUP_COST}
-            label={'StartupCost'}
-            previousValue={generatorToModify?.startupCost}
+            previousValue={
+                generatorToModify?.generatorStartup?.plannedActivePowerSetPoint
+            }
             clearable={true}
         />
     );
@@ -210,7 +185,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={MARGINAL_COST}
             label={'MarginalCost'}
-            previousValue={generatorToModify?.marginalCost}
+            previousValue={generatorToModify?.generatorStartup?.marginalCost}
             clearable={true}
         />
     );
@@ -219,7 +194,9 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={PLANNED_OUTAGE_RATE}
             label={'PlannedOutageRate'}
-            previousValue={generatorToModify?.plannedOutageRate}
+            previousValue={
+                generatorToModify?.generatorStartup?.plannedOutageRate
+            }
             clearable={true}
         />
     );
@@ -228,7 +205,9 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={FORCED_OUTAGE_RATE}
             label={'ForcedOutageRate'}
-            previousValue={generatorToModify?.forcedOutageRate}
+            previousValue={
+                generatorToModify?.generatorStartup?.forcedOutageRate
+            }
             clearable={true}
         />
     );
@@ -240,7 +219,6 @@ const GeneratorModificationForm = ({
                 {gridItem(generatorNameField, 4)}
                 {gridItem(energySourceField, 4)}
             </Grid>
-
             {/* Limits part */}
             <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -259,8 +237,15 @@ const GeneratorModificationForm = ({
             </Grid>
 
             {/* Reactive limits part */}
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h4>
+                        <FormattedMessage id="ReactiveLimits" />
+                    </h4>
+                </Grid>
+            </Grid>
             <ReactiveLimitsForm
-                generatorToModify={generatorToModify}
+                equipmentToModify={generatorToModify}
                 updatePreviousReactiveCapabilityCurveTable={
                     updatePreviousReactiveCapabilityCurveTable
                 }
@@ -271,7 +256,7 @@ const GeneratorModificationForm = ({
                 studyUuid={studyUuid}
                 currentNodeUuid={currentNodeUuid}
                 voltageLevelOptions={voltageLevelOptions}
-                isGeneratorModification={true}
+                isEquipmentModification={true}
                 previousValues={generatorToModify}
             />
 
@@ -283,13 +268,10 @@ const GeneratorModificationForm = ({
             </Grid>
 
             {/* Cost of start part */}
-            <GridSection title="Startup" />
+            <GridSection title="GenerationDispatch" />
             <Grid container spacing={2}>
                 {gridItem(plannedActivePowerSetPointField, 4)}
-                <Grid container item spacing={2}>
-                    {gridItem(startupCostField, 4)}
-                    {gridItem(marginalCostField, 4)}
-                </Grid>
+                {gridItem(marginalCostField, 4)}
                 <Grid container item spacing={2}>
                     {gridItem(plannedOutageRateField, 4)}
                     {gridItem(forcedOutageRateField, 4)}

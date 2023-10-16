@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, MenuItem, Select, Typography } from '@mui/material';
+import { Grid, MenuItem, Select, Typography, useTheme } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, {
     forwardRef,
@@ -16,31 +16,37 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import clsx from 'clsx';
-import { AgGridReact } from 'ag-grid-react';
-import { makeStyles, useTheme } from '@mui/styles';
 import CountrySelect from '../country-select';
 import CheckboxSelect from '../common/checkbox-select';
 import { useSelector } from 'react-redux';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPES as ALL_EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
+import { Box } from '@mui/system';
+import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
 
-export const EQUIPMENT_TYPES = {
-    [ALL_EQUIPMENT_TYPES.GENERATOR.type]: ALL_EQUIPMENT_TYPES.GENERATOR,
-    [ALL_EQUIPMENT_TYPES.LOAD.type]: ALL_EQUIPMENT_TYPES.LOAD,
+export const CURVE_EQUIPMENTS = {
+    [EQUIPMENT_TYPES.GENERATOR]: {
+        type: EQUIPMENT_TYPES.GENERATOR,
+        fetchers: EQUIPMENT_FETCHERS.GENERATOR,
+    },
+    [EQUIPMENT_TYPES.LOAD]: {
+        type: EQUIPMENT_TYPES.LOAD,
+        fetchers: EQUIPMENT_FETCHERS.LOAD,
+    },
 };
 
 const TENSION_UNIT = 'kV';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     grid: {
         width: '100%',
         height: '100%',
     },
-}));
+};
 
 const EquipmentFilter = forwardRef(
-    ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
+    ({ equipment: initialEquipment, onChangeEquipment }, ref) => {
         const { snackError } = useSnackMessage();
         const [gridReady, setGridReady] = useState(false);
         const [substationsFiltersReady, setSubstationsFiltersReady] =
@@ -52,21 +58,19 @@ const EquipmentFilter = forwardRef(
         const currentNode = useSelector((state) => state.currentTreeNode);
 
         const intl = useIntl();
-        const classes = useStyles();
         const theme = useTheme();
         const equipmentsRef = useRef();
 
         // --- Equipment types --- //
-        const [equipmentType, setEquipmentType] =
-            useState(initialEquipmentType);
+        const [equipment, setEquipment] = useState(initialEquipment);
 
         const handleEquipmentTypeChange = useCallback(
             (event) => {
-                const selectedEquipmentType = event.target.value;
-                setEquipmentType(selectedEquipmentType);
-                onChangeEquipmentType(selectedEquipmentType);
+                const selectedEquipment = event.target.value;
+                setEquipment(selectedEquipment);
+                onChangeEquipment(selectedEquipment);
             },
-            [onChangeEquipmentType]
+            [onChangeEquipment]
         );
 
         // --- Voltage levels (id metadata), tension (nominalV metadata) => lookup in Voltage levels --- //
@@ -97,7 +101,7 @@ const EquipmentFilter = forwardRef(
         // load VoltageLevels from backend
         useEffect(() => {
             Promise.all(
-                ALL_EQUIPMENT_TYPES.VOLTAGE_LEVEL.fetchers.map((fetchPromise) =>
+                EQUIPMENT_FETCHERS.VOLTAGE_LEVEL.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -148,7 +152,7 @@ const EquipmentFilter = forwardRef(
         // load substation from backend to infer countries
         useEffect(() => {
             Promise.all(
-                ALL_EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
+                EQUIPMENT_FETCHERS.SUBSTATION.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -181,7 +185,7 @@ const EquipmentFilter = forwardRef(
         const loadFilteredEquipments = useCallback(() => {
             // get all substations which include also voltage levels
             return Promise.all(
-                ALL_EQUIPMENT_TYPES.SUBSTATION.fetchers.map((fetchPromise) =>
+                EQUIPMENT_FETCHERS.SUBSTATION.map((fetchPromise) =>
                     fetchPromise(studyUuid, currentNode.id)
                 )
             )
@@ -210,7 +214,7 @@ const EquipmentFilter = forwardRef(
 
                     // get equipments by type and substation ids
                     return Promise.all(
-                        equipmentType.fetchers.map((fetchPromise) =>
+                        equipment.fetchers.map((fetchPromise) =>
                             fetchPromise(
                                 studyUuid,
                                 currentNode.id,
@@ -269,7 +273,7 @@ const EquipmentFilter = forwardRef(
             selectedCountries,
             selectedTensionIds,
             selectedVoltageLevelIds,
-            equipmentType.fetchers,
+            equipment.fetchers,
             snackError,
         ]);
 
@@ -296,11 +300,11 @@ const EquipmentFilter = forwardRef(
         const columnDefs = useMemo(() => {
             return [
                 {
-                    field: 'name',
+                    field: 'id',
                     checkboxSelection: true,
                     headerCheckboxSelection: true,
                     headerCheckboxSelectionFilteredOnly: true,
-                    minWidth: '80',
+                    minWidth: 80,
                     headerName: intl.formatMessage({
                         id: 'DynamicSimulationCurveDynamicModelHeader',
                     }),
@@ -356,12 +360,12 @@ const EquipmentFilter = forwardRef(
                     <Grid item xs={6}>
                         <Select
                             labelId={'DynamicSimulationCurveEquipementType'}
-                            value={equipmentType}
+                            value={equipment}
                             onChange={handleEquipmentTypeChange}
                             size="small"
                             sx={{ width: '100%' }}
                         >
-                            {Object.entries(EQUIPMENT_TYPES).map(
+                            {Object.entries(CURVE_EQUIPMENTS).map(
                                 ([key, value]) => (
                                     <MenuItem key={key} value={value}>
                                         {intl.formatMessage({ id: value.type })}
@@ -384,7 +388,9 @@ const EquipmentFilter = forwardRef(
                         <CheckboxSelect
                             value={selectedVoltageLevelIds}
                             options={voltageLevelIds}
-                            getOptionLabel={(value) => voltageLevels[value]}
+                            getOptionLabel={(value) =>
+                                voltageLevels[value] ?? value
+                            }
                             onChange={handleVoltageLevelChange}
                         />
                     </Grid>
@@ -446,8 +452,8 @@ const EquipmentFilter = forwardRef(
                         </Typography>
                     </Grid>
                     <Grid xs>
-                        <div className={clsx([theme.aggrid, classes.grid])}>
-                            <AgGridReact
+                        <Box sx={styles.grid}>
+                            <CustomAGGrid
                                 ref={equipmentsRef}
                                 rowData={equipmentRowData}
                                 columnDefs={columnDefs}
@@ -457,8 +463,8 @@ const EquipmentFilter = forwardRef(
                                 onSelectionChanged={
                                     handleEquipmentSelectionChanged
                                 }
-                            ></AgGridReact>
-                        </div>
+                            ></CustomAGGrid>
+                        </Box>
                     </Grid>
                 </Grid>
             </>

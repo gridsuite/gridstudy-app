@@ -7,17 +7,22 @@
 
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import {
-    LIMITS,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
+    LIMITS,
     PERMANENT_LIMIT,
-    TEMPORARY_LIMITS,
-    TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
+    TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
+    TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import { areArrayElementsUnique } from 'components/utils/utils';
+import {
+    areArrayElementsUnique,
+    formatTemporaryLimits,
+} from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
+import { isNodeBuilt } from '../../graph/util/model-functions';
 
 const temporaryLimitsTableValidationSchema = () => ({
     [PERMANENT_LIMIT]: yup
@@ -103,3 +108,131 @@ export const getLimitsFormData = (
         },
     },
 });
+
+export const sanitizeLimitNames = (temporaryLimitList) =>
+    temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
+        ...temporaryLimit,
+        name: sanitizeString(name),
+    }));
+
+const findTemporaryLimit = (temporaryLimits, limit) =>
+    temporaryLimits?.find(
+        (l) =>
+            l.name === limit.name &&
+            l.acceptableDuration === limit.acceptableDuration
+    );
+
+export const updateTemporaryLimits = (
+    modifiedTemporaryLimits,
+    temporaryLimitsToModify
+) => {
+    let updatedTemporaryLimits = modifiedTemporaryLimits ?? [];
+    //add temporary limits from previous modifications
+    temporaryLimitsToModify?.forEach((limit) => {
+        if (findTemporaryLimit(updatedTemporaryLimits, limit) === undefined) {
+            updatedTemporaryLimits?.push({
+                ...limit,
+            });
+        }
+    });
+
+    //remove deleted temporary limits from current and previous modifications
+    updatedTemporaryLimits = updatedTemporaryLimits?.filter(
+        (limit) =>
+            limit.modificationType !==
+                TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED &&
+            !(
+                (limit.modificationType === null ||
+                    limit.modificationType ===
+                        TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED) &&
+                findTemporaryLimit(temporaryLimitsToModify, limit) === undefined
+            )
+    );
+
+    //update temporary limits values
+    updatedTemporaryLimits?.forEach((limit) => {
+        if (limit.modificationType === null) {
+            limit.value = findTemporaryLimit(
+                temporaryLimitsToModify,
+                limit
+            )?.value;
+        }
+    });
+    return updatedTemporaryLimits;
+};
+
+export const addModificationTypeToTemporaryLimits = (
+    temporaryLimits,
+    temporaryLimitsToModify,
+    currentModifiedTemporaryLimits,
+    currentNode
+) => {
+    const formattedTemporaryLimitsToModify = formatTemporaryLimits(
+        temporaryLimitsToModify
+    );
+    const formattedCurrentModifiedTemporaryLimits = formatTemporaryLimits(
+        currentModifiedTemporaryLimits
+    );
+    const updatedTemporaryLimits = temporaryLimits.map((limit) => {
+        const limitWithSameName = findTemporaryLimit(
+            formattedTemporaryLimitsToModify,
+            limit
+        );
+        if (limitWithSameName) {
+            const currentLimitWithSameName = findTemporaryLimit(
+                formattedCurrentModifiedTemporaryLimits,
+                limitWithSameName
+            );
+            if (
+                (currentLimitWithSameName?.modificationType ===
+                    TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
+                    isNodeBuilt(currentNode)) ||
+                currentLimitWithSameName?.modificationType ===
+                    TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
+            ) {
+                return {
+                    ...limit,
+                    modificationType: currentLimitWithSameName.modificationType,
+                };
+            } else {
+                return limitWithSameName.value === limit.value
+                    ? {
+                          ...limit,
+                          modificationType: null,
+                      }
+                    : {
+                          ...limit,
+                          modificationType:
+                              TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED,
+                      };
+            }
+        } else {
+            return {
+                ...limit,
+                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED,
+            };
+        }
+    });
+    //add deleted limits
+    formattedTemporaryLimitsToModify?.forEach((limit) => {
+        if (!findTemporaryLimit(temporaryLimits, limit)) {
+            updatedTemporaryLimits.push({
+                ...limit,
+                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED,
+            });
+        }
+    });
+    //add previously deleted limits
+    formattedCurrentModifiedTemporaryLimits?.forEach((limit) => {
+        if (
+            !findTemporaryLimit(updatedTemporaryLimits, limit) &&
+            limit.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED
+        ) {
+            updatedTemporaryLimits.push({
+                ...limit,
+                modificationType: TEMPORARY_LIMIT_MODIFICATION_TYPE.DELETED,
+            });
+        }
+    });
+    return updatedTemporaryLimits;
+};

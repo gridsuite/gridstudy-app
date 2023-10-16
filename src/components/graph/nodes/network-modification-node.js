@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React from 'react';
 import Button from '@mui/material/Button';
 import { Handle } from 'react-flow-renderer';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
@@ -16,6 +16,7 @@ import { CopyType } from '../../network-modification-tree-pane';
 import { getLocalStorageTheme } from '../../../redux/local-storage';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import { BUILD_STATUS } from '../../network/constants';
+import { Box } from '@mui/system';
 
 const BUILT_NODE_BANNER_COLOR = '#74a358';
 const BUILT_WITH_WARNING_NODE_BANNER_COLOR = '#FFA500';
@@ -31,8 +32,17 @@ const buildBanner = {
     left: '0px',
 };
 
-const useStyles = makeStyles((theme) => ({
-    networkModificationSelected: {
+const bottomBuildBanner = {
+    display: 'flex',
+    height: '25%',
+    width: '15%',
+    position: 'absolute',
+    bottom: '0px',
+    left: '0px',
+};
+
+const styles = {
+    networkModificationSelected: (theme) => ({
         position: 'relative',
         variant: 'contained',
         background: theme.node.background,
@@ -49,8 +59,8 @@ const useStyles = makeStyles((theme) => ({
             ' 0px 0px 25px,' +
             theme.node.border +
             ' 0px 0px 5px 1px',
-    },
-    networkModification: {
+    }),
+    networkModification: (theme) => ({
         background: theme.palette.text.secondary,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
@@ -58,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
             background: theme.node.hover,
         },
         overflow: 'hidden',
-    },
+    }),
     outOfBoundIcons: {
         display: 'flex',
         flexDirection: 'column',
@@ -91,17 +101,32 @@ const useStyles = makeStyles((theme) => ({
         ...buildBanner,
         background: NOT_BUILT_NODE_BANNER_COLOR,
     },
-    margin: {
-        marginLeft: theme.spacing(1.25),
+    bottomBuildBannerOK: {
+        ...bottomBuildBanner,
+        background: BUILT_NODE_BANNER_COLOR,
     },
+    bottomBuildBannerWarning: {
+        ...bottomBuildBanner,
+        background: BUILT_WITH_WARNING_NODE_BANNER_COLOR,
+    },
+    bottomBuildBannerError: {
+        ...bottomBuildBanner,
+        background: BUILT_WITH_ERROR_NODE_BANNER_COLOR,
+    },
+    bottomBuildBannerNotBuilt: {
+        ...bottomBuildBanner,
+        background: NOT_BUILT_NODE_BANNER_COLOR,
+    },
+
+    margin: (theme) => ({
+        marginLeft: theme.spacing(1.25),
+    }),
     tooltip: {
         maxWidth: '720px',
     },
-}));
+};
 
 const NetworkModificationNode = (props) => {
-    const classes = useStyles();
-
     const currentNode = useSelector((state) => state.currentTreeNode);
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
 
@@ -128,16 +153,29 @@ const NetworkModificationNode = (props) => {
             : 'unset';
     };
 
-    function getClassForBanner(buildStatus) {
+    function getStyleForBanner(buildStatus) {
         switch (buildStatus) {
             case BUILD_STATUS.BUILT:
-                return classes.buildBannerOK;
+                return styles.buildBannerOK;
             case BUILD_STATUS.BUILT_WITH_ERROR:
-                return classes.buildBannerError;
+                return styles.buildBannerError;
             case BUILD_STATUS.BUILT_WITH_WARNING:
-                return classes.buildBannerWarning;
+                return styles.buildBannerWarning;
             default:
-                return classes.buildBannerNotBuilt;
+                return styles.buildBannerNotBuilt;
+        }
+    }
+
+    function getStyleForBottomBanner(buildStatus) {
+        switch (buildStatus) {
+            case BUILD_STATUS.BUILT:
+                return styles.bottomBuildBannerOK;
+            case BUILD_STATUS.BUILT_WITH_ERROR:
+                return styles.bottomBuildBannerError;
+            case BUILD_STATUS.BUILT_WITH_WARNING:
+                return styles.bottomBuildBannerWarning;
+            default:
+                return styles.bottomBuildBannerNotBuilt;
         }
     }
 
@@ -159,23 +197,26 @@ const NetworkModificationNode = (props) => {
                 style={{
                     opacity: getNodeOpacity(),
                 }}
-                className={
+                sx={
                     isSelectedNode()
-                        ? classes.networkModificationSelected
-                        : classes.networkModification
+                        ? styles.networkModificationSelected
+                        : styles.networkModification
                 }
             >
-                <div className={getClassForBanner(props.data.buildStatus)}>
-                    {props.data.buildStatus === 'BUILDING' && (
+                <Box sx={getStyleForBanner(props.data.localBuildStatus)}>
+                    {props.data.localBuildStatus === 'BUILDING' && (
                         <CircularProgress
                             size={20}
                             color="primary"
                             style={{ margin: 'auto' }}
                         />
                     )}
-                </div>
+                </Box>
+                <Box
+                    sx={getStyleForBottomBanner(props.data.globalBuildStatus)}
+                ></Box>
 
-                <div className={classes.labelWrapper}>
+                <Box sx={styles.labelWrapper}>
                     <span
                         style={{
                             overflow: 'hidden',
@@ -188,15 +229,15 @@ const NetworkModificationNode = (props) => {
                         <OverflowableText
                             text={props.data.label}
                             style={{ width: '100%' }}
-                            tooltipStyle={classes.tooltip}
+                            tooltipSx={styles.tooltip}
                         />
                     </span>
-                </div>
+                </Box>
             </Button>
 
-            <div className={classes.outOfBoundIcons}>
+            <Box sx={styles.outOfBoundIcons}>
                 {props.data.readOnly && <LockIcon />}
-            </div>
+            </Box>
         </>
     );
 };

@@ -5,25 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import RadioInput from 'components/utils/rhf-inputs/radio-input';
+import { RadioInput } from '@gridsuite/commons-ui';
 import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import VariationForm from './variation/variation-form';
 import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
 import Grid from '@mui/material/Grid';
 import { gridItem, GridSection } from '../../dialogUtils';
-import makeStyles from '@mui/styles/makeStyles';
 import { getVariationEmptyForm } from './variation/variation-utils';
 
-export const useStyles = makeStyles((theme) => ({
-    padding: {
+const styles = {
+    padding: (theme) => ({
         paddingLeft: theme.spacing(2),
-    },
-}));
+    }),
+};
 
 const GeneratorScalingForm = () => {
-    const classes = useStyles();
-
     const variationTypeField = (
         <RadioInput
             name={VARIATION_TYPE}
@@ -44,12 +41,10 @@ const GeneratorScalingForm = () => {
 
     return (
         <>
-            <Grid className={classes.padding}>
-                {gridItem(variationTypeField, 8)}
-            </Grid>
+            <Grid sx={styles.padding}>{gridItem(variationTypeField, 8)}</Grid>
 
             <GridSection title="Variations" />
-            <Grid container className={classes.padding}>
+            <Grid container sx={styles.padding}>
                 {gridItem(variationsField, 12)}
             </Grid>
         </>

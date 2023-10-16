@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
@@ -26,17 +27,17 @@ import {
 import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog';
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
-import { getLineTypesCatalog } from '../../../utils/rest-api';
 import { emptyLineSegment } from './line-type-segment-dialog';
 import {
     calculateResistance,
     calculateReactance,
     calculateSusceptance,
 } from '../../utils/utils';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { getLineTypesCatalog } from '../../../services/network-modification';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     header: {
         fontWeight: 'bold',
     },
@@ -45,10 +46,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'end',
     },
-}));
+};
 
 export const LineTypeSegmentForm = () => {
-    const classes = useStyles();
     const { setValue, getValues, clearErrors } = useFormContext();
     const [lineTypesCatalog, setLineTypesCatalog] = useState([]);
     const [openCatalogDialogIndex, setOpenCatalogDialogIndex] = useState(null);
@@ -197,27 +197,27 @@ export const LineTypeSegmentForm = () => {
     );
 
     const segmentTypeHeader = (
-        <div className={classes.header}>
+        <Box sx={styles.header}>
             <FormattedMessage id={'lineTypes.type'} />
-        </div>
+        </Box>
     );
 
     const segmentResistanceHeader = (
-        <div className={classes.headerJustifyEnd}>
+        <Box sx={styles.headerJustifyEnd}>
             <FormattedMessage id={'lineTypes.resistanceLabel'} />
-        </div>
+        </Box>
     );
 
     const segmentReactanceHeader = (
-        <div className={classes.headerJustifyEnd}>
+        <Box sx={styles.headerJustifyEnd}>
             <FormattedMessage id={'lineTypes.reactanceLabel'} />
-        </div>
+        </Box>
     );
 
     const segmentSusceptanceHeader = (
-        <div className={classes.headerJustifyEnd}>
+        <Box sx={styles.headerJustifyEnd}>
             <FormattedMessage id={'lineTypes.susceptanceLabel'} />
-        </div>
+        </Box>
     );
 
     const totalResistanceField = (

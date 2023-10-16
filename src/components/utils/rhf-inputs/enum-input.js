@@ -15,7 +15,7 @@ import {
     FormHelperText,
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { FieldLabel } from '../inputs/hooks-helpers';
+import { FieldLabel } from '@gridsuite/commons-ui';
 import { useController } from 'react-hook-form';
 const EnumInput = ({ options, name, label, size, labelValues }) => {
     const {
@@ -24,7 +24,7 @@ const EnumInput = ({ options, name, label, size, labelValues }) => {
     } = useController({ name });
 
     return (
-        <FormControl fullWidth size={size} error={error ? true : false}>
+        <FormControl fullWidth size={size} error={!!error}>
             <InputLabel id="enum-type-label">
                 <FieldLabel label={label} values={labelValues} />
             </InputLabel>

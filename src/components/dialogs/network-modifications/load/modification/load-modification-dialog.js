@@ -11,19 +11,38 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ACTIVE_POWER,
-    EQUIPMENT_ID,
     EQUIPMENT_NAME,
     LOAD_TYPE,
     REACTIVE_POWER,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { modifyLoad, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
+import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { modifyLoad } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
+
+const emptyFormData = {
+    [EQUIPMENT_NAME]: '',
+    [LOAD_TYPE]: null,
+    [ACTIVE_POWER]: null,
+    [REACTIVE_POWER]: null,
+};
+
+const formSchema = yup
+    .object()
+    .shape({
+        [EQUIPMENT_NAME]: yup.string(),
+        [LOAD_TYPE]: yup.string().nullable(),
+        [ACTIVE_POWER]: yup.number().nullable(),
+        [REACTIVE_POWER]: yup.number().nullable(),
+    })
+    .required();
 
 /**
  * Dialog to create a load in the network
@@ -35,21 +54,9 @@ import LoadModificationForm from './load-modification-form';
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
-
-const formSchema = yup
-    .object()
-    .shape({
-        [EQUIPMENT_ID]: yup.string().nullable().required(),
-        [EQUIPMENT_NAME]: yup.string(),
-        [LOAD_TYPE]: yup.string().nullable(),
-        [ACTIVE_POWER]: yup.number().nullable(),
-        [REACTIVE_POWER]: yup.number().nullable(),
-    })
-    .required();
-
 const LoadModificationDialog = ({
-    editData,
-    defaultIdValue,
+    editData, // contains data when we try to edit an existing hypothesis from the current node's list
+    defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
     studyUuid,
     isUpdate,
@@ -58,18 +65,8 @@ const LoadModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
+    const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
-
-    const emptyFormData = useMemo(
-        () => ({
-            [EQUIPMENT_ID]: defaultIdValue ?? null,
-            [EQUIPMENT_NAME]: '',
-            [LOAD_TYPE]: null,
-            [ACTIVE_POWER]: null,
-            [REACTIVE_POWER]: null,
-        }),
-        [defaultIdValue]
-    );
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -80,8 +77,10 @@ const LoadModificationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
+            if (load?.equipmentId) {
+                setSelectedId(load.equipmentId);
+            }
             reset({
-                [EQUIPMENT_ID]: load.equipmentId,
                 [EQUIPMENT_NAME]: load.equipmentName?.value ?? '',
                 [LOAD_TYPE]: load.loadType?.value ?? null,
                 [ACTIVE_POWER]: load.activePower?.value ?? null,
@@ -102,14 +101,14 @@ const LoadModificationDialog = ({
             modifyLoad(
                 studyUuid,
                 currentNodeUuid,
-                load?.equipmentId,
+                selectedId,
                 sanitizeString(load?.equipmentName),
                 load?.loadType,
                 load?.activePower,
                 load?.reactivePower,
                 undefined,
                 undefined,
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined
             ).catch((error) => {
                 snackError({
@@ -118,12 +117,12 @@ const LoadModificationDialog = ({
                 });
             });
         },
-        [editData, studyUuid, currentNodeUuid, snackError]
+        [selectedId, editData, studyUuid, currentNodeUuid, snackError]
     );
 
     const clear = useCallback(() => {
         reset(emptyFormData);
-    }, [reset, emptyFormData]);
+    }, [reset]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
@@ -149,6 +148,7 @@ const LoadModificationDialog = ({
                 titleId="ModifyLoad"
                 open={open}
                 keepMounted={true}
+                showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
                     isUpdate &&
                     (editDataFetchStatus === FetchStatus.RUNNING ||
@@ -156,11 +156,24 @@ const LoadModificationDialog = ({
                 }
                 {...dialogProps}
             >
-                <LoadModificationForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                    setDataFetchStatus={setDataFetchStatus}
-                />
+                {selectedId == null && (
+                    <EquipmentIdSelector
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
+                        defaultValue={selectedId}
+                        setSelectedId={setSelectedId}
+                        equipmentType={EQUIPMENT_TYPES.LOAD}
+                        fillerHeight={2}
+                    />
+                )}
+                {selectedId != null && (
+                    <LoadModificationForm
+                        currentNode={currentNode}
+                        studyUuid={studyUuid}
+                        setDataFetchStatus={setDataFetchStatus}
+                        equipmentId={selectedId}
+                    />
+                )}
             </ModificationDialog>
         </FormProvider>
     );

@@ -6,44 +6,26 @@
  */
 
 import StudyPane from './study-pane';
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAMS_LOADED } from '../utils/config-params';
 import {
-    connectNotificationsWebsocket,
-    fetchLoadFlowInfos,
-    fetchNetworkModificationTree,
-    fetchSecurityAnalysisStatus,
-    fetchStudyExists,
-    fetchPath,
-    connectNotificationsWsUpdateDirectories,
-    fetchCaseName,
-    fetchSensitivityAnalysisStatus,
-    connectDeletedStudyNotificationsWebsocket,
-    fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
-    fetchVoltageInitStatus,
-} from '../utils/rest-api';
-import {
     closeStudy,
     loadNetworkModificationTreeSuccess,
-    networkCreated,
     openStudy,
     studyUpdated,
     setCurrentTreeNode,
     setDeletedEquipments,
     setUpdatedSubstationsIds,
-    isNetworkEquipmentsFetched,
+    updateEquipments,
+    deleteEquipment,
+    resetEquipments,
+    resetEquipmentsPostLoadflow,
+    setStudyIndexationStatus,
+    STUDY_INDEXATION_STATUS,
 } from '../redux/actions';
-import Network from './network/network';
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
@@ -53,19 +35,30 @@ import {
     isNodeRenamed,
     isSameNode,
 } from './graph/util/model-functions';
-import {
-    getSecurityAnalysisRunningStatus,
-    getSensiRunningStatus,
-    getShortCircuitRunningStatus,
-    getDynamicSimulationRunningStatus,
-    getVoltageInitRunningStatus,
-    RunningStatus,
-} from './utils/running-status';
-import { useIntl } from 'react-intl';
+import { RunningStatus } from './utils/running-status';
 import { computePageTitle, computeFullPath } from '../utils/compute-title';
 import { directoriesNotificationType } from '../utils/directories-notification-type';
-import { equipments } from './network/network-equipments';
-import { BUILD_STATUS } from './network/constants';
+import {
+    BUILD_STATUS,
+    MAX_NUMBER_OF_IMPACTED_SUBSTATIONS,
+} from './network/constants';
+import { connectNotificationsWebsocket } from '../services/study-notification';
+import {
+    connectDeletedStudyNotificationsWebsocket,
+    connectNotificationsWsUpdateDirectories,
+} from '../services/directory-notification';
+import { fetchPath } from '../services/directory';
+import { useAllComputingStatus } from './computing-status/use-all-computing-status';
+import { CreateStudyDialog } from './create-study-dialog/create-study-dialog';
+import { fetchAllEquipments } from '../services/study/network-map';
+import { fetchCaseName, fetchStudyExists } from '../services/study';
+import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import {
+    fetchNetworkExistence,
+    fetchStudyIndexationStatus,
+} from '../services/study/network';
+import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
+import { HttpStatusCode } from 'utils/http-status-code';
 
 function isWorthUpdate(
     studyUpdatedForce,
@@ -180,7 +173,7 @@ function useStudy(studyUuidRequest) {
                 setStudyUuid(studyUuidRequest);
             })
             .catch((error) => {
-                if (error.status === 404) {
+                if (error.status === HttpStatusCode.NOT_FOUND) {
                     setErrMessage(
                         intlRef.current.formatMessage(
                             { id: 'studyNotFound' },
@@ -205,29 +198,12 @@ function usePrevious(value) {
     return ref.current;
 }
 
-const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
-const securityAnalysisStatusInvalidations = [
-    'securityAnalysis_status',
-    'securityAnalysis_failed',
-];
-const sensiStatusInvalidations = [
-    'sensitivityAnalysis_status',
-    'sensitivityAnalysis_failed',
-];
-const shortCircuitStatusInvalidations = [
-    'shortCircuitAnalysis_status',
-    'shortCircuitAnalysis_failed',
-];
-const dynamicSimulationStatusInvalidations = [
-    'dynamicSimulation_status',
-    'dynamicSimulation_failed',
-];
-const voltageInitStatusInvalidations = [
-    'voltageInit_status',
-    'voltageInit_failed',
-];
-
 export const UPDATE_TYPE_HEADER = 'updateType';
+const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE =
+    'study_network_recreation_done';
+const UPDATE_TYPE_INDEXATION_STATUS = 'indexation_status_updated';
+const HEADER_INDEXATION_STATUS = 'indexation_status';
+
 const ERROR_HEADER = 'error';
 const USER_HEADER = 'userId';
 // the delay before we consider the WS truly connected
@@ -235,6 +211,7 @@ const DELAY_BEFORE_WEBSOCKET_CONNECTED = 12000;
 
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
+    const intlRef = useIntlRef();
 
     const [studyUuid, studyPending, studyErrorMessage] = useStudy(
         decodeURIComponent(useParams().studyUuid)
@@ -248,13 +225,19 @@ export function StudyContainer({ view, onChangeTab }) {
     // using a ref because this is not used for rendering, it is used in the websocket onMessage()
     const studyParentDirectoriesUuidsRef = useRef([]);
 
-    const network = useSelector((state) => state.network);
     const userName = useSelector((state) => state.user.profile.sub);
     const paramsLoaded = useSelector((state) => state[PARAMS_LOADED]);
-    const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
-        useState(undefined);
 
     const [errorMessage, setErrorMessage] = useState(undefined);
+
+    const [isStudyNetworkFound, setIsStudyNetworkFound] = useState(false);
+    const studyIndexationStatus = useSelector(
+        (state) => state.studyIndexationStatus
+    );
+    const studyIndexationStatusRef = useRef();
+    studyIndexationStatusRef.current = studyIndexationStatus;
+    const [isStudyIndexationPending, setIsStudyIndexationPending] =
+        useState(false);
 
     const [initialTitle] = useState(document.title);
 
@@ -264,57 +247,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const currentNodeRef = useRef();
 
-    const [loadFlowInfos] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchLoadFlowInfos,
-        loadFlowStatusInvalidations
-    );
-
-    const [securityAnalysisStatus] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSecurityAnalysisStatus,
-        securityAnalysisStatusInvalidations,
-        RunningStatus.IDLE,
-        getSecurityAnalysisRunningStatus
-    );
-
-    const [sensiStatus] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSensitivityAnalysisStatus,
-        sensiStatusInvalidations,
-        RunningStatus.IDLE,
-        getSensiRunningStatus
-    );
-
-    const [shortCircuitStatus] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchShortCircuitAnalysisStatus,
-        shortCircuitStatusInvalidations,
-        RunningStatus.IDLE,
-        getShortCircuitRunningStatus
-    );
-
-    const [dynamicSimulationStatus] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchDynamicSimulationStatus,
-        dynamicSimulationStatusInvalidations,
-        RunningStatus.IDLE,
-        getDynamicSimulationRunningStatus
-    );
-
-    const [voltageInitStatus] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchVoltageInitStatus,
-        voltageInitStatusInvalidations,
-        RunningStatus.IDLE,
-        getVoltageInitRunningStatus
-    );
+    useAllComputingStatus(studyUuid, currentNode?.id);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -322,9 +255,14 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const { snackError, snackWarning, snackInfo } = useSnackMessage();
 
-    const intl = useIntl();
+    const [isImportStudyDialogDisplayed, setIsImportStudyDialogDisplayed] =
+        useState(false);
 
     const wsRef = useRef();
+
+    const closeImportStudyDialog = useCallback(() => {
+        setIsImportStudyDialogDisplayed(false);
+    }, []);
 
     const displayErrorNotifications = useCallback(
         (eventData) => {
@@ -333,6 +271,12 @@ export function StudyContainer({ view, onChangeTab }) {
             const userId = eventData.headers[USER_HEADER];
             if (userId !== userName) {
                 return;
+            }
+            if (updateTypeHeader === 'loadflow_failed') {
+                snackError({
+                    headerId: 'LoadFlowError',
+                    messageTxt: errorMessage,
+                });
             }
             if (updateTypeHeader === 'buildFailed') {
                 snackError({
@@ -352,7 +296,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
-            if (updateTypeHeader === 'shortCircuitAnalysis_failed') {
+            if (
+                updateTypeHeader === 'shortCircuitAnalysis_failed' ||
+                updateTypeHeader === 'oneBusShortCircuitAnalysis_failed'
+            ) {
                 snackError({
                     headerId: 'ShortCircuitAnalysisError',
                     messageTxt: errorMessage,
@@ -363,9 +310,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     headerId: 'dynamicSimulationError',
                 });
             }
-            if (updateTypeHeader === 'voltageinit_failed') {
+            if (updateTypeHeader === 'voltageInit_failed') {
                 snackError({
                     headerId: 'voltageInitError',
+                    messageTxt: errorMessage,
                 });
             }
         },
@@ -508,11 +456,6 @@ export function StudyContainer({ view, onChangeTab }) {
         };
     }, [dispatch, fetchStudyPath]);
 
-    const displayNetworkLoadingFailMessage = useCallback((error) => {
-        console.error(error.message);
-        setNetworkLoadingFailMessage(error.message);
-    }, []);
-
     const loadTree = useCallback(() => {
         console.info(
             `Loading network modification tree of study '${studyUuid}'...`
@@ -544,12 +487,22 @@ export function StudyContainer({ view, onChangeTab }) {
                         });
                     });
 
-                const firstSelectedNode =
-                    getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
-                        BUILD_STATUS.BUILT,
-                        BUILD_STATUS.BUILT_WITH_WARNING,
-                        BUILD_STATUS.BUILT_WITH_ERROR,
-                    ]) || getFirstNodeOfType(tree, 'ROOT');
+                // Select root node by default
+                let firstSelectedNode = getFirstNodeOfType(tree, 'ROOT');
+                // if reindexation is ongoing then stay on root node, all variants will be removed
+                // if indexation is done then look for the next built node.
+                // This is to avoid future fetch on variants removed during reindexation process
+                if (
+                    studyIndexationStatusRef.current ===
+                    STUDY_INDEXATION_STATUS.INDEXED
+                ) {
+                    firstSelectedNode =
+                        getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
+                            BUILD_STATUS.BUILT,
+                            BUILD_STATUS.BUILT_WITH_WARNING,
+                            BUILD_STATUS.BUILT_WITH_ERROR,
+                        ]) || firstSelectedNode;
+                }
 
                 // To get positions we must get the node from the model class
                 const ModelFirstSelectedNode = {
@@ -560,16 +513,10 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(setCurrentTreeNode(ModelFirstSelectedNode));
             })
             .catch((error) => {
-                if (error.status === 404) {
-                    snackError({
-                        headerId: 'StudyUnrecoverableStateRecreate',
-                    });
-                } else {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'NetworkModificationTreeLoadError',
-                    });
-                }
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'NetworkModificationTreeLoadError',
+                });
             })
             .finally(() =>
                 console.debug('Network modification tree loading finished')
@@ -577,11 +524,122 @@ export function StudyContainer({ view, onChangeTab }) {
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch, snackError, snackWarning]);
 
+    const checkNetworkExistenceAndRecreateIfNotFound = useCallback(
+        (successCallback) => {
+            fetchNetworkExistence(studyUuid)
+                .then((response) => {
+                    if (response.status === HttpStatusCode.OK) {
+                        successCallback && successCallback();
+                        setIsStudyNetworkFound(true);
+                        loadTree();
+                    } else {
+                        // response.state === NO_CONTENT
+                        // if network is not found, we try to recreate study network from existing case
+                        setIsStudyNetworkFound(false);
+                        recreateStudyNetwork(studyUuid)
+                            .then(() => {
+                                snackWarning({
+                                    headerId: 'recreatingNetworkStudy',
+                                });
+                            })
+                            .catch((error) => {
+                                if (
+                                    error.status ===
+                                    HttpStatusCode.FAILED_DEPENDENCY
+                                ) {
+                                    // when trying to recreate study network, if case can't be found (424 error), we let the user select a new one
+                                    setIsImportStudyDialogDisplayed(true);
+                                    snackError({
+                                        headerId: 'StudyUnrecoverableState',
+                                    });
+                                } else {
+                                    // unknown error when trying to recreate network from study case
+                                    setErrorMessage(
+                                        intlRef.current.formatMessage({
+                                            id: 'networkRecreationError',
+                                        })
+                                    );
+                                }
+                            });
+                    }
+                })
+                .catch(() => {
+                    // unknown error when checking network existence
+                    setErrorMessage(
+                        intlRef.current.formatMessage({
+                            id: 'checkNetworkExistenceError',
+                        })
+                    );
+                });
+        },
+        [studyUuid, loadTree, snackError, snackWarning, intlRef]
+    );
+
+    const checkStudyIndexation = useCallback(() => {
+        setIsStudyIndexationPending(true);
+        fetchStudyIndexationStatus(studyUuid)
+            .then((status) => {
+                switch (status) {
+                    case STUDY_INDEXATION_STATUS.INDEXED: {
+                        dispatch(setStudyIndexationStatus(status));
+                        setIsStudyIndexationPending(false);
+                        break;
+                    }
+                    case STUDY_INDEXATION_STATUS.INDEXING_ONGOING: {
+                        dispatch(setStudyIndexationStatus(status));
+                        break;
+                    }
+                    case STUDY_INDEXATION_STATUS.NOT_INDEXED: {
+                        dispatch(setStudyIndexationStatus(status));
+                        reindexAllStudy(studyUuid)
+                            .catch((error) => {
+                                // unknown error when trying to reindex study
+                                snackError({
+                                    headerId: 'studyIndexationError',
+                                    messageTxt: error,
+                                });
+                            })
+                            .finally(() => {
+                                setIsStudyIndexationPending(false);
+                            });
+                        break;
+                    }
+                    default: {
+                        setIsStudyIndexationPending(false);
+                        snackError({
+                            headerId: 'studyIndexationStatusUnknown',
+                            headerValues: { status: status },
+                        });
+                        break;
+                    }
+                }
+            })
+            .catch(() => {
+                // unknown error when checking study indexation status
+                setIsStudyIndexationPending(false);
+                snackError({
+                    headerId: 'checkstudyIndexationError',
+                });
+            });
+    }, [studyUuid, dispatch, snackError]);
+
+    useEffect(() => {
+        if (studyUuid && !isStudyNetworkFound) {
+            checkNetworkExistenceAndRecreateIfNotFound();
+        }
+    }, [
+        isStudyNetworkFound,
+        checkNetworkExistenceAndRecreateIfNotFound,
+        studyUuid,
+    ]);
+
+    // first time we need to check indexation status by query
+    // studyIndexationStatus = STUDY_INDEXATION_STATUS.NOT_INDEXED by default
     useEffect(() => {
         if (studyUuid) {
-            loadTree();
+            checkStudyIndexation();
         }
-    }, [studyUuid, loadTree]);
+    }, [checkStudyIndexation, studyUuid]);
 
     function parseStudyNotification(studyUpdatedForce) {
         const payload = studyUpdatedForce.eventData.payload;
@@ -592,7 +650,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }
 
     useEffect(() => {
-        if (network && studyUpdatedForce.eventData.headers) {
+        if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
                 'study'
@@ -615,9 +673,11 @@ export function StudyContainer({ view, onChangeTab }) {
                                 deletedEquipment?.equipmentType,
                                 ' from the network'
                             );
-                            network.removeEquipment(
-                                deletedEquipment?.equipmentType,
-                                deletedEquipment?.equipmentId
+                            dispatch(
+                                deleteEquipment(
+                                    deletedEquipment?.equipmentType,
+                                    deletedEquipment?.equipmentId
+                                )
                             );
                         }
                     });
@@ -626,53 +686,79 @@ export function StudyContainer({ view, onChangeTab }) {
                 // updating data related to impacted substations
                 if (substationsIds?.length > 0) {
                     console.info('Reload network equipments');
-                    network.reloadImpactedSubstationsEquipments(
+                    const substationsIdsToFetch =
+                        substationsIds?.length >
+                        MAX_NUMBER_OF_IMPACTED_SUBSTATIONS
+                            ? undefined
+                            : substationsIds; // TODO : temporary to fix fetching request failing when number of impacted substations is too high
+                    const updatedEquipments = fetchAllEquipments(
                         studyUuid,
-                        currentNodeRef.current,
-                        substationsIds
+                        currentNode?.id,
+                        substationsIdsToFetch
                     );
+
+                    updatedEquipments.then((values) => {
+                        dispatch(updateEquipments(values));
+                    });
+
                     dispatch(setUpdatedSubstationsIds(substationsIds));
                 }
             }
         }
-    }, [studyUpdatedForce, network, studyUuid, dispatch]);
+    }, [studyUpdatedForce, currentNode?.id, studyUuid, dispatch]);
 
-    const loadNetwork = useCallback(
-        (isUpdate) => {
-            if (!isNodeBuilt(currentNode) || !studyUuid) {
-                return;
-            }
-            console.info(`Loading network of study '${studyUuid}'...`);
+    // study_network_recreation_done notification
+    // checking another time if we can find network, if we do, we display a snackbar info
+    useEffect(() => {
+        if (
+            studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] ===
+            UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE
+        ) {
+            const successCallback = () =>
+                snackInfo({
+                    headerId: 'studyNetworkRecovered',
+                });
 
-            if (isUpdate) {
-                // After a load flow, network has to be recreated.
-                // In order to avoid glitches during sld (this force closes all slds) and map rendering,
-                // lines and substations have to be prefetched and set before network creation event is dispatched
-                // Network creation event is dispatched directly in the network constructor
-                new Network(
-                    studyUuid,
-                    currentNodeRef, // we use currentNodeRef instead of currentNode to check if the node has changed while we fetch data
-                    displayNetworkLoadingFailMessage,
-                    dispatch,
-                    {
-                        equipments: [equipments.lines, equipments.substations],
-                    }
-                );
-            } else {
-                const network = new Network(
-                    studyUuid,
-                    currentNodeRef,
-                    displayNetworkLoadingFailMessage,
-                    dispatch
-                );
-                // For initial network loading, no need to initialize lines and substations at first,
-                // lazy loading will do the job (no glitches to avoid)
-                dispatch(isNetworkEquipmentsFetched(true));
-                dispatch(networkCreated(network));
+            checkNetworkExistenceAndRecreateIfNotFound(successCallback);
+        } else if (
+            studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] ===
+            UPDATE_TYPE_INDEXATION_STATUS
+        ) {
+            dispatch(
+                setStudyIndexationStatus(
+                    studyUpdatedForce.eventData.headers?.[
+                        HEADER_INDEXATION_STATUS
+                    ]
+                )
+            );
+            if (
+                studyUpdatedForce.eventData.headers?.[
+                    HEADER_INDEXATION_STATUS
+                ] === STUDY_INDEXATION_STATUS.INDEXED
+            ) {
+                snackInfo({
+                    headerId: 'studyIndexationDone',
+                });
             }
-        },
-        [currentNode, studyUuid, displayNetworkLoadingFailMessage, dispatch]
-    );
+            // notification that the study is not indexed anymore then ask to refresh
+            if (
+                studyUpdatedForce.eventData.headers?.[
+                    HEADER_INDEXATION_STATUS
+                ] === STUDY_INDEXATION_STATUS.NOT_INDEXED
+            ) {
+                snackWarning({
+                    headerId: 'studyIndexationNotIndexed',
+                });
+            }
+        }
+    }, [
+        studyUpdatedForce,
+        checkNetworkExistenceAndRecreateIfNotFound,
+        snackInfo,
+        snackWarning,
+        dispatch,
+        checkStudyIndexation,
+    ]);
 
     //handles map automatic mode network reload
     useEffect(() => {
@@ -696,21 +782,19 @@ export function StudyContainer({ view, onChangeTab }) {
         ) {
             return;
         }
-        loadNetwork(previousCurrentNode); // loadNetwork(false) only at app startup, otherwise slds are force closed
-    }, [loadNetwork, currentNode, wsConnected]);
+        dispatch(resetEquipments());
+    }, [currentNode, wsConnected, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] ===
-                'loadflow'
+                'loadflowResult'
             ) {
-                //TODO reload data more intelligently
-                loadNetwork(true);
+                dispatch(resetEquipmentsPostLoadflow());
             }
         }
-        // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, loadNetwork, dispatch]);
+    }, [studyUpdatedForce, dispatch]);
 
     useEffect(() => {
         if (prevStudyPath && prevStudyPath !== studyPath) {
@@ -779,51 +863,32 @@ export function StudyContainer({ view, onChangeTab }) {
         connectDeletedStudyNotifications,
     ]);
 
-    const runnable = useMemo(() => {
-        return {
-            LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
-            SECURITY_ANALYSIS: intl.formatMessage({
-                id: 'SecurityAnalysis',
-            }),
-            SENSITIVITY_ANALYSIS: intl.formatMessage({
-                id: 'SensitivityAnalysis',
-            }),
-            SHORT_CIRCUIT_ANALYSIS: intl.formatMessage({
-                id: 'ShortCircuitAnalysis',
-            }),
-            DYNAMIC_SIMULATION: intl.formatMessage({
-                id: 'DynamicSimulation',
-            }),
-            VOLTAGE_INIT: intl.formatMessage({
-                id: 'VoltageInit',
-            }),
-        };
-    }, [intl]);
-
     return (
-        <WaitingLoader
-            errMessage={
-                studyErrorMessage || networkLoadingFailMessage || errorMessage
-            }
-            loading={studyPending || !paramsLoaded} // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
-            message={'LoadingRemoteData'}
-        >
-            <StudyPane
-                studyUuid={studyUuid}
-                network={network}
-                currentNode={currentNode}
-                view={view}
-                onChangeTab={onChangeTab}
-                loadFlowInfos={loadFlowInfos}
-                securityAnalysisStatus={securityAnalysisStatus}
-                sensiStatus={sensiStatus}
-                shortCircuitStatus={shortCircuitStatus}
-                dynamicSimulationStatus={dynamicSimulationStatus}
-                voltageInitStatus={voltageInitStatus}
-                runnable={runnable}
-                setErrorMessage={setErrorMessage}
-            />
-        </WaitingLoader>
+        <>
+            <WaitingLoader
+                errMessage={studyErrorMessage || errorMessage}
+                loading={
+                    studyPending ||
+                    !paramsLoaded ||
+                    !isStudyNetworkFound ||
+                    (studyIndexationStatus !==
+                        STUDY_INDEXATION_STATUS.INDEXED &&
+                        isStudyIndexationPending)
+                } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
+                message={'LoadingRemoteData'}
+            >
+                <StudyPane
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    view={view}
+                    onChangeTab={onChangeTab}
+                    setErrorMessage={setErrorMessage}
+                />
+            </WaitingLoader>
+            {isImportStudyDialogDisplayed && (
+                <CreateStudyDialog closeDialog={closeImportStudyDialog} />
+            )}
+        </>
     );
 }
 

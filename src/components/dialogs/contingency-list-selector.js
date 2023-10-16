@@ -7,7 +7,6 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
@@ -15,11 +14,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
 import CheckboxList from '../utils/checkbox-list';
-import {
-    fetchContingencyCount,
-    fetchContingencyAndFiltersLists,
-    updateConfigParameter,
-} from '../../utils/rest-api';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
@@ -29,6 +23,9 @@ import { useSelector } from 'react-redux';
 import { elementType } from '@gridsuite/commons-ui';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
+import { updateConfigParameter } from '../../services/config';
+import { fetchContingencyAndFiltersLists } from '../../services/directory';
+import { fetchContingencyCount } from '../../services/study';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -42,8 +39,6 @@ function makeButton(onClick, message, disabled) {
 
 const CONTINGENCY_TYPES = [elementType.CONTINGENCY_LIST];
 const ContingencyListSelector = (props) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
     const favoriteContingencyListUuids = useSelector(
         (state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]
     );
@@ -90,7 +85,7 @@ const ContingencyListSelector = (props) => {
         var discardResult = false;
         if (props.currentNodeUuid !== null) {
             fetchContingencyCount(
-                studyUuid,
+                props.studyUuid,
                 props.currentNodeUuid,
                 checkedContingencyListUuids
             ).then((contingencyCount) => {
@@ -102,7 +97,7 @@ const ContingencyListSelector = (props) => {
         return () => {
             discardResult = true;
         };
-    }, [studyUuid, props.currentNodeUuid, checkedContingencyListUuids]);
+    }, [props.studyUuid, props.currentNodeUuid, checkedContingencyListUuids]);
 
     useEffect(() => {
         if (
@@ -267,6 +262,7 @@ ContingencyListSelector.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onStart: PropTypes.func.isRequired,
+    studyUuid: PropTypes.string,
     currentNodeUuid: PropTypes.string,
 };
 

@@ -6,23 +6,24 @@
  */
 
 import FormControl from '@mui/material/FormControl';
-import clsx from 'clsx';
 import { Grid } from '@mui/material';
-import { FieldLabel } from '../inputs/hooks-helpers';
+import { FieldLabel } from '@gridsuite/commons-ui';
 import Chip from '@mui/material/Chip';
 import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
 import DirectoryItemSelector from '../../directory-item-selector';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useStyles } from '../../dialogs/dialogUtils';
+import { styles } from '../../dialogs/dialogUtils';
 import { useController, useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import ErrorInput from './error-inputs/error-input';
-import MidFormError from './error-inputs/mid-form-error';
+import { ErrorInput } from '@gridsuite/commons-ui';
+import { MidFormError } from '@gridsuite/commons-ui';
 import { RawReadOnlyInput } from './read-only/raw-read-only-input';
 import { NAME } from '../field-constants';
 import { isFieldRequired } from '../utils';
+import Tooltip from '@mui/material/Tooltip';
+import { mergeSx } from '../functions';
 
 const DirectoryItemsInput = ({
     label,
@@ -31,8 +32,8 @@ const DirectoryItemsInput = ({
     equipmentTypes, // Mostly used for filters, it allows the user to get elements of specific equipment only
     itemFilter, // Used to further filter the results displayed according to specific requirement
     titleId, // title of directory item selector dialogue
+    hideErrorMessage,
 }) => {
-    const classes = useStyles();
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const types = useMemo(() => [elementType], [elementType]);
@@ -57,6 +58,7 @@ const DirectoryItemsInput = ({
         (values) => {
             values.forEach((value) => {
                 const { icon, children, ...otherElementAttributes } = value;
+
                 // check if element is already present
                 if (
                     getValues(name).find(
@@ -79,12 +81,13 @@ const DirectoryItemsInput = ({
     return (
         <>
             <FormControl
-                className={clsx(classes.formDirectoryElements1, {
-                    [classes.formDirectoryElementsError]: error?.message,
-                })}
+                sx={mergeSx(
+                    styles.formDirectoryElements1,
+                    error?.message && styles.formDirectoryElementsError
+                )}
                 error={!!error?.message}
             >
-                {elements?.length === 0 && (
+                {elements?.length === 0 && label && (
                     <FieldLabel
                         label={label}
                         optional={
@@ -97,7 +100,7 @@ const DirectoryItemsInput = ({
                     />
                 )}
                 {elements?.length > 0 && (
-                    <FormControl className={classes.formDirectoryElements2}>
+                    <FormControl sx={styles.formDirectoryElements2}>
                         {elements.map((item, index) => (
                             <Chip
                                 key={item.id}
@@ -119,17 +122,25 @@ const DirectoryItemsInput = ({
                 )}
                 <Grid item xs>
                     <Grid container direction="row-reverse">
-                        <IconButton
-                            className={classes.addDirectoryElements}
-                            size={'small'}
-                            onClick={() => setDirectoryItemSelectorOpen(true)}
+                        <Tooltip
+                            title={intl.formatMessage({ id: 'chooseElement' })}
                         >
-                            <FolderIcon />
-                        </IconButton>
+                            <IconButton
+                                sx={styles.addDirectoryElements}
+                                size={'small'}
+                                onClick={() =>
+                                    setDirectoryItemSelectorOpen(true)
+                                }
+                            >
+                                <FolderIcon />
+                            </IconButton>
+                        </Tooltip>
                     </Grid>
                 </Grid>
             </FormControl>
-            <ErrorInput name={name} InputField={MidFormError} />
+            {!hideErrorMessage && (
+                <ErrorInput name={name} InputField={MidFormError} />
+            )}
             <DirectoryItemSelector
                 open={directoryItemSelectorOpen}
                 onClose={addElements}

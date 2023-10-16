@@ -34,7 +34,6 @@ import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createVoltageLevel } from 'utils/rest-api';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
 import VoltageLevelCreationForm from './voltage-level-creation-form';
@@ -44,7 +43,8 @@ import { useIntl } from 'react-intl';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/rounding';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FetchStatus } from 'utils/rest-api';
+import { createVoltageLevel } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 
 /**
  * Dialog to create a load in the network
@@ -125,7 +125,6 @@ const VoltageLevelCreationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError, snackWarning } = useSnackMessage();
-    const equipmentPath = 'voltage-levels';
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -148,10 +147,14 @@ const VoltageLevelCreationDialog = ({
                 [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                 [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
-                    voltageLevel.ipMin
+                    fromCopy
+                        ? voltageLevel.identifiableShortCircuit?.ipMin
+                        : voltageLevel.ipMin
                 ),
                 [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
-                    voltageLevel.ipMax
+                    fromCopy
+                        ? voltageLevel.identifiableShortCircuit?.ipMax
+                        : voltageLevel.ipMax
                 ),
                 [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
                 [SECTION_COUNT]: voltageLevel[SECTION_COUNT] ?? 1,
@@ -168,10 +171,9 @@ const VoltageLevelCreationDialog = ({
                           }))
                         : [],
             });
-            if (voltageLevel.isPartiallyCopied) {
+            if (!voltageLevel.isRetrievedBusbarSections && fromCopy) {
                 snackWarning({
-                    messageTxt:
-                        'Copy was partially made, some fields were not copied',
+                    messageId: 'BusBarSectionsCopyingNotSupported',
                 });
             }
         },
@@ -181,9 +183,9 @@ const VoltageLevelCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromExternalDataToFormValues,
+        elementType: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
     });
 
     useEffect(() => {
@@ -215,7 +217,7 @@ const VoltageLevelCreationDialog = ({
                     return e.switchKind;
                 }),
                 couplingDevices: voltageLevel[COUPLING_OMNIBUS],
-                isUpdate: editData ? true : false,
+                isUpdate: !!editData,
                 modificationUuid: editData?.uuid,
             }).catch((error) => {
                 snackError({
@@ -262,7 +264,7 @@ const VoltageLevelCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL.type}
+                    equipmentType={EQUIPMENT_TYPES.VOLTAGE_LEVEL}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

@@ -4,12 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState, useLayoutEffect, useRef } from 'react';
+
+import {
+    useCallback,
+    useState,
+    useLayoutEffect,
+    useRef,
+    useEffect,
+} from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
 import { RunningStatus } from '../../utils/running-status';
-import { equipments } from '../../network/network-equipments';
 import {
     getEquipmentTypeFromFeederType,
     MIN_HEIGHT,
@@ -20,7 +25,7 @@ import {
     MAX_WIDTH_VOLTAGE_LEVEL,
     DiagramType,
     useDiagram,
-    useDiagramStyles,
+    styles,
 } from '../diagram-common';
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
@@ -28,7 +33,6 @@ import withBranchMenu from '../../menus/branch-menu';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
-import { deleteEquipment, updateSwitchState } from '../../../utils/rest-api';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -36,13 +40,39 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
-import LinePopover from '../../tooltips/line-popover';
-
+import BatteryModificationDialog from '../../dialogs/network-modifications/battery/modification/battery-modification-dialog';
+import EquipmentPopover from '../../tooltips/equipment-popover';
+import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
+import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
+import {
+    deleteEquipment,
+    updateSwitchState,
+} from '../../../services/study/network-modifications';
+import { BusMenu } from 'components/menus/bus-menu';
+import { setComputationRunning, setComputingStatus } from 'redux/actions';
+import { ComputingType } from 'components/computing-status/computing-type';
+import { useDispatch } from 'react-redux';
+import { useParameterState } from 'components/dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../../utils/equipment-types';
+import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
+import { fetchNetworkElementInfos } from '../../../services/study/network';
+import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
+import {
+    OptionalServicesNames,
+    OptionalServicesStatus,
+} from '../../utils/optional-services';
+import { mergeSx } from '../../utils/functions';
+import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 function SingleLineDiagramContent(props) {
-    const { studyUuid } = props;
-    const classes = useDiagramStyles();
-    const { diagramSizeSetter } = props;
+    const { diagramSizeSetter, studyUuid } = props;
     const theme = useTheme();
+    const dispatch = useDispatch();
     const MenuBranch = withBranchMenu(BaseEquipmentMenu);
     const svgRef = useRef();
     const diagramViewerRef = useRef();
@@ -54,32 +84,67 @@ function SingleLineDiagramContent(props) {
     const [errorMessage, setErrorMessage] = useState('');
     const { openDiagramView } = useDiagram();
     const [equipmentToModify, setEquipmentToModify] = useState();
+    const [equipmentToDelete, setEquipmentToDelete] = useState();
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
-    const [linePopoverAnchorEl, setLinePopoverAnchorEl] = useState(null);
-    const [lineHoveredId, setLineHoveredId] = useState('');
+    const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] =
+        useState(null);
+    const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
+    const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const shortCircuitAvailability = useOptionalServiceStatus(
+        OptionalServicesNames.ShortCircuit
+    );
+    const computationRunning = useSelector((state) => state.computationRunning);
+
+    const [
+        oneBusShortcircuitAnalysisLoaderMessage,
+        isDiagramRunningOneBusShortcircuitAnalysis,
+        displayOneBusShortcircuitAnalysisLoader,
+        resetOneBusShortcircuitAnalysisLoader,
+    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode.id);
 
     /**
      * DIAGRAM INTERACTIVITY
      */
+
+    const closeEquipmentMenu = useCallback(() => {
+        setEquipmentMenu({
+            display: false,
+        });
+    }, []);
 
     const handleOpenModificationDialog = (equipmentId, equipmentType) => {
         closeEquipmentMenu();
         setEquipmentToModify({ equipmentId, equipmentType });
     };
 
+    const handleOpenDeletionDialog = useCallback(
+        (equipmentId, equipmentType) => {
+            closeEquipmentMenu();
+            setEquipmentToDelete({ equipmentId, equipmentType });
+        },
+        [closeEquipmentMenu]
+    );
+
     const closeModificationDialog = () => {
         setEquipmentToModify();
     };
 
+    const closeDeletionDialog = () => {
+        setEquipmentToDelete();
+    };
+
     const handleTogglePopover = useCallback(
-        (shouldDisplay, currentTarget, lineId) => {
+        (shouldDisplay, currentTarget, equipmentId, equipmentType) => {
             setShouldDisplayTooltip(shouldDisplay);
             if (shouldDisplay) {
-                setLineHoveredId(lineId);
-                setLinePopoverAnchorEl(currentTarget);
+                setHoveredEquipmentId(equipmentId);
+                setEquipmentPopoverAnchorEl(currentTarget);
+                setHoveredEquipmentType(equipmentType);
             } else {
-                setLineHoveredId('');
-                setLinePopoverAnchorEl(null);
+                setHoveredEquipmentId('');
+                setEquipmentPopoverAnchorEl(null);
+                setHoveredEquipmentType('');
             }
         },
         [setShouldDisplayTooltip]
@@ -125,6 +190,26 @@ function SingleLineDiagramContent(props) {
         display: null,
     });
 
+    const [busMenu, setBusMenu] = useState({
+        position: [-1, -1],
+        busId: null,
+        svgId: null,
+        display: null,
+    });
+
+    const showBusMenu = useCallback(
+        (busId, svgId, x, y) => {
+            handleTogglePopover(false, null, null);
+            setBusMenu({
+                position: [x, y],
+                busId: busId,
+                svgId: svgId,
+                display: true,
+            });
+        },
+        [setBusMenu, handleTogglePopover]
+    );
+
     const showEquipmentMenu = useCallback(
         (equipmentId, equipmentType, svgId, x, y) => {
             handleTogglePopover(false, null, null);
@@ -139,8 +224,8 @@ function SingleLineDiagramContent(props) {
         [handleTogglePopover]
     );
 
-    const closeEquipmentMenu = useCallback(() => {
-        setEquipmentMenu({
+    const closeBusMenu = useCallback(() => {
+        setBusMenu({
             display: false,
         });
     }, []);
@@ -150,7 +235,7 @@ function SingleLineDiagramContent(props) {
         closeEquipmentMenu();
     };
 
-    const handleDeleteEquipment = useCallback(
+    const removeEquipment = useCallback(
         (equipmentType, equipmentId) => {
             deleteEquipment(
                 studyUuid,
@@ -169,19 +254,115 @@ function SingleLineDiagramContent(props) {
         [studyUuid, currentNode?.id, closeEquipmentMenu, snackError]
     );
 
+    const handleRunShortcircuitAnalysis = useCallback(
+        (busId) => {
+            dispatch(
+                setComputingStatus(
+                    ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
+                    RunningStatus.RUNNING
+                )
+            );
+            displayOneBusShortcircuitAnalysisLoader();
+            dispatch(setComputationRunning(true));
+            startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'startShortCircuitError',
+                    });
+                    dispatch(setComputationRunning(false));
+                    dispatch(
+                        setComputingStatus(
+                            ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS,
+                            RunningStatus.FAILED
+                        )
+                    );
+                    resetOneBusShortcircuitAnalysisLoader();
+                })
+                .finally(closeBusMenu());
+        },
+        [
+            dispatch,
+            displayOneBusShortcircuitAnalysisLoader,
+            studyUuid,
+            currentNode?.id,
+            closeBusMenu,
+            snackError,
+            resetOneBusShortcircuitAnalysisLoader,
+        ]
+    );
+
+    const displayBusMenu = () => {
+        return (
+            busMenu.display && (
+                <BusMenu
+                    handleRunShortcircuitAnalysis={
+                        handleRunShortcircuitAnalysis
+                    }
+                    busId={busMenu.busId}
+                    position={busMenu.position}
+                    closeBusMenu={closeBusMenu}
+                />
+            )
+        );
+    };
+
+    const handleDeleteEquipment = useCallback(
+        (equipmentType, equipmentId) => {
+            if (equipmentType !== EQUIPMENT_TYPES.HVDC_LINE) {
+                removeEquipment(equipmentType, equipmentId);
+            } else {
+                // need a query to know the HVDC converters type (LCC vs VSC)
+                fetchNetworkElementInfos(
+                    studyUuid,
+                    currentNode?.id,
+                    EQUIPMENT_TYPES.HVDC_LINE,
+                    EQUIPMENT_INFOS_TYPES.MAP.type,
+                    equipmentId,
+                    false
+                )
+                    .then((hvdcInfos) => {
+                        if (hvdcInfos?.hvdcType === 'LCC') {
+                            // only hvdc line with LCC requires a Dialog (to select MCS)
+                            handleOpenDeletionDialog(
+                                equipmentId,
+                                EQUIPMENT_TYPES.HVDC_LINE
+                            );
+                        } else {
+                            removeEquipment(equipmentType, equipmentId);
+                        }
+                    })
+                    .catch(() => {
+                        snackError({
+                            messageId: 'NetworkElementNotFound',
+                            messageValues: { elementId: equipmentId },
+                        });
+                    });
+            }
+        },
+        [
+            studyUuid,
+            currentNode?.id,
+            snackError,
+            handleOpenDeletionDialog,
+            removeEquipment,
+        ]
+    );
+
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
-            (equipmentMenu.equipmentType === equipments.lines ||
+            (equipmentMenu.equipmentType === EQUIPMENT_TYPES.LINE ||
                 equipmentMenu.equipmentType ===
-                    equipments.twoWindingsTransformers) && (
+                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) && (
                 <MenuBranch
-                    id={equipmentMenu.equipmentId}
+                    equipment={{ id: equipmentMenu.equipmentId }}
                     equipmentType={equipmentMenu.equipmentType}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
+                    handleOpenModificationDialog={handleOpenModificationDialog}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
@@ -201,7 +382,7 @@ function SingleLineDiagramContent(props) {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipmentType && (
                 <Menu
-                    id={equipmentMenu.equipmentId}
+                    equipment={{ id: equipmentMenu.equipmentId }}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -214,41 +395,78 @@ function SingleLineDiagramContent(props) {
 
     const displayTooltip = () => {
         return (
-            <LinePopover
+            <EquipmentPopover
                 studyUuid={studyUuid}
-                anchorEl={linePopoverAnchorEl}
-                lineId={lineHoveredId}
+                anchorEl={equipmentPopoverAnchorEl}
+                equipmentType={hoveredEquipmentType}
+                equipmentId={hoveredEquipmentId}
                 loadFlowStatus={props.loadFlowStatus}
             />
         );
     };
 
-    const displayModificationDialog = (equipmentType) => {
-        switch (equipmentType) {
-            case equipments.generators:
+    const displayModificationDialog = () => {
+        let CurrentModificationDialog;
+        switch (equipmentToModify.equipmentType) {
+            case EQUIPMENT_TYPES.BATTERY:
+                CurrentModificationDialog = BatteryModificationDialog;
+                break;
+            case EQUIPMENT_TYPES.GENERATOR:
+                CurrentModificationDialog = GeneratorModificationDialog;
+                break;
+            case EQUIPMENT_TYPES.LOAD:
+                CurrentModificationDialog = LoadModificationDialog;
+                break;
+            case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+                CurrentModificationDialog =
+                    TwoWindingsTransformerModificationDialog;
+                break;
+            case EQUIPMENT_TYPES.LINE:
+                CurrentModificationDialog = LineModificationDialog;
+                break;
+            case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+                CurrentModificationDialog = ShuntCompensatorModificationDialog;
+                break;
+            default:
+                return <></>;
+        }
+        return (
+            <CurrentModificationDialog
+                open={true}
+                studyUuid={studyUuid}
+                currentNode={currentNode}
+                defaultIdValue={equipmentToModify.equipmentId}
+                isUpdate={true}
+                onClose={() => closeModificationDialog()}
+            />
+        );
+    };
+
+    const displayDeletionDialog = () => {
+        switch (equipmentToDelete.equipmentType) {
+            case EQUIPMENT_TYPES.HVDC_LINE:
                 return (
-                    <GeneratorModificationDialog
+                    <EquipmentDeletionDialog
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        onClose={() => closeModificationDialog()}
-                        defaultIdValue={equipmentToModify.equipmentId}
-                    />
-                );
-            case equipments.loads:
-                return (
-                    <LoadModificationDialog
-                        open={true}
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        onClose={() => closeModificationDialog()}
-                        defaultIdValue={equipmentToModify.equipmentId}
+                        defaultIdValue={equipmentToDelete.equipmentId}
+                        isUpdate={true}
+                        onClose={() => closeDeletionDialog()}
                     />
                 );
             default:
                 return <></>;
         }
     };
+
+    useEffect(() => {
+        dispatch(
+            setComputationRunning(
+                props.oneBusShortCircuitStatus === RunningStatus.RUNNING
+            )
+        );
+    }, [props.oneBusShortCircuitStatus, dispatch]);
 
     /**
      * DIAGRAM CONTENT BUILDING
@@ -257,7 +475,7 @@ function SingleLineDiagramContent(props) {
     useLayoutEffect(() => {
         if (props.svg) {
             const isReadyForInteraction =
-                !props.isComputationRunning &&
+                !computationRunning &&
                 !isAnyNodeBuilding &&
                 !modificationInProgress &&
                 !props.loadingState;
@@ -290,6 +508,12 @@ function SingleLineDiagramContent(props) {
 
                 // callback on the feeders
                 isReadyForInteraction ? showEquipmentMenu : null,
+
+                // callback on the buses
+                isReadyForInteraction &&
+                shortCircuitAvailability === OptionalServicesStatus.Up
+                    ? showBusMenu
+                    : null,
 
                 // arrows color
                 theme.palette.background.paper,
@@ -341,14 +565,16 @@ function SingleLineDiagramContent(props) {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
+        shortCircuitAvailability,
         props.svgUrl,
         props.svg,
         props.svgMetadata,
         currentNode,
-        props.isComputationRunning,
         isAnyNodeBuilding,
         equipmentMenu,
         showEquipmentMenu,
+        showBusMenu,
+        enableDeveloperMode,
         props.diagramId,
         props.svgType,
         theme,
@@ -359,6 +585,7 @@ function SingleLineDiagramContent(props) {
         handleNextVoltageLevelClick,
         diagramSizeSetter,
         handleTogglePopover,
+        computationRunning,
     ]);
 
     // When the loading is finished, we always reset these two states
@@ -380,52 +607,54 @@ function SingleLineDiagramContent(props) {
     return (
         <>
             <Box height={2}>
-                {(props.loadingState || modificationInProgress) && (
+                {(props.loadingState ||
+                    modificationInProgress ||
+                    isDiagramRunningOneBusShortcircuitAnalysis) && (
                     <LinearProgress />
                 )}
+                {oneBusShortcircuitAnalysisLoaderMessage}
             </Box>
             {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-            <div
+            <Box
                 ref={svgRef}
-                className={clsx(
-                    classes.divDiagram,
-                    classes.divSingleLineDiagram,
-                    {
-                        [classes.divDiagramInvalid]:
-                            props.loadFlowStatus !== RunningStatus.SUCCEED,
-                    }
+                sx={mergeSx(
+                    styles.divDiagram,
+                    styles.divSingleLineDiagram,
+                    props.loadFlowStatus !== RunningStatus.SUCCEED &&
+                        styles.divDiagramInvalid
                 )}
                 style={{ height: '100%' }}
             />
             {shouldDisplayTooltip && displayTooltip()}
             {displayBranchMenu()}
-            {displayMenu(equipments.loads, 'load-menus')}
-            {displayMenu(equipments.batteries, 'battery-menus')}
-            {displayMenu(equipments.danglingLines, 'dangling-line-menus')}
-            {displayMenu(equipments.generators, 'generator-menus')}
+            {displayBusMenu()}
+            {displayMenu(EQUIPMENT_TYPES.LOAD, 'load-menus')}
+            {displayMenu(EQUIPMENT_TYPES.BATTERY, 'battery-menus')}
+            {displayMenu(EQUIPMENT_TYPES.DANGLING_LINE, 'dangling-line-menus')}
+            {displayMenu(EQUIPMENT_TYPES.GENERATOR, 'generator-menus')}
             {displayMenu(
-                equipments.staticVarCompensators,
+                EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
                 'static-var-compensator-menus'
             )}
             {displayMenu(
-                equipments.shuntCompensators,
+                EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                 'shunt-compensator-menus'
             )}
             {displayMenu(
-                equipments.threeWindingsTransformers,
+                EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
                 'three-windings-transformer-menus'
             )}
-            {displayMenu(equipments.hvdcLines, 'hvdc-line-menus')}
+            {displayMenu(EQUIPMENT_TYPES.HVDC_LINE, 'hvdc-line-menus')}
             {displayMenu(
-                equipments.lccConverterStations,
+                EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
                 'lcc-converter-station-menus'
             )}
             {displayMenu(
-                equipments.vscConverterStations,
+                EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
                 'vsc-converter-station-menus'
             )}
-            {equipmentToModify &&
-                displayModificationDialog(equipmentToModify.equipmentType)}
+            {equipmentToModify && displayModificationDialog()}
+            {equipmentToDelete && displayDeletionDialog()}
         </>
     );
 }

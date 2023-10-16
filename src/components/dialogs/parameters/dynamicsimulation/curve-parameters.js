@@ -8,24 +8,23 @@
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 
-import { Grid, Typography } from '@mui/material';
-import { makeStyles, useTheme } from '@mui/styles';
+import { Grid, Typography, useTheme } from '@mui/material';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
-import { AgGridReact } from 'ag-grid-react';
-import clsx from 'clsx';
 import { useIntl } from 'react-intl';
 import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
 import { GlobalFilter } from '../../../spreadsheet/global-filter';
+import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     grid: {
         width: 'auto',
         height: '100%',
     },
-}));
+};
 
-const CurveParameters = ({ curves = [], onUpdateCurve }) => {
+const CurveParameters = ({ curves, onUpdateCurve }) => {
     const intl = useIntl();
     const [rowData, setRowData] = useState([]);
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
@@ -40,7 +39,7 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
             // do save here
             const notYetAddedCurves = newCurves.filter(
                 (curve) =>
-                    !curves.find(
+                    !curves?.find(
                         (elem) =>
                             elem.equipmentId === curve.equipmentId &&
                             elem.variableId === curve.variableId
@@ -57,7 +56,6 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
     const quickFilterRef = useRef();
 
     // curve grid configuration
-    const classes = useStyles();
     const theme = useTheme();
     const gridRef = useRef();
 
@@ -65,14 +63,14 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
         return [
             {
                 field: 'equipmentId',
-                minWidth: '80',
+                minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveDynamicModelHeader',
                 }),
             },
             {
                 field: 'variableId',
-                minWidth: '80',
+                minWidth: 80,
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveVariableHeader',
                 }),
@@ -169,8 +167,8 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
                     </Grid>
                     {/* aggrid for configured curves */}
                     <Grid item xs>
-                        <div className={clsx([theme.aggrid, classes.grid])}>
-                            <AgGridReact
+                        <Box sx={styles.grid}>
+                            <CustomAGGrid
                                 ref={gridRef}
                                 rowData={rowData}
                                 columnDefs={columnDefs}
@@ -178,8 +176,8 @@ const CurveParameters = ({ curves = [], onUpdateCurve }) => {
                                 rowSelection={'multiple'}
                                 onGridReady={onGridReady}
                                 onSelectionChanged={onSelectionChanged}
-                            ></AgGridReact>
-                        </div>
+                            ></CustomAGGrid>
+                        </Box>
                     </Grid>
                 </Grid>
                 {open && (

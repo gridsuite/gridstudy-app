@@ -4,7 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+
+import { useCallback, useEffect, useState } from 'react';
 import {
     equipmentStyles,
     LIGHT_THEME,
@@ -27,53 +28,64 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    fetchAppsAndUrls,
-    fetchLoadFlowInfos,
-    fetchSecurityAnalysisStatus,
-    fetchSensitivityAnalysisStatus,
-    fetchShortCircuitAnalysisStatus,
-    fetchDynamicSimulationStatus,
-    fetchVoltageLevel,
-} from '../utils/rest-api';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
     addLoadflowNotif,
     addSANotif,
     addSensiNotif,
-    addShortCircuitNotif,
+    addAllBusesShortCircuitNotif,
     addDynamicSimulationNotif,
     centerOnSubstation,
     openDiagram,
     resetLoadflowNotif,
     resetSANotif,
     resetSensiNotif,
-    resetShortCircuitNotif,
+    resetAllBusesShortCircuitNotif,
     resetDynamicSimulationNotif,
     STUDY_DISPLAY_MODE,
+    addVoltageInitNotif,
+    resetVoltageInitNotif,
+    STUDY_INDEXATION_STATUS,
+    addOneBusShortCircuitNotif,
+    resetOneBusShortCircuitNotif,
 } from '../redux/actions';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import { DiagramType, useDiagram } from './diagrams/diagram-common';
-import { isNodeBuilt } from './graph/util/model-functions';
-import { useNodeData } from './study-container';
+import {
+    DiagramType,
+    useDiagram,
+    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
+} from './diagrams/diagram-common';
+import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
 import Parameters, { useParameterState } from './dialogs/parameters/parameters';
 import { useSearchMatchingEquipments } from './utils/search-matching-equipments';
-import { NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from './diagrams/diagram-common';
-import { EQUIPMENT_TYPES } from './utils/equipment-types';
+import { ComputingType } from './computing-status/computing-type';
+import { RunningStatus } from './utils/running-status';
+import { fetchNetworkElementInfos } from '../services/study/network';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from './utils/equipment-types';
+import { fetchAppsAndUrls } from '../services/utils';
+import { RunButtonContainer } from './run-button-container';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     tabs: {
         flexGrow: 1,
     },
-    label: {
+    label: (theme) => ({
         color: theme.palette.primary.main,
         margin: theme.spacing(1.5),
         fontWeight: 'bold',
+    }),
+    runButtonContainer: {
+        marginRight: '10%',
+        marginTop: '4px',
+        flexShrink: 0,
     },
-}));
+    boxContent: { display: 'flex', width: '100%' },
+};
 
 const STUDY_VIEWS = [
     StudyView.MAP,
@@ -82,11 +94,8 @@ const STUDY_VIEWS = [
     StudyView.LOGS,
 ];
 
-const useEquipmentStyles = makeStyles(equipmentStyles);
-
 const CustomSuffixRenderer = ({ props, element }) => {
     const dispatch = useDispatch();
-    const equipmentClasses = useEquipmentStyles();
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const networkAreaDiagramNbVoltageLevels = useSelector(
@@ -98,20 +107,23 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const centerOnSubstationCB = useCallback(
         (e, element) => {
+            e.stopPropagation();
             if (!studyUuid || !currentNode) {
                 return;
             }
             let substationIdPromise;
-            if (element.type === EQUIPMENT_TYPES.SUBSTATION.type) {
+            if (element.type === EQUIPMENT_TYPES.SUBSTATION) {
                 substationIdPromise = Promise.resolve(element.id);
             } else {
-                substationIdPromise = fetchVoltageLevel(
+                substationIdPromise = fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
-                    element.id
+                    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+                    EQUIPMENT_INFOS_TYPES.LIST.type,
+                    element.id,
+                    true
                 ).then((vl) => vl.substationId);
             }
-
             substationIdPromise.then((substationId) => {
                 dispatch(centerOnSubstation(substationId));
                 props.onClose && props.onClose();
@@ -131,12 +143,12 @@ const CustomSuffixRenderer = ({ props, element }) => {
     );
 
     if (
-        element.type === EQUIPMENT_TYPES.SUBSTATION.type ||
-        element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type
+        element.type === EQUIPMENT_TYPES.SUBSTATION ||
+        element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL
     ) {
         return (
             <>
-                {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL.type && (
+                {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL && (
                     <IconButton
                         disabled={
                             networkAreaDiagramNbVoltageLevels >
@@ -152,7 +164,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 <IconButton
                     disabled={
                         (!studyUuid || !currentNode) &&
-                        element.type !== EQUIPMENT_TYPES.SUBSTATION.type
+                        element.type !== EQUIPMENT_TYPES.SUBSTATION
                     }
                     onClick={(e) => centerOnSubstationCB(e, element)}
                     size={'small'}
@@ -164,19 +176,11 @@ const CustomSuffixRenderer = ({ props, element }) => {
     }
 
     return (
-        <TagRenderer
-            classes={equipmentClasses}
-            props={props}
-            element={element}
-        />
+        <TagRenderer styles={equipmentStyles} props={props} element={element} />
     );
 };
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
-    const classes = useStyles();
-
-    const equipmentClasses = useEquipmentStyles();
-
     const dispatch = useDispatch();
 
     const intl = useIntl();
@@ -189,7 +193,15 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const sensiNotif = useSelector((state) => state.sensiNotif);
 
-    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+    const allBusesShortCircuitNotif = useSelector(
+        (state) => state.allBusesShortCircuitNotif
+    );
+
+    const oneBusShortCircuitNotif = useSelector(
+        (state) => state.oneBusShortCircuitNotif
+    );
+
+    const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
 
     const dynamicSimulationNotif = useSelector(
         (state) => state.dynamicSimulationNotif
@@ -214,65 +226,48 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
-    const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
-    const securityAnalysisStatusInvalidations = [
-        'securityAnalysis_status',
-        'securityAnalysis_failed',
-    ];
-    const sensitivityAnalysisStatusInvalidations = [
-        'sensitivityAnalysis_status',
-        'sensitivityAnalysis_failed',
-    ];
-    const shortCircuitAnalysisStatusInvalidations = [
-        'shortCircuitAnalysis_status',
-        'shortCircuitAnalysis_failed',
-    ];
-    const dynamicSimulationStatusInvalidations = [
-        'dynamicSimulation_status',
-        'dynamicSimulation_failed',
-    ];
-    const [loadFlowInfosNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchLoadFlowInfos,
-        loadFlowStatusInvalidations
+
+    const loadFlowStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.LOADFLOW]
     );
 
-    const [securityAnalysisStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSecurityAnalysisStatus,
-        securityAnalysisStatusInvalidations
+    const securityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
-    const [sensitivityAnalysisStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchSensitivityAnalysisStatus,
-        sensitivityAnalysisStatusInvalidations
+    const sensitivityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const [shortCircuitAnalysisStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchShortCircuitAnalysisStatus,
-        shortCircuitAnalysisStatusInvalidations
+    const allBusesShortCircuitAnalysisStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
     );
 
-    const [dynamicSimulationStatusNode] = useNodeData(
-        studyUuid,
-        currentNode?.id,
-        fetchDynamicSimulationStatus,
-        dynamicSimulationStatusInvalidations
+    const oneBusShortCircuitAnalysisStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+    );
+
+    const dynamicSimulationStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+    );
+
+    const voltageInitStatus = useSelector(
+        (state) => state.computingStatus[ComputingType.VOLTAGE_INIT]
     );
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
+
+    const studyIndexationStatus = useSelector(
+        (state) => state.studyIndexationStatus
+    );
 
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
-            if (optionInfos.type === EQUIPMENT_TYPES.SUBSTATION.type) {
+            if (optionInfos.type === EQUIPMENT_TYPES.SUBSTATION) {
                 openDiagramView(optionInfos.id, DiagramType.SUBSTATION);
             } else {
                 openDiagramView(
@@ -290,24 +285,56 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 setAppsAndUrls(res);
             });
         }
-        hideParameters();
     }, [user]);
 
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            loadFlowInfosNode?.loadFlowStatus !== 'NOT_DONE' &&
-            loadFlowInfosNode?.loadFlowResult != null
+            (loadFlowStatus === RunningStatus.SUCCEED ||
+                loadFlowStatus === RunningStatus.FAILED)
         ) {
             dispatch(addLoadflowNotif());
         } else {
             dispatch(resetLoadflowNotif());
         }
+    }, [currentNode, dispatch, loadFlowStatus, tabIndex, user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            (securityAnalysisStatus === RunningStatus.SUCCEED ||
+                securityAnalysisStatus === RunningStatus.FAILED)
+        ) {
+            dispatch(addSANotif());
+        } else {
+            dispatch(resetSANotif());
+        }
+    }, [currentNode, dispatch, securityAnalysisStatus, tabIndex, user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            sensitivityAnalysisStatus === RunningStatus.SUCCEED
+        ) {
+            dispatch(addSensiNotif());
+        } else {
+            dispatch(resetSensiNotif());
+        }
+    }, [currentNode, dispatch, sensitivityAnalysisStatus, tabIndex, user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            allBusesShortCircuitAnalysisStatus === RunningStatus.SUCCEED
+        ) {
+            dispatch(addAllBusesShortCircuitNotif());
+        } else {
+            dispatch(resetAllBusesShortCircuitNotif());
+        }
     }, [
         currentNode,
         dispatch,
-        loadFlowInfosNode?.loadFlowResult,
-        loadFlowInfosNode?.loadFlowStatus,
+        allBusesShortCircuitAnalysisStatus,
         tabIndex,
         user,
     ]);
@@ -315,48 +342,43 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            (securityAnalysisStatusNode === 'CONVERGED' ||
-                securityAnalysisStatusNode === 'DIVERGED')
+            oneBusShortCircuitAnalysisStatus === RunningStatus.SUCCEED
         ) {
-            dispatch(addSANotif());
+            dispatch(addOneBusShortCircuitNotif());
         } else {
-            dispatch(resetSANotif());
+            dispatch(resetOneBusShortCircuitNotif());
         }
-    }, [currentNode, dispatch, securityAnalysisStatusNode, tabIndex, user]);
+    }, [
+        currentNode,
+        dispatch,
+        oneBusShortCircuitAnalysisStatus,
+        tabIndex,
+        user,
+    ]);
 
     useEffect(() => {
         if (
             isNodeBuilt(currentNode) &&
-            sensitivityAnalysisStatusNode === 'COMPLETED'
-        ) {
-            dispatch(addSensiNotif());
-        } else {
-            dispatch(resetSensiNotif());
-        }
-    }, [currentNode, dispatch, sensitivityAnalysisStatusNode, tabIndex, user]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            shortCircuitAnalysisStatusNode === 'COMPLETED'
-        ) {
-            dispatch(addShortCircuitNotif());
-        } else {
-            dispatch(resetShortCircuitNotif());
-        }
-    }, [currentNode, dispatch, shortCircuitAnalysisStatusNode, tabIndex, user]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            (dynamicSimulationStatusNode === 'CONVERGED' ||
-                dynamicSimulationStatusNode === 'DIVERGED')
+            (dynamicSimulationStatus === RunningStatus.SUCCEED ||
+                dynamicSimulationStatus === RunningStatus.FAILED)
         ) {
             dispatch(addDynamicSimulationNotif());
         } else {
             dispatch(resetDynamicSimulationNotif());
         }
-    }, [currentNode, dispatch, dynamicSimulationStatusNode, tabIndex, user]);
+    }, [currentNode, dispatch, dynamicSimulationStatus, tabIndex, user]);
+
+    useEffect(() => {
+        if (
+            isNodeBuilt(currentNode) &&
+            (voltageInitStatus === RunningStatus.SUCCEED ||
+                voltageInitStatus === RunningStatus.FAILED)
+        ) {
+            dispatch(addVoltageInitNotif());
+        } else {
+            dispatch(resetVoltageInitNotif());
+        }
+    }, [currentNode, dispatch, voltageInitStatus, tabIndex, user]);
 
     function showParameters() {
         setParametersOpen(true);
@@ -378,6 +400,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 id: 'InvalidNode',
             });
         }
+
+        if (studyIndexationStatus !== STUDY_INDEXATION_STATUS.INDEXED) {
+            return intl.formatMessage({
+                id: 'waitingStudyIndexation',
+            });
+        }
+
         return '';
     }
 
@@ -411,7 +440,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 elementsFound={equipmentsFound}
                 renderElement={(props) => (
                     <EquipmentItem
-                        classes={equipmentClasses}
+                        styles={equipmentStyles}
                         {...props}
                         key={'ei' + props.element.key}
                         suffixRenderer={CustomSuffixRenderer}
@@ -420,7 +449,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
                 searchTermDisabled={getDisableReason() !== ''}
-                initialSearchTerm={getDisableReason()}
+                searchTermDisableReason={getDisableReason()}
             >
                 {/* Add current Node name between Logo and Tabs */}
                 <Box
@@ -433,7 +462,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     {/* TODO : temporary fix (remove user and manage disconnection in a hook?) */}
                     {currentNode && user && (
                         <OverflowableText
-                            className={classes.label}
+                            sx={styles.label}
                             text={
                                 currentNode?.data?.label === 'Root'
                                     ? intl.formatMessage({
@@ -444,53 +473,74 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         />
                     )}
                 </Box>
-                {studyUuid && (
-                    <Tabs
-                        value={tabIndex}
-                        variant="scrollable"
-                        onChange={(event, newTabIndex) => {
-                            onChangeTab(newTabIndex);
-                        }}
-                        aria-label="views"
-                        className={classes.tabs}
-                    >
-                        {STUDY_VIEWS.map((tabName) => {
-                            let label;
-                            if (
-                                tabName === StudyView.RESULTS &&
-                                (loadflowNotif ||
-                                    saNotif ||
-                                    sensiNotif ||
-                                    shortCircuitNotif ||
-                                    dynamicSimulationNotif)
-                            ) {
-                                label = (
-                                    <Badge
-                                        badgeContent={
-                                            loadflowNotif +
-                                            saNotif +
-                                            sensiNotif +
-                                            shortCircuitNotif +
-                                            dynamicSimulationNotif
-                                        }
-                                        color="secondary"
-                                    >
-                                        <FormattedMessage id={tabName} />
-                                    </Badge>
-                                );
-                            } else {
-                                label = <FormattedMessage id={tabName} />;
-                            }
-                            return <Tab key={tabName} label={label} />;
-                        })}
-                    </Tabs>
-                )}
+                <Box sx={styles.boxContent}>
+                    {studyUuid && (
+                        <Tabs
+                            value={tabIndex}
+                            variant="scrollable"
+                            onChange={(event, newTabIndex) => {
+                                onChangeTab(newTabIndex);
+                            }}
+                            aria-label="views"
+                            sx={styles.tabs}
+                        >
+                            {STUDY_VIEWS.map((tabName) => {
+                                let label;
+                                if (
+                                    tabName === StudyView.RESULTS &&
+                                    (loadflowNotif ||
+                                        saNotif ||
+                                        sensiNotif ||
+                                        allBusesShortCircuitNotif ||
+                                        oneBusShortCircuitNotif ||
+                                        dynamicSimulationNotif ||
+                                        voltageInitNotif)
+                                ) {
+                                    label = (
+                                        <Badge
+                                            badgeContent={
+                                                loadflowNotif +
+                                                saNotif +
+                                                sensiNotif +
+                                                allBusesShortCircuitNotif +
+                                                oneBusShortCircuitNotif +
+                                                dynamicSimulationNotif +
+                                                voltageInitNotif
+                                            }
+                                            color="secondary"
+                                        >
+                                            <FormattedMessage id={tabName} />
+                                        </Badge>
+                                    );
+                                } else {
+                                    label = <FormattedMessage id={tabName} />;
+                                }
+                                return <Tab key={tabName} label={label} />;
+                            })}
+                        </Tabs>
+                    )}
+                    {studyUuid && (
+                        <Box sx={styles.runButtonContainer}>
+                            <RunButtonContainer
+                                studyUuid={studyUuid}
+                                currentNode={currentNode}
+                                disabled={
+                                    !isNodeBuilt(currentNode) ||
+                                    isNodeReadOnly(currentNode)
+                                }
+                            />
+                        </Box>
+                    )}
+                </Box>
             </TopBar>
-            <Parameters
-                isParametersOpen={isParametersOpen}
-                hideParameters={hideParameters}
-                user={user}
-            />
+
+            {studyUuid && (
+                <Parameters
+                    isParametersOpen={isParametersOpen}
+                    hideParameters={hideParameters}
+                    user={user}
+                />
+            )}
         </>
     );
 };

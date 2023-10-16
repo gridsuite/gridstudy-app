@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,7 +20,7 @@ import {
     FieldLabel,
     genHelperError,
     genHelperPreviousValue,
-} from './hooks-helpers';
+} from '@gridsuite/commons-ui';
 
 const QUESTIONABLE_SIZE = 1000;
 

@@ -4,24 +4,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import PropTypes from 'prop-types';
 import DynamicSimulationResultSeriesItem from './dynamic-simulation-result-series-item';
-import { debounce, Grid, List, ListSubheader, Typography } from '@mui/material';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { Grid, List, ListSubheader, Typography } from '@mui/material';
+import { memo, useCallback, useEffect, useState } from 'react';
 
-const useStyle = makeStyles((theme) => ({
+const styles = {
     root: {
         width: '100%',
         height: '100%',
         overflow: 'auto',
     },
-    headerItem: {
+    headerItem: (theme) => ({
         textAlign: 'center',
         background: theme.palette.background.paper,
-    },
-    headerList: {},
-}));
+    }),
+};
 
 const DynamicSimulationResultSeriesList = ({
     index,
@@ -32,8 +31,6 @@ const DynamicSimulationResultSeriesList = ({
 }) => {
     const [leftAxisCheckedIndexes, setLeftAxisCheckedIndexes] = useState([]);
     const [rightAxisCheckedIndexes, setRightAxisCheckedIndexes] = useState([]);
-
-    const classes = useStyle();
 
     const handleToggle = useCallback((id, setAxisCheckedIndexes) => {
         setAxisCheckedIndexes((prev) => {
@@ -62,33 +59,24 @@ const DynamicSimulationResultSeriesList = ({
         [handleToggle]
     );
 
-    const delayedOnLeftAxisSelected = useMemo(
-        () => debounce(onLeftAxisSelected, 500),
-        [onLeftAxisSelected]
-    );
-    const delayedOnRightAxisSelected = useMemo(
-        () => debounce(onRightAxisSelected, 500),
-        [onRightAxisSelected]
-    );
+    useEffect(() => {
+        // propagate changes
+        onLeftAxisSelected(index, leftAxisCheckedIndexes);
+    }, [leftAxisCheckedIndexes, index, onLeftAxisSelected]);
 
     useEffect(() => {
         // propagate changes
-        delayedOnLeftAxisSelected(index, leftAxisCheckedIndexes);
-    }, [leftAxisCheckedIndexes, index, delayedOnLeftAxisSelected]);
-
-    useEffect(() => {
-        // propagate changes
-        delayedOnRightAxisSelected(index, rightAxisCheckedIndexes);
-    }, [rightAxisCheckedIndexes, index, delayedOnRightAxisSelected]);
+        onRightAxisSelected(index, rightAxisCheckedIndexes);
+    }, [rightAxisCheckedIndexes, index, onRightAxisSelected]);
 
     const renderHeaders = () => {
         return (
-            <ListSubheader className={classes.headerList}>
+            <ListSubheader>
                 <Grid container>
                     {headers.map((header, index) => (
                         <Grid item flexGrow={index === 1 ? 1 : 0} key={index}>
                             <Typography
-                                className={classes.headerItem}
+                                sx={styles.headerItem}
                                 variant={'subtitle1'}
                             >
                                 {header}
@@ -100,7 +88,7 @@ const DynamicSimulationResultSeriesList = ({
         );
     };
     return (
-        <List className={classes.root} subheader={renderHeaders()}>
+        <List sx={styles.root} subheader={renderHeaders()}>
             {items.map((item, index) => (
                 <DynamicSimulationResultSeriesItem
                     key={index}

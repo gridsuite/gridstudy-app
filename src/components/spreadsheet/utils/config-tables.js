@@ -5,12 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { equipments } from '../../network/network-equipments';
-import { BooleanCellRenderer } from './cell-renderers';
+import { BooleanCellRenderer, PropertiesCellRenderer } from './cell-renderers';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { BooleanListField, NumericalField } from './equipment-table-editors';
 import { ENERGY_SOURCES, LOAD_TYPES } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
+import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
+import {
+    kiloUnitToUnit,
+    unitToKiloUnit,
+    unitToMicroUnit,
+} from '../../../utils/rounding';
 
 const generateTapPositions = (params) => {
     return params
@@ -18,10 +23,6 @@ const generateTapPositions = (params) => {
               Array(params.highTapPosition - params.lowTapPosition + 1).keys()
           )
         : [];
-};
-
-const nominalVoltage = (network, voltageLevelId) => {
-    return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
 };
 
 const applyFluxConvention = (convention, val) => {
@@ -32,6 +33,8 @@ const applyFluxConvention = (convention, val) => {
 };
 
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter
+// The columns we want to include in the global filter at the date of this comment : ID (all), Name, Country, Type and Nominal Voltage (all).
+// All the others should be excluded.
 const excludeFromGlobalFilter = () => '';
 
 export const MIN_COLUMN_WIDTH = 160;
@@ -43,11 +46,61 @@ export const DEFAULT_SORT_ORDER = 'asc';
 
 export const EDIT_COLUMN = 'edit';
 
+const propertiesGetter = (params) => {
+    const properties = params?.data?.properties;
+    if (properties && Object.keys(properties).length) {
+        return Object.keys(properties)
+            .map((property) => property + ' : ' + properties[property])
+            .join(' | ');
+    } else {
+        return null;
+    }
+};
+
+const generateEditableNumericColumnDefinition = (
+    id,
+    field,
+    fractionDigits,
+    changeCmd,
+    optional,
+    minExpression,
+    maxExpression,
+    excludeFromGlobalFilter,
+    extraDef
+) => {
+    return {
+        id: id,
+        field: field,
+        numeric: true,
+        filter: 'agNumberColumnFilter',
+        fractionDigits: fractionDigits,
+        changeCmd: changeCmd,
+        editable: true,
+        cellEditor: NumericalField,
+        cellEditorParams: (params) => {
+            return {
+                optional,
+                ...(minExpression && { minExpression: minExpression }),
+                ...(maxExpression && { maxExpression: maxExpression }),
+                defaultValue: params.data[field],
+                gridContext: params.context,
+                gridApi: params.api,
+                colDef: params.colDef,
+            };
+        },
+        ...(excludeFromGlobalFilter && {
+            getQuickFilterText: excludeFromGlobalFilter,
+        }),
+        ...extraDef,
+    };
+};
+
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,
         name: 'Substations',
-        resource: equipments.substations,
+        type: EQUIPMENT_TYPES.SUBSTATION,
+        fetchers: EQUIPMENT_FETCHERS.SUBSTATION,
         columns: [
             {
                 id: 'ID',
@@ -62,15 +115,22 @@ export const TABLES_DEFINITIONS = {
                 id: 'Country',
                 field: 'countryName',
             },
+            {
+                id: 'Properties',
+                field: 'properties',
+                valueGetter: propertiesGetter, // valueFormatter does not work here
+                cellRenderer: PropertiesCellRenderer,
+                minWidth: 300,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
     VOLTAGE_LEVELS: {
         index: 1,
         name: 'VoltageLevels',
-        resource: equipments.voltageLevels,
-        modifiableEquipmentType: EQUIPMENT_TYPES.VOLTAGE_LEVEL.type,
-        getter: (network) => network.getVoltageLevels(),
+        type: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+        fetchers: EQUIPMENT_FETCHERS.VOLTAGE_LEVEL,
         columns: [
             {
                 id: 'ID',
@@ -80,6 +140,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
+                editable: true,
             },
             {
                 id: 'SubstationId',
@@ -91,6 +152,87 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.nominalVoltage,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+            },
+            generateEditableNumericColumnDefinition(
+                'LowVoltageLimitkV',
+                'lowVoltageLimit',
+                1,
+                'equipment.setLowVoltageLimit({})\n',
+                true,
+                undefined,
+                'highVoltageLimit',
+                excludeFromGlobalFilter
+            ),
+            generateEditableNumericColumnDefinition(
+                'HighVoltageLimitkV',
+                'highVoltageLimit',
+                1,
+                'equipment.setHighVoltageLimit({})\n',
+                true,
+                'lowVoltageLimit',
+                undefined,
+                excludeFromGlobalFilter
+            ),
+            {
+                id: 'IpMin',
+                field: 'identifiableShortCircuit.ipMin',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                valueGetter: (params) =>
+                    unitToKiloUnit(
+                        params.data?.identifiableShortCircuit?.ipMin
+                    ),
+                valueSetter: (params) => {
+                    params.data.identifiableShortCircuit = {
+                        ...params.data.identifiableShortCircuit,
+                        ipMin: kiloUnitToUnit(params.newValue),
+                    };
+                    return params;
+                },
+                ...(excludeFromGlobalFilter && {
+                    getQuickFilterText: excludeFromGlobalFilter,
+                }),
+            },
+            {
+                id: 'IpMax',
+                field: 'identifiableShortCircuit.ipMax',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                valueGetter: (params) =>
+                    unitToKiloUnit(
+                        params.data?.identifiableShortCircuit?.ipMax
+                    ),
+                valueSetter: (params) => {
+                    params.data.identifiableShortCircuit = {
+                        ...params.data.identifiableShortCircuit,
+                        ipMax: kiloUnitToUnit(params.newValue),
+                    };
+                    return params;
+                },
+                ...(excludeFromGlobalFilter && {
+                    getQuickFilterText: excludeFromGlobalFilter,
+                }),
+                ...{
+                    crossValidation: {
+                        requiredOn: {
+                            dependencyColumn: 'ipMin',
+                        },
+                    },
+                },
             },
         ],
     },
@@ -98,7 +240,8 @@ export const TABLES_DEFINITIONS = {
     LINES: {
         index: 2,
         name: 'Lines',
-        resource: equipments.lines,
+        type: EQUIPMENT_TYPES.LINE,
+        fetchers: EQUIPMENT_FETCHERS.LINE,
         columns: [
             {
                 id: 'ID',
@@ -122,11 +265,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId1
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -134,11 +272,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId2
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -179,14 +312,80 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'SeriesResistance',
+                field: 'r',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'SeriesReactance',
+                field: 'x',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ShuntConductance1',
+                field: 'g1',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.g1),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ShuntConductance2',
+                field: 'g2',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.g2),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ShuntSusceptance1',
+                field: 'b1',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.b1),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ShuntSusceptance2',
+                field: 'b2',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.b2),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide1',
+                field: 'terminal1Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide2',
+                field: 'terminal2Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
     TWO_WINDINGS_TRANSFORMERS: {
         index: 3,
         name: 'TwoWindingsTransformers',
-        resource: equipments.twoWindingsTransformers,
-        modifiableEquipmentType: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER.type,
+        type: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+        fetchers: EQUIPMENT_FETCHERS.TWO_WINDINGS_TRANSFORMER,
         groovyEquipmentGetter: 'getTwoWindingsTransformer',
         columns: [
             {
@@ -209,11 +408,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId1
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -221,11 +415,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId2
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -302,7 +491,11 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger.tapPosition = params.newValue;
+                    params.data.ratioTapChanger = {
+                        ...params.data.ratioTapChanger,
+                        tapPosition: params.newValue,
+                    };
+
                     return params;
                 },
                 cellEditor: 'agSelectCellEditor',
@@ -343,7 +536,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger.tapPosition = params.newValue;
+                    params.data.phaseTapChanger = {
+                        ...params.data.phaseTapChanger,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 cellEditor: 'agSelectCellEditor',
@@ -368,15 +564,70 @@ export const TABLES_DEFINITIONS = {
                     params?.data?.phaseTapChanger?.regulationValue,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'SeriesResistance',
+                field: 'r',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'SeriesReactance',
+                field: 'x',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'MagnetizingConductanceWithUnit',
+                field: 'g',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.g),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'MagnetizingSusceptanceWithUnit',
+                field: 'b',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                valueGetter: (params) => unitToMicroUnit(params.data.b),
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'RatedNominalPower',
+                field: 'ratedS',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide1',
+                field: 'terminal1Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide2',
+                field: 'terminal2Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
     THREE_WINDINGS_TRANSFORMERS: {
         index: 4,
         name: 'ThreeWindingsTransformers',
-        resource: equipments.threeWindingsTransformers,
-        modifiableEquipmentType:
-            EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER.type,
+        type: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
+        fetchers: EQUIPMENT_FETCHERS.THREE_WINDINGS_TRANSFORMER,
         groovyEquipmentGetter: 'getThreeWindingsTransformer',
         columns: [
             {
@@ -403,11 +654,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 field: 'nominalVoltage1',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId1
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -415,11 +661,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide2',
                 field: 'nominalVoltage2',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId2
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -427,11 +668,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide3',
                 field: 'nominalVoltage3',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId3
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -522,7 +758,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger1?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger1.tapPosition = params.newValue;
+                    params.data.ratioTapChanger1 = {
+                        ...params.data.ratioTapChanger1,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -568,7 +807,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger2?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger2.tapPosition = params.newValue;
+                    params.data.ratioTapChanger2 = {
+                        ...params.data.ratioTapChanger2,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -614,7 +856,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.ratioTapChanger3?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.ratioTapChanger3.tapPosition = params.newValue;
+                    params.data.ratioTapChanger3 = {
+                        ...params.data.ratioTapChanger3,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -651,7 +896,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger1?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger1.tapPosition = params.newValue;
+                    params.data.phaseTapChanger1 = {
+                        ...params.data.phaseTapChanger1,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -697,7 +945,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger2?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger2.tapPosition = params.newValue;
+                    params.data.phaseTapChanger2 = {
+                        ...params.data.phaseTapChanger2,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -743,7 +994,10 @@ export const TABLES_DEFINITIONS = {
                 valueGetter: (params) =>
                     params?.data?.phaseTapChanger3?.tapPosition,
                 valueSetter: (params) => {
-                    params.data.phaseTapChanger3.tapPosition = params.newValue;
+                    params.data.phaseTapChanger3 = {
+                        ...params.data.phaseTapChanger3,
+                        tapPosition: params.newValue,
+                    };
                     return params;
                 },
                 editable: true,
@@ -766,14 +1020,35 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'ConnectedSide1',
+                field: 'terminal1Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide2',
+                field: 'terminal2Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ConnectedSide3',
+                field: 'terminal3Connected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
     GENERATORS: {
         index: 5,
         name: 'Generators',
-        resource: equipments.generators,
-        modifiableEquipmentType: EQUIPMENT_TYPES.GENERATOR.type,
+        type: EQUIPMENT_TYPES.GENERATOR,
+        fetchers: EQUIPMENT_FETCHERS.GENERATOR,
         columns: [
             {
                 id: 'ID',
@@ -794,11 +1069,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -839,7 +1109,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'ActivePowerControl',
-                field: 'activePowerControlOn',
+                field: 'activePowerControl.activePowerControlOn',
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -856,6 +1126,9 @@ export const TABLES_DEFINITIONS = {
                     return {
                         maxExpression: 'maxP',
                         defaultValue: params.data.minP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -873,6 +1146,9 @@ export const TABLES_DEFINITIONS = {
                     return {
                         minExpression: 'minP',
                         defaultValue: params.data.maxP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -896,6 +1172,9 @@ export const TABLES_DEFINITIONS = {
                         minExpression: 'minP',
                         maxExpression: 'maxP',
                         defaultValue: params.data.targetP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
                     };
                 },
                 fractionDigits: 1,
@@ -913,11 +1192,17 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.targetQ,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
                     };
                 },
-                editableCondition: {
-                    dependencyColumn: 'voltageRegulatorOn',
-                    columnValue: false,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'voltageRegulatorOn',
+                        //the following value is matched against the input of a boolean input, so 1 convey the following value : false
+                        columnValue: 0,
+                    },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -931,6 +1216,9 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.voltageRegulatorOn | 0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
                     };
                 },
                 resetColumnsInError: [
@@ -957,11 +1245,17 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.targetV,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
                     };
                 },
-                editableCondition: {
-                    dependencyColumn: 'voltageRegulatorOn',
-                    columnValue: true,
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn: 'voltageRegulatorOn',
+                        //the following value is matched against the input of a boolean input, so 1 convey the following value : true
+                        columnValue: 1,
+                    },
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -970,13 +1264,68 @@ export const TABLES_DEFINITIONS = {
                 field: 'regulatingTerminal',
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'TransientReactance',
+                field: 'generatorShortCircuit.transientReactance',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'TransformerReactance',
+                field: 'generatorShortCircuit.stepUpTransformerReactance',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'PlannedActivePowerSetPoint',
+                field: 'generatorStartup.plannedActivePowerSetPoint',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'StartupCost',
+                field: 'generatorStartup.marginalCost',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'PlannedOutageRate',
+                field: 'generatorStartup.plannedOutageRate',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 2,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'ForcedOutageRate',
+                field: 'generatorStartup.forcedOutageRate',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 2,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
     LOADS: {
         index: 6,
         name: 'Loads',
-        resource: equipments.loads,
-        modifiableEquipmentType: EQUIPMENT_TYPES.LOAD.type,
+        type: EQUIPMENT_TYPES.LOAD,
+        fetchers: EQUIPMENT_FETCHERS.LOAD,
         columns: [
             {
                 id: 'ID',
@@ -1013,11 +1362,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1052,6 +1396,9 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.p0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1068,8 +1415,18 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue: params.data.q0,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
                     };
                 },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
@@ -1078,7 +1435,8 @@ export const TABLES_DEFINITIONS = {
     SHUNT_COMPENSATORS: {
         index: 7,
         name: 'ShuntCompensators',
-        resource: equipments.shuntCompensators,
+        type: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
+        fetchers: EQUIPMENT_FETCHERS.SHUNT_COMPENSATOR,
         columns: [
             {
                 id: 'ID',
@@ -1098,11 +1456,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1133,13 +1486,21 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
     STATIC_VAR_COMPENSATORS: {
         index: 8,
         name: 'StaticVarCompensators',
-        resource: equipments.staticVarCompensators,
+        type: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
+        fetchers: EQUIPMENT_FETCHERS.STATIC_VAR_COMPENSATOR,
         columns: [
             {
                 id: 'ID',
@@ -1157,11 +1518,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1185,7 +1541,7 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'VoltageSetpoint',
+                id: 'VoltageSetpointKV',
                 field: 'voltageSetpoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
@@ -1193,12 +1549,19 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
-                id: 'ReactivePowerSetpoint',
+                id: 'ReactivePowerSetpointMVAR',
                 field: 'reactivePowerSetpoint',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
@@ -1207,7 +1570,8 @@ export const TABLES_DEFINITIONS = {
     BATTERIES: {
         index: 9,
         name: 'Batteries',
-        resource: equipments.batteries,
+        type: EQUIPMENT_TYPES.BATTERY,
+        fetchers: EQUIPMENT_FETCHERS.BATTERY,
         columns: [
             {
                 id: 'ID',
@@ -1217,6 +1581,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'Name',
                 field: 'name',
+                editable: true,
             },
             {
                 id: 'VoltageLevelId',
@@ -1225,11 +1590,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1255,11 +1615,116 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
+                id: 'ActivePowerControl',
+                field: 'activePowerControl.activePowerControlOn',
+                cellRenderer: BooleanCellRenderer,
+                editable: true,
+                cellEditor: BooleanListField,
+                valueSetter: (params) => {
+                    params.data.activePowerControl = {
+                        ...params.data.activePowerControl,
+                        activePowerControlOn: params.newValue,
+                    };
+
+                    return params;
+                },
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue:
+                            params.data.activePowerControl.activePowerControlOn,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'DroopColumnName',
+                field: 'activePowerControl.droop',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                valueGetter: (params) => params.data?.activePowerControl?.droop,
+                valueSetter: (params) => {
+                    params.data.activePowerControl = {
+                        ...params.data.activePowerControl,
+                        droop: params.newValue,
+                    };
+                    return params;
+                },
+                crossValidation: {
+                    requiredOn: {
+                        dependencyColumn:
+                            'activePowerControl.activePowerControlOn',
+                        columnValue: 1,
+                    },
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'MinP',
+                field: 'minP',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        maxExpression: 'maxP',
+                        defaultValue: params.data.minP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'MaxP',
+                field: 'maxP',
+                numeric: true,
+                filter: 'agNumberColumnFilter',
+                fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        minExpression: 'minP',
+                        defaultValue: params.data.maxP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
                 id: 'TargetP',
                 field: 'targetP',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.targetP,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1268,6 +1733,23 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
+                editable: true,
+                cellEditor: NumericalField,
+                cellEditorParams: (params) => {
+                    return {
+                        defaultValue: params.data.targetQ,
+                        gridContext: params.context,
+                        gridApi: params.api,
+                        colDef: params.colDef,
+                    };
+                },
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
         ],
@@ -1276,7 +1758,8 @@ export const TABLES_DEFINITIONS = {
     HVDC_LINES: {
         index: 10,
         name: 'HvdcLines',
-        resource: equipments.hvdcLines,
+        type: EQUIPMENT_TYPES.HVDC_LINE,
+        fetchers: EQUIPMENT_FETCHERS.HVDC_LINE,
         columns: [
             {
                 id: 'ID',
@@ -1331,7 +1814,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'OprFromCS1toCS2',
-                field: 'oprFromCS1toCS2',
+                field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
@@ -1340,7 +1823,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'OprFromCS2toCS1',
-                field: 'oprFromCS2toCS1',
+                field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
@@ -1349,14 +1832,14 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'AcEmulation',
-                field: 'isEnabled',
+                field: 'hvdcAngleDroopActivePowerControl.isEnabled',
                 boolean: true,
                 cellRenderer: BooleanCellRenderer,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'K',
-                field: 'k',
+                field: 'hvdcAngleDroopActivePowerControl.droop',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
@@ -1364,7 +1847,7 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'P0',
-                field: 'p0',
+                field: 'hvdcAngleDroopActivePowerControl.p0',
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 1,
@@ -1376,7 +1859,8 @@ export const TABLES_DEFINITIONS = {
     LCC_CONVERTER_STATIONS: {
         index: 11,
         name: 'LccConverterStations',
-        resource: equipments.lccConverterStations,
+        type: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
+        fetchers: EQUIPMENT_FETCHERS.LCC_CONVERTER_STATION,
         columns: [
             {
                 id: 'ID',
@@ -1394,11 +1878,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1441,13 +1920,21 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
     VSC_CONVERTER_STATIONS: {
         index: 12,
         name: 'VscConverterStations',
-        resource: equipments.vscConverterStations,
+        type: EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
+        fetchers: EQUIPMENT_FETCHERS.VSC_CONVERTER_STATION,
         columns: [
             {
                 id: 'ID',
@@ -1466,11 +1953,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1528,13 +2010,21 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 
     DANGLING_LINES: {
         index: 13,
         name: 'DanglingLines',
-        resource: equipments.danglingLines,
+        type: EQUIPMENT_TYPES.DANGLING_LINE,
+        fetchers: EQUIPMENT_FETCHERS.DANGLING_LINE,
         columns: [
             {
                 id: 'ID',
@@ -1552,11 +2042,6 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 field: 'nominalVoltage',
-                valueGetter: (params) =>
-                    nominalVoltage(
-                        params.context.network,
-                        params.data.voltageLevelId
-                    ),
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
@@ -1600,6 +2085,13 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
+            {
+                id: 'Connected',
+                field: 'terminalConnected',
+                boolean: true,
+                cellRenderer: BooleanCellRenderer,
+                getQuickFilterText: excludeFromGlobalFilter,
+            },
         ],
     },
 };
@@ -1624,6 +2116,10 @@ export const TABLES_NAMES = Object.values(TABLES_DEFINITIONS).map(
 
 export const TABLES_NAMES_INDEXES = new Map(
     Object.values(TABLES_DEFINITIONS).map((table) => [table.name, table.index])
+);
+
+export const TABLES_DEFINITION_TYPES = new Map(
+    Object.values(TABLES_DEFINITIONS).map((table) => [table.type, table])
 );
 
 export const TABLES_DEFINITION_INDEXES = new Map(

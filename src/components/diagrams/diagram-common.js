@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,9 +18,8 @@ import {
     INVALID_LOADFLOW_OPACITY,
     NAD_INVALID_LOADFLOW_OPACITY,
 } from '../../utils/colors';
-import { equipments } from '../network/network-equipments';
 import { FEEDER_TYPES } from 'components/utils/feederType';
-import makeStyles from '@mui/styles/makeStyles';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 export const LOADING_WIDTH = 300;
 export const LOADING_HEIGHT = 300;
@@ -51,7 +50,7 @@ export const MAP_BOTTOM_OFFSET = 80;
 // diagram pane's height.
 export const DIAGRAM_MAP_RATIO_MIN_PERCENTAGE = 0.25;
 
-export const useDiagramStyles = makeStyles((theme) => ({
+export const styles = {
     divDiagram: {
         '& svg': {
             // necessary because the default (inline-block) adds vertical space
@@ -63,22 +62,22 @@ export const useDiagramStyles = makeStyles((theme) => ({
         },
         overflow: 'hidden',
     },
-    divNetworkAreaDiagram: {
+    divNetworkAreaDiagram: (theme) => ({
         '& .nad-label-box': {
             color: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
+            fontFamily: theme.typography.fontFamily,
         },
         '& .nad-text-edges': {
             stroke: theme.palette.text.primary,
         },
-    },
-    divSingleLineDiagram: {
+    }),
+    divSingleLineDiagram: (theme) => ({
         '& polyline': {
             pointerEvents: 'none',
         },
         '& .sld-label, .sld-graph-label, .sld-legend': {
             fill: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
+            fontFamily: theme.typography.fontFamily,
         },
         '& .sld-disconnector:not(.sld-fictitious), :not(.sld-breaker):not(.sld-disconnector):not(.sld-load-break-switch):not(.sld-lock .sld-disconnected):not(.sld-flash .sld-disconnected).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
             {
@@ -91,7 +90,7 @@ export const useDiagramStyles = makeStyles((theme) => ({
         '& .arrow': {
             fill: theme.palette.text.primary,
         },
-    },
+    }),
     divDiagramReadOnly: {
         '& .sld-in .sld-label': {
             display: 'none',
@@ -117,12 +116,12 @@ export const useDiagramStyles = makeStyles((theme) => ({
             opacity: NAD_INVALID_LOADFLOW_OPACITY,
         },
     },
-    paperBorders: {
+    paperBorders: (theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
         borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
         borderRight: '1px solid ' + theme.palette.action.hover,
-    },
-}));
+    }),
+};
 
 export const ViewState = {
     PINNED: 'pinned',
@@ -144,36 +143,35 @@ export const DiagramType = {
     NETWORK_AREA_DIAGRAM: 'network-area-diagram',
 };
 
+// be careful when using this method because there are treatments made on purpose
 export function getEquipmentTypeFromFeederType(feederType) {
     switch (feederType) {
-        case FEEDER_TYPES.LINE.type:
-            return equipments.lines;
-        case FEEDER_TYPES.LOAD.type:
-            return equipments.loads;
-        case FEEDER_TYPES.BATTERY.type:
-            return equipments.batteries;
-        case FEEDER_TYPES.DANGLING_LINE.type:
-            return equipments.danglingLines;
-        case FEEDER_TYPES.GENERATOR.type:
-            return equipments.generators;
-        case FEEDER_TYPES.VSC_CONVERTER_STATION.type:
-            return equipments.vscConverterStations;
-        case FEEDER_TYPES.LCC_CONVERTER_STATION.type:
-            return equipments.lccConverterStations;
-        case FEEDER_TYPES.HVDC_LINE.type:
-            return equipments.hvdcLines;
-        case FEEDER_TYPES.CAPACITOR.type:
-        case FEEDER_TYPES.INDUCTOR.type:
-            return equipments.shuntCompensators;
-        case FEEDER_TYPES.STATIC_VAR_COMPENSATOR.type:
-            return equipments.staticVarCompensators;
-        case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER.type:
-        case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER_LEG.type:
-        case FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER.type:
-            return equipments.twoWindingsTransformers;
-        case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER.type:
-        case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER_LEG.type:
-            return equipments.threeWindingsTransformers;
+        case FEEDER_TYPES.LINE:
+            return EQUIPMENT_TYPES.LINE;
+        case FEEDER_TYPES.LOAD:
+            return EQUIPMENT_TYPES.LOAD;
+        case FEEDER_TYPES.BATTERY:
+            return EQUIPMENT_TYPES.BATTERY;
+        case FEEDER_TYPES.DANGLING_LINE:
+            return EQUIPMENT_TYPES.DANGLING_LINE;
+        case FEEDER_TYPES.GENERATOR:
+            return EQUIPMENT_TYPES.GENERATOR;
+        case FEEDER_TYPES.LCC_CONVERTER_STATION: // return EQUIPMENT_TYPES.LCC_CONVERTER_STATION; TODO : to be reactivated in the next powsybl version
+        case FEEDER_TYPES.VSC_CONVERTER_STATION: // return EQUIPMENT_TYPES.VSC_CONVERTER_STATION; TODO : to be reactivated in the next powsybl version
+        case FEEDER_TYPES.HVDC_LINE:
+            return EQUIPMENT_TYPES.HVDC_LINE;
+        case FEEDER_TYPES.CAPACITOR:
+        case FEEDER_TYPES.INDUCTOR:
+            return EQUIPMENT_TYPES.SHUNT_COMPENSATOR;
+        case FEEDER_TYPES.STATIC_VAR_COMPENSATOR:
+            return EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR;
+        case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER:
+        case FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER_LEG:
+        case FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER:
+            return EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
+        case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER:
+        case FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER_LEG:
+            return EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER;
         default: {
             console.log('bad feeder type ', feederType);
             return null;
@@ -183,33 +181,33 @@ export function getEquipmentTypeFromFeederType(feederType) {
 
 export function getFeederTypeFromEquipmentType(equipmentType) {
     switch (equipmentType) {
-        case equipments.substations:
-            return FEEDER_TYPES.SUBSTATION.type;
-        case equipments.voltageLevels:
-            return FEEDER_TYPES.VOLTAGE_LEVEL.type;
-        case equipments.lines:
-            return FEEDER_TYPES.LINE.type;
-        case equipments.loads:
-            return FEEDER_TYPES.LOAD.type;
-        case equipments.batteries:
-            return FEEDER_TYPES.BATTERY.type;
-        case equipments.danglingLines:
-            return FEEDER_TYPES.DANGLING_LINE.type;
-        case equipments.generators:
-            return FEEDER_TYPES.GENERATOR.type;
-        case equipments.vscConverterStations:
-        case equipments.lccConverterStations:
-            return FEEDER_TYPES.HVDC_CONVERTER_STATION.type;
-        case equipments.hvdcLines:
-            return FEEDER_TYPES.HVDC_LINE.type;
-        case equipments.shuntCompensators:
-            return FEEDER_TYPES.SHUNT_COMPENSATOR.type;
-        case equipments.staticVarCompensators:
-            return FEEDER_TYPES.STATIC_VAR_COMPENSATOR.type;
-        case equipments.twoWindingsTransformers:
-            return FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER.type;
-        case equipments.threeWindingsTransformers:
-            return FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER.type;
+        case EQUIPMENT_TYPES.SUBSTATION:
+            return FEEDER_TYPES.SUBSTATION;
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+            return FEEDER_TYPES.VOLTAGE_LEVEL;
+        case EQUIPMENT_TYPES.LINE:
+            return FEEDER_TYPES.LINE;
+        case EQUIPMENT_TYPES.LOAD:
+            return FEEDER_TYPES.LOAD;
+        case EQUIPMENT_TYPES.BATTERY:
+            return FEEDER_TYPES.BATTERY;
+        case EQUIPMENT_TYPES.DANGLING_LINE:
+            return FEEDER_TYPES.DANGLING_LINE;
+        case EQUIPMENT_TYPES.GENERATOR:
+            return FEEDER_TYPES.GENERATOR;
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
+            return FEEDER_TYPES.HVDC_CONVERTER_STATION;
+        case EQUIPMENT_TYPES.HVDC_LINE:
+            return FEEDER_TYPES.HVDC_LINE;
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+            return FEEDER_TYPES.SHUNT_COMPENSATOR;
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
+            return FEEDER_TYPES.STATIC_VAR_COMPENSATOR;
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+            return FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER;
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
+            return FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER;
         default: {
             console.log('bad equipment type ', equipmentType);
             return null;

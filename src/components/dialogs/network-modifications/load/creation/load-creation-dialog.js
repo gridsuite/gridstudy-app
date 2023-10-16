@@ -17,7 +17,6 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { createLoad, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
@@ -34,8 +33,10 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { createLoad } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 
 /**
  * Dialog to create a load in the network
@@ -78,8 +79,6 @@ const LoadCreationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const equipmentPath = 'loads';
-
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
@@ -97,8 +96,9 @@ const LoadCreationDialog = ({
             ...getConnectivityFormData({
                 voltageLevelId: load.voltageLevelId,
                 busbarSectionId: load.busOrBusbarSectionId,
-                connectionDirection: load.connectionDirection,
-                connectionName: load.connectionName,
+                connectionDirection:
+                    load.connectablePosition.connectionDirection,
+                connectionName: load.connectablePosition.connectionName,
             }),
         });
     };
@@ -126,9 +126,9 @@ const LoadCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        equipmentPath,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
+        elementType: EQUIPMENT_TYPES.LOAD,
     });
 
     useEffect(() => {
@@ -149,7 +149,7 @@ const LoadCreationDialog = ({
                 load[REACTIVE_POWER],
                 load.connectivity.voltageLevel.id,
                 load.connectivity.busOrBusbarSection.id,
-                editData ? true : false,
+                !!editData,
                 editData ? editData.uuid : undefined,
                 load.connectivity?.connectionDirection ??
                     UNDEFINED_CONNECTION_DIRECTION,
@@ -200,7 +200,7 @@ const LoadCreationDialog = ({
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.LOAD.type}
+                    equipmentType={EQUIPMENT_TYPES.LOAD}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />

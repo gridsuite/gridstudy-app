@@ -8,12 +8,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-    fetchDirectoryContent,
-    fetchElementsMetadata,
-    fetchRootFolders,
-} from '../utils/rest-api';
-import makeStyles from '@mui/styles/makeStyles';
-import {
     getFileIcon,
     elementType,
     useSnackMessage,
@@ -21,14 +15,16 @@ import {
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { notificationType } from '../utils/NotificationType';
+import { fetchDirectoryContent, fetchRootFolders } from '../services/directory';
+import { fetchElementsMetadata } from '../services/explore';
 
-const useStyles = makeStyles((theme) => ({
-    icon: {
+const styles = {
+    icon: (theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
-    },
-}));
+    }),
+};
 
 // this method checks if an object (as map here) is empty or has at least one property
 function isObjectEmpty(obj) {
@@ -41,7 +37,6 @@ const DirectoryItemSelector = (props) => {
     const [data, setData] = useState([]);
     const [rootDirectories, setRootDirectories] = useState([]);
     const nodeMap = useRef({});
-    const classes = useStyles();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const dataRef = useRef([]);
     dataRef.current = data;
@@ -56,27 +51,24 @@ const DirectoryItemSelector = (props) => {
         [props.types]
     );
 
-    const convertChildren = useCallback(
-        (children) => {
-            return children.map((e) => {
-                return {
-                    id: e.elementUuid,
-                    name: e.elementName,
-                    specificMetadata: e.specificMetadata,
-                    icon: getFileIcon(e.type, classes.icon),
-                    children:
-                        e.type === elementType.DIRECTORY
-                            ? convertChildren(e.children)
-                            : undefined,
-                    childrenCount:
-                        e.type === elementType.DIRECTORY
-                            ? e.subdirectoriesCount
-                            : undefined,
-                };
-            });
-        },
-        [classes.icon]
-    );
+    const convertChildren = useCallback((children) => {
+        return children.map((e) => {
+            return {
+                id: e.elementUuid,
+                name: e.elementName,
+                specificMetadata: e.specificMetadata,
+                icon: getFileIcon(e.type, styles.icon),
+                children:
+                    e.type === elementType.DIRECTORY
+                        ? convertChildren(e.children)
+                        : undefined,
+                childrenCount:
+                    e.type === elementType.DIRECTORY
+                        ? e.subdirectoriesCount
+                        : undefined,
+            };
+        });
+    }, []);
 
     const convertRoots = useCallback(
         (newRoots) => {
@@ -84,7 +76,7 @@ const DirectoryItemSelector = (props) => {
                 return {
                     id: e.elementUuid,
                     name: e.elementName,
-                    icon: getFileIcon(e.type, classes.icon),
+                    icon: getFileIcon(e.type, styles.icon),
                     children:
                         e.type === elementType.DIRECTORY
                             ? convertChildren(
@@ -98,7 +90,7 @@ const DirectoryItemSelector = (props) => {
                 };
             });
         },
-        [classes.icon, convertChildren]
+        [convertChildren]
     );
 
     const addToDirectory = useCallback(
@@ -242,6 +234,10 @@ DirectoryItemSelector.propTypes = {
     types: PropTypes.array.isRequired,
     equipmentTypes: PropTypes.array,
     title: PropTypes.string.isRequired,
+    onlyLeaves: PropTypes.bool.isRequired,
+    multiselect: PropTypes.bool.isRequired,
+    validationButtonText: PropTypes.string.isRequired,
+    titleId: PropTypes.string,
 };
 
 export default DirectoryItemSelector;

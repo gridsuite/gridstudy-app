@@ -4,7 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback } from 'react';
+
+import React from 'react';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -15,8 +16,6 @@ import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import makeStyles from '@mui/styles/makeStyles';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import StopIcon from '@mui/icons-material/Stop';
 import ListItemText from '@mui/material/ListItemText';
@@ -25,35 +24,34 @@ import DoneIcon from '@mui/icons-material/Done';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import PlayIcon from '@mui/icons-material/PlayArrow';
 import { RunningStatus } from './running-status';
+import { mergeSx } from './functions';
 
-const useStyles = makeStyles((theme) => ({
-    expand: {
-        transform: 'rotate(180deg)',
+const styles = {
+    expand: (theme) => ({
         marginLeft: 'auto',
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,
         }),
-    },
+    }),
     expandOpen: {
-        transform: 'rotate(0deg)',
+        transform: 'rotate(180deg)',
     },
-    listOptions: {
-        minWidth: 275,
-        left: '-21px',
-        top: '1px',
+    listOptions: (theme) => ({
+        minWidth: '270px',
+        marginRight: '43px',
         position: 'relative',
         boxShadow: 'none',
         borderRadius: '0',
         border: '1px solid #7f7f7e',
-        background: '#242424',
-        color: '#fdfdfd',
+        background: theme.palette.background.default,
+        color: theme.palette.text.primary,
         '& ul': {
             padding: 0,
-            '& li:first-child': {
+            '& li:first-of-type': {
                 borderBottom: '1px solid #7f7f7e',
             },
         },
-    },
+    }),
     stop: {
         color: 'red',
     },
@@ -64,10 +62,10 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#0ca789',
         color: '#fdfdfd',
         border: '1px solid #0ca789',
-        '&:nth-child(1)': {
-            minWidth: 270,
+        '&:nth-of-type(1)': {
+            minWidth: '270px',
         },
-        '&:nth-child(2)': {
+        '&:nth-of-type(2)': {
             borderLeft: '1px solid #92b1ab',
         },
         '&:disabled, &:hover': {
@@ -79,10 +77,10 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#d85050',
         color: '#fdfdfd',
         border: '1px solid #d85050',
-        '&:nth-child(1)': {
-            minWidth: 270,
+        '&:nth-of-type(1)': {
+            minWidth: '270px',
         },
-        '&:nth-child(2)': {
+        '&:nth-of-type(2)': {
             borderLeft: '1px solid #c58585',
         },
         '&:disabled, &:hover': {
@@ -90,43 +88,45 @@ const useStyles = makeStyles((theme) => ({
             color: '#fdfdfd',
         },
     },
-    running: {
-        backgroundColor: '#242424',
-        color: '#fdfdfd',
+    running: (theme) => ({
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
         border: '1px solid #808080',
-        '&:nth-child(1)': {
-            minWidth: 270,
-            color: '#fdfdfd',
+        '&:nth-of-type(1)': {
+            minWidth: '270px',
+            color: theme.palette.text.primary,
         },
-        '&:nth-child(2)': {
+        '&:nth-of-type(2)': {
             borderLeft: '1px solid #4a4a4a',
         },
         '&:hover': {
-            backgroundColor: '#242424',
-            color: '#fdfdfd',
+            backgroundColor: theme.palette.background.default,
+            color: theme.palette.text.primary,
         },
-    },
-    idle: {
-        backgroundColor: '#242424',
-        color: '#fdfdfd',
-        border: '1px solid #808080',
-        '&:nth-child(1)': {
-            minWidth: 270,
-            color: '#fdfdfd',
+    }),
+    idle: (theme) => ({
+        backgroundColor: theme.palette.background.default,
+        color: theme.palette.text.primary,
+        borderColor: '#808080',
+        '&:nth-of-type(1)': {
+            minWidth: '270px',
+            color: theme.palette.text.primary,
         },
-        '&:nth-child(2)': {
-            borderLeft: '1px solid #4a4a4a',
-        },
+
         '&:hover': {
-            backgroundColor: '#242424',
+            backgroundColor: theme.palette.background.default,
             border: '1px solid ' + theme.palette.primary,
-            color: '#fdfdfd',
+            color: theme.palette.text.primary,
         },
         '&:disabled': {
-            color: '#717171',
+            color: theme.palette.text.disabled,
         },
+    }),
+    runMenuButton: {
+        zIndex: 99,
     },
-}));
+};
+
 const SplitButton = ({
     runningStatus,
     buttonDisabled = false,
@@ -140,8 +140,6 @@ const SplitButton = ({
     actionOnRunnable,
     onSelectionChange,
 }) => {
-    const classes = useStyles();
-
     const [open, setOpen] = React.useState(false);
 
     const anchorRef = React.useRef(null);
@@ -175,7 +173,7 @@ const SplitButton = ({
     const getRunningIcon = (status) => {
         switch (status) {
             case RunningStatus.RUNNING:
-                return <LoopIcon className={classes.rotate} />;
+                return <LoopIcon sx={styles.rotate} />;
             case RunningStatus.SUCCEED:
                 return <DoneIcon />;
             case RunningStatus.FAILED:
@@ -186,22 +184,19 @@ const SplitButton = ({
         }
     };
 
-    const getStyle = useCallback(
-        (runningStatus) => {
-            switch (runningStatus) {
-                case RunningStatus.SUCCEED:
-                    return classes.succeed;
-                case RunningStatus.FAILED:
-                    return classes.failed;
-                case RunningStatus.RUNNING:
-                    return classes.running;
-                case RunningStatus.IDLE:
-                default:
-                    return classes.idle;
-            }
-        },
-        [classes.failed, classes.idle, classes.running, classes.succeed]
-    );
+    const getStyle = (runningStatus) => {
+        switch (runningStatus) {
+            case RunningStatus.SUCCEED:
+                return styles.succeed;
+            case RunningStatus.FAILED:
+                return styles.failed;
+            case RunningStatus.RUNNING:
+                return styles.running;
+            case RunningStatus.IDLE:
+            default:
+                return styles.idle;
+        }
+    };
 
     const breakText = (text) => {
         return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
@@ -211,27 +206,25 @@ const SplitButton = ({
 
     return (
         <>
-            <ButtonGroup className={getStyle(runningStatus)} ref={anchorRef}>
+            <ButtonGroup sx={getStyle(runningStatus)} ref={anchorRef}>
                 <Button
                     variant="outlined"
                     startIcon={getRunningIcon(runningStatus)}
-                    className={getStyle(runningStatus)}
+                    sx={getStyle(runningStatus)}
                     disabled={buttonDisabled}
                     onClick={handleClick}
                 >
-                    {breakText(text)}
+                    <span style={{ marginTop: '2px' }}>{breakText(text)}</span>
                 </Button>
                 <Button
                     variant="outlined"
                     size="small"
                     onClick={handleToggle}
-                    className={getStyle(runningStatus)}
+                    sx={getStyle(runningStatus)}
                     disabled={selectionDisabled}
                 >
                     <ArrowDropDownIcon
-                        className={clsx(classes.expand, {
-                            [classes.expandOpen]: open,
-                        })}
+                        sx={mergeSx(styles.expand, open && styles.expandOpen)}
                     />
                 </Button>
             </ButtonGroup>
@@ -240,6 +233,7 @@ const SplitButton = ({
                 anchorEl={anchorRef.current}
                 role={undefined}
                 transition
+                sx={styles.runMenuButton}
             >
                 {({ TransitionProps, placement }) => (
                     <Grow
@@ -251,7 +245,7 @@ const SplitButton = ({
                                     : 'center bottom',
                         }}
                     >
-                        <Paper className={classes.listOptions}>
+                        <Paper sx={styles.listOptions}>
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu">
                                     {options.map((option, index) => (
@@ -270,7 +264,7 @@ const SplitButton = ({
                                                 <ListItemIcon>
                                                     <StopIcon
                                                         fontSize="small"
-                                                        className={classes.stop}
+                                                        sx={styles.stop}
                                                     />
                                                 </ListItemIcon>
                                             )}

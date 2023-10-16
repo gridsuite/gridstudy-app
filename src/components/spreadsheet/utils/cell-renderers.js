@@ -5,10 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { OverflowableText } from '@gridsuite/commons-ui';
 import { Checkbox, Tooltip, IconButton } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import clsx from 'clsx';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -17,8 +14,10 @@ import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useSelector } from 'react-redux';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
+import { Box } from '@mui/system';
+import { mergeSx } from '../../utils/functions';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     editCell: {
         position: 'absolute',
         left: 0,
@@ -27,13 +26,13 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         height: '100%',
     },
-    referenceEditRow: {
+    referenceEditRow: (theme) => ({
         '& button': {
             color: theme.palette.primary.main,
             cursor: 'initial',
         },
-    },
-    tableCell: {
+    }),
+    tableCell: (theme) => ({
         fontSize: 'small',
         cursor: 'initial',
         display: 'flex',
@@ -44,6 +43,11 @@ const useStyles = makeStyles((theme) => ({
             right: theme.spacing(0.5),
             bottom: 0,
         },
+    }),
+    overflow: {
+        whiteSpace: 'pre',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
     },
     valueInvalid: {
         opacity: INVALID_LOADFLOW_OPACITY,
@@ -51,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     numericValue: {
         marginLeft: 'inherit',
     },
-    leftFade: {
+    leftFade: (theme) => ({
         background:
             'linear-gradient(to right, ' +
             theme.palette.primary.main +
@@ -60,11 +64,11 @@ const useStyles = makeStyles((theme) => ({
             ' 2%, rgba(0,0,0,0) 12%)',
         borderBottomLeftRadius: theme.spacing(0.8),
         borderTopLeftRadius: theme.spacing(0.8),
-    },
-}));
+    }),
+};
 
 export const BooleanCellRenderer = (props) => {
-    const isChecked = props.value;
+    const isChecked = Boolean(props.value);
     return (
         <div>
             {isChecked !== undefined && (
@@ -93,44 +97,68 @@ export const formatCell = (props) => {
         tooltipValue = value;
         value = parseFloat(value).toFixed(props.colDef.fractionDigits);
     }
+    if (props.colDef.numeric && isNaN(value)) {
+        value = null;
+    }
     return { value: value, tooltip: tooltipValue };
 };
 
 export const DefaultCellRenderer = (props) => {
-    const classes = useStyles();
     const cellValue = formatCell(props);
     return (
-        <div className={classes.tableCell}>
-            {cellValue.tooltip !== undefined ? (
-                <Tooltip
-                    disableFocusListener
-                    disableTouchListener
-                    title={cellValue.tooltip}
-                >
-                    <div
-                        children={cellValue.value}
-                        className={clsx({
-                            [classes.valueInvalid]: props.isValueInvalid,
-                            [classes.numericValue]: props.colDef.numeric,
-                        })}
-                    />
-                </Tooltip>
-            ) : (
-                <OverflowableText
-                    className={clsx({
-                        [classes.valueInvalid]: props.isValueInvalid,
-                        [classes.numericValue]: props.colDef.numeric,
-                    })}
-                    text={cellValue.value}
-                />
-            )}
-        </div>
+        <Box sx={styles.tableCell}>
+            <Tooltip
+                disableFocusListener
+                disableTouchListener
+                title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
+            >
+                <Box sx={styles.overflow} children={cellValue.value} />
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const PropertiesCellRenderer = (props) => {
+    const cellValue = formatCell(props);
+    // different properties are seperated with |
+    // tooltip message contains properties in seperated lines
+    return (
+        <Box sx={styles.tableCell}>
+            <Tooltip
+                title={
+                    <div style={{ whiteSpace: 'pre-line' }}>
+                        {cellValue.value &&
+                            cellValue.value.replaceAll(' | ', '\n')}
+                    </div>
+                }
+            >
+                <Box sx={styles.overflow} children={cellValue.value} />
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const ContingencyCellRenderer = ({ value }) => {
+    const { cellValue, tooltipValue } = value ?? {};
+
+    if (cellValue == null || tooltipValue == null) {
+        return null;
+    }
+
+    return (
+        <Box sx={styles.tableCell}>
+            <Tooltip
+                title={
+                    <div style={{ whiteSpace: 'pre-line' }}>{tooltipValue}</div>
+                }
+            >
+                <Box sx={styles.overflow} children={cellValue} />
+            </Tooltip>
+        </Box>
     );
 };
 
 export const EditableCellRenderer = (props) => {
-    const classes = useStyles();
-
     const currentNode = useSelector((state) => state.currentTreeNode);
     const isRootNode = useMemo(
         () => isNodeReadOnly(currentNode),
@@ -147,7 +175,7 @@ export const EditableCellRenderer = (props) => {
     }, [props]);
 
     return (
-        <div className={classes.editCell}>
+        <Box sx={styles.editCell}>
             <IconButton
                 size={'small'}
                 onClick={handleStartEditing}
@@ -155,19 +183,17 @@ export const EditableCellRenderer = (props) => {
             >
                 <EditIcon />
             </IconButton>
-        </div>
+        </Box>
     );
 };
 
 export const ReferenceLineCellRenderer = (props) => {
-    const classes = useStyles();
-
     return (
-        <div
-            className={clsx(
-                classes.referenceEditRow,
-                classes.leftFade,
-                classes.editCell
+        <Box
+            sx={mergeSx(
+                styles.referenceEditRow,
+                styles.leftFade,
+                styles.editCell
             )}
         >
             <IconButton
@@ -177,13 +203,11 @@ export const ReferenceLineCellRenderer = (props) => {
             >
                 <MoreHorizIcon />
             </IconButton>
-        </div>
+        </Box>
     );
 };
 
 export const EditingCellRenderer = (props) => {
-    const classes = useStyles();
-
     const validateEdit = useCallback(() => {
         //stopEditing triggers the events onCellValueChanged and once every cells have been processed it triggers onRowValueChanged
         props.api?.stopEditing();
@@ -208,7 +232,7 @@ export const EditingCellRenderer = (props) => {
     }, [props]);
 
     return (
-        <div className={clsx(classes.leftFade, classes.editCell)}>
+        <Box sx={mergeSx(styles.leftFade, styles.editCell)}>
             <IconButton
                 size={'small'}
                 onClick={validateEdit}
@@ -220,6 +244,6 @@ export const EditingCellRenderer = (props) => {
             <IconButton size={'small'} onClick={resetEdit}>
                 <ClearIcon />
             </IconButton>
-        </div>
+        </Box>
     );
 };

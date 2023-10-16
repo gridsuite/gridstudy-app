@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
@@ -17,12 +18,13 @@ import {
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { deleteAttachingLine, FetchStatus } from 'utils/rest-api';
 import { sanitizeString } from '../../dialogUtils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
 import DeleteAttachingLineForm from './delete-attaching-line-form';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
+import { deleteAttachingLine } from '../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../services/utils';
 
 const emptyFormData = {
     [ATTACHED_LINE_ID]: null,

@@ -6,8 +6,7 @@
  */
 
 import { makeComponentsFor, TYPES } from '../../util/make-component-utils';
-import { useCallback, useMemo } from 'react';
-import { debounce } from '@mui/material';
+import { useCallback } from 'react';
 
 const IdaSolverParameters = ({ idaSolver, onUpdateIdaSolver }) => {
     const defParams = {
@@ -44,19 +43,8 @@ const IdaSolverParameters = ({ idaSolver, onUpdateIdaSolver }) => {
         [onUpdateIdaSolver]
     );
 
-    const delayedHandleUpdateIdaSolver = useMemo(
-        () => debounce(handleUpdateIdaSolver, 500),
-        [handleUpdateIdaSolver]
-    );
-
     return (
-        <>
-            {makeComponentsFor(
-                defParams,
-                idaSolver,
-                delayedHandleUpdateIdaSolver
-            )}
-        </>
+        <>{makeComponentsFor(defParams, idaSolver, handleUpdateIdaSolver)}</>
     );
 };
 

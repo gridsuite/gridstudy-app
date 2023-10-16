@@ -8,7 +8,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-
+import {
+    getOptionalServiceByServerName,
+    OptionalServicesStatus,
+} from './utils/optional-services';
 import {
     Navigate,
     Route,
@@ -42,6 +45,7 @@ import {
     selectMapManualRefresh,
     selectEnableDeveloperMode,
     setParamsLoaded,
+    setOptionalServices,
 } from '../redux/actions';
 
 import {
@@ -55,13 +59,6 @@ import {
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
 
-import {
-    connectNotificationsWsUpdateConfig,
-    fetchConfigParameter,
-    fetchConfigParameters,
-    fetchDefaultParametersValues,
-    fetchValidateUser,
-} from '../utils/rest-api';
 import {
     APP_NAME,
     COMMON_APP_NAME,
@@ -87,11 +84,21 @@ import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    TABLES_DEFINITION_INDEXES,
     TABLES_NAMES_INDEXES,
 } from './spreadsheet/utils/config-tables';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
+import { fetchValidateUser } from '../services/user-admin';
+import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
+import {
+    fetchConfigParameter,
+    fetchConfigParameters,
+} from '../services/config';
+import { fetchDefaultParametersValues } from '../services/utils';
+import { getOptionalServices } from '../services/study';
+import { defaultOptionalServicesState } from 'redux/reducer';
 
 const noUserManager = { instance: null, error: null };
 
@@ -207,7 +214,7 @@ const App = () => {
                     case PARAM_FAVORITE_CONTINGENCY_LISTS:
                         dispatch(
                             selectFavoriteContingencyLists(
-                                param.value.split(',')
+                                param.value.split(',').filter((list) => list)
                             )
                         );
                         break;
@@ -263,17 +270,78 @@ const App = () => {
                 }
             });
             if (dispatchDisplayedColumns) {
+                if (dispatchReorderedColumns) {
+                    cleanEquipmentsColumnsParamsWithNewAndDeleted(
+                        displayedColumnsParams,
+                        reorderedColumnsParams
+                    );
+                }
                 dispatch(changeDisplayedColumns(displayedColumnsParams));
             }
             if (dispatchLockedColumns) {
+                if (dispatchReorderedColumns) {
+                    cleanEquipmentsColumnsParamsWithNewAndDeleted(
+                        lockedColumnsParams,
+                        reorderedColumnsParams,
+                        true
+                    );
+                }
                 dispatch(changeLockedColumns(lockedColumnsParams));
             }
             if (dispatchReorderedColumns) {
+                cleanEquipmentsColumnsParamsWithNewAndDeleted(
+                    reorderedColumnsParams,
+                    reorderedColumnsParams
+                );
                 dispatch(changeReorderedColumns(reorderedColumnsParams));
             }
         },
         [dispatch]
     );
+
+    function cleanEquipmentsColumnsParamsWithNewAndDeleted(
+        equipmentsColumnsParams,
+        reorderedColumnsParams,
+        deletedOnly = false
+    ) {
+        for (let param of equipmentsColumnsParams) {
+            if (!param) {
+                continue;
+            }
+
+            let index = param.index;
+
+            const equipmentAllColumnsIds = TABLES_DEFINITION_INDEXES.get(
+                index
+            ).columns.map((item) => item.id);
+
+            let equipmentReorderedColumnsIds = JSON.parse(
+                reorderedColumnsParams[index].value
+            );
+            let equipmentNewColumnsIds = equipmentAllColumnsIds.filter(
+                (item) => !equipmentReorderedColumnsIds.includes(item)
+            );
+
+            let equipmentsParamColumnIds = JSON.parse(
+                equipmentsColumnsParams[index].value
+            );
+
+            // Remove deleted ids
+            let equipmentsNewParamColumnIds = equipmentsParamColumnIds.filter(
+                (item) => equipmentAllColumnsIds.includes(item)
+            );
+
+            // Update columns
+            if (deletedOnly) {
+                param.value = JSON.stringify([...equipmentsNewParamColumnIds]);
+            } else {
+                param.value = JSON.stringify([
+                    ...equipmentsNewParamColumnIds,
+                    ...equipmentNewColumnsIds,
+                ]);
+            }
+        }
+    }
 
     const connectNotificationsUpdateConfig = useCallback(() => {
         const ws = connectNotificationsWsUpdateConfig();
@@ -369,11 +437,53 @@ const App = () => {
                 }
             );
 
+            const fetchOptionalServices = getOptionalServices()
+                .then((services) => {
+                    const retrieveOptionalServices = services.map((service) => {
+                        return {
+                            ...service,
+                            name: getOptionalServiceByServerName(service.name),
+                        };
+                    });
+                    // get all potentially optional services
+                    const optionalServicesNames =
+                        defaultOptionalServicesState.map(
+                            (service) => service.name
+                        );
+
+                    // if one of those services was not returned by "getOptionalServices", it means it was defined as "not optional"
+                    // in that case, we consider it is UP
+                    optionalServicesNames
+                        .filter(
+                            (serviceName) =>
+                                !retrieveOptionalServices
+                                    .map((service) => service.name)
+                                    .includes(serviceName)
+                        )
+                        .forEach((serviceName) =>
+                            retrieveOptionalServices.push({
+                                name: serviceName,
+                                status: OptionalServicesStatus.Up,
+                            })
+                        );
+                    dispatch(setOptionalServices(retrieveOptionalServices));
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'optionalServicesRetrievingError',
+                    });
+                });
+
             // Dispatch globally when all params are loaded to allow easy waiting.
             // This might not be necessary but allows to gradually migrate parts
             // of the code that don't subscribe to exactly the parameters they need.
             // Code that depends on this could be rewritten to depend on what it acually needs.
-            Promise.all([fetchCommonConfigPromise, fetchAppConfigPromise])
+            Promise.all([
+                fetchCommonConfigPromise,
+                fetchAppConfigPromise,
+                fetchOptionalServices,
+            ])
                 .then(() => {
                     dispatch(setParamsLoaded());
                 })

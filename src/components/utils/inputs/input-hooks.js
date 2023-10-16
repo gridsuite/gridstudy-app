@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,13 +14,9 @@ import React, {
     useState,
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { validateField } from '../validation-functions';
 import {
     CircularProgress,
-    FormHelperText,
     InputLabel,
-    MenuItem,
-    Select,
     TextField,
     Tooltip,
     Button,
@@ -28,29 +24,22 @@ import {
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import FolderIcon from '@mui/icons-material/Folder';
-import TextFieldWithAdornment from '../text-field-with-adornment';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
-import ClearIcon from '@mui/icons-material/Clear';
+
+import { styles } from '../../dialogs/dialogUtils';
 import {
-    func_identity,
-    toFloatValue,
-    toIntValue,
-    useStyles,
-} from '../../dialogs/dialogUtils';
-import { useSnackMessage, OverflowableText } from '@gridsuite/commons-ui';
-import { isNodeExists } from '../../../utils/rest-api';
-import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
-import {
+    useSnackMessage,
+    OverflowableText,
+    useDebounce,
     FieldLabel,
-    genHelperError,
-    genHelperPreviousValue,
-} from './hooks-helpers';
-import { useAutocompleteField } from './use-autocomplete-field';
+} from '@gridsuite/commons-ui';
+import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import Chip from '@mui/material/Chip';
 import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
-import clsx from 'clsx';
+import { isNodeExists } from '../../../services/study';
+import { mergeSx } from '../functions';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -100,159 +89,7 @@ export const useInputForm = () => {
     ]);
 };
 
-export const useTextValue = ({
-    label,
-    id,
-    defaultValue = '',
-    validation = {},
-    adornment,
-    transformValue = func_identity,
-    acceptValue,
-    inputForm,
-    formProps,
-    errorMsg,
-    previousValue,
-    clearable,
-    customAdornment,
-}) => {
-    const [value, setValue] = useState(defaultValue);
-    const [error, setError] = useState();
-
-    const validationRef = useRef();
-    const classes = useStyles();
-
-    validationRef.current = validation;
-
-    useEffect(() => {
-        function validate() {
-            const res = validateField(
-                value,
-                validationRef.current,
-                formProps?.disabled
-            );
-            setError(res?.errorMsgId);
-            return !res.error;
-        }
-
-        inputForm.addValidation(id ? id : label, validate);
-    }, [label, inputForm, value, id, validation, formProps?.disabled]);
-
-    const handleChangeValue = useCallback(
-        (event) => {
-            if (acceptValue === undefined || acceptValue(event.target.value)) {
-                setValue(transformValue(event.target.value));
-            }
-            inputForm.setHasChanged(true);
-        },
-        [acceptValue, inputForm, transformValue]
-    );
-
-    const handleClearValue = useCallback(() => {
-        setValue('');
-    }, []);
-
-    const field = useMemo(() => {
-        const Field = adornment ? TextFieldWithAdornment : TextField;
-        return (
-            <Field
-                key={id ? id : label}
-                size="small"
-                fullWidth
-                id={id ? id : label}
-                label={FieldLabel({
-                    label,
-                    optional:
-                        validation.isFieldRequired === false &&
-                        !formProps?.disabled,
-                })}
-                {...(adornment && {
-                    adornmentPosition: adornment.position,
-                    adornmentText: adornment?.text,
-                })}
-                value={'' + value} // handle numerical value
-                onChange={handleChangeValue}
-                FormHelperTextProps={{
-                    className: classes.helperText,
-                }}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            {clearable &&
-                                value !== undefined &&
-                                value !== '' && (
-                                    <IconButton onClick={handleClearValue}>
-                                        <ClearIcon />
-                                    </IconButton>
-                                )}
-                            {customAdornment && { ...customAdornment }}
-                        </InputAdornment>
-                    ),
-                }}
-                {...(clearable &&
-                    adornment && { handleClearValue: handleClearValue })}
-                {...genHelperPreviousValue(previousValue, adornment)}
-                {...genHelperError(error, errorMsg)}
-                {...formProps}
-            />
-        );
-    }, [
-        adornment,
-        id,
-        label,
-        validation.isFieldRequired,
-        formProps,
-        value,
-        handleChangeValue,
-        classes.helperText,
-        clearable,
-        handleClearValue,
-        customAdornment,
-        previousValue,
-        error,
-        errorMsg,
-    ]);
-
-    useEffect(
-        () => setValue(defaultValue),
-        [defaultValue, inputForm.toggleClear]
-    );
-    return [value, field];
-};
-
-export const useIntegerValue = ({
-    transformValue = toIntValue,
-    validation,
-    customAdornment,
-    ...props
-}) => {
-    return useTextValue({
-        ...props,
-        transformValue: transformValue,
-        validation: { ...validation, isFieldNumeric: true },
-        customAdornment,
-    });
-};
-
-export const isFloatNumber = (val) => {
-    return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
-};
-
-export const useDoubleValue = ({
-    transformValue = toFloatValue,
-    validation,
-    ...props
-}) => {
-    return useTextValue({
-        ...props,
-        acceptValue: isFloatNumber,
-        transformValue: transformValue,
-        validation: { ...validation, isFieldNumeric: true },
-    });
-};
-
 export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
-    const classes = useStyles();
-
     return useMemo(() => {
         return (
             <Tooltip
@@ -261,155 +98,22 @@ export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
                 arrow
                 enterDelay={TOOLTIP_DELAY}
                 enterNextDelay={TOOLTIP_DELAY}
-                classes={{ tooltip: classes.tooltip }}
+                slotProps={{
+                    popper: {
+                        sx: {
+                            '& .MuiTooltip-tooltip': styles.tooltip,
+                        },
+                    },
+                }}
             >
                 <IconButton style={{ padding: '2px' }} onClick={handleClick}>
                     {icon}
                 </IconButton>
             </Tooltip>
         );
-    }, [label, handleClick, classes.tooltip, icon]);
+    }, [label, handleClick, icon]);
 };
 
-export const useOptionalEnumValue = (props) => {
-    const intl = useIntl();
-
-    const getEnumTranslation = useCallback(
-        (enumValue) => {
-            // translate the label of enumValue
-            const enumTranslation = props.enumObjects
-                .filter((enumObject) => enumObject.id === enumValue)
-                .map((enumObject) =>
-                    intl.formatMessage({ id: enumObject.label })
-                );
-            return enumTranslation.length === 1
-                ? enumTranslation[0]
-                : enumValue;
-        },
-        [intl, props.enumObjects]
-    );
-
-    // because we want to have the clear icon to possibly reset the optional enum value to null,
-    // we use an Autocomplete without the ability to enter some letters in the text field (readonly then).
-    return useAutocompleteField({
-        values: props.enumObjects.map((enumObject) => enumObject.id),
-        selectedValue: props.defaultValue,
-        defaultValue: props.defaultValue,
-        previousValue: props.previousValue,
-        getLabel: getEnumTranslation,
-        readOnlyTextField: true,
-        ...props,
-    });
-};
-
-const getObjectId = (e) => e.id;
-const getLabel = (e) => e.label;
-
-export const useEnumValue = ({
-    label,
-    defaultValue,
-    previousValue,
-    validation = {},
-    inputForm,
-    formProps,
-    enumValues,
-    doTranslation = true,
-    getId = getObjectId,
-    getEnumLabel = getLabel,
-}) => {
-    const [value, setValue] = useState(defaultValue);
-    const [error, setError] = useState();
-
-    useEffect(() => {
-        function validate() {
-            const res = validateField(value, validation);
-            setError(res?.errorMsgId);
-            return !res.error;
-        }
-
-        inputForm.addValidation(label, validate);
-    }, [label, validation, inputForm, value]);
-
-    const handleChangeValue = useCallback(
-        (event) => {
-            setValue(event.target.value);
-            inputForm.setHasChanged(true);
-        },
-        [inputForm]
-    );
-
-    const field = useMemo(() => {
-        return (
-            <FormControl fullWidth size="small" error={!!error}>
-                {/*This InputLabel is necessary in order to display
-                            the label describing the content of the Select*/}
-                <InputLabel id="enum-type-label" {...formProps}>
-                    <FieldLabel
-                        label={label}
-                        optional={validation.isFieldRequired === false}
-                    />
-                </InputLabel>
-                <Select
-                    label={label}
-                    id={label}
-                    value={value || ''}
-                    onChange={handleChangeValue}
-                    fullWidth
-                    {...formProps}
-                >
-                    {enumValues.map((e, index) => (
-                        <MenuItem value={getId(e)} key={e.id + '_' + index}>
-                            <em>
-                                {doTranslation && (
-                                    <FormattedMessage id={getEnumLabel(e)} />
-                                )}
-                                {!doTranslation && getEnumLabel(e)}
-                            </em>
-                        </MenuItem>
-                    ))}
-                </Select>
-                {previousValue && (
-                    <FormHelperText>
-                        {doTranslation ? (
-                            <FormattedMessage
-                                id={getEnumLabel(previousValue)}
-                            />
-                        ) : (
-                            getEnumLabel(previousValue)
-                        )}
-                    </FormHelperText>
-                )}
-                {error && (
-                    <FormHelperText>
-                        <FormattedMessage id={error} />
-                    </FormHelperText>
-                )}
-            </FormControl>
-        );
-    }, [
-        error,
-        formProps,
-        label,
-        validation.isFieldRequired,
-        value,
-        handleChangeValue,
-        enumValues,
-        previousValue,
-        getId,
-        doTranslation,
-        getEnumLabel,
-    ]);
-
-    useEffect(() => {
-        setValue('');
-    }, [inputForm.toggleClear]);
-
-    useEffect(() => {
-        setValue(defaultValue || '');
-    }, [defaultValue]);
-
-    return [value, field];
-};
 export const useSimpleTextValue = ({
     defaultValue,
     adornment,
@@ -451,7 +155,6 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     const { snackError } = useSnackMessage();
     const [isValidName, setIsValidName] = useState(false);
     const [error, setError] = useState();
-    const timer = useRef();
     const [checking, setChecking] = useState(undefined);
     const [adornment, setAdornment] = useState();
     const [name, field] = useSimpleTextValue({
@@ -490,6 +193,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
         },
         [studyUuid, intl, defaultValue, snackError]
     );
+    const debouncedValidName = useDebounce(validName, 700);
 
     useEffect(() => {
         if (checking === undefined) {
@@ -507,17 +211,16 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
     }, [checking, isValidName]);
 
     useEffect(() => {
-        if (name === '' && !timer.current) {
+        if (name === '') {
             return;
         } // initial render
 
-        clearTimeout(timer.current);
         setIsValidName(false);
         setAdornment(undefined);
         setChecking(true);
         setError(undefined);
-        timer.current = setTimeout(() => validName(name), 700);
-    }, [studyUuid, name, validName, triggerReset]);
+        debouncedValidName(name);
+    }, [studyUuid, name, debouncedValidName, triggerReset]);
 
     return [error, field, isValidName, name];
 };
@@ -528,13 +231,11 @@ export const useDirectoryElements = ({
     elementType,
     equipmentTypes,
     titleId,
-    elementClassName,
-    required = false,
+    elementStyle,
     itemFilter = undefined,
     errorMsg = undefined,
     inputForm = undefined,
 }) => {
-    const classes = useStyles();
     const [values, setValues] = useState(initialValues);
     const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] =
         useState(false);
@@ -589,9 +290,10 @@ export const useDirectoryElements = ({
         return (
             <>
                 <FormControl
-                    className={clsx(classes.formDirectoryElements1, {
-                        [classes.formDirectoryElementsError]: errorMsg,
-                    })}
+                    sx={mergeSx(
+                        styles.formDirectoryElements1,
+                        errorMsg && styles.formDirectoryElementsError
+                    )}
                     error={!!errorMsg}
                     aria-errormessage={errorMsg}
                 >
@@ -600,7 +302,7 @@ export const useDirectoryElements = ({
                             <Grid item>
                                 <InputLabel
                                     id="elements"
-                                    className={classes.labelDirectoryElements}
+                                    sx={styles.labelDirectoryElements}
                                     error={!!errorMsg}
                                 >
                                     <FieldLabel
@@ -612,11 +314,11 @@ export const useDirectoryElements = ({
                         </Grid>
                     )}
                     {values?.length > 0 && (
-                        <FormControl className={classes.formDirectoryElements2}>
+                        <FormControl sx={styles.formDirectoryElements2}>
                             <div>
                                 {values.map((item, index) => (
                                     <Chip
-                                        className={elementClassName}
+                                        sx={elementStyle}
                                         key={label + '_' + index}
                                         size="small"
                                         onDelete={() =>
@@ -636,7 +338,7 @@ export const useDirectoryElements = ({
                     <Grid item xs>
                         <Grid container direction="row-reverse">
                             <IconButton
-                                className={classes.addDirectoryElements}
+                                sx={styles.addDirectoryElements}
                                 size={'small'}
                                 onClick={() =>
                                     setDirectoryItemSelectorOpen(true)
@@ -658,11 +360,6 @@ export const useDirectoryElements = ({
             </>
         );
     }, [
-        classes.formDirectoryElementsError,
-        classes.formDirectoryElements1,
-        classes.labelDirectoryElements,
-        classes.formDirectoryElements2,
-        classes.addDirectoryElements,
         errorMsg,
         values,
         label,
@@ -672,7 +369,7 @@ export const useDirectoryElements = ({
         intl,
         titleId,
         itemFilter,
-        elementClassName,
+        elementStyle,
         handleDelete,
         types,
     ]);

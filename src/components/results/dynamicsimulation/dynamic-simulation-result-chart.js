@@ -12,6 +12,7 @@ import {
     Paper,
     TextField,
     ToggleButton,
+    Tooltip,
     Typography,
 } from '@mui/material';
 
@@ -23,48 +24,48 @@ import TooltipIconButton from './common/tooltip-icon-button';
 import AddIcon from '@mui/icons-material/Add';
 import SyncIcon from '@mui/icons-material/Sync';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
-import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import { MenuOpen } from '@mui/icons-material';
 import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import ResponsiveGridLayout from './common/gridlayout/responsive-grid-layout';
 import { lighten } from '@mui/material/styles';
+import { useDebounce } from '@gridsuite/commons-ui';
+import { mergeSx } from '../../utils/functions';
 
-const headers = ['Left Axis', 'Available Curves', 'Right Axis'];
-const useStyles = makeStyles((theme) => ({
+const styles = {
     root: {
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
         height: '100%',
     },
-    modal: {
+    modal: (theme) => ({
         position: 'fixed',
         top: 0,
         left: 0,
         opacity: 0.99,
         zIndex: 1,
         background: lighten(theme.palette.background.paper, 0.05),
-    },
-    gridLayout: {
+    }),
+    gridLayout: (theme) => ({
         paddingRight: theme.spacing(0.5),
         overflowY: 'auto',
         overflowX: 'hidden',
         height: '100%',
-    },
+    }),
     menuCloseButton: {
         transform: 'scaleX(-1)',
     },
-    fullViewButton: {
+    fullViewButton: (theme) => ({
         marginRight: theme.spacing(2),
-    },
-    addButton: {
+    }),
+    addButton: (theme) => ({
         borderRadius: '50%',
         marginRight: theme.spacing(10),
         color: theme.palette.primary.main,
-    },
-    paperOptionsGroup: {
+    }),
+    paperOptionsGroup: (theme) => ({
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
         display: 'flex',
@@ -72,28 +73,18 @@ const useStyles = makeStyles((theme) => ({
         padding: '2px',
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    cardSticky: {
-        position: 'sticky',
-        top: theme.spacing(2),
-    },
-    toolBar: {
+    }),
+    toolBar: (theme) => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
-    },
-    removeStyle: {
-        position: 'absolute',
-        right: '2px',
-        top: 0,
-        cursor: 'pointer',
-    },
-    colsLabel: {
+    }),
+    colsLabel: (theme) => ({
         marginLeft: theme.spacing(2),
-    },
-    colsInput: {
+    }),
+    colsInput: (theme) => ({
         marginLeft: theme.spacing(1),
-    },
-}));
+    }),
+};
 
 const DynamicSimulationResultChart = ({
     groupId,
@@ -101,8 +92,18 @@ const DynamicSimulationResultChart = ({
     selected,
     loadTimeSeries,
 }) => {
-    const classes = useStyles();
     const intl = useIntl();
+
+    const headers = useMemo(
+        () => [
+            intl.formatMessage({ id: 'DynamicSimulationSeriesListLeftAxis' }),
+            intl.formatMessage({
+                id: 'DynamicSimulationSeriesListAvailableCurves',
+            }),
+            intl.formatMessage({ id: 'DynamicSimulationSeriesListRightAxis' }),
+        ],
+        [intl]
+    );
 
     // store the previous layout when scaling in order to restore later
     const prevLayoutRef = useRef([]);
@@ -180,6 +181,11 @@ const DynamicSimulationResultChart = ({
         [selectSeries]
     );
 
+    const debouncedHandleLeftAxisSelected = useDebounce(
+        handleLeftAxisSelected,
+        500
+    );
+
     const handleRightAxisSelected = useCallback(
         (index, selectedIndexes) => {
             selectSeries(selectedIndexes).then((selectedSeries) => {
@@ -191,6 +197,11 @@ const DynamicSimulationResultChart = ({
             });
         },
         [selectSeries]
+    );
+
+    const debouncedHandleRightAxisSelected = useDebounce(
+        handleRightAxisSelected,
+        500
     );
 
     const items = useMemo(() => {
@@ -289,11 +300,6 @@ const DynamicSimulationResultChart = ({
 
             // set the current plot id in scaling
             setPlotIdScale(plotScale ? plotId : undefined);
-
-            // auto switch in full view
-            if (plotScale) {
-                setFullView(plotScale);
-            }
         },
         [prevLayoutRef]
     );
@@ -335,41 +341,48 @@ const DynamicSimulationResultChart = ({
     };
 
     return (
-        <Box
-            className={
-                fullView
-                    ? `${classes.root} ${classes.modal}`
-                    : `${classes.root}`
-            }
-        >
+        <Box sx={mergeSx(styles.root, fullView && styles.modal)}>
             <Box>
                 <Grid
                     container
-                    className={classes.toolBar}
+                    sx={styles.toolBar}
                     alignItems="center"
                     justify="center"
                 >
                     {!plotIdScale && (
                         <Grid item>
-                            <Paper
-                                elevation={2}
-                                className={classes.paperOptionsGroup}
-                            >
+                            <Paper elevation={2} sx={styles.paperOptionsGroup}>
                                 <ToggleButton
                                     size={'small'}
                                     value="sync"
                                     selected={sync}
                                     onChange={handleSync}
                                 >
-                                    {sync ? <SyncIcon /> : <SyncDisabledIcon />}
+                                    {sync ? (
+                                        <Tooltip
+                                            title={intl.formatMessage({
+                                                id: 'DynamicSimulationSyncPlotEnable',
+                                            })}
+                                        >
+                                            <SyncIcon />
+                                        </Tooltip>
+                                    ) : (
+                                        <Tooltip
+                                            title={intl.formatMessage({
+                                                id: 'DynamicSimulationSyncPlotDisable',
+                                            })}
+                                        >
+                                            <SyncDisabledIcon />
+                                        </Tooltip>
+                                    )}
                                 </ToggleButton>
-                                <Typography className={classes.colsLabel}>
+                                <Typography sx={styles.colsLabel}>
                                     {`${intl.formatMessage({
                                         id: 'DynamicSimulationResultLayoutCols',
                                     })}`}
                                 </Typography>
                                 <TextField
-                                    className={classes.colsInput}
+                                    sx={styles.colsInput}
                                     size={'small'}
                                     type="number"
                                     value={gridLayout.cols}
@@ -387,8 +400,10 @@ const DynamicSimulationResultChart = ({
                     {!plotIdScale && (
                         <Grid item ml={2}>
                             <TooltipIconButton
-                                toolTip={'Add a graph'}
-                                className={classes.addButton}
+                                toolTip={intl.formatMessage({
+                                    id: 'DynamicSimulationAddGraph',
+                                })}
+                                sx={styles.addButton}
                                 onClick={handleAddNewPlot}
                             >
                                 <AddIcon />
@@ -397,21 +412,30 @@ const DynamicSimulationResultChart = ({
                     )}
                     <Grid item xs />
                     <Grid item xs={'auto'}>
-                        <Paper
-                            elevation={2}
-                            className={classes.paperOptionsGroup}
-                        >
+                        <Paper elevation={2} sx={styles.paperOptionsGroup}>
                             <ToggleButton
-                                className={classes.fullViewButton}
+                                sx={styles.fullViewButton}
                                 size={'small'}
                                 value={'fullView'}
                                 selected={fullView}
                                 onChange={handleFullView}
                             >
                                 {fullView ? (
-                                    <FullscreenExitSharpIcon />
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DynamicSimulationFullViewDisable',
+                                        })}
+                                    >
+                                        <FullscreenExitSharpIcon />
+                                    </Tooltip>
                                 ) : (
-                                    <FitScreenSharpIcon />
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DynamicSimulationFullViewEnable',
+                                        })}
+                                    >
+                                        <FitScreenSharpIcon />
+                                    </Tooltip>
                                 )}
                             </ToggleButton>
                             <ToggleButton
@@ -421,11 +445,21 @@ const DynamicSimulationResultChart = ({
                                 onChange={handleShowSeriesList}
                             >
                                 {showSeriesList ? (
-                                    <MenuOpen
-                                        className={classes.menuCloseButton}
-                                    />
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DynamicSimulationShowSeriesListDisable',
+                                        })}
+                                    >
+                                        <MenuOpen sx={styles.menuCloseButton} />
+                                    </Tooltip>
                                 ) : (
-                                    <MenuOpen />
+                                    <Tooltip
+                                        title={intl.formatMessage({
+                                            id: 'DynamicSimulationShowSeriesListEnable',
+                                        })}
+                                    >
+                                        <MenuOpen />
+                                    </Tooltip>
                                 )}
                             </ToggleButton>
                         </Paper>
@@ -446,7 +480,7 @@ const DynamicSimulationResultChart = ({
                             height: '100%',
                         }}
                     >
-                        <Box className={classes.gridLayout}>
+                        <Box sx={styles.gridLayout}>
                             <ResponsiveGridLayout
                                 className={`layout`}
                                 cols={{
@@ -520,10 +554,10 @@ const DynamicSimulationResultChart = ({
                                         items={items}
                                         headers={headers}
                                         onLeftAxisSelected={
-                                            handleLeftAxisSelected
+                                            debouncedHandleLeftAxisSelected
                                         }
                                         onRightAxisSelected={
-                                            handleRightAxisSelected
+                                            debouncedHandleRightAxisSelected
                                         }
                                     />
                                 </Visibility>

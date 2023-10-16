@@ -4,28 +4,28 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { fetchReport } from '../utils/rest-api';
 import Paper from '@mui/material/Paper';
-import clsx from 'clsx';
 import { ReportViewer, useSnackMessage } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
-import AlertInvalidNode from './utils/alert-invalid-node';
+import AlertCustomMessageNode from './utils/alert-custom-message-node';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
-import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
+import { fetchReport } from '../services/study';
+import { Box } from '@mui/system';
 
-const useStyles = makeStyles(() => ({
+const styles = {
     div: {
         display: 'flex',
     },
     reportOnlyNode: {
-        margin: 5,
+        margin: '5px',
     },
-}));
+};
 
 /**
  * control the ReportViewer (fetch and waiting)
@@ -43,10 +43,23 @@ export const ReportViewerTab = ({
     disabled,
 }) => {
     const intl = useIntl();
-    const classes = useStyles();
 
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
+    );
+
+    const loadflowNotif = useSelector((state) => state.loadflowNotif);
+    const saNotif = useSelector((state) => state.saNotif);
+    const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
+    const sensiNotif = useSelector((state) => state.sensiNotif);
+    const allBusesShortCircuitNotif = useSelector(
+        (state) => state.allBusesShortCircuitNotif
+    );
+    const dynamicSimulationNotif = useSelector(
+        (state) => state.dynamicSimulationNotif
+    );
+    const oneBusShortCircuitNotif = useSelector(
+        (state) => state.oneBusShortCircuitNotif
     );
 
     const [report, setReport] = useState(null);
@@ -75,8 +88,8 @@ export const ReportViewerTab = ({
         [nodesNames]
     );
 
-    useEffect(() => {
-        if (visible && !disabled) {
+    const fetchAndProcessReport = useCallback(
+        (studyId, currentNode) => {
             setWaitingLoadReport(true);
             fetchReport(studyId, currentNode.id, nodeOnlyReport)
                 .then((fetchedReport) => {
@@ -95,32 +108,44 @@ export const ReportViewerTab = ({
                         setReport(globalReport);
                     }
                 })
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
-                    })
-                )
+                .catch((error) => snackError({ messageTxt: error.message }))
                 .finally(() => {
                     setWaitingLoadReport(false);
                 });
+        },
+        [nodeOnlyReport, setNodeName, snackError]
+    );
+
+    // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
+    // and when the application receives a notification.
+    useEffect(() => {
+        // Visible and !disabled ensure that the user has the LOGS tab open and the current node is built.
+        if (visible && !disabled) {
+            fetchAndProcessReport(studyId, currentNode);
         }
+        // It is important to keep the notifications in the useEffect's dependencies (even if it is not
+        // apparent that they are used) to trigger the update of reports when a notification happens.
     }, [
         visible,
         studyId,
         currentNode,
-        nodesNames,
-        setNodeName,
-        nodeOnlyReport,
         disabled,
-        snackError,
+        saNotif,
+        loadflowNotif,
+        voltageInitNotif,
+        sensiNotif,
+        allBusesShortCircuitNotif,
+        dynamicSimulationNotif,
+        fetchAndProcessReport,
+        oneBusShortCircuitNotif,
     ]);
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
-            <Paper className={clsx('singlestretch-child')}>
-                <div className={classes.div}>
+            <Paper className={'singlestretch-child'}>
+                <Box sx={styles.div}>
                     <FormControlLabel
-                        className={classes.reportOnlyNode}
+                        sx={styles.reportOnlyNode}
                         control={
                             <Switch
                                 checked={nodeOnlyReport}
@@ -135,8 +160,10 @@ export const ReportViewerTab = ({
                             id: 'LogOnlySingleNode',
                         })}
                     />
-                    {disabled && <AlertInvalidNode />}
-                </div>
+                    {disabled && (
+                        <AlertCustomMessageNode message={'InvalidNode'} />
+                    )}
+                </Box>
                 {!!report && !disabled && <ReportViewer jsonReport={report} />}
             </Paper>
         </WaitingLoader>

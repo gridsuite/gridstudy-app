@@ -28,6 +28,16 @@ export const PARAMS_LOADED = 'paramsLoaded';
 
 export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';
 
+export const PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD = 'flowProportionalThreshold';
+export const PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD =
+    'lowVoltageProportionalThreshold';
+export const PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD =
+    'lowVoltageAbsoluteThreshold';
+export const PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD =
+    'highVoltageProportionalThreshold';
+export const PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD =
+    'highVoltageAbsoluteThreshold';
+
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
 
 export function getAppName(paramName) {
@@ -35,3 +45,13 @@ export function getAppName(paramName) {
         ? COMMON_APP_NAME
         : APP_NAME;
 }
+
+const PARAM_SA_PROPORTIONAL_THRESHOLD = new Set([
+    PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
+]);
+
+export const isProportionalSAParam = (param) => {
+    return PARAM_SA_PROPORTIONAL_THRESHOLD.has(param);
+};

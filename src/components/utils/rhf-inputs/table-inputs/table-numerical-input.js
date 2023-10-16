@@ -17,6 +17,8 @@ export const TableNumericalInput = ({
     inputProps,
     previousValue,
     valueModified,
+    adornment,
+    isClearable = true,
     ...props
 }) => {
     const { trigger } = useFormContext();
@@ -34,10 +36,12 @@ export const TableNumericalInput = ({
 
     const clearable = useMemo(
         () =>
-            previousValue === Number.MAX_VALUE
+            /** we add the clear button only if the field is clearable and the previous value is different from the current one **/
+            isClearable &&
+            (previousValue === Number.MAX_VALUE
                 ? validateValueIsANumber(value)
-                : previousValue && previousValue !== value,
-        [previousValue, value]
+                : previousValue !== undefined && previousValue !== value),
+        [isClearable, previousValue, value]
     );
 
     const outputTransform = (value) => {
@@ -81,11 +85,12 @@ export const TableNumericalInput = ({
                 style: {
                     fontSize: 'small',
                     color:
-                        previousValue &&
-                        previousValue === value &&
+                        previousValue !== undefined &&
+                        previousValue === parseFloat(value) &&
                         !valueModified
                             ? 'grey'
                             : null, // grey out the value if it is the same as the previous one
+                    textAlign: style?.textAlign ?? 'left',
                 },
                 inputMode: 'numeric',
                 pattern: '[0-9]*',
@@ -95,15 +100,19 @@ export const TableNumericalInput = ({
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">
-                        {/** we add the clear button only if the previous value is different from the current value **/}
-                        <IconButton
-                            onClick={handleClearValue}
-                            style={{
-                                visibility: clearable ? 'visible' : 'hidden',
-                            }}
-                        >
-                            <ClearIcon />
-                        </IconButton>
+                        {transformedValue && adornment?.text}
+                        {clearable && (
+                            <IconButton
+                                onClick={handleClearValue}
+                                style={{
+                                    visibility: clearable
+                                        ? 'visible'
+                                        : 'hidden',
+                                }}
+                            >
+                                <ClearIcon />
+                            </IconButton>
+                        )}
                     </InputAdornment>
                 ),
                 disableInjectingGlobalStyles: true, // disable auto-fill animations and increase rendering perf
