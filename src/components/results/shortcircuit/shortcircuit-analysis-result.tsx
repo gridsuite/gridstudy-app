@@ -69,12 +69,12 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         (state: ReduxState) =>
             state.computingStatus[
                 analysisType === ShortcircuitAnalysisType.ALL_BUSES
-                    ? ComputingType.SHORTCIRCUIT_ANALYSIS
+                    ? ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS
                     : ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS
             ]
     );
-    const shortCircuitNotif = useSelector(
-        (state: ReduxState) => state.shortCircuitNotif
+    const allBusesShortCircuitNotif = useSelector(
+        (state: ReduxState) => state.allBusesShortCircuitNotif
     );
 
     const isAllBusesType = analysisType === ShortcircuitAnalysisType.ALL_BUSES;
@@ -168,7 +168,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         studyUuid,
         currentNode?.id,
         intl,
-        shortCircuitNotif,
+        allBusesShortCircuitNotif,
         oneBusShortCircuitAnalysisState,
     ]);
 

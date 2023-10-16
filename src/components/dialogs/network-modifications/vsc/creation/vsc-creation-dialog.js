@@ -108,15 +108,15 @@ const VscCreationDialog = ({
                 dcResistance: hvdcLine.dcResistance,
                 maximumActivePower: hvdcLine.maximumActivePower,
                 operatorActivePowerLimitFromSide1ToSide2:
-                    hvdcLine.operatorActivePowerLimitFromSide1ToSide2,
+                    hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
                 operatorActivePowerLimitFromSide2ToSide1:
-                    hvdcLine.operatorActivePowerLimitFromSide2ToSide1,
+                    hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
                 convertersMode: hvdcLine.convertersMode,
                 activePower: hvdcLine.activePower,
                 angleDroopActivePowerControl:
-                    hvdcLine.angleDroopActivePowerControl,
-                p0: hvdcLine.p0,
-                droop: hvdcLine.droop,
+                    hvdcLine.hvdcAngleDroopActivePowerControl?.isEnabled,
+                p0: hvdcLine.hvdcAngleDroopActivePowerControl?.p0,
+                droop: hvdcLine.hvdcAngleDroopActivePowerControl?.droop,
             }),
             ...getConverterStationFromSearchCopy(
                 CONVERTER_STATION_1,

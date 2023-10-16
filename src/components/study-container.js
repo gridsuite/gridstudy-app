@@ -633,14 +633,13 @@ export function StudyContainer({ view, onChangeTab }) {
         studyUuid,
     ]);
 
+    // first time we need to check indexation status by query
+    // studyIndexationStatus = STUDY_INDEXATION_STATUS.NOT_INDEXED by default
     useEffect(() => {
-        if (
-            studyUuid &&
-            studyIndexationStatus === STUDY_INDEXATION_STATUS.NOT_INDEXED
-        ) {
+        if (studyUuid) {
             checkStudyIndexation();
         }
-    }, [checkStudyIndexation, studyIndexationStatus, studyUuid]);
+    }, [checkStudyIndexation, studyUuid]);
 
     function parseStudyNotification(studyUpdatedForce) {
         const payload = studyUpdatedForce.eventData.payload;
@@ -741,12 +740,24 @@ export function StudyContainer({ view, onChangeTab }) {
                     headerId: 'studyIndexationDone',
                 });
             }
+            // notification that the study is not indexed anymore then ask to refresh
+            if (
+                studyUpdatedForce.eventData.headers?.[
+                    HEADER_INDEXATION_STATUS
+                ] === STUDY_INDEXATION_STATUS.NOT_INDEXED
+            ) {
+                snackWarning({
+                    headerId: 'studyIndexationNotIndexed',
+                });
+            }
         }
     }, [
         studyUpdatedForce,
         checkNetworkExistenceAndRecreateIfNotFound,
         snackInfo,
+        snackWarning,
         dispatch,
+        checkStudyIndexation,
     ]);
 
     //handles map automatic mode network reload
