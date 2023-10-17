@@ -189,8 +189,8 @@ const NetworkModificationNodeEditor = () => {
                 snackInfo({
                     messageId: 'CopiedModificationInvalidationMessage',
                 });
-                return [];
             }
+            return [];
         });
     }, [snackInfo]);
 
