@@ -54,11 +54,11 @@ import { CreateStudyDialog } from './create-study-dialog/create-study-dialog';
 import { fetchAllEquipments } from '../services/study/network-map';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { fetchNetworkExistence } from '../services/study/network';
 import {
-    fetchNetworkExistence,
-    fetchStudyIndexationStatus,
-} from '../services/study/network';
-import { recreateStudyNetwork, reindexStudyIfNeeded } from 'services/study/study';
+    recreateStudyNetwork,
+    reindexStudyIfNeeded,
+} from 'services/study/study';
 import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
@@ -598,7 +598,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     headerId: 'checkstudyIndexationError',
                 });
             });
-    }, [studyUuid, dispatch, snackError]);
+    }, [studyUuid, snackError]);
 
     useEffect(() => {
         if (studyUuid && !isStudyNetworkFound) {

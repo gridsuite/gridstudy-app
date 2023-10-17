@@ -13,7 +13,6 @@ import {
 import {
     backendFetch,
     backendFetchJson,
-    backendFetchText,
     getRequestParamFromList,
     getUrlWithToken,
 } from '../utils';
@@ -441,7 +440,6 @@ export const fetchNetworkExistence = (studyUuid) => {
 
     return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
 };
-
 
 /* export-network */
 export function getExportUrl(studyUuid, nodeUuid, exportFormat) {

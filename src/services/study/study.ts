@@ -56,7 +56,6 @@ export const recreateStudyNetwork = (
     });
 };
 
-
 export const reindexStudyIfNeeded = (studyUuid: UUID): Promise<void> => {
     const reindexStudyIfNeededUrl =
         PREFIX_STUDY_QUERIES +
