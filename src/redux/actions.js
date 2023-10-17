@@ -301,6 +301,15 @@ export function selectLimitReduction(limitReduction) {
     };
 }
 
+export const LIMIT_REDUCTION_MODIFIED = 'LIMIT_REDUCTION_MODIFIED';
+
+export function limitReductionModified(limitReductionModified) {
+    return {
+        type: LIMIT_REDUCTION_MODIFIED,
+        limitReductionModified: limitReductionModified,
+    };
+}
+
 export const STUDY_UPDATED = 'STUDY_UPDATED';
 
 export function studyUpdated(eventData) {
@@ -512,6 +521,15 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen) {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
         isModificationsDrawerOpen: isModificationsDrawerOpen,
+    };
+}
+
+export const SET_EVENT_SCENARIO_DRAWER_OPEN = 'SET_EVENT_SCENARIO_DRAWER_OPEN';
+
+export function setEventScenarioDrawerOpen(isEventScenarioDrawerOpen) {
+    return {
+        type: SET_EVENT_SCENARIO_DRAWER_OPEN,
+        isEventScenarioDrawerOpen: isEventScenarioDrawerOpen,
     };
 }
 
