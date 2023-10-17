@@ -24,11 +24,11 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     const oneBusShortCircuitNotif = useSelector(
         (state: ReduxState) => state.oneBusShortCircuitNotif
     );
-
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
+
     const [faultResult, setFaultResult] = useState<SCAFaultResult>();
     const [feederResults, setFeederResults] = useState<SCAFeederResult[]>([]);
     const [result, setResult] = useState<SCAFaultResult[]>([]);
@@ -42,9 +42,11 @@ export const ShortCircuitAnalysisOneBusResult = () => {
         }).then((result: SCAResult) => {
             if (result.faults.length !== 1) {
                 snackError({
-                    messageTxt:
-                        'We should have one and only one fault for one bus results',
+                    messageId: 'ShortCircuitAnalysisResultsError',
                 });
+                console.error(
+                    'We should have one and only one fault for one bus SCA results, or we found 0 or more than 1'
+                );
                 return;
             }
             setFaultResult(result.faults[0]);

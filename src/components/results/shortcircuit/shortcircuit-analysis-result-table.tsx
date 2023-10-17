@@ -321,58 +321,64 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         }
     }, []);
 
-    const onFilterChanged = useCallback((e: FilterChangedEvent) => {
-        // to see what contains filter model : https://www.ag-grid.com/javascript-data-grid/filter-api/
-        const formattedFilter = Object.entries(e.api.getFilterModel())
-            .map(([column, filter]) => {
-                // if a column has only one filter, then 'conditions' is not present
-                if (!filter.conditions) {
-                    return [
-                        {
-                            dataType: filter.filterType,
-                            type: filter.type,
-                            value: filter.filter,
-                            column: column,
-                        },
-                    ];
-                }
-                // otherwise, if a column has several filters, then 'conditions' is present and contains the list of filters
-                else {
-                    return filter.conditions.map((condition: any) => {
-                        return {
-                            dataType: condition.filterType,
-                            type: condition.type,
-                            value: condition.filter,
-                            column: column,
-                        };
-                    });
-                }
-            })
-            .flat();
+    const onFilterChanged = useCallback(
+        (e: FilterChangedEvent) => {
+            // to see what contains filter model : https://www.ag-grid.com/javascript-data-grid/filter-api/
+            const formattedFilter = Object.entries(e.api.getFilterModel())
+                .map(([column, filter]) => {
+                    // if a column has only one filter, then 'conditions' is not present
+                    if (!filter.conditions) {
+                        return [
+                            {
+                                dataType: filter.filterType,
+                                type: filter.type,
+                                value: filter.filter,
+                                column: column,
+                            },
+                        ];
+                    }
+                    // otherwise, if a column has several filters, then 'conditions' is present and contains the list of filters
+                    else {
+                        return filter.conditions.map((condition: any) => {
+                            return {
+                                dataType: condition.filterType,
+                                type: condition.type,
+                                value: condition.filter,
+                                column: column,
+                            };
+                        });
+                    }
+                })
+                .flat();
 
-        setFilter(formattedFilter);
-    }, []);
+            setFilter(formattedFilter);
+        },
+        [setFilter]
+    );
 
-    const onSortChanged = useCallback((e: SortChangedEvent) => {
-        // We filter and sort the array and only keep the fields we need
-        // The order is important, it decides in which order the columns are sorted in the back-end
-        const columnStates = e.columnApi
-            .getColumnState()
-            .filter(function (s) {
-                return s.sort != null;
-            })
-            .sort(function (a, b) {
-                if (a.sortIndex == null || b.sortIndex == null) {
-                    return 0;
-                }
-                return a.sortIndex - b.sortIndex;
-            })
-            .map(function (s) {
-                return { colId: s.colId, sort: s.sort };
-            });
+    const onSortChanged = useCallback(
+        (e: SortChangedEvent) => {
+            // We filter and sort the array and only keep the fields we need
+            // The order is important, it decides in which order the columns are sorted in the back-end
+            const columnStates = e.columnApi
+                .getColumnState()
+                .filter(function (s) {
+                    return s.sort != null;
+                })
+                .sort(function (a, b) {
+                    if (a.sortIndex == null || b.sortIndex == null) {
+                        return 0;
+                    }
+                    return a.sortIndex - b.sortIndex;
+                })
+                .map(function (s) {
+                    return { colId: s.colId, sort: s.sort };
+                });
 
-        setSort(columnStates);
-    }, []);
+            setSort(columnStates);
+        },
+        [setSort]
+    );
 
     const handlePostSortRows = useCallback((params: PostSortRowsParams) => {
         const rows = params.nodes;

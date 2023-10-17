@@ -105,9 +105,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             .catch((error) =>
                 snackError({
                     messageTxt: error.message,
-                    headerId: intl.formatMessage({
-                        id: 'ShortCircuitAnalysisResultsError',
-                    }),
+                    headerId: 'ShortCircuitAnalysisResultsError',
                 })
             )
             .finally(() => {
