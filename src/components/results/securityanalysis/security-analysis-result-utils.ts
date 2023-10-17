@@ -59,10 +59,6 @@ export const flattenNmKResultsContingencies = (
         }: ConstraintsFromContingencyItem) => {
             if (!!subjectLimitViolations.length) {
                 rows.push({
-                    limit: 0,
-                    limitType: '',
-                    subjectId: '',
-                    value: 0,
                     contingencyId: id,
                     contingencyEquipmentsIds: elements.map(
                         (element) => element.id
