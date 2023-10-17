@@ -8,8 +8,8 @@
 import React, {
     SyntheticEvent,
     FunctionComponent,
-    useEffect,
     useState,
+    useCallback,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -23,11 +23,9 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ComputingType } from '../../computing-status/computing-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
-import {
-    SecurityAnalysisResultType,
-    SecurityAnalysisTabProps,
-} from './security-analysis.type';
+import { SecurityAnalysisTabProps } from './security-analysis.type';
 import { NMK_TYPE, RESULT_TYPE } from './security-analysis-result-utils';
+import { useNodeData } from '../../study-container';
 
 const styles = {
     container: {
@@ -58,13 +56,41 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const [nmkType, setNmkType] = useState(
         NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
     );
-    const [result, setResult] = useState<SecurityAnalysisResultType>(null);
-    const [isLoadingResult, setIsLoadingResult] = useState(false);
 
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
+
+    const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
+
+    const fetchSecurityAnalysisResultWithResultType = useCallback(
+        (studyUuid: string, nodeUuid: string) => {
+            const resultType =
+                tabIndex === 0
+                    ? RESULT_TYPE.N
+                    : nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
+                    ? RESULT_TYPE.NMK_CONTINGENCIES
+                    : RESULT_TYPE.NMK_CONSTRAINTS;
+
+            return fetchSecurityAnalysisResult(studyUuid, nodeUuid, resultType);
+        },
+        [nmkType, tabIndex]
+    );
+
+    const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(
+        studyUuid,
+        nodeUuid,
+        fetchSecurityAnalysisResultWithResultType,
+        securityAnalysisResultInvalidations,
+        null
+    );
+
+    const shouldOpenLoader = useOpenLoaderShortWait({
+        isLoading:
+            securityAnalysisStatus === RunningStatus.RUNNING || isLoadingResult,
+        delay: RESULTS_LOADING_DELAY,
+    });
 
     const handleChangeNmkType = () => {
         setResult(null);
@@ -79,28 +105,6 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         setResult(null);
         setTabIndex(newTabIndex);
     };
-
-    useEffect(() => {
-        setIsLoadingResult(true);
-
-        const resultType =
-            tabIndex === 0
-                ? RESULT_TYPE.N
-                : nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                ? RESULT_TYPE.NMK_CONTINGENCIES
-                : RESULT_TYPE.NMK_CONSTRAINTS;
-
-        fetchSecurityAnalysisResult(studyUuid, nodeUuid, resultType)
-            .then(setResult)
-            .catch((error) => console.error(error))
-            .finally(() => setIsLoadingResult(false));
-    }, [tabIndex, nmkType, nodeUuid, studyUuid]);
-
-    const shouldOpenLoader = useOpenLoaderShortWait({
-        isLoading:
-            securityAnalysisStatus === RunningStatus.RUNNING || isLoadingResult,
-        delay: RESULTS_LOADING_DELAY,
-    });
 
     return (
         <>
@@ -140,12 +144,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             <Box sx={styles.resultContainer}>
                 {tabIndex === 0 ? (
                     <SecurityAnalysisResultN
-                        result={result}
+                        result={securityAnalysisResult}
                         isLoadingResult={isLoadingResult}
                     />
                 ) : (
                     <SecurityAnalysisResultNmk
-                        result={result}
+                        result={securityAnalysisResult}
                         isLoadingResult={isLoadingResult}
                         isFromContingency={
                             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES

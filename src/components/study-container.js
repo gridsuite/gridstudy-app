@@ -158,7 +158,7 @@ export function useNodeData(
         studyUuid,
     ]);
 
-    return [result, isPending, errorMessage, update];
+    return [result, isPending, setResult, errorMessage, update];
 }
 
 function useStudy(studyUuidRequest) {
