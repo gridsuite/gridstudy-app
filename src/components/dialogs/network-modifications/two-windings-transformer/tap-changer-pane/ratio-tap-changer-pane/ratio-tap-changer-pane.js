@@ -21,8 +21,7 @@ import { useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { gridItem, VoltageAdornment } from '../../../../dialogUtils';
-import { SwitchInput } from '@gridsuite/commons-ui';
-import { FloatInput } from '@gridsuite/commons-ui';
+import { SwitchInput, FloatInput, SelectInput } from '@gridsuite/commons-ui';
 import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
 import {
@@ -30,7 +29,6 @@ import {
     REGULATION_TYPES,
     SIDE,
 } from 'components/network/constants';
-import { SelectInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
@@ -130,9 +128,10 @@ const RatioTapChangerPane = ({
     });
 
     const regulationType = useMemo(() => {
-        return regulationTypeWatch
-            ? regulationTypeWatch
-            : getComputedPreviousRatioRegulationType(previousValues);
+        return (
+            regulationTypeWatch ||
+            getComputedPreviousRatioRegulationType(previousValues)
+        );
     }, [previousValues, regulationTypeWatch]);
 
     // we want to update the validation of these fields when they become optionals to remove the red alert
@@ -259,16 +258,15 @@ const RatioTapChangerPane = ({
                             <Grid item xs={4}>
                                 {regulationModeField}
                             </Grid>
-                            {regulationModeWatch && (
-                                <>
-                                    <Grid item xs={4}>
-                                        {targetVoltage1Field}
-                                    </Grid>
-                                    <Grid item xs={4}>
-                                        {targetDeadbandField}
-                                    </Grid>
-                                </>
-                            )}
+
+                            <>
+                                <Grid item xs={4}>
+                                    {targetVoltage1Field}
+                                </Grid>
+                                <Grid item xs={4}>
+                                    {targetDeadbandField}
+                                </Grid>
+                            </>
                         </Grid>
                         <Grid item container spacing={2}>
                             <Grid
