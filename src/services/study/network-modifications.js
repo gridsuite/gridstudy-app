@@ -374,7 +374,8 @@ export function createLoad(
     modificationUuid,
     connectionDirection,
     connectionName,
-    connectionPosition
+    connectionPosition,
+    connected
 ) {
     let createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -405,6 +406,7 @@ export function createLoad(
             connectionDirection: connectionDirection,
             connectionName: connectionName,
             connectionPosition: connectionPosition,
+            connected: connected,
         }),
     });
 }

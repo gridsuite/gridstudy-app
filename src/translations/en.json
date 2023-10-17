@@ -571,6 +571,7 @@
     "BusBarBus": "Bus bar section / bus",
     "Setpoints": "Setpoints",
     "Connectivity": "Connectivity",
+    "Connected": "Connected",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
     "errReorderModificationMsg": "Reorder network modification error:",

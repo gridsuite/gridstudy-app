@@ -572,6 +572,7 @@
     "BusBarBus": "SJB / nœud",
     "Setpoints": "Consignes",
     "Connectivity": "Connectivité",
+    "Connected": "Connecté",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
     "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du nœud\u00a0:",

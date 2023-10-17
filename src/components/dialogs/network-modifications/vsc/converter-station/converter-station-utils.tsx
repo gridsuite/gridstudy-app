@@ -71,6 +71,7 @@ interface ConverterStationInterfaceEditData {
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
+    connected?: boolean | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
     reactiveCapabilityCurve: boolean;
     minimumReactivePower: number | null;
@@ -192,6 +193,7 @@ export function getConverterStationFormEditData(
                 connectionName: converterStation?.connectionName,
                 connectionPosition: converterStation?.connectionPosition,
                 busbarSectionName: converterStation?.busbarSectionName,
+                connected: converterStation?.connected,
             }),
             ...getConverterStationReactiveLimits(converterStation),
         },
@@ -242,6 +244,7 @@ export function getConverterStationFromSearchCopy(
                     converterStation?.connectablePositionInfos?.connectionName,
                 connectionPosition: null,
                 busbarSectionName: null,
+                connected: null,
             }),
             ...getReactiveLimitsFormData({
                 reactiveCapabilityCurveChoice:
