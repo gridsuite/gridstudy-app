@@ -114,18 +114,11 @@ export function searchEquipmentsInfos(
     );
 }
 
-export function fetchLimitViolations(
-    studyUuid,
-    currentNodeUuid,
-    limitReduction
-) {
-    console.info(
-        `Fetching limit violations with (limit reduction ${limitReduction}) ...`
-    );
+export function fetchLimitViolations(studyUuid, currentNodeUuid) {
+    console.info(`Fetching limit violations ...`);
     const url =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/limit-violations?limitReduction=' +
-        limitReduction.toString();
+        '/limit-violations';
     return backendFetchJson(url);
 }
 
