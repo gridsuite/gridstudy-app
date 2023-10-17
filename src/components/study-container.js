@@ -594,9 +594,6 @@ export function StudyContainer({ view, onChangeTab }) {
             })
             .finally(() => {
                 setIsStudyIndexationPending(false);
-                snackError({
-                    headerId: 'checkstudyIndexationError',
-                });
             });
     }, [studyUuid, snackError]);
 
