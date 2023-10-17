@@ -56,20 +56,6 @@ export const recreateStudyNetwork = (
     });
 };
 
-export const reindexAllStudy = (studyUuid: UUID): Promise<void> => {
-    const reindexAllStudyUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/reindex-all';
-
-    console.debug(reindexAllStudyUrl);
-
-    return backendFetch(reindexAllStudyUrl, {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-    });
-};
 
 export const reindexStudyIfNeeded = (studyUuid: UUID): Promise<void> => {
     const reindexStudyIfNeededUrl =

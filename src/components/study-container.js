@@ -578,13 +578,6 @@ export function StudyContainer({ view, onChangeTab }) {
     const checkStudyIndexation = useCallback(() => {
         setIsStudyIndexationPending(true);
         reindexStudyIfNeeded(studyUuid)
-            .then(() => {
-                dispatch(
-                    setStudyIndexationStatus(
-                        STUDY_INDEXATION_STATUS.INDEXING_ONGOING
-                    )
-                );
-            })
             .catch((error) => {
                 // unknown error when trying to reindex study
                 snackError({
