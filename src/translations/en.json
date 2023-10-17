@@ -1146,7 +1146,6 @@
     "studyIndexationDone": "Study indexation done. Search functionality is now available",
     "studyIndexationNotIndexed": "Serverside warning: Something went wrong, Study equipments aren't indexed anymore. Please refresh the page (F5)",
     "studyIndexationError": "Study indexation process has failed.",
-    "checkstudyIndexationError": "Study indexation checking has failed.",
     "waitingStudyIndexation": "Waiting for study indexation...",
 
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status"

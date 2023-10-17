@@ -1167,7 +1167,6 @@
     "studyIndexationDone": "L'indexation de l'étude est terminée. La fonctionnalité de recherche est disponible",
     "studyIndexationNotIndexed": "Alerte côté serveur :Un incident s'est produit, les équipements de l'étude ne sont plus indexés. Merci de rafraîchir la page (F5)",
     "studyIndexationError": "L'indexation de l'étude a échoué.",
-    "checkstudyIndexationError": "La récupération de l'état d'indexation de l'étude a échoué.",
     "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
 
     "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition"
