@@ -86,6 +86,7 @@ import {
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     SELECTION_FOR_COPY,
     LIMIT_REDUCTION,
+    LIMIT_REDUCTION_MODIFIED,
     LOAD_EQUIPMENTS,
     UPDATE_EQUIPMENTS,
     DELETE_EQUIPMENT,
@@ -247,6 +248,7 @@ const initialState = {
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
+    limitReductionModified: false,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -494,6 +496,10 @@ export const reducer = createReducer(initialState, {
 
     [LIMIT_REDUCTION]: (state, action) => {
         state[PARAM_LIMIT_REDUCTION] = action[PARAM_LIMIT_REDUCTION];
+    },
+
+    [LIMIT_REDUCTION_MODIFIED]: (state, action) => {
+        state.limitReductionModified = action.limitReductionModified;
     },
 
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {

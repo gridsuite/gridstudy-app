@@ -301,6 +301,15 @@ export function selectLimitReduction(limitReduction) {
     };
 }
 
+export const LIMIT_REDUCTION_MODIFIED = 'LIMIT_REDUCTION_MODIFIED';
+
+export function limitReductionModified(limitReductionModified) {
+    return {
+        type: LIMIT_REDUCTION_MODIFIED,
+        limitReductionModified: limitReductionModified,
+    };
+}
+
 export const STUDY_UPDATED = 'STUDY_UPDATED';
 
 export function studyUpdated(eventData) {
