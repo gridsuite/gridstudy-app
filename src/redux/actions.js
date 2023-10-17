@@ -524,6 +524,15 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen) {
     };
 }
 
+export const SET_EVENT_SCENARIO_DRAWER_OPEN = 'SET_EVENT_SCENARIO_DRAWER_OPEN';
+
+export function setEventScenarioDrawerOpen(isEventScenarioDrawerOpen) {
+    return {
+        type: SET_EVENT_SCENARIO_DRAWER_OPEN,
+        isEventScenarioDrawerOpen: isEventScenarioDrawerOpen,
+    };
+}
+
 export const CENTER_ON_SUBSTATION = 'CENTER_ON_SUBSTATION';
 
 export function centerOnSubstation(substationId) {
