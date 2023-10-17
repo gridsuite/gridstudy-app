@@ -25,6 +25,7 @@ import {
     resetEquipmentsPostLoadflow,
     setStudyIndexationStatus,
     STUDY_INDEXATION_STATUS,
+    limitReductionModified,
 } from '../redux/actions';
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
@@ -58,6 +59,8 @@ import {
     fetchStudyIndexationStatus,
 } from '../services/study/network';
 import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
+import { invalidateLoadFlowStatus } from 'services/study/loadflow';
+
 import { HttpStatusCode } from 'utils/http-status-code';
 
 function isWorthUpdate(
@@ -259,6 +262,10 @@ export function StudyContainer({ view, onChangeTab }) {
         useState(false);
 
     const wsRef = useRef();
+
+    const isLimitReductionModified = useSelector(
+        (state) => state.limitReductionModified
+    );
 
     const closeImportStudyDialog = useCallback(() => {
         setIsImportStudyDialogDisplayed(false);
@@ -862,6 +869,21 @@ export function StudyContainer({ view, onChangeTab }) {
         connectNotifications,
         connectDeletedStudyNotifications,
     ]);
+
+    useEffect(() => {
+        if (studyUuid) {
+            if (isLimitReductionModified) {
+                // limit reduction param has changed : we invalidate the load flow status
+                invalidateLoadFlowStatus(studyUuid).catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'invalidateLoadFlowStatusError',
+                    });
+                });
+                dispatch(limitReductionModified(false));
+            }
+        }
+    }, [studyUuid, isLimitReductionModified, snackError, dispatch]);
 
     return (
         <>
