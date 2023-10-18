@@ -111,7 +111,7 @@ const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
             label={'LowShortCircuitCurrentLimit'}
             adornment={KiloAmpereAdornment}
             clearable
-            previousValue={voltageLevelInfos?.ipMin}
+            previousValue={voltageLevelInfos?.identifiableShortCircuit?.ipMin}
         />
     );
 
@@ -121,7 +121,7 @@ const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
             label={'HighShortCircuitCurrentLimit'}
             adornment={KiloAmpereAdornment}
             clearable
-            previousValue={voltageLevelInfos?.ipMax}
+            previousValue={voltageLevelInfos?.identifiableShortCircuit?.ipMax}
         />
     );
 

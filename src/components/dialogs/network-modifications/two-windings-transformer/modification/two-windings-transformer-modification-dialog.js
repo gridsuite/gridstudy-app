@@ -185,6 +185,36 @@ const TwoWindingsTransformerModificationDialog = ({
         }
     };
 
+    const isRatioTapChangerEnabled = useCallback(
+        (twtEditData) => {
+            const ratioTapEnabledInEditData =
+                twtEditData?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value;
+            const ratioTapFormHasBeenEdited =
+                Object.keys(twtEditData?.[RATIO_TAP_CHANGER] ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
+            const ratioTapEnabledInTwtToModify = !!twtToModify?.ratioTapChanger; // used when we have twt element (built node)
+            return (
+                ratioTapEnabledInEditData ??
+                (ratioTapFormHasBeenEdited || ratioTapEnabledInTwtToModify)
+            );
+        },
+        [twtToModify]
+    );
+
+    const isPhaseTapChangerEnabled = useCallback(
+        (twtEditData) => {
+            const phaseTapEnabledInEditData =
+                twtEditData?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value;
+            const phaseTapFormHasBeenEdited =
+                Object.keys(twtEditData?.[PHASE_TAP_CHANGER] ?? {}).length > 0; // to check if the form has been edited (to solve problem when unbuilt node)
+            const phaseTapEnabledInTwtToModify = !!twtToModify?.phaseTapChanger; // used when we have twt element (built node)
+            return (
+                phaseTapEnabledInEditData ??
+                (phaseTapFormHasBeenEdited || phaseTapEnabledInTwtToModify)
+            );
+        },
+        [twtToModify]
+    );
+
     const fromEditDataToFormValues = useCallback(
         (twt, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
             if (twt?.equipmentId) {
@@ -209,24 +239,20 @@ const TwoWindingsTransformerModificationDialog = ({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        updatedTemporaryLimits1
-                            ? updatedTemporaryLimits1
-                            : formatTemporaryLimits(
-                                  twt.currentLimits1?.temporaryLimits
-                              )
+                        updatedTemporaryLimits1 ||
+                            formatTemporaryLimits(
+                                twt.currentLimits1?.temporaryLimits
+                            )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        updatedTemporaryLimits2
-                            ? updatedTemporaryLimits2
-                            : formatTemporaryLimits(
-                                  twt.currentLimits2?.temporaryLimits
-                              )
+                        updatedTemporaryLimits2 ||
+                            formatTemporaryLimits(
+                                twt.currentLimits2?.temporaryLimits
+                            )
                     ),
                 }),
                 ...getRatioTapChangerFormData({
-                    enabled:
-                        twt?.[RATIO_TAP_CHANGER]?.[ENABLED]?.value ??
-                        !!twtToModify?.ratioTapChanger,
+                    enabled: isRatioTapChangerEnabled(twt),
                     loadTapChangingCapabilities:
                         twt?.[RATIO_TAP_CHANGER]?.[
                             LOAD_TAP_CHANGING_CAPABILITIES
@@ -261,9 +287,7 @@ const TwoWindingsTransformerModificationDialog = ({
                         twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId?.value,
                 }),
                 ...getPhaseTapChangerFormData({
-                    enabled:
-                        twt?.[PHASE_TAP_CHANGER]?.[ENABLED]?.value ??
-                        !!twtToModify?.phaseTapChanger,
+                    enabled: isPhaseTapChangerEnabled(twt),
                     regulationMode:
                         twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]?.value,
                     regulationType:
@@ -303,7 +327,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 }),
             });
         },
-        [reset, twtToModify]
+        [reset, twtToModify, isRatioTapChangerEnabled, isPhaseTapChangerEnabled]
     );
 
     useEffect(() => {
@@ -502,7 +526,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 };
             }
 
-            let ratioTap = undefined;
+            let ratioTap;
             const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
             const enableRatioTapChanger =
                 ratioTapChangerFormValues?.[ENABLED] !==
@@ -547,7 +571,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 };
             }
 
-            let phaseTap = undefined;
+            let phaseTap;
             const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
             const enablePhaseTapChanger =
                 phaseTapChangerFormValues?.[ENABLED] !==

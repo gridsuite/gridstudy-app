@@ -8,7 +8,7 @@
 import PropTypes from 'prop-types';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import { Box, IconButton } from '@mui/material';
+import { Box } from '@mui/material';
 import DynamicSimulationResultChart from './dynamic-simulation-result-chart';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -110,13 +110,16 @@ const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
                                             {`${intl.formatMessage({
                                                 id: 'DynamicSimulationResultTab',
                                             })} ${tab.id}`}
-                                            <IconButton
+                                            <TooltipIconButton
+                                                toolTip={intl.formatMessage({
+                                                    id: 'DynamicSimulationCloseTab',
+                                                })}
                                                 size="small"
                                                 component="span"
                                                 onClick={handleClose(index)}
                                             >
                                                 <CloseIcon />
-                                            </IconButton>
+                                            </TooltipIconButton>
                                         </span>
                                     }
                                 />
@@ -126,7 +129,9 @@ const DynamicSimulationResultChartTabs = ({ result, loadTimeSeries }) => {
                     onDragEnd={handleDragEnd}
                 />
                 <TooltipIconButton
-                    toolTip={'Add a tab'}
+                    toolTip={intl.formatMessage({
+                        id: 'DynamicSimulationAddTab',
+                    })}
                     sx={styles.addButton}
                     onClick={handleAddNewTab}
                 >

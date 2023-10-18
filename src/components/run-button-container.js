@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import SensiParametersSelector from './dialogs/sensi/sensi-parameters-selector';
 import RunButton from './run-button';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -16,7 +15,7 @@ import {
     addLoadflowNotif,
     addSANotif,
     addSensiNotif,
-    addShortCircuitNotif,
+    addAllBusesShortCircuitNotif,
     addDynamicSimulationNotif,
     addVoltageInitNotif,
     setComputingStatus,
@@ -71,9 +70,15 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const sensitivityAnalysisStatus = useSelector(
         (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
-    const shortCircuitAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
+    const allBusesShortCircuitAnalysisStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
     );
+    const oneBusShortCircuitAnalysisStatus = useSelector(
+        (state) =>
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+    );
+
     const dynamicSimulationStatus = useSelector(
         (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
@@ -84,9 +89,6 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const [showContingencyListSelector, setShowContingencyListSelector] =
-        useState(false);
-
-    const [showSensiParametersSelector, setShowSensiParametersSelector] =
         useState(false);
 
     const [
@@ -145,8 +147,13 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             [ComputingType.SENSITIVITY_ANALYSIS]: intl.formatMessage({
                 id: 'SensitivityAnalysis',
             }),
-            [ComputingType.SHORTCIRCUIT_ANALYSIS]: intl.formatMessage({
-                id: 'ShortCircuitAnalysis',
+            [ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]: intl.formatMessage(
+                {
+                    id: 'ShortCircuitAnalysis',
+                }
+            ),
+            [ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]: intl.formatMessage({
+                id: 'OneBusShortCircuitAnalysis',
             }),
             [ComputingType.DYNAMIC_SIMULATION]: intl.formatMessage({
                 id: 'DynamicSimulation',
@@ -181,7 +188,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             studyUpdatedForce?.eventData?.headers?.updateType ===
                 'shortCircuitAnalysisResult'
         ) {
-            dispatch(addShortCircuitNotif());
+            dispatch(addAllBusesShortCircuitNotif());
         } else if (
             ranDynamicSimulation &&
             studyUpdatedForce?.eventData?.headers?.updateType ===
@@ -220,8 +227,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     type = ComputingType.SENSITIVITY_ANALYSIS;
                     stopSensitivityAnalysis(studyUuid, currentNode?.id);
                     break;
-                case runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]:
-                    type = ComputingType.SHORTCIRCUIT_ANALYSIS;
+                case runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]:
+                    type = ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS;
                     stopShortCircuitAnalysis(studyUuid, currentNode?.id);
                     break;
                 case runnable[ComputingType.DYNAMIC_SIMULATION]:
@@ -269,31 +276,6 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 )
             )
         );
-    };
-
-    const handleStartSensi = (sensiConfiguration) => {
-        // close the contingency list selection window
-        setShowSensiParametersSelector(false);
-        setComputationStopped(false);
-        dispatch(
-            setComputingStatus(
-                ComputingType.SENSITIVITY_ANALYSIS,
-                RunningStatus.RUNNING
-            )
-        );
-        // start server side security analysis
-        startSensitivityAnalysis(
-            studyUuid,
-            currentNode?.id,
-            sensiConfiguration
-        ).catch(() => {
-            dispatch(
-                setComputingStatus(
-                    ComputingType.SENSITIVITY_ANALYSIS,
-                    RunningStatus.FAILED
-                )
-            );
-        });
     };
 
     const handleStartDynamicSimulation = (dynamicSimulationConfiguration) => {
@@ -354,12 +336,32 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             setShowContingencyListSelector(true);
             setRanSA(true);
         } else if (action === runnable[ComputingType.SENSITIVITY_ANALYSIS]) {
-            setShowSensiParametersSelector(true);
-            setRanSensi(true);
-        } else if (action === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]) {
             dispatch(
                 setComputingStatus(
-                    ComputingType.SHORTCIRCUIT_ANALYSIS,
+                    ComputingType.SENSITIVITY_ANALYSIS,
+                    RunningStatus.RUNNING
+                )
+            );
+            startSensitivityAnalysis(studyUuid, currentNode?.id)
+                .then(setRanSensi(true))
+                .catch((error) => {
+                    dispatch(
+                        setComputingStatus(
+                            ComputingType.SENSITIVITY_ANALYSIS,
+                            RunningStatus.FAILED
+                        )
+                    );
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'startSensitivityAnalysisError',
+                    });
+                });
+        } else if (
+            action === runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+        ) {
+            dispatch(
+                setComputingStatus(
+                    ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
                     RunningStatus.RUNNING
                 )
             );
@@ -368,7 +370,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 .catch((error) => {
                     dispatch(
                         setComputingStatus(
-                            ComputingType.SHORTCIRCUIT_ANALYSIS,
+                            ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS,
                             RunningStatus.FAILED
                         )
                     );
@@ -440,9 +442,15 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             ) {
                 return sensitivityAnalysisStatus;
             } else if (
-                runnableType === runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]
+                runnableType ===
+                runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
             ) {
-                return shortCircuitAnalysisStatus;
+                return allBusesShortCircuitAnalysisStatus;
+            } else if (
+                runnableType ===
+                runnable[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+            ) {
+                return oneBusShortCircuitAnalysisStatus;
             } else if (
                 runnableType === runnable[ComputingType.DYNAMIC_SIMULATION]
             ) {
@@ -456,7 +464,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             loadFlowStatus,
             securityAnalysisStatus,
             sensitivityAnalysisStatus,
-            shortCircuitAnalysisStatus,
+            allBusesShortCircuitAnalysisStatus,
+            oneBusShortCircuitAnalysisStatus,
             dynamicSimulationStatus,
             voltageInitStatus,
         ]
@@ -475,9 +484,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
             ...(sensitivityAnalysisUnavailability === OptionalServicesStatus.Up
                 ? [runnable[ComputingType.SENSITIVITY_ANALYSIS]]
                 : []),
-            ...(shortCircuitAvailability === OptionalServicesStatus.Up &&
-            enableDeveloperMode
-                ? [runnable[ComputingType.SHORTCIRCUIT_ANALYSIS]]
+            ...(shortCircuitAvailability === OptionalServicesStatus.Up
+                ? [runnable[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]]
                 : []),
             ...(dynamicSimulationAvailability === OptionalServicesStatus.Up &&
             enableDeveloperMode
@@ -525,16 +533,6 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                         studyUuid={studyUuid}
                         currentNodeUuid={currentNode?.id}
                     />
-                    {showSensiParametersSelector && (
-                        <SensiParametersSelector
-                            open={showSensiParametersSelector}
-                            onClose={() =>
-                                setShowSensiParametersSelector(false)
-                            }
-                            onStart={handleStartSensi}
-                            currentNodeUuid={currentNode?.id}
-                        />
-                    )}
                     {showDynamicSimulationParametersSelector && (
                         <DynamicSimulationParametersSelector
                             open={showDynamicSimulationParametersSelector}

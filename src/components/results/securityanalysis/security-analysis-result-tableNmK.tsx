@@ -42,7 +42,12 @@ import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 
 export const SecurityAnalysisResultTableNmK: FunctionComponent<
     SecurityAnalysisResultTableNmKProps
-> = ({ postContingencyResults, onClickNmKConstraint, nmkTypeResult }) => {
+> = ({
+    postContingencyResults,
+    onClickNmKConstraint,
+    nmkTypeResult,
+    isWaiting,
+}) => {
     const theme = useTheme();
     const styles = {
         button: (theme: Theme) => ({
@@ -153,7 +158,13 @@ export const SecurityAnalysisResultTableNmK: FunctionComponent<
         isFromContingency,
         postContingencyResults
     );
-    const message = getNoRowsMessage(messages, rows, securityAnalysisStatus);
+
+    const message = getNoRowsMessage(
+        messages,
+        rows,
+        securityAnalysisStatus,
+        !isWaiting
+    );
     const rowsToShow = getRows(rows, securityAnalysisStatus);
 
     return (

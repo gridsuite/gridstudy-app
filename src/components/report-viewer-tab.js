@@ -52,7 +52,9 @@ export const ReportViewerTab = ({
     const saNotif = useSelector((state) => state.saNotif);
     const voltageInitNotif = useSelector((state) => state.voltageInitNotif);
     const sensiNotif = useSelector((state) => state.sensiNotif);
-    const shortCircuitNotif = useSelector((state) => state.shortCircuitNotif);
+    const allBusesShortCircuitNotif = useSelector(
+        (state) => state.allBusesShortCircuitNotif
+    );
     const dynamicSimulationNotif = useSelector(
         (state) => state.dynamicSimulationNotif
     );
@@ -114,49 +116,25 @@ export const ReportViewerTab = ({
         [nodeOnlyReport, setNodeName, snackError]
     );
 
+    // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
+    // and when the application receives a notification.
     useEffect(() => {
+        // Visible and !disabled ensure that the user has the LOGS tab open and the current node is built.
         if (visible && !disabled) {
             fetchAndProcessReport(studyId, currentNode);
         }
+        // It is important to keep the notifications in the useEffect's dependencies (even if it is not
+        // apparent that they are used) to trigger the update of reports when a notification happens.
     }, [
         visible,
         studyId,
         currentNode,
-        nodesNames,
-        setNodeName,
-        nodeOnlyReport,
         disabled,
-        snackError,
-        fetchAndProcessReport,
-    ]);
-
-    useEffect(() => {
-        const anyNotificationTriggered =
-            loadflowNotif ||
-            saNotif ||
-            voltageInitNotif ||
-            sensiNotif ||
-            shortCircuitNotif ||
-            dynamicSimulationNotif ||
-            oneBusShortCircuitNotif;
-
-        if (visible && !disabled && anyNotificationTriggered) {
-            fetchAndProcessReport(studyId, currentNode);
-        }
-    }, [
-        visible,
-        studyId,
-        currentNode,
-        nodesNames,
-        setNodeName,
-        nodeOnlyReport,
-        disabled,
-        snackError,
         saNotif,
         loadflowNotif,
         voltageInitNotif,
         sensiNotif,
-        shortCircuitNotif,
+        allBusesShortCircuitNotif,
         dynamicSimulationNotif,
         fetchAndProcessReport,
         oneBusShortCircuitNotif,

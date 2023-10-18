@@ -78,7 +78,13 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string(),
         [MAXIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
         [MINIMUM_ACTIVE_POWER]: yup.number().nullable().required(),
-        [ACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
+        [ACTIVE_POWER_SET_POINT]: yup
+            .number()
+            .required()
+            .max(
+                yup.ref(MAXIMUM_ACTIVE_POWER),
+                'ActivePowerLessThanMaxActivePower'
+            ),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable().required(),
         ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
@@ -111,8 +117,9 @@ const BatteryCreationDialog = ({
             [MINIMUM_ACTIVE_POWER]: battery.minP,
             [ACTIVE_POWER_SET_POINT]: battery.targetP,
             [REACTIVE_POWER_SET_POINT]: battery.targetQ,
-            [FREQUENCY_REGULATION]: battery.activePowerControlOn,
-            [DROOP]: battery.droop,
+            [FREQUENCY_REGULATION]:
+                battery.activePowerControl?.activePowerControlOn,
+            [DROOP]: battery.activePowerControl?.droop,
             ...getConnectivityFormData({
                 voltageLevelId: battery.voltageLevelId,
                 busbarSectionId: battery.busOrBusbarSectionId,
@@ -133,7 +140,6 @@ const BatteryCreationDialog = ({
             }),
         });
     };
-
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
