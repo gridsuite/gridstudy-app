@@ -177,15 +177,13 @@ export const ReportViewerTab = ({
         studyId,
         studyNodeId,
         reportId,
-        severityFilterList,
-        nodeFilter
+        severityFilterList
     ) => {
         return fetchSingleNodeReportElements(
             studyId,
             studyNodeId,
             reportId,
-            severityFilterList,
-            nodeFilter
+            severityFilterList
         );
     };
 
@@ -242,6 +240,7 @@ export const ReportViewerTab = ({
                 {!!report && !disabled && (
                     <ReportViewer
                         jsonReportTree={report}
+                        visible={visible && !disabled}
                         studyId={studyId}
                         currentNode={currentNode}
                         makeSingleReport={makeSingleReport}

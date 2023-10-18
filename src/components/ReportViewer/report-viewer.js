@@ -39,6 +39,7 @@ const styles = {
 export default function ReportViewer({
     jsonReportTree,
     studyId,
+    visible,
     currentNode,
     makeSingleReport,
     reporterElementsPromise,
@@ -94,18 +95,11 @@ export default function ReportViewer({
     const getFetchPromise = useCallback(
         (nodeId, severityList) => {
             if (allReports.current[nodeId].isModificationNode()) {
-                let nodeFilter;
-                if (allReports.current[nodeId].getTitle() !== 'Root') {
-                    // TODO today , filter is a "startsWith" the nodeId
-                    // Tommorrow it will be exact matching with nodeId@NetworkModification or @LoadFlow etc
-                    nodeFilter = allReports.current[nodeId].getKey();
-                }
                 return nodeElementsPromise(
                     studyId,
                     allReports.current[nodeId].getKey(), // modif nodeId
                     allReports.current[nodeId].getNodeReportId(),
-                    severityList,
-                    nodeFilter
+                    severityList
                 );
             } else if (allReports.current[nodeId].isGlobalLog()) {
                 return allLogsElementsPromise(
@@ -180,10 +174,10 @@ export default function ReportViewer({
         treeView.current = createReporterItem(rootReport.current);
         setSelectedNode(rootId);
         setExpandedNodes([rootId]);
-        if (rootReportLoading) {
+        if (rootReportLoading && visible) {
             refreshNode(rootId, LogReportItem.getDefaultSeverityFilter());
         }
-    }, [jsonReportTree, createReporterItem, refreshNode]);
+    }, [jsonReportTree, createReporterItem, refreshNode, visible]);
 
     const handleToggleNode = (event, nodeIds) => {
         event.persist();

@@ -100,16 +100,13 @@ export function fetchSingleNodeReportElements(
     studyUuid,
     nodeUuid,
     reportUuid,
-    severityFilterList,
-    nodeFilter
+    severityFilterList
 ) {
     console.info(
         'get report elements for single node : ' +
             nodeUuid +
             ' in study ' +
-            studyUuid +
-            ' with filter ' +
-            nodeFilter
+            studyUuid
     );
 
     let url =
@@ -118,22 +115,9 @@ export function fetchSingleNodeReportElements(
         reportUuid +
         '/elements';
 
-    // Add 2 optional params
-    let urlParams = '';
     if (severityFilterList?.length) {
-        urlParams = getRequestParamFromList(
-            severityFilterList,
-            'severityLevels'
-        );
-    }
-    if (nodeFilter) {
-        if (urlParams !== '') {
-            urlParams += '&';
-        }
-        urlParams += 'filter=' + nodeFilter;
-    }
-    if (urlParams !== '') {
-        url += '?' + urlParams;
+        url +=
+            '?' + getRequestParamFromList(severityFilterList, 'severityLevels');
     }
 
     return backendFetchJson(url);
