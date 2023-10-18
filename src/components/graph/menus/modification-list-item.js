@@ -21,6 +21,7 @@ const nonEditableModificationTypes = new Set([
     'EQUIPMENT_ATTRIBUTE_MODIFICATION',
     'GROOVY_SCRIPT',
     'BRANCH_STATUS_MODIFICATION',
+    // 'TABULAR_MODIFICATION',
 ]);
 
 const isEditableModification = (modif) => {
@@ -93,10 +94,14 @@ export const ModificationListItem = ({
                     '/' +
                     modif.lineToAttachTo2Id
                 );
+            case 'TABULAR_MODIFICATION':
+                return intl.formatMessage({
+                    id: 'network_modifications/tabular/' + modif.modificationType,
+                });
             default:
                 return modif.equipmentId || '';
         }
-    }, [modif]);
+    }, [intl, modif]);
 
     const toggle = useCallback(
         () => handleToggle(modif),
