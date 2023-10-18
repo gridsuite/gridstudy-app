@@ -309,10 +309,10 @@ const BaseEquipmentMenu = ({
                             key={equipment.substationId}
                             equipmentType={EQUIPMENT_TYPES.SUBSTATION}
                             equipmentId={equipment.substationId}
-                            itemText={
-                                equipment.substationName ??
-                                equipment.substationId
-                            }
+                            itemText={getNameOrId({
+                                name: equipment.substationName,
+                                id: equipment.substationId,
+                            })}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
                         {/* menus for the voltage level */}
@@ -333,10 +333,10 @@ const BaseEquipmentMenu = ({
                             key={equipment.substationId}
                             equipmentType={EQUIPMENT_TYPES.SUBSTATION}
                             equipmentId={equipment.substationId}
-                            itemText={
-                                equipment.substationName ??
-                                equipment.substationId
-                            }
+                            itemText={getNameOrId({
+                                name: equipment.substationName,
+                                id: equipment.substationId,
+                            })}
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
                         {/* menus for the voltage level */}
@@ -357,10 +357,10 @@ const BaseEquipmentMenu = ({
                             key={equipment.substationId}
                             equipmentType={EQUIPMENT_TYPES.SUBSTATION}
                             equipmentId={equipment.substationId}
-                            itemText={
-                                equipment.substationName ??
-                                equipment.substationId
-                            }
+                            itemText={getNameOrId({
+                                name: equipment.substationName,
+                                id: equipment.substationId,
+                            })}
                             handleOpenModificationDialog={
                                 handleOpenModificationDialog
                             }

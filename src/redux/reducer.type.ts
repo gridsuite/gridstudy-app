@@ -26,6 +26,7 @@ export interface ReduxState {
     dynamicSimulationNotif: boolean;
     user: User;
     oneBusShortCircuitAnalysisDiagram: oneBusShortCircuitAnalysisDiagram;
+    notificationIdList: UUID[];
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {

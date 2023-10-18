@@ -239,18 +239,16 @@ const TwoWindingsTransformerModificationDialog = ({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        updatedTemporaryLimits1
-                            ? updatedTemporaryLimits1
-                            : formatTemporaryLimits(
-                                  twt.currentLimits1?.temporaryLimits
-                              )
+                        updatedTemporaryLimits1 ||
+                            formatTemporaryLimits(
+                                twt.currentLimits1?.temporaryLimits
+                            )
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        updatedTemporaryLimits2
-                            ? updatedTemporaryLimits2
-                            : formatTemporaryLimits(
-                                  twt.currentLimits2?.temporaryLimits
-                              )
+                        updatedTemporaryLimits2 ||
+                            formatTemporaryLimits(
+                                twt.currentLimits2?.temporaryLimits
+                            )
                     ),
                 }),
                 ...getRatioTapChangerFormData({
@@ -528,7 +526,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 };
             }
 
-            let ratioTap = undefined;
+            let ratioTap;
             const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];
             const enableRatioTapChanger =
                 ratioTapChangerFormValues?.[ENABLED] !==
@@ -573,7 +571,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 };
             }
 
-            let phaseTap = undefined;
+            let phaseTap;
             const phaseTapChangerFormValues = twt[PHASE_TAP_CHANGER];
             const enablePhaseTapChanger =
                 phaseTapChangerFormValues?.[ENABLED] !==
@@ -680,6 +678,11 @@ const TwoWindingsTransformerModificationDialog = ({
                 TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB
             );
         }
+
+        if (tabsInError.length > 0) {
+            setTabIndex(tabsInError[0]);
+        }
+
         setTabIndexesWithError(tabsInError);
     };
 
