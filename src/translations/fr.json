@@ -272,6 +272,25 @@
     "DynamicSimulationFetchVoltageLevelError": "Une erreur est survenue lors du chargement des postes",
     "DynamicSimulationFetchSubstationError": "Une erreur est survenue lors du chargement des sites",
     "DynamicSimulationFetchEquipmentError": "Une erreur est survenue lors du chargement des ouvrages",
+    "DynamicSimulationEventPropertyTEvent": "Temps de l'événement",
+    "DynamicSimulationEventPropertySide": "Uniquement Côté",
+    "DynamicSimulationEventSaveError": "Une erreur est survenue lors du sauvegarde d'un évènement",
+    "DynamicSimulationEventScenario": "Evènements scénario",
+    "DynamicSimulationEventDeleteError": "Une erreur est survenue lors de la suppression d'un évènement",
+    "DynamicSimulationEventCount": "{hide, select, false {{count, plural, =0 {aucun évènement} =1 {# évènement} other {# évènements}}} other {...}}",
+    "DynamicSimulationEventUpdatingList": "Mise à jour de la liste des évènements en cours ...",
+    "DynamicSimulationEventCreating": "Création d'un évènement en cours ...",
+    "DynamicSimulationEventUpdating": "Mise à jour d'un évènement en cours ...",
+    "DynamicSimulationEventDeleting": "Suppression d'un évènement en cours ...",
+
+    "DisconnectLine": "Déclencher la ligne",
+    "Disconnect2WTransformer": "Déclencher le transformateur",
+
+    "Disconnect/LINE": "Déclencher ligne {computedLabel}",
+    "Disconnect/TWO_WINDINGS_TRANSFORMER": "Déclencher transformateur {computedLabel}",
+
+    "Branch.Side.ONE": "Côté origine",
+    "Branch.Side.TWO": "Côté extrémité",
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
@@ -1170,5 +1189,7 @@
     "studyIndexationError": "L'indexation de l'étude a échoué.",
     "checkstudyIndexationError": "La récupération de l'état d'indexation de l'étude a échoué.",
     "studyIndexationStatusUnknown": "L'état d'indexation de l'étude est inconnu : \"{status}\".",
-    "waitingStudyIndexation": "En attente de l'indexation de l'étude..."
+    "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
+
+    "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition"
 }
