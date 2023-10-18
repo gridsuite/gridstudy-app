@@ -38,9 +38,7 @@ const styles = {
 
 export default function ReportViewer({
     jsonReportTree,
-    studyId,
     visible,
-    currentNode,
     makeSingleReport,
     reporterElementsPromise,
     nodeElementsPromise,
@@ -96,33 +94,17 @@ export default function ReportViewer({
         (nodeId, severityList) => {
             if (allReports.current[nodeId].isModificationNode()) {
                 return nodeElementsPromise(
-                    studyId,
-                    allReports.current[nodeId].getKey(), // modif nodeId
+                    allReports.current[nodeId].getKey(), // gets nodeId
                     allReports.current[nodeId].getNodeReportId(),
                     severityList
                 );
             } else if (allReports.current[nodeId].isGlobalLog()) {
-                return allLogsElementsPromise(
-                    studyId,
-                    currentNode.id,
-                    severityList
-                );
+                return allLogsElementsPromise(severityList);
             } else {
-                return reporterElementsPromise(
-                    studyId,
-                    currentNode.id,
-                    nodeId,
-                    severityList
-                );
+                return reporterElementsPromise(nodeId, severityList);
             }
         },
-        [
-            studyId,
-            currentNode.id,
-            nodeElementsPromise,
-            allLogsElementsPromise,
-            reporterElementsPromise,
-        ]
+        [nodeElementsPromise, allLogsElementsPromise, reporterElementsPromise]
     );
 
     const refreshNode = useCallback(

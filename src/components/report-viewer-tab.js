@@ -173,41 +173,27 @@ export const ReportViewerTab = ({
         oneBusShortCircuitNotif,
     ]);
 
-    const nodeElementsPromise = (
-        studyId,
-        studyNodeId,
-        reportId,
-        severityFilterList
-    ) => {
+    const nodeElementsPromise = (nodeId, reportId, severityFilterList) => {
         return fetchSingleNodeReportElements(
             studyId,
-            studyNodeId,
+            nodeId,
             reportId,
             severityFilterList
         );
     };
 
-    const allLogsElementsPromise = (
-        studyId,
-        studyNodeId,
-        severityFilterList
-    ) => {
+    const allLogsElementsPromise = (severityFilterList) => {
         return fetchAllNodesReportElements(
             studyId,
-            studyNodeId,
+            currentNode.id,
             severityFilterList
         );
     };
 
-    const reporterElementsPromise = (
-        studyId,
-        studyNodeId,
-        reporterId,
-        severityFilterList
-    ) => {
+    const reporterElementsPromise = (reporterId, severityFilterList) => {
         return fetchReporterElements(
             studyId,
-            studyNodeId,
+            currentNode.id,
             reporterId,
             severityFilterList
         );
@@ -241,8 +227,6 @@ export const ReportViewerTab = ({
                     <ReportViewer
                         jsonReportTree={report}
                         visible={visible && !disabled}
-                        studyId={studyId}
-                        currentNode={currentNode}
                         makeSingleReport={makeSingleReport}
                         reporterElementsPromise={reporterElementsPromise}
                         nodeElementsPromise={nodeElementsPromise}
