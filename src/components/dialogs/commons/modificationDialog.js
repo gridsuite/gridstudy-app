@@ -89,6 +89,8 @@ const ModificationDialog = ({
 };
 
 ModificationDialog.propTypes = {
+    showNodeNotBuiltWarning: PropTypes.bool,
+    isDataFetching: PropTypes.bool,
     onClose: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
@@ -98,7 +100,7 @@ ModificationDialog.propTypes = {
     fullWidth: PropTypes.bool,
     open: PropTypes.bool,
     titleId: PropTypes.string,
-    maxWidth: PropTypes.string,
+    maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     children: PropTypes.node,
 };
 

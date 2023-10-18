@@ -65,16 +65,19 @@ export function setLoadFlowProvider(studyUuid, newProvider) {
     });
 }
 
-export function startLoadFlow(studyUuid, currentNodeUuid) {
+export function startLoadFlow(studyUuid, currentNodeUuid, limitReduction) {
     console.info(
         'Running loadflow on ' +
             studyUuid +
             ' and node ' +
             currentNodeUuid +
-            '...'
+            ' with limit reduction ' +
+            limitReduction
     );
     const startLoadFlowUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/run';
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        '/loadflow/run?limitReduction=' +
+        limitReduction.toString();
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
@@ -109,4 +112,14 @@ export function fetchLoadFlowResult(studyUuid, currentNodeUuid) {
         '/loadflow/result';
     console.debug(url);
     return backendFetchJson(url);
+}
+
+export function invalidateLoadFlowStatus(studyUuid) {
+    console.info('invalidate loadflow status');
+    const invalidateLoadFlowStatusUrl =
+        getStudyUrl(studyUuid) + '/loadflow/invalidate-status';
+    console.debug(invalidateLoadFlowStatusUrl);
+    return backendFetch(invalidateLoadFlowStatusUrl, {
+        method: 'PUT',
+    });
 }
