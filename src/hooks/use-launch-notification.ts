@@ -16,14 +16,14 @@ import {
     addOneBusShortCircuitNotif,
     addSANotif,
     addSensiNotif,
-    addShortCircuitNotif,
+    addAllBusesShortCircuitNotif,
     addVoltageInitNotif,
     resetDynamicSimulationNotif,
     resetLoadflowNotif,
     resetOneBusShortCircuitNotif,
     resetSANotif,
     resetSensiNotif,
-    resetShortCircuitNotif,
+    resetAllBusesShortCircuitNotif,
     resetVoltageInitNotif,
 } from '../redux/actions';
 
@@ -49,14 +49,14 @@ export const useLaunchNotification = (tabIndex: number) => {
             state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
-    const shortCircuitAnalysisStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORTCIRCUIT_ANALYSIS]
-    );
-
-    const oneBusShortCircuitAnalysisStatus = useSelector(
+    const oneBusallBusesShortCircuitStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+    );
+
+    const allBusesShortCircuitStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
     );
 
     const dynamicSimulationStatus = useSelector(
@@ -69,89 +69,50 @@ export const useLaunchNotification = (tabIndex: number) => {
     );
 
     useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            (loadFlowStatus === RunningStatus.SUCCEED ||
-                loadFlowStatus === RunningStatus.FAILED)
-        ) {
-            dispatch(addLoadflowNotif());
-        } else {
-            dispatch(resetLoadflowNotif());
-        }
-    }, [currentNode, dispatch, loadFlowStatus, tabIndex, user]);
+        if (isNodeBuilt(currentNode)) {
+            loadFlowStatus === RunningStatus.SUCCEED ||
+            loadFlowStatus === RunningStatus.FAILED
+                ? dispatch(addLoadflowNotif())
+                : dispatch(resetLoadflowNotif());
 
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            (securityAnalysisStatus === RunningStatus.SUCCEED ||
-                securityAnalysisStatus === RunningStatus.FAILED)
-        ) {
-            dispatch(addSANotif());
-        } else {
-            dispatch(resetSANotif());
-        }
-    }, [currentNode, dispatch, securityAnalysisStatus, tabIndex, user]);
+            securityAnalysisStatus === RunningStatus.SUCCEED ||
+            securityAnalysisStatus === RunningStatus.FAILED
+                ? dispatch(addSANotif())
+                : dispatch(resetSANotif());
 
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
             sensitivityAnalysisStatus === RunningStatus.SUCCEED
-        ) {
-            dispatch(addSensiNotif());
-        } else {
-            dispatch(resetSensiNotif());
-        }
-    }, [currentNode, dispatch, sensitivityAnalysisStatus, tabIndex, user]);
+                ? dispatch(addSensiNotif())
+                : dispatch(resetSensiNotif());
 
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            shortCircuitAnalysisStatus === RunningStatus.SUCCEED
-        ) {
-            dispatch(addShortCircuitNotif());
-        } else {
-            dispatch(resetShortCircuitNotif());
-        }
-    }, [currentNode, dispatch, shortCircuitAnalysisStatus, tabIndex, user]);
+            allBusesShortCircuitStatus === RunningStatus.SUCCEED
+                ? dispatch(addAllBusesShortCircuitNotif())
+                : dispatch(resetAllBusesShortCircuitNotif());
 
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            oneBusShortCircuitAnalysisStatus === RunningStatus.SUCCEED
-        ) {
-            dispatch(addOneBusShortCircuitNotif());
-        } else {
-            dispatch(resetOneBusShortCircuitNotif());
+            oneBusallBusesShortCircuitStatus === RunningStatus.SUCCEED
+                ? dispatch(addOneBusShortCircuitNotif())
+                : dispatch(resetOneBusShortCircuitNotif());
+
+            dynamicSimulationStatus === RunningStatus.SUCCEED ||
+            dynamicSimulationStatus === RunningStatus.FAILED
+                ? dispatch(addDynamicSimulationNotif())
+                : dispatch(resetDynamicSimulationNotif());
+
+            voltageInitStatus === RunningStatus.SUCCEED ||
+            voltageInitStatus === RunningStatus.FAILED
+                ? dispatch(addVoltageInitNotif())
+                : dispatch(resetVoltageInitNotif());
         }
     }, [
         currentNode,
         dispatch,
-        oneBusShortCircuitAnalysisStatus,
+        loadFlowStatus,
         tabIndex,
         user,
+        securityAnalysisStatus,
+        sensitivityAnalysisStatus,
+        allBusesShortCircuitStatus,
+        oneBusallBusesShortCircuitStatus,
+        dynamicSimulationStatus,
+        voltageInitStatus,
     ]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            (dynamicSimulationStatus === RunningStatus.SUCCEED ||
-                dynamicSimulationStatus === RunningStatus.FAILED)
-        ) {
-            dispatch(addDynamicSimulationNotif());
-        } else {
-            dispatch(resetDynamicSimulationNotif());
-        }
-    }, [currentNode, dispatch, dynamicSimulationStatus, tabIndex, user]);
-
-    useEffect(() => {
-        if (
-            isNodeBuilt(currentNode) &&
-            (voltageInitStatus === RunningStatus.SUCCEED ||
-                voltageInitStatus === RunningStatus.FAILED)
-        ) {
-            dispatch(addVoltageInitNotif());
-        } else {
-            dispatch(resetVoltageInitNotif());
-        }
-    }, [currentNode, dispatch, voltageInitStatus, tabIndex, user]);
 };

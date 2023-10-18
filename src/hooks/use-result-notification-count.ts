@@ -16,8 +16,8 @@ export const useResultNotificationCount = () => {
 
     const sensiNotif = useSelector((state: ReduxState) => state.sensiNotif);
 
-    const shortCircuitNotif = useSelector(
-        (state: ReduxState) => state.shortCircuitNotif
+    const allBusesshortCircuitNotif = useSelector(
+        (state: ReduxState) => state.allBusesShortCircuitNotif
     );
 
     const oneBusShortCircuitNotif = useSelector(
@@ -36,7 +36,7 @@ export const useResultNotificationCount = () => {
         loadflowNotif,
         saNotif,
         sensiNotif,
-        shortCircuitNotif,
+        allBusesshortCircuitNotif,
         oneBusShortCircuitNotif,
         voltageInitNotif,
         dynamicSimulationNotif,
