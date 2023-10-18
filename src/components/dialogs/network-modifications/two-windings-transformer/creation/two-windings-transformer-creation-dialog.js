@@ -737,6 +737,10 @@ const TwoWindingsTransformerCreationDialog = ({
                 TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
             );
         }
+
+        if (tabsInError.length > 0) {
+            setTabIndex(tabsInError[0]);
+        }
         setTabIndexesWithError(tabsInError);
     };
 
