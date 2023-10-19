@@ -107,13 +107,17 @@ export const flattenNmKResultsConstraints = (
 
                 contingencies.forEach(
                     ({ contingency = {}, limitViolation = {} }) => {
+                        console.log({ limitViolation });
+
                         rows.push({
                             contingencyId: contingency.contingencyId,
                             contingencyEquipmentsIds: contingency.elements?.map(
                                 (element) => element.id
                             ),
                             computationStatus: contingency.computationStatus,
-                            limitType: limitViolation.limitType,
+                            limitType: intl.formatMessage({
+                                id: limitViolation.limitType,
+                            }),
                             limitName: limitViolation.limitName,
                             side: limitViolation.side,
                             acceptableDuration:
