@@ -1122,6 +1122,7 @@
     "chooseElement": "Choose element",
     "studyNetworkRecovered": "Study network has been recreated successfully",
     "recreatingNetworkStudy": "Impossible to get the study network. Reconstruction of the network from the initial situation...",
+    "invalidStudyError": "Invalid study : Root situation can not be found",
     "importNewSituation": "Import situation",
     "networkRecreationError": "An error occurred when recreating study network",
     "checkNetworkExistenceError": "An error occurred when checking study network existence",
