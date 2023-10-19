@@ -99,4 +99,7 @@ export const MODIFICATION_TYPES = {
     CONVERTER_STATION_CREATION: {
         type: 'CONVERTER_STATION_CREATION',
     },
+    BY_FORMULA_MODIFICATION: {
+        type: 'BY_FORMULA_MODIFICATION',
+    },
 };

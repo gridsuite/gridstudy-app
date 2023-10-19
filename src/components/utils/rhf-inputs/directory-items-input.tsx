@@ -13,7 +13,7 @@ import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
 import DirectoryItemSelector from '../../directory-item-selector';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { styles } from '../../dialogs/dialogUtils';
 import { useController, useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
@@ -21,11 +21,21 @@ import { ErrorInput } from '@gridsuite/commons-ui';
 import { MidFormError } from '@gridsuite/commons-ui';
 import { RawReadOnlyInput } from './read-only/raw-read-only-input';
 import { NAME } from '../field-constants';
-import { isFieldRequired } from '../utils';
+import { isFieldFromContextRequired, isFieldRequired } from "../utils";
 import Tooltip from '@mui/material/Tooltip';
 import { mergeSx } from '../functions';
 
-const DirectoryItemsInput = ({
+interface DirectoryItemsInputProps {
+    label: string | undefined;
+    name: string;
+    elementType: string;
+    equipmentTypes: string[];
+    itemFilter?: any;
+    titleId?: string;
+    hideErrorMessage?: boolean;
+}
+
+const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
     label,
     name,
     elementType, // Used to specify type of element (Filter, Contingency list, ...)
@@ -47,7 +57,8 @@ const DirectoryItemsInput = ({
         name,
     });
 
-    const { validationSchema, getValues } = useFormContext();
+    const formContext = useFormContext();
+    const { getValues } = formContext;
     const {
         fieldState: { error },
     } = useController({
@@ -91,9 +102,9 @@ const DirectoryItemsInput = ({
                     <FieldLabel
                         label={label}
                         optional={
-                            !isFieldRequired(
+                            !isFieldFromContextRequired(
                                 name,
-                                validationSchema,
+                                formContext,
                                 getValues()
                             )
                         }

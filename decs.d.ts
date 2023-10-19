@@ -69,6 +69,8 @@ declare module '@gridsuite/commons-ui' {
         >
     >;
 
+    export const MidFormError: FunctionComponent;
+
     interface TextFieldWithAdornmentProps extends TextFieldProps {
         // variant already included in TextFieldProps
         value: Input; // we override the default type of TextFieldProps which is unknown
@@ -129,6 +131,13 @@ declare module '@gridsuite/commons-ui' {
         onClick: () => void;
         disabled?: boolean;
     }>;
+
+    interface OverflowableTextProps {
+        text: any;
+        style: any;
+    }
+
+    export const OverflowableText: FunctionComponent<OverflowableTextProps>;
 
     export const FieldLabel: FunctionComponent<{
         label: string;

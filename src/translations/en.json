@@ -422,6 +422,7 @@
 
     "Equipment": "Equipment",
     "Constraint": "Constraint",
+    "EquipmentType": "Equipment type",
 
     "Loads": "Loads",
     "Batteries": "Batteries",
@@ -1148,5 +1149,9 @@
     "studyIndexationError": "Study indexation process has failed.",
     "checkstudyIndexationError": "Study indexation checking has failed.",
     "studyIndexationStatusUnknown": "Study indexation status unknown : \"{status}\".",
-    "waitingStudyIndexation": "Waiting for Study indexation..."
+    "waitingStudyIndexation": "Waiting for Study indexation...",
+
+    "EditedField": "Edited field",
+    "ReferenceFieldOrValue": "Reference field or value",
+    "Operator": "Operator"
 }

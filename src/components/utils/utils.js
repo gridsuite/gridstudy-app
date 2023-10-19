@@ -8,6 +8,14 @@
 import { getIn } from 'yup';
 import { toNumber } from './validation-functions';
 
+// When using type script, you can get the validation schema from useFormContext (because it is a custom prop)
+// this method can be used instead in typescript files
+export const isFieldFromContextRequired = (fieldName, formContext, values) => {
+    // When using type script, you can get the validation schema from useFormContext (because it is a custom prop)
+    const { validationSchema } = formContext;
+    return isFieldRequired(fieldName, validationSchema, values);
+};
+
 export const isFieldRequired = (fieldName, schema, values) => {
     const { schema: fieldSchema, parent: parentValues } =
         getIn(schema, fieldName, values) || {};

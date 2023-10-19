@@ -422,6 +422,7 @@
 
     "Equipment": "Ouvrage",
     "Constraint": "Contrainte",
+    "EquipmentType": "Type d'ouvrage",
 
     "Loads": "Consommations",
     "Batteries": "Batteries",
@@ -1169,5 +1170,9 @@
     "studyIndexationError": "L'indexation de l'étude a échoué.",
     "checkstudyIndexationError": "La récupération de l'état d'indexation de l'étude a échoué.",
     "studyIndexationStatusUnknown": "L'état d'indexation de l'étude est inconnu : \"{status}\".",
-    "waitingStudyIndexation": "En attente de l'indexation de l'étude..."
+    "waitingStudyIndexation": "En attente de l'indexation de l'étude...",
+
+    "EditedField": "Champ modifié",
+    "ReferenceFieldOrValue": "Champ de référence ou valeur",
+    "Operator": "Opérateur"
 }
