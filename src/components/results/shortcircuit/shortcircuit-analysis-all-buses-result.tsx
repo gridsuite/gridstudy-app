@@ -14,15 +14,21 @@ import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shor
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import { useCallback, useState } from 'react';
+import { ComputingType } from 'components/computing-status/computing-type';
 
 export const ShortCircuitAnalysisAllBusesResult = () => {
     const allBusesShortCircuitNotif = useSelector(
         (state: ReduxState) => state.allBusesShortCircuitNotif
     );
 
+    const allBusesShortCircuitAnalysisStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.ALL_BUSES_SHORTCIRCUIT_ANALYSIS]
+    );
+
     const [result, setResult] = useState<SCAFaultResult[]>([]);
 
-    const handleFetchResultPage = useCallback(
+    const updateResult = useCallback(
         (results: SCAFaultResult[] | SCAFeederResult[]) => {
             setResult(results as SCAFaultResult[]);
         },
@@ -32,8 +38,9 @@ export const ShortCircuitAnalysisAllBusesResult = () => {
     return (
         <ShortCircuitAnalysisResult
             analysisType={ShortCircuitAnalysisType.ALL_BUSES}
+            analysisStatus={allBusesShortCircuitAnalysisStatus}
             result={result}
-            handleFetchResultPage={handleFetchResultPage}
+            updateResult={updateResult}
             shortCircuitNotif={allBusesShortCircuitNotif}
         />
     );

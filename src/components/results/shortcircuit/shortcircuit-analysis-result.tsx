@@ -18,7 +18,6 @@ import React, {
     FunctionComponent,
     useCallback,
     useEffect,
-    useRef,
     useState,
 } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
@@ -29,23 +28,31 @@ import {
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { AgGridReact } from 'ag-grid-react';
+import { RunningStatus } from 'components/utils/running-status';
+import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
+import { RESULTS_LOADING_DELAY } from 'components/network/constants';
+import { Box } from '@mui/system';
+import LinearProgress from '@mui/material/LinearProgress';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
+    analysisStatus: RunningStatus;
     result: SCAFaultResult[];
-    handleFetchResultPage: (
-        result: SCAFaultResult[] | SCAFeederResult[]
-    ) => void;
+    updateResult: (result: SCAFaultResult[] | SCAFeederResult[]) => void;
     shortCircuitNotif: boolean;
 }
 
 export const ShortCircuitAnalysisResult: FunctionComponent<
     IShortCircuitAnalysisGlobalResultProps
-> = ({ analysisType, result, handleFetchResultPage, shortCircuitNotif }) => {
+> = ({
+    analysisType,
+    analysisStatus,
+    result,
+    updateResult,
+    shortCircuitNotif,
+}) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-    const gridRef = useRef<AgGridReact>(null);
 
     const [rowsPerPage, setRowsPerPage] = useState<number>(
         DEFAULT_PAGE_COUNT as number
@@ -54,10 +61,17 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const [page, setPage] = useState<number>(0);
     const [filter, setFilter] = useState([]);
     const [sort, setSort] = useState([]);
+    const [isFetching, setIsFetching] = useState<boolean>(false);
+
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
+
+    const updateFilter = useCallback((newFilter: any) => {
+        setFilter(newFilter);
+        setPage(0); // we need to reset the page after updating the filter
+    }, []);
 
     const handleChangePage = useCallback(
         (_: any, newPage: number) => {
@@ -77,7 +91,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     // Effects
     useEffect(() => {
         let active = true; // to manage race condition
-        gridRef.current?.api?.showLoadingOverlay();
+        setIsFetching(true);
+        updateResult([]);
 
         const selector = {
             page,
@@ -86,7 +101,6 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             sort: sort,
         };
 
-        //TODO FM fix bad glitch one bus
         fetchShortCircuitAnalysisPagedResults({
             studyUuid,
             currentNodeUuid: currentNode?.id,
@@ -96,7 +110,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             .then((result: SCAPagedResults) => {
                 if (active) {
                     const { content, totalElements } = result;
-                    handleFetchResultPage(content);
+                    updateResult(content);
                     if (totalElements && content.length) {
                         setCount(totalElements);
                     }
@@ -110,7 +124,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             )
             .finally(() => {
                 if (active) {
-                    gridRef.current?.api?.hideOverlay();
+                    setIsFetching(false);
                 }
             });
 
@@ -124,21 +138,27 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         rowsPerPage,
         snackError,
         analysisType,
-        handleFetchResultPage,
+        updateResult,
         studyUuid,
         currentNode?.id,
         intl,
         shortCircuitNotif,
     ]);
 
+    const openLoader = useOpenLoaderShortWait({
+        isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,
+        delay: RESULTS_LOADING_DELAY,
+    });
+
     return (
         <>
+            <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
             <ShortCircuitAnalysisResultTable
-                gridRef={gridRef}
                 result={result}
                 analysisType={analysisType}
-                setFilter={setFilter}
-                setSort={setSort}
+                updateFilter={updateFilter}
+                updateSort={setSort}
+                isFetching={isFetching}
             />
             <CustomTablePagination
                 rowsPerPageOptions={PAGE_OPTIONS}

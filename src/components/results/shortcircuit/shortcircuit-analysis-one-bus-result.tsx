@@ -17,6 +17,7 @@ import { ReduxState } from 'redux/reducer.type';
 import { useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { ComputingType } from 'components/computing-status/computing-type';
 
 export const ShortCircuitAnalysisOneBusResult = () => {
     const { snackError } = useSnackMessage();
@@ -24,6 +25,11 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     const oneBusShortCircuitNotif = useSelector(
         (state: ReduxState) => state.oneBusShortCircuitNotif
     );
+    const oneBusShortCircuitAnalysisStatus = useSelector(
+        (state: ReduxState) =>
+            state.computingStatus[ComputingType.ONE_BUS_SHORTCIRCUIT_ANALYSIS]
+    );
+
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
@@ -67,7 +73,7 @@ export const ShortCircuitAnalysisOneBusResult = () => {
         setResult(faultWithPagedFeeders);
     }, [faultResult, feederResults]);
 
-    const handleFetchResultPage = useCallback(
+    const updateResult = useCallback(
         (results: SCAFaultResult[] | SCAFeederResult[]) => {
             setFeederResults(results as SCAFeederResult[]);
         },
@@ -77,8 +83,9 @@ export const ShortCircuitAnalysisOneBusResult = () => {
     return (
         <ShortCircuitAnalysisResult
             analysisType={ShortCircuitAnalysisType.ONE_BUS}
+            analysisStatus={oneBusShortCircuitAnalysisStatus}
             result={result}
-            handleFetchResultPage={handleFetchResultPage}
+            updateResult={updateResult}
             shortCircuitNotif={oneBusShortCircuitNotif}
         />
     );

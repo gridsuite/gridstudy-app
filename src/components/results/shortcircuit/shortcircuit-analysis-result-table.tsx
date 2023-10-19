@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, Ref, useCallback, useMemo } from 'react';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, useTheme } from '@mui/material';
 import { unitToKiloUnit } from 'utils/rounding';
@@ -32,14 +32,14 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ReduxState } from '../../../redux/reducer.type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { AgGridReact } from 'ag-grid-react';
+import { DATA_KEY_TO_SORT_KEY } from 'components/results/shortcircuit/shortcircuit-analysis-result-content';
 
 interface ShortCircuitAnalysisResultProps {
-    gridRef: Ref<AgGridReact>;
     result: SCAFaultResult[];
     analysisType: ShortCircuitAnalysisType;
-    setFilter: (filter: any) => void;
-    setSort: (sort: any) => void;
+    updateFilter: (filter: any) => void;
+    updateSort: (sort: any) => void;
+    isFetching: boolean;
 }
 
 type ShortCircuitAnalysisAGGridResult =
@@ -75,18 +75,9 @@ interface ShortCircuitAnalysisResultsFeederResult {
     linkedElementId: string;
 }
 
-interface ColumnConfig {
-    headerName?: string;
-    field: string;
-    isNumeric?: boolean;
-    fractionDigits?: number;
-    isHidden?: boolean;
-    isSortable?: boolean;
-}
-
 const ShortCircuitAnalysisResultTable: FunctionComponent<
     ShortCircuitAnalysisResultProps
-> = ({ gridRef, result, analysisType, setFilter, setSort }) => {
+> = ({ result, analysisType, updateFilter, updateSort, isFetching }) => {
     const intl = useIntl();
     const theme = useTheme();
 
@@ -95,22 +86,24 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             {
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
+                sortable: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
+                sortable: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
                 field: 'connectableId',
                 sortable: analysisType === ShortCircuitAnalysisType.ONE_BUS,
-                comparator: (): number => 0, // we disable the AGGrid sort because we do it in the server
                 filter:
                     analysisType === ShortCircuitAnalysisType.ONE_BUS
                         ? 'agTextColumnFilter'
                         : null,
                 filterParams: {
                     debounceMs: 1200, // we don't want to fetch the back end too fast
+                    maxNumConditions: 1,
                     filterOptions: ['contains', 'startsWith'],
                     textMatcher: (): boolean => true, // we disable the AGGrid filter because we do it in the server
                 },
@@ -120,14 +113,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 field: 'current',
                 fractionDigits: 1,
                 numeric: true,
-                sortable: analysisType === ShortCircuitAnalysisType.ONE_BUS,
-                comparator: (): number => 0, // we disable the AGGrid sort because we do it in the server
+                sortable: true,
                 filter:
                     analysisType === ShortCircuitAnalysisType.ONE_BUS
                         ? 'agNumberColumnFilter'
                         : null,
                 filterParams: {
                     debounceMs: 1200, // we don't want to fetch the back end too fast
+                    maxNumConditions: 1,
                     filterOptions: [
                         'notEqual',
                         'lessThanOrEqual',
@@ -139,36 +132,42 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
+                sortable: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
                 fractionDigits: 1,
                 numeric: true,
+                sortable: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
                 fractionDigits: 1,
                 numeric: true,
+                sortable: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
                 fractionDigits: 1,
                 numeric: true,
+                sortable: true,
             },
             {
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
                 field: 'deltaCurrentIpMin',
                 fractionDigits: 1,
                 numeric: true,
+                sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
             },
             {
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
                 field: 'deltaCurrentIpMax',
                 fractionDigits: 1,
                 numeric: true,
+                sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
             },
             {
                 field: 'linkedElementId',
@@ -311,6 +310,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             resizable: true,
             flex: 1,
             cellRenderer: DefaultCellRenderer,
+            comparator: (): number => 0, // we disable the AGGrid sort because we do it in the server
         }),
         []
     );
@@ -351,9 +351,9 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 })
                 .flat();
 
-            setFilter(formattedFilter);
+            updateFilter(formattedFilter);
         },
-        [setFilter]
+        [updateFilter]
     );
 
     const onSortChanged = useCallback(
@@ -372,12 +372,15 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                     return a.sortIndex - b.sortIndex;
                 })
                 .map(function (s) {
-                    return { colId: s.colId, sort: s.sort };
+                    return {
+                        colId: DATA_KEY_TO_SORT_KEY[s.colId],
+                        sort: s.sort,
+                    };
                 });
 
-            setSort(columnStates);
+            updateSort(columnStates);
         },
-        [setSort]
+        [updateSort]
     );
 
     const handlePostSortRows = useCallback((params: PostSortRowsParams) => {
@@ -392,14 +395,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     const message = getNoRowsMessage(
         messages,
         rows,
-        shortCircuitAnalysisStatus
+        shortCircuitAnalysisStatus,
+        !isFetching
     );
     const rowsToShow = getRows(rows, shortCircuitAnalysisStatus);
 
     return (
         <Box sx={{ flexGrow: 1 }}>
             <CustomAGGrid
-                ref={gridRef}
                 rowData={rowsToShow}
                 defaultColDef={defaultColDef}
                 onGridReady={onGridReady}
