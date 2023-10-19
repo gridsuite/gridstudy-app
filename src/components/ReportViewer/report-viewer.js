@@ -16,7 +16,7 @@ import TreeView from '@mui/lab/TreeView';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ReportItem from './report-item';
-import LogReport from './log-report';
+import LogReport, { LogReportType } from './log-report';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
@@ -67,7 +67,7 @@ export default function ReportViewer({
      */
     const createReporterItem = useCallback(
         (logReport) => {
-            reportTreeData.current[logReport.getId()] = logReport;
+            reportTreeData.current[logReport.getNodeId()] = logReport;
             if (logReport.getSubReports().length > maxSubReports) {
                 console.warn(
                     'The number (%s) being greater than %s only the first %s subreports will be displayed',
@@ -80,9 +80,9 @@ export default function ReportViewer({
                 <ReportItem
                     labelText={logReport.getTitle()}
                     labelIconColor={logReport.getHighestSeverity().colorName}
-                    key={logReport.getId().toString()}
+                    key={logReport.getNodeId().toString()}
                     sx={styles.treeItem}
-                    nodeId={logReport.getId().toString()}
+                    nodeId={logReport.getNodeId().toString()}
                 >
                     {logReport
                         .getSubReports()
@@ -97,7 +97,6 @@ export default function ReportViewer({
     /**
      * Check the json data, and possibly create an extra top-level reporter called 'Logs' for the GlobalNode
      * @param reportData incoming Json data
-     * @returns a json data
      */
     const makeReport = (reportData) => {
         if (!Array.isArray(reportData)) {
@@ -118,27 +117,42 @@ export default function ReportViewer({
 
     const getFetchPromise = useCallback(
         (nodeId, severityList) => {
-            if (reportTreeData.current[nodeId].isModificationNode()) {
+            if (
+                reportTreeData.current[nodeId].getType() ===
+                LogReportType.NodeReport
+            ) {
                 return nodeElementsPromise(
-                    reportTreeData.current[nodeId].getKey(), // gets nodeId
-                    reportTreeData.current[nodeId].getNodeReportId(),
+                    reportTreeData.current[nodeId].getKey(),
+                    reportTreeData.current[nodeId].getId(),
                     severityList
                 );
-            } else if (reportTreeData.current[nodeId].isGlobalLog()) {
+            } else if (
+                reportTreeData.current[nodeId].getType() ===
+                LogReportType.GlobalReport
+            ) {
                 return allLogsElementsPromise(severityList);
             } else {
+                // SubReport
                 return reporterElementsPromise(nodeId, severityList);
             }
         },
         [nodeElementsPromise, allLogsElementsPromise, reporterElementsPromise]
     );
 
+    const buildLogReport = useCallback((jsonData) => {
+        return jsonData.taskKey === GLOBAL_NODE_TASK_KEY
+            ? new LogReport(LogReportType.GlobalReport, jsonData)
+            : new LogReport(LogReportType.NodeReport, jsonData);
+    }, []);
+
     const refreshNode = useCallback(
         (nodeId, severityFilter) => {
             if (
-                reportTreeData.current[nodeId].isModificationNode() &&
-                !reportTreeData.current[nodeId].getNodeReportId()
+                reportTreeData.current[nodeId].getType() ===
+                    LogReportType.NodeReport &&
+                !reportTreeData.current[nodeId].getId()
             ) {
+                // can happen where no logs / no direct access => cannot fetch data
                 return;
             }
 
@@ -148,15 +162,16 @@ export default function ReportViewer({
                     severityList.push(severity);
                 }
             }
+
             // use a timout to avoid having a loader in case of fast promise return (avoid blink)
             const timer = setTimeout(() => {
                 setWaitingLoadReport(true);
             }, 700);
+
             Promise.resolve(getFetchPromise(nodeId, severityList))
                 .then((fetchedData) => {
                     clearTimeout(timer);
-                    let reporterData = makeReport(fetchedData);
-                    let logReporter = new LogReport(reporterData);
+                    const logReporter = buildLogReport(makeReport(fetchedData));
                     setSelectedNode(nodeId);
                     setLogs(logReporter.getAllLogs());
                     setHighlightedReportId(null);
@@ -172,20 +187,25 @@ export default function ReportViewer({
                     setWaitingLoadReport(false);
                 });
         },
-        [snackError, getFetchPromise]
+        [snackError, getFetchPromise, buildLogReport]
     );
 
     useEffect(() => {
-        const rootReportLoading = rootReport.current === null;
-        rootReport.current = new LogReport(jsonReportTree);
-        let rootId = rootReport.current.getId().toString();
-        treeView.current = createReporterItem(rootReport.current);
-        setSelectedNode(rootId);
-        setExpandedNodes([rootId]);
-        if (rootReportLoading && visible) {
+        if (visible && rootReport.current === null) {
+            rootReport.current = buildLogReport(jsonReportTree);
+            let rootId = rootReport.current.getNodeId().toString();
+            treeView.current = createReporterItem(rootReport.current);
+            setSelectedNode(rootId);
+            setExpandedNodes([rootId]);
             refreshNode(rootId, LogReportItem.getDefaultSeverityFilter());
         }
-    }, [jsonReportTree, createReporterItem, refreshNode, visible]);
+    }, [
+        jsonReportTree,
+        createReporterItem,
+        refreshNode,
+        visible,
+        buildLogReport,
+    ]);
 
     const handleToggleNode = (event, nodeIds) => {
         event.persist();

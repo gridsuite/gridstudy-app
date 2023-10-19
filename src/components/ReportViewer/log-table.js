@@ -8,7 +8,6 @@ import React, { memo, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import TableCell from '@mui/material/TableCell';
 import { styled } from '@mui/system';
-//import MuiVirtualizedTable from '../MuiVirtualizedTable';
 import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
 import { FilterButton } from './filter-button';

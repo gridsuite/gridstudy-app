@@ -6,60 +6,62 @@
  */
 
 import LogReportItem from './log-report-item';
-
 import { v4 as uuid4 } from 'uuid';
 
-const LogReportType = {
-    GlobalReport: 'global',
-    NodeReport: 'node',
+/**
+ * A LogReport is a tree that can contain 3 kinds of nodes:
+ * - GlobalReport : an optional top-level node that contains only the NodeReport children
+ * - NodeReport : contain a root node report having N SubReport children
+ * - SubReport : contain other SubReport children, and can have some reports (log messages displayed in the right pane)
+ */
+export const LogReportType = {
+    GlobalReport: 'global report',
+    NodeReport: 'node report',
     SubReport: 'reporter',
 };
 
 export default class LogReport {
-    constructor(jsonReporter, parentReportId) {
-        this.reportId = undefined;
-        if (jsonReporter?.taskValues?.id?.type === 'ID') {
-            // Reporter case
-            // we store the reporterId for direct access to its logs
-            this.id = jsonReporter.taskValues.id.value;
-            this.isGlobal = false;
-            this.isNode = false;
+    constructor(reportType, jsonReporter, parentReportId) {
+        this.id = undefined;
+        this.type = reportType;
+        if (reportType === LogReportType.GlobalReport) {
+            // no ID for this kind of report, we have to create one
+            this.nodeId = uuid4();
+        } else if (reportType === LogReportType.NodeReport) {
+            this.id = jsonReporter?.taskValues?.id?.value; // not unique for all nodes
+            this.nodeId = jsonReporter.taskKey; // then use taskkey as unique nodeId
         } else {
-            // Node (or global all-nodes) case
-            this.id = uuid4();
-            this.isGlobal = jsonReporter?.taskValues?.globalReport?.value;
-            this.isNode = !this.isGlobal;
-            if (this.isNode) {
-                // For each Modification Node, we should get the reportId (if some logs are present)
-                this.reportId = jsonReporter?.taskValues?.reportId?.value;
-            }
+            this.id = jsonReporter?.taskValues?.id?.value; // unique for all subreports
+            this.nodeId = this.id;
         }
         this.key = jsonReporter.taskKey;
         this.title = LogReportItem.resolveTemplateMessage(
-            jsonReporter.defaultName ? jsonReporter.defaultName : this.id,
+            jsonReporter.defaultName,
             jsonReporter.taskValues
         );
         this.subReports = [];
         this.logs = [];
         this.parentReportId = parentReportId;
         this.severity = this.initSeverity(jsonReporter);
-        this.init(jsonReporter);
+        this.init(reportType, jsonReporter);
     }
 
+    /**
+     * A unique ID to identify a node in the tree
+     */
+    getNodeId() {
+        return this.nodeId;
+    }
+
+    /**
+     * An ID provided by the back to be used to fetch reports from the back
+     */
     getId() {
         return this.id;
     }
 
-    isGlobalLog() {
-        return this.isGlobal;
-    }
-
-    isModificationNode() {
-        return this.isNode;
-    }
-
-    getNodeReportId() {
-        return this.isModificationNode() ? this.reportId : undefined;
+    getType() {
+        return this.type;
     }
 
     getTitle() {
@@ -84,12 +86,16 @@ export default class LogReport {
         );
     }
 
-    init(jsonReporter) {
+    init(reportType, jsonReporter) {
+        const childType =
+            reportType === LogReportType.GlobalReport
+                ? LogReportType.NodeReport
+                : LogReportType.SubReport;
         jsonReporter.subReporters.map((value) =>
-            this.subReports.push(new LogReport(value, this.id))
+            this.subReports.push(new LogReport(childType, value, this.nodeId))
         );
         jsonReporter.reports.map((value) =>
-            this.logs.push(new LogReportItem(value, this.id))
+            this.logs.push(new LogReportItem(value, this.nodeId))
         );
     }
 
@@ -109,11 +115,11 @@ export default class LogReport {
         return severity;
     }
 
-    getHighestSeverity(currentSeverity = LogReportItem.SEVERITY.UNKNOWN) {
+    getHighestSeverity() {
         let reduceFct = (p, c) => (p.level < c.level ? c : p);
         let highestSeverity = this.severity;
         return this.getSubReports()
-            .map((r) => r.getHighestSeverity(highestSeverity))
+            .map((r) => r.getHighestSeverity())
             .reduce(reduceFct, highestSeverity);
     }
 }
