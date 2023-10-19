@@ -18,7 +18,7 @@ import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabulareModification } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
-import { TABULAR_MODIFICATION_TYPES } from './modification-fields';
+import { TABULAR_MODIFICATION_TYPES } from './tabular-modification-utils';
 import { toModificationOperation } from 'components/utils/utils';
 
 const formSchema = yup

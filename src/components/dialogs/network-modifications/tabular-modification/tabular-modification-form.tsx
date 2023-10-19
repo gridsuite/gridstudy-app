@@ -10,27 +10,31 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
-import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
+import { gridItem } from 'components/dialogs/dialogUtils';
 import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import { Alert, Box } from '@mui/material';
-import { TABULAR_MODIFICATION_FIELDS } from './modification-fields';
+import {
+    Modification,
+    TABULAR_MODIFICATION_FIELDS,
+} from './tabular-modification-utils';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import { ALLOWED_KEYS } from '../voltage-init-modification/voltage-init-modification-dialog';
 import Papa from 'papaparse';
 
-const richTypeEquals = (a, b) => a === b;
+const richTypeEquals = (a: string, b: string) => a === b;
 
 const TabularModificationForm = () => {
     const intl = useIntl();
 
     const { setValue } = useFormContext();
 
-    const richTypeLabel = (rt) => {
+    const richTypeLabel = (rt: string) => {
         return intl.formatMessage({ id: rt });
     };
+
     const watchType = useWatch({
         name: TYPE,
     });
@@ -45,14 +49,15 @@ const TabularModificationForm = () => {
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
         label: 'import CSV',
         header: csvColumns,
+        maxTapNumber: undefined,
         disabled: !csvColumns,
         resetTrigger: typeChanged,
     });
 
     const postProcessFile = useCallback(
-        (fileData) => {
-            fileData = fileData.map((row) => {
-                let modification = {};
+        (fileData: any) => {
+            fileData = fileData.map((row: any) => {
+                let modification: Modification = {};
                 Object.getOwnPropertyNames(row).forEach((key) => {
                     modification[key] = row[key];
                 });
@@ -71,7 +76,7 @@ const TabularModificationForm = () => {
         if (selectedFileError) {
             setValue(MODIFICATIONS_TABLE, []);
         } else if (selectedFile) {
-            Papa.parse(selectedFile, {
+            Papa.parse(selectedFile as any, {
                 header: true,
                 skipEmptyLines: true,
                 complete: function (results) {
@@ -111,13 +116,14 @@ const TabularModificationForm = () => {
             onChangeCallback={handleChange}
             getOptionLabel={richTypeLabel}
             size={'small'}
-            formProps={filledTextField}
+            formProps={{ variant: 'filled' }}
         />
     );
 
-    const suppressKeyEvent = (params) => {
+    const suppressKeyEvent = (params: any) => {
         return !ALLOWED_KEYS.includes(params.event.key);
     };
+
     const defaultColDef = useMemo(
         () => ({
             filter: true,
@@ -127,7 +133,7 @@ const TabularModificationForm = () => {
             wrapHeaderText: true,
             autoHeaderHeight: true,
             cellRenderer: DefaultCellRenderer,
-            suppressKeyboardEvent: (params) => suppressKeyEvent(params),
+            suppressKeyboardEvent: (params: any) => suppressKeyEvent(params),
         }),
         []
     );

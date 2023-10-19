@@ -34,5 +34,7 @@
     "network_modifications/modifications": "Mise à jour de la liste des modifications en cours ...",
     "network_modifications/GENERATION_DISPATCH": "Démarrage de groupes {computedLabel}",
     "network_modifications/VOLTAGE_INIT_MODIFICATION": "Initialisation du plan de tension {computedLabel}",
-    "network_modifications/TABULAR_MODIFICATION": "Modification tabulaire"
+    "network_modifications/TABULAR_MODIFICATION": "Modification tabulaire - {computedLabel}",
+    "network_modifications/tabular/GENERATOR_MODIFICATION": "modifications de générateurs",
+    "network_modifications/tabular/LOAD_MODIFICATION": "modifications de consommations"
 }
