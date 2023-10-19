@@ -17,7 +17,7 @@ import { useSelector } from 'react-redux';
 import { notificationType } from '../utils/NotificationType';
 import { fetchDirectoryContent, fetchRootFolders } from '../services/directory';
 import { fetchElementsMetadata } from '../services/explore';
-import { isObjectEmpty } from "utils/functions";
+import { isObjectEmpty } from 'utils/functions';
 
 const styles = {
     icon: (theme) => ({
