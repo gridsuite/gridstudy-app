@@ -226,12 +226,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         [theme.selectedRow.background]
     );
 
-    const getCurrent = (faultResult: SCAFaultResult | SCAFeederResult) => {
+    const getCurrent = (x: SCAFaultResult | SCAFeederResult) => {
         let current = NaN;
         if (analysisType === ShortCircuitAnalysisType.ALL_BUSES) {
-            current = faultResult.current;
+            current = x.current;
         } else if (analysisType === ShortCircuitAnalysisType.ONE_BUS) {
-            current = faultResult.positiveMagnitude;
+            current = x.positiveMagnitude;
         }
         return current;
     };

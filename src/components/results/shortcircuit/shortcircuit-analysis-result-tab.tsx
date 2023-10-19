@@ -9,8 +9,8 @@ import { Tab, Tabs } from '@mui/material';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
-    ResultsTabsLevel,
     ResultTabIndexRedirection,
+    ResultsTabsLevel,
     useResultsTab,
 } from '../use-results-tab';
 import { FormattedMessage } from 'react-intl';

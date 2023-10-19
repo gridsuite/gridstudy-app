@@ -14,6 +14,7 @@ import {
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
 import { ReduxState } from 'redux/reducer.type';
+import { RunningStatus } from 'components/utils/running-status';
 import React, {
     FunctionComponent,
     useCallback,
@@ -22,17 +23,15 @@ import React, {
 } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
-    DEFAULT_PAGE_COUNT,
     PAGE_OPTIONS,
+    DEFAULT_PAGE_COUNT,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { RunningStatus } from 'components/utils/running-status';
-import { useOpenLoaderShortWait } from 'components/dialogs/commons/handle-loader';
-import { RESULTS_LOADING_DELAY } from 'components/network/constants';
-import { Box } from '@mui/system';
-import LinearProgress from '@mui/material/LinearProgress';
+import { Box, LinearProgress } from '@mui/material';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
