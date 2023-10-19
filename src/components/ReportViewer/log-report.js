@@ -9,6 +9,12 @@ import LogReportItem from './log-report-item';
 
 import { v4 as uuid4 } from 'uuid';
 
+const LogReportType = {
+    GlobalReport: 'global',
+    NodeReport: 'node',
+    SubReport: 'reporter',
+};
+
 export default class LogReport {
     constructor(jsonReporter, parentReportId) {
         this.reportId = undefined;

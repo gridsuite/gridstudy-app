@@ -23,6 +23,7 @@ import {
     fetchSingleNodeReportElements,
 } from '../services/study';
 import { Box } from '@mui/system';
+import { GLOBAL_NODE_TASK_KEY } from './ReportViewer/report-viewer';
 
 const styles = {
     div: {
@@ -111,8 +112,8 @@ export const ReportViewerTab = ({
                     return setNodeName(reportData[0]);
                 } else {
                     return {
-                        taskKey: 'Logs',
-                        defaultName: 'Logs',
+                        taskKey: GLOBAL_NODE_TASK_KEY,
+                        defaultName: GLOBAL_NODE_TASK_KEY,
                         taskValues: {
                             globalReport: {
                                 value: true,
@@ -227,7 +228,6 @@ export const ReportViewerTab = ({
                     <ReportViewer
                         jsonReportTree={report}
                         visible={visible && !disabled}
-                        makeSingleReport={makeSingleReport}
                         reporterElementsPromise={reporterElementsPromise}
                         nodeElementsPromise={nodeElementsPromise}
                         allLogsElementsPromise={allLogsElementsPromise}

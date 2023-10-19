@@ -60,6 +60,9 @@ export default class LogReportItem {
     }
 
     static resolveTemplateMessage(templateMessage, templateValues) {
+        if (!templateMessage || !templateValues) {
+            return '';
+        }
         const templateVars = {};
         for (const [key, value] of Object.entries(templateValues)) {
             templateVars[key] = value.value;

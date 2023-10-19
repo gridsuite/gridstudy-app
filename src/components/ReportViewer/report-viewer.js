@@ -25,6 +25,7 @@ import WaitingLoader from '../utils/waiting-loader';
 import LogReportItem from './log-report-item';
 
 const MAX_SUB_REPORTS = 500;
+export const GLOBAL_NODE_TASK_KEY = 'Logs';
 
 const styles = {
     treeView: {
@@ -39,7 +40,6 @@ const styles = {
 export default function ReportViewer({
     jsonReportTree,
     visible,
-    makeSingleReport,
     reporterElementsPromise,
     nodeElementsPromise,
     allLogsElementsPromise,
@@ -54,16 +54,20 @@ export default function ReportViewer({
     const [highlightedReportId, setHighlightedReportId] = useState();
 
     const rootReport = useRef(null);
-    const allReports = useRef({});
+    const reportTreeData = useRef({});
     const treeView = useRef(null);
 
     const [selectedSeverity, setSelectedSeverity] = useState(
         LogReportItem.getDefaultSeverityFilter()
     );
 
+    /**
+     * Build the tree view (left pane) creating all ReportItem from json data
+     * @type {Function}
+     */
     const createReporterItem = useCallback(
         (logReport) => {
-            allReports.current[logReport.getId()] = logReport;
+            reportTreeData.current[logReport.getId()] = logReport;
             if (logReport.getSubReports().length > maxSubReports) {
                 console.warn(
                     'The number (%s) being greater than %s only the first %s subreports will be displayed',
@@ -90,15 +94,37 @@ export default function ReportViewer({
         [maxSubReports]
     );
 
+    /**
+     * Check the json data, and possibly create an extra top-level reporter called 'Logs' for the GlobalNode
+     * @param reportData incoming Json data
+     * @returns a json data
+     */
+    const makeReport = (reportData) => {
+        if (!Array.isArray(reportData)) {
+            return reportData;
+        } else {
+            if (reportData.length === 1) {
+                return reportData[0];
+            } else {
+                return {
+                    taskKey: GLOBAL_NODE_TASK_KEY,
+                    defaultName: GLOBAL_NODE_TASK_KEY,
+                    reports: [],
+                    subReporters: reportData,
+                };
+            }
+        }
+    };
+
     const getFetchPromise = useCallback(
         (nodeId, severityList) => {
-            if (allReports.current[nodeId].isModificationNode()) {
+            if (reportTreeData.current[nodeId].isModificationNode()) {
                 return nodeElementsPromise(
-                    allReports.current[nodeId].getKey(), // gets nodeId
-                    allReports.current[nodeId].getNodeReportId(),
+                    reportTreeData.current[nodeId].getKey(), // gets nodeId
+                    reportTreeData.current[nodeId].getNodeReportId(),
                     severityList
                 );
-            } else if (allReports.current[nodeId].isGlobalLog()) {
+            } else if (reportTreeData.current[nodeId].isGlobalLog()) {
                 return allLogsElementsPromise(severityList);
             } else {
                 return reporterElementsPromise(nodeId, severityList);
@@ -110,8 +136,8 @@ export default function ReportViewer({
     const refreshNode = useCallback(
         (nodeId, severityFilter) => {
             if (
-                allReports.current[nodeId].isModificationNode() &&
-                !allReports.current[nodeId].getNodeReportId()
+                reportTreeData.current[nodeId].isModificationNode() &&
+                !reportTreeData.current[nodeId].getNodeReportId()
             ) {
                 return;
             }
@@ -129,7 +155,7 @@ export default function ReportViewer({
             Promise.resolve(getFetchPromise(nodeId, severityList))
                 .then((fetchedData) => {
                     clearTimeout(timer);
-                    let reporterData = makeSingleReport(fetchedData);
+                    let reporterData = makeReport(fetchedData);
                     let logReporter = new LogReport(reporterData);
                     setSelectedNode(nodeId);
                     setLogs(logReporter.getAllLogs());
@@ -146,7 +172,7 @@ export default function ReportViewer({
                     setWaitingLoadReport(false);
                 });
         },
-        [snackError, makeSingleReport, getFetchPromise]
+        [snackError, getFetchPromise]
     );
 
     useEffect(() => {
@@ -196,9 +222,9 @@ export default function ReportViewer({
         setExpandedNodes((previouslyExpandedNodes) => {
             let nodesToExpand = [];
             let reportId = data.reportId;
-            while (allReports.current[reportId]?.parentReportId) {
+            while (reportTreeData.current[reportId]?.parentReportId) {
                 let parentReportId =
-                    allReports.current[reportId].parentReportId;
+                    reportTreeData.current[reportId].parentReportId;
                 if (!previouslyExpandedNodes.includes(parentReportId)) {
                     nodesToExpand.push(parentReportId);
                 }
