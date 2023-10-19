@@ -86,6 +86,7 @@ import {
     NETWORK_MODIFICATION_HANDLE_SUBTREE,
     SELECTION_FOR_COPY,
     LIMIT_REDUCTION,
+    LIMIT_REDUCTION_MODIFIED,
     LOAD_EQUIPMENTS,
     UPDATE_EQUIPMENTS,
     DELETE_EQUIPMENT,
@@ -98,6 +99,7 @@ import {
     SET_COMPUTATION_RUNNING,
     MAP_DATA_LOADING,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+    SET_EVENT_SCENARIO_DRAWER_OPEN,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -228,6 +230,7 @@ const initialState = {
     allReorderedTableDefinitionIndexes: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
+    isEventScenarioDrawerOpen: false,
     centerOnSubstation: null,
     notificationIdList: [],
     isModificationsInProgress: false,
@@ -245,6 +248,7 @@ const initialState = {
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
     ...paramsInitialState,
+    limitReductionModified: false,
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -494,6 +498,10 @@ export const reducer = createReducer(initialState, {
         state[PARAM_LIMIT_REDUCTION] = action[PARAM_LIMIT_REDUCTION];
     },
 
+    [LIMIT_REDUCTION_MODIFIED]: (state, action) => {
+        state.limitReductionModified = action.limitReductionModified;
+    },
+
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
         state[PARAM_LINE_FLOW_ALERT_THRESHOLD] =
             action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
@@ -662,6 +670,25 @@ export const reducer = createReducer(initialState, {
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
+
+        // exclusively open between two components
+        if (
+            action.isModificationsDrawerOpen &&
+            state.isEventScenarioDrawerOpen
+        ) {
+            state.isEventScenarioDrawerOpen = !state.isEventScenarioDrawerOpen;
+        }
+    },
+    [SET_EVENT_SCENARIO_DRAWER_OPEN]: (state, action) => {
+        state.isEventScenarioDrawerOpen = action.isEventScenarioDrawerOpen;
+
+        // exclusively open between two components
+        if (
+            action.isEventScenarioDrawerOpen &&
+            state.isModificationsDrawerOpen
+        ) {
+            state.isModificationsDrawerOpen = !state.isModificationsDrawerOpen;
+        }
     },
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;
