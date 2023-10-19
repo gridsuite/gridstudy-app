@@ -53,8 +53,8 @@ import {
 } from './utils/equipment-types';
 import { fetchAppsAndUrls } from '../services/utils';
 import { RunButtonContainer } from './run-button-container';
-import { useResultNotificationCount } from '../hooks/use-result-notification-count';
-import { useLaunchNotification } from '../hooks/use-launch-notification';
+import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
+import { useComputationNotification } from '../hooks/use-computation-notification';
 
 const styles = {
     tabs: {
@@ -173,7 +173,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
-    const notificationsCount = useResultNotificationCount();
+    const notificationsCount = useComputationNotificationCount();
 
     const theme = useSelector((state) => state[PARAM_THEME]);
 
@@ -195,7 +195,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [searchMatchingEquipments, equipmentsFound] =
         useSearchMatchingEquipments(studyUuid, currentNode?.id);
 
-    useLaunchNotification(tabIndex);
+    useComputationNotification();
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 

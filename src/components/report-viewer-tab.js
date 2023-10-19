@@ -17,7 +17,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { fetchReport } from '../services/study';
 import { Box } from '@mui/system';
-import { useResultNotificationCount } from '../hooks/use-result-notification-count';
+import { useComputationNotificationCount } from '../hooks/use-computation-notification-count';
 
 const styles = {
     div: {
@@ -49,7 +49,7 @@ export const ReportViewerTab = ({
         (state) => state.networkModificationTreeModel
     );
 
-    const notificationsCount = useResultNotificationCount();
+    const notificationsCount = useComputationNotificationCount();
 
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);

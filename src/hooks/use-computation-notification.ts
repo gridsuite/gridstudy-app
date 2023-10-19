@@ -27,7 +27,7 @@ import {
     resetVoltageInitNotif,
 } from '../redux/actions';
 
-export const useLaunchNotification = (tabIndex: number) => {
+export const useComputationNotification = () => {
     const dispatch = useDispatch();
     const user = useSelector((state: ReduxState) => state.user);
 
@@ -69,44 +69,48 @@ export const useLaunchNotification = (tabIndex: number) => {
     );
 
     useEffect(() => {
-        if (isNodeBuilt(currentNode)) {
-            loadFlowStatus === RunningStatus.SUCCEED ||
-            loadFlowStatus === RunningStatus.FAILED
-                ? dispatch(addLoadflowNotif())
-                : dispatch(resetLoadflowNotif());
+        isNodeBuilt(currentNode) &&
+        (loadFlowStatus === RunningStatus.SUCCEED ||
+            loadFlowStatus === RunningStatus.FAILED)
+            ? dispatch(addLoadflowNotif())
+            : dispatch(resetLoadflowNotif());
 
-            securityAnalysisStatus === RunningStatus.SUCCEED ||
-            securityAnalysisStatus === RunningStatus.FAILED
-                ? dispatch(addSANotif())
-                : dispatch(resetSANotif());
+        isNodeBuilt(currentNode) &&
+        (securityAnalysisStatus === RunningStatus.SUCCEED ||
+            securityAnalysisStatus === RunningStatus.FAILED)
+            ? dispatch(addSANotif())
+            : dispatch(resetSANotif());
 
-            sensitivityAnalysisStatus === RunningStatus.SUCCEED
-                ? dispatch(addSensiNotif())
-                : dispatch(resetSensiNotif());
+        isNodeBuilt(currentNode) &&
+        sensitivityAnalysisStatus === RunningStatus.SUCCEED
+            ? dispatch(addSensiNotif())
+            : dispatch(resetSensiNotif());
 
-            allBusesShortCircuitStatus === RunningStatus.SUCCEED
-                ? dispatch(addAllBusesShortCircuitNotif())
-                : dispatch(resetAllBusesShortCircuitNotif());
+        isNodeBuilt(currentNode) &&
+        allBusesShortCircuitStatus === RunningStatus.SUCCEED
+            ? dispatch(addAllBusesShortCircuitNotif())
+            : dispatch(resetAllBusesShortCircuitNotif());
 
-            oneBusallBusesShortCircuitStatus === RunningStatus.SUCCEED
-                ? dispatch(addOneBusShortCircuitNotif())
-                : dispatch(resetOneBusShortCircuitNotif());
+        isNodeBuilt(currentNode) &&
+        oneBusallBusesShortCircuitStatus === RunningStatus.SUCCEED
+            ? dispatch(addOneBusShortCircuitNotif())
+            : dispatch(resetOneBusShortCircuitNotif());
 
-            dynamicSimulationStatus === RunningStatus.SUCCEED ||
-            dynamicSimulationStatus === RunningStatus.FAILED
-                ? dispatch(addDynamicSimulationNotif())
-                : dispatch(resetDynamicSimulationNotif());
+        isNodeBuilt(currentNode) &&
+        (dynamicSimulationStatus === RunningStatus.SUCCEED ||
+            dynamicSimulationStatus === RunningStatus.FAILED)
+            ? dispatch(addDynamicSimulationNotif())
+            : dispatch(resetDynamicSimulationNotif());
 
-            voltageInitStatus === RunningStatus.SUCCEED ||
-            voltageInitStatus === RunningStatus.FAILED
-                ? dispatch(addVoltageInitNotif())
-                : dispatch(resetVoltageInitNotif());
-        }
+        isNodeBuilt(currentNode) &&
+        (voltageInitStatus === RunningStatus.SUCCEED ||
+            voltageInitStatus === RunningStatus.FAILED)
+            ? dispatch(addVoltageInitNotif())
+            : dispatch(resetVoltageInitNotif());
     }, [
         currentNode,
         dispatch,
         loadFlowStatus,
-        tabIndex,
         user,
         securityAnalysisStatus,
         sensitivityAnalysisStatus,

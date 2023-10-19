@@ -7,7 +7,7 @@
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../redux/reducer.type';
 
-export const useResultNotificationCount = () => {
+export const useComputationNotificationCount = () => {
     const loadflowNotif = useSelector(
         (state: ReduxState) => state.loadflowNotif
     );
@@ -31,6 +31,16 @@ export const useResultNotificationCount = () => {
     const dynamicSimulationNotif = useSelector(
         (state: ReduxState) => state.dynamicSimulationNotif
     );
+
+    console.log('MMT count saNotif', saNotif);
+    console.log('MMT count sensiNotif', sensiNotif);
+    console.log(
+        'MMT count allBusesshortCircuitNotif',
+        allBusesshortCircuitNotif
+    );
+    console.log('MMT count oneBusShortCircuitNotif', oneBusShortCircuitNotif);
+    console.log('MMT count voltageInitNotif', voltageInitNotif);
+    console.log('MMT count dynamicSimulationNotif', dynamicSimulationNotif);
 
     return [
         loadflowNotif,
