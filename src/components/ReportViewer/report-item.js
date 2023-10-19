@@ -15,6 +15,8 @@ import ReportTreeViewContext from './report-tree-view-context';
 import CustomTreeItem from './custom-tree-item';
 import { alpha } from '@mui/system';
 
+// WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
+
 const styles = {
     root: (theme) => ({
         color: theme.palette.text.secondary,

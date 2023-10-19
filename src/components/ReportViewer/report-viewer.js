@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import React, {
     useCallback,
     useEffect,
@@ -23,6 +22,8 @@ import ReportTreeViewContext from './report-tree-view-context';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import WaitingLoader from '../utils/waiting-loader';
 import LogReportItem from './log-report-item';
+
+// WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
 const MAX_SUB_REPORTS = 500;
 export const GLOBAL_NODE_TASK_KEY = 'Logs';

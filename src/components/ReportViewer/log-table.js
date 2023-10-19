@@ -12,6 +12,8 @@ import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
 import { FilterButton } from './filter-button';
 
+// WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
+
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
 const styles = {

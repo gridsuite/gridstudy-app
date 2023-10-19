@@ -10,6 +10,8 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { MultiSelectList } from './multi-select-list';
 import LogReportItem from './log-report-item';
 
+// WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
+
 const styles = {
     notificationDot: {
         height: '6px',

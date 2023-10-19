@@ -7,6 +7,8 @@
 
 import { createContext } from 'react';
 
+// WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
+
 const ReportTreeViewContext = createContext({});
 
 if (process.env.NODE_ENV !== 'production') {

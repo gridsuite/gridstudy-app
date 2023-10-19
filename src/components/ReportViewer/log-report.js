@@ -8,6 +8,8 @@
 import LogReportItem from './log-report-item';
 import { v4 as uuid4 } from 'uuid';
 
+// WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
+
 /**
  * A LogReport is a tree that can contain 3 kinds of nodes:
  * - GlobalReport : an optional top-level node that contains only the NodeReport children
