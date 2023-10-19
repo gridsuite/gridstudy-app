@@ -27,7 +27,7 @@ import {
 } from "../../../utils/field-constants";
 
 const formSchema = yup.object().shape({
-    [EQUIPMENT_TYPE_FIELD]: yup.string().resolver(),
+    [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
     [FORMULAS]: yup.array().of(yup.object().shape({
         [FILTERS]: yup
           .array()

@@ -174,6 +174,9 @@ const CreateParameterDialog: React.FunctionComponent<CreateParameterProps> = ({
                     title={intl.formatMessage({
                         id: 'showSelectDirectoryDialog',
                     })}
+                    itemFilter={undefined}
+                    titleId={null}
+                    equipmentTypes={undefined}
                 />
             </ModificationDialog>
         </FormProvider>

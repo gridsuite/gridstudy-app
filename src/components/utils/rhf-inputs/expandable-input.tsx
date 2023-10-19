@@ -103,7 +103,7 @@ const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
                     startIcon={<AddIcon />}
                     onClick={() => append(initialValue)}
                 >
-                    <FormattedMessage id={addButtonLabel} />
+                    {addButtonLabel && <FormattedMessage id={addButtonLabel} />}
                 </Button>
             </span>
         </Grid>

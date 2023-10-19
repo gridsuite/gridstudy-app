@@ -13,7 +13,12 @@ import { OverflowableText, useSnackMessage } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
 import DirectoryItemSelector from '../../directory-item-selector';
-import React, { FunctionComponent, useCallback, useMemo, useState } from "react";
+import React, {
+    FunctionComponent,
+    useCallback,
+    useMemo,
+    useState,
+} from 'react';
 import { styles } from '../../dialogs/dialogUtils';
 import { useController, useFieldArray, useFormContext } from 'react-hook-form';
 import { useIntl } from 'react-intl';
@@ -21,7 +26,7 @@ import { ErrorInput } from '@gridsuite/commons-ui';
 import { MidFormError } from '@gridsuite/commons-ui';
 import { RawReadOnlyInput } from './read-only/raw-read-only-input';
 import { NAME } from '../field-constants';
-import { isFieldFromContextRequired, isFieldRequired } from "../utils";
+import { isFieldFromContextRequired, isFieldRequired } from '../utils';
 import Tooltip from '@mui/material/Tooltip';
 import { mergeSx } from '../functions';
 
@@ -66,14 +71,14 @@ const DirectoryItemsInput: FunctionComponent<DirectoryItemsInputProps> = ({
     });
 
     const addElements = useCallback(
-        (values) => {
+        (values: any[]) => {
             values.forEach((value) => {
                 const { icon, children, ...otherElementAttributes } = value;
 
-                // check if element is already present
+                // Check if the element is already present
                 if (
                     getValues(name).find(
-                        (v) => v?.id === otherElementAttributes.id
+                        (v: any) => v?.id === otherElementAttributes.id
                     ) !== undefined
                 ) {
                     snackError({

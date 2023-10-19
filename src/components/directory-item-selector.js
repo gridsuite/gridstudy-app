@@ -31,9 +31,7 @@ function isObjectEmpty(obj) {
     return obj == null || Object.keys(obj).length === 0;
 }
 
-const DirectoryItemSelector = (props) => {
-    const { types, equipmentTypes, itemFilter } = props;
-
+const DirectoryItemSelector = ({ types, equipmentTypes, itemFilter, ...props }) => {
     const [data, setData] = useState([]);
     const [rootDirectories, setRootDirectories] = useState([]);
     const nodeMap = useRef({});
