@@ -99,6 +99,7 @@ import {
     SET_COMPUTATION_RUNNING,
     MAP_DATA_LOADING,
     SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
+    SET_EVENT_SCENARIO_DRAWER_OPEN,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -229,6 +230,7 @@ const initialState = {
     allReorderedTableDefinitionIndexes: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
+    isEventScenarioDrawerOpen: false,
     centerOnSubstation: null,
     notificationIdList: [],
     isModificationsInProgress: false,
@@ -668,6 +670,25 @@ export const reducer = createReducer(initialState, {
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
+
+        // exclusively open between two components
+        if (
+            action.isModificationsDrawerOpen &&
+            state.isEventScenarioDrawerOpen
+        ) {
+            state.isEventScenarioDrawerOpen = !state.isEventScenarioDrawerOpen;
+        }
+    },
+    [SET_EVENT_SCENARIO_DRAWER_OPEN]: (state, action) => {
+        state.isEventScenarioDrawerOpen = action.isEventScenarioDrawerOpen;
+
+        // exclusively open between two components
+        if (
+            action.isEventScenarioDrawerOpen &&
+            state.isModificationsDrawerOpen
+        ) {
+            state.isModificationsDrawerOpen = !state.isModificationsDrawerOpen;
+        }
     },
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;

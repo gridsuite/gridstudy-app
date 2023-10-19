@@ -20,6 +20,7 @@ export interface ReduxState {
     optionalServices: IOptionalService[];
     limitReduction: string;
     oneBusShortCircuitAnalysisDiagram: oneBusShortCircuitAnalysisDiagram;
+    notificationIdList: UUID[];
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {
