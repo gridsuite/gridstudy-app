@@ -9,10 +9,9 @@ import React from 'react';
 import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
-    Contingency,
     LimitViolation,
     SecurityAnalysisNmkTableRow,
-    subjectLimitViolations,
+    Constraint,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
 import {
@@ -34,14 +33,17 @@ const contingencyGetterValues = (params: ValueGetterParams) => {
 };
 
 export const computeLoading = (
-    limitViolation: LimitViolation | subjectLimitViolations | Contingency
+    limitViolation: LimitViolation
 ): number | undefined => {
-    return (limitViolation.loading =
-        limitViolation.limitType === 'CURRENT'
-            ? (100 * limitViolation.value) /
-              (limitViolation.limit *
-                  (limitViolation as LimitViolation).limitReduction)
-            : undefined);
+    const {
+        value = 0,
+        limit = 0,
+        limitReduction = 0,
+        limitType,
+    } = limitViolation || {};
+    return limitType === 'CURRENT'
+        ? (100 * value) / (limit * limitReduction)
+        : undefined;
 };
 
 export const flattenNmKResultsContingencies = (
@@ -53,34 +55,38 @@ export const flattenNmKResultsContingencies = (
     result?.forEach(
         ({
             subjectLimitViolations = [],
-            elements = [],
-            id,
-            status,
+            contingency,
         }: ConstraintsFromContingencyItem) => {
             if (!!subjectLimitViolations.length) {
+                const {
+                    contingencyId,
+                    computationStatus,
+                    elements = [],
+                } = contingency || {};
                 rows.push({
-                    contingencyId: id,
+                    contingencyId,
                     contingencyEquipmentsIds: elements.map(
                         (element) => element.id
                     ),
-                    computationStatus: status,
+                    computationStatus,
                     violationCount: subjectLimitViolations.length,
                 });
-                subjectLimitViolations?.forEach(
-                    (constraint: subjectLimitViolations) => {
-                        rows.push({
-                            subjectId: constraint.subjectId,
-                            limitType: intl.formatMessage({
-                                id: constraint.limitType,
-                            }),
-                            limit: constraint.limit,
-                            value: constraint.value,
-                            loading: constraint.loading,
-                            side: constraint.side,
-                            linkedElementId: id,
-                        });
-                    }
-                );
+                subjectLimitViolations?.forEach((constraint: Constraint) => {
+                    const { limitViolation = {} as LimitViolation, subjectId } =
+                        constraint || {};
+
+                    rows.push({
+                        subjectId,
+                        limitType: intl.formatMessage({
+                            id: limitViolation.limitType,
+                        }),
+                        limit: limitViolation.limit,
+                        value: limitViolation.value,
+                        loading: limitViolation.loading,
+                        side: limitViolation.side,
+                        linkedElementId: contingencyId,
+                    });
+                });
             }
         }
     );
@@ -98,23 +104,27 @@ export const flattenNmKResultsConstraints = (
         if (!rows.find((row) => row.subjectId === subjectId)) {
             if (contingencies.length) {
                 rows.push({ subjectId });
-                contingencies.forEach((contingency: Contingency) => {
-                    rows.push({
-                        contingencyId: contingency.contingencyId,
-                        contingencyEquipmentsIds: contingency.elements?.map(
-                            (element) => element.id
-                        ),
-                        computationStatus: contingency.computationStatus,
-                        limitType: contingency.limitType,
-                        limitName: contingency.limitName,
-                        side: contingency.side,
-                        acceptableDuration: contingency.acceptableDuration,
-                        limit: contingency.limit,
-                        value: contingency.value,
-                        loading: contingency.loading,
-                        linkedElementId: subjectId,
-                    });
-                });
+
+                contingencies.forEach(
+                    ({ contingency = {}, limitViolation = {} }) => {
+                        rows.push({
+                            contingencyId: contingency.contingencyId,
+                            contingencyEquipmentsIds: contingency.elements?.map(
+                                (element) => element.id
+                            ),
+                            computationStatus: contingency.computationStatus,
+                            limitType: limitViolation.limitType,
+                            limitName: limitViolation.limitName,
+                            side: limitViolation.side,
+                            acceptableDuration:
+                                limitViolation.acceptableDuration,
+                            limit: limitViolation.limit,
+                            value: limitViolation.value,
+                            loading: limitViolation.loading,
+                            linkedElementId: subjectId,
+                        });
+                    }
+                );
             }
         }
     });

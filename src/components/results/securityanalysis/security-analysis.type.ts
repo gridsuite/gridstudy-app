@@ -8,43 +8,51 @@
 import { ColDef } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
 
-export interface LimitViolationBase {
-    limit: number;
-    limitType?: string;
-    loading?: number | undefined;
+export interface LimitViolation {
     subjectId?: string;
-    value: number;
-}
-
-export interface LimitViolation extends LimitViolationBase {
-    limitReduction: number;
+    acceptableDuration?: number;
+    limit?: number;
+    limitName?: string;
+    limitReduction?: number;
+    limitType?: string;
+    loading?: number;
     side?: string;
+    value?: number;
 }
-
-export interface PreContingencyResult {
-    limitViolationsResult?: {
-        limitViolations?: LimitViolation[];
-    };
-}
-
 interface Element {
     elementType?: string;
     id?: string;
 }
 
-export interface Contingency extends LimitViolationBase {
-    acceptableDuration?: number;
+export interface ContingencyItem {
     computationStatus?: string;
     contingencyId?: string;
     elements?: Element[];
-    limitName?: string | null;
-    side?: string | undefined;
+}
+export interface Contingency {
+    contingency?: ContingencyItem;
+    limitViolation?: LimitViolation;
 }
 
-export interface subjectLimitViolations extends LimitViolationBase {
+export interface SecurityAnalysisNmkTableRow {
+    subjectId?: string;
     acceptableDuration?: number;
-    limitName?: string | null;
-    side?: string | undefined;
+    computationStatus?: string;
+    contingencyEquipmentsIds?: (string | undefined)[];
+    contingencyId?: string;
+    limit?: number;
+    limitName?: string;
+    limitType?: string;
+    linkedElementId?: string;
+    loading?: number;
+    side?: string;
+    value?: number;
+    violationCount?: number;
+}
+
+export interface Constraint {
+    limitViolation?: LimitViolation;
+    subjectId?: string;
 }
 
 export interface ContingenciesFromConstraintItem {
@@ -53,10 +61,14 @@ export interface ContingenciesFromConstraintItem {
 }
 
 export interface ConstraintsFromContingencyItem {
-    id?: string;
-    status?: string;
-    elements?: Element[];
-    subjectLimitViolations?: subjectLimitViolations[];
+    subjectLimitViolations?: Constraint[];
+    contingency?: ContingencyItem;
+}
+
+export interface PreContingencyResult {
+    limitViolationsResult?: {
+        limitViolations?: LimitViolation[];
+    };
 }
 
 export type SecurityAnalysisResultType =
@@ -85,21 +97,10 @@ export interface SecurityAnalysisResultNmkProps
     nodeUuid?: string;
 }
 
-export interface SecurityAnalysisNTableRow extends LimitViolationBase {}
-
-export interface SecurityAnalysisNmkTableRow {
-    acceptableDuration?: number;
-    elements?: Element[];
-    limitName?: string | null;
-    side?: string | undefined;
-    linkedElementId?: string;
-    contingencyId?: string;
-    contingencyEquipmentsIds?: (string | undefined)[];
-    computationStatus?: string;
-    violationCount?: number;
+export interface SecurityAnalysisNTableRow {
     limit?: number;
     limitType?: string;
-    loading?: number | undefined;
+    loading?: number;
     subjectId?: string;
     value?: number;
 }
