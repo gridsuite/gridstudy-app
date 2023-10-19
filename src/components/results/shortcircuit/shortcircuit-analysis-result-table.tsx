@@ -86,12 +86,12 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             {
                 headerName: intl.formatMessage({ id: 'IDNode' }),
                 field: 'elementId',
-                sortable: true,
+                sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
             },
             {
                 headerName: intl.formatMessage({ id: 'Type' }),
                 field: 'faultType',
-                sortable: true,
+                sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
             },
             {
                 headerName: intl.formatMessage({ id: 'Feeders' }),
@@ -132,28 +132,28 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
             {
                 headerName: intl.formatMessage({ id: 'LimitType' }),
                 field: 'limitType',
-                sortable: true,
+                sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
                 field: 'limitMin',
                 fractionDigits: 1,
                 numeric: true,
-                sortable: true,
+                sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
             },
             {
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
                 field: 'limitMax',
                 fractionDigits: 1,
                 numeric: true,
-                sortable: true,
+                sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
             },
             {
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
                 field: 'shortCircuitPower',
                 fractionDigits: 1,
                 numeric: true,
-                sortable: true,
+                sortable: analysisType === ShortCircuitAnalysisType.ALL_BUSES,
             },
             {
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
