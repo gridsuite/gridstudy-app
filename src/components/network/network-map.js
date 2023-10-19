@@ -414,7 +414,7 @@ const NetworkMap = (props) => {
                         setCursorType('pointer');
                         const lineObject = object?.line ?? object;
                         setTooltip({
-                            equipmentId: lineObject.equipmentId,
+                            equipmentId: lineObject?.id,
                             pointerX: x,
                             pointerY: y,
                             visible: showTooltip,
