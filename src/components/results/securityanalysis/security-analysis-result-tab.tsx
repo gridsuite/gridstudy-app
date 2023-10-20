@@ -10,6 +10,7 @@ import React, {
     FunctionComponent,
     useState,
     useCallback,
+    useMemo,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -24,7 +25,11 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { SecurityAnalysisTabProps } from './security-analysis.type';
-import { NMK_TYPE, RESULT_TYPE } from './security-analysis-result-utils';
+import {
+    FAILED,
+    NMK_TYPE,
+    RESULT_TYPE,
+} from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 
 const styles = {
@@ -106,6 +111,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         setTabIndex(newTabIndex);
     };
 
+    const result = useMemo(
+        () =>
+            securityAnalysisResult === FAILED ? null : securityAnalysisResult,
+        [securityAnalysisResult]
+    );
+
     return (
         <>
             <Box sx={styles.container}>
@@ -144,12 +155,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             <Box sx={styles.resultContainer}>
                 {tabIndex === 0 ? (
                     <SecurityAnalysisResultN
-                        result={securityAnalysisResult}
+                        result={result}
                         isLoadingResult={isLoadingResult}
                     />
                 ) : (
                     <SecurityAnalysisResultNmk
-                        result={securityAnalysisResult}
+                        result={result}
                         isLoadingResult={isLoadingResult}
                         isFromContingency={
                             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
