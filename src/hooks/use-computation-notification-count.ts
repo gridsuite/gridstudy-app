@@ -32,16 +32,6 @@ export const useComputationNotificationCount = () => {
         (state: ReduxState) => state.dynamicSimulationNotif
     );
 
-    console.log('MMT count saNotif', saNotif);
-    console.log('MMT count sensiNotif', sensiNotif);
-    console.log(
-        'MMT count allBusesshortCircuitNotif',
-        allBusesshortCircuitNotif
-    );
-    console.log('MMT count oneBusShortCircuitNotif', oneBusShortCircuitNotif);
-    console.log('MMT count voltageInitNotif', voltageInitNotif);
-    console.log('MMT count dynamicSimulationNotif', dynamicSimulationNotif);
-
     return [
         loadflowNotif,
         saNotif,
