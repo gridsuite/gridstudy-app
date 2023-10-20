@@ -25,14 +25,14 @@ import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
 
-const richTypeEquals = (a: string, b: string) => a === b;
+const richTypeEquals = (a: any, b: any) => a === b;
 
 const TabularModificationForm = () => {
     const intl = useIntl();
 
     const { setValue } = useFormContext();
 
-    const richTypeLabel = (rt: string) => {
+    const richTypeLabel = (rt: any) => {
         return intl.formatMessage({ id: rt });
     };
 
