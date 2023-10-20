@@ -22,6 +22,7 @@ import {
     TABULAR_MODIFICATION_FIELDS,
     TABULAR_MODIFICATION_TYPES,
     formatModification,
+    getEquipmentTypeFromModificationType,
 } from './tabular-modification-utils';
 import { toModificationOperation } from 'components/utils/utils';
 import { useIntl } from 'react-intl';
@@ -70,10 +71,8 @@ const TabularModificationDialog = ({
 
     const fromEditDataToFormValues = useCallback(
         (editData) => {
-            const equipmentType = Object.keys(TABULAR_MODIFICATION_TYPES).find(
-                (key) =>
-                    TABULAR_MODIFICATION_TYPES[key] ===
-                    editData?.modificationType
+            const equipmentType = getEquipmentTypeFromModificationType(
+                editData?.modificationType
             );
             const modifications = editData?.modifications.map((modif) => {
                 let modification = {};
@@ -113,11 +112,7 @@ const TabularModificationDialog = ({
                     type: modificationType,
                 };
                 TABULAR_MODIFICATION_FIELDS[
-                    Object.keys(TABULAR_MODIFICATION_TYPES).find(
-                        (key) =>
-                            TABULAR_MODIFICATION_TYPES[key] ===
-                            editData?.modificationType
-                    )
+                    getEquipmentTypeFromModificationType(modificationType)
                 ].forEach((field) => {
                     const translatedKey = intl.formatMessage({
                         id: field,

@@ -14,7 +14,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     LOAD: ['equipmentId', 'activePower'],
 };
 
-export const TABULAR_MODIFICATION_TYPES = {
+export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     GENERATOR: MODIFICATION_TYPES.GENERATOR_MODIFICATION.type,
     LOAD: MODIFICATION_TYPES.LOAD_MODIFICATION.type,
 };
@@ -29,6 +29,11 @@ export const formatModification = (modification: Modification) => {
     return rest;
 };
 
+export const getEquipmentTypeFromModificationType = (type: string) => {
+    return Object.keys(TABULAR_MODIFICATION_TYPES).find(
+        (key) => TABULAR_MODIFICATION_TYPES[key] === type
+    );
+};
 export const styles = {
     csvButton: { mt: 'auto', mb: 'auto' },
     grid: { height: 500, width: '100%' },
