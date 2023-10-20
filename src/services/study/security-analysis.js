@@ -65,14 +65,16 @@ export function fetchSecurityAnalysisResult(
     console.info(
         `Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`
     );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/security-analysis/result?resultType=' +
-        resultType;
-    console.debug(url);
-    return backendFetchJson(url);
-}
+    const url = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/security-analysis/result`;
 
+    const params = new URLSearchParams({ resultType: resultType });
+    const urlWithParams = `${url}?${params.toString()}`;
+    console.debug(urlWithParams);
+    return backendFetchJson(urlWithParams);
+}
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     console.info(
         `Fetching security analysis status on ${studyUuid} and node ${currentNodeUuid} ...`

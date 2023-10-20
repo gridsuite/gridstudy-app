@@ -96,7 +96,7 @@ export const flattenNmKResultsContingencies = (
 
 export const flattenNmKResultsConstraints = (
     intl: IntlShape,
-    result?: ContingenciesFromConstraintItem[]
+    result: ContingenciesFromConstraintItem[] = []
 ) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
 
