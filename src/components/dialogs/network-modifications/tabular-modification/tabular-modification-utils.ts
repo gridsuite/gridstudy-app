@@ -5,7 +5,12 @@ export interface TabularModificationFields {
 }
 
 export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
-    GENERATOR: ['equipmentId', 'maxActivePower'],
+    GENERATOR: [
+        'equipmentId',
+        'minActivePower',
+        'activePowerSetpoint',
+        'maxActivePower',
+    ],
     LOAD: ['equipmentId', 'activePower'],
 };
 
@@ -15,5 +20,16 @@ export const TABULAR_MODIFICATION_TYPES = {
 };
 
 export interface Modification {
-    [key: string]: string;
+    [key: string]: any;
 }
+
+export const formatModification = (modification: Modification) => {
+    //exclude type, date and uuid from modification object
+    const { type, date, uuid, ...rest } = modification;
+    return rest;
+};
+
+export const styles = {
+    csvButton: { mt: 'auto', mb: 'auto' },
+    grid: { height: 500, width: '100%' },
+};

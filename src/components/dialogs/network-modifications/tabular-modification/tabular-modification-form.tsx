@@ -7,21 +7,22 @@
 
 import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import { MODIFICATIONS_TABLE, TYPE } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
-import { Alert, Box } from '@mui/material';
+import CsvDownloader from 'react-csv-downloader';
+import { Alert, Button } from '@mui/material';
 import {
     Modification,
     TABULAR_MODIFICATION_FIELDS,
+    styles,
 } from './tabular-modification-utils';
 import { CustomAGGrid } from 'components/custom-aggrid/custom-aggrid';
 import { DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
-import { ALLOWED_KEYS } from '../voltage-init-modification/voltage-init-modification-dialog';
 import Papa from 'papaparse';
 
 const richTypeEquals = (a: string, b: string) => a === b;
@@ -47,7 +48,7 @@ const TabularModificationForm = () => {
 
     const [typeChanged, setTypeChanged] = useState(false);
     const [selectedFile, FileField, selectedFileError] = useCSVPicker({
-        label: 'import CSV',
+        label: 'ImportModifications',
         header: csvColumns,
         maxTapNumber: undefined,
         disabled: !csvColumns,
@@ -96,6 +97,12 @@ const TabularModificationForm = () => {
             EQUIPMENT_TYPES.DANGLING_LINE,
             EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
             EQUIPMENT_TYPES.HVDC_LINE,
+            EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
+            EQUIPMENT_TYPES.SUBSTATION,
+            EQUIPMENT_TYPES.VOLTAGE_LEVEL,
+            EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+            EQUIPMENT_TYPES.LINE,
+            EQUIPMENT_TYPES.BATTERY,
         ]);
         return Object.values(EQUIPMENT_TYPES).filter(
             (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
@@ -120,12 +127,9 @@ const TabularModificationForm = () => {
         />
     );
 
-    const suppressKeyEvent = (params: any) => {
-        return !ALLOWED_KEYS.includes(params.event.key);
-    };
-
     const defaultColDef = useMemo(
         () => ({
+            flex: 1,
             filter: true,
             sortable: true,
             resizable: false,
@@ -133,40 +137,59 @@ const TabularModificationForm = () => {
             wrapHeaderText: true,
             autoHeaderHeight: true,
             cellRenderer: DefaultCellRenderer,
-            suppressKeyboardEvent: (params: any) => suppressKeyEvent(params),
         }),
         []
     );
+    interface ColumnDefinition {
+        [key: string]: any;
+    }
+
     const columnDefs = useMemo(() => {
         return TABULAR_MODIFICATION_FIELDS[watchType]?.map((field) => {
-            return {
-                field: field,
-                headerName: intl.formatMessage({ id: field }),
-            };
+            let colunmDef: ColumnDefinition = {};
+            if (field === 'equipmentId') {
+                colunmDef.pinned = true;
+            }
+            colunmDef.field = intl.formatMessage({ id: field });
+            colunmDef.headerName = intl.formatMessage({ id: field });
+            colunmDef.cellRenderer = DefaultCellRenderer;
+            return colunmDef;
         });
     }, [intl, watchType]);
 
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(equipmentTypeField, 6)}
-                <Grid item sx={{ marginTop: '5.75px' }}>
-                    {FileField}
-                </Grid>
-                {selectedFile && selectedFileError && (
-                    <Grid item>
-                        <Alert severity="error">{selectedFileError}</Alert>
+                <Grid container item xs={12} spacing={2}>
+                    {gridItem(equipmentTypeField, 4)}
+                    <Grid item sx={styles.csvButton}>
+                        {FileField}
                     </Grid>
-                )}
-
-                <Grid item xs={12}>
-                    <Box sx={{ height: 500, width: '100%' }}>
-                        <CustomAGGrid
-                            rowData={watchTable}
-                            defaultColDef={defaultColDef}
-                            columnDefs={columnDefs}
-                        />
-                    </Box>
+                </Grid>
+                <Grid item sx={styles.csvButton}>
+                    <CsvDownloader
+                        columns={csvColumns}
+                        datas={[]}
+                        filename={watchType + '_skeleton'}
+                    >
+                        <Button variant="contained">
+                            <FormattedMessage id="GenerateSkeleton" />
+                        </Button>
+                    </CsvDownloader>
+                </Grid>
+                <Grid item>
+                    {selectedFile && selectedFileError && (
+                        <Alert severity="error">{selectedFileError}</Alert>
+                    )}
+                </Grid>
+                <Grid item xs={12} sx={styles.grid}>
+                    <CustomAGGrid
+                        rowData={watchTable}
+                        defaultColDef={defaultColDef}
+                        columnDefs={columnDefs}
+                        pagination={true}
+                        paginationPageSize={100}
+                    />
                 </Grid>
             </Grid>
         </>

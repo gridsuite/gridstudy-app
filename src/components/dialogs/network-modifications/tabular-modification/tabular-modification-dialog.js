@@ -18,8 +18,13 @@ import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabulareModification } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
-import { TABULAR_MODIFICATION_TYPES } from './tabular-modification-utils';
+import {
+    TABULAR_MODIFICATION_FIELDS,
+    TABULAR_MODIFICATION_TYPES,
+    formatModification,
+} from './tabular-modification-utils';
 import { toModificationOperation } from 'components/utils/utils';
+import { useIntl } from 'react-intl';
 
 const formSchema = yup
     .object()
@@ -52,6 +57,8 @@ const TabularModificationDialog = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
 
+    const intl = useIntl();
+
     const { snackError } = useSnackMessage();
 
     const formMethods = useForm({
@@ -70,13 +77,18 @@ const TabularModificationDialog = ({
             );
             const modifications = editData?.modifications.map((modif) => {
                 let modification = {};
-                Object.getOwnPropertyNames(modif).forEach((key) => {
-                    if (key === 'equipmentId') {
-                        modification[key] = modif[key];
-                    } else if (typeof modif[key] === 'object') {
-                        modification[key] = modif[key]?.value;
+                Object.getOwnPropertyNames(formatModification(modif)).forEach(
+                    (key) => {
+                        const translatedKey = intl.formatMessage({
+                            id: key,
+                        });
+                        if (key === 'equipmentId') {
+                            modification[translatedKey] = modif[key];
+                        } else if (typeof modif[key] === 'object') {
+                            modification[translatedKey] = modif[key]?.value;
+                        }
                     }
-                });
+                );
                 return modification;
             });
             reset({
@@ -84,7 +96,7 @@ const TabularModificationDialog = ({
                 [MODIFICATIONS_TABLE]: modifications,
             });
         },
-        [reset]
+        [intl, reset]
     );
 
     useEffect(() => {
@@ -100,11 +112,22 @@ const TabularModificationDialog = ({
                 let modification = {
                     type: modificationType,
                 };
-                Object.getOwnPropertyNames(row).forEach((key) => {
-                    if (key === 'equipmentId') {
-                        modification[key] = row[key];
+                TABULAR_MODIFICATION_FIELDS[
+                    Object.keys(TABULAR_MODIFICATION_TYPES).find(
+                        (key) =>
+                            TABULAR_MODIFICATION_TYPES[key] ===
+                            editData?.modificationType
+                    )
+                ].forEach((field) => {
+                    const translatedKey = intl.formatMessage({
+                        id: field,
+                    });
+                    if (field === 'equipmentId') {
+                        modification[field] = row[translatedKey];
                     } else {
-                        modification[key] = toModificationOperation(row[key]);
+                        modification[field] = toModificationOperation(
+                            row[translatedKey]
+                        );
                     }
                 });
                 return modification;
@@ -123,7 +146,7 @@ const TabularModificationDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, getValues, snackError, studyUuid]
+        [currentNodeUuid, editData, getValues, intl, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {

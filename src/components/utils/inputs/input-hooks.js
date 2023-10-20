@@ -40,7 +40,6 @@ import DirectoryItemSelector from '../../directory-item-selector';
 import { useCSVReader } from 'react-papaparse';
 import { isNodeExists } from '../../../services/study';
 import { mergeSx } from '../functions';
-import { _ } from 'ag-grid-community';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
