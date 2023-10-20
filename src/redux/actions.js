@@ -118,6 +118,17 @@ export function networkModificationTreeNodeAdded(
     };
 }
 
+export const NETWORK_MODIFICATION_TREE_NODE_UPDATED =
+    'NETWORK_MODIFICATION_TREE_NODE_UPDATED';
+export function networkModificationTreeNodeUpdated(
+    networkModificationTreeModel
+) {
+    return {
+        type: NETWORK_MODIFICATION_TREE_NODE_UPDATED,
+        networkModificationTreeModel: networkModificationTreeModel,
+    };
+}
+
 export const NETWORK_MODIFICATION_TREE_NODE_MOVED =
     'NETWORK_MODIFICATION_TREE_NODE_MOVED';
 

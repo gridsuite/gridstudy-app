@@ -15,6 +15,7 @@ import {
     STUDY_DISPLAY_MODE,
     networkModificationHandleSubtree,
     setSelectionForCopy,
+    networkModificationTreeNodeUpdated,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -218,7 +219,15 @@ export const NetworkModificationTreePane = ({
                     studyUuid,
                     studyUpdatedForce.eventData.headers['newNode']
                 ).then((node) => {
-                    networkModificationTreeModel.updateLayout(() => {
+                    let newModel =
+                        networkModificationTreeModel.newSharedForUpdate();
+                    newModel.addChild(
+                        node,
+                        studyUpdatedForce.eventData.headers['parentNode'],
+                        studyUpdatedForce.eventData.headers['insertMode'],
+                        studyUpdatedForce.eventData.headers['referenceNodeUuid']
+                    );
+                    newModel.updateLayout(() => {
                         dispatch(
                             networkModificationTreeNodeAdded(
                                 node,
@@ -233,6 +242,7 @@ export const NetworkModificationTreePane = ({
                                 ]
                             )
                         );
+                        dispatch(networkModificationTreeNodeUpdated(newModel));
                         if (
                             isSubtreeImpacted([
                                 studyUpdatedForce.eventData.headers[
@@ -243,14 +253,6 @@ export const NetworkModificationTreePane = ({
                             resetNodeClipboard();
                         }
 
-                        networkModificationTreeModel.addChild(
-                            node,
-                            studyUpdatedForce.eventData.headers['parentNode'],
-                            studyUpdatedForce.eventData.headers['insertMode'],
-                            studyUpdatedForce.eventData.headers[
-                                'referenceNodeUuid'
-                            ]
-                        );
                         console.log(
                             'MMT networkModificationTreeModel',
                             networkModificationTreeModel

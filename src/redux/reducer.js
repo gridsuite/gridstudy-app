@@ -49,6 +49,7 @@ import {
     FAVORITE_CONTINGENCY_LISTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
+    NETWORK_MODIFICATION_TREE_NODE_UPDATED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
     SET_MODIFICATIONS_DRAWER_OPEN,
@@ -297,32 +298,20 @@ export const reducer = createReducer(initialState, {
     },
 
     [NETWORK_MODIFICATION_TREE_NODE_ADDED]: (state, action) => {
-        if (state.networkModificationTreeModel) {
-            // let newModel =
-            //     state.networkModificationTreeModel.newSharedForUpdate();
-            // newModel.addChild(
-            //     action.networkModificationTreeNode,
-            //     action.parentNodeId,
-            //     action.insertMode,
-            //     action.referenceNodeId
-            // );
-            //
-            // state.networkModificationTreeModel = newModel;
+        if (
+            state.networkModificationTreeModel &&
+            action.networkModificationTreeNode?.childrenIds.includes(
+                state.currentTreeNode?.id
+            )
+        ) {
             // check if added node is the new parent of the current Node
-            console.log('MMT hereeee');
-            console.log(
-                'MMT action.networkModificationTreeNode?.childrenIds',
-                action.networkModificationTreeNode?.childrenIds
-            );
+            // Then must overwrite currentTreeNode to set new parentNodeUuid
             synchCurrentTreeNode(state, state.currentTreeNode?.id);
-            if (
-                action.networkModificationTreeNode?.childrenIds.includes(
-                    state.currentTreeNode?.id
-                )
-            ) {
-                // Then must overwrite currentTreeNode to set new parentNodeUuid
-            }
         }
+    },
+
+    [NETWORK_MODIFICATION_TREE_NODE_UPDATED]: (state, action) => {
+        state.networkModificationTreeModel = action.networkModificationTreeNode;
     },
 
     [NETWORK_MODIFICATION_TREE_NODE_MOVED]: (state, action) => {
