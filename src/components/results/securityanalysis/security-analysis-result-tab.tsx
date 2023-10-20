@@ -71,7 +71,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                     ? RESULT_TYPE.N
                     : nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                     ? RESULT_TYPE.NMK_CONTINGENCIES
-                    : RESULT_TYPE.NMK_CONSTRAINTS;
+                    : RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
 
             return fetchSecurityAnalysisResult(studyUuid, nodeUuid, resultType);
         },

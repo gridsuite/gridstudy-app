@@ -107,8 +107,6 @@ export const flattenNmKResultsConstraints = (
 
                 contingencies.forEach(
                     ({ contingency = {}, limitViolation = {} }) => {
-                        console.log({ limitViolation });
-
                         rows.push({
                             contingencyId: contingency.contingencyId,
                             contingencyEquipmentsIds: contingency.elements?.map(
@@ -356,6 +354,6 @@ export enum NMK_TYPE {
 
 export enum RESULT_TYPE {
     N = 'N',
-    NMK_CONSTRAINTS = 'NMK_CONSTRAINTS',
+    NMK_LIMIT_VIOLATIONS = 'NMK_LIMIT_VIOLATIONS',
     NMK_CONTINGENCIES = 'NMK_CONTINGENCIES',
 }
