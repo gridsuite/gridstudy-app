@@ -25,11 +25,7 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { SecurityAnalysisTabProps } from './security-analysis.type';
-import {
-    FAILED,
-    NMK_TYPE,
-    RESULT_TYPE,
-} from './security-analysis-result-utils';
+import { NMK_TYPE, RESULT_TYPE } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
 
 const styles = {
@@ -113,7 +109,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const result = useMemo(
         () =>
-            securityAnalysisResult === FAILED ? null : securityAnalysisResult,
+            securityAnalysisResult === RunningStatus.FAILED
+                ? null
+                : securityAnalysisResult,
         [securityAnalysisResult]
     );
 
