@@ -236,6 +236,20 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
         return current;
     };
 
+    // When we filter / sort the 'current' column in one bus, it's actually the 'fortescueCurrent.positiveMagnitude' field in the back-end
+    const fromColumnToField = useCallback(
+        (column: string) => {
+            if (
+                analysisType === ShortCircuitAnalysisType.ONE_BUS &&
+                column === 'current'
+            ) {
+                return 'fortescueCurrent.positiveMagnitude';
+            }
+            return column;
+        },
+        [analysisType]
+    );
+
     const flattenResult = (shortCircuitAnalysisResult: SCAFaultResult[]) => {
         const rows: ShortCircuitAnalysisAGGridResult[] = [];
 
@@ -333,7 +347,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                                 dataType: filter.filterType,
                                 type: filter.type,
                                 value: filter.filter,
-                                column: column,
+                                field: fromColumnToField(column),
                             },
                         ];
                     }
@@ -344,7 +358,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                                 dataType: condition.filterType,
                                 type: condition.type,
                                 value: condition.filter,
-                                column: column,
+                                field: fromColumnToField(column),
                             };
                         });
                     }
@@ -353,7 +367,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
 
             updateFilter(formattedFilter);
         },
-        [updateFilter]
+        [updateFilter, fromColumnToField]
     );
 
     const onSortChanged = useCallback(
@@ -373,14 +387,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
                 })
                 .map(function (s) {
                     return {
-                        colId: DATA_KEY_TO_SORT_KEY[s.colId],
+                        colId: fromColumnToField(DATA_KEY_TO_SORT_KEY[s.colId]),
                         sort: s.sort,
                     };
                 });
 
             updateSort(columnStates);
         },
-        [updateSort]
+        [updateSort, fromColumnToField]
     );
 
     const handlePostSortRows = useCallback((params: PostSortRowsParams) => {
