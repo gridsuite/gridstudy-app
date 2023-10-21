@@ -94,6 +94,16 @@ const generateEditableNumericColumnDefinition = (
         ...extraDef,
     };
 };
+//const onCellClicked = event: CellClickedEvent<TData>
+const onCellSitePropertiesClicked = (event) => {
+    // console.log('sites', event);
+    console.log('sites', event.column.colId);
+    console.log('sites', event.data.type);
+    if (event.data.type === EQUIPMENT_TYPES.SUBSTATION &&
+        event.column.colId === 'properties') {
+        console.log('sites', event.data);
+    }
+}
 
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
@@ -101,6 +111,7 @@ export const TABLES_DEFINITIONS = {
         name: 'Substations',
         type: EQUIPMENT_TYPES.SUBSTATION,
         fetchers: EQUIPMENT_FETCHERS.SUBSTATION,
+        onCellClicked: onCellSitePropertiesClicked,
         columns: [
             {
                 id: 'ID',

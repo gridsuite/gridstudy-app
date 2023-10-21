@@ -302,6 +302,17 @@ const TableWrapper = (props) => {
         ]
     );
 
+    const onCellClicked = useMemo(() => {
+        const onClickedOnOther = (event) => {
+            console.log('sites', 'other');
+        };
+
+        const onCellClickedFunction =
+            TABLES_DEFINITION_INDEXES.get(tabIndex)?.onCellClicked ||
+            onClickedOnOther;
+        return onCellClickedFunction;
+    }, [tabIndex]);
+
     const equipmentDefinition = useMemo(
         () => ({
             type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
@@ -774,6 +785,7 @@ const TableWrapper = (props) => {
             return undefined;
         }
     }, [editingData]);
+
     return (
         <>
             <Grid container justifyContent={'space-between'}>
@@ -850,6 +862,7 @@ const TableWrapper = (props) => {
                         shouldHidePinnedHeaderRightBorder={
                             isLockedColumnNamesEmpty
                         }
+                        onCellClicked={onCellClicked}
                     />
                 </Box>
             )}

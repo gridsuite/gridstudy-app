@@ -11,7 +11,7 @@ import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import { useIntl } from 'react-intl';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { GetLocaleTextParams } from 'ag-grid-community';
+import { CellClickedEvent, GetLocaleTextParams } from 'ag-grid-community';
 import { Box } from '@mui/system';
 import { mergeSx } from '../utils/functions';
 
@@ -77,7 +77,6 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
             },
             [intl]
         );
-
         return (
             <Box
                 sx={mergeSx(
@@ -96,6 +95,8 @@ export const CustomAGGrid = React.forwardRef<any, CustomAGGridProps>(
                         loadingOverlayComponentParams
                     }
                     overlayNoRowsTemplate={overlayNoRowsTemplate}
+                    // onCellClicked={props.onCellClicked as (event: CellClickedEvent) => void}
+                    onCellClicked={props.onCellClicked}
                     {...props}
                 />
             </Box>

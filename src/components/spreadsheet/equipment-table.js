@@ -29,6 +29,7 @@ export const EquipmentTable = ({
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
+    onCellClicked,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -133,6 +134,7 @@ export const EquipmentTable = ({
             loadingOverlayComponent={loadingOverlayComponent}
             loadingOverlayComponentParams={loadingOverlayComponentParams}
             showOverlay={true}
+            onCellClicked={onCellClicked}
         />
     );
 };
