@@ -9,13 +9,17 @@ import Grid from '@mui/material/Grid';
 import {
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
-    Q_AT_NOMINAL_V,
+    MAXIMUM_SECTION_COUNT,
+    MAX_SUSCEPTANCE,
+    QMAX_AT_NOMINAL_V,
+    SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
     SHUNT_COMPENSATOR_TYPES,
-    SUSCEPTANCE_PER_SECTION,
+    SWITCHED_ON_Q_AT_NOMINAL_V,
+    SWITCHED_ON_SUSCEPTANCE,
 } from 'components/utils/field-constants';
 import { Box } from '@mui/material';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { RadioInput } from '@gridsuite/commons-ui';
 import {
@@ -24,7 +28,7 @@ import {
     SusceptanceAdornment,
 } from '../../../dialogUtils';
 import { SelectInput } from '@gridsuite/commons-ui';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 
 // this component needs to be isolated to avoid too many rerenders
@@ -33,13 +37,63 @@ export const CharacteristicsForm = ({
     isModification = false,
 }) => {
     const intl = useIntl();
-    const QatNominalVField = (
+    const { setValue, trigger, clearErrors } = useFormContext();
+
+    const sectionCount = useWatch({
+        name: SECTION_COUNT,
+    });
+    const maximumSectionCount = useWatch({
+        name: MAXIMUM_SECTION_COUNT,
+    });
+
+    const QMaxAtNominalV = useWatch({
+        name: QMAX_AT_NOMINAL_V,
+    });
+    const maxSusceptance = useWatch({
+        name: MAX_SUSCEPTANCE,
+    });
+
+    const characteristicsChoice = useWatch({
+        name: CHARACTERISTICS_CHOICE,
+    });
+
+    const maximumSectionCountField = (
         <FloatInput
-            name={Q_AT_NOMINAL_V}
-            label={'QatNominalV'}
-            adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.qatNominalV}
+            name={MAXIMUM_SECTION_COUNT}
+            label={'MaximumSectionCount'}
+            previousValue={previousValues?.maximumSectionCount}
             clearable={isModification}
+        />
+    );
+
+    const sectionCountField = (
+        <FloatInput
+            name={SECTION_COUNT}
+            label={'ShuntSectionCount'}
+            previousValue={previousValues?.sectionCount}
+            clearable={isModification}
+        />
+    );
+
+    const QMaxAtNominalVField = (
+        <FloatInput
+            name={QMAX_AT_NOMINAL_V}
+            label={'QMaxAtNominalV'}
+            adornment={ReactivePowerAdornment}
+            previousValue={previousValues?.QMaxAtNominalV}
+            clearable={isModification}
+        />
+    );
+
+    const switchedOnQMaxAtNominalVField = (
+        <FloatInput
+            name={SWITCHED_ON_Q_AT_NOMINAL_V}
+            label={'SwitchedOnQMaxAtNominalV'}
+            adornment={ReactivePowerAdornment}
+            clearable={isModification}
+            formProps={{
+                disabled: true,
+            }}
         />
     );
 
@@ -66,13 +120,25 @@ export const CharacteristicsForm = ({
         />
     );
 
-    const susceptancePerSectionField = (
+    const maxSusceptanceField = (
         <FloatInput
-            name={SUSCEPTANCE_PER_SECTION}
-            label={'ShuntSusceptancePerSection'}
+            name={MAX_SUSCEPTANCE}
+            label={'MaxShuntSusceptance'}
             adornment={SusceptanceAdornment}
             previousValue={previousValues?.bperSection}
             clearable={isModification}
+        />
+    );
+
+    const switchedOnSusceptanceField = (
+        <FloatInput
+            name={SWITCHED_ON_SUSCEPTANCE}
+            label={'SwitchedOnMaxSusceptance'}
+            adornment={SusceptanceAdornment}
+            clearable={isModification}
+            formProps={{
+                disabled: true,
+            }}
         />
     );
 
@@ -83,24 +149,68 @@ export const CharacteristicsForm = ({
         />
     );
 
-    const characteristicsChoice = useWatch({
-        name: CHARACTERISTICS_CHOICE,
-    });
+    const handleSwitchedOnValue = useCallback(
+        (linkedValue, SWITCHED_ON_FIELD) => {
+            if (
+                ![sectionCount, maximumSectionCount, linkedValue].includes(null)
+            ) {
+                trigger(SECTION_COUNT).then((isValid) => {
+                    if (isValid) {
+                        setValue(
+                            SWITCHED_ON_FIELD,
+                            (linkedValue / maximumSectionCount) * sectionCount
+                        );
+                    } else {
+                        setValue(SWITCHED_ON_FIELD, null);
+                    }
+                });
+            } else {
+                setValue(SWITCHED_ON_FIELD, null);
+                clearErrors(SECTION_COUNT);
+            }
+        },
+        [maximumSectionCount, sectionCount, clearErrors, setValue, trigger]
+    );
+
+    useEffect(() => {
+        if (
+            characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+        ) {
+            handleSwitchedOnValue(QMaxAtNominalV, SWITCHED_ON_Q_AT_NOMINAL_V);
+        } else if (
+            characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
+        ) {
+            handleSwitchedOnValue(maxSusceptance, SWITCHED_ON_SUSCEPTANCE);
+        }
+    }, [
+        QMaxAtNominalV,
+        maxSusceptance,
+        characteristicsChoice,
+        handleSwitchedOnValue,
+    ]);
 
     return (
         <>
             <Grid container spacing={2}>
+                {gridItem(maximumSectionCountField, 4)}
+                {gridItem(sectionCountField, 4)}
                 {gridItem(characteristicsChoiceField, 12)}
                 {characteristicsChoice ===
                     CHARACTERISTICS_CHOICES.SUSCEPTANCE.id &&
-                    gridItem(susceptancePerSectionField, 4)}
+                    gridItem(maxSusceptanceField, 4)}
+                {characteristicsChoice ===
+                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id &&
+                    gridItem(switchedOnSusceptanceField, 4)}
                 {characteristicsChoice ===
                     CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
                     gridItem(shuntCompensatorTypeField, 4)}
                 <Box sx={{ width: '100%' }} />
                 {characteristicsChoice ===
                     CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
-                    gridItem(QatNominalVField, 4)}
+                    gridItem(QMaxAtNominalVField, 4)}
+                {characteristicsChoice ===
+                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
+                    gridItem(switchedOnQMaxAtNominalVField, 4)}
             </Grid>
         </>
     );

@@ -15,7 +15,7 @@ import {
     SUSCEPTANCE_PER_SECTION,
 } from '../../../../utils/field-constants';
 import {
-    getCharacteristicsEmptyFormData,
+    getCharacteristicsEmptyModificationFormData,
     getCharacteristicsFormData,
     getCharacteristicsFormValidationSchema,
 } from '../characteristics-pane/characteristics-form-utils';
@@ -40,7 +40,7 @@ import { FetchStatus } from '../../../../../services/utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
-    ...getCharacteristicsEmptyFormData(),
+    ...getCharacteristicsEmptyModificationFormData(),
 };
 
 const formSchema = yup
