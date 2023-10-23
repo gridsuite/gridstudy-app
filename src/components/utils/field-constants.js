@@ -113,7 +113,7 @@ export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
 export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
 export const MAX_SUSCEPTANCE = 'maxSusceptance';
-export const QMAX_AT_NOMINAL_V = 'qMaxAtNominalV';
+export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
 //line
 export const SHUNT_CONDUCTANCE_1 = 'shuntConductance1';
 export const SHUNT_CONDUCTANCE_2 = 'shuntConductance2';

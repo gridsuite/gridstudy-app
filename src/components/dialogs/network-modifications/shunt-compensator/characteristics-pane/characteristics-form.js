@@ -11,7 +11,7 @@ import {
     CHARACTERISTICS_CHOICES,
     MAXIMUM_SECTION_COUNT,
     MAX_SUSCEPTANCE,
-    QMAX_AT_NOMINAL_V,
+    MAX_Q_AT_NOMINAL_V,
     SECTION_COUNT,
     SHUNT_COMPENSATOR_TYPE,
     SHUNT_COMPENSATOR_TYPES,
@@ -39,22 +39,20 @@ export const CharacteristicsForm = ({
     const intl = useIntl();
     const { setValue, trigger, clearErrors } = useFormContext();
 
-    const sectionCount = useWatch({
-        name: SECTION_COUNT,
-    });
-    const maximumSectionCount = useWatch({
-        name: MAXIMUM_SECTION_COUNT,
-    });
-
-    const QMaxAtNominalV = useWatch({
-        name: QMAX_AT_NOMINAL_V,
-    });
-    const maxSusceptance = useWatch({
-        name: MAX_SUSCEPTANCE,
-    });
-
-    const characteristicsChoice = useWatch({
-        name: CHARACTERISTICS_CHOICE,
+    const [
+        sectionCount,
+        maximumSectionCount,
+        maxQAtNominalV,
+        maxSusceptance,
+        characteristicsChoice,
+    ] = useWatch({
+        name: [
+            SECTION_COUNT,
+            MAXIMUM_SECTION_COUNT,
+            MAX_Q_AT_NOMINAL_V,
+            MAX_SUSCEPTANCE,
+            CHARACTERISTICS_CHOICE,
+        ],
     });
 
     const maximumSectionCountField = (
@@ -75,20 +73,20 @@ export const CharacteristicsForm = ({
         />
     );
 
-    const QMaxAtNominalVField = (
+    const maxQAtNominalVField = (
         <FloatInput
-            name={QMAX_AT_NOMINAL_V}
-            label={'QMaxAtNominalV'}
+            name={MAX_Q_AT_NOMINAL_V}
+            label={'maxQAtNominalV'}
             adornment={ReactivePowerAdornment}
-            previousValue={previousValues?.QMaxAtNominalV}
+            previousValue={previousValues?.maxQAtNominalV}
             clearable={isModification}
         />
     );
 
-    const switchedOnQMaxAtNominalVField = (
+    const switchedOnMaxQAtNominalVField = (
         <FloatInput
             name={SWITCHED_ON_Q_AT_NOMINAL_V}
-            label={'SwitchedOnQMaxAtNominalV'}
+            label={'SwitchedOnMaxQAtNominalV'}
             adornment={ReactivePowerAdornment}
             clearable={isModification}
             formProps={{
@@ -150,17 +148,19 @@ export const CharacteristicsForm = ({
     );
 
     const handleSwitchedOnValue = useCallback(
-        (switchedOnValue, SWITCHED_ON_FIELD) => {
+        (linkedSwitchedOnValue, SWITCHED_ON_FIELD) => {
             if (
-                ![sectionCount, maximumSectionCount, switchedOnValue].includes(
-                    null
-                )
+                ![
+                    sectionCount,
+                    maximumSectionCount,
+                    linkedSwitchedOnValue,
+                ].includes(null)
             ) {
                 trigger(SECTION_COUNT).then((isValid) => {
                     if (isValid) {
                         setValue(
                             SWITCHED_ON_FIELD,
-                            (switchedOnValue / maximumSectionCount) *
+                            (linkedSwitchedOnValue / maximumSectionCount) *
                                 sectionCount
                         );
                     } else {
@@ -179,14 +179,14 @@ export const CharacteristicsForm = ({
         if (
             characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
         ) {
-            handleSwitchedOnValue(QMaxAtNominalV, SWITCHED_ON_Q_AT_NOMINAL_V);
+            handleSwitchedOnValue(maxQAtNominalV, SWITCHED_ON_Q_AT_NOMINAL_V);
         } else if (
             characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
         ) {
             handleSwitchedOnValue(maxSusceptance, SWITCHED_ON_SUSCEPTANCE);
         }
     }, [
-        QMaxAtNominalV,
+        maxQAtNominalV,
         maxSusceptance,
         characteristicsChoice,
         handleSwitchedOnValue,
@@ -210,10 +210,10 @@ export const CharacteristicsForm = ({
                 <Box sx={{ width: '100%' }} />
                 {characteristicsChoice ===
                     CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
-                    gridItem(QMaxAtNominalVField, 4)}
+                    gridItem(maxQAtNominalVField, 4)}
                 {characteristicsChoice ===
                     CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id &&
-                    gridItem(switchedOnQMaxAtNominalVField, 4)}
+                    gridItem(switchedOnMaxQAtNominalVField, 4)}
             </Grid>
         </>
     );

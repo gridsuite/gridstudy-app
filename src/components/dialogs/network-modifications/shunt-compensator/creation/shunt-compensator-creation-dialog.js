@@ -21,7 +21,7 @@ import {
     SECTION_COUNT,
     MAXIMUM_SECTION_COUNT,
     MAX_SUSCEPTANCE,
-    QMAX_AT_NOMINAL_V,
+    MAX_Q_AT_NOMINAL_V,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
@@ -113,7 +113,7 @@ const ShuntCompensatorCreationDialog = ({
                 }),
                 ...getCharacteristicsCreateFormDataFromSearchCopy({
                     maxSusceptance: shuntCompensator.bperSection,
-                    qMaxAtNominalV: shuntCompensator.qatNominalV,
+                    maxQAtNominalV: shuntCompensator.qatNominalV,
                     sectionCount: shuntCompensator.sectionCount,
                     maximumSectionCount: shuntCompensator.maximumSectionCount,
                 }),
@@ -136,7 +136,7 @@ const ShuntCompensatorCreationDialog = ({
                 }),
                 ...getCharacteristicsCreateFormData({
                     maxSusceptance: shuntCompensator.maxSusceptance,
-                    qMaxAtNominalV: shuntCompensator.qMaxAtNominalV,
+                    maxQAtNominalV: shuntCompensator.maxQAtNominalV,
                     shuntCompensatorType: shuntCompensator.shuntCompensatorType,
                     sectionCount: shuntCompensator.sectionCount,
                     maximumSectionCount: shuntCompensator.maximumSectionCount,
@@ -173,7 +173,7 @@ const ShuntCompensatorCreationDialog = ({
                     : null,
                 shuntCompensator[CHARACTERISTICS_CHOICE] ===
                     CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                    ? shuntCompensator[QMAX_AT_NOMINAL_V]
+                    ? shuntCompensator[MAX_Q_AT_NOMINAL_V]
                     : null,
                 shuntCompensator[CHARACTERISTICS_CHOICE] ===
                     CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id

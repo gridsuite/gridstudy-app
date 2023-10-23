@@ -741,9 +741,9 @@
     "SectionCountBetweenZeroAndMaximumSectionCount": "Section count must be greater or equal to 0 and lesser or equal to Maximum section count",
     "MaximumSectionCount": "Maximum number of sections",
     "ShuntSectionCount": "Current number of sections",
-    "SwitchedOnQMaxAtNominalV": "Switch-on Q at nominal voltage",
+    "SwitchedOnMaxQAtNominalV": "Switch-on Q at nominal voltage",
     "SwitchedOnMaxSusceptance": "Switch-on susceptance",
-    "QMaxAtNominalV": "Qmax available at nominal voltage",
+    "maxQAtNominalV": "Qmax available at nominal voltage",
     "MaxShuntSusceptance": "Maximal susceptance available",
 
     "CreateSubstation": "Create substation",

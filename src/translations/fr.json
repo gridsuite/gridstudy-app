@@ -741,9 +741,9 @@
     "SectionCountBetweenZeroAndMaximumSectionCount": "La valeur de la prise courante doit être comprise entre 0 et le nombre de gradins",
     "MaximumSectionCount": "Nombre de gradins",
     "ShuntSectionCount": "Gradin courant",
-    "SwitchedOnQMaxAtNominalV": "Q enclenchée à tension nominale",
+    "SwitchedOnMaxQAtNominalV": "Q enclenchée à tension nominale",
     "SwitchedOnMaxSusceptance": "Susceptance enclenchée",
-    "QMaxAtNominalV": "Q installée à tension nominale",
+    "maxQAtNominalV": "Q installée à tension nominale",
     "MaxShuntSusceptance": "Susceptance installée",
 
     "CreateSubstation": "Créer un site",

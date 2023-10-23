@@ -16,7 +16,7 @@ import {
     SECTION_COUNT,
     SWITCHED_ON_SUSCEPTANCE,
     SWITCHED_ON_Q_AT_NOMINAL_V,
-    QMAX_AT_NOMINAL_V,
+    MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
@@ -43,7 +43,7 @@ const characteristicsValidationSchema = (isModification) => ({
 
 const getCharacteristicsCreateFormValidationSchema = () => {
     return {
-        [QMAX_AT_NOMINAL_V]: yup
+        [MAX_Q_AT_NOMINAL_V]: yup
             .number()
             .nullable()
             .when([CHARACTERISTICS_CHOICE], {
@@ -107,7 +107,7 @@ const characteristicsEmptyCreateFormData = () => ({
     [CHARACTERISTICS_CHOICE]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
     [MAX_SUSCEPTANCE]: null,
     [SHUNT_COMPENSATOR_TYPE]: null,
-    [QMAX_AT_NOMINAL_V]: null,
+    [MAX_Q_AT_NOMINAL_V]: null,
     [SWITCHED_ON_Q_AT_NOMINAL_V]: null,
     [SWITCHED_ON_SUSCEPTANCE]: null,
 });
@@ -152,7 +152,7 @@ export const getCharacteristicsFormDataFromSearchCopy = ({
 
 export const getCharacteristicsCreateFormData = ({
     maxSusceptance,
-    qMaxAtNominalV,
+    maxQAtNominalV,
     shuntCompensatorType,
     sectionCount,
     maximumSectionCount,
@@ -172,14 +172,14 @@ export const getCharacteristicsCreateFormData = ({
             : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [MAX_SUSCEPTANCE]: maxSusceptance,
         [SHUNT_COMPENSATOR_TYPE]: shuntCompensatorType ?? '',
-        [QMAX_AT_NOMINAL_V]: qMaxAtNominalV,
+        [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
         [SECTION_COUNT]: sectionCount,
         [MAXIMUM_SECTION_COUNT]: maximumSectionCount,
-        [SWITCHED_ON_Q_AT_NOMINAL_V]: qMaxAtNominalV
+        [SWITCHED_ON_Q_AT_NOMINAL_V]: maxQAtNominalV
             ? computeSwitchedOnValue(
                   sectionCount,
                   maximumSectionCount,
-                  qMaxAtNominalV
+                  maxQAtNominalV
               )
             : null,
         [SWITCHED_ON_SUSCEPTANCE]: maxSusceptance
@@ -194,7 +194,7 @@ export const getCharacteristicsCreateFormData = ({
 
 export const getCharacteristicsCreateFormDataFromSearchCopy = ({
     maxSusceptance,
-    qMaxAtNominalV,
+    maxQAtNominalV,
     sectionCount,
     maximumSectionCount,
 }) => {
@@ -205,7 +205,7 @@ export const getCharacteristicsCreateFormDataFromSearchCopy = ({
             maxSusceptance > 0
                 ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
                 : SHUNT_COMPENSATOR_TYPES.REACTOR.id,
-        [QMAX_AT_NOMINAL_V]: qMaxAtNominalV,
+        [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
         [SECTION_COUNT]: sectionCount,
         [MAXIMUM_SECTION_COUNT]: maximumSectionCount,
     };
@@ -214,7 +214,7 @@ export const getCharacteristicsCreateFormDataFromSearchCopy = ({
 const computeSwitchedOnValue = (
     sectionCount,
     maximumSectionCount,
-    switchedOnValue
+    linkedSwitchedOnValue
 ) => {
-    return (switchedOnValue / maximumSectionCount) * sectionCount;
+    return (linkedSwitchedOnValue / maximumSectionCount) * sectionCount;
 };
