@@ -150,15 +150,18 @@ export const CharacteristicsForm = ({
     );
 
     const handleSwitchedOnValue = useCallback(
-        (linkedValue, SWITCHED_ON_FIELD) => {
+        (switchedOnValue, SWITCHED_ON_FIELD) => {
             if (
-                ![sectionCount, maximumSectionCount, linkedValue].includes(null)
+                ![sectionCount, maximumSectionCount, switchedOnValue].includes(
+                    null
+                )
             ) {
                 trigger(SECTION_COUNT).then((isValid) => {
                     if (isValid) {
                         setValue(
                             SWITCHED_ON_FIELD,
-                            (linkedValue / maximumSectionCount) * sectionCount
+                            (switchedOnValue / maximumSectionCount) *
+                                sectionCount
                         );
                     } else {
                         setValue(SWITCHED_ON_FIELD, null);

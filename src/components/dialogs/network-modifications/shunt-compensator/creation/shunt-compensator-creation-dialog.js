@@ -22,8 +22,6 @@ import {
     MAXIMUM_SECTION_COUNT,
     MAX_SUSCEPTANCE,
     QMAX_AT_NOMINAL_V,
-    SWITCHED_ON_Q_AT_NOMINAL_V,
-    SWITCHED_ON_SUSCEPTANCE,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';

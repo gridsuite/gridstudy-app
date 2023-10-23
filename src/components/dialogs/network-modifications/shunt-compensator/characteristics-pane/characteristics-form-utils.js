@@ -76,8 +76,8 @@ const getCharacteristicsCreateFormValidationSchema = () => {
                 yup.ref(MAXIMUM_SECTION_COUNT),
                 'SectionCountBetweenZeroAndMaximumSectionCount'
             ),
-        // [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().notRequired(),
-        // [SWITCHED_ON_SUSCEPTANCE]: yup.number().notRequired(),
+        [SWITCHED_ON_Q_AT_NOMINAL_V]: yup.number().notRequired(),
+        [SWITCHED_ON_SUSCEPTANCE]: yup.number().notRequired(),
     };
 };
 
@@ -108,8 +108,8 @@ const characteristicsEmptyCreateFormData = () => ({
     [MAX_SUSCEPTANCE]: null,
     [SHUNT_COMPENSATOR_TYPE]: null,
     [QMAX_AT_NOMINAL_V]: null,
-    // [SWITCHED_ON_Q_AT_NOMINAL_V]: null,
-    // [SWITCHED_ON_SUSCEPTANCE]: null,
+    [SWITCHED_ON_Q_AT_NOMINAL_V]: null,
+    [SWITCHED_ON_SUSCEPTANCE]: null,
 });
 
 export const getCharacteristicsEmptyCreateFormData = () => {
@@ -157,6 +157,15 @@ export const getCharacteristicsCreateFormData = ({
     sectionCount,
     maximumSectionCount,
 }) => {
+    console.log(
+        maxSusceptance
+            ? computeSwitchedOnValue(
+                  sectionCount,
+                  maximumSectionCount,
+                  maxSusceptance
+              )
+            : null
+    );
     return {
         [CHARACTERISTICS_CHOICE]: maxSusceptance
             ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
@@ -166,6 +175,20 @@ export const getCharacteristicsCreateFormData = ({
         [QMAX_AT_NOMINAL_V]: qMaxAtNominalV,
         [SECTION_COUNT]: sectionCount,
         [MAXIMUM_SECTION_COUNT]: maximumSectionCount,
+        [SWITCHED_ON_Q_AT_NOMINAL_V]: qMaxAtNominalV
+            ? computeSwitchedOnValue(
+                  sectionCount,
+                  maximumSectionCount,
+                  qMaxAtNominalV
+              )
+            : null,
+        [SWITCHED_ON_SUSCEPTANCE]: maxSusceptance
+            ? computeSwitchedOnValue(
+                  sectionCount,
+                  maximumSectionCount,
+                  maxSusceptance
+              )
+            : null,
     };
 };
 
@@ -186,4 +209,12 @@ export const getCharacteristicsCreateFormDataFromSearchCopy = ({
         [SECTION_COUNT]: sectionCount,
         [MAXIMUM_SECTION_COUNT]: maximumSectionCount,
     };
+};
+
+const computeSwitchedOnValue = (
+    sectionCount,
+    maximumSectionCount,
+    switchedOnValue
+) => {
+    return (switchedOnValue / maximumSectionCount) * sectionCount;
 };
