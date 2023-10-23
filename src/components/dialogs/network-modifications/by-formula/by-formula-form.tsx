@@ -10,8 +10,8 @@ import { gridItem } from '../../dialogUtils';
 interface ByFormulaFormProps {}
 
 const EQUIPMENT_TYPE_OPTIONS = [
-    EQUIPMENT_TYPES.GENERATOR,
-    EQUIPMENT_TYPES.BATTERY,
+    {id: EQUIPMENT_TYPES.GENERATOR, label: EQUIPMENT_TYPES.GENERATOR},
+    {id: EQUIPMENT_TYPES.BATTERY, label: EQUIPMENT_TYPES.BATTERY},
 ];
 
 const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = ({}) => {
