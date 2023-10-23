@@ -84,6 +84,7 @@ export const BooleanCellRenderer = (props) => {
 };
 
 export const formatCell = (props) => {
+    let value = props.value;
     let tooltipValue = undefined;
     if (props.colDef.valueGetter) {
         value = props.colDef.valueGetter(props, props.context.network);
