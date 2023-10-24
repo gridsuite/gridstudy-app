@@ -81,27 +81,27 @@ export const ModificationListItem = ({
 
         switch (modif.messageType) {
             case MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type:
-                return modificationMetadata.lineToSplitId;
-            case MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type:
-                return modificationMetadata.lineToAttachToId;
+                return modificationMetadata?.lineToSplitId;
+            case MODIFICATION_TYPES?.LINE_ATTACH_TO_VOLTAGE_LEVEL.type:
+                return modificationMetadata?.lineToAttachToId;
             case MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type:
-                return modificationMetadata.attachedLineId;
+                return modificationMetadata?.attachedLineId;
             case MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type:
                 return (
-                    modificationMetadata.lineToAttachTo1Id +
+                    modificationMetadata?.lineToAttachTo1Id +
                     '/' +
-                    modificationMetadata.lineToAttachTo2Id
+                    modificationMetadata?.lineToAttachTo2Id
                 );
             case MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type:
                 return (
-                    modificationMetadata.attachedLineId +
+                    modificationMetadata?.attachedLineId +
                     '/' +
-                    modificationMetadata.lineToAttachTo1Id +
+                    modificationMetadata?.lineToAttachTo1Id +
                     '/' +
-                    modificationMetadata.lineToAttachTo2Id
+                    modificationMetadata?.lineToAttachTo2Id
                 );
             default:
-                return modificationMetadata.equipmentId || '';
+                return modificationMetadata?.equipmentId || '';
         }
     }, [modif]);
 
